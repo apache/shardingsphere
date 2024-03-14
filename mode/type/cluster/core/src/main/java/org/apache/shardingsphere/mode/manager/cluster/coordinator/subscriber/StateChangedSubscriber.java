@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceRule;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
@@ -63,7 +63,7 @@ public final class StateChangedSubscriber {
         if (!metaData.containsDatabase(event.getQualifiedDatabase().getDatabaseName())) {
             return;
         }
-        for (StaticDataSourceRule each : metaData.getDatabase(event.getQualifiedDatabase().getDatabaseName()).getRuleMetaData().getRuleIdentifiers(StaticDataSourceRule.class)) {
+        for (StaticDataSourceRuleAttribute each : metaData.getDatabase(event.getQualifiedDatabase().getDatabaseName()).getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)) {
             each.updateStatus(new StorageNodeDataSourceChangedEvent(event.getQualifiedDatabase(), event.getDataSource()));
         }
         DataSourceStateManager.getInstance().updateState(

@@ -22,9 +22,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -107,12 +107,12 @@ public final class RuleMetaData {
     public Map<String, Collection<Class<? extends ShardingSphereRule>>> getInUsedStorageUnitNameAndRulesMap() {
         Map<String, Collection<Class<? extends ShardingSphereRule>>> result = new LinkedHashMap<>();
         for (ShardingSphereRule each : rules) {
-            Optional<DataSourceMapperRule> dataSourceMapperRule = each.getRuleIdentifiers().findIdentifier(DataSourceMapperRule.class);
-            if (dataSourceMapperRule.isPresent()) {
-                mergeInUsedStorageUnitNameAndRules(result, getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames(dataSourceMapperRule.get())));
+            Optional<DataSourceMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
+            if (ruleAttribute.isPresent()) {
+                mergeInUsedStorageUnitNameAndRules(result, getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames(ruleAttribute.get())));
                 continue;
             }
-            each.getRuleIdentifiers().findIdentifier(DataNodeRule.class)
+            each.getAttributes().findAttribute(DataNodeRuleAttribute.class)
                     .ifPresent(optional -> mergeInUsedStorageUnitNameAndRules(result, getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames(optional))));
         }
         return result;
@@ -129,12 +129,12 @@ public final class RuleMetaData {
         return result;
     }
     
-    private Collection<String> getInUsedStorageUnitNames(final DataSourceMapperRule rule) {
-        return rule.getDataSourceMapper().values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+    private Collection<String> getInUsedStorageUnitNames(final DataSourceMapperRuleAttribute ruleAttribute) {
+        return ruleAttribute.getDataSourceMapper().values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
     }
     
-    private Collection<String> getInUsedStorageUnitNames(final DataNodeRule rule) {
-        return rule.getAllDataNodes().values().stream().flatMap(each -> each.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()).stream()).collect(Collectors.toSet());
+    private Collection<String> getInUsedStorageUnitNames(final DataNodeRuleAttribute ruleAttribute) {
+        return ruleAttribute.getAllDataNodes().values().stream().flatMap(each -> each.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()).stream()).collect(Collectors.toSet());
     }
     
     private void mergeInUsedStorageUnitNameAndRules(final Map<String, Collection<Class<? extends ShardingSphereRule>>> storageUnitNameAndRules,
@@ -153,16 +153,16 @@ public final class RuleMetaData {
     }
     
     /**
-     * Get rule identifiers.
+     * Get rule attributes.
      * 
-     * @param ruleIdentifierClass rule identifier class
-     * @param <T> type of rule identifiers
-     * @return rule identifiers
+     * @param attributeClass rule attribute class
+     * @param <T> type of rule attributes
+     * @return rule attributes
      */
-    public <T extends RuleIdentifier> Collection<T> getRuleIdentifiers(final Class<T> ruleIdentifierClass) {
+    public <T extends RuleAttribute> Collection<T> getAttributes(final Class<T> attributeClass) {
         Collection<T> result = new LinkedList<>();
         for (ShardingSphereRule each : rules) {
-            each.getRuleIdentifiers().findIdentifier(ruleIdentifierClass).ifPresent(result::add);
+            each.getAttributes().findAttribute(attributeClass).ifPresent(result::add);
         }
         return result;
     }

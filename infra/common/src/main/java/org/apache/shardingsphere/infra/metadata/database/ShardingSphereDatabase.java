@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSc
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 
 import javax.sql.DataSource;
@@ -192,14 +192,14 @@ public final class ShardingSphereDatabase {
      */
     public synchronized void reloadRules() {
         Collection<ShardingSphereRule> toBeReloadedRules = ruleMetaData.getRules().stream()
-                .filter(each -> each.getRuleIdentifiers().findIdentifier(MutableDataNodeRule.class).isPresent()).collect(Collectors.toList());
+                .filter(each -> each.getAttributes().findAttribute(MutableDataNodeRuleAttribute.class).isPresent()).collect(Collectors.toList());
         RuleConfiguration ruleConfig = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).findFirst().orElse(null);
         Collection<ShardingSphereRule> rules = new LinkedList<>(ruleMetaData.getRules());
         toBeReloadedRules.stream().findFirst().ifPresent(optional -> {
             rules.removeAll(toBeReloadedRules);
             Map<String, DataSource> dataSources = resourceMetaData.getStorageUnits().entrySet().stream()
                     .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-            rules.add(optional.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).reloadRule(ruleConfig, name, dataSources, rules));
+            rules.add(optional.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).reloadRule(ruleConfig, name, dataSources, rules));
         });
         ruleMetaData.getRules().clear();
         ruleMetaData.getRules().addAll(rules);

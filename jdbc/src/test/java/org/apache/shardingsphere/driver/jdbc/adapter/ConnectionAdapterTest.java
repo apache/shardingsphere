@@ -20,8 +20,8 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.resoure.ResourceHeldRuleAttribute;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
@@ -103,9 +103,9 @@ class ConnectionAdapterTest {
     private Connection createConnectionAdaptor() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         TransactionRule transactionRule = mock(TransactionRule.class);
-        ResourceHeldRule<ShardingSphereTransactionManagerEngine> resourceHeldRule = mock(ResourceHeldRule.class);
-        when(resourceHeldRule.getResource()).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
-        when(transactionRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(resourceHeldRule));
+        ResourceHeldRuleAttribute<ShardingSphereTransactionManagerEngine> resourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
+        when(resourceHeldRuleAttribute.getResource()).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
+        when(transactionRule.getAttributes()).thenReturn(new RuleAttributes(resourceHeldRuleAttribute));
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
                 new RuleMetaData(Arrays.asList(transactionRule, new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()))));
         return new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, contextManager);

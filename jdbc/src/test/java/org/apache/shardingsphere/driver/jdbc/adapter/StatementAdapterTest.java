@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -252,10 +252,10 @@ class StatementAdapterTest {
     
     private ShardingSphereStatement mockShardingSphereStatementWithNeedAccumulate(final Statement... statements) {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
-        DataNodeRule dataNodeRule = mock(DataNodeRule.class);
-        when(dataNodeRule.isNeedAccumulate(any())).thenReturn(true);
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRuleIdentifiers(DataNodeRule.class))
-                .thenReturn(Collections.singleton(dataNodeRule));
+        DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
+        when(ruleAttribute.isNeedAccumulate(any())).thenReturn(true);
+        when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class))
+                .thenReturn(Collections.singleton(ruleAttribute));
         when(connection.getDatabaseName()).thenReturn("db");
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(databaseType);

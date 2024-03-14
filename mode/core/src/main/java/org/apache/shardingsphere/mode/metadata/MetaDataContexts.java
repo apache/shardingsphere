@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaD
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
-import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
+import org.apache.shardingsphere.infra.rule.attribute.resoure.ResourceHeldRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 
@@ -99,9 +99,9 @@ public final class MetaDataContexts implements AutoCloseable {
     @Override
     public void close() {
         persistService.getRepository().close();
-        metaData.getGlobalRuleMetaData().getRuleIdentifiers(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource);
+        metaData.getGlobalRuleMetaData().getAttributes(ResourceHeldRuleAttribute.class).forEach(ResourceHeldRuleAttribute::closeStaleResource);
         for (ShardingSphereDatabase each : metaData.getDatabases().values()) {
-            each.getRuleMetaData().getRuleIdentifiers(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource);
+            each.getRuleMetaData().getAttributes(ResourceHeldRuleAttribute.class).forEach(ResourceHeldRuleAttribute::closeStaleResource);
         }
     }
 }

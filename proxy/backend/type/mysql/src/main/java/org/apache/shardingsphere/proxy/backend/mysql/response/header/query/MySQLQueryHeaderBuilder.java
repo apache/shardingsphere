@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
 
@@ -60,7 +60,7 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
     }
     
     private String getLogicTableName(final ShardingSphereDatabase database, final String actualTableName) {
-        for (DataNodeRule each : database.getRuleMetaData().getRuleIdentifiers(DataNodeRule.class)) {
+        for (DataNodeRuleAttribute each : database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
             Optional<String> logicTable = each.findLogicTableByActualTable(actualTableName);
             if (logicTable.isPresent()) {
                 return logicTable.get();

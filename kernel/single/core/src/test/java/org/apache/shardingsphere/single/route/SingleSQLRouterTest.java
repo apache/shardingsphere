@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -75,7 +75,7 @@ class SingleSQLRouterTest {
     void assertCreateRouteContextWithSingleDataSource() throws SQLException {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
                 DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
-        rule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).getAllDataNodes().put("t_order", Collections.singleton(createDataNode("foo_ds")));
+        rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singleton(createDataNode("foo_ds")));
         ShardingSphereDatabase database = mockSingleDatabase();
         RouteContext actual = new SingleSQLRouter().createRouteContext(createQueryContext(),
                 mock(RuleMetaData.class), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
@@ -96,7 +96,7 @@ class SingleSQLRouterTest {
     void assertCreateRouteContextWithReadwriteSplittingDataSource() throws SQLException {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
                 DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), Collections.singletonMap("readwrite_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
-        rule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).getAllDataNodes().put("t_order", Collections.singletonList(createDataNode("write_ds")));
+        rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singletonList(createDataNode("write_ds")));
         ShardingSphereDatabase database = mockReadwriteSplittingDatabase();
         RouteContext actual = new SingleSQLRouter().createRouteContext(createQueryContext(),
                 mock(RuleMetaData.class), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -157,7 +157,7 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext sqlStatementContext) {
-        for (DataNodeRule each : metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRuleIdentifiers(DataNodeRule.class)) {
+        for (DataNodeRuleAttribute each : metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
             if (each.isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
                 return true;
             }

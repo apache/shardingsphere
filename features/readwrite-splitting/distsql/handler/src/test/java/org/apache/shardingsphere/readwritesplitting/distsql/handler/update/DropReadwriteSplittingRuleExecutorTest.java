@@ -23,9 +23,9 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedExcept
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.DropReadwriteSplittingRuleStatement;
@@ -80,12 +80,12 @@ class DropReadwriteSplittingRuleExecutorTest {
     
     @Test
     void assertCheckSQLStatementWithInUsed() throws RuleDefinitionViolationException {
-        DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class);
-        when(database.getRuleMetaData().getRuleIdentifiers(DataSourceMapperRule.class)).thenReturn(Collections.singleton(dataSourceMapperRule));
-        DataNodeRule dataNodeRule = mock(DataNodeRule.class);
-        when(dataNodeRule.getAllDataNodes()).thenReturn(Collections.singletonMap("foo_ds", Collections.singleton(new DataNode("readwrite_ds.tbl"))));
+        DataSourceMapperRuleAttribute dataSourceMapperRuleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.singleton(dataSourceMapperRuleAttribute));
+        DataNodeRuleAttribute dataNodeRuleAttribute = mock(DataNodeRuleAttribute.class);
+        when(dataNodeRuleAttribute.getAllDataNodes()).thenReturn(Collections.singletonMap("foo_ds", Collections.singleton(new DataNode("readwrite_ds.tbl"))));
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
-        when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(dataNodeRuleAttribute));
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
         executor.setDatabase(database);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());

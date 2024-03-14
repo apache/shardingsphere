@@ -23,7 +23,7 @@ import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -57,8 +57,8 @@ public final class CDCDataNodeUtils {
         Map<String, List<DataNode>> result = new HashMap<>();
         // TODO support virtual data source name
         for (String each : tableNames) {
-            if (singleRule.isPresent() && singleRule.get().getRuleIdentifiers().getIdentifier(DataNodeRule.class).getAllDataNodes().containsKey(each)) {
-                result.put(each, new ArrayList<>(singleRule.get().getRuleIdentifiers().getIdentifier(DataNodeRule.class).getAllDataNodes().get(each)));
+            if (singleRule.isPresent() && singleRule.get().getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().containsKey(each)) {
+                result.put(each, new ArrayList<>(singleRule.get().getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().get(each)));
                 continue;
             }
             if (shardingRule.isPresent() && shardingRule.get().findShardingTable(each).isPresent()) {
@@ -66,8 +66,8 @@ public final class CDCDataNodeUtils {
                 result.put(each, shardingTable.getActualDataNodes());
                 continue;
             }
-            if (broadcastRule.isPresent() && broadcastRule.get().getRuleIdentifiers().getIdentifier(DataNodeRule.class).findFirstActualTable(each).isPresent()) {
-                result.put(each, Collections.singletonList(broadcastRule.get().getRuleIdentifiers().getIdentifier(DataNodeRule.class).getAllDataNodes().get(each).iterator().next()));
+            if (broadcastRule.isPresent() && broadcastRule.get().getAttributes().getAttribute(DataNodeRuleAttribute.class).findFirstActualTable(each).isPresent()) {
+                result.put(each, Collections.singletonList(broadcastRule.get().getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().get(each).iterator().next()));
                 continue;
             }
             throw new PipelineInvalidParameterException(String.format("Not find actual data nodes of `%s`", each));

@@ -34,8 +34,8 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -114,7 +114,7 @@ public final class ShardingRule implements DatabaseRule {
     
     private final ShardingCache shardingCache;
     
-    private final RuleIdentifiers ruleIdentifiers;
+    private final RuleAttributes attributes;
     
     public ShardingRule(final ShardingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSources, final InstanceContext instanceContext) {
         configuration = ruleConfig;
@@ -141,7 +141,7 @@ public final class ShardingRule implements DatabaseRule {
             ((InstanceContextAware) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
         }
         shardingCache = null == ruleConfig.getShardingCache() ? null : new ShardingCache(ruleConfig.getShardingCache(), this);
-        ruleIdentifiers = new RuleIdentifiers(new ShardingDataNodeRule(shardingTables), new ShardingTableMapperRule(shardingTables.values()));
+        attributes = new RuleAttributes(new ShardingDataNodeRuleAttribute(shardingTables), new ShardingTableMapperRuleAttribute(shardingTables.values()));
     }
     
     private void validateUniqueActualDataNodesInTableRules() {

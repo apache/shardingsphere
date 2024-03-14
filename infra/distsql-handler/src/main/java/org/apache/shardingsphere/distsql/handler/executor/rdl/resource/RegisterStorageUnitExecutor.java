@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
@@ -109,7 +109,7 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
     }
     
     private Collection<String> getLogicalDataSourceNames() {
-        return database.getRuleMetaData().getRuleIdentifiers(DataSourceMapperRule.class).stream().flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toList());
+        return database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class).stream().flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toList());
     }
     
     @Override

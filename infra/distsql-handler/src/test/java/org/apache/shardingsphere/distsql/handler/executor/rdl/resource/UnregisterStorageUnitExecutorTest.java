@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNo
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -109,9 +109,9 @@ class UnregisterStorageUnitExecutorTest {
     @Test
     void assertExecuteUpdateWithStorageUnitInUsed() {
         ShardingSphereRule rule = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
-        DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class);
-        when(dataSourceMapperRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
-        when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataSourceMapperRule));
+        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         assertThrows(StorageUnitInUsedException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
     }
@@ -140,9 +140,9 @@ class UnregisterStorageUnitExecutorTest {
     @Test
     void assertExecuteUpdateWithStorageUnitInUsedWithIfExists() {
         ShardingSphereRule rule = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
-        DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class);
-        when(dataSourceMapperRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
-        when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataSourceMapperRule));
+        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         assertThrows(DistSQLException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false), contextManager));
     }

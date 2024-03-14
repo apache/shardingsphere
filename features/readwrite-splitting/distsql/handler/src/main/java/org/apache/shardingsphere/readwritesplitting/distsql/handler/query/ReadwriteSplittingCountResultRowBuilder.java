@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.executor.rql.rule.CountResultRowBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
@@ -33,7 +33,7 @@ public final class ReadwriteSplittingCountResultRowBuilder implements CountResul
     @Override
     public Collection<LocalDataQueryResultRow> generateRows(final ReadwriteSplittingRule rule, final String databaseName) {
         return Collections.singleton(
-                new LocalDataQueryResultRow("readwrite_splitting", databaseName, rule.getRuleIdentifiers().getIdentifier(DataSourceMapperRule.class).getDataSourceMapper().size()));
+                new LocalDataQueryResultRow("readwrite_splitting", databaseName, rule.getAttributes().getAttribute(DataSourceMapperRuleAttribute.class).getDataSourceMapper().size()));
     }
     
     @Override

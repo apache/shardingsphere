@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRe
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -98,9 +98,9 @@ class CreateReadwriteSplittingRuleExecutorTest {
     
     @Test
     void assertCheckSQLStatementWithDuplicateLogicResource() {
-        DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class);
-        when(dataSourceMapperRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("duplicate_ds", Collections.singleton("ds_0")));
-        when(database.getRuleMetaData().getRuleIdentifiers(DataSourceMapperRule.class)).thenReturn(Collections.singleton(dataSourceMapperRule));
+        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("duplicate_ds", Collections.singleton("ds_0")));
+        when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
         ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("duplicate_ds", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"),
                 new AlgorithmSegment(null, new Properties()));
         executor.setDatabase(database);
@@ -148,9 +148,9 @@ class CreateReadwriteSplittingRuleExecutorTest {
     
     @Test
     void assertUpdateSuccess() {
-        DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class, RETURNS_DEEP_STUBS);
-        when(dataSourceMapperRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("ms_group", Collections.singleton("ds_0")));
-        when(database.getRuleMetaData().getRuleIdentifiers(DataSourceMapperRule.class)).thenReturn(Collections.singleton(dataSourceMapperRule));
+        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
+        when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("ms_group", Collections.singleton("ds_0")));
+        when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
         ReadwriteSplittingRuleSegment staticSegment = new ReadwriteSplittingRuleSegment(
                 "static_rule", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), new AlgorithmSegment("TEST", new Properties()));
         CreateReadwriteSplittingRuleStatement sqlStatement = createSQLStatement(false, staticSegment);

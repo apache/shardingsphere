@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rdl.UnloadSingleTableStatement;
 import org.apache.shardingsphere.single.exception.SingleTableNotFoundException;
@@ -62,11 +62,11 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
         }
         Collection<String> allTables = getAllTableNames(database);
         SingleRule singleRule = database.getRuleMetaData().getSingleRule(SingleRule.class);
-        Collection<String> singleTables = singleRule.getRuleIdentifiers().getIdentifier(TableMapperRule.class).getLogicTableMapper().getTableNames();
+        Collection<String> singleTables = singleRule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableMapper().getTableNames();
         for (String each : sqlStatement.getTables()) {
             checkTableExist(allTables, each);
             checkIsSingleTable(singleTables, each);
-            checkTableRuleExist(database.getName(), database.getProtocolType(), singleRule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).getDataNodesByTableName(each), each);
+            checkTableRuleExist(database.getName(), database.getProtocolType(), singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getDataNodesByTableName(each), each);
         }
     }
     

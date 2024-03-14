@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceRule;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
@@ -114,11 +114,11 @@ class StateChangedSubscriberTest {
     
     @Test
     void assertRenewForDisableStateChanged() {
-        StaticDataSourceRule staticDataSourceRule = mock(StaticDataSourceRule.class);
-        when(database.getRuleMetaData().getRuleIdentifiers(StaticDataSourceRule.class)).thenReturn(Collections.singleton(staticDataSourceRule));
+        StaticDataSourceRuleAttribute ruleAttribute = mock(StaticDataSourceRuleAttribute.class);
+        when(database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
         StorageNodeChangedEvent event = new StorageNodeChangedEvent(new QualifiedDatabase("db.readwrite_ds.ds_0"), new StorageNodeDataSource(StorageNodeRole.MEMBER, DataSourceState.DISABLED));
         subscriber.renew(event);
-        verify(staticDataSourceRule).updateStatus(argThat(
+        verify(ruleAttribute).updateStatus(argThat(
                 (ArgumentMatcher<StorageNodeDataSourceChangedEvent>) argumentEvent -> Objects.equals(event.getQualifiedDatabase(), argumentEvent.getQualifiedDatabase())
                         && Objects.equals(event.getDataSource(), argumentEvent.getDataSource())));
     }

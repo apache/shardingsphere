@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.resoure.ResourceHeldRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -106,9 +106,9 @@ class JDBCBackendDataSourceTest {
     @SuppressWarnings("unchecked")
     private RuleMetaData mockGlobalRuleMetaData() {
         TransactionRule transactionRule = mock(TransactionRule.class);
-        ResourceHeldRule<ShardingSphereTransactionManagerEngine> resourceHeldRule = mock(ResourceHeldRule.class);
-        when(resourceHeldRule.getResource()).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
-        when(transactionRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(resourceHeldRule));
+        ResourceHeldRuleAttribute<ShardingSphereTransactionManagerEngine> resourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
+        when(resourceHeldRuleAttribute.getResource()).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
+        when(transactionRule.getAttributes()).thenReturn(new RuleAttributes(resourceHeldRuleAttribute));
         return new RuleMetaData(Collections.singleton(transactionRule));
     }
     

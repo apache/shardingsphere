@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolD
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.resoure.ResourceHeldRuleAttribute;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -95,7 +95,7 @@ public final class ShardingSphereMetaData {
     public void addDatabase(final String databaseName, final DatabaseType protocolType, final ConfigurationProperties props) {
         ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType, props);
         databases.put(database.getName().toLowerCase(), database);
-        globalRuleMetaData.getRuleIdentifiers(ResourceHeldRule.class).forEach(each -> each.addResource(database));
+        globalRuleMetaData.getAttributes(ResourceHeldRuleAttribute.class).forEach(each -> each.addResource(database));
     }
     
     /**
@@ -108,9 +108,9 @@ public final class ShardingSphereMetaData {
     }
     
     private void cleanResources(final ShardingSphereDatabase database) {
-        globalRuleMetaData.getRuleIdentifiers(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(database.getName()));
-        database.getRuleMetaData().getRuleIdentifiers(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(database.getName()));
-        database.getRuleMetaData().getRuleIdentifiers(StaticDataSourceRule.class).forEach(StaticDataSourceRule::cleanStorageNodeDataSources);
+        globalRuleMetaData.getAttributes(ResourceHeldRuleAttribute.class).forEach(each -> each.closeStaleResource(database.getName()));
+        database.getRuleMetaData().getAttributes(ResourceHeldRuleAttribute.class).forEach(each -> each.closeStaleResource(database.getName()));
+        database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class).forEach(StaticDataSourceRuleAttribute::cleanStorageNodeDataSources);
         Optional.ofNullable(database.getResourceMetaData())
                 .ifPresent(optional -> optional.getStorageUnits().values().forEach(each -> new DataSourcePoolDestroyer(each.getDataSource()).asyncDestroy()));
     }

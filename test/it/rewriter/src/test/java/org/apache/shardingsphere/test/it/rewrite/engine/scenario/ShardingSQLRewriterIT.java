@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -58,8 +58,8 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
     protected void mockRules(final Collection<ShardingSphereRule> rules, final String schemaName, final SQLStatement sqlStatement) {
         Optional<SingleRule> singleRule = rules.stream().filter(each -> each instanceof SingleRule).map(each -> (SingleRule) each).findFirst();
         if (singleRule.isPresent() && !(sqlStatement instanceof CreateTableStatement)) {
-            singleRule.get().getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).put("db", schemaName, "t_single");
-            singleRule.get().getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).put("db", schemaName, "t_single_extend");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("db", schemaName, "t_single");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("db", schemaName, "t_single_extend");
         }
     }
     

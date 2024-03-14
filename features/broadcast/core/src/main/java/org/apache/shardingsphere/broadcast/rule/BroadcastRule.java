@@ -20,9 +20,9 @@ package org.apache.shardingsphere.broadcast.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
+import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -47,30 +47,30 @@ public final class BroadcastRule implements DatabaseRule {
     
     private final Collection<String> dataSourceNames;
     
-    private final RuleIdentifiers ruleIdentifiers;
+    private final RuleAttributes attributes;
     
     public BroadcastRule(final BroadcastRuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
         configuration = config;
         this.databaseName = databaseName;
         dataSourceNames = getAggregatedDataSourceNames(dataSources, builtRules);
         tables = createBroadcastTables(config.getTables());
-        ruleIdentifiers = new RuleIdentifiers(new BroadcastDataNodeRule(dataSourceNames, tables), new BroadcastTableMapperRule(tables));
+        attributes = new RuleAttributes(new BroadcastDataNodeRuleAttribute(dataSourceNames, tables), new BroadcastTableMapperRuleAttribute(tables));
     }
     
     private Collection<String> getAggregatedDataSourceNames(final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
         Collection<String> result = new LinkedList<>(dataSources.keySet());
         for (ShardingSphereRule each : builtRules) {
-            Optional<DataSourceMapperRule> dataSourceMapperRule = each.getRuleIdentifiers().findIdentifier(DataSourceMapperRule.class);
-            if (dataSourceMapperRule.isPresent()) {
-                result = getAggregatedDataSourceNames(result, dataSourceMapperRule.get());
+            Optional<DataSourceMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
+            if (ruleAttribute.isPresent()) {
+                result = getAggregatedDataSourceNames(result, ruleAttribute.get());
             }
         }
         return result;
     }
     
-    private Collection<String> getAggregatedDataSourceNames(final Collection<String> dataSourceNames, final DataSourceMapperRule dataSourceMapperRule) {
+    private Collection<String> getAggregatedDataSourceNames(final Collection<String> dataSourceNames, final DataSourceMapperRuleAttribute ruleAttribute) {
         Collection<String> result = new LinkedList<>();
-        for (Entry<String, Collection<String>> entry : dataSourceMapperRule.getDataSourceMapper().entrySet()) {
+        for (Entry<String, Collection<String>> entry : ruleAttribute.getDataSourceMapper().entrySet()) {
             for (String each : entry.getValue()) {
                 if (dataSourceNames.contains(each)) {
                     dataSourceNames.remove(each);

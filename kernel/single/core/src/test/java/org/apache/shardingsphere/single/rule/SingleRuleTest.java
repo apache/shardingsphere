@@ -24,10 +24,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -103,13 +103,13 @@ class SingleRuleTest {
     
     @Test
     void assertGetSingleTableDataNodes() {
-        TableMapperRule tableMapperRule = mock(TableMapperRule.class, RETURNS_DEEP_STUBS);
-        when(tableMapperRule.getDistributedTableMapper().getTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(tableMapperRule.getActualTableMapper().getTableNames()).thenReturn(Arrays.asList("t_order_0", "t_order_1"));
+        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
+        when(ruleAttribute.getDistributedTableMapper().getTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(ruleAttribute.getActualTableMapper().getTableNames()).thenReturn(Arrays.asList("t_order_0", "t_order_1"));
         ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
-        when(builtRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(tableMapperRule));
+        when(builtRule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(builtRule));
-        Map<String, Collection<DataNode>> actual = singleRule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).getAllDataNodes();
+        Map<String, Collection<DataNode>> actual = singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes();
         assertThat(actual.size(), is(2));
         assertTrue(actual.containsKey("employee"));
         assertTrue(actual.containsKey("student"));
@@ -118,12 +118,12 @@ class SingleRuleTest {
     @Test
     void assertGetSingleTableDataNodesWithUpperCase() {
         ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
-        TableMapperRule tableMapperRule = mock(TableMapperRule.class, RETURNS_DEEP_STUBS);
-        when(tableMapperRule.getDistributedTableMapper().getTableNames()).thenReturn(Collections.singleton("T_ORDER"));
-        when(tableMapperRule.getActualTableMapper().getTableNames()).thenReturn(Arrays.asList("T_ORDER_0", "T_ORDER_1"));
-        when(builtRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(tableMapperRule));
+        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
+        when(ruleAttribute.getDistributedTableMapper().getTableNames()).thenReturn(Collections.singleton("T_ORDER"));
+        when(ruleAttribute.getActualTableMapper().getTableNames()).thenReturn(Arrays.asList("T_ORDER_0", "T_ORDER_1"));
+        when(builtRule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(builtRule));
-        Map<String, Collection<DataNode>> actual = singleRule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).getAllDataNodes();
+        Map<String, Collection<DataNode>> actual = singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes();
         assertThat(actual.size(), is(2));
         assertTrue(actual.containsKey("employee"));
         assertTrue(actual.containsKey("student"));
@@ -132,7 +132,7 @@ class SingleRuleTest {
     @Test
     void assertFindSingleTableDataNode() {
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
-        Optional<DataNode> actual = singleRule.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).findTableDataNode(DefaultDatabase.LOGIC_NAME, "employee");
+        Optional<DataNode> actual = singleRule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(DefaultDatabase.LOGIC_NAME, "employee");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDataSourceName(), is("foo_ds"));
         assertThat(actual.get().getTableName(), is("employee"));
@@ -141,7 +141,7 @@ class SingleRuleTest {
     @Test
     void assertFindSingleTableDataNodeWithUpperCase() {
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
-        Optional<DataNode> actual = singleRule.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).findTableDataNode(DefaultDatabase.LOGIC_NAME, "EMPLOYEE");
+        Optional<DataNode> actual = singleRule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(DefaultDatabase.LOGIC_NAME, "EMPLOYEE");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDataSourceName(), is("foo_ds"));
         assertThat(actual.get().getTableName(), is("employee"));
@@ -183,44 +183,44 @@ class SingleRuleTest {
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
         String tableName = "teacher";
         String dataSourceName = "foo_ds";
-        singleRule.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).put(dataSourceName, DefaultDatabase.LOGIC_NAME, tableName);
+        singleRule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put(dataSourceName, DefaultDatabase.LOGIC_NAME, tableName);
         Collection<QualifiedTable> tableNames = new LinkedList<>();
         tableNames.add(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "teacher"));
         assertThat(singleRule.getSingleTables(tableNames).iterator().next().getSchemaName(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(singleRule.getSingleTables(tableNames).iterator().next().getTableName(), is("teacher"));
-        assertTrue(singleRule.getRuleIdentifiers().getIdentifier(TableMapperRule.class).getLogicTableMapper().contains("employee"));
-        assertTrue(singleRule.getRuleIdentifiers().getIdentifier(TableMapperRule.class).getLogicTableMapper().contains("student"));
-        assertTrue(singleRule.getRuleIdentifiers().getIdentifier(TableMapperRule.class).getLogicTableMapper().contains("t_order_0"));
-        assertTrue(singleRule.getRuleIdentifiers().getIdentifier(TableMapperRule.class).getLogicTableMapper().contains("t_order_1"));
-        assertTrue(singleRule.getRuleIdentifiers().getIdentifier(TableMapperRule.class).getLogicTableMapper().contains("teacher"));
+        assertTrue(singleRule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableMapper().contains("employee"));
+        assertTrue(singleRule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableMapper().contains("student"));
+        assertTrue(singleRule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableMapper().contains("t_order_0"));
+        assertTrue(singleRule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableMapper().contains("t_order_1"));
+        assertTrue(singleRule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableMapper().contains("teacher"));
     }
     
     @Test
     void assertRemove() {
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
         String tableName = "employee";
-        singleRule.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).remove(DefaultDatabase.LOGIC_NAME, tableName);
+        singleRule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).remove(DefaultDatabase.LOGIC_NAME, tableName);
         Collection<QualifiedTable> tableNames = new LinkedList<>();
         tableNames.add(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "employee"));
         assertTrue(singleRule.getSingleTables(tableNames).isEmpty());
-        assertTrue(singleRule.getRuleIdentifiers().getIdentifier(TableMapperRule.class).getLogicTableMapper().contains("student"));
-        assertTrue(singleRule.getRuleIdentifiers().getIdentifier(TableMapperRule.class).getLogicTableMapper().contains("t_order_0"));
-        assertTrue(singleRule.getRuleIdentifiers().getIdentifier(TableMapperRule.class).getLogicTableMapper().contains("t_order_1"));
+        assertTrue(singleRule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableMapper().contains("student"));
+        assertTrue(singleRule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableMapper().contains("t_order_0"));
+        assertTrue(singleRule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableMapper().contains("t_order_1"));
     }
     
     @Test
     void assertGetAllDataNodes() {
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
-        assertTrue(singleRule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).getAllDataNodes().containsKey("employee"));
-        assertTrue(singleRule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).getAllDataNodes().containsKey("student"));
-        assertTrue(singleRule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).getAllDataNodes().containsKey("t_order_0"));
-        assertTrue(singleRule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).getAllDataNodes().containsKey("t_order_1"));
+        assertTrue(singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().containsKey("employee"));
+        assertTrue(singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().containsKey("student"));
+        assertTrue(singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().containsKey("t_order_0"));
+        assertTrue(singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().containsKey("t_order_1"));
     }
     
     @Test
     void assertGetDataNodesByTableName() {
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
-        Collection<DataNode> actual = singleRule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).getDataNodesByTableName("EMPLOYEE");
+        Collection<DataNode> actual = singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getDataNodesByTableName("EMPLOYEE");
         assertThat(actual.size(), is(1));
         DataNode dataNode = actual.iterator().next();
         assertThat(dataNode.getDataSourceName(), is("foo_ds"));
@@ -231,20 +231,20 @@ class SingleRuleTest {
     void assertFindFirstActualTable() {
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
         String logicTable = "employee";
-        assertFalse(singleRule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).findFirstActualTable(logicTable).isPresent());
+        assertFalse(singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).findFirstActualTable(logicTable).isPresent());
     }
     
     @Test
     void assertIsNeedAccumulate() {
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
-        assertFalse(singleRule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).isNeedAccumulate(Collections.emptyList()));
+        assertFalse(singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).isNeedAccumulate(Collections.emptyList()));
     }
     
     @Test
     void assertFindLogicTableByActualTable() {
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
         String actualTable = "student";
-        assertFalse(singleRule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).findLogicTableByActualTable(actualTable).isPresent());
+        assertFalse(singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).findLogicTableByActualTable(actualTable).isPresent());
     }
     
     @Test
@@ -252,6 +252,6 @@ class SingleRuleTest {
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
         String catalog = "employee";
         String logicTable = "t_order_0";
-        assertFalse(singleRule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).findActualTableByCatalog(catalog, logicTable).isPresent());
+        assertFalse(singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).findActualTableByCatalog(catalog, logicTable).isPresent());
     }
 }

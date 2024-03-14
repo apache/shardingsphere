@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.util.regex.RegexUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTableStatement;
@@ -52,8 +52,8 @@ public final class ShowSingleTableExecutor implements DistSQLQueryExecutor<ShowS
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowSingleTableStatement sqlStatement, final ContextManager contextManager) {
         Collection<DataNode> resultDataNodes = getPattern(sqlStatement)
-                .map(optional -> getDataNodesWithLikePattern(rule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).getAllDataNodes(), optional))
-                .orElseGet(() -> getDataNodes(rule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).getAllDataNodes(), sqlStatement));
+                .map(optional -> getDataNodesWithLikePattern(rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes(), optional))
+                .orElseGet(() -> getDataNodes(rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes(), sqlStatement));
         Collection<DataNode> sortedDataNodes = resultDataNodes.stream().sorted(Comparator.comparing(DataNode::getTableName)).collect(Collectors.toList());
         return sortedDataNodes.stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName())).collect(Collectors.toList());
     }

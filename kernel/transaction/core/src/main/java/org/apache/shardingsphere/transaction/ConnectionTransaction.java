@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
+import org.apache.shardingsphere.infra.rule.attribute.resoure.ResourceHeldRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -49,7 +49,7 @@ public final class ConnectionTransaction {
     
     public ConnectionTransaction(final TransactionType transactionType, final TransactionRule rule) {
         this.transactionType = transactionType;
-        transactionManager = ((ShardingSphereTransactionManagerEngine) rule.getRuleIdentifiers().getIdentifier(ResourceHeldRule.class).getResource()).getTransactionManager(transactionType);
+        transactionManager = ((ShardingSphereTransactionManagerEngine) rule.getAttributes().getAttribute(ResourceHeldRuleAttribute.class).getResource()).getTransactionManager(transactionType);
     }
     
     /**
