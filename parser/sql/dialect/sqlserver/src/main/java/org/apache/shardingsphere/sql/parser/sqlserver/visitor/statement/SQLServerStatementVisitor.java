@@ -1038,7 +1038,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
                 offset = new NumberLiteralLimitValueSegment(ctx.expr(0).start.getStartIndex(), ctx.expr(0).stop.getStopIndex(),
                         ((Number) ((LiteralExpressionSegment) astNode).getLiterals()).longValue());
             } else if (astNode instanceof ParameterMarkerExpressionSegment) {
-                offset = new ParameterMarkerLimitValueSegment(ctx.expr(0).start.getStartIndex(), ctx.expr(0).stop.getStopIndex(), parameterMarkerSegments.size());
+                offset = new ParameterMarkerLimitValueSegment(ctx.expr(0).start.getStartIndex(), ctx.expr(0).stop.getStopIndex(), parameterMarkerSegments.size() - 1);
             }
         }
         if (null != ctx.FETCH()) {
@@ -1047,7 +1047,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
                 rowcount = new NumberLiteralLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(),
                         ((Number) ((LiteralExpressionSegment) astNode).getLiterals()).longValue());
             } else if (astNode instanceof ParameterMarkerExpressionSegment) {
-                rowcount = new ParameterMarkerLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(), parameterMarkerSegments.size());
+                rowcount = new ParameterMarkerLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(), parameterMarkerSegments.size() - 1);
             }
         }
         if (null != offset) {
