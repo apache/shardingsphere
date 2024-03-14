@@ -57,13 +57,13 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
         checkLoadBalancerDataSourceName(databaseName, configs, getLoadBalancer(config));
     }
     
-    private void checkDataSources(final String databaseName,
-                                  final Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
+    private void checkDataSources(final String databaseName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs,
+                                  final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
         Collection<String> addedWriteDataSourceNames = new HashSet<>();
         Collection<String> addedReadDataSourceNames = new HashSet<>();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : configs) {
             ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(each.getName()), () -> new MissingRequiredDataSourceNameException(databaseName));
-            checkDataSources(databaseName, dataSourceMap, each, addedWriteDataSourceNames, addedReadDataSourceNames, rules);
+            checkDataSources(databaseName, dataSourceMap, each, addedWriteDataSourceNames, addedReadDataSourceNames, builtRules);
         }
     }
     
