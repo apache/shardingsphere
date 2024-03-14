@@ -40,29 +40,29 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShardingConstraintReviserTest {
-
+    
     private ShardingConstraintReviser reviser;
-
+    
     private ShardingRule shardingRule;
-
+    
     @BeforeEach
     public void setUp() {
         shardingRule = mockShardingRule();
         ShardingTable shardingTable = mock(ShardingTable.class);
         reviser = new ShardingConstraintReviser(shardingTable);
         when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode[]{
-          new DataNode("schema_name", "table_name_0"),
-          new DataNode("schema_name", "table_name_1")
+                new DataNode("schema_name", "table_name_0"),
+                new DataNode("schema_name", "table_name_1")
         }));
     }
-
+    
     private ShardingRule mockShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("table_name", "ds.table_name");
         ruleConfig.setTables(Collections.singleton(shardingTableRuleConfig));
         return new ShardingRule(ruleConfig, Maps.of("ds", new MockedDataSource()), mock(InstanceContext.class));
     }
-
+    
     @Test
     public void testReviseWhenTableMatches() {
         ConstraintMetaData originalMetaData = new ConstraintMetaData("test_table_name_1", "referenced_table_name");
@@ -71,7 +71,7 @@ class ShardingConstraintReviserTest {
         assertEquals("test", result.get().getName());
         assertEquals("referenced_table_name", result.get().getReferencedTableName());
     }
-
+    
     @Test
     public void testReviseWhenTableDoesNotMatch() {
         ConstraintMetaData originalMetaData = new ConstraintMetaData("test_table_name_2", "referenced_table_name");
