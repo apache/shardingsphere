@@ -159,11 +159,19 @@ public final class PipelineContainerComposer implements AutoCloseable {
             Map<String, Object> jobInfo = queryForListWithLog(String.format("SHOW %s STATUS '%s'", jobTypeName, jobId)).get(0);
             String status = jobInfo.get("status").toString();
             if (JobStatus.FINISHED.name().equals(status)) {
-                connection.createStatement().execute(String.format((jobType instanceof CDCJobType ? "DROP" : "COMMIT") + " %s '%s'", jobTypeName, jobId));
+                connection.createStatement().execute(String.format((isSupportCommit(jobType) ? "COMMIT" : "DROP") + " %s '%s'", jobTypeName, jobId));
             } else {
-                connection.createStatement().execute(String.format((jobType instanceof CDCJobType ? "DROP" : "ROLLBACK") + " %s '%s'", jobTypeName, jobId));
+                connection.createStatement().execute(String.format((isSupportRollback(jobType) ? "ROLLBACK" : "DROP") + " %s '%s'", jobTypeName, jobId));
             }
         }
+    }
+    
+    private boolean isSupportCommit(final PipelineJobType jobType) {
+        return !(jobType instanceof CDCJobType);
+    }
+    
+    private boolean isSupportRollback(final PipelineJobType jobType) {
+        return !(jobType instanceof CDCJobType);
     }
     
     private List<Map<String, Object>> queryJobs(final Connection connection, final String jobTypeName) {
