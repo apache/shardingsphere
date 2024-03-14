@@ -44,9 +44,13 @@ public final class YamlBroadcastDataNodeRuleConfigurationSwapper implements Yaml
         if (data.getTables().isEmpty()) {
             return Collections.emptyList();
         }
-        YamlBroadcastRuleConfiguration yamlBroadcastRuleConfig = new YamlBroadcastRuleConfiguration();
-        yamlBroadcastRuleConfig.getTables().addAll(data.getTables());
-        return Collections.singleton(new YamlDataNode(BroadcastRuleNodePathProvider.TABLES, YamlEngine.marshal(yamlBroadcastRuleConfig)));
+        return Collections.singleton(new YamlDataNode(BroadcastRuleNodePathProvider.TABLES, YamlEngine.marshal(swapToTablesYamlConfiguration(data))));
+    }
+    
+    private YamlBroadcastRuleConfiguration swapToTablesYamlConfiguration(final BroadcastRuleConfiguration data) {
+        YamlBroadcastRuleConfiguration result = new YamlBroadcastRuleConfiguration();
+        result.getTables().addAll(data.getTables());
+        return result;
     }
     
     @Override
