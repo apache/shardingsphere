@@ -26,7 +26,7 @@ public final class LoadBalanceAlgorithmInitializationException extends LoadBalan
     
     private static final long serialVersionUID = 3025471428679102820L;
     
-    public LoadBalanceAlgorithmInitializationException(final String loadBalanceAlgorithmType, final String reason) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 81, "'%s' load balance algorithm initialization failed, reason is: %s.", loadBalanceAlgorithmType, reason);
+    public LoadBalanceAlgorithmInitializationException(final String loadBalanceAlgorithmType, final String reason, final Object... args) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 80, "'%s' load balance algorithm initialization failed, reason is: %s.", loadBalanceAlgorithmType, String.format(reason, args));
     }
 }

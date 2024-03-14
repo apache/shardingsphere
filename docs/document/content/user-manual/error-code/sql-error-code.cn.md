@@ -291,10 +291,9 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 基础算法 - 负载均衡
 
-| SQL State | Vendor Code | 错误信息                                                        |
-|-----------|-------------|-------------------------------------------------------------|
-| 44000     | 21280       | Invalid available target weight \`%s\`.                             |
-| HY000     | 21281       | \'%s\' load balance algorithm initialization failed, reason is: %s. |
+| SQL State | Vendor Code | 错误信息                                                              |
+|-----------|-------------|-------------------------------------------------------------------|
+| 44000     | 21280       | '%s' load balance algorithm initialization failed, reason is: %s. |
 
 ## 其他异常
 
