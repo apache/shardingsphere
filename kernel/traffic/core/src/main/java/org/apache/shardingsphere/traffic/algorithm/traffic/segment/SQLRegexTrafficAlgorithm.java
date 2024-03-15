@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.traffic.algorithm.traffic.segment;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
-import org.apache.shardingsphere.traffic.exception.segment.SegmentTrafficAlgorithmInitializationException;
 
 import java.util.Properties;
 import java.util.regex.Pattern;
@@ -37,11 +37,9 @@ public final class SQLRegexTrafficAlgorithm implements SegmentTrafficAlgorithm {
     
     @Override
     public void init(final Properties props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(REGEX_PROPS_KEY),
-                () -> new SegmentTrafficAlgorithmInitializationException(SQLRegexTrafficAlgorithm.class.getName(), String.format("%s cannot be null", REGEX_PROPS_KEY)));
+        ShardingSpherePreconditions.checkState(props.containsKey(REGEX_PROPS_KEY), () -> new AlgorithmInitializationException(this, "%s cannot be null", REGEX_PROPS_KEY));
         regex = Pattern.compile(props.getProperty(REGEX_PROPS_KEY));
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(String.valueOf(regex)),
-                () -> new SegmentTrafficAlgorithmInitializationException(SQLRegexTrafficAlgorithm.class.getName(), "regex must be not empty"));
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(String.valueOf(regex)), () -> new AlgorithmInitializationException(this, "Regex must be not empty"));
     }
     
     @Override

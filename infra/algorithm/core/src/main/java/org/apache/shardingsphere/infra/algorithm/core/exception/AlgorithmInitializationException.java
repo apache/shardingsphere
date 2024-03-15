@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.algorithm.sharding;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
+import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Sharding algorithm initialization exception.
+ * Algorithm initialization exception.
  */
-public final class ShardingAlgorithmInitializationException extends ShardingSQLException {
+public final class AlgorithmInitializationException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = -2638422150430534412L;
+    private static final long serialVersionUID = -7634670846091616790L;
     
-    public ShardingAlgorithmInitializationException(final String shardingType, final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 83, "Sharding algorithm `%s` initialization failed, reason is: %s.", shardingType, reason);
+    public AlgorithmInitializationException(final ShardingSphereAlgorithm algorithm, final String reason, final Object... args) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 11, "'%s.'%s' initialization failed, reason is: %s.",
+                algorithm.getClass().getSuperclass().getSimpleName(), algorithm.getType(), String.format(reason, args));
     }
 }

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.hint;
 
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
-import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
 import java.util.Collection;
@@ -50,7 +50,7 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     
     private String getAlgorithmExpression(final Properties props) {
         String algorithmExpression = props.getProperty(ALGORITHM_EXPRESSION_KEY, DEFAULT_ALGORITHM_EXPRESSION);
-        ShardingSpherePreconditions.checkNotNull(algorithmExpression, () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression can not be null."));
+        ShardingSpherePreconditions.checkNotNull(algorithmExpression, () -> new AlgorithmInitializationException(this, "Inline sharding algorithm expression can not be null."));
         return InlineExpressionParserFactory.newInstance(algorithmExpression.trim()).handlePlaceHolder();
     }
     
