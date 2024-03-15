@@ -18,7 +18,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 08000     | 10001       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\`.          |
 | 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
 | HY004     | 10003       | Invalid format for actual data node \`%s\`.                                    |
-| 42000     | 10004       | Unsupported SQL node conversion for SQL statement \`%s\`.                      |
 | HY000     | 10005       | Column '%s' in %s is ambiguous.                                                |
 | 42S02     | 10006       | Unknown column '%s' in '%s'.                                                   |
 | 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
