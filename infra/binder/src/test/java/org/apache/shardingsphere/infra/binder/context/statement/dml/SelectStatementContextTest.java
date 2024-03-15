@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.dml;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -64,6 +67,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -407,6 +411,55 @@ class SelectStatementContextTest {
         assertThat(actual.getAllTables(), is(Collections.emptyList()));
         assertThat(actual.getGroupByContext().getItems(), is(Collections.emptyList()));
         assertThat(actual.getWhereSegments(), is(Collections.singletonList(whereSegment)));
+    }
+    
+    @Test
+    void assertFindColumnProjectionWithoutExpandProjections() {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        
+        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.emptyList());
+        
+        Optional<ColumnProjection> result = selectStatementContext.findColumnProjection(1);
+        
+        assertFalse(result.isPresent());
+    }
+    
+    @Test
+    void assertFindColumnProjectionInvalidProjectionType() {
+        ExpressionProjection projection = mock(ExpressionProjection.class);
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        
+        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(projection));
+        
+        Optional<ColumnProjection> result = selectStatementContext.findColumnProjection(1);
+        
+        assertFalse(result.isPresent());
+    }
+    
+    @Test
+    void assertFindColumnProjectionFromColumnProjection() {
+        ColumnProjection projection = mock(ColumnProjection.class);
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        
+        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(projection));
+        
+        Optional<ColumnProjection> result = selectStatementContext.findColumnProjection(1);
+        
+        assertTrue(result.isPresent());
+    }
+    
+    @Test
+    void assertFindColumnProjectionFromSubqueryProjection() {
+        SubqueryProjection projection = mock(SubqueryProjection.class, RETURNS_DEEP_STUBS);
+        ColumnProjection columnProjection = mock(ColumnProjection.class);
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        
+        when(projection.getProjection()).thenReturn(columnProjection);
+        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(projection));
+        
+        Optional<ColumnProjection> result = selectStatementContext.findColumnProjection(1);
+        
+        assertTrue(result.isPresent());
     }
     
     @Test
