@@ -29,6 +29,6 @@ public final class OptimizationSQLNodeConvertException extends SQLFederationSQLE
     private static final long serialVersionUID = 7115939407266382363L;
     
     public OptimizationSQLNodeConvertException(final SQLStatement statement) {
-        super(XOpenSQLState.SYNTAX_ERROR, 4, "Unsupported SQL node conversion for SQL statement `%s`.", statement.toString());
+        super(XOpenSQLState.SYNTAX_ERROR, 40, "Unsupported SQL node conversion for SQL statement `%s`.", statement.toString());
     }
 }

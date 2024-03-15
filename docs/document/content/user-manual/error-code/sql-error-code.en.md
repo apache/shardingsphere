@@ -310,6 +310,13 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 |-----------|-------------|-------------------------------------------------------------------|
 | 44000     | 21280       | '%s' load balance algorithm initialization failed, reason is: %s. |
 
+### SQL Federation
+
+| SQL State | Vendor Code | Reason                                                    |
+|-----------|-------------|-----------------------------------------------------------|
+| 42000     | 22040       | Unsupported SQL node conversion for SQL statement \`%s\`. |
+| 42000     | 22041       | SQL federation doesn't support SQL \`%s\` execution.      |
+
 ## Other Exception
 
 | SQL State | Vendor Code | Reason                          |
