@@ -64,7 +64,7 @@ public final class ConstructorAdviceExecutor implements AdviceExecutor {
                 }
             }
             // CHECKSTYLE:OFF
-        } catch (final Throwable ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             LOGGER.log(Level.SEVERE, "Constructor advice execution error. class: {0}, {1}", new String[]{target.getClass().getTypeName(), ex.getMessage()});
         }

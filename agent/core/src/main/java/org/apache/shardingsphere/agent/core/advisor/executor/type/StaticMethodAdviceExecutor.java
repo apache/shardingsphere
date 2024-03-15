@@ -44,11 +44,11 @@ import java.util.logging.Logger;
  */
 @RequiredArgsConstructor
 public final class StaticMethodAdviceExecutor implements AdviceExecutor {
-    
+
     private static final Logger LOGGER = Logger.getLogger(StaticMethodAdviceExecutor.class.getName());
-    
+
     private final Map<String, Collection<StaticMethodAdvice>> advices;
-    
+
     /**
      * Advice static method.
      *
@@ -66,7 +66,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
         try {
             result = callable.call();
             // CHECKSTYLE:OFF
-        } catch (final Throwable ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             adviceThrow(klass, method, args, ex);
             throw ex;
@@ -75,7 +75,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
         }
         return result;
     }
-    
+
     private void adviceBefore(final Class<?> klass, final Method method, final Object[] args) {
         try {
             for (Entry<String, Collection<StaticMethodAdvice>> entry : advices.entrySet()) {
@@ -86,12 +86,12 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
                 }
             }
             // CHECKSTYLE:OFF
-        } catch (final Throwable ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             LOGGER.log(Level.SEVERE, "Failed to execute the pre-method of method `{0}` in class `{1}`, {2}.", new String[]{method.getName(), klass.getClass().getName(), ex.getMessage()});
         }
     }
-    
+
     private void adviceThrow(final Class<?> klass, final Method method, final Object[] args, final Throwable ex) {
         try {
             for (Entry<String, Collection<StaticMethodAdvice>> entry : advices.entrySet()) {
@@ -102,12 +102,12 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
                 }
             }
             // CHECKSTYLE:OFF
-        } catch (final Throwable ignored) {
+        } catch (final RuntimeException ignored) {
             // CHECKSTYLE:ON
             LOGGER.log(Level.SEVERE, "Failed to execute the error handler of method `{0}` in class `{1}`, {2}.", new String[]{method.getName(), klass.getClass().getName(), ex.getMessage()});
         }
     }
-    
+
     private void adviceAfter(final Class<?> klass, final Method method, final Object[] args, final Object result) {
         try {
             for (Entry<String, Collection<StaticMethodAdvice>> entry : advices.entrySet()) {
@@ -118,16 +118,16 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
                 }
             }
             // CHECKSTYLE:OFF
-        } catch (final Throwable ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             LOGGER.log(Level.SEVERE, "Failed to execute the post-method of method `{0}` in class `{1}` {2}.", new String[]{method.getName(), klass.getClass().getName(), ex.getMessage()});
         }
     }
-    
+
     private boolean isPluginEnabled(final StaticMethodAdvice advice) {
         return !(advice instanceof AgentPluginEnable) || ((AgentPluginEnable) advice).isPluginEnabled();
     }
-    
+
     @Override
     public Builder<?> intercept(final Builder<?> builder, final MethodDescription pointcut) {
         return builder.method(ElementMatchers.is(pointcut)).intercept(MethodDelegation.withDefaultConfiguration().to(this));

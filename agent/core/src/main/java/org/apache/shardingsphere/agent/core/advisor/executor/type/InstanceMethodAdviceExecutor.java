@@ -68,7 +68,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
         try {
             result = callable.call();
             // CHECKSTYLE:OFF
-        } catch (final Throwable ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             adviceThrow(target, method, args, ex);
             throw ex;
@@ -88,7 +88,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
                 }
             }
             // CHECKSTYLE:OFF
-        } catch (final Throwable ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             LOGGER.log(Level.SEVERE, "Failed to execute the pre-method of method `{0}` in class `{1}`, {2}.", new String[]{method.getName(), target.getClass().getName(), ex.getMessage()});
         }
@@ -104,7 +104,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
                 }
             }
             // CHECKSTYLE:OFF
-        } catch (final Throwable ignored) {
+        } catch (final RuntimeException ignored) {
             // CHECKSTYLE:ON
             LOGGER.log(Level.SEVERE, "Failed to execute the error handler of method `{0}` in class `{1}`, {2}.", new String[]{method.getName(), target.getClass().getName(), ex.getMessage()});
         }
@@ -120,7 +120,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
                 }
             }
             // CHECKSTYLE:OFF
-        } catch (final Throwable ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             LOGGER.log(Level.SEVERE, "Failed to execute the post-method of method `{0}` in class `{1}`, {2}.", new String[]{method.getName(), target.getClass().getName(), ex.getMessage()});
         }
