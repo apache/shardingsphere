@@ -472,11 +472,11 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
         return convertValue(result);
     }
     
-    private Object convertValue(Object data) {
+    private Object convertValue(final Object data) {
         return databaseType instanceof MySQLDatabaseType ? convertMysqlValue(data) : data;
     }
     
-    private Object convertMysqlValue(Object data) {
+    private Object convertMysqlValue(final Object data) {
         if (data instanceof Boolean) {
             return ((Boolean) data) ? 1 : 0;
         }
