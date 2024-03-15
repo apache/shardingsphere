@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.checker;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.load.balancer.core.exception.LoadBalanceAlgorithmInitializationException;
+import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.exception.LoadBalanceAlgorithmInitializationException;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;

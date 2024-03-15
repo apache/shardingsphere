@@ -19,7 +19,7 @@ package org.apache.shardingsphere.traffic.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 
 import java.util.Collection;
