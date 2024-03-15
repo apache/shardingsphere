@@ -1127,4 +1127,33 @@
             <column-item name="DeptId" order-direction="ASC" start-index="176" stop-index="181" />
         </group-by>
     </select>
+    
+    <select sql-case-id="select_wm_concat_function_with_schema">
+        <projections start-index="7" stop-index="49">
+            <expression-projection start-index="7" stop-index="49" text="TO_CHAR(WMSYS.WM_CONCAT(DISTINCT o.status))">
+                <expr>
+                    <function function-name="TO_CHAR" text="TO_CHAR(WMSYS.WM_CONCAT(DISTINCT o.status))" start-index="7" stop-index="49">
+                        <parameter>
+                            <function function-name="WM_CONCAT" text="WMSYS.WM_CONCAT(DISTINCT o.status)" start-index="15" stop-index="48">
+                                <parameter>
+                                    <column name="status" start-index="40" stop-index="47">
+                                        <owner start-index="40" stop-index="40" name="o" />
+                                    </column>
+                                </parameter>
+                                <owner start-index="15" stop-index="19" name="WMSYS" />
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="56" stop-index="64" alias="o" />
+        </from>
+        <group-by start-index="66" stop-index="84">
+            <column-item name="order_id" order-direction="ASC" start-index="75" stop-index="84">
+                <owner start-index="75" stop-index="75" name="o" />
+            </column-item>
+        </group-by>
+    </select>
 </sql-parser-test-cases>
