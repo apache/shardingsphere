@@ -126,6 +126,5 @@ execute
     | alterTablespace
     | dropTablespace
     | delimiter
-    ) (SEMI_ EOF? | EOF)
-    | EOF
+    ) SEMI_? EOF
     ;

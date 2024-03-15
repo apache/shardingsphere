@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.ins
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.merge.MergeStatementConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.select.SelectStatementConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.update.UpdateStatementConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.exception.OptimizationSQLNodeConvertException;
+import org.apache.shardingsphere.sqlfederation.optimizer.exception.convert.OptimizationSQLNodeConvertException;
 
 import java.util.Optional;
 

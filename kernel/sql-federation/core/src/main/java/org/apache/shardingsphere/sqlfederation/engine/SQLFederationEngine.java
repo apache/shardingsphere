@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.engine;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
 import org.apache.calcite.adapter.enumerable.EnumerableRel;
 import org.apache.calcite.linq4j.Enumerator;
@@ -52,6 +53,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationCompilerEn
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.exception.syntax.SQLFederationUnsupportedSQLException;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationTable;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.cache.ExecutionPlanCacheKey;
 import org.apache.shardingsphere.sqlfederation.optimizer.statement.SQLStatementCompiler;
@@ -73,6 +75,7 @@ import java.util.Map.Entry;
 /**
  * SQL federation engine.
  */
+@Slf4j
 @Getter
 public final class SQLFederationEngine implements AutoCloseable {
     
@@ -155,14 +158,21 @@ public final class SQLFederationEngine implements AutoCloseable {
      * @param callback callback
      * @param federationContext federation context
      * @return result set
+     * @throws SQLFederationUnsupportedSQLException SQL federation unsupported SQL exception
      */
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
-        String databaseName = federationContext.getQueryContext().getDatabaseNameFromSQLStatement().orElse(this.databaseName);
-        String schemaName = federationContext.getQueryContext().getSchemaNameFromSQLStatement().orElse(this.schemaName);
-        SQLFederationExecutionPlan executionPlan = compileQuery(prepareEngine, callback, federationContext, databaseName, schemaName);
-        resultSet = executePlan(federationContext, executionPlan, databaseName, schemaName);
-        return resultSet;
+        try {
+            String databaseName = federationContext.getQueryContext().getDatabaseNameFromSQLStatement().orElse(this.databaseName);
+            String schemaName = federationContext.getQueryContext().getSchemaNameFromSQLStatement().orElse(this.schemaName);
+            SQLFederationExecutionPlan executionPlan = compileQuery(prepareEngine, callback, federationContext, databaseName, schemaName);
+            resultSet = executePlan(federationContext, executionPlan, databaseName, schemaName);
+            return resultSet;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            throw new SQLFederationUnsupportedSQLException(federationContext.getQueryContext().getSql());
+        }
     }
     
     private SQLFederationExecutionPlan compileQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
