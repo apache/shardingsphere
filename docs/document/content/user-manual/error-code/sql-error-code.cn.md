@@ -38,16 +38,16 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 语法
 
-| SQL State | Vendor Code | 错误信息                                        |
-|-----------|-------------|---------------------------------------------|
-| 42000     | 12000       | You have an error in your SQL syntax: %s    |
-| 42000     | 12001       | Can not accept SQL type \`%s\`.             |
-| 42000     | 12002       | SQL String can not be NULL or empty.        |
-| 42000     | 12010       | Can not support variable \`%s\`.            |
-| 42S02     | 12011       | Can not find column label \`%s\`.           |
-| 42S02     | 12012       | Can not find url provider for \`%s`\. |
-| HV008     | 12020       | Column index \`%d\` is out of range.        |
-| 0A000     | 12100       | DROP TABLE ... CASCADE is not supported.    |
+| SQL State | Vendor Code | 错误信息                                     |
+|-----------|-------------|------------------------------------------|
+| 42000     | 12000       | You have an error in your SQL syntax: %s |
+| 42000     | 12001       | Can not accept SQL type \`%s\`.          |
+| 42000     | 12002       | SQL String can not be NULL or empty.     |
+| 42000     | 12010       | Can not support variable \`%s\`.         |
+| 42S02     | 12011       | Can not find column label \`%s\`.        |
+| 42S02     | 12012       | Can not find url provider for \`%s`\.    |
+| HV008     | 12020       | Column index \`%d\` is out of range.     |
+| 0A000     | 12100       | DROP TABLE ... CASCADE is not supported. |
 
 ### 连接
 
@@ -109,37 +109,37 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 迁移
 
-| SQL State | Vendor Code | 错误信息                                                                               |
-|-----------|-------------|------------------------------------------------------------------------------------|
-| 42S02     | 18002       | There is no rule in database \`%s\`.                                               |
-| 44000     | 18003       | Mode configuration does not exist.                                                 |
-| 44000     | 18004       | Target database \`%s\` isn't exist.                                                |
-| 22023     | 18005       | There is invalid parameter value: `%s`.                                            |
-| HY000     | 18020       | Failed to get DDL for table \`%s\`.                                                |
-| 42S01     | 18030       | Duplicate storage unit names \`%s\`.                                               |
-| 42S02     | 18031       | Storage units names \`%s\` do not exist.                                           |
-| HY000     | 18050       | Before data record is \`%s\`, after data record is \`%s\`.                         |
-| 08000     | 18051       | Data check table \`%s\` failed.                                                    |
-| 0A000     | 18052       | Unsupported pipeline database type \`%s\`.                                         |
-| 0A000     | 18053       | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\`.  |
-| 0A000     | 18054       | Unsupported mode type \`%s\`.                                                      |
-| HY000     | 18080       | Can not find pipeline job \`%s\`.                                                  |
-| HY000     | 18082       | Sharding count of job \`%s\` is 0.                                                 |
-| HY000     | 18083       | Can not split by range for table \`%s\`, reason is: %s                             |
-| HY000     | 18084       | Can not split by unique key \`%s\` for table \`%s\`, reason is: %s                 |
-| HY000     | 18085       | Target table \`%s\` is not empty.                                                  |
-| 01007     | 18086       | Source data source lacks %s privilege(s).                                          |
-| HY000     | 18087       | Source data source required \`%s = %s\`, now is \`%s\`.                            |
-| HY000     | 18088       | User \`%s\` does exist.                                                            |
-| 08000     | 18089       | Check privileges failed on source data source, reason is: %s                       |
-| 08000     | 18090       | Data sources can not connect, reason is: %s                                        |
-| HY000     | 18091       | Importer job write data failed.                                                    |
-| 08000     | 18092       | Get binlog position failed by job \`%s\`, reason is: %s                            |
-| HY000     | 18095       | Can not find consistency check job of \`%s\`.                                      |
-| HY000     | 18096       | Uncompleted consistency check job \`%s\` exists.                                   |
-| HY000     | 18200       | Not find stream data source table.                                                 |
-| HY000     | 18201       | CDC server exception, reason is: %s.                                               |
-| HY000     | 18202       | CDC login failed, reason is: %s                                                    |
+| SQL State | Vendor Code | 错误信息                                                                              |
+|-----------|-------------|-----------------------------------------------------------------------------------|
+| 42S02     | 18002       | There is no rule in database \`%s\`.                                              |
+| 44000     | 18003       | Mode configuration does not exist.                                                |
+| 44000     | 18004       | Target database \`%s\` isn't exist.                                               |
+| 22023     | 18005       | There is invalid parameter value: \`%s\`.                                         |
+| HY000     | 18020       | Failed to get DDL for table \`%s\`.                                               |
+| 42S01     | 18030       | Duplicate storage unit names \`%s\`.                                              |
+| 42S02     | 18031       | Storage units names \`%s\` do not exist.                                          |
+| HY000     | 18050       | Before data record is \`%s\`, after data record is \`%s\`.                        |
+| 08000     | 18051       | Data check table \`%s\` failed.                                                   |
+| 0A000     | 18052       | Unsupported pipeline database type \`%s\`.                                        |
+| 0A000     | 18053       | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\`. |
+| 0A000     | 18054       | Unsupported mode type \`%s\`.                                                     |
+| HY000     | 18080       | Can not find pipeline job \`%s\`.                                                 |
+| HY000     | 18082       | Sharding count of job \`%s\` is 0.                                                |
+| HY000     | 18083       | Can not split by range for table \`%s\`, reason is: %s                            |
+| HY000     | 18084       | Can not split by unique key \`%s\` for table \`%s\`, reason is: %s                |
+| HY000     | 18085       | Target table \`%s\` is not empty.                                                 |
+| 01007     | 18086       | Source data source lacks %s privilege(s).                                         |
+| HY000     | 18087       | Source data source required \`%s = %s\`, now is \`%s\`.                           |
+| HY000     | 18088       | User \`%s\` does exist.                                                           |
+| 08000     | 18089       | Check privileges failed on source data source, reason is: %s                      |
+| 08000     | 18090       | Data sources can not connect, reason is: %s                                       |
+| HY000     | 18091       | Importer job write data failed.                                                   |
+| 08000     | 18092       | Get binlog position failed by job \`%s\`, reason is: %s                           |
+| HY000     | 18095       | Can not find consistency check job of \`%s\`.                                     |
+| HY000     | 18096       | Uncompleted consistency check job \`%s\` exists.                                  |
+| HY000     | 18200       | Not find stream data source table.                                                |
+| HY000     | 18201       | CDC server exception, reason is: %s.                                              |
+| HY000     | 18202       | CDC login failed, reason is: %s                                                   |
 
 ### DistSQL
 
@@ -281,16 +281,10 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 基础算法 - 分布式序列
 
-| SQL State | Vendor Code | 错误信息                                                        |
-|-----------|-------------|-------------------------------------------------------------|
-| 44000     | 21180       | Can not find strategy for generate keys with table \`%s\`.                                                                       |
-| HY000     | 21181       | Key generate algorithm \`%s\` initialization failed, reason is: %s.                                                              |
-
-### 基础算法 - 负载均衡
-
-| SQL State | Vendor Code | 错误信息                                                              |
-|-----------|-------------|-------------------------------------------------------------------|
-| 44000     | 21280       | '%s' load balance algorithm initialization failed, reason is: %s. |
+| SQL State | Vendor Code | 错误信息                                                                |
+|-----------|-------------|---------------------------------------------------------------------|
+| 44000     | 21180       | Can not find strategy for generate keys with table \`%s\`.          |
+| HY000     | 21181       | Key generate algorithm \`%s\` initialization failed, reason is: %s. |
 
 ### 联邦查询
 

@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.loadbalancer.core.exception;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
+import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Load balance algorithm initialization exception.
+ * Algorithm initialization exception.
  */
-public final class LoadBalanceAlgorithmInitializationException extends LoadBalanceSQLException {
+public final class AlgorithmInitializationException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = 3025471428679102820L;
+    private static final long serialVersionUID = -7634670846091616790L;
     
-    public LoadBalanceAlgorithmInitializationException(final String loadBalanceAlgorithmType, final String reason, final Object... args) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 80, "'%s' load balance algorithm initialization failed, reason is: %s.", loadBalanceAlgorithmType, String.format(reason, args));
+    public AlgorithmInitializationException(final ShardingSphereAlgorithm algorithm, final String reason, final Object... args) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 11, "'%s.'%s' initialization failed, reason is: %s.", algorithm.getClass().getSimpleName(), algorithm.getType(), String.format(reason, args));
     }
 }

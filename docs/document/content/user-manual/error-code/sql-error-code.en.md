@@ -38,16 +38,16 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Syntax
 
-| SQL State | Vendor Code | Reason                                      |
-|-----------|-------------|---------------------------------------------|
-| 42000     | 12000       | You have an error in your SQL syntax: %s    |
-| 42000     | 12001       | Can not accept SQL type \`%s\`.             |
-| 42000     | 12002       | SQL String can not be NULL or empty.        |
-| 42000     | 12010       | Can not support variable \`%s\`.            |
-| 42S02     | 12011       | Can not find column label \`%s\`.           |
-| 42S02     | 12012       | Can not find url provider for \`%s`\. |
-| HV008     | 12020       | Column index \`%d\` is out of range.        |
-| 0A000     | 12100       | DROP TABLE ... CASCADE is not supported.    |
+| SQL State | Vendor Code | Reason                                   |
+|-----------|-------------|------------------------------------------|
+| 42000     | 12000       | You have an error in your SQL syntax: %s |
+| 42000     | 12001       | Can not accept SQL type \`%s\`.          |
+| 42000     | 12002       | SQL String can not be NULL or empty.     |
+| 42000     | 12010       | Can not support variable \`%s\`.         |
+| 42S02     | 12011       | Can not find column label \`%s\`.        |
+| 42S02     | 12012       | Can not find url provider for \`%s`\.    |
+| HV008     | 12020       | Column index \`%d\` is out of range.     |
+| 0A000     | 12100       | DROP TABLE ... CASCADE is not supported. |
 
 ### Connection
 
@@ -109,37 +109,37 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Migration
 
-| SQL State | Vendor Code | Reason                                                                             |
-|-----------|-------------|------------------------------------------------------------------------------------|
-| 42S02     | 18002       | There is no rule in database \`%s\`.                                               |
-| 44000     | 18003       | Mode configuration does not exist.                                                 |
-| 44000     | 18004       | Target database \`%s\` isn't exist.                                                |
-| 22023     | 18005       | There is invalid parameter value: `%s`.                                            |
-| HY000     | 18020       | Failed to get DDL for table \`%s\`.                                                |
-| 42S01     | 18030       | Duplicate storage unit names \`%s\`.                                               |
-| 42S02     | 18031       | Storage units names \`%s\` do not exist.                                           |
-| HY000     | 18050       | Before data record is \`%s\`, after data record is \`%s\`.                         |
-| 08000     | 18051       | Data check table \`%s\` failed.                                                    |
-| 0A000     | 18052       | Unsupported pipeline database type \`%s\`.                                         |
-| 0A000     | 18053       | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\`.  |
-| 0A000     | 18054       | Unsupported mode type \`%s\`.                                                      |
-| HY000     | 18080       | Can not find pipeline job \`%s\`.                                                  |
-| HY000     | 18082       | Sharding count of job \`%s\` is 0.                                                 |
-| HY000     | 18083       | Can not split by range for table \`%s\`, reason is: %s                             |
-| HY000     | 18084       | Can not split by unique key \`%s\` for table \`%s\`, reason is: %s                 |
-| HY000     | 18085       | Target table \`%s\` is not empty.                                                  |
-| 01007     | 18086       | Source data source lacks %s privilege(s).                                          |
-| HY000     | 18087       | Source data source required \`%s = %s\`, now is \`%s\`.                            |
-| HY000     | 18088       | User \`%s\` does exist.                                                            |
-| 08000     | 18089       | Check privileges failed on source data source, reason is: %s                       |
-| 08000     | 18090       | Data sources can not connect, reason is: %s                                        |
-| HY000     | 18091       | Importer job write data failed.                                                    |
-| 08000     | 18092       | Get binlog position failed by job \`%s\`, reason is: %s                            |
-| HY000     | 18095       | Can not find consistency check job of \`%s\`.                                      |
-| HY000     | 18096       | Uncompleted consistency check job \`%s\` exists.                                   |
-| HY000     | 18200       | Not find stream data source table.                                                 |
-| HY000     | 18201       | CDC server exception, reason is: %s.                                               |
-| HY000     | 18202       | CDC login failed, reason is: %s                                                    |
+| SQL State | Vendor Code | Reason                                                                            |
+|-----------|-------------|-----------------------------------------------------------------------------------|
+| 42S02     | 18002       | There is no rule in database \`%s\`.                                              |
+| 44000     | 18003       | Mode configuration does not exist.                                                |
+| 44000     | 18004       | Target database \`%s\` isn't exist.                                               |
+| 22023     | 18005       | There is invalid parameter value: \`%s\`.                                         |
+| HY000     | 18020       | Failed to get DDL for table \`%s\`.                                               |
+| 42S01     | 18030       | Duplicate storage unit names \`%s\`.                                              |
+| 42S02     | 18031       | Storage units names \`%s\` do not exist.                                          |
+| HY000     | 18050       | Before data record is \`%s\`, after data record is \`%s\`.                        |
+| 08000     | 18051       | Data check table \`%s\` failed.                                                   |
+| 0A000     | 18052       | Unsupported pipeline database type \`%s\`.                                        |
+| 0A000     | 18053       | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\`. |
+| 0A000     | 18054       | Unsupported mode type \`%s\`.                                                     |
+| HY000     | 18080       | Can not find pipeline job \`%s\`.                                                 |
+| HY000     | 18082       | Sharding count of job \`%s\` is 0.                                                |
+| HY000     | 18083       | Can not split by range for table \`%s\`, reason is: %s                            |
+| HY000     | 18084       | Can not split by unique key \`%s\` for table \`%s\`, reason is: %s                |
+| HY000     | 18085       | Target table \`%s\` is not empty.                                                 |
+| 01007     | 18086       | Source data source lacks %s privilege(s).                                         |
+| HY000     | 18087       | Source data source required \`%s = %s\`, now is \`%s\`.                           |
+| HY000     | 18088       | User \`%s\` does exist.                                                           |
+| 08000     | 18089       | Check privileges failed on source data source, reason is: %s                      |
+| 08000     | 18090       | Data sources can not connect, reason is: %s                                       |
+| HY000     | 18091       | Importer job write data failed.                                                   |
+| 08000     | 18092       | Get binlog position failed by job \`%s\`, reason is: %s                           |
+| HY000     | 18095       | Can not find consistency check job of \`%s\`.                                     |
+| HY000     | 18096       | Uncompleted consistency check job \`%s\` exists.                                  |
+| HY000     | 18200       | Not find stream data source table.                                                |
+| HY000     | 18201       | CDC server exception, reason is: %s.                                              |
+| HY000     | 18202       | CDC login failed, reason is: %s                                                   |
 
 ### DistSQL
 
@@ -258,21 +258,21 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Data Encrypt
 
-| SQL State | Vendor Code | Reason                                                                                             |
-|-----------|-------------|----------------------------------------------------------------------------------------------------|
-| 44000     | 20700       | Can not find logic encrypt column by \`%s\`.                                                       |
-| 44000     | 20701       | Fail to find encrypt column \`%s\` from table \`%s\`.                                              |
-| 44000     | 20702       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\`. |
-| 42000     | 20740       | Insert value of index \`%s\` can not support for encrypt.                                          |
-| 0A000     | 20741       | The SQL clause \`%s\` is unsupported in encrypt rule.                                              |
-| HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s.                                     |
-| HY004     | 20781       | \`%s\` column's encryptor name \`%s\` does not match encrypt algorithm type \`%s\ in database \`%s\`.|
-| 44000     | 20703       | Cipher column of \`%s\` can not be null in database \`%s\`.                                        |
-| 44000     | 20704       | Can not find (STANDARD\|ASSIST_QUERY\|LIKE_QUERY) encryptor in table \`%s\` and column \`%s\`.     |
-| 44000     | 20705       | Assisted query column of \`%s\` can not be null in database \`%s\`.                                |
-| 44000     | 20707       | Like query column of \`%s\` can not be null in database \`%s\`.                                    |
-| 44000     | 20709       | Can not find encrypt table: \`%s\`.                                                                |
-| 44000     | 20710       | Can not found registered encryptor \`%s\` in database \`%s\`.                                      |
+| SQL State | Vendor Code | Reason                                                                                                |
+|-----------|-------------|-------------------------------------------------------------------------------------------------------|
+| 44000     | 20700       | Can not find logic encrypt column by \`%s\`.                                                          |
+| 44000     | 20701       | Fail to find encrypt column \`%s\` from table \`%s\`.                                                 |
+| 44000     | 20702       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\`.    |
+| 42000     | 20740       | Insert value of index \`%s\` can not support for encrypt.                                             |
+| 0A000     | 20741       | The SQL clause \`%s\` is unsupported in encrypt rule.                                                 |
+| HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s.                                        |
+| HY004     | 20781       | \`%s\` column's encryptor name \`%s\` does not match encrypt algorithm type \`%s\ in database \`%s\`. |
+| 44000     | 20703       | Cipher column of \`%s\` can not be null in database \`%s\`.                                           |
+| 44000     | 20704       | Can not find (STANDARD\|ASSIST_QUERY\|LIKE_QUERY) encryptor in table \`%s\` and column \`%s\`.        |
+| 44000     | 20705       | Assisted query column of \`%s\` can not be null in database \`%s\`.                                   |
+| 44000     | 20707       | Like query column of \`%s\` can not be null in database \`%s\`.                                       |
+| 44000     | 20709       | Can not find encrypt table: \`%s\`.                                                                   |
+| 44000     | 20710       | Can not found registered encryptor \`%s\` in database \`%s\`.                                         |
 
 ### Shadow Database
 
@@ -296,16 +296,10 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Infra algorithm - key generate
 
-| SQL State | Vendor Code | Reason                                                      |
-|-----------|-------------|-------------------------------------------------------------|
-| 44000     | 21180       | Can not find strategy for generate keys with table \`%s\`.                                                                       |
-| HY000     | 21181       | Key generate algorithm \`%s\` initialization failed, reason is: %s.                                                              |
-
-### Infra algorithm - load balance
-
-| SQL State | Vendor Code | Reason                                                            |
-|-----------|-------------|-------------------------------------------------------------------|
-| 44000     | 21280       | '%s' load balance algorithm initialization failed, reason is: %s. |
+| SQL State | Vendor Code | Reason                                                              |
+|-----------|-------------|---------------------------------------------------------------------|
+| 44000     | 21180       | Can not find strategy for generate keys with table \`%s\`.          |
+| HY000     | 21181       | Key generate algorithm \`%s\` initialization failed, reason is: %s. |
 
 ### SQL Federation
 
