@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ratelimit;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.job.ratelimit.JobRateLimitAlgorithmInitializationException;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.type.QPSJobRateLimitAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +50,7 @@ class QPSJobRateLimitAlgorithmTest {
     @Test
     void assertJobRateLimitWithWrongArgumentForQPS() {
         Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property("qps", "0"));
-        assertThrows(JobRateLimitAlgorithmInitializationException.class, () -> TypedSPILoader.getService(JobRateLimitAlgorithm.class, "QPS", props));
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(JobRateLimitAlgorithm.class, "QPS", props));
     }
     
     @Test

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.ratelimit.type;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.RateLimiter;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.ratelimit.JobRateLimitAlgorithmInitializationException;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.util.Properties;
@@ -42,7 +42,7 @@ public final class QPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
         String qpsValue = props.getProperty(QPS_KEY);
         if (!Strings.isNullOrEmpty(qpsValue)) {
             qps = Integer.parseInt(qpsValue);
-            ShardingSpherePreconditions.checkState(qps > 0, () -> new JobRateLimitAlgorithmInitializationException(getType(), "QPS must be a positive number"));
+            ShardingSpherePreconditions.checkState(qps > 0, () -> new AlgorithmInitializationException(this, "QPS must be a positive number"));
         }
         rateLimiter = RateLimiter.create(qps);
     }
