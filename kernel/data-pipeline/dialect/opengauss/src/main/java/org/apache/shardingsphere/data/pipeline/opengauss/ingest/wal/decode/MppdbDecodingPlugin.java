@@ -57,9 +57,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private final boolean decodeWithTX;
     
-    public MppdbDecodingPlugin(final BaseTimestampUtils timestampUtils) {
-        this(timestampUtils, false);
-    }
+    private final int majorVersion;
     
     @Override
     public AbstractWALEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
@@ -78,15 +76,28 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private AbstractWALEvent decodeDataWithTX(final String dataText) {
         AbstractWALEvent result = new PlaceholderEvent();
-        if (dataText.startsWith("BEGIN")) {
-            int beginIndex = dataText.indexOf("BEGIN") + "BEGIN".length() + 1;
-            result = new BeginTXEvent(Long.parseLong(dataText.substring(beginIndex)));
-        } else if (dataText.startsWith("COMMIT")) {
-            int commitBeginIndex = dataText.indexOf("COMMIT") + "COMMIT".length() + 1;
-            int csnBeginIndex = dataText.indexOf("CSN") + "CSN".length() + 1;
-            result = new CommitTXEvent(Long.parseLong(dataText.substring(commitBeginIndex, dataText.indexOf(' ', commitBeginIndex))), Long.parseLong(dataText.substring(csnBeginIndex)));
-        } else if (dataText.startsWith("{")) {
-            result = readTableEvent(dataText);
+        if (majorVersion <= 2) {
+            if (dataText.startsWith("BEGIN")) {
+                int beginIndex = dataText.indexOf("BEGIN") + "BEGIN".length() + 1;
+                result = new BeginTXEvent(Long.parseLong(dataText.substring(beginIndex)), null);
+            } else if (dataText.startsWith("COMMIT")) {
+                int commitBeginIndex = dataText.indexOf("COMMIT") + "COMMIT".length() + 1;
+                int csnBeginIndex = dataText.indexOf("CSN") + "CSN".length() + 1;
+                result = new CommitTXEvent(Long.parseLong(dataText.substring(commitBeginIndex, dataText.indexOf(' ', commitBeginIndex))), Long.parseLong(dataText.substring(csnBeginIndex)));
+            } else if (dataText.startsWith("{")) {
+                result = readTableEvent(dataText);
+            }
+        } else {
+            if (dataText.startsWith("BEGIN")) {
+                int beginIndex = dataText.indexOf("CSN:") + "CSN:".length() + 1;
+                int endIndex = dataText.indexOf("first_lsn") - 1;
+                result = new BeginTXEvent(null, Long.parseLong(dataText.substring(beginIndex, endIndex)));
+            } else if (dataText.startsWith("commit")) {
+                int beginIndex = dataText.indexOf("xid:") + "xid:".length() + 1;
+                result = new CommitTXEvent(Long.parseLong(dataText.substring(beginIndex)), null);
+            } else if (dataText.startsWith("{")) {
+                result = readTableEvent(dataText);
+            }
         }
         return result;
     }

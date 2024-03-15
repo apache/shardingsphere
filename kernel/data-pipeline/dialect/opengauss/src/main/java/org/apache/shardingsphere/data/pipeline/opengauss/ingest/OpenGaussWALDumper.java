@@ -19,15 +19,15 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
+import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.OpenGaussLogicalReplication;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.MppdbDecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussLogSequenceNumber;
@@ -46,12 +46,18 @@ import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.PGReplicationStream;
 
 import java.nio.ByteBuffer;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * WAL dumper of openGauss.
@@ -59,6 +65,10 @@ import java.util.concurrent.atomic.AtomicReference;
 @HighFrequencyInvocation
 @Slf4j
 public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable implements IncrementalDumper {
+    
+    private static final Pattern VERSION_PATTERN = Pattern.compile("(openGauss) (\\d+)");
+    
+    private static final int DEFAULT_VERSION = 2;
     
     private final IncrementalDumperContext dumperContext;
     
@@ -73,6 +83,8 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
     private final boolean decodeWithTX;
     
     private List<AbstractRowEvent> rowEvents = new LinkedList<>();
+    
+    private final AtomicReference<Long> currentCsn = new AtomicReference<>();
     
     public OpenGaussWALDumper(final IncrementalDumperContext dumperContext, final IngestPosition position,
                               final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
@@ -110,10 +122,15 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
     @SneakyThrows(InterruptedException.class)
     private void dump() throws SQLException {
         PGReplicationStream stream = null;
+        StandardPipelineDataSourceConfiguration dataSourceConfig = (StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig();
+        int majorVersion;
+        try (Connection connection = DriverManager.getConnection(dataSourceConfig.getUrl(), dataSourceConfig.getUsername(), dataSourceConfig.getPassword())) {
+            majorVersion = getMajorVersion(connection);
+        }
         try (PgConnection connection = getReplicationConnectionUnwrap()) {
             stream = logicalReplication.createReplicationStream(connection, walPosition.get().getLogSequenceNumber(),
-                    OpenGaussIngestPositionManager.getUniqueSlotName(connection, dumperContext.getJobId()));
-            DecodingPlugin decodingPlugin = new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.getTimestampUtils()), decodeWithTX);
+                    OpenGaussIngestPositionManager.getUniqueSlotName(connection, dumperContext.getJobId()), majorVersion);
+            DecodingPlugin decodingPlugin = new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.getTimestampUtils()), decodeWithTX, majorVersion);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
                 if (null == message) {
@@ -122,7 +139,7 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
                 }
                 AbstractWALEvent event = decodingPlugin.decode(message, new OpenGaussLogSequenceNumber(stream.getLastReceiveLSN()));
                 if (decodeWithTX) {
-                    processEventWithTX(event);
+                    processEventWithTX(event, majorVersion);
                 } else {
                     processEventIgnoreTX(event);
                 }
@@ -138,28 +155,50 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
         }
     }
     
+    private int getMajorVersion(final Connection connection) throws SQLException {
+        try (
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery("SELECT version()")) {
+            resultSet.next();
+            String versionText = resultSet.getString(1);
+            log.info("openGauss select version() result={}", versionText);
+            Matcher matcher = VERSION_PATTERN.matcher(versionText);
+            if (matcher.find()) {
+                return Integer.parseInt(matcher.group(2));
+            }
+            return DEFAULT_VERSION;
+        }
+    }
+    
     private PgConnection getReplicationConnectionUnwrap() throws SQLException {
         return logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig()).unwrap(PgConnection.class);
     }
     
-    private void processEventWithTX(final AbstractWALEvent event) {
+    private void processEventWithTX(final AbstractWALEvent event, final int majorVersion) {
         if (event instanceof BeginTXEvent) {
-            return;
+            if (majorVersion < 3) {
+                return;
+            }
+            currentCsn.set(((BeginTXEvent) event).getCsn());
         }
         if (event instanceof AbstractRowEvent) {
-            rowEvents.add((AbstractRowEvent) event);
+            AbstractRowEvent rowEvent = (AbstractRowEvent) event;
+            rowEvent.setCsn(currentCsn.get());
+            rowEvents.add(rowEvent);
             return;
         }
         if (event instanceof CommitTXEvent) {
-            Long csn = ((CommitTXEvent) event).getCsn();
             List<Record> records = new LinkedList<>();
             for (AbstractRowEvent each : rowEvents) {
-                each.setCsn(csn);
+                if (majorVersion < 3) {
+                    each.setCsn(((CommitTXEvent) event).getCsn());
+                }
                 records.add(walEventConverter.convert(each));
             }
             records.add(walEventConverter.convert(event));
             channel.push(records);
             rowEvents = new LinkedList<>();
+            currentCsn.set(null);
         }
     }
     
