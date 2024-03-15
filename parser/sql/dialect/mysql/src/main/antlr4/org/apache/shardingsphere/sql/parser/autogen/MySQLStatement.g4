@@ -126,5 +126,7 @@ execute
     | alterTablespace
     | dropTablespace
     | delimiter
-    ) SEMI_? EOF
+    // TODO consider refactor following sytax to SEMI_? EOF
+    ) (SEMI_ EOF? | EOF)
+    | EOF
     ;
