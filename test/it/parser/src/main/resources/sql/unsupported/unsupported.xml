@@ -319,9 +319,11 @@
     <sql-case id="unsupported_select_case_for_opengauss_578" value="select string_agg(name, #) from table_test;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_579" value="select bool_or(array[1.1,2.1,3.1]::int[] =[1,2,3]);" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_580" value="select bool_or(@);" db-types="openGauss" />
-    <sql-case id="assertDistSQLShowRuleParseConflict" value="SHOW READWRITE_SPLITTING RULE FROM schema_name" db-types="PostgreSQL,openGauss" />
-    <sql-case id="assertDistSQLRollbackMigration" value="ROLLBACK MIGRATION 10102p0000697d5ccb2e3d960d0gif75c7c7f486fal" db-types="MySQL,PostgreSQL,openGauss,Oracle" />
-    <sql-case id="assertShowDatabasesParseConflict" value="SHOW DATABASES" db-types="Oracle" />
-    <sql-case id="assertShowSchemasParseConflict" value="SHOW SCHEMAS" db-types="Oracle" />
-    <sql-case id="assertShowTablesParseConflict" value="SHOW TABLES" db-types="Oracle" />
+    <sql-case id="assert_distsql_show_rule_parse_conflict" value="SHOW READWRITE_SPLITTING RULE FROM schema_name" db-types="PostgreSQL,openGauss" />
+    <sql-case id="assert_distsql_rollback_migration" value="ROLLBACK MIGRATION 10102p0000697d5ccb2e3d960d0gif75c7c7f486fal" db-types="MySQL,PostgreSQL,openGauss,Oracle" />
+    <sql-case id="assert_show_databases_parse_conflict" value="SHOW DATABASES" db-types="Oracle" />
+    <sql-case id="assert_show_schemas_parse_conflict" value="SHOW SCHEMAS" db-types="Oracle" />
+    <sql-case id="assert_show_tables_parse_conflict" value="SHOW TABLES" db-types="Oracle" />
+    <!-- TODO open this case when MySQLStatement change to SEMI_? EOF -->
+    <!--    <sql-case id="assert_parse_multi_statements" value="SHOW VARIABLES LIKE 'sql_mode'; SELECT COUNT(*) AS support_ndb FROM information_schema;" db-types="MySQL" />-->
 </sql-cases>

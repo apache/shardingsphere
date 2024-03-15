@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.feature.FeatureSQLException;
 
 /**
- * Optimization SQL node convert exception.
+ * SQL federation SQL exception.
  */
-public final class OptimizationSQLNodeConvertException extends MetaDataSQLException {
+public abstract class SQLFederationSQLException extends FeatureSQLException {
     
-    private static final long serialVersionUID = -5486229929620713984L;
+    private static final long serialVersionUID = 4689889693356895996L;
     
-    public OptimizationSQLNodeConvertException(final SQLStatement statement) {
-        super(XOpenSQLState.SYNTAX_ERROR, 4, "Unsupported SQL node conversion for SQL statement `%s`.", statement.toString());
+    private static final int FEATURE_CODE = 20;
+    
+    protected SQLFederationSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, FEATURE_CODE, errorCode, reason, messageArgs);
     }
 }
