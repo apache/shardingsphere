@@ -22,10 +22,12 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.Table;
+import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 
 import java.sql.ResultSetMetaData;
@@ -147,12 +149,23 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public int getColumnType(final int column) {
-        return resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName().getJdbcOrdinal();
+        return convertSqlType(resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName()).getJdbcOrdinal();
     }
     
     @Override
     public String getColumnTypeName(final int column) {
-        return resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName().getName();
+        return convertSqlType(resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName()).getName();
+    }
+    
+    private SqlTypeName convertSqlType(final SqlTypeName sqlTypeName) {
+        return selectStatementContext.getDatabaseType() instanceof MySQLDatabaseType ? convertMysqlSqlType(sqlTypeName) : sqlTypeName;
+    }
+    
+    private SqlTypeName convertMysqlSqlType(final SqlTypeName sqlTypeName) {
+        if (SqlTypeName.BOOLEAN.getName().equalsIgnoreCase(sqlTypeName.getName())) {
+            return SqlTypeName.BIGINT;
+        }
+        return sqlTypeName;
     }
     
     @Override
