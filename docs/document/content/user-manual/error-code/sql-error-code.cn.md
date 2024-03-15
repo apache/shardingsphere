@@ -220,7 +220,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 |-----------|-------------|---------------------------------------------------------------------------------------------|
 | 44000     | 20270       | Inline expression %s names size error.                                                      |
 | HY004     | 20280       | Invalid read database weight \`%s\`.                                                        |
-| 44000     | 20281       | Load balancer algorithm \`%s\` initialization failed, reason is: \`%s\.`                    |
 | 44000     | 20290       | Data source name is required in database \`%s\.`                                            |
 | 44000     | 20291       | Write data source name is required in database `\`%s\.`                                     |
 | 44000     | 20292       | Read data source names is required in database `\`%s\.`                                     |
@@ -228,7 +227,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42S02     | 20294       | %s data source name \`%s\` not in database \`%s\.`                                          |
 | 44000     | 20295       | Auto aware data source name is required in database \`%s\.`                                 |
 | 42S02     | 20296       | Not found load balance type in database \`%s\.`                                             |
-| 44000     | 20297       | Weight load balancer datasource name config does not match data sources in database \`%s\.` |
 
 ### SQL 方言转换
 
