@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-public class IndexReviseEngineTest<T extends ShardingSphereRule> {
+class IndexReviseEngineTest<T extends ShardingSphereRule> {
     
     @Mock
     private T rule;
@@ -63,10 +63,8 @@ public class IndexReviseEngineTest<T extends ShardingSphereRule> {
     @Test
     void assertReviseIsPresentIsFalse() {
         when(metaDataReviseEntry.getIndexReviser(any(), anyString())).thenReturn(Optional.empty());
-        
         Collection<IndexMetaData> indexMetaDataCollection = Collections.singletonList(new IndexMetaData("index"));
         Collection<IndexMetaData> actual = indexReviseEngine.revise("tableName", indexMetaDataCollection);
-        
         Assertions.assertNotNull(actual);
         assertThat(actual.size(), is(1));
         assertThat(actual, equalToObject(indexMetaDataCollection));
@@ -75,16 +73,11 @@ public class IndexReviseEngineTest<T extends ShardingSphereRule> {
     @Test
     void assertReviseIsPresentIsTrue() {
         IndexReviser<T> reviser = mock(IndexReviser.class);
-        
         IndexMetaData indexMetaData = new IndexMetaData("index");
-        
         doReturn(Optional.of(reviser)).when(metaDataReviseEntry).getIndexReviser(any(), anyString());
         when(reviser.revise(anyString(), any(), any())).thenReturn(Optional.of(indexMetaData));
-        
         Collection<IndexMetaData> indexMetaDataCollection = Arrays.asList(new IndexMetaData("index1"), new IndexMetaData("index2"));
-        
         Collection<IndexMetaData> actual = indexReviseEngine.revise("tableName", indexMetaDataCollection);
-        
         assertThat(actual.size(), equalTo(1));
         assertTrue(actual.contains(indexMetaData));
     }
