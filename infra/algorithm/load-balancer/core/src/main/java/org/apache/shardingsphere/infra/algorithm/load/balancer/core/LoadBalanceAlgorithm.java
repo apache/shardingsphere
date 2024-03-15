@@ -19,12 +19,22 @@ package org.apache.shardingsphere.infra.algorithm.load.balancer.core;
 
 import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
  * Load balance algorithm.
  */
 public interface LoadBalanceAlgorithm extends ShardingSphereAlgorithm {
+    
+    /**
+     * Check load balance algorithm.
+     * 
+     * @param databaseName database name
+     * @param configuredTargetNames configured target names
+     */
+    default void check(String databaseName, Collection<String> configuredTargetNames) {
+    }
     
     /**
      * Get available target name.

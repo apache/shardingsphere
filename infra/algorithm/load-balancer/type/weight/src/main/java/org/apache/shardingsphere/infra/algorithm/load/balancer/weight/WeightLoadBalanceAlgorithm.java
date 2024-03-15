@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.infra.algorithm.load.balancer.weight;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.load.balancer.core.exception.LoadBalanceAlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -40,26 +40,28 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
     
     private final Map<String, double[]> weightMap = new ConcurrentHashMap<>();
     
-    private Properties props;
-    
-    @Getter
-    private Collection<String> availableTargetNames;
+    private final Map<String, Double> weightConfigMap = new HashMap<>();
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
-        availableTargetNames = props.stringPropertyNames();
+        Collection<String> availableTargetNames = props.stringPropertyNames();
         ShardingSpherePreconditions.checkState(!availableTargetNames.isEmpty(), () -> new LoadBalanceAlgorithmInitializationException(getType(), "Available target is required."));
         for (String each : availableTargetNames) {
             String weight = props.getProperty(each);
             ShardingSpherePreconditions.checkNotNull(weight,
                     () -> new LoadBalanceAlgorithmInitializationException(getType(), "Weight of available target `%s` is required.", each));
             try {
-                Double.parseDouble(weight);
+                weightConfigMap.put(each, Double.parseDouble(weight));
             } catch (final NumberFormatException ex) {
                 throw new LoadBalanceAlgorithmInitializationException(getType(), "Weight `%s` of available target `%s` should be number.", weight, each);
             }
         }
+    }
+    
+    @Override
+    public void check(final String databaseName, final Collection<String> configuredTargetNames) {
+        weightConfigMap.keySet().forEach(each -> ShardingSpherePreconditions.checkState(configuredTargetNames.contains(each),
+                () -> new LoadBalanceAlgorithmInitializationException(getType(), "Target `%s` is required in database `%s`.", each, databaseName)));
     }
     
     @Override
@@ -115,8 +117,7 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
     }
     
     private double getWeightValue(final String readDataSourceName) {
-        Object weightObject = props.get(readDataSourceName);
-        double result = Double.parseDouble(weightObject.toString());
+        double result = weightConfigMap.get(readDataSourceName);
         if (Double.isInfinite(result)) {
             result = 10000.0D;
         }
