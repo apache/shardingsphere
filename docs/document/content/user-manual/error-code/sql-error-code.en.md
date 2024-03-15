@@ -297,7 +297,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | SQL State | Vendor Code | Reason                                                              |
 |-----------|-------------|---------------------------------------------------------------------|
 | 44000     | 21180       | Can not find strategy for generate keys with table \`%s\`.          |
-| HY000     | 21181       | Key generate algorithm \`%s\` initialization failed, reason is: %s. |
 
 ### SQL Federation
 

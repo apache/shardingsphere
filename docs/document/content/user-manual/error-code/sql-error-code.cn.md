@@ -282,7 +282,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | SQL State | Vendor Code | 错误信息                                                                |
 |-----------|-------------|---------------------------------------------------------------------|
 | 44000     | 21180       | Can not find strategy for generate keys with table \`%s\`.          |
-| HY000     | 21181       | Key generate algorithm \`%s\` initialization failed, reason is: %s. |
 
 ### 联邦查询
 
