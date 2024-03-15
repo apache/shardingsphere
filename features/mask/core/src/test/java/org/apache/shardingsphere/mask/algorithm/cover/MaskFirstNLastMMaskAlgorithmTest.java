@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.algorithm.cover;
 
-import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,19 +85,19 @@ class MaskFirstNLastMMaskAlgorithmTest {
     
     @Test
     void assertInitWhenFirstNIsEmpty() {
-        assertThrows(MaskAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", ""), new Property("last-m", "5"), new Property("replace-char", "*"))));
     }
     
     @Test
     void assertInitWhenLastMIsEmpty() {
-        assertThrows(MaskAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", ""), new Property("replace-char", "*"))));
     }
     
     @Test
     void assertInitWhenReplaceCharIsEmpty() {
-        assertThrows(MaskAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", ""))));
     }
 }
