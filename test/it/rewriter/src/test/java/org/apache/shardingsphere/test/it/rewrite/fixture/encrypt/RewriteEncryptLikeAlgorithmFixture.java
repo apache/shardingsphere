@@ -20,10 +20,10 @@ package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,7 +76,7 @@ public final class RewriteEncryptLikeAlgorithmFixture implements EncryptAlgorith
             try {
                 return Integer.parseInt(props.getProperty(DELTA_KEY));
             } catch (final NumberFormatException ignored) {
-                throw new EncryptAlgorithmInitializationException(getType(), "delta can only be a decimal number");
+                throw new AlgorithmInitializationException(this, "delta can only be a decimal number");
             }
         }
         return DEFAULT_DELTA;
@@ -87,7 +87,7 @@ public final class RewriteEncryptLikeAlgorithmFixture implements EncryptAlgorith
             try {
                 return Integer.parseInt(props.getProperty(MASK_KEY));
             } catch (final NumberFormatException ignored) {
-                throw new EncryptAlgorithmInitializationException(getType(), "mask can only be a decimal number");
+                throw new AlgorithmInitializationException(this, "mask can only be a decimal number");
             }
         }
         return DEFAULT_MASK;
@@ -98,7 +98,7 @@ public final class RewriteEncryptLikeAlgorithmFixture implements EncryptAlgorith
             try {
                 return Integer.parseInt(props.getProperty(START_KEY));
             } catch (final NumberFormatException ignored) {
-                throw new EncryptAlgorithmInitializationException(getType(), "start can only be a decimal number");
+                throw new AlgorithmInitializationException(this, "start can only be a decimal number");
             }
         }
         return DEFAULT_START;
