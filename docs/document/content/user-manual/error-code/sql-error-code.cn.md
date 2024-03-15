@@ -295,6 +295,13 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 |-----------|-------------|-------------------------------------------------------------------|
 | 44000     | 21280       | '%s' load balance algorithm initialization failed, reason is: %s. |
 
+### 联邦查询
+
+| SQL State | Vendor Code | 错误信息                                                      |
+|-----------|-------------|-----------------------------------------------------------|
+| 42000     | 22040       | Unsupported SQL node conversion for SQL statement \`%s\`. |
+| 42000     | 22041       | SQL federation doesn't support SQL \`%s\` execution.      |
+
 ## 其他异常
 
 | SQL State | Vendor Code | 错误信息                            |
