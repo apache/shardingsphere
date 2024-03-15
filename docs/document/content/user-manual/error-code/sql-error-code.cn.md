@@ -206,7 +206,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 20080       | Sharding algorithm class \`%s\` should be implement \`%s\`.                                                                      |
 | HY000     | 20081       | Routed target \`%s\` does not exist, available targets are \`%s\`.                                                               |
 | 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match.                                            |
-| HY000     | 20083       | Sharding algorithm \`%s\` initialization failed, reason is: %s.                                                                  |
 | 44000     | 20084       | Complex inline algorithm need %d sharing columns, but only found %d.                                                             |
 | 44000     | 20085       | No sharding database route info.                                                                                                 |
 | 44000     | 20086       | Some routed data sources do not belong to configured data sources. routed data sources: \`%s\`, configured data sources: \`%s\`. |
