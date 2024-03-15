@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
+package org.apache.shardingsphere.infra.algorithm.loadbalancer.core.exception;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Load balance algorithm type and class mapper.
+ * Load balance algorithm initialization exception.
  */
-public final class LoadBalanceAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
+public final class LoadBalanceAlgorithmInitializationException extends LoadBalanceSQLException {
     
-    @Override
-    public Class<LoadBalanceAlgorithm> getPluginClass() {
-        return LoadBalanceAlgorithm.class;
-    }
+    private static final long serialVersionUID = 3025471428679102820L;
     
-    @Override
-    public String getType() {
-        return "LOAD_BALANCE_ALGORITHM";
+    public LoadBalanceAlgorithmInitializationException(final String loadBalanceAlgorithmType, final String reason, final Object... args) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 80, "'%s' load balance algorithm initialization failed, reason is: %s.", loadBalanceAlgorithmType, String.format(reason, args));
     }
 }

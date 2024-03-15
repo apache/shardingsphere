@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
+package org.apache.shardingsphere.infra.algorithm.loadbalancer.random;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
 
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
- * Load balance algorithm type and class mapper.
+ * Random load balance algorithm.
  */
-public final class LoadBalanceAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
+public final class RandomLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
     
     @Override
-    public Class<LoadBalanceAlgorithm> getPluginClass() {
-        return LoadBalanceAlgorithm.class;
+    public String getAvailableTargetName(final String groupName, final List<String> availableTargetNames) {
+        return availableTargetNames.get(ThreadLocalRandom.current().nextInt(availableTargetNames.size()));
     }
     
     @Override
     public String getType() {
-        return "LOAD_BALANCE_ALGORITHM";
+        return "RANDOM";
     }
 }

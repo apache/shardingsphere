@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
+package org.apache.shardingsphere.infra.algorithm.loadbalancer.core.exception;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.feature.FeatureSQLException;
 
 /**
- * Load balance algorithm type and class mapper.
+ * Load balance SQL exception.
  */
-public final class LoadBalanceAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
+public abstract class LoadBalanceSQLException extends FeatureSQLException {
     
-    @Override
-    public Class<LoadBalanceAlgorithm> getPluginClass() {
-        return LoadBalanceAlgorithm.class;
-    }
+    private static final int FEATURE_CODE = 12;
     
-    @Override
-    public String getType() {
-        return "LOAD_BALANCE_ALGORITHM";
+    private static final long serialVersionUID = -6834428848205322872L;
+    
+    protected LoadBalanceSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, FEATURE_CODE, errorCode, reason, messageArgs);
     }
 }
