@@ -36,7 +36,7 @@ class WeightLoadBalanceAlgorithmTest {
     @Test
     void assertGetSingleAvailableTarget() {
         LoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(LoadBalanceAlgorithm.class, "WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5")));
-        assertThat(loadBalanceAlgorithm.getAvailableTargetName("ds", Collections.singletonList("test_read_ds_1")), is("test_read_ds_1"));
+        assertThat(loadBalanceAlgorithm.getTargetName("ds", Collections.singletonList("test_read_ds_1")), is("test_read_ds_1"));
     }
     
     @Test
@@ -50,16 +50,16 @@ class WeightLoadBalanceAlgorithmTest {
     }
     
     private void assertWeightLoadBalance(final LoadBalanceAlgorithm loadBalanceAlgorithm, final List<String> availableTargetNames) {
-        assertThat(loadBalanceAlgorithm.getAvailableTargetName("ds", availableTargetNames), notNullValue());
-        assertThat(loadBalanceAlgorithm.getAvailableTargetName("ds", availableTargetNames), notNullValue());
-        assertThat(loadBalanceAlgorithm.getAvailableTargetName("ds", availableTargetNames), notNullValue());
+        assertThat(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames), notNullValue());
+        assertThat(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames), notNullValue());
+        assertThat(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames), notNullValue());
     }
     
     @Test
     void assertGetAvailableTargetNameWhenTargetChanged() {
         LoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(LoadBalanceAlgorithm.class,
                 "WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5")));
-        loadBalanceAlgorithm.getAvailableTargetName("ds", Arrays.asList("test_read_ds_1", "test_read_ds_1"));
-        assertThat(loadBalanceAlgorithm.getAvailableTargetName("ds", Collections.singletonList("test_read_ds_1")), is("test_read_ds_1"));
+        loadBalanceAlgorithm.getTargetName("ds", Arrays.asList("test_read_ds_1", "test_read_ds_1"));
+        assertThat(loadBalanceAlgorithm.getTargetName("ds", Collections.singletonList("test_read_ds_1")), is("test_read_ds_1"));
     }
 }
