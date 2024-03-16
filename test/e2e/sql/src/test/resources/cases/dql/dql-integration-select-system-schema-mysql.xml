@@ -277,6 +277,10 @@
     <test-case sql="SELECT * FROM mysql.procs_priv limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+
+    <test-case sql="SELECT * FROM mysql.role_edges limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
     
     <test-case sql="SELECT * FROM mysql.server_cost limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
