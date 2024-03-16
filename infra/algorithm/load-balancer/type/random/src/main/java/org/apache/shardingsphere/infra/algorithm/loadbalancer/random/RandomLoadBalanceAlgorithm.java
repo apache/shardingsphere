@@ -28,7 +28,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class RandomLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
     
     @Override
-    public String getAvailableTargetName(final String groupName, final List<String> availableTargetNames) {
+    public String getTargetName(final String groupName, final List<String> availableTargetNames) {
         return availableTargetNames.get(ThreadLocalRandom.current().nextInt(availableTargetNames.size()));
     }
     

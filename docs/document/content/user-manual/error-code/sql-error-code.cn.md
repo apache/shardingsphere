@@ -23,6 +23,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
 | 42000     | 10010       | Rule does not exist.                                                           |
 | 44000     | 10011       | '%s.'%s' initialization failed, reason is: %s.                                 |
+| 44000     | 10012       | Can not find '%s' algorithm on table '%s'.                                     |
 | 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
@@ -275,12 +276,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | SQL State | Vendor Code | 错误信息                                                        |
 |-----------|-------------|-------------------------------------------------------------|
 | 42S02     | 20990       | Invalid mask algorithm \`%s\` in database \`%s\`.           |
-
-### 基础算法 - 分布式序列
-
-| SQL State | Vendor Code | 错误信息                                                                |
-|-----------|-------------|---------------------------------------------------------------------|
-| 44000     | 21180       | Can not find strategy for generate keys with table \`%s\`.          |
 
 ### 联邦查询
 

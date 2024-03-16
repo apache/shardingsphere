@@ -36,13 +36,13 @@ class RandomLoadBalanceAlgorithmTest {
         String availableTargetNames2 = "test_read_ds_2";
         List<String> availableTargetNames = Arrays.asList(availableTargetNames1, availableTargetNames2);
         assertRandomLoadBalance(availableTargetNames, loadBalanceAlgorithm);
-        assertTrue(availableTargetNames.contains(loadBalanceAlgorithm.getAvailableTargetName("ds", availableTargetNames)));
-        assertTrue(availableTargetNames.contains(loadBalanceAlgorithm.getAvailableTargetName("ds", availableTargetNames)));
+        assertTrue(availableTargetNames.contains(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames)));
+        assertTrue(availableTargetNames.contains(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames)));
     }
     
     private void assertRandomLoadBalance(final List<String> availableTargetNames, final LoadBalanceAlgorithm loadBalanceAlgorithm) {
-        assertTrue(availableTargetNames.contains(loadBalanceAlgorithm.getAvailableTargetName("ds", availableTargetNames)));
-        assertTrue(availableTargetNames.contains(loadBalanceAlgorithm.getAvailableTargetName("ds", availableTargetNames)));
-        assertTrue(availableTargetNames.contains(loadBalanceAlgorithm.getAvailableTargetName("ds", availableTargetNames)));
+        assertTrue(availableTargetNames.contains(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames)));
+        assertTrue(availableTargetNames.contains(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames)));
+        assertTrue(availableTargetNames.contains(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames)));
     }
 }

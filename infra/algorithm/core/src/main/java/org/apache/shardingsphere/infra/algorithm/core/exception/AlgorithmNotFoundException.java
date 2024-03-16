@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.distsql.handler.fixture;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
-import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
-import java.util.List;
-
-public final class DistSQLLoadBalanceAlgorithmFixture implements LoadBalanceAlgorithm {
+/**
+ * Algorithm not found exception.
+ */
+public final class AlgorithmNotFoundException extends MetaDataSQLException {
     
-    @Override
-    public String getAvailableTargetName(final String groupName, final List<String> availableTargetNames) {
-        return null;
-    }
+    private static final long serialVersionUID = -6334833729231404326L;
     
-    @Override
-    public String getType() {
-        return "DISTSQL.FIXTURE";
+    public AlgorithmNotFoundException(final String algorithmType, final String tableName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 12, "Can not find '%s' algorithm on table '%s'.", algorithmType, tableName);
     }
 }

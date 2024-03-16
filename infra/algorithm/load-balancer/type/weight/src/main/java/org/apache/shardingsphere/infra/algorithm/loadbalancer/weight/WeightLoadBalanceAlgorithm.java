@@ -65,7 +65,7 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
     }
     
     @Override
-    public String getAvailableTargetName(final String groupName, final List<String> availableTargetNames) {
+    public String getTargetName(final String groupName, final List<String> availableTargetNames) {
         double[] weight = weightMap.containsKey(groupName) && weightMap.get(groupName).length == availableTargetNames.size() ? weightMap.get(groupName) : initWeight(availableTargetNames);
         weightMap.put(groupName, weight);
         return getAvailableTargetName(availableTargetNames, weight);
