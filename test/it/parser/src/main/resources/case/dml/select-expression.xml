@@ -3178,4 +3178,48 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_case_when_group_by_order_by">
+        <projections start-index="7" stop-index="177">
+            <column-projection name="state_desc" start-index="7" stop-index="16"/>
+            <column-projection name="file_type_desc" start-index="19" stop-index="32"/>
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="35" stop-index="42" alias="count"/>
+            <expression-projection alias="on-disk size MB"
+                                   text="SUM(CASE WHEN state = 5 AND file_type=0 THEN 128*1024*1024 ELSE file_size_in_bytes END) / 1024 / 1024"
+                                   start-index="56" stop-index="177">
+                <expr>
+                    <binary-operation-expression start-index="56" stop-index="156">
+                        <left>
+                            <binary-operation-expression start-index="56" stop-index="149">
+                                <left>
+                                    <aggregation-projection start-index="56" stop-index="142" type="SUM"
+                                                            expression="SUM(CASE WHEN state = 5 AND file_type=0 THEN 128*1024*1024 ELSE file_size_in_bytes END)"
+                                                            parameters="CASEWHENstate=5ANDfile_type=0THEN128*1024*1024ELSEfile_size_in_bytesEND">
+                                        <expression-projection start-index="40" stop-index="142" text="CASEWHENstate=5ANDfile_type=0THEN128*1024*1024ELSEfile_size_in_bytesEND">
+                                            <expr>
+                                                <common-expression literal-text="CASEWHENstate=5ANDfile_type=0THEN128*1024*1024ELSEfile_size_in_bytesEND" start-index="40" stop-index="142"/>
+                                            </expr>
+                                        </expression-projection>
+                                    </aggregation-projection>
+                                </left>
+                                <operator>/</operator>
+                                <right>
+                                    <literal-expression value="1024" start-index="146" stop-index="149"/>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>/</operator>
+                        <right>
+                            <literal-expression value="1024" start-index="153" stop-index="156"/>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="188" stop-index="213">
+            <simple-table name="dm_db_xtp_checkpoint_files" start-index="184" stop-index="213">
+                <owner name="sys" start-index="184" stop-index="186"/>
+            </simple-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
