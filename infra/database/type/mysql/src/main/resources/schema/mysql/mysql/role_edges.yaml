@@ -52,3 +52,6 @@ columns:
     name: WITH_ADMIN_OPTION
     primaryKey: false
     visible: true
+indexes:
+  primary:
+    name: PRIMARY
