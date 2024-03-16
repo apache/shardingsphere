@@ -23,6 +23,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
 | 42000     | 10010       | Rule does not exist.                                                           |
 | 44000     | 10011       | '%s.'%s' initialization failed, reason is: %s.                                 |
+| 44000     | 10012       | Can not find '%s' algorithm on table '%s'.                                     |
 | 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
@@ -290,12 +291,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | SQL State | Vendor Code | Reason                                                      |
 |-----------|-------------|-------------------------------------------------------------|
 | 42S02     | 20990       | Invalid mask algorithm \`%s\` in database \`%s\`.           |
-
-### Infra algorithm - key generate
-
-| SQL State | Vendor Code | Reason                                                              |
-|-----------|-------------|---------------------------------------------------------------------|
-| 44000     | 21180       | Can not find strategy for generate keys with table \`%s\`.          |
 
 ### SQL Federation
 

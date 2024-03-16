@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.keygen.core.exception;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Generate key strategy not found exception.
+ * Algorithm not found exception.
  */
-public final class GenerateKeyStrategyNotFoundException extends KeyGenerateSQLException {
+public final class AlgorithmNotFoundException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = 7456922260524630374L;
+    private static final long serialVersionUID = -6334833729231404326L;
     
-    public GenerateKeyStrategyNotFoundException(final String tableName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 80, "Can not find strategy for generate keys with table `%s`.", tableName);
+    public AlgorithmNotFoundException(final String algorithmType, final String tableName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 12, "Can not find '%s' algorithm on table '%s'.", algorithmType, tableName);
     }
 }

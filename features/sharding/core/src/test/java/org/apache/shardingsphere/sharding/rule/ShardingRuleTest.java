@@ -21,7 +21,7 @@ import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.exception.GenerateKeyStrategyNotFoundException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmNotFoundException;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
@@ -336,7 +336,7 @@ class ShardingRuleTest {
     void assertGenerateKeyFailure() {
         AlgorithmSQLContext generateContext = mock(AlgorithmSQLContext.class);
         when(generateContext.getTableName()).thenReturn("table_0");
-        assertThrows(GenerateKeyStrategyNotFoundException.class, () -> createMaximumShardingRule().generateKeys(generateContext, 1));
+        assertThrows(AlgorithmNotFoundException.class, () -> createMaximumShardingRule().generateKeys(generateContext, 1));
     }
     
     @Test
