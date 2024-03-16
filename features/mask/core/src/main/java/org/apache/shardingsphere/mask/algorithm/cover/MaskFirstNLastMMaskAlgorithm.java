@@ -48,17 +48,17 @@ public final class MaskFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object,
     }
     
     private Integer createFirstN(final Properties props) {
-        MaskAlgorithmPropsChecker.checkPositiveIntegerConfig(props, FIRST_N, getType());
+        MaskAlgorithmPropsChecker.checkPositiveIntegerConfiguration(props, FIRST_N, this);
         return Integer.parseInt(props.getProperty(FIRST_N));
     }
     
     private Integer createLastM(final Properties props) {
-        MaskAlgorithmPropsChecker.checkPositiveIntegerConfig(props, LAST_M, getType());
+        MaskAlgorithmPropsChecker.checkPositiveIntegerConfiguration(props, LAST_M, this);
         return Integer.parseInt(props.getProperty(LAST_M));
     }
     
     private Character createReplaceChar(final Properties props) {
-        MaskAlgorithmPropsChecker.checkSingleCharConfig(props, REPLACE_CHAR, getType());
+        MaskAlgorithmPropsChecker.checkSingleCharConfiguration(props, REPLACE_CHAR, this);
         return props.getProperty(REPLACE_CHAR).charAt(0);
     }
     

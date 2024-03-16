@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.security.SecureRandom;
@@ -65,11 +65,9 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
         uppercaseLetterCodes = splitPropsToList(props.getProperty(UPPERCASE_LETTER_CODES, DEFAULT_UPPERCASE_LETTER_CODES));
         lowercaseLetterCodes = splitPropsToList(props.getProperty(LOWERCASE_LETTER_CODES, DEFAULT_LOWERCASE_LETTER_CODES));
         digitalCodes = splitPropsToList(props.getProperty(DIGITAL_CODES, DEFAULT_DIGITAL_CODES));
-        ShardingSpherePreconditions.checkState(!digitalCodes.isEmpty(),
-                () -> new MaskAlgorithmInitializationException(getType(), String.format("'%s' must be not empty", DIGITAL_CODES)));
+        ShardingSpherePreconditions.checkState(!digitalCodes.isEmpty(), () -> new AlgorithmInitializationException(this, String.format("'%s' must be not empty", DIGITAL_CODES)));
         specialCodes = splitPropsToList(props.getProperty(SPECIAL_CODES, DEFAULT_SPECIAL_CODES));
-        ShardingSpherePreconditions.checkState(!specialCodes.isEmpty(),
-                () -> new MaskAlgorithmInitializationException(getType(), String.format("'%s' must be not empty", SPECIAL_CODES)));
+        ShardingSpherePreconditions.checkState(!specialCodes.isEmpty(), () -> new AlgorithmInitializationException(this, String.format("'%s' must be not empty", SPECIAL_CODES)));
     }
     
     private List<Character> splitPropsToList(final String props) {

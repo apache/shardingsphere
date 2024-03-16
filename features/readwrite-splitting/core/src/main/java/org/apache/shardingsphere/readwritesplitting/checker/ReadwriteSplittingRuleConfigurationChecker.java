@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.checker;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.load.balancer.weight.WeightLoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
@@ -31,11 +30,9 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.DataSourceNameNotExistedException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.DuplicateDataSourceException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.InvalidWeightLoadBalancerConfigurationException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.LoadBalancerAlgorithmNotFoundException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredDataSourceNameException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredReadDataSourceNamesException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredReadDatabaseWeightException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredWriteDataSourceNameException;
 
 import javax.sql.DataSource;
@@ -115,17 +112,8 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
             }
             LoadBalanceAlgorithm loadBalancer = loadBalancers.get(each.getLoadBalancerName());
             ShardingSpherePreconditions.checkNotNull(loadBalancer, () -> new LoadBalancerAlgorithmNotFoundException(databaseName));
-            if (loadBalancer instanceof WeightLoadBalanceAlgorithm) {
-                checkWeightLoadBalancer(databaseName, each, (WeightLoadBalanceAlgorithm) loadBalancer);
-            }
+            loadBalancer.check(databaseName, each.getReadDataSourceNames());
         }
-    }
-    
-    private void checkWeightLoadBalancer(final String databaseName, final ReadwriteSplittingDataSourceRuleConfiguration sourceRuleConfig, final WeightLoadBalanceAlgorithm loadBalancer) {
-        ShardingSpherePreconditions.checkState(!loadBalancer.getAvailableTargetNames().isEmpty(),
-                () -> new MissingRequiredReadDatabaseWeightException(loadBalancer.getType(), String.format("Read data source weight config are required in database `%s`", databaseName)));
-        loadBalancer.getAvailableTargetNames().forEach(each -> ShardingSpherePreconditions.checkState(sourceRuleConfig.getReadDataSourceNames().contains(each),
-                () -> new InvalidWeightLoadBalancerConfigurationException(databaseName)));
     }
     
     private Map<String, LoadBalanceAlgorithm> getLoadBalancer(final ReadwriteSplittingRuleConfiguration config) {

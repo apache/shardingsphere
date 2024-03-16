@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.shadow.exception.algorithm.ShadowAlgorithmInitializationException;
 import org.apache.shardingsphere.shadow.exception.data.UnsupportedShadowColumnTypeException;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -26,8 +26,8 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ColumnValueMatchShadowAlgorithmTest {
     
@@ -53,13 +53,13 @@ class ColumnValueMatchShadowAlgorithmTest {
     
     @Test
     void assertPropertiesWithoutColumn() {
-        assertThrows(ShadowAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(ShadowAlgorithm.class, "VALUE_MATCH", PropertiesBuilder.build(new Property("operation", "insert"), new Property("value", "1"))));
     }
     
     @Test
     void assertPropertiesWithWrongOperation() {
-        assertThrows(ShadowAlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShadowAlgorithm.class, "VALUE_MATCH",
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShadowAlgorithm.class, "VALUE_MATCH",
                 PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "wrong"), new Property("value", "1"))));
     }
 }

@@ -22,6 +22,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.keygen.core.exception.GenerateKeyStrategyNotFoundException;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -34,8 +35,8 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -49,7 +50,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.cache.ShardingCache;
-import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 import org.apache.shardingsphere.sharding.exception.metadata.DuplicateSharingActualDataNodeException;
 import org.apache.shardingsphere.sharding.exception.metadata.InvalidBindingTablesException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
@@ -203,7 +203,7 @@ public final class ShardingRule implements DatabaseRule {
     private void checkManualShardingAlgorithm(final String shardingAlgorithmName, final String logicTable) {
         ShardingAlgorithm shardingAlgorithm = shardingAlgorithms.get(shardingAlgorithmName);
         ShardingSpherePreconditions.checkState(!(shardingAlgorithm instanceof ShardingAutoTableAlgorithm),
-                () -> new ShardingAlgorithmInitializationException(shardingAlgorithm.getType(), String.format("`%s` tables sharding configuration can not use auto sharding algorithm.", logicTable)));
+                () -> new AlgorithmInitializationException(shardingAlgorithm, "`%s` tables sharding configuration can not use auto sharding algorithm.", logicTable));
     }
     
     private Map<String, ShardingTable> createShardingAutoTables(final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigs,
@@ -221,7 +221,7 @@ public final class ShardingRule implements DatabaseRule {
     private void checkAutoShardingAlgorithm(final String shardingAlgorithmName, final String logicTable) {
         ShardingAlgorithm shardingAlgorithm = shardingAlgorithms.get(shardingAlgorithmName);
         ShardingSpherePreconditions.checkState(shardingAlgorithm instanceof ShardingAutoTableAlgorithm,
-                () -> new ShardingAlgorithmInitializationException(shardingAlgorithm.getType(), String.format("`%s` autoTables sharding configuration must use auto sharding algorithm.", logicTable)));
+                () -> new AlgorithmInitializationException(shardingAlgorithm, "`%s` autoTables sharding configuration must use auto sharding algorithm.", logicTable));
     }
     
     private String getDefaultGenerateKeyColumn(final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {

@@ -19,13 +19,13 @@ package org.apache.shardingsphere.infra.algorithm.keygen.snowflake;
 
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.exception.SnowflakeClockMoveBackException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.exception.KeyGenerateAlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.exception.SnowflakeClockMoveBackException;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -102,13 +102,13 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private int getMaxVibrationOffset(final Properties props) {
         int result = Integer.parseInt(props.getOrDefault(MAX_VIBRATION_OFFSET_KEY, DEFAULT_VIBRATION_VALUE).toString());
-        ShardingSpherePreconditions.checkState(result >= 0 && result <= SEQUENCE_MASK, () -> new KeyGenerateAlgorithmInitializationException(getType(), "Illegal max vibration offset."));
+        ShardingSpherePreconditions.checkState(result >= 0 && result <= SEQUENCE_MASK, () -> new AlgorithmInitializationException(this, "Illegal max vibration offset."));
         return result;
     }
     
     private int getMaxTolerateTimeDifferenceMillis(final Properties props) {
         int result = Integer.parseInt(props.getOrDefault(MAX_TOLERATE_TIME_DIFFERENCE_MILLIS_KEY, MAX_TOLERATE_TIME_DIFFERENCE_MILLIS).toString());
-        ShardingSpherePreconditions.checkState(result >= 0, () -> new KeyGenerateAlgorithmInitializationException(getType(), "Illegal max tolerate time difference milliseconds."));
+        ShardingSpherePreconditions.checkState(result >= 0, () -> new AlgorithmInitializationException(this, "Illegal max tolerate time difference milliseconds."));
         return result;
     }
     

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.algorithm.cover;
 
-import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,24 +66,24 @@ class MaskAfterSpecialCharsAlgorithmTest {
     
     @Test
     void assertInitWhenSpecialCharsIsEmpty() {
-        assertThrows(MaskAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build(new Property("special-chars", ""), new Property("replace-char", "*"))));
     }
     
     @Test
     void assertInitWhenReplaceCharIsEmpty() {
-        assertThrows(MaskAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", ""))));
     }
     
     @Test
     void assertInitWhenReplaceCharIsMissing() {
-        assertThrows(MaskAlgorithmInitializationException.class, () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build(new Property("special-chars", "d1"))));
+        assertThrows(AlgorithmInitializationException.class, () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build(new Property("special-chars", "d1"))));
     }
     
     @Test
     void assertInitWhenPropertiesAreEmpty() {
-        assertThrows(MaskAlgorithmInitializationException.class, () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build()));
+        assertThrows(AlgorithmInitializationException.class, () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build()));
     }
     
     @Test

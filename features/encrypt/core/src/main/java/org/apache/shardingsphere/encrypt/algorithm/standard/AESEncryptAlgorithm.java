@@ -23,10 +23,10 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
-import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.crypto.Cipher;
@@ -59,7 +59,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     private byte[] getSecretKey(final Properties props) {
         String aesKey = props.getProperty(AES_KEY);
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(aesKey), () -> new EncryptAlgorithmInitializationException(getType(), String.format("%s can not be null or empty", AES_KEY)));
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(aesKey), () -> new AlgorithmInitializationException(this, "%s can not be null or empty", AES_KEY));
         String digestAlgorithm = props.getProperty(DIGEST_ALGORITHM_NAME, MessageDigestAlgorithms.SHA_1);
         return Arrays.copyOf(DigestUtils.getDigest(digestAlgorithm.toUpperCase()).digest(aesKey.getBytes(StandardCharsets.UTF_8)), 16);
     }

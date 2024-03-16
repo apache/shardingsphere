@@ -26,8 +26,8 @@ import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnItemSegmen
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.statement.CreateEncryptRuleStatement;
-import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -142,7 +142,7 @@ class CreateEncryptRuleExecutorTest {
         EncryptRule rule = mock(EncryptRule.class);
         when(rule.getConfiguration()).thenReturn(getCurrentRuleConfig());
         executor.setRule(rule);
-        assertThrows(EncryptAlgorithmInitializationException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+        assertThrows(AlgorithmInitializationException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     private CreateEncryptRuleStatement createWrongAESEncryptorSQLStatement() {

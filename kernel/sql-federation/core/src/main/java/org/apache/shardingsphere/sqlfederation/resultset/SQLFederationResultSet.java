@@ -97,7 +97,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     @Override
     public boolean next() {
         boolean result = enumerator.moveNext();
-        if (result) {
+        if (result && null != enumerator.current()) {
             currentRows = enumerator.current().getClass().isArray() ? (Object[]) enumerator.current() : new Object[]{enumerator.current()};
         } else {
             currentRows = new Object[]{};
