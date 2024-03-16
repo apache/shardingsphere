@@ -24,7 +24,7 @@ import java.util.List;
 public final class DistSQLLoadBalanceAlgorithmFixture implements LoadBalanceAlgorithm {
     
     @Override
-    public String getAvailableTargetName(final String groupName, final List<String> availableTargetNames) {
+    public String getTargetName(final String groupName, final List<String> availableTargetNames) {
         return availableTargetNames.get(0);
     }
     

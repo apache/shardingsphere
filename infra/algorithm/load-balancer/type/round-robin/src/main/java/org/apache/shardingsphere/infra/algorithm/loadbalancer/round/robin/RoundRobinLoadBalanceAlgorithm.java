@@ -30,7 +30,7 @@ public final class RoundRobinLoadBalanceAlgorithm implements LoadBalanceAlgorith
     private final AtomicInteger count = new AtomicInteger(0);
     
     @Override
-    public String getAvailableTargetName(final String groupName, final List<String> availableTargetNames) {
+    public String getTargetName(final String groupName, final List<String> availableTargetNames) {
         return availableTargetNames.get(Math.abs(count.getAndIncrement()) % availableTargetNames.size());
     }
     

@@ -41,9 +41,9 @@ class RoundRobinLoadBalanceAlgorithmTest {
     
     private void assertRoundRobinLoadBalance(final String availableTargetName1, final String availableTargetName2, final LoadBalanceAlgorithm loadBalanceAlgorithm,
                                              final List<String> availableTargetNames) {
-        assertThat(loadBalanceAlgorithm.getAvailableTargetName("ds", availableTargetNames), is(availableTargetName1));
-        assertThat(loadBalanceAlgorithm.getAvailableTargetName("ds", availableTargetNames), is(availableTargetName2));
-        assertThat(loadBalanceAlgorithm.getAvailableTargetName("ds", availableTargetNames), is(availableTargetName1));
-        assertThat(loadBalanceAlgorithm.getAvailableTargetName("ds", availableTargetNames), is(availableTargetName2));
+        assertThat(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames), is(availableTargetName1));
+        assertThat(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames), is(availableTargetName2));
+        assertThat(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames), is(availableTargetName1));
+        assertThat(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames), is(availableTargetName2));
     }
 }
