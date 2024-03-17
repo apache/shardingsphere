@@ -108,8 +108,8 @@ public final class ShardingSphereMetaData {
     }
     
     private void cleanResources(final ShardingSphereDatabase database) {
-        globalRuleMetaData.getAttributes(ResourceHeldRuleAttribute.class).forEach(each -> each.closeResource(database.getName()));
-        database.getRuleMetaData().getAttributes(ResourceHeldRuleAttribute.class).forEach(each -> each.closeResource(database.getName()));
+        globalRuleMetaData.getAttributes(ResourceHeldRuleAttribute.class).forEach(each -> each.dropResource(database.getName()));
+        database.getRuleMetaData().getAttributes(ResourceHeldRuleAttribute.class).forEach(each -> each.dropResource(database.getName()));
         database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class).forEach(StaticDataSourceRuleAttribute::cleanStorageNodeDataSources);
         Optional.ofNullable(database.getResourceMetaData())
                 .ifPresent(optional -> optional.getStorageUnits().values().forEach(each -> new DataSourcePoolDestroyer(each.getDataSource()).asyncDestroy()));

@@ -67,7 +67,7 @@ public final class TransactionResourceHeldRuleAttribute implements ResourceHeldR
     }
     
     @Override
-    public synchronized void closeResource(final String databaseName) {
+    public synchronized void dropResource(final String databaseName) {
         if (!databases.containsKey(databaseName.toLowerCase())) {
             return;
         }
@@ -76,7 +76,7 @@ public final class TransactionResourceHeldRuleAttribute implements ResourceHeldR
     }
     
     @Override
-    public synchronized void closeStaleResources() {
+    public synchronized void close() {
         databases.clear();
         closeEngine();
     }
