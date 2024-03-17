@@ -20,12 +20,9 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
-import org.apache.shardingsphere.infra.rule.attribute.resoure.ResourceHeldRuleAttribute;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
-import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.Test;
 
@@ -99,15 +96,10 @@ class ConnectionAdapterTest {
         }
     }
     
-    @SuppressWarnings("unchecked")
     private Connection createConnectionAdaptor() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        TransactionRule transactionRule = mock(TransactionRule.class);
-        ResourceHeldRuleAttribute<ShardingSphereTransactionManagerEngine> resourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
-        when(resourceHeldRuleAttribute.getResource()).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
-        when(transactionRule.getAttributes()).thenReturn(new RuleAttributes(resourceHeldRuleAttribute));
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
-                new RuleMetaData(Arrays.asList(transactionRule, new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()))));
+                new RuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()))));
         return new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, contextManager);
     }
 }

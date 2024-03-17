@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.session;
 
-import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
-import org.apache.shardingsphere.infra.rule.attribute.resoure.ResourceHeldRuleAttribute;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
-import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -93,14 +90,9 @@ class ConnectionSessionTest {
         assertThat(connectionSession.getDefaultDatabaseName(), is("newDB"));
     }
     
-    @SuppressWarnings("unchecked")
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        TransactionRule transactionRule = mock(TransactionRule.class);
-        ResourceHeldRuleAttribute<ShardingSphereTransactionManagerEngine> resourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
-        when(resourceHeldRuleAttribute.getResource()).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
-        when(transactionRule.getAttributes()).thenReturn(new RuleAttributes(resourceHeldRuleAttribute));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(transactionRule)));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(TransactionRule.class))));
         return result;
     }
     

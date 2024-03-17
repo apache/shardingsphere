@@ -25,8 +25,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
-import org.apache.shardingsphere.infra.rule.attribute.resoure.ResourceHeldRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
@@ -60,14 +58,11 @@ class DriverStateContextTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
-    @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
         Map<String, ShardingSphereDatabase> databases = mockDatabases();
         TransactionRule transactionRule = mock(TransactionRule.class);
-        ResourceHeldRuleAttribute<ShardingSphereTransactionManagerEngine> resourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
-        when(resourceHeldRuleAttribute.getResource()).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
-        when(transactionRule.getAttributes()).thenReturn(new RuleAttributes(resourceHeldRuleAttribute));
+        when(transactionRule.getResource()).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
         TrafficRule trafficRule = mock(TrafficRule.class);
         RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(transactionRule, trafficRule));
         MetaDataContexts metaDataContexts = new MetaDataContexts(

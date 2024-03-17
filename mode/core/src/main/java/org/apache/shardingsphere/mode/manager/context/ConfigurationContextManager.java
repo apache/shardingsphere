@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.context;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
@@ -37,8 +38,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.attribute.resoure.ResourceHeldRuleAttribute;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
@@ -79,7 +78,7 @@ public final class ConfigurationContextManager {
      */
     public synchronized void registerStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
         try {
-            getStaleResourceHeldRules(databaseName).forEach(ResourceHeldRuleAttribute::close);
+            closeStaleRules(databaseName);
             SwitchingResource switchingResource =
                     new NewResourceSwitchManager().registerStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
             buildNewMetaDataContext(databaseName, switchingResource);
@@ -96,7 +95,7 @@ public final class ConfigurationContextManager {
      */
     public synchronized void alterStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
         try {
-            getStaleResourceHeldRules(databaseName).forEach(ResourceHeldRuleAttribute::close);
+            closeStaleRules(databaseName);
             SwitchingResource switchingResource =
                     new NewResourceSwitchManager().alterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
             buildNewMetaDataContext(databaseName, switchingResource);
@@ -113,7 +112,7 @@ public final class ConfigurationContextManager {
      */
     public synchronized void unregisterStorageUnit(final String databaseName, final String storageUnitName) {
         try {
-            getStaleResourceHeldRules(databaseName).forEach(ResourceHeldRuleAttribute::close);
+            closeStaleRules(databaseName);
             SwitchingResource switchingResource = new NewResourceSwitchManager().unregisterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
                     Collections.singletonList(storageUnitName));
             buildNewMetaDataContext(databaseName, switchingResource);
@@ -145,7 +144,7 @@ public final class ConfigurationContextManager {
     public synchronized void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
         try {
             // TODO consider rename this method to alterDatabaseRuleConfiguration
-            getStaleResourceHeldRules(databaseName).stream().filter(DatabaseRule.class::isInstance).forEach(ResourceHeldRuleAttribute::close);
+            closeStaleRules(databaseName);
             MetaDataContexts reloadMetaDataContexts = createMetaDataContextsWhenRuleChanged(databaseName, false, null, ruleConfigs);
             alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
             metaDataContexts.set(reloadMetaDataContexts);
@@ -226,7 +225,7 @@ public final class ConfigurationContextManager {
      */
     public synchronized void alterDataSourceUnitsConfiguration(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
         try {
-            getStaleResourceHeldRules(databaseName).forEach(ResourceHeldRuleAttribute::close);
+            closeStaleRules(databaseName);
             SwitchingResource switchingResource =
                     new ResourceSwitchManager().createByAlterDataSourcePoolProperties(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
             metaDataContexts.get().getMetaData().getDatabases().putAll(renewDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName), switchingResource));
@@ -294,11 +293,13 @@ public final class ConfigurationContextManager {
         return result;
     }
     
-    @SuppressWarnings("rawtypes")
-    private Collection<ResourceHeldRuleAttribute> getStaleResourceHeldRules(final String databaseName) {
-        Collection<ResourceHeldRuleAttribute> result = metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getAttributes(ResourceHeldRuleAttribute.class);
-        result.addAll(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getAttributes(ResourceHeldRuleAttribute.class));
-        return result;
+    @SneakyThrows(Exception.class)
+    private void closeStaleRules(final String databaseName) {
+        for (ShardingSphereRule each : metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules()) {
+            if (each instanceof AutoCloseable) {
+                ((AutoCloseable) each).close();
+            }
+        }
     }
     
     /**
@@ -412,7 +413,7 @@ public final class ConfigurationContextManager {
         if (ruleConfigs.isEmpty()) {
             return;
         }
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getAttributes(ResourceHeldRuleAttribute.class).forEach(ResourceHeldRuleAttribute::close);
+        closeStaleGlobalRules();
         RuleMetaData toBeChangedGlobalRuleMetaData = new RuleMetaData(
                 GlobalRulesBuilder.buildRules(ruleConfigs, metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getProps()));
         ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getGlobalResourceMetaData(),
@@ -442,6 +443,15 @@ public final class ConfigurationContextManager {
         Collection<ShardingSphereRule> result = new LinkedList<>(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules());
         result.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
         return result;
+    }
+    
+    @SneakyThrows(Exception.class)
+    private void closeStaleGlobalRules() {
+        for (ShardingSphereRule each : metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules()) {
+            if (each instanceof AutoCloseable) {
+                ((AutoCloseable) each).close();
+            }
+        }
     }
     
     /**
