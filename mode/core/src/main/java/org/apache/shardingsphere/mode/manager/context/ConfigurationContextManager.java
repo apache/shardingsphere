@@ -81,7 +81,7 @@ public final class ConfigurationContextManager {
     public synchronized void registerStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
         try {
             Collection<ResourceHeldRuleAttribute> staleResourceHeldRuleAttributes = getStaleResourceHeldRules(databaseName);
-            staleResourceHeldRuleAttributes.forEach(ResourceHeldRuleAttribute::closeStaleResource);
+            staleResourceHeldRuleAttributes.forEach(ResourceHeldRuleAttribute::closeStaleResources);
             SwitchingResource switchingResource =
                     new NewResourceSwitchManager().registerStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
             buildNewMetaDataContext(databaseName, switchingResource);
@@ -100,7 +100,7 @@ public final class ConfigurationContextManager {
     public synchronized void alterStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
         try {
             Collection<ResourceHeldRuleAttribute> staleResourceHeldRuleAttributes = getStaleResourceHeldRules(databaseName);
-            staleResourceHeldRuleAttributes.forEach(ResourceHeldRuleAttribute::closeStaleResource);
+            staleResourceHeldRuleAttributes.forEach(ResourceHeldRuleAttribute::closeStaleResources);
             SwitchingResource switchingResource =
                     new NewResourceSwitchManager().alterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
             buildNewMetaDataContext(databaseName, switchingResource);
@@ -119,7 +119,7 @@ public final class ConfigurationContextManager {
     public synchronized void unregisterStorageUnit(final String databaseName, final String storageUnitName) {
         try {
             Collection<ResourceHeldRuleAttribute> staleResourceHeldRuleAttributes = getStaleResourceHeldRules(databaseName);
-            staleResourceHeldRuleAttributes.forEach(ResourceHeldRuleAttribute::closeStaleResource);
+            staleResourceHeldRuleAttributes.forEach(ResourceHeldRuleAttribute::closeStaleResources);
             SwitchingResource switchingResource = new NewResourceSwitchManager().unregisterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
                     Collections.singletonList(storageUnitName));
             buildNewMetaDataContext(databaseName, switchingResource);
@@ -153,7 +153,7 @@ public final class ConfigurationContextManager {
         try {
             Collection<ResourceHeldRuleAttribute> staleResourceHeldRuleAttributes = getStaleResourceHeldRules(databaseName);
             // TODO consider rename this method to alterDatabaseRuleConfiguration
-            staleResourceHeldRuleAttributes.stream().filter(DatabaseRule.class::isInstance).forEach(ResourceHeldRuleAttribute::closeStaleResource);
+            staleResourceHeldRuleAttributes.stream().filter(DatabaseRule.class::isInstance).forEach(ResourceHeldRuleAttribute::closeStaleResources);
             MetaDataContexts reloadMetaDataContexts = createMetaDataContextsWhenRuleChanged(databaseName, false, null, ruleConfigs);
             alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
             metaDataContexts.set(reloadMetaDataContexts);
@@ -236,7 +236,7 @@ public final class ConfigurationContextManager {
     public synchronized void alterDataSourceUnitsConfiguration(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
         try {
             Collection<ResourceHeldRuleAttribute> staleResourceHeldRuleAttributes = getStaleResourceHeldRules(databaseName);
-            staleResourceHeldRuleAttributes.forEach(ResourceHeldRuleAttribute::closeStaleResource);
+            staleResourceHeldRuleAttributes.forEach(ResourceHeldRuleAttribute::closeStaleResources);
             SwitchingResource switchingResource =
                     new ResourceSwitchManager().createByAlterDataSourcePoolProperties(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
             metaDataContexts.get().getMetaData().getDatabases().putAll(renewDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName), switchingResource));
@@ -422,7 +422,7 @@ public final class ConfigurationContextManager {
         if (ruleConfigs.isEmpty()) {
             return;
         }
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getAttributes(ResourceHeldRuleAttribute.class).forEach(ResourceHeldRuleAttribute::closeStaleResource);
+        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getAttributes(ResourceHeldRuleAttribute.class).forEach(ResourceHeldRuleAttribute::closeStaleResources);
         RuleMetaData toBeChangedGlobalRuleMetaData = new RuleMetaData(
                 GlobalRulesBuilder.buildRules(ruleConfigs, metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getProps()));
         ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getGlobalResourceMetaData(),

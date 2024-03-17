@@ -42,14 +42,14 @@ public interface ResourceHeldRuleAttribute<T> extends RuleAttribute {
     void addResource(ShardingSphereDatabase database);
     
     /**
-     * Close stale resource with database name.
+     * Close resource.
      *
      * @param databaseName database name
      */
-    void closeStaleResource(String databaseName);
+    void closeResource(String databaseName);
     
     /**
-     * Close stale resource.
+     * Close stale resources.
      */
-    void closeStaleResource();
+    void closeStaleResources();
 }
