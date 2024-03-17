@@ -59,7 +59,7 @@ public final class TransactionRule implements GlobalRule, AutoCloseable {
         providerType = ruleConfig.getProviderType();
         props = ruleConfig.getProps();
         resource = new AtomicReference<>(createTransactionManagerEngine(databases));
-        attributes = new RuleAttributes(new TransactionResourceHeldRuleAttribute(defaultType, providerType, databases));
+        attributes = new RuleAttributes();
     }
     
     private synchronized ShardingSphereTransactionManagerEngine createTransactionManagerEngine(final Map<String, ShardingSphereDatabase> databases) {
