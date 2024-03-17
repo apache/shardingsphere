@@ -46,26 +46,18 @@ class TransactionRuleTest {
     
     @Test
     void assertInitTransactionRuleWithMultiDatabaseType() {
-        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
-        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
+        try (TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()))) {
+            assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
+        }
     }
     
-//    @Test
-//    void assertAddResource() {
-//        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
-//        actual.getAttributes().getAttribute(ResourceHeldRuleAttribute.class).addResource(createAddDatabase());
-//        assertNotNull(actual.getAttributes().getAttribute(ResourceHeldRuleAttribute.class).getResource());
-//        assertThat(((ShardingSphereTransactionManagerEngine) actual.getAttributes().getAttribute(ResourceHeldRuleAttribute.class).getResource()).getTransactionManager(TransactionType.XA),
-//                instanceOf(ShardingSphereTransactionManagerFixture.class));
-//    }
-    
-//    @Test
-//    void assertCloseStaleResource() {
-//        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
-//        actual.getAttributes().getAttribute(ResourceHeldRuleAttribute.class).dropResource(SHARDING_DB_1);
-//        assertThat(((ShardingSphereTransactionManagerEngine) actual.getAttributes().getAttribute(ResourceHeldRuleAttribute.class).getResource()).getTransactionManager(TransactionType.XA),
-//                instanceOf(ShardingSphereTransactionManagerFixture.class));
-//    }
+    @Test
+    void assertAddResource() {
+        try (TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()))) {
+            actual.refresh(Collections.singletonMap(SHARDING_DB_2, createAddDatabase()));
+            assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
+        }
+    }
     
     @Test
     void assertClose() {
