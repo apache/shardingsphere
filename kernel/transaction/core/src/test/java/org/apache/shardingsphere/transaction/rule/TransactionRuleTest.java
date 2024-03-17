@@ -80,7 +80,7 @@ class TransactionRuleTest {
     @Test
     void assertCloseStaleResource() {
         TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
-        actual.getAttributes().getAttribute(ResourceHeldRuleAttribute.class).closeStaleResource(SHARDING_DB_1);
+        actual.getAttributes().getAttribute(ResourceHeldRuleAttribute.class).closeResource(SHARDING_DB_1);
         assertTrue(actual.getDatabases().isEmpty());
         assertThat(((ShardingSphereTransactionManagerEngine) actual.getAttributes().getAttribute(ResourceHeldRuleAttribute.class).getResource()).getTransactionManager(TransactionType.XA),
                 instanceOf(ShardingSphereTransactionManagerFixture.class));
@@ -89,7 +89,7 @@ class TransactionRuleTest {
     @Test
     void assertCloseAllStaleResources() {
         TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
-        actual.getAttributes().getAttribute(ResourceHeldRuleAttribute.class).closeStaleResource();
+        actual.getAttributes().getAttribute(ResourceHeldRuleAttribute.class).closeStaleResources();
         assertTrue(actual.getDatabases().isEmpty());
         assertThat(((ShardingSphereTransactionManagerEngine) actual.getAttributes().getAttribute(ResourceHeldRuleAttribute.class).getResource()).getTransactionManager(TransactionType.XA),
                 instanceOf(ShardingSphereTransactionManagerFixture.class));
