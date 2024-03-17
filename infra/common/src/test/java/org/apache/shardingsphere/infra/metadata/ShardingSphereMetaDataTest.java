@@ -89,8 +89,8 @@ class ShardingSphereMetaDataTest {
         assertTrue(metaData.getDatabases().isEmpty());
         Awaitility.await().pollDelay(10L, TimeUnit.MILLISECONDS).until(dataSource::isClosed);
         assertTrue(dataSource.isClosed());
-        verify(databaseResourceHeldRuleAttribute).closeResource("foo_db");
-        verify(globalResourceHeldRuleAttribute).closeResource("foo_db");
+        verify(databaseResourceHeldRuleAttribute).dropResource("foo_db");
+        verify(globalResourceHeldRuleAttribute).dropResource("foo_db");
     }
     
     @Test
