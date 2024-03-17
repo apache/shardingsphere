@@ -59,7 +59,7 @@ class ShardingSphereMetaDataTest {
     
     @Test
     void assertAddDatabase() {
-        ResourceHeldRuleAttribute<?> globalResourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
+        ResourceHeldRuleAttribute globalResourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
         ShardingSphereRule globalRule = mock(ShardingSphereRule.class);
         when(globalRule.getAttributes()).thenReturn(new RuleAttributes(globalResourceHeldRuleAttribute));
         ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new MockedDataSource(), globalRule);
@@ -77,8 +77,8 @@ class ShardingSphereMetaDataTest {
     void assertDropDatabase() {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         MockedDataSource dataSource = new MockedDataSource();
-        ResourceHeldRuleAttribute<?> databaseResourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class, RETURNS_DEEP_STUBS);
-        ResourceHeldRuleAttribute<?> globalResourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
+        ResourceHeldRuleAttribute databaseResourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class, RETURNS_DEEP_STUBS);
+        ResourceHeldRuleAttribute globalResourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
         ShardingSphereRule databaseRule = mock(ShardingSphereRule.class);
         when(databaseRule.getAttributes()).thenReturn(new RuleAttributes(databaseResourceHeldRuleAttribute));
         ShardingSphereRule globalRule = mock(ShardingSphereRule.class);
@@ -95,7 +95,7 @@ class ShardingSphereMetaDataTest {
     
     @Test
     void assertContainsDatabase() {
-        ResourceHeldRuleAttribute<?> globalResourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
+        ResourceHeldRuleAttribute globalResourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
         ShardingSphereRule globalRule = mock(ShardingSphereRule.class);
         when(globalRule.getAttributes()).thenReturn(new RuleAttributes(globalResourceHeldRuleAttribute));
         ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new MockedDataSource(), globalRule);
@@ -107,7 +107,7 @@ class ShardingSphereMetaDataTest {
     
     @Test
     void assertGetDatabase() {
-        ResourceHeldRuleAttribute<?> globalResourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
+        ResourceHeldRuleAttribute globalResourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
         ShardingSphereRule globalRule = mock(ShardingSphereRule.class);
         when(globalRule.getAttributes()).thenReturn(new RuleAttributes(globalResourceHeldRuleAttribute));
         ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new MockedDataSource(), globalRule);

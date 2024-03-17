@@ -22,17 +22,8 @@ import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
 
 /**
  * Resource held rule attribute.
- * 
- * @param <T> type of resource
  */
-public interface ResourceHeldRuleAttribute<T> extends RuleAttribute, AutoCloseable {
-    
-    /**
-     * Get resource.
-     * 
-     * @return got resource
-     */
-    T getResource();
+public interface ResourceHeldRuleAttribute extends RuleAttribute {
     
     /**
      * Add resource.
@@ -48,6 +39,8 @@ public interface ResourceHeldRuleAttribute<T> extends RuleAttribute, AutoCloseab
      */
     void dropResource(String databaseName);
     
-    @Override
+    /**
+     * Close.
+     */
     void close();
 }

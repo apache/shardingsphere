@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Transaction resource held rule attribute.
  */
 @Slf4j
-public final class TransactionResourceHeldRuleAttribute implements ResourceHeldRuleAttribute<ShardingSphereTransactionManagerEngine> {
+public final class TransactionResourceHeldRuleAttribute implements ResourceHeldRuleAttribute {
     
     private final TransactionType defaultType;
     
@@ -48,12 +48,7 @@ public final class TransactionResourceHeldRuleAttribute implements ResourceHeldR
         this.defaultType = defaultType;
         this.providerType = providerType;
         this.databases = databases;
-        resource = new AtomicReference<>(createTransactionManagerEngine(this.databases));
-    }
-    
-    @Override
-    public ShardingSphereTransactionManagerEngine getResource() {
-        return resource.get();
+        resource = new AtomicReference<>(createTransactionManagerEngine(databases));
     }
     
     @Override
