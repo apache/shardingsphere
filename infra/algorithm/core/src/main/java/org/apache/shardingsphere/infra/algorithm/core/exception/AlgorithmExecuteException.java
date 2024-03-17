@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.keygen.snowflake.exception;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
+import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.exception.KeyGenerateSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Snowflake clock move back exception.
+ * Algorithm execute exception.
  */
-public final class SnowflakeClockMoveBackException extends KeyGenerateSQLException {
+public final class AlgorithmExecuteException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = 3076059285632288623L;
+    private static final long serialVersionUID = -9099514178650043282L;
     
-    public SnowflakeClockMoveBackException(final long lastMillis, final long currentMillis) {
-        super(XOpenSQLState.GENERAL_ERROR, 92, "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds.", lastMillis, currentMillis);
+    public AlgorithmExecuteException(final ShardingSphereAlgorithm algorithm, final String reason, final Object... args) {
+        super(XOpenSQLState.GENERAL_ERROR, 13, "Algorithm '%s.%s' execute failed, reason is: %s.",
+                algorithm.getClass().getSuperclass().getSimpleName(), algorithm.getType(), String.format(reason, args));
     }
 }
