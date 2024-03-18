@@ -1245,4 +1245,5 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
     "name":"org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfigurationCustomizer"
   }
-]
+  ]
+  
