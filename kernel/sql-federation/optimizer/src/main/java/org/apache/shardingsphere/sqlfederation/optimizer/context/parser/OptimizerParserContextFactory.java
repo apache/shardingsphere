@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.context.parser;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Optimizer parser context factory.
@@ -40,7 +40,7 @@ public final class OptimizerParserContextFactory {
      * @return created optimizer parser context map
      */
     public static Map<String, OptimizerParserContext> create(final Map<String, ShardingSphereDatabase> databases) {
-        Map<String, OptimizerParserContext> result = new ConcurrentHashMap<>();
+        Map<String, OptimizerParserContext> result = new CaseInsensitiveMap<>();
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             DatabaseType databaseType = entry.getValue().getProtocolType();
             result.put(entry.getKey(), new OptimizerParserContext(databaseType, new OptimizerSQLPropertiesBuilder(databaseType).build()));

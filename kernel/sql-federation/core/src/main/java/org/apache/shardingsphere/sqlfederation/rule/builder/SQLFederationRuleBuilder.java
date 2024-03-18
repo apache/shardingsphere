@@ -34,7 +34,7 @@ public final class SQLFederationRuleBuilder implements GlobalRuleBuilder<SQLFede
     
     @Override
     public GlobalRule build(final SQLFederationRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
-        return new SQLFederationRule(ruleConfig, databases, props);
+        return new SQLFederationRule(ruleConfig, databases);
     }
     
     @Override

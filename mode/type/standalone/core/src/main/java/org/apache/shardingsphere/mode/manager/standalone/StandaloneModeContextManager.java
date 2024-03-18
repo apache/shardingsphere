@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
-import org.apache.shardingsphere.infra.rule.attribute.metadata.MetaDataHeldRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataBasedPersistService;
@@ -75,7 +74,6 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         ShardingSphereSchema schema = new ShardingSphereSchema();
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
         database.addSchema(schemaName, schema);
-        refreshMetaDataHeldRule(database);
         contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService().persist(databaseName, schemaName, schema);
     }
     
@@ -84,7 +82,6 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(alterSchemaPOJO.getDatabaseName());
         putSchemaMetaData(database, alterSchemaPOJO.getSchemaName(), alterSchemaPOJO.getRenameSchemaName(), alterSchemaPOJO.getLogicDataSourceName());
         removeSchemaMetaData(database, alterSchemaPOJO.getSchemaName());
-        refreshMetaDataHeldRule(database);
         DatabaseMetaDataBasedPersistService databaseMetaDataService = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService();
         databaseMetaDataService.persist(alterSchemaPOJO.getDatabaseName(), alterSchemaPOJO.getRenameSchemaName(), database.getSchema(alterSchemaPOJO.getRenameSchemaName()));
         databaseMetaDataService.getViewMetaDataPersistService().persist(alterSchemaPOJO.getDatabaseName(), alterSchemaPOJO.getRenameSchemaName(),
@@ -175,7 +172,6 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
             tobeRemovedSchemas.add(each.toLowerCase());
         }
         removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), tobeRemovedSchemas, tobeRemovedTables);
-        refreshMetaDataHeldRule(database);
     }
     
     @Override
@@ -187,16 +183,11 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         Map<String, ShardingSphereView> views = alterSchemaMetaDataPOJO.getAlteredViews().stream().collect(Collectors.toMap(ShardingSphereView::getName, view -> view));
         addDataNode(database, alterSchemaMetaDataPOJO.getLogicDataSourceName(), schemaName, tables, views);
         removeDataNode(database, schemaName, alterSchemaMetaDataPOJO.getDroppedTables(), alterSchemaMetaDataPOJO.getDroppedViews());
-        refreshMetaDataHeldRule(database);
         DatabaseMetaDataBasedPersistService databaseMetaDataService = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService();
         databaseMetaDataService.getTableMetaDataPersistService().persist(databaseName, schemaName, tables);
         databaseMetaDataService.getViewMetaDataPersistService().persist(databaseName, schemaName, views);
         alterSchemaMetaDataPOJO.getDroppedTables().forEach(each -> databaseMetaDataService.getTableMetaDataPersistService().delete(databaseName, schemaName, each));
         alterSchemaMetaDataPOJO.getDroppedViews().forEach(each -> databaseMetaDataService.getViewMetaDataPersistService().delete(databaseName, schemaName, each));
-    }
-    
-    private void refreshMetaDataHeldRule(final ShardingSphereDatabase database) {
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getAttributes(MetaDataHeldRuleAttribute.class).forEach(each -> each.alterDatabase(database));
     }
     
     @Override

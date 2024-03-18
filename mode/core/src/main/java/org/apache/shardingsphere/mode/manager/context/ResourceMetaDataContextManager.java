@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
-import org.apache.shardingsphere.infra.rule.attribute.metadata.MetaDataHeldRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.util.Collections;
@@ -52,13 +51,7 @@ public final class ResourceMetaDataContextManager {
         }
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.get().getMetaData().getProps());
         metaDataContexts.get().getMetaData().addDatabase(databaseName, protocolType, metaDataContexts.get().getMetaData().getProps());
-        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getAttributes(MetaDataHeldRuleAttribute.class).forEach(each -> each.alterDatabase(database));
         metaDataContexts.set(new MetaDataContexts(metaDataContexts.get().getPersistService(), metaDataContexts.get().getMetaData()));
-    }
-    
-    private void alterMetaDataHeldRule(final ShardingSphereDatabase database) {
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getAttributes(MetaDataHeldRuleAttribute.class).forEach(each -> each.alterDatabase(database));
     }
     
     /**
@@ -71,7 +64,6 @@ public final class ResourceMetaDataContextManager {
             return;
         }
         metaDataContexts.get().getMetaData().dropDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName());
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getAttributes(MetaDataHeldRuleAttribute.class).forEach(each -> each.dropDatabase(databaseName));
     }
     
     /**
@@ -86,7 +78,6 @@ public final class ResourceMetaDataContextManager {
             return;
         }
         database.addSchema(schemaName, new ShardingSphereSchema());
-        alterMetaDataHeldRule(database);
     }
     
     /**
@@ -104,7 +95,6 @@ public final class ResourceMetaDataContextManager {
             return;
         }
         database.dropSchema(schemaName);
-        alterMetaDataHeldRule(database);
     }
     
     /**
@@ -121,7 +111,6 @@ public final class ResourceMetaDataContextManager {
         }
         Optional.ofNullable(toBeDeletedTableName).ifPresent(optional -> dropTable(databaseName, schemaName, optional));
         Optional.ofNullable(toBeDeletedViewName).ifPresent(optional -> dropView(databaseName, schemaName, optional));
-        alterMetaDataHeldRule(metaDataContexts.get().getMetaData().getDatabase(databaseName));
     }
     
     /**
@@ -138,7 +127,6 @@ public final class ResourceMetaDataContextManager {
         }
         Optional.ofNullable(toBeChangedTable).ifPresent(optional -> alterTable(databaseName, schemaName, optional));
         Optional.ofNullable(toBeChangedView).ifPresent(optional -> alterView(databaseName, schemaName, optional));
-        alterMetaDataHeldRule(metaDataContexts.get().getMetaData().getDatabase(databaseName));
     }
     
     private void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
