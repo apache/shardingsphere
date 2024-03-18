@@ -37,7 +37,8 @@ import java.sql.Statement;
 import java.util.Collection;
 
 /**
- * Process list changed subscriber.
+ * TODO replace the old ProcessListChangedSubscriber after meta data refactor completed
+ * New process list changed subscriber.
  */
 public final class ProcessListChangedSubscriber {
     

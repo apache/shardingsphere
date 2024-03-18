@@ -35,7 +35,7 @@ import java.util.PriorityQueue;
 import java.util.Properties;
 
 /**
- * Worker id generator for cluster mode.
+ * Cluster worker id generator for cluster mode.
  */
 @RequiredArgsConstructor
 @Slf4j
