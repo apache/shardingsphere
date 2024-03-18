@@ -15,27 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.attribute.metadata;
+package org.apache.shardingsphere.infra.rule.scope;
 
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Meta data held rule attribute.
+ * Global rule changed type enum.
  */
-public interface MetaDataHeldRuleAttribute extends RuleAttribute {
+@RequiredArgsConstructor
+@Getter
+public enum GlobalRuleChangedType {
     
-    /**
-     * Alter database.
-     * 
-     * @param database database
-     */
-    void alterDatabase(ShardingSphereDatabase database);
-    
-    /**
-     * Drop database.
-     * 
-     * @param databaseName database name
-     */
-    void dropDatabase(String databaseName);
+    DATABASE_CHANGED, SCHEMA_CHANGED
 }

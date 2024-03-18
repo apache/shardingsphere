@@ -31,7 +31,8 @@ public interface GlobalRule extends ShardingSphereRule {
      * Refresh rule when databases changed.
      * 
      * @param databases changed databases
+     * @param changedType changed type
      */
-    default void refresh(final Map<String, ShardingSphereDatabase> databases) {
+    default void refresh(final Map<String, ShardingSphereDatabase> databases, GlobalRuleChangedType changedType) {
     }
 }

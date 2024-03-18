@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRuleChangedType;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -68,7 +69,7 @@ class ShardingSphereMetaDataTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalRule)), configProps);
         metaData.addDatabase("foo_db", databaseType, configProps);
         assertThat(metaData.getDatabases(), is(databases));
-        verify(globalRule).refresh(databases);
+        verify(globalRule).refresh(databases, GlobalRuleChangedType.DATABASE_CHANGED);
     }
     
     @Test
@@ -84,7 +85,7 @@ class ShardingSphereMetaDataTest {
         assertTrue(metaData.getDatabases().isEmpty());
         Awaitility.await().pollDelay(10L, TimeUnit.MILLISECONDS).until(dataSource::isClosed);
         assertTrue(dataSource.isClosed());
-        verify(globalRule).refresh(metaData.getDatabases());
+        verify(globalRule).refresh(metaData.getDatabases(), GlobalRuleChangedType.DATABASE_CHANGED);
     }
     
     @Test

@@ -49,25 +49,6 @@ public final class OptimizerContext {
     }
     
     /**
-     * Put parser context.
-     *
-     * @param databaseName database name
-     * @param parserContext parser context
-     */
-    public void putParserContext(final String databaseName, final OptimizerParserContext parserContext) {
-        parserContexts.put(databaseName, parserContext);
-    }
-    
-    /**
-     * Remove parser context.
-     *
-     * @param databaseName database name
-     */
-    public void removeParserContext(final String databaseName) {
-        parserContexts.remove(databaseName);
-    }
-    
-    /**
      * Get planner context.
      *
      * @param databaseName database name
@@ -75,24 +56,5 @@ public final class OptimizerContext {
      */
     public OptimizerPlannerContext getPlannerContext(final String databaseName) {
         return plannerContexts.get(databaseName);
-    }
-    
-    /**
-     * Put planner context.
-     * 
-     * @param databaseName database name
-     * @param plannerContext planner context
-     */
-    public void putPlannerContext(final String databaseName, final OptimizerPlannerContext plannerContext) {
-        plannerContexts.put(databaseName, plannerContext);
-    }
-    
-    /**
-     * Remove planner context.
-     * 
-     * @param databaseName database name
-     */
-    public void removePlannerContext(final String databaseName) {
-        plannerContexts.remove(databaseName);
     }
 }
