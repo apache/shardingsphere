@@ -19,29 +19,31 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.test.fixture.infra.rule.MockedRule;
+import org.apache.shardingsphere.test.fixture.infra.rule.MockedRuleConfiguration;
 
-public final class FixtureDatabaseRuleCreateExecutor implements DatabaseRuleCreateExecutor<CreateFixtureRuleStatement, FixtureRule, FixtureRuleConfiguration> {
+public final class FixtureDatabaseRuleCreateExecutor implements DatabaseRuleCreateExecutor<CreateFixtureRuleStatement, MockedRule, MockedRuleConfiguration> {
     
     @Override
     public void checkBeforeUpdate(final CreateFixtureRuleStatement sqlStatement) {
     }
     
     @Override
-    public FixtureRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateFixtureRuleStatement sqlStatement) {
-        return new FixtureRuleConfiguration();
+    public MockedRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateFixtureRuleStatement sqlStatement) {
+        return new MockedRuleConfiguration("");
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final FixtureRuleConfiguration currentRuleConfig, final FixtureRuleConfiguration toBeCreatedRuleConfig) {
+    public void updateCurrentRuleConfiguration(final MockedRuleConfiguration currentRuleConfig, final MockedRuleConfiguration toBeCreatedRuleConfig) {
     }
     
     @Override
-    public void setRule(final FixtureRule rule) {
+    public void setRule(final MockedRule rule) {
     }
     
     @Override
-    public Class<FixtureRule> getRuleClass() {
-        return FixtureRule.class;
+    public Class<MockedRule> getRuleClass() {
+        return MockedRule.class;
     }
     
     @Override
