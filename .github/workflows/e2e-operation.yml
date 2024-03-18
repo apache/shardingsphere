@@ -60,12 +60,12 @@ jobs:
       fail-fast: false
       matrix:
         operation: [ transaction, pipeline, showprocesslist ]
-        image: [ { type: "it.docker.mysql.version", version: "mysql:5.7" }, { type: "it.docker.postgresql.version", version: "postgres:12-alpine" }, { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0" } ]
+        image: [ { type: "it.docker.mysql.version", version: "mysql:5.7" }, { type: "it.docker.postgresql.version", version: "postgres:12-alpine" }, { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0,enmotech/opengauss:3.1.0" } ]
         exclude:
           - operation: showprocesslist
             image: { type: "it.docker.postgresql.version", version: "postgres:12-alpine" }
           - operation: showprocesslist
-            image: { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0" }
+            image: { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0,enmotech/opengauss:3.1.0" }
     steps:
       - env:
           changed_operations: ${{ needs.detect-changed-files.outputs.changed_operations }}

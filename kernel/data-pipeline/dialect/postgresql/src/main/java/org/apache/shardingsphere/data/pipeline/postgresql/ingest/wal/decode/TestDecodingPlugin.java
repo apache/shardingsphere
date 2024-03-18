@@ -53,7 +53,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
         AbstractWALEvent result;
         String type = readEventType(data);
         if (type.startsWith("BEGIN")) {
-            result = new BeginTXEvent(Long.parseLong(readNextSegment(data)));
+            result = new BeginTXEvent(Long.parseLong(readNextSegment(data)), null);
         } else if (type.startsWith("COMMIT")) {
             result = new CommitTXEvent(Long.parseLong(readNextSegment(data)), null);
         } else {

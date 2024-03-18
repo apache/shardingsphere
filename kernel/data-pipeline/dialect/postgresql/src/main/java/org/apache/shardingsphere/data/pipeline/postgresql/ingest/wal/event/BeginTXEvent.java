@@ -27,5 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class BeginTXEvent extends AbstractWALEvent {
     
-    private final long xid;
+    private final Long xid;
+    
+    private final Long csn;
 }

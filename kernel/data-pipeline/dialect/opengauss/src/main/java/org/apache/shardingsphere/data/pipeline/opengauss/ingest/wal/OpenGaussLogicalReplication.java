@@ -28,6 +28,7 @@ import org.opengauss.PGProperty;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.LogSequenceNumber;
 import org.opengauss.replication.PGReplicationStream;
+import org.opengauss.replication.fluent.logical.ChainedLogicalStreamBuilder;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -86,17 +87,26 @@ public final class OpenGaussLogicalReplication {
      * @param connection connection
      * @param startPosition start position
      * @param slotName slot name
+     * @param majorVersion version
      * @return replication stream
      * @throws SQLException SQL exception
      */
-    public PGReplicationStream createReplicationStream(final PgConnection connection, final BaseLogSequenceNumber startPosition, final String slotName) throws SQLException {
-        return connection.getReplicationAPI()
+    public PGReplicationStream createReplicationStream(final PgConnection connection, final BaseLogSequenceNumber startPosition, final String slotName,
+                                                       final int majorVersion) throws SQLException {
+        ChainedLogicalStreamBuilder logicalStreamBuilder = connection.getReplicationAPI()
                 .replicationStream()
                 .logical()
                 .withSlotName(slotName)
                 .withSlotOption("include-xids", true)
                 .withSlotOption("skip-empty-xacts", true)
-                .withStartPosition((LogSequenceNumber) startPosition.get())
+                .withStartPosition((LogSequenceNumber) startPosition.get());
+        if (majorVersion < 3) {
+            return logicalStreamBuilder.start();
+        }
+        return logicalStreamBuilder
+                .withSlotOption("parallel-decode-num", 10)
+                .withSlotOption("decode-style", "j")
+                .withSlotOption("sending-batch", 0)
                 .start();
     }
 }
