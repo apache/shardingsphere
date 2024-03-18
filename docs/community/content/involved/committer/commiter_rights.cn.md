@@ -12,4 +12,4 @@ chapter = true
 
 如果您是 Apache ShardingSphere 提交者，但仍未收到免费的 JetBrains 订阅，请使用您的 @apache.org 电子邮件地址[立即获取免费的所有产品包](https://www.jetbrains.com/shop/eform/apache?product=ALL)。
 
-如果您已经获取到了免费的 JetBrains 订阅，但是您的订阅到期，您可以使用您的 @apache.org 电子邮件地址[续订免费的所有产品包](https://www.jetbrains.com/shop/eform/apache?product=ALL)，并且在您的 JetBrains 桌面工具（例如 IntelliJ IDEA） 中点击 `Refresh license list` 刷新订阅。
+如果您已经获取到了免费的 JetBrains 订阅，但是订阅到期，可以使用您的 @apache.org 电子邮件地址[续订免费的所有产品包](https://www.jetbrains.com/shop/eform/apache?product=ALL)，并且在您的 JetBrains 桌面工具（例如 IntelliJ IDEA） 中点击 `Refresh license list` 刷新订阅。
