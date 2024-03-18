@@ -217,34 +217,6 @@ public final class ConfigurationContextManager {
     }
     
     /**
-     * Alter data source units configuration.
-     *
-     * @param databaseName database name
-     * @param propsMap altered data source pool properties map
-     */
-    public synchronized void alterDataSourceUnitsConfiguration(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
-        try {
-            closeStaleRules(databaseName);
-            SwitchingResource switchingResource =
-                    new ResourceSwitchManager().alterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
-            metaDataContexts.get().getMetaData().getDatabases().putAll(renewDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName), switchingResource));
-            // TODO Remove this logic when issue #22887 are finished.
-            MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, false, switchingResource, null);
-            reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> reloadMetaDataContexts.getPersistService().getDatabaseMetaDataService()
-                    .persist(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
-            Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
-                    .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> reloadMetaDataContexts.getPersistService().getShardingSphereDataPersistService()
-                            .persist(databaseName, schemaName, schemaData, metaDataContexts.get().getMetaData().getDatabases())));
-            alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
-            metaDataContexts.set(reloadMetaDataContexts);
-            metaDataContexts.get().getMetaData().getDatabases().putAll(newShardingSphereDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
-            switchingResource.closeStaleDataSources();
-        } catch (final SQLException ex) {
-            log.error("Alter database: {} data source configuration failed", databaseName, ex);
-        }
-    }
-    
-    /**
      * Alter schema meta data.
      *
      * @param databaseName database name
