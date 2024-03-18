@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -39,6 +40,7 @@ import java.util.Map.Entry;
 /**
  * SQL rewrite entry.
  */
+@HighFrequencyInvocation
 public final class SQLRewriteEntry {
     
     private final ShardingSphereDatabase database;

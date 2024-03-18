@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.context;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -39,19 +38,19 @@ class OptimizerContextTest {
     
     @Test
     void assertGetSqlParserRule() {
-        OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()), mock(ConfigurationProperties.class));
+        OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()));
         assertThat(actual.getSqlParserRule(), instanceOf(SQLParserRule.class));
     }
     
     @Test
     void assertGetParserContext() {
-        OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()), mock(ConfigurationProperties.class));
+        OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()));
         assertThat(actual.getParserContext(DefaultDatabase.LOGIC_NAME), instanceOf(OptimizerParserContext.class));
     }
     
     @Test
     void assertGetPlannerContext() {
-        OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()), mock(ConfigurationProperties.class));
+        OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()));
         assertThat(actual.getPlannerContext(DefaultDatabase.LOGIC_NAME), instanceOf(OptimizerPlannerContext.class));
     }
     

@@ -36,5 +36,5 @@ execute
     | rollback
     | grant
     | revoke
-    ) SEMI_?
+    ) SEMI_? EOF
     ;

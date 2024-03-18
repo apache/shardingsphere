@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.route;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -38,6 +39,7 @@ import java.util.Optional;
 /**
  * Readwrite-splitting SQL router.
  */
+@HighFrequencyInvocation
 public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadwriteSplittingRule> {
     
     @Override

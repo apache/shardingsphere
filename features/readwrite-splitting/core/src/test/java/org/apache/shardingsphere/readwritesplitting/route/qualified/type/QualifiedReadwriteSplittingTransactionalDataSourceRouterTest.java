@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.route.qualified.type;
 
-import org.apache.shardingsphere.infra.algorithm.load.balancer.round.robin.RoundRobinLoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.loadbalancer.round.robin.RoundRobinLoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;

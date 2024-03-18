@@ -21,10 +21,8 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.database.core.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.exception.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.rule.attribute.resoure.ResourceHeldRuleAttribute;
 import org.apache.shardingsphere.proxy.backend.connector.BackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
@@ -108,8 +106,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     
     private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
-        ShardingSphereTransactionManager transactionManager = ((ShardingSphereTransactionManagerEngine) transactionRule.getAttributes().getAttribute(ResourceHeldRuleAttribute.class).getResource())
-                .getTransactionManager(transactionType);
+        ShardingSphereTransactionManager transactionManager = transactionRule.getResource().getTransactionManager(transactionType);
         Connection result = isInTransaction(transactionManager) ? transactionManager.getConnection(databaseName, dataSourceName) : dataSource.getConnection();
         if (dataSourceName.contains(".")) {
             String catalog = dataSourceName.split("\\.")[1];

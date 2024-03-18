@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.traffic.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
@@ -55,7 +55,7 @@ public final class TrafficEngine {
         Map<String, InstanceMetaData> instances = instanceContext.getAllClusterInstances(InstanceType.PROXY, strategyRule.get().getLabels());
         if (!instances.isEmpty()) {
             LoadBalanceAlgorithm loadBalancer = strategyRule.get().getLoadBalancer();
-            String instanceId = 1 == instances.size() ? instances.keySet().iterator().next() : loadBalancer.getAvailableTargetName(strategyRule.get().getName(), new ArrayList<>(instances.keySet()));
+            String instanceId = 1 == instances.size() ? instances.keySet().iterator().next() : loadBalancer.getTargetName(strategyRule.get().getName(), new ArrayList<>(instances.keySet()));
             return Optional.of(instanceId);
         }
         return Optional.empty();

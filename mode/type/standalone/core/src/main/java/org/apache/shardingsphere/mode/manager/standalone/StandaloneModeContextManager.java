@@ -22,22 +22,28 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.connection.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
-import org.apache.shardingsphere.infra.rule.attribute.metadata.MetaDataHeldRuleAttribute;
-import org.apache.shardingsphere.infra.rule.attribute.resoure.ResourceHeldRuleAttribute;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRuleChangedType;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
+import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataBasedPersistService;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerAware;
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.builder.RuleConfigurationEventBuilder;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -53,6 +59,8 @@ import java.util.stream.Collectors;
  * Standalone mode context manager.
  */
 public final class StandaloneModeContextManager implements ModeContextManager, ContextManagerAware {
+    
+    private final RuleConfigurationEventBuilder ruleConfigurationEventBuilder = new RuleConfigurationEventBuilder();
     
     private ContextManager contextManager;
     
@@ -73,18 +81,20 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     @Override
     public void createSchema(final String databaseName, final String schemaName) {
         ShardingSphereSchema schema = new ShardingSphereSchema();
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         database.addSchema(schemaName, schema);
-        refreshMetaDataHeldRule(database);
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
         contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService().persist(databaseName, schemaName, schema);
     }
     
     @Override
     public void alterSchema(final AlterSchemaPOJO alterSchemaPOJO) {
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(alterSchemaPOJO.getDatabaseName());
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
+        ShardingSphereDatabase database = metaData.getDatabase(alterSchemaPOJO.getDatabaseName());
         putSchemaMetaData(database, alterSchemaPOJO.getSchemaName(), alterSchemaPOJO.getRenameSchemaName(), alterSchemaPOJO.getLogicDataSourceName());
         removeSchemaMetaData(database, alterSchemaPOJO.getSchemaName());
-        refreshMetaDataHeldRule(database);
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
         DatabaseMetaDataBasedPersistService databaseMetaDataService = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService();
         databaseMetaDataService.persist(alterSchemaPOJO.getDatabaseName(), alterSchemaPOJO.getRenameSchemaName(), database.getSchema(alterSchemaPOJO.getRenameSchemaName()));
         databaseMetaDataService.getViewMetaDataPersistService().persist(alterSchemaPOJO.getDatabaseName(), alterSchemaPOJO.getRenameSchemaName(),
@@ -125,7 +135,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
                                     final Map<String, ShardingSphereTable> toBeAddedTables, final Map<String, ShardingSphereView> toBeAddedViews) {
         for (Entry<String, ShardingSphereView> entry : toBeAddedViews.entrySet()) {
             if (!Strings.isNullOrEmpty(logicDataSourceName) && TableRefreshUtils.isSingleTable(entry.getKey(), database)) {
-                database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, entry.getKey()));
+                database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceName, schemaName, entry.getKey()));
             }
             database.getSchema(schemaName).putTable(entry.getKey(), toBeAddedTables.get(entry.getKey().toLowerCase()));
             database.getSchema(schemaName).putView(entry.getKey(), entry.getValue());
@@ -135,7 +145,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     private void removeSchemaMetaData(final ShardingSphereDatabase database, final String schemaName) {
         ShardingSphereSchema schema = new ShardingSphereSchema(database.getSchema(schemaName).getTables(), database.getSchema(schemaName).getViews());
         database.dropSchema(schemaName);
-        removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), Collections.singleton(schemaName), schema.getAllTableNames());
+        removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), Collections.singletonList(schemaName), schema.getAllTableNames());
     }
     
     private void removeDataNode(final Collection<MutableDataNodeRuleAttribute> ruleAttributes, final Collection<String> schemaNames, final Collection<String> tobeRemovedTables) {
@@ -167,7 +177,8 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     public void dropSchema(final String databaseName, final Collection<String> schemaNames) {
         Collection<String> tobeRemovedTables = new LinkedHashSet<>();
         Collection<String> tobeRemovedSchemas = new LinkedHashSet<>();
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         for (String each : schemaNames) {
             ShardingSphereSchema schema = new ShardingSphereSchema(database.getSchema(each).getTables(), database.getSchema(each).getViews());
             database.dropSchema(each);
@@ -175,19 +186,20 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
             tobeRemovedSchemas.add(each.toLowerCase());
         }
         removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), tobeRemovedSchemas, tobeRemovedTables);
-        refreshMetaDataHeldRule(database);
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
     @Override
     public void alterSchemaMetaData(final AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO) {
         String databaseName = alterSchemaMetaDataPOJO.getDatabaseName();
         String schemaName = alterSchemaMetaDataPOJO.getSchemaName();
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         Map<String, ShardingSphereTable> tables = alterSchemaMetaDataPOJO.getAlteredTables().stream().collect(Collectors.toMap(ShardingSphereTable::getName, table -> table));
         Map<String, ShardingSphereView> views = alterSchemaMetaDataPOJO.getAlteredViews().stream().collect(Collectors.toMap(ShardingSphereView::getName, view -> view));
         addDataNode(database, alterSchemaMetaDataPOJO.getLogicDataSourceName(), schemaName, tables, views);
         removeDataNode(database, schemaName, alterSchemaMetaDataPOJO.getDroppedTables(), alterSchemaMetaDataPOJO.getDroppedViews());
-        refreshMetaDataHeldRule(database);
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
         DatabaseMetaDataBasedPersistService databaseMetaDataService = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService();
         databaseMetaDataService.getTableMetaDataPersistService().persist(databaseName, schemaName, tables);
         databaseMetaDataService.getViewMetaDataPersistService().persist(databaseName, schemaName, views);
@@ -195,17 +207,13 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         alterSchemaMetaDataPOJO.getDroppedViews().forEach(each -> databaseMetaDataService.getViewMetaDataPersistService().delete(databaseName, schemaName, each));
     }
     
-    private void refreshMetaDataHeldRule(final ShardingSphereDatabase database) {
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getAttributes(MetaDataHeldRuleAttribute.class).forEach(each -> each.alterDatabase(database));
-    }
-    
     @Override
     public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) throws SQLException {
         SwitchingResource switchingResource =
-                new ResourceSwitchManager().create(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisteredProps);
+                new ResourceSwitchManager().registerStorageUnit(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisteredProps);
         contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.getConfigurationContextManager().createChangedDatabases(databaseName, false, switchingResource, null));
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getAttributes(ResourceHeldRuleAttribute.class)
-                .forEach(each -> each.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName)));
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()
+                .forEach(each -> ((GlobalRule) each).refresh(contextManager.getMetaDataContexts().getMetaData().getDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
         contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getSchemas()
                 .forEach((schemaName, schema) -> contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService()
                         .persist(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
@@ -217,10 +225,10 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     @Override
     public void alterStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException {
         SwitchingResource switchingResource =
-                new ResourceSwitchManager().create(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeUpdatedProps);
+                new ResourceSwitchManager().alterStorageUnit(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeUpdatedProps);
         contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.getConfigurationContextManager().createChangedDatabases(databaseName, true, switchingResource, null));
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getAttributes(ResourceHeldRuleAttribute.class)
-                .forEach(each -> each.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName)));
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()
+                .forEach(each -> ((GlobalRule) each).refresh(contextManager.getMetaDataContexts().getMetaData().getDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
         contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().append(
                 contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), toBeUpdatedProps);
         switchingResource.closeStaleDataSources();
@@ -229,11 +237,8 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     
     @Override
     public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) throws SQLException {
-        Map<String, DataSourcePoolProperties> propsMap = contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService()
-                .load(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName());
-        Map<String, DataSourcePoolProperties> toBeDeletedPropsMap = getToBeDeletedDataSourcePoolPropertiesMap(propsMap, toBeDroppedStorageUnitNames);
         SwitchingResource switchingResource =
-                new ResourceSwitchManager().createByDropResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeDeletedPropsMap);
+                new ResourceSwitchManager().unregisterStorageUnit(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeDroppedStorageUnitNames);
         contextManager.getMetaDataContexts().getMetaData().getDatabases()
                 .putAll(contextManager.getConfigurationContextManager().renewDatabase(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName), switchingResource));
         MetaDataContexts reloadMetaDataContexts = contextManager.getConfigurationContextManager().createMetaDataContexts(databaseName, false, switchingResource, null);
@@ -241,19 +246,8 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
                 contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         contextManager.deletedSchemaNames(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         contextManager.renewMetaDataContexts(reloadMetaDataContexts);
-        Map<String, DataSourcePoolProperties> toBeReversedPropsMap = getToBeReversedDataSourcePoolPropertiesMap(propsMap, toBeDroppedStorageUnitNames);
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().persist(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(),
-                toBeReversedPropsMap);
         switchingResource.closeStaleDataSources();
         clearServiceCache();
-    }
-    
-    private Map<String, DataSourcePoolProperties> getToBeDeletedDataSourcePoolPropertiesMap(final Map<String, DataSourcePoolProperties> propsMap, final Collection<String> toBeDroppedResourceNames) {
-        return propsMap.entrySet().stream().filter(entry -> toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-    }
-    
-    private Map<String, DataSourcePoolProperties> getToBeReversedDataSourcePoolPropertiesMap(final Map<String, DataSourcePoolProperties> propsMap, final Collection<String> toBeDroppedResourceNames) {
-        return propsMap.entrySet().stream().filter(entry -> !toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
     @Override
@@ -265,6 +259,45 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     }
     
     @Override
+    public Collection<MetaDataVersion> alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
+        if (null != toBeAlteredRuleConfig) {
+            sendDatabaseRuleChangedEvent(databaseName,
+                    contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService()
+                            .persistConfig(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), Collections.singletonList(toBeAlteredRuleConfig)));
+            clearServiceCache();
+        }
+        return Collections.emptyList();
+    }
+    
+    private void sendDatabaseRuleChangedEvent(final String databaseName, final Collection<MetaDataVersion> metaDataVersions) {
+        for (MetaDataVersion each : metaDataVersions) {
+            sendDatabaseRuleChangedEvent(databaseName, each);
+        }
+    }
+    
+    private void sendDatabaseRuleChangedEvent(final String databaseName, final MetaDataVersion metaDataVersion) {
+        for (String each : metaDataVersion.getActiveVersionKeys()) {
+            ruleConfigurationEventBuilder.build(databaseName, new DataChangedEvent(each, metaDataVersion.getCurrentActiveVersion(), Type.UPDATED))
+                    .ifPresent(optional -> contextManager.getInstanceContext().getEventBusContext().post(optional));
+        }
+    }
+    
+    @Override
+    public void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
+        if (null != toBeRemovedRuleConfig) {
+            sendDatabaseRuleChangedEvent(databaseName,
+                    contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().deleteConfig(databaseName, Collections.singleton(toBeRemovedRuleConfig)));
+            clearServiceCache();
+        }
+    }
+    
+    @Override
+    public void removeRuleConfiguration(final String databaseName, final String ruleName) {
+        contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().delete(databaseName, ruleName);
+        clearServiceCache();
+    }
+    
+    @Override
     public void alterGlobalRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs) {
         contextManager.getConfigurationContextManager().alterGlobalRuleConfiguration(globalRuleConfigs);
         contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().persist(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations());
@@ -272,10 +305,19 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     }
     
     @Override
+    public void alterGlobalRuleConfiguration(final RuleConfiguration toBeAlteredRuleConfig) {
+        contextManager.getConfigurationContextManager().alterGlobalRuleConfiguration(toBeAlteredRuleConfig);
+        GlobalPersistService<Collection<RuleConfiguration>> globalRuleService = contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService();
+        contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(globalRuleService.persistConfig(Collections.singleton(toBeAlteredRuleConfig)));
+        clearServiceCache();
+    }
+    
+    @Override
     public void alterProperties(final Properties props) {
         contextManager.getConfigurationContextManager().alterProperties(props);
         if (null != contextManager.getMetaDataContexts().getPersistService().getPropsService()) {
-            contextManager.getMetaDataContexts().getPersistService().getPropsService().persist(props);
+            Collection<MetaDataVersion> versions = contextManager.getMetaDataContexts().getPersistService().getPropsService().persistConfig(props);
+            contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(versions);
         }
         clearServiceCache();
     }

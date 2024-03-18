@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.single.route;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -40,6 +41,7 @@ import java.util.LinkedList;
 /**
  * Single SQL router.
  */
+@HighFrequencyInvocation
 public final class SingleSQLRouter implements SQLRouter<SingleRule> {
     
     @Override

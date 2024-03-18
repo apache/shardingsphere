@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.route.engine.impl;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -43,6 +44,7 @@ import java.util.Optional;
 /**
  * Partial SQL route executor.
  */
+@HighFrequencyInvocation
 public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     
     private final ConfigurationProperties props;

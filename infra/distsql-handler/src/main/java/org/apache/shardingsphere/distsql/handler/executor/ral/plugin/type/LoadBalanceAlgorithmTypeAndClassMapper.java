@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
 
 import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
 
 /**
  * Load balance algorithm type and class mapper.

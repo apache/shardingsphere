@@ -18,21 +18,29 @@
 package org.apache.shardingsphere.transaction.rule;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRuleChangedType;
+import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
+import javax.sql.DataSource;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Transaction rule.
  */
 @Getter
-public final class TransactionRule implements GlobalRule {
+@Slf4j
+public final class TransactionRule implements GlobalRule, AutoCloseable {
     
     private final TransactionRuleConfiguration configuration;
     
@@ -42,7 +50,7 @@ public final class TransactionRule implements GlobalRule {
     
     private final Properties props;
     
-    private final Map<String, ShardingSphereDatabase> databases;
+    private final AtomicReference<ShardingSphereTransactionManagerEngine> resource;
     
     private final RuleAttributes attributes;
     
@@ -51,7 +59,65 @@ public final class TransactionRule implements GlobalRule {
         defaultType = TransactionType.valueOf(ruleConfig.getDefaultType().toUpperCase());
         providerType = ruleConfig.getProviderType();
         props = ruleConfig.getProps();
-        this.databases = new ConcurrentHashMap<>(databases);
-        attributes = new RuleAttributes(new TransactionResourceHeldRuleAttribute(defaultType, providerType, this.databases));
+        resource = new AtomicReference<>(createTransactionManagerEngine(databases));
+        attributes = new RuleAttributes();
+    }
+    
+    private synchronized ShardingSphereTransactionManagerEngine createTransactionManagerEngine(final Map<String, ShardingSphereDatabase> databases) {
+        if (databases.isEmpty()) {
+            return new ShardingSphereTransactionManagerEngine(defaultType);
+        }
+        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(databases.size(), 1F);
+        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(databases.size(), 1F);
+        for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
+            ShardingSphereDatabase database = entry.getValue();
+            database.getResourceMetaData().getStorageUnits().forEach((key, value) -> {
+                databaseTypes.put(database.getName() + "." + key, value.getStorageType());
+                dataSourceMap.put(database.getName() + "." + key, value.getDataSource());
+            });
+        }
+        ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine(defaultType);
+        result.init(databaseTypes, dataSourceMap, providerType);
+        return result;
+    }
+    
+    /**
+     * Get resource.
+     * 
+     * @return got resource
+     */
+    public ShardingSphereTransactionManagerEngine getResource() {
+        return resource.get();
+    }
+    
+    @Override
+    public void refresh(final Map<String, ShardingSphereDatabase> databases, final GlobalRuleChangedType changedType) {
+        if (GlobalRuleChangedType.DATABASE_CHANGED != changedType) {
+            return;
+        }
+        ShardingSphereTransactionManagerEngine previousEngine = resource.get();
+        if (null != previousEngine) {
+            close(previousEngine);
+        }
+        resource.set(createTransactionManagerEngine(databases));
+    }
+    
+    @Override
+    public void close() {
+        ShardingSphereTransactionManagerEngine engine = resource.get();
+        if (null != engine) {
+            close(engine);
+            resource.set(new ShardingSphereTransactionManagerEngine(defaultType));
+        }
+    }
+    
+    private void close(final ShardingSphereTransactionManagerEngine engine) {
+        try {
+            engine.close();
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            log.error("Close transaction engine failed.", ex);
+        }
     }
 }

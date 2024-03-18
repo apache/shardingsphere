@@ -793,7 +793,7 @@ specialFunction
     ;
 
 wmConcatFunction
-    : WM_CONCAT LP_ expr RP_ overClause?
+    : (owner DOT_)? WM_CONCAT LP_ expr RP_ overClause?
     ;
 
 approxRank

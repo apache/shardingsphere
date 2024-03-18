@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule;
 
-import org.apache.shardingsphere.infra.algorithm.load.balancer.random.RandomLoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.loadbalancer.random.RandomLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.junit.jupiter.api.Test;

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
 import com.google.common.collect.Range;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtils;
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorith
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
-import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 import org.apache.shardingsphere.sharding.exception.data.InvalidDatetimeFormatException;
 import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
@@ -66,7 +66,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     private LocalDateTime getDateTime(final Properties props) {
         String value = props.getProperty(DATE_TIME_LOWER_KEY);
-        ShardingSpherePreconditions.checkNotNull(value, () -> new ShardingAlgorithmInitializationException(getType(), String.format("%s cannot be null.", DATE_TIME_LOWER_KEY)));
+        ShardingSpherePreconditions.checkNotNull(value, () -> new AlgorithmInitializationException(this, String.format("%s cannot be null.", DATE_TIME_LOWER_KEY)));
         try {
             return LocalDateTime.parse(value, DateTimeFormatterFactory.getStandardFormatter());
         } catch (final DateTimeParseException ignored) {
@@ -75,8 +75,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     }
     
     private long getShardingSeconds(final Properties props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(SHARDING_SECONDS_KEY),
-                () -> new ShardingAlgorithmInitializationException(getType(), String.format("%s cannot be null.", SHARDING_SECONDS_KEY)));
+        ShardingSpherePreconditions.checkState(props.containsKey(SHARDING_SECONDS_KEY), () -> new AlgorithmInitializationException(this, String.format("%s cannot be null.", SHARDING_SECONDS_KEY)));
         return Long.parseLong(props.getProperty(SHARDING_SECONDS_KEY));
     }
     

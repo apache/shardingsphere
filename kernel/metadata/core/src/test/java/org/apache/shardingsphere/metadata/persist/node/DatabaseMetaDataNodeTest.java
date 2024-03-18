@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.metadata.persist.node;
 
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -29,120 +28,167 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DatabaseMetaDataNodeTest {
     
     @Test
-    void assertGetRulePath() {
-        assertThat(DatabaseMetaDataNode.getRulePath(DefaultDatabase.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/rules"));
+    void assertIsDataSourcesNode() {
+        assertTrue(DatabaseMetaDataNode.isDataSourcesNode("/metadata/logic_db/data_sources/foo_ds"));
+    }
+    
+    @Test
+    void assertGetDataSourceNameByDataSourceUnitNode() {
+        Optional<String> actual = DatabaseMetaDataNode.getDataSourceNameByDataSourceUnitNode("/metadata/logic_db/data_sources/units/foo_ds/versions/0");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_ds"));
+    }
+    
+    @Test
+    void assertIsDataSourceUnitActiveVersionNode() {
+        assertTrue(DatabaseMetaDataNode.isDataSourceUnitActiveVersionNode("/metadata/logic_db/data_sources/units/foo_ds/active_version"));
+    }
+    
+    @Test
+    void assertIsDataSourceNodeActiveVersionNode() {
+        assertTrue(DatabaseMetaDataNode.isDataSourceNodeActiveVersionNode("/metadata/logic_db/data_sources/nodes/foo_ds/active_version"));
     }
     
     @Test
     void assertGetDatabaseName() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseName("/metadata/logic_db");
-        assertTrue(actualSchemaName.isPresent());
-        assertThat(actualSchemaName.get(), is("logic_db"));
+        Optional<String> actual = DatabaseMetaDataNode.getDatabaseName("/metadata/foo_db");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_db"));
     }
     
     @Test
-    void assertGetDatabaseNameWithLine() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath("/metadata/logic-db-test/schemas/logic-db-schema");
-        assertTrue(actualSchemaName.isPresent());
-        assertThat(actualSchemaName.get(), is("logic-db-test"));
-    }
-    
-    @Test
-    void assertGetDatabaseNamePath() {
-        assertThat(DatabaseMetaDataNode.getDatabaseNamePath("sharding_db"), is("/metadata/sharding_db"));
-    }
-    
-    @Test
-    void assertGetMetaDataTablesPath() {
-        assertThat(DatabaseMetaDataNode.getMetaDataTablesPath("sharding_db", "sharding_schema"), is("/metadata/sharding_db/schemas/sharding_schema/tables"));
-    }
-    
-    @Test
-    void assertGetMetaDataViewsPath() {
-        assertThat(DatabaseMetaDataNode.getMetaDataViewsPath("sharding_db", "sharding_schema"), is("/metadata/sharding_db/schemas/sharding_schema/views"));
-    }
-    
-    @Test
-    void assertGetDatabaseNameByDatabasePath() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath("/metadata/logic_db/schemas/logic_schema");
-        assertTrue(actualSchemaName.isPresent());
-        assertThat(actualSchemaName.get(), is("logic_db"));
-    }
-    
-    @Test
-    void assertGetTableName() {
-        Optional<String> actualTableName = DatabaseMetaDataNode.getTableName("/metadata/logic_db/schemas/logic_schema/tables/t_order");
-        assertTrue(actualTableName.isPresent());
-        assertThat(actualTableName.get(), is("t_order"));
-    }
-    
-    @Test
-    void assertGetViewName() {
-        Optional<String> actualViewName = DatabaseMetaDataNode.getViewName("/metadata/logic_db/schemas/logic_schema/views/foo_view");
-        assertTrue(actualViewName.isPresent());
-        assertThat(actualViewName.get(), is("foo_view"));
+    void assertGetDatabaseNameBySchemaNode() {
+        Optional<String> actual = DatabaseMetaDataNode.getDatabaseNameBySchemaNode("/metadata/foo_db/schemas/foo_schema");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_db"));
     }
     
     @Test
     void assertGetSchemaName() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getSchemaName("/metadata/logic_db/schemas/logic_schema");
-        assertTrue(actualSchemaName.isPresent());
-        assertThat(actualSchemaName.get(), is("logic_schema"));
+        Optional<String> actual = DatabaseMetaDataNode.getSchemaName("/metadata/foo_db/schemas/foo_schema");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_schema"));
     }
     
     @Test
-    void assertGetVersionByDataSourceUnitsPath() {
-        Optional<String> actualVersion = DatabaseMetaDataNode.getVersionByDataSourceUnitsPath("/metadata/logic_db/versions/0/data_sources/units");
-        assertTrue(actualVersion.isPresent());
-        assertThat(actualVersion.get(), is("0"));
+    void assertGetSchemaNameByTableNode() {
+        Optional<String> actual = DatabaseMetaDataNode.getSchemaNameByTableNode("/metadata/foo_db/schemas/foo_schema/tables");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_schema"));
     }
     
     @Test
-    void assertGetVersionByDataSourceNodesPath() {
-        Optional<String> actualVersion = DatabaseMetaDataNode.getVersionByDataSourceNodesPath("/metadata/logic_db/versions/0/data_sources/nodes");
-        assertTrue(actualVersion.isPresent());
-        assertThat(actualVersion.get(), is("0"));
+    void assertGetTableName() {
+        Optional<String> actual = DatabaseMetaDataNode.getTableName("/metadata/foo_db/schemas/foo_schema/tables/foo_table/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_table"));
     }
     
     @Test
-    void assertGetActiveVersionPath() {
-        assertThat(DatabaseMetaDataNode.getActiveVersionPath("logic_db"), is("/metadata/logic_db/active_version"));
+    void assertIsTableActiveVersionNode() {
+        assertTrue(DatabaseMetaDataNode.isTableActiveVersionNode("/metadata/foo_db/schemas/foo_schema/tables/foo_table/active_version"));
     }
     
     @Test
-    void assertGetVersionByRulesPath() {
-        Optional<String> actualVersion = DatabaseMetaDataNode.getVersionByRulesPath("/metadata/logic_db/versions/0/rules");
-        assertTrue(actualVersion.isPresent());
-        assertThat(actualVersion.get(), is("0"));
+    void assertGetViewName() {
+        Optional<String> actual = DatabaseMetaDataNode.getViewName("/metadata/foo_db/schemas/foo_schema/views/foo_view");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_view"));
     }
     
     @Test
-    void assertGetDatabaseVersionPath() {
-        assertThat(DatabaseMetaDataNode.getDatabaseVersionPath("logic_db", "0"), is("/metadata/logic_db/versions/0"));
+    void assertIsViewActiveVersionNode() {
+        assertTrue(DatabaseMetaDataNode.isViewActiveVersionNode("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
     }
     
     @Test
-    void assertGetTableMetaDataPath() {
-        assertThat(DatabaseMetaDataNode.getTableMetaDataPath("logic_db", "logic_schema", "order"), is("/metadata/logic_db/schemas/logic_schema/tables/order"));
+    void assertGetVersionNodeByActiveVersionPath() {
+        assertThat(DatabaseMetaDataNode.getVersionNodeByActiveVersionPath("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "0"),
+                is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
     }
     
     @Test
-    void assertGetViewMetaDataPath() {
-        assertThat(DatabaseMetaDataNode.getViewMetaDataPath("logic_db", "logic_schema", "order_view"), is("/metadata/logic_db/schemas/logic_schema/views/order_view"));
+    void assertGetMetaDataDataSourcesNode() {
+        assertThat(DatabaseMetaDataNode.getDataSourceUnitsNode("foo_db"), is("/metadata/foo_db/data_sources/units"));
     }
     
     @Test
-    void assertGetMetaDataNodePath() {
-        assertThat(DatabaseMetaDataNode.getMetaDataNodePath(), is("/metadata"));
+    void assertGetMetaDataDataSourceNode() {
+        assertThat(DatabaseMetaDataNode.getDataSourceUnitNode("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds"));
     }
     
     @Test
-    void assertGetMetaDataDataSourceNodesPath() {
-        assertThat(DatabaseMetaDataNode.getMetaDataDataSourceNodesPath(DefaultDatabase.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/data_sources/nodes"));
+    void assertGetDataSourceUnitNodeWithVersion() {
+        assertThat(DatabaseMetaDataNode.getDataSourceUnitNodeWithVersion("foo_db", "foo_ds", "0"), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
     }
     
     @Test
-    void assertGetMetaDataDataSourceUnitsPath() {
-        assertThat(DatabaseMetaDataNode.getMetaDataDataSourceUnitsPath(DefaultDatabase.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/data_sources/units"));
+    void assertGetDataSourceUnitVersionsNode() {
+        assertThat(DatabaseMetaDataNode.getDataSourceUnitVersionsNode("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds/versions"));
+    }
+    
+    @Test
+    void assertGetDataSourceUnitActiveVersionNode() {
+        assertThat(DatabaseMetaDataNode.getDataSourceUnitActiveVersionNode("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds/active_version"));
+    }
+    
+    @Test
+    void assertGetDatabaseRuleActiveVersionNode() {
+        assertThat(DatabaseMetaDataNode.getDatabaseRuleActiveVersionNode("foo_db", "foo_rule", "foo_tables"), is("/metadata/foo_db/rules/foo_rule/foo_tables/active_version"));
+    }
+    
+    @Test
+    void assertGetDatabaseRuleVersionsNode() {
+        assertThat(DatabaseMetaDataNode.getDatabaseRuleVersionsNode("foo_db", "sharding", "foo_key"), is("/metadata/foo_db/rules/sharding/foo_key/versions"));
+    }
+    
+    @Test
+    void assertGetDatabaseRuleVersionNode() {
+        assertThat(DatabaseMetaDataNode.getDatabaseRuleVersionNode("foo_db", "foo_rule", "foo_tables", "1"), is("/metadata/foo_db/rules/foo_rule/foo_tables/versions/1"));
+    }
+    
+    @Test
+    void assertGetTableActiveVersionNode() {
+        assertThat(DatabaseMetaDataNode.getTableActiveVersionNode("foo_db", "foo_schema", "foo_table"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table/active_version"));
+    }
+    
+    @Test
+    void assertGetTableVersionsNode() {
+        assertThat(DatabaseMetaDataNode.getTableVersionsNode("foo_db", "foo_schema", "foo_table"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table/versions"));
+    }
+    
+    @Test
+    void assertGetTableVersionNode() {
+        assertThat(DatabaseMetaDataNode.getTableVersionNode("foo_db", "foo_schema", "foo_table", "0"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table/versions/0"));
+    }
+    
+    @Test
+    void assertGetTableNode() {
+        assertThat(DatabaseMetaDataNode.getTableNode("foo_db", "foo_schema", "foo_table"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table"));
+    }
+    
+    @Test
+    void assertGetViewActiveVersionNode() {
+        assertThat(DatabaseMetaDataNode.getViewActiveVersionNode("foo_db", "foo_schema", "foo_view"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
+    }
+    
+    @Test
+    void assertGetViewVersionsNode() {
+        assertThat(DatabaseMetaDataNode.getViewVersionsNode("foo_db", "foo_schema", "foo_view"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions"));
+    }
+    
+    @Test
+    void assertGetViewVersionNode() {
+        assertThat(DatabaseMetaDataNode.getViewVersionNode("foo_db", "foo_schema", "foo_view", "0"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
+    }
+    
+    @Test
+    void assertGetViewNode() {
+        assertThat(DatabaseMetaDataNode.getViewNode("foo_db", "foo_schema", "foo_view"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
+    }
+    
+    @Test
+    void assertGetDataSourceNodeVersionsNode() {
+        assertThat(DatabaseMetaDataNode.getDataSourceNodeVersionsNode("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions"));
     }
 }

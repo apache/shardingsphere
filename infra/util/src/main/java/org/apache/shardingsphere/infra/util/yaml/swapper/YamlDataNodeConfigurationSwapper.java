@@ -23,8 +23,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * TODO Rename YamlConfigurationSwapper when metadata structure adjustment completed. #25485
- * YAML configuration swapper.
+ * YAML data node configuration swapper.
  *
  * @param <T> type of swapped object
  */

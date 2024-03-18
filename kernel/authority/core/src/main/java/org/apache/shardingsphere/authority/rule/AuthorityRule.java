@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
@@ -67,6 +68,7 @@ public final class AuthorityRule implements GlobalRule {
      * @param grantee grantee user
      * @return found user
      */
+    @HighFrequencyInvocation
     public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
         return configuration.getUsers().stream().filter(each -> each.getGrantee().accept(grantee)).findFirst();
     }
@@ -77,6 +79,7 @@ public final class AuthorityRule implements GlobalRule {
      * @param grantee grantee
      * @return found privileges
      */
+    @HighFrequencyInvocation
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
         return privileges.keySet().stream().filter(each -> each.accept(grantee)).findFirst().map(privileges::get);
     }

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.algorithm.keygen.snowflake;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmExecuteException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.exception.KeyGenerateAlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.exception.SnowflakeClockMoveBackException;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.fixture.FixedTimeService;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.fixture.WorkerIdGeneratorFixture;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
@@ -166,7 +166,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
         setLastMillis(algorithm, timeService.getCurrentMillis() + 2);
-        assertThrows(SnowflakeClockMoveBackException.class, () -> batchGenerate(algorithm));
+        assertThrows(AlgorithmExecuteException.class, () -> batchGenerate(algorithm));
     }
     
     private void batchGenerate(final KeyGenerateAlgorithm algorithm) {
@@ -209,7 +209,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test
     void assertSetMaxVibrationOffsetFailureWhenNegative() {
-        assertThrows(KeyGenerateAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "-1")))
                         .generateKeys(mock(AlgorithmSQLContext.class), 1));
     }
@@ -224,7 +224,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test
     void assertSetMaxVibrationOffsetFailureWhenOutOfRange() {
-        assertThrows(KeyGenerateAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "4096")))
                         .generateKeys(mock(AlgorithmSQLContext.class), 1));
     }
@@ -237,7 +237,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test
     void assertMaxTolerateTimeDifferenceMillisecondsWhenNegative() {
-        assertThrows(KeyGenerateAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-tolerate-time-difference-milliseconds", "-1")))
                         .generateKeys(mock(AlgorithmSQLContext.class), 1));
     }

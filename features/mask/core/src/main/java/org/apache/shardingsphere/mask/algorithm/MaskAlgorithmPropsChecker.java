@@ -19,8 +19,9 @@ package org.apache.shardingsphere.mask.algorithm;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
+import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Properties;
 
@@ -35,12 +36,12 @@ public final class MaskAlgorithmPropsChecker {
      * 
      * @param props props
      * @param singleCharConfigKey single char config key
-     * @param maskType mask type
+     * @param algorithm mask algorithm
      */
-    public static void checkSingleCharConfig(final Properties props, final String singleCharConfigKey, final String maskType) {
-        checkRequiredPropertyConfig(props, singleCharConfigKey, maskType);
+    public static void checkSingleCharConfiguration(final Properties props, final String singleCharConfigKey, final MaskAlgorithm<?, ?> algorithm) {
+        checkRequiredPropertyConfiguration(props, singleCharConfigKey, algorithm);
         ShardingSpherePreconditions.checkState(1 == props.getProperty(singleCharConfigKey).length(),
-                () -> new MaskAlgorithmInitializationException(maskType, String.format("%s's length must be one", singleCharConfigKey)));
+                () -> new AlgorithmInitializationException(algorithm, "%s's length must be one", singleCharConfigKey));
     }
     
     /**
@@ -48,35 +49,33 @@ public final class MaskAlgorithmPropsChecker {
      * 
      * @param props props
      * @param atLeastOneCharConfigKey at least one char config key
-     * @param maskType mask type
+     * @param algorithm mask algorithm
      */
-    public static void checkAtLeastOneCharConfig(final Properties props, final String atLeastOneCharConfigKey, final String maskType) {
-        checkRequiredPropertyConfig(props, atLeastOneCharConfigKey, maskType);
+    public static void checkAtLeastOneCharConfiguration(final Properties props, final String atLeastOneCharConfigKey, final MaskAlgorithm<?, ?> algorithm) {
+        checkRequiredPropertyConfiguration(props, atLeastOneCharConfigKey, algorithm);
         ShardingSpherePreconditions.checkState(props.getProperty(atLeastOneCharConfigKey).length() > 0,
-                () -> new MaskAlgorithmInitializationException(maskType, String.format("%s's length must be at least one", atLeastOneCharConfigKey)));
+                () -> new AlgorithmInitializationException(algorithm, "%s's length must be at least one", atLeastOneCharConfigKey));
     }
     
     /**
-     * Check required property config.
+     * Check required property configuration.
      * 
      * @param props props
      * @param positiveIntegerTypeConfigKey positive integer type config key
-     * @param maskType mask type
-     * @throws MaskAlgorithmInitializationException mask algorithm initialization exception
+     * @param algorithm mask algorithm
+     * @throws AlgorithmInitializationException algorithm initialization exception
      */
-    public static void checkPositiveIntegerConfig(final Properties props, final String positiveIntegerTypeConfigKey, final String maskType) {
-        checkRequiredPropertyConfig(props, positiveIntegerTypeConfigKey, maskType);
+    public static void checkPositiveIntegerConfiguration(final Properties props, final String positiveIntegerTypeConfigKey, final MaskAlgorithm<?, ?> algorithm) {
+        checkRequiredPropertyConfiguration(props, positiveIntegerTypeConfigKey, algorithm);
         try {
             int integerValue = Integer.parseInt(props.getProperty(positiveIntegerTypeConfigKey));
-            ShardingSpherePreconditions.checkState(integerValue > 0,
-                    () -> new MaskAlgorithmInitializationException(maskType, String.format("%s must be a positive integer.", positiveIntegerTypeConfigKey)));
+            ShardingSpherePreconditions.checkState(integerValue > 0, () -> new AlgorithmInitializationException(algorithm, "%s must be a positive integer.", positiveIntegerTypeConfigKey));
         } catch (final NumberFormatException ex) {
-            throw new MaskAlgorithmInitializationException(maskType, String.format("%s must be a valid integer number", positiveIntegerTypeConfigKey));
+            throw new AlgorithmInitializationException(algorithm, "%s must be a valid integer number", positiveIntegerTypeConfigKey);
         }
     }
     
-    private static void checkRequiredPropertyConfig(final Properties props, final String requiredPropertyConfigKey, final String maskType) {
-        ShardingSpherePreconditions.checkState(props.containsKey(requiredPropertyConfigKey),
-                () -> new MaskAlgorithmInitializationException(maskType, String.format("%s is required", requiredPropertyConfigKey)));
+    private static void checkRequiredPropertyConfiguration(final Properties props, final String requiredPropertyConfigKey, final MaskAlgorithm<?, ?> algorithm) {
+        ShardingSpherePreconditions.checkState(props.containsKey(requiredPropertyConfigKey), () -> new AlgorithmInitializationException(algorithm, "%s is required", requiredPropertyConfigKey));
     }
 }

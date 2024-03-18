@@ -238,7 +238,7 @@ class StatementAdapterTest {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(
                 new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()),
-                new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyMap(), mock(ConfigurationProperties.class)),
+                new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyMap()),
                 new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build())));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
@@ -261,7 +261,7 @@ class StatementAdapterTest {
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(databaseType);
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(
                 new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()),
-                new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyMap(), mock(ConfigurationProperties.class)),
+                new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyMap()),
                 new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()))));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         ShardingSphereStatement result = new ShardingSphereStatement(connection);

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.route.standard;
 
-import org.apache.shardingsphere.infra.algorithm.load.balancer.round.robin.RoundRobinLoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.loadbalancer.round.robin.RoundRobinLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;

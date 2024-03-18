@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.algorithm.cover;
 
-import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,37 +73,37 @@ class MaskFromXToYMaskAlgorithmTest {
     
     @Test
     void assertInitWhenFromXIsEmpty() {
-        assertThrows(MaskAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", ""), new Property("to-y", "5"), new Property("replace-char", "*"))));
     }
     
     @Test
     void assertInitWhenToYIsEmpty() {
-        assertThrows(MaskAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", ""), new Property("replace-char", "*"))));
     }
     
     @Test
     void assertInitWhenReplaceCharIsEmpty() {
-        assertThrows(MaskAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", ""))));
     }
     
     @Test
     void assertInitWhenFromXIsNotPositive() {
-        assertThrows(MaskAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "-3"), new Property("to-y", "5"), new Property("replace-char", "*"))));
     }
     
     @Test
     void assertInitWhenToYIsNotPositive() {
-        assertThrows(MaskAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "-5"), new Property("replace-char", "*"))));
     }
     
     @Test
     void assertInitWhenFromXGreaterThanToY() {
-        assertThrows(MaskAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "5"), new Property("to-y", "2"), new Property("replace-char", ""))));
     }
 }

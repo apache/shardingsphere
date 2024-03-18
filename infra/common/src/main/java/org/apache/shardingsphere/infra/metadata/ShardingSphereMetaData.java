@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -25,8 +26,10 @@ import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolD
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
-import org.apache.shardingsphere.infra.rule.attribute.resoure.ResourceHeldRuleAttribute;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRuleChangedType;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -95,7 +98,7 @@ public final class ShardingSphereMetaData {
     public void addDatabase(final String databaseName, final DatabaseType protocolType, final ConfigurationProperties props) {
         ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType, props);
         databases.put(database.getName().toLowerCase(), database);
-        globalRuleMetaData.getAttributes(ResourceHeldRuleAttribute.class).forEach(each -> each.addResource(database));
+        globalRuleMetaData.getRules().forEach(each -> ((GlobalRule) each).refresh(databases, GlobalRuleChangedType.DATABASE_CHANGED));
     }
     
     /**
@@ -107,9 +110,14 @@ public final class ShardingSphereMetaData {
         cleanResources(databases.remove(databaseName.toLowerCase()));
     }
     
+    @SneakyThrows(Exception.class)
     private void cleanResources(final ShardingSphereDatabase database) {
-        globalRuleMetaData.getAttributes(ResourceHeldRuleAttribute.class).forEach(each -> each.closeStaleResource(database.getName()));
-        database.getRuleMetaData().getAttributes(ResourceHeldRuleAttribute.class).forEach(each -> each.closeStaleResource(database.getName()));
+        globalRuleMetaData.getRules().forEach(each -> ((GlobalRule) each).refresh(databases, GlobalRuleChangedType.DATABASE_CHANGED));
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            if (each instanceof AutoCloseable) {
+                ((AutoCloseable) each).close();
+            }
+        }
         database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class).forEach(StaticDataSourceRuleAttribute::cleanStorageNodeDataSources);
         Optional.ofNullable(database.getResourceMetaData())
                 .ifPresent(optional -> optional.getStorageUnits().values().forEach(each -> new DataSourcePoolDestroyer(each.getDataSource()).asyncDestroy()));

@@ -32,7 +32,7 @@ class SystemSchemaManagerTest {
     @Test
     void assertValueOfSchemaPathSuccess() {
         Collection<String> actualInformationSchema = SystemSchemaManager.getTables("MySQL", "information_schema");
-        assertThat(actualInformationSchema.size(), is(61));
+        assertThat(actualInformationSchema.size(), is(62));
         Collection<String> actualMySQLSchema = SystemSchemaManager.getTables("MySQL", "mysql");
         assertThat(actualMySQLSchema.size(), is(31));
         Collection<String> actualPerformanceSchema = SystemSchemaManager.getTables("MySQL", "performance_schema");

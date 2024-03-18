@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
-import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -41,13 +41,13 @@ class ComplexInlineShardingAlgorithmTest {
     
     @Test
     void assertInitWithNullClass() {
-        assertThrows(ShardingAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(ShardingAlgorithm.class, "COMPLEX_INLINE", PropertiesBuilder.build(new Property("wrong", ""))));
     }
     
     @Test
     void assertInitWithEmptyClassName() {
-        assertThrows(ShardingAlgorithmInitializationException.class,
+        assertThrows(AlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(ShardingAlgorithm.class, "COMPLEX_INLINE", PropertiesBuilder.build(new Property("algorithm-expression", ""))));
     }
     

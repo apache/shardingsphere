@@ -20,7 +20,8 @@ package org.apache.shardingsphere.sharding.rule;
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.exception.GenerateKeyStrategyNotFoundException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmNotFoundException;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
@@ -46,7 +47,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexSh
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 import org.apache.shardingsphere.sharding.exception.metadata.DuplicateSharingActualDataNodeException;
 import org.apache.shardingsphere.sharding.exception.metadata.InvalidBindingTablesException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
@@ -121,7 +121,7 @@ class ShardingRuleTest {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "MOD"));
         ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "2"))));
-        assertThrows(ShardingAlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class)));
+        assertThrows(AlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class)));
     }
     
     @Test
@@ -129,7 +129,7 @@ class ShardingRuleTest {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "MOD"));
         ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "2"))));
-        assertThrows(ShardingAlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class)));
+        assertThrows(AlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class)));
     }
     
     @Test
@@ -139,7 +139,7 @@ class ShardingRuleTest {
         tableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "MOD"));
         ruleConfig.getTables().add(tableRuleConfig);
         ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "2"))));
-        assertThrows(ShardingAlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class)));
+        assertThrows(AlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class)));
     }
     
     @Test
@@ -149,7 +149,7 @@ class ShardingRuleTest {
         tableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "MOD"));
         ruleConfig.getTables().add(tableRuleConfig);
         ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "2"))));
-        assertThrows(ShardingAlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class)));
+        assertThrows(AlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class)));
     }
     
     @Test
@@ -159,7 +159,7 @@ class ShardingRuleTest {
         autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "INLINE"));
         ruleConfig.getAutoTables().add(autoTableRuleConfig);
         ruleConfig.getShardingAlgorithms().put("INLINE", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_%{order_id % 2}"))));
-        assertThrows(ShardingAlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class)));
+        assertThrows(AlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class)));
     }
     
     @Test
@@ -336,7 +336,7 @@ class ShardingRuleTest {
     void assertGenerateKeyFailure() {
         AlgorithmSQLContext generateContext = mock(AlgorithmSQLContext.class);
         when(generateContext.getTableName()).thenReturn("table_0");
-        assertThrows(GenerateKeyStrategyNotFoundException.class, () -> createMaximumShardingRule().generateKeys(generateContext, 1));
+        assertThrows(AlgorithmNotFoundException.class, () -> createMaximumShardingRule().generateKeys(generateContext, 1));
     }
     
     @Test

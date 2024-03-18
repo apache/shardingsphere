@@ -27,12 +27,8 @@ import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMeta
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.event.schema.TableMetaDataChangedEvent;
-import org.apache.shardingsphere.mode.event.schema.ViewMetaDataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
@@ -139,23 +135,5 @@ class ResourceMetaDataChangedSubscriberTest {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("foo_schema")).thenReturn(true);
         subscriber.renew(new SchemaDeletedEvent("db", "foo_schema"));
         verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).dropSchema("foo_schema");
-    }
-    
-    @Test
-    void assertRenewForTableMetaDataChangedChanged() {
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("db")).thenReturn(true);
-        ShardingSphereTable changedTableMetaData = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        TableMetaDataChangedEvent event = new TableMetaDataChangedEvent("db", "db", changedTableMetaData, null);
-        subscriber.renew(event);
-        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchema("db")).putTable("t_order", event.getChangedTableMetaData());
-    }
-    
-    @Test
-    void assertRenewForViewMetaDataChanged() {
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("db")).thenReturn(true);
-        ShardingSphereView changedViewMetaData = new ShardingSphereView("t_order_view", "");
-        ViewMetaDataChangedEvent event = new ViewMetaDataChangedEvent("db", "db", changedViewMetaData, null);
-        subscriber.renew(event);
-        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchema("db")).putView("t_order_view", event.getChangedViewMetaData());
     }
 }

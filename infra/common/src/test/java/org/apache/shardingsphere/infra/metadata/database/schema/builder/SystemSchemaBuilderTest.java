@@ -39,7 +39,7 @@ class SystemSchemaBuilderTest {
         Map<String, ShardingSphereSchema> actualInformationSchema = SystemSchemaBuilder.build("information_schema", databaseType, configProps);
         assertThat(actualInformationSchema.size(), is(1));
         assertTrue(actualInformationSchema.containsKey("information_schema"));
-        assertThat(actualInformationSchema.get("information_schema").getTables().size(), is(61));
+        assertThat(actualInformationSchema.get("information_schema").getTables().size(), is(62));
         Map<String, ShardingSphereSchema> actualMySQLSchema = SystemSchemaBuilder.build("mysql", databaseType, configProps);
         assertThat(actualMySQLSchema.size(), is(1));
         assertTrue(actualMySQLSchema.containsKey("mysql"));

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.user;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 /**
  * Grantee.
@@ -56,6 +57,7 @@ public final class Grantee {
      * @param grantee grantee
      * @return if the grantee is acceptable
      */
+    @HighFrequencyInvocation
     public boolean accept(final Grantee grantee) {
         return grantee.username.equalsIgnoreCase(username) && isPermittedHost(grantee);
     }
