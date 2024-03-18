@@ -514,7 +514,7 @@ class ShardingDQLResultMergerTest {
         return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), mock(ResourceMetaData.class),
                 mock(RuleMetaData.class), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));
     }
-
+    
     private ShardingSphereDatabase createSQLServerDatabase() {
         ShardingSphereColumn column1 = new ShardingSphereColumn("col1", 0, false, false, false, true, false, false);
         ShardingSphereColumn column2 = new ShardingSphereColumn("col2", 0, false, false, false, true, false, false);
@@ -524,8 +524,7 @@ class ShardingDQLResultMergerTest {
         return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), mock(ResourceMetaData.class),
                 mock(RuleMetaData.class), Collections.singletonMap("dbo", schema));
     }
-
-
+    
     private SelectStatement buildSelectStatement(final SelectStatement result) {
         result.setFrom(new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl"))));
         result.setProjections(new ProjectionsSegment(0, 0));
