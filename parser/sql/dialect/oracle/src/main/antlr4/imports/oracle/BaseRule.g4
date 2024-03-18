@@ -2164,3 +2164,23 @@ dbUserProxy
 dbUserProxyClauses
     : (WITH ((ROLE (ALL EXCEPT)? roleName (COMMA_ roleName)*) | NO ROLES))? (AUTHENTICATION REQUIRED | AUTHENTICATED USING PASSWORD)?
     ;
+
+delimSpec
+     : terminatedBySpec? optionallyEnclosedBySpec? lrtrimSpec?
+     ;
+
+terminatedBySpec
+     : TERMINATED BY (STRING_|WHITESPACE)
+     ;
+
+optionallyEnclosedBySpec
+     : OPTIONALLY? ENCLOSED BY STRING_ AND STRING_
+     ;
+
+lrtrimSpec
+     : LRTRIM
+     ;
+
+
+
+
