@@ -35,5 +35,7 @@ class OpenGaussWALDumperTest {
         OpenGaussWALDumper mock = mock(OpenGaussWALDumper.class);
         version = ReflectionUtils.invokeMethod(OpenGaussWALDumper.class.getDeclaredMethod("parseMajorVersion", String.class), mock, "(openGauss 5.0.1 build )");
         assertThat(version, is(5));
+        version = ReflectionUtils.invokeMethod(OpenGaussWALDumper.class.getDeclaredMethod("parseMajorVersion", String.class), mock, "not match");
+        assertThat(version, is(2));
     }
 }

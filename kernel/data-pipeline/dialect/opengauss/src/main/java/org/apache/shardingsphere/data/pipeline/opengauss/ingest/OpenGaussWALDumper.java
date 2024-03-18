@@ -58,7 +58,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * WAL dumper of openGauss.
@@ -67,7 +66,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable implements IncrementalDumper {
     
-    private static final Pattern VERSION_PATTERN = Pattern.compile("(\\d+)");
+    private static final Pattern VERSION_PATTERN = Pattern.compile("^\\(openGauss (\\d)");
     
     private static final int DEFAULT_VERSION = 2;
     
@@ -127,7 +126,7 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
         try (PgConnection connection = getReplicationConnectionUnwrap()) {
             stream = logicalReplication.createReplicationStream(connection, walPosition.get().getLogSequenceNumber(),
                     OpenGaussIngestPositionManager.getUniqueSlotName(connection, dumperContext.getJobId()), majorVersion);
-            DecodingPlugin decodingPlugin = new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.getTimestampUtils()), decodeWithTX, majorVersion);
+            DecodingPlugin decodingPlugin = new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.getTimestampUtils()), decodeWithTX, majorVersion >= 3);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
                 if (null == message) {
@@ -166,8 +165,9 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
     
     private int parseMajorVersion(final String versionText) {
         Matcher matcher = VERSION_PATTERN.matcher(versionText);
-        if (matcher.find()) {
-            log.info("openGauss major version={}, `select version()`={}", matcher.group(1), versionText);
+        boolean isFind = matcher.find();
+        log.info("openGauss major version={}, `select version()`={}", isFind ? matcher.group(1) : DEFAULT_VERSION, versionText);
+        if (isFind) {
             return Integer.parseInt(matcher.group(1));
         }
         return DEFAULT_VERSION;
@@ -183,8 +183,7 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
                 return;
             }
             if (!rowEvents.isEmpty()) {
-                channel.push(rowEvents.stream().map(walEventConverter::convert).collect(Collectors.toList()));
-                rowEvents = new LinkedList<>();
+                log.warn("Commit event parse have problem, there still has uncommitted row events size={}, ", rowEvents.size());
             }
             currentCsn.set(((BeginTXEvent) event).getCsn());
             return;
