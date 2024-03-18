@@ -2180,4 +2180,3 @@ optionallyEnclosedBySpec
 lrtrimSpec
      : LRTRIM
      ;
-
