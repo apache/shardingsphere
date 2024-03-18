@@ -6,7 +6,7 @@ chapter = true
 
 ## Committer Rights
 
-For a long time, JetBrains has been committed to supporting open source development. JetBrains is now officially a Platinum Targeted Sponsor of The Apache Software Foundation! Every Apache Committer is eligible for a complimentary subscription that grants them access to all the JetBrains IDEs such as IntelliJ IDEA, PyCharm, and other desktop tools.。
+For a long time, JetBrains has been committed to supporting open source development. JetBrains is now officially a Platinum Targeted Sponsor of The Apache Software Foundation! Every Apache Committer is eligible for a complimentary subscription that grants them access to all the JetBrains IDEs such as IntelliJ IDEA, PyCharm, and other desktop tools.
 
 All individual Committers who have received a free JetBrains license before will have their subscriptions co-termed under the official Apache Software Foundation account and extended for a year. Plus, all further renewals will be automated, so new Apache Committers will only need to request a free All Products Pack once.
 
