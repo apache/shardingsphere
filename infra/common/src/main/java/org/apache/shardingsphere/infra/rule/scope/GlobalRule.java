@@ -35,4 +35,12 @@ public interface GlobalRule extends ShardingSphereRule {
      */
     default void refresh(final Map<String, ShardingSphereDatabase> databases, GlobalRuleChangedType changedType) {
     }
+    
+    /**
+     * Global rule changed type enum.
+     */
+    enum GlobalRuleChangedType {
+        
+        DATABASE_CHANGED, SCHEMA_CHANGED
+    }
 }
