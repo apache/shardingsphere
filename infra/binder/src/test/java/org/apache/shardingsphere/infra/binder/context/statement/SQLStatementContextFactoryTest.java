@@ -154,6 +154,8 @@ class SQLStatementContextFactoryTest {
         when(database.containsSchema("public")).thenReturn(true);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("tbl")).thenReturn(true);
         when(database.getSchema("public").containsTable("tbl")).thenReturn(true);
+        when(database.containsSchema("dbo")).thenReturn(true);
+        when(database.getSchema("dbo").containsTable("tbl")).thenReturn(true);
         Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
         return new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }

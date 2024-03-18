@@ -100,7 +100,7 @@ class ShardingCreateTableStatementValidatorTest {
     void assertPreValidateCreateTableForSQLServer() {
         SQLServerCreateTableStatement sqlStatement = new SQLServerCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "sharding_db"));
+        assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "dbo"));
     }
     
     private void assertPreValidateCreateTable(final CreateTableStatement sqlStatement, final String schemaName) {
