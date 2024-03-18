@@ -17,10 +17,21 @@
 
 package org.apache.shardingsphere.infra.rule.scope;
 
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+
+import java.util.Map;
 
 /**
  * Global rule.
  */
 public interface GlobalRule extends ShardingSphereRule {
+    
+    /**
+     * Refresh rule when databases changed.
+     * 
+     * @param databases changed databases
+     */
+    default void refresh(final Map<String, ShardingSphereDatabase> databases) {
+    }
 }
