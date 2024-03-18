@@ -262,15 +262,17 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsVal(new String[]{"'7D'"});
         List<String> dataList = Arrays.asList("BEGIN CSN: 951909 first_lsn: 5/59825858", JsonUtils.toJsonString(tableData), JsonUtils.toJsonString(tableData), "commit xid: 1006076");
         MppdbDecodingPlugin mppdbDecodingPlugin = new MppdbDecodingPlugin(null, true, 3);
-        List<AbstractWALEvent> expectedEvents = new LinkedList<>();
+        List<AbstractWALEvent> actual = new LinkedList<>();
         for (String each : dataList) {
-            expectedEvents.add(mppdbDecodingPlugin.decode(ByteBuffer.wrap(each.getBytes()), logSequenceNumber));
+            actual.add(mppdbDecodingPlugin.decode(ByteBuffer.wrap(each.getBytes()), logSequenceNumber));
         }
-        assertThat(expectedEvents.size(), is(4));
-        assertInstanceOf(BeginTXEvent.class, expectedEvents.get(0));
-        assertThat(((BeginTXEvent) expectedEvents.get(0)).getCsn(), is(951909L));
-        assertThat(((CommitTXEvent) expectedEvents.get(3)).getXid(), is(1006076L));
-        assertNull(((CommitTXEvent) expectedEvents.get(3)).getCsn());
+        assertThat(actual.size(), is(4));
+        assertInstanceOf(BeginTXEvent.class, actual.get(0));
+        assertThat(((BeginTXEvent) actual.get(0)).getCsn(), is(951909L));
+        assertThat(((WriteRowEvent) actual.get(1)).getAfterRow().get(0).toString(), is("7D"));
+        assertThat(((WriteRowEvent) actual.get(2)).getAfterRow().get(0).toString(), is("7D"));
+        assertThat(((CommitTXEvent) actual.get(3)).getXid(), is(1006076L));
+        assertNull(((CommitTXEvent) actual.get(3)).getCsn());
     }
     
     @Test

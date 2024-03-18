@@ -58,6 +58,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * WAL dumper of openGauss.
@@ -66,7 +67,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable implements IncrementalDumper {
     
-    private static final Pattern VERSION_PATTERN = Pattern.compile("(openGauss) (\\d+)");
+    private static final Pattern VERSION_PATTERN = Pattern.compile("(\\d+)");
     
     private static final int DEFAULT_VERSION = 2;
     
@@ -122,11 +123,7 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
     @SneakyThrows(InterruptedException.class)
     private void dump() throws SQLException {
         PGReplicationStream stream = null;
-        StandardPipelineDataSourceConfiguration dataSourceConfig = (StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig();
-        int majorVersion;
-        try (Connection connection = DriverManager.getConnection(dataSourceConfig.getUrl(), dataSourceConfig.getUsername(), dataSourceConfig.getPassword())) {
-            majorVersion = getMajorVersion(connection);
-        }
+        int majorVersion = getMajorVersion();
         try (PgConnection connection = getReplicationConnectionUnwrap()) {
             stream = logicalReplication.createReplicationStream(connection, walPosition.get().getLogSequenceNumber(),
                     OpenGaussIngestPositionManager.getUniqueSlotName(connection, dumperContext.getJobId()), majorVersion);
@@ -155,19 +152,25 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
         }
     }
     
-    private int getMajorVersion(final Connection connection) throws SQLException {
+    private int getMajorVersion() throws SQLException {
+        StandardPipelineDataSourceConfiguration dataSourceConfig = (StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig();
         try (
+                Connection connection = DriverManager.getConnection(dataSourceConfig.getUrl(), dataSourceConfig.getUsername(), dataSourceConfig.getPassword());
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery("SELECT version()")) {
             resultSet.next();
             String versionText = resultSet.getString(1);
-            log.info("openGauss select version() result={}", versionText);
-            Matcher matcher = VERSION_PATTERN.matcher(versionText);
-            if (matcher.find()) {
-                return Integer.parseInt(matcher.group(2));
-            }
-            return DEFAULT_VERSION;
+            return parseMajorVersion(versionText);
         }
+    }
+    
+    private int parseMajorVersion(final String versionText) {
+        Matcher matcher = VERSION_PATTERN.matcher(versionText);
+        if (matcher.find()) {
+            log.info("openGauss major version={}, `select version()`={}", matcher.group(1), versionText);
+            return Integer.parseInt(matcher.group(1));
+        }
+        return DEFAULT_VERSION;
     }
     
     private PgConnection getReplicationConnectionUnwrap() throws SQLException {
@@ -179,7 +182,12 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
             if (majorVersion < 3) {
                 return;
             }
+            if (!rowEvents.isEmpty()) {
+                channel.push(rowEvents.stream().map(walEventConverter::convert).collect(Collectors.toList()));
+                rowEvents = new LinkedList<>();
+            }
             currentCsn.set(((BeginTXEvent) event).getCsn());
+            return;
         }
         if (event instanceof AbstractRowEvent) {
             AbstractRowEvent rowEvent = (AbstractRowEvent) event;
