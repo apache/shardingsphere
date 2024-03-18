@@ -28,12 +28,12 @@ import java.util.Iterator;
  * Broadcast convert rule configuration provider.
  */
 public final class BroadcastConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
-
+    
     @Override
     public String convert(final RuleConfiguration ruleConfig) {
         return getBroadcastDistSQL((BroadcastRuleConfiguration) ruleConfig);
     }
-
+    
     private String getBroadcastDistSQL(final BroadcastRuleConfiguration ruleConfig) {
         if (ruleConfig.getTables().isEmpty()) {
             return "";
@@ -50,7 +50,7 @@ public final class BroadcastConvertRuleConfigurationProvider implements ConvertR
         result.append(BroadcastDistSQLConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
         return result.toString();
     }
-
+    
     @Override
     public Class<? extends RuleConfiguration> getType() {
         return BroadcastRuleConfiguration.class;
