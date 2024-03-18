@@ -2170,7 +2170,7 @@ delimSpec
      ;
 
 terminatedBySpec
-     : TERMINATED BY (STRING_|WHITESPACE)
+     : TERMINATED BY (STRING_ | WHITESPACE)
      ;
 
 optionallyEnclosedBySpec
