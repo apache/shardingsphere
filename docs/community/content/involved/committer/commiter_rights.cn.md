@@ -6,7 +6,7 @@ chapter = true
 
 ## 提交者权益
 
-长期以来，JetBrains 一直致力于支持开源开发。JetBrains 现已正式成为Apache 软件基金会的白金目标赞助商。每个 Apache Committer 都有资格获得免费订阅，使他们能够访问所有 JetBrains IDE，例如 IntelliJ IDEA、PyCharm 和其他桌面工具。
+长期以来，JetBrains 一直致力于支持开源开发。JetBrains 现已正式成为Apache 软件基金会的白金目标赞助商。每个 Apache Committer 都有资格获得免费订阅，使他们能够访问所有 JetBrains IDE，如 IntelliJ IDEA、PyCharm 和其他桌面工具。
 
 所有之前获得免费 JetBrains 许可证的个人提交者的订阅都将被归入 Apache 软件基金会官方帐户并延长一年。此外，所有进一步的续订都将自动化，因此新的 Apache 提交者只需请求免费的所有产品包一次。
 
