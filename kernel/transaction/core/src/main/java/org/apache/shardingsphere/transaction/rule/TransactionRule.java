@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRuleChangedType;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
@@ -90,7 +91,10 @@ public final class TransactionRule implements GlobalRule, AutoCloseable {
     }
     
     @Override
-    public void refresh(final Map<String, ShardingSphereDatabase> databases) {
+    public void refresh(final Map<String, ShardingSphereDatabase> databases, final GlobalRuleChangedType changedType) {
+        if (GlobalRuleChangedType.DATABASE_CHANGED != changedType) {
+            return;
+        }
         ShardingSphereTransactionManagerEngine previousEngine = resource.get();
         if (null != previousEngine) {
             close(previousEngine);

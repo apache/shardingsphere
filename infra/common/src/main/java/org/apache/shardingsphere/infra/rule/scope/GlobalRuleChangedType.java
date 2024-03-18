@@ -17,22 +17,15 @@
 
 package org.apache.shardingsphere.infra.rule.scope;
 
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
-import java.util.Map;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Global rule.
+ * Global rule changed type enum.
  */
-public interface GlobalRule extends ShardingSphereRule {
+@RequiredArgsConstructor
+@Getter
+public enum GlobalRuleChangedType {
     
-    /**
-     * Refresh rule when databases changed.
-     * 
-     * @param databases changed databases
-     * @param changedType changed type
-     */
-    default void refresh(final Map<String, ShardingSphereDatabase> databases, GlobalRuleChangedType changedType) {
-    }
+    DATABASE_CHANGED, SCHEMA_CHANGED
 }
