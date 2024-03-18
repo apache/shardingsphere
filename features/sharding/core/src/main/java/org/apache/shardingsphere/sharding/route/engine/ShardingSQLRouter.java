@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -44,6 +45,7 @@ import java.util.Optional;
 /**
  * Sharding SQL router.
  */
+@HighFrequencyInvocation
 public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
     
     @Override

@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.shadow.route;
 
-import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.route.engine.ShadowRouteEngineFactory;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 /**
  * Shadow SQL router.
  */
+@HighFrequencyInvocation
 public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     
     @Override
