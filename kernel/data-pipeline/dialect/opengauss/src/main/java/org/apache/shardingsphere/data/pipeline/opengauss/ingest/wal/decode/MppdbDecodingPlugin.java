@@ -57,9 +57,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private final boolean decodeWithTX;
     
-    public MppdbDecodingPlugin(final BaseTimestampUtils timestampUtils) {
-        this(timestampUtils, false);
-    }
+    private final boolean decodeParallelly;
     
     @Override
     public AbstractWALEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
@@ -77,14 +75,38 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     }
     
     private AbstractWALEvent decodeDataWithTX(final String dataText) {
+        if (decodeParallelly) {
+            return decodeParallelly(dataText);
+        } else {
+            return decodeSerially(dataText);
+        }
+    }
+    
+    private AbstractWALEvent decodeSerially(final String dataText) {
         AbstractWALEvent result = new PlaceholderEvent();
         if (dataText.startsWith("BEGIN")) {
             int beginIndex = dataText.indexOf("BEGIN") + "BEGIN".length() + 1;
-            result = new BeginTXEvent(Long.parseLong(dataText.substring(beginIndex)));
+            result = new BeginTXEvent(Long.parseLong(dataText.substring(beginIndex)), null);
         } else if (dataText.startsWith("COMMIT")) {
             int commitBeginIndex = dataText.indexOf("COMMIT") + "COMMIT".length() + 1;
             int csnBeginIndex = dataText.indexOf("CSN") + "CSN".length() + 1;
             result = new CommitTXEvent(Long.parseLong(dataText.substring(commitBeginIndex, dataText.indexOf(' ', commitBeginIndex))), Long.parseLong(dataText.substring(csnBeginIndex)));
+        } else if (dataText.startsWith("{")) {
+            result = readTableEvent(dataText);
+        }
+        return result;
+    }
+    
+    private AbstractWALEvent decodeParallelly(final String dataText) {
+        AbstractWALEvent result = new PlaceholderEvent();
+        if (dataText.startsWith("BEGIN")) {
+            int beginIndex = dataText.indexOf("CSN:") + "CSN:".length() + 1;
+            int firstLsnIndex = dataText.indexOf("first_lsn");
+            long csn = firstLsnIndex > 0 ? Long.parseLong(dataText.substring(beginIndex, firstLsnIndex - 1)) : 0L;
+            result = new BeginTXEvent(null, csn);
+        } else if (dataText.startsWith("commit") || dataText.startsWith("COMMIT")) {
+            int beginIndex = dataText.indexOf("xid:") + "xid:".length() + 1;
+            result = new CommitTXEvent(Long.parseLong(dataText.substring(beginIndex)), null);
         } else if (dataText.startsWith("{")) {
             result = readTableEvent(dataText);
         }

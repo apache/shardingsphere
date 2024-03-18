@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
-import org.apache.shardingsphere.infra.rule.scope.GlobalRuleChangedType;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;

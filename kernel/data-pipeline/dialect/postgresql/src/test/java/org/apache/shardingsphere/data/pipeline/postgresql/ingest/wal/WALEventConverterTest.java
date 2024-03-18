@@ -144,7 +144,7 @@ class WALEventConverterTest {
     
     @Test
     void assertConvertBeginTXEvent() {
-        BeginTXEvent beginTXEvent = new BeginTXEvent(100);
+        BeginTXEvent beginTXEvent = new BeginTXEvent(100L, null);
         beginTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
         Record record = walEventConverter.convert(beginTXEvent);
         assertInstanceOf(PlaceholderRecord.class, record);
