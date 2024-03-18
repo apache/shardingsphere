@@ -37,6 +37,8 @@ public final class DataSourceEnvironment {
                 return "org.h2.Driver";
             case "MySQL":
                 return "com.mysql.cj.jdbc.Driver";
+            case "MariaDB":
+                return "org.mariadb.jdbc.Driver";
             case "PostgreSQL":
                 return "org.postgresql.Driver";
             case "openGauss":
@@ -62,6 +64,9 @@ public final class DataSourceEnvironment {
             case "MySQL":
                 return String.format("jdbc:mysql://%s:%s?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false"
                         + "&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true", host, port);
+            case "MariaDB":
+                return String.format("jdbc:mariadb://%s:%s?useSSL=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true",
+                        host, port);
             case "PostgreSQL":
                 return String.format("jdbc:postgresql://%s:%s/?ssl=on&sslmode=prefer", host, port);
             case "openGauss":
@@ -89,6 +94,10 @@ public final class DataSourceEnvironment {
                 return String.format(
                         "jdbc:mysql://%s:%s/%s?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false"
                                 + "&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true",
+                        host, port, dataSourceName);
+            case "MariaDB":
+                return String.format("jdbc:mariadb://%s:%s/%s?useSSL=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowMultiQueries=true"
+                                + "&rewriteBatchedStatements=true",
                         host, port, dataSourceName);
             case "PostgreSQL":
                 return String.format("jdbc:postgresql://%s:%s/%s?ssl=on&sslmode=prefer", host, port, dataSourceName);

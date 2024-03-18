@@ -41,7 +41,8 @@ public final class MySQLDataSourceChecker implements DialectDataSourceChecker {
     
     private static final String SHOW_GRANTS_SQL = "SHOW GRANTS";
     
-    private static final String[][] REQUIRED_PRIVILEGES = {{"ALL PRIVILEGES", "ON *.*"}, {"REPLICATION SLAVE", "REPLICATION CLIENT", "ON *.*"}};
+    // BINLOG MONITOR is a synonym for REPLICATION CLIENT for MariaDB
+    private static final String[][] REQUIRED_PRIVILEGES = {{"ALL PRIVILEGES", "ON *.*"}, {"REPLICATION SLAVE", "REPLICATION CLIENT", "ON *.*"}, {"REPLICATION SLAVE", "BINLOG MONITOR", "ON *.*"}};
     
     private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(3, 1F);
     
