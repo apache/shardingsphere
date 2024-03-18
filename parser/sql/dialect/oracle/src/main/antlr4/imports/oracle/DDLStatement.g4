@@ -196,7 +196,7 @@ createDefinitionClause
 
 createXMLTypeTableClause
     : OF? XMLTYPE
-      (LP_ (objectProperties)  RP_)?
+      (LP_ (objectProperties) RP_)?
       (XMLTYPE xmlTypeStorageClause)?
       (xmlSchemaSpecClause)?
       (xmlTypeVirtualColumnsClause)?
@@ -1018,7 +1018,7 @@ organizationClause
     ;
 
 heapOrgTableClause
-    : tableCompression? inmemoryTableClause? ilmClause?
+    : tableCompression? inmemoryTableClause? ilmClause?parser/sql/dialect/oracle/src/main/antlr4/imports/oracle/DDLStatement.g4
     ;
 
 indexOrgTableClause
@@ -1030,7 +1030,7 @@ externalTableClause
     ;
 
 externalTableDataProps
-    : (DEFAULT DIRECTORY directoryName)? (ACCESS PARAMETERS ((opaqueFormatSpec delimSpec )?|USING CLOB subquery))? (LOCATION LP_ (directoryName|(directoryName COLON_)? locationSpecifier (COMMA_ (directoryName COLON_)? locationSpecifier)+) RP_)?
+    : (DEFAULT DIRECTORY directoryName)? (ACCESS PARAMETERS ((opaqueFormatSpec delimSpec)? | USING CLOB subquery))? (LOCATION LP_ (directoryName|(directoryName COLON_)? locationSpecifier (COMMA_ (directoryName COLON_)? locationSpecifier)+) RP_)?
     ;
 
 mappingTableClause
