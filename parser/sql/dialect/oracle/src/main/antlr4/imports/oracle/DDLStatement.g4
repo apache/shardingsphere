@@ -1030,7 +1030,7 @@ externalTableClause
     ;
 
 externalTableDataProps
-    : (DEFAULT DIRECTORY directoryName)? (ACCESS PARAMETERS ((opaqueFormatSpec delimSpec)? | USING CLOB subquery))? (LOCATION LP_ (directoryName|(directoryName COLON_)? locationSpecifier (COMMA_ (directoryName COLON_)? locationSpecifier)+) RP_)?
+    : (DEFAULT DIRECTORY directoryName)? (ACCESS PARAMETERS ((opaqueFormatSpec delimSpec)? | USING CLOB subquery))? (LOCATION LP_ (directoryName | (directoryName COLON_)? locationSpecifier (COMMA_ (directoryName COLON_)? locationSpecifier)+) RP_)?
     ;
 
 mappingTableClause
@@ -4281,3 +4281,4 @@ noAuditTraditional
 dropDatabase
     : DROP DATABASE (INCLUDING BACKUPS)? NOPROMPT?
     ;
+
