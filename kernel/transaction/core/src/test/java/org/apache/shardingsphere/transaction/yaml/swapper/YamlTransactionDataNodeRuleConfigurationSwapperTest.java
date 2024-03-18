@@ -15,33 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.swapper;
+package org.apache.shardingsphere.transaction.yaml.swapper;
 
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.Optional;
+import java.util.Properties;
 
-/**
- * YAML data node configuration swapper.
- *
- * @param <T> type of swapped object
- */
-public interface YamlDataNodeConfigurationSwapper<T> {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class YamlTransactionDataNodeRuleConfigurationSwapperTest {
     
-    /**
-    * Swap to YAML data node.
-    *
-    * @param data data to be swapped
-    * @return YAML data nodes
-    */
-    Collection<YamlDataNode> swapToDataNodes(T data);
+    private final YamlTransactionDataNodeRuleConfigurationSwapper swapper = new YamlTransactionDataNodeRuleConfigurationSwapper();
     
-    /**
-     * Swap from data node to object.
-     *
-     * @param dataNodes data nodes
-     * @return swapped object
-     */
-    Optional<T> swapToObject(Collection<YamlDataNode> dataNodes);
+    @Test
+    void assertSwapToDataNodes() {
+        Collection<YamlDataNode> actual = swapper.swapToDataNodes(new TransactionRuleConfiguration("", "", new Properties()));
+        assertThat(actual.iterator().next().getKey(), is("transaction"));
+    }
 }

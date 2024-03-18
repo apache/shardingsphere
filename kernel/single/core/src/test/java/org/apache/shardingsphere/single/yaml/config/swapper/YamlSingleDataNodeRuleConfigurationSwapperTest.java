@@ -15,33 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.swapper;
+package org.apache.shardingsphere.single.yaml.config.swapper;
 
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
-import java.util.Optional;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * YAML data node configuration swapper.
- *
- * @param <T> type of swapped object
- */
-public interface YamlDataNodeConfigurationSwapper<T> {
+class YamlSingleDataNodeRuleConfigurationSwapperTest {
     
-    /**
-    * Swap to YAML data node.
-    *
-    * @param data data to be swapped
-    * @return YAML data nodes
-    */
-    Collection<YamlDataNode> swapToDataNodes(T data);
+    private final YamlSingleDataNodeRuleConfigurationSwapper swapper = new YamlSingleDataNodeRuleConfigurationSwapper();
     
-    /**
-     * Swap from data node to object.
-     *
-     * @param dataNodes data nodes
-     * @return swapped object
-     */
-    Optional<T> swapToObject(Collection<YamlDataNode> dataNodes);
+    @Test
+    void assertSwapToDataNodes() {
+        assertThat(swapper.swapToDataNodes(new SingleRuleConfiguration()).iterator().next().getKey(), is("tables"));
+    }
 }

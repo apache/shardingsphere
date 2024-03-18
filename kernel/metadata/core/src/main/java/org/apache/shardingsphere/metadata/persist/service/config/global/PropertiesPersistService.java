@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -34,21 +35,41 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public final class PropertiesPersistService implements GlobalPersistService<Properties> {
     
+    private static final String DEFAULT_VERSION = "0";
+    
     private final PersistRepository repository;
     
     @Override
     public void persist(final Properties props) {
-        repository.persist(GlobalNode.getPropsPath(), YamlEngine.marshal(props));
+        if (Strings.isNullOrEmpty(getActiveVersion())) {
+            repository.persist(GlobalNode.getPropsActiveVersionNode(), DEFAULT_VERSION);
+        }
+        List<String> versions = repository.getChildrenKeys(GlobalNode.getPropsVersionsNode());
+        repository.persist(GlobalNode.getPropsVersionNode(versions.isEmpty()
+                ? DEFAULT_VERSION
+                : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), YamlEngine.marshal(props));
+        
     }
     
     @Override
     public Collection<MetaDataVersion> persistConfig(final Properties props) {
-        return Collections.emptyList();
+        List<String> versions = repository.getChildrenKeys(GlobalNode.getPropsVersionsNode());
+        String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+        String persistKey = GlobalNode.getPropsVersionNode(nextActiveVersion);
+        repository.persist(persistKey, YamlEngine.marshal(props));
+        if (Strings.isNullOrEmpty(getActiveVersion())) {
+            repository.persist(GlobalNode.getPropsActiveVersionNode(), DEFAULT_VERSION);
+        }
+        return Collections.singletonList(new MetaDataVersion(GlobalNode.getPropsRootNode(), getActiveVersion(), nextActiveVersion));
     }
     
     @Override
     public Properties load() {
-        String props = repository.getDirectly(GlobalNode.getPropsPath());
-        return Strings.isNullOrEmpty(props) ? new Properties() : YamlEngine.unmarshal(props, Properties.class);
+        String yamlContent = repository.getDirectly(GlobalNode.getPropsVersionNode(getActiveVersion()));
+        return Strings.isNullOrEmpty(yamlContent) ? new Properties() : YamlEngine.unmarshal(yamlContent, Properties.class);
+    }
+    
+    private String getActiveVersion() {
+        return repository.getDirectly(GlobalNode.getPropsActiveVersionNode());
     }
 }

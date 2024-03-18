@@ -19,7 +19,7 @@ package org.apache.shardingsphere.metadata.persist.service.version;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.identifier.NodePathTransactionAware;
 import org.apache.shardingsphere.mode.identifier.NodePathTransactionOperation;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
@@ -85,6 +85,6 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
     
     @Override
     public String getVersionPathByActiveVersion(final String path, final String activeVersion) {
-        return repository.getDirectly(NewDatabaseMetaDataNode.getVersionNodeByActiveVersionPath(path, activeVersion));
+        return repository.getDirectly(DatabaseMetaDataNode.getVersionNodeByActiveVersionPath(path, activeVersion));
     }
 }
