@@ -1018,7 +1018,7 @@ organizationClause
     ;
 
 heapOrgTableClause
-    : tableCompression? inmemoryTableClause? ilmClause?parser/sql/dialect/oracle/src/main/antlr4/imports/oracle/DDLStatement.g4
+    : tableCompression? inmemoryTableClause? ilmClause?
     ;
 
 indexOrgTableClause
