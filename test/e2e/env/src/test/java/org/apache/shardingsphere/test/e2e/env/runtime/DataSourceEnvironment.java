@@ -97,8 +97,7 @@ public final class DataSourceEnvironment {
                         host, port, dataSourceName);
             case "MariaDB":
                 return String.format("jdbc:mariadb://%s:%s/%s?useSSL=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowMultiQueries=true"
-                                + "&rewriteBatchedStatements=true",
-                        host, port, dataSourceName);
+                        + "&rewriteBatchedStatements=true", host, port, dataSourceName);
             case "PostgreSQL":
                 return String.format("jdbc:postgresql://%s:%s/%s?ssl=on&sslmode=prefer", host, port, dataSourceName);
             case "openGauss":
