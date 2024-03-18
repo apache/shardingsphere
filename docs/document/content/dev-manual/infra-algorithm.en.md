@@ -9,7 +9,7 @@ chapter = true
 
 ### Fully-qualified class name
 
-[`org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/core/src/main/java/org/apache/shardingsphere/infra/algorithm/load/balancer/core/LoadBalanceAlgorithm.java)
+[`org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/core/src/main/java/org/apache/shardingsphere/infra/algorithm/loadbalancer/core/LoadBalanceAlgorithm.java)
 
 ### Definition
 
@@ -19,9 +19,9 @@ Load balance algorithms, they can be used in readwrite-splitting and traffic fea
 
 | *Configuration Type* | *Description*                                          | *Fully-qualified class name*                                                                                                                                                                                                                                                                                                         |
 |----------------------|--------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ROUND_ROBIN          | load balancer algorithm based on polling | [`org.apache.shardingsphere.infra.algorithm.load.balancer.round.robin.RoundRobinLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/type/round-robin/src/main/java/org/apache/shardingsphere/infra/algorithm/load/balancer/round/robin/RoundRobinLoadBalanceAlgorithm.java) |
-| RANDOM               | load balancer algorithm based on random | [`org.apache.shardingsphere.infra.algorithm.load.balancer.random.RandomLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/type/random/src/main/java/org/apache/shardingsphere/infra/algorithm/load/balancer/random/RandomLoadBalanceAlgorithm.java)         |
-| WEIGHT               | load balancer algorithm based on weight | [`org.apache.shardingsphere.infra.algorithm.load.balancer.weight.WeightLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/type/weight/src/main/java/org/apache/shardingsphere/infra/algorithm/load/balancer/weight/WeightLoadBalanceAlgorithm.java)         |
+| ROUND_ROBIN          | load balancer algorithm based on polling | [`org.apache.shardingsphere.infra.algorithm.loadbalancer.round.robin.RoundRobinLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/type/round-robin/src/main/java/org/apache/shardingsphere/infra/algorithm/loadbalancer/round/robin/RoundRobinLoadBalanceAlgorithm.java) |
+| RANDOM               | load balancer algorithm based on random | [`org.apache.shardingsphere.infra.algorithm.loadbalancer.random.RandomLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/type/random/src/main/java/org/apache/shardingsphere/infra/algorithm/loadbalancer/random/RandomLoadBalanceAlgorithm.java)         |
+| WEIGHT               | load balancer algorithm based on weight | [`org.apache.shardingsphere.infra.algorithm.loadbalancer.weight.WeightLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/type/weight/src/main/java/org/apache/shardingsphere/infra/algorithm/loadbalancer/weight/WeightLoadBalanceAlgorithm.java)         |
 
 ## KeyGenerateAlgorithm
 
