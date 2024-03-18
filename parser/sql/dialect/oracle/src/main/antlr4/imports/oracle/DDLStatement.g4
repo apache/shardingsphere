@@ -4281,6 +4281,3 @@ noAuditTraditional
 dropDatabase
     : DROP DATABASE (INCLUDING BACKUPS)? NOPROMPT?
     ;
-
-
-
