@@ -59,15 +59,6 @@ public final class CreateShardingTableRuleExecutor implements DatabaseRuleCreate
         return ShardingTableRuleStatementConverter.convert(segments);
     }
     
-    @Override
-    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
-        currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
-        currentRuleConfig.getAutoTables().addAll(toBeCreatedRuleConfig.getAutoTables());
-        currentRuleConfig.getShardingAlgorithms().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());
-        currentRuleConfig.getKeyGenerators().putAll(toBeCreatedRuleConfig.getKeyGenerators());
-        currentRuleConfig.getAuditors().putAll(toBeCreatedRuleConfig.getAuditors());
-    }
-    
     private Collection<String> getDuplicatedRuleNames(final CreateShardingTableRuleStatement sqlStatement) {
         Collection<String> currentShardingTables = null == rule ? Collections.emptyList() : getCurrentShardingTables();
         return sqlStatement.getRules().stream().map(AbstractTableRuleSegment::getLogicTable).filter(currentShardingTables::contains).collect(Collectors.toSet());

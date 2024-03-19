@@ -114,11 +114,6 @@ public final class CreateShardingTableReferenceRuleExecutor implements DatabaseR
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
-        currentRuleConfig.getBindingTableGroups().addAll(toBeCreatedRuleConfig.getBindingTableGroups());
-    }
-    
-    @Override
     public Class<ShardingRule> getRuleClass() {
         return ShardingRule.class;
     }

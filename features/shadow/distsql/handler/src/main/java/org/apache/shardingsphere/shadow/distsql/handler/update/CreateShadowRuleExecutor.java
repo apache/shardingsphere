@@ -89,13 +89,6 @@ public final class CreateShadowRuleExecutor implements DatabaseRuleCreateExecuto
         return ShadowRuleStatementConverter.convert(segments);
     }
     
-    @Override
-    public void updateCurrentRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final ShadowRuleConfiguration toBeCreatedRuleConfig) {
-        currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
-        currentRuleConfig.getShadowAlgorithms().putAll(toBeCreatedRuleConfig.getShadowAlgorithms());
-        updateTables(currentRuleConfig.getTables(), toBeCreatedRuleConfig.getTables());
-    }
-    
     private void updateTables(final Map<String, ShadowTableConfiguration> currentTables, final Map<String, ShadowTableConfiguration> toBeCreateTables) {
         toBeCreateTables.forEach((key, value) -> currentTables.merge(key, value, ShadowRuleStatementSupporter::mergeConfiguration));
     }

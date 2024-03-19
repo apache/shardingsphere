@@ -84,17 +84,6 @@ public final class DropDefaultShardingStrategyExecutor implements DatabaseRuleDr
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (sqlStatement.getDefaultType().equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())) {
-            currentRuleConfig.setDefaultTableShardingStrategy(null);
-        } else {
-            currentRuleConfig.setDefaultDatabaseShardingStrategy(null);
-        }
-        UnusedAlgorithmFinder.findUnusedShardingAlgorithm(currentRuleConfig).forEach(each -> currentRuleConfig.getShardingAlgorithms().remove(each));
-        return currentRuleConfig.isEmpty();
-    }
-    
-    @Override
     public Class<ShardingRule> getRuleClass() {
         return ShardingRule.class;
     }

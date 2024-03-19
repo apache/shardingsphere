@@ -76,12 +76,6 @@ public final class DropShardingTableReferenceExecutor implements DatabaseRuleDro
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final DropShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getBindingTableGroups().removeIf(each -> sqlStatement.getNames().stream().anyMatch(each.getName()::equalsIgnoreCase));
-        return false;
-    }
-    
-    @Override
     public boolean hasAnyOneToBeDropped(final DropShardingTableReferenceRuleStatement sqlStatement) {
         return !Collections.disjoint(getCurrentShardingTableReferenceRuleNames(), sqlStatement.getNames());
     }

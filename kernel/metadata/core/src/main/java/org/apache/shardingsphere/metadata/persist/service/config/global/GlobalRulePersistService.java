@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.metadata.persist.service.config.global;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapper;
@@ -35,7 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * Global rule persist service.
@@ -104,18 +101,5 @@ public final class GlobalRulePersistService extends AbstractPersistService imple
     public RuleConfiguration load(final String ruleName) {
         Collection<YamlDataNode> dataNodes = getDataNodes(GlobalNode.getGlobalRuleNode(ruleName));
         return new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapSingleRuleToRuleConfiguration(ruleName, dataNodes).orElse(null);
-    }
-    
-    /**
-     * TODO Avoid load all keys.
-     * Load all users.
-     * 
-     * @return collection of user
-     */
-    @Override
-    public Collection<ShardingSphereUser> loadUsers() {
-        Optional<AuthorityRuleConfiguration> authorityRuleConfig = load().stream()
-                .filter(AuthorityRuleConfiguration.class::isInstance).map(AuthorityRuleConfiguration.class::cast).findFirst();
-        return authorityRuleConfig.isPresent() ? authorityRuleConfig.get().getUsers() : Collections.emptyList();
     }
 }

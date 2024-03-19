@@ -97,8 +97,7 @@ class LoadSingleTableExecutorTest {
         SingleRule rule = mock(SingleRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
-        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
+        executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         Iterator<String> iterator = currentConfig.getTables().iterator();
         assertThat(iterator.next(), is("ds_0.foo"));
         assertThat(iterator.next(), is("ds_0.bar"));

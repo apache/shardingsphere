@@ -46,13 +46,4 @@ public interface DatabaseRuleAlterExecutor<T extends SQLStatement, R extends Sha
      * @return to be dropped rule configuration
      */
     C buildToBeDroppedRuleConfiguration(C toBeAlteredRuleConfig);
-    
-    /**
-     * Update current rule configuration.
-     *
-     * @param currentRuleConfig current rule configuration to be updated
-     * @param toBeAlteredRuleConfig to be altered rule configuration
-     */
-    // TODO should remove after legacy metadata removed
-    void updateCurrentRuleConfiguration(C currentRuleConfig, C toBeAlteredRuleConfig);
 }

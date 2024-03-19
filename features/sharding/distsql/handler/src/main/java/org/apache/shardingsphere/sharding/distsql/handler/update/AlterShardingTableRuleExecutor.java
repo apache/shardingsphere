@@ -75,34 +75,6 @@ public final class AlterShardingTableRuleExecutor implements DatabaseRuleAlterEx
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
-        removeRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-        addRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-    }
-    
-    private void removeRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
-        Collection<String> toBeAlteredLogicTableNames = getAlteredLogicalTableNames(toBeAlteredRuleConfig);
-        toBeAlteredLogicTableNames.forEach(each -> {
-            currentRuleConfig.getTables().removeIf(table -> table.getLogicTable().equalsIgnoreCase(each));
-            currentRuleConfig.getAutoTables().removeIf(table -> table.getLogicTable().equalsIgnoreCase(each));
-        });
-    }
-    
-    private Collection<String> getAlteredLogicalTableNames(final ShardingRuleConfiguration toBeAlteredRuleConfig) {
-        Collection<String> result = toBeAlteredRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
-        result.addAll(toBeAlteredRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
-        return result;
-    }
-    
-    private void addRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
-        currentRuleConfig.getTables().addAll(toBeAlteredRuleConfig.getTables());
-        currentRuleConfig.getAutoTables().addAll(toBeAlteredRuleConfig.getAutoTables());
-        currentRuleConfig.getShardingAlgorithms().putAll(toBeAlteredRuleConfig.getShardingAlgorithms());
-        currentRuleConfig.getKeyGenerators().putAll(toBeAlteredRuleConfig.getKeyGenerators());
-        currentRuleConfig.getAuditors().putAll(toBeAlteredRuleConfig.getAuditors());
-    }
-    
-    @Override
     public Class<ShardingRule> getRuleClass() {
         return ShardingRule.class;
     }

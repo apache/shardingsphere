@@ -62,11 +62,6 @@ public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseR
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeCreatedRuleConfig) {
-        currentRuleConfig.setDefaultDataSource(toBeCreatedRuleConfig.getDefaultDataSource().orElse(null));
-    }
-    
-    @Override
     public Class<SingleRule> getRuleClass() {
         return SingleRule.class;
     }

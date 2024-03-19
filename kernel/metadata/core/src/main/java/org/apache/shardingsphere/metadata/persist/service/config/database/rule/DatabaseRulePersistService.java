@@ -62,6 +62,17 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
         }
     }
     
+    @Override
+    public Collection<RuleConfiguration> load(final String databaseName) {
+        Collection<YamlDataNode> dataNodes = getDataNodes(DatabaseMetaDataNode.getRulesNode(databaseName));
+        return dataNodes.isEmpty() ? Collections.emptyList() : new YamlDataNodeRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
+    }
+    
+    @Override
+    public void delete(final String databaseName, final String name) {
+        repository.delete(DatabaseMetaDataNode.getDatabaseRuleNode(databaseName, name));
+    }
+    
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public Collection<MetaDataVersion> persistConfig(final String databaseName, final Collection<RuleConfiguration> configs) {
@@ -91,10 +102,6 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
         return result;
     }
     
-    private String getActiveVersion(final String databaseName, final String ruleName, final String key) {
-        return repository.getDirectly(DatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, key));
-    }
-    
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public Collection<MetaDataVersion> deleteConfig(final String databaseName, final Collection<RuleConfiguration> configs) {
@@ -112,11 +119,6 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
         return result;
     }
     
-    @Override
-    public void delete(final String databaseName, final String ruleName) {
-        repository.delete(DatabaseMetaDataNode.getDatabaseRuleNode(databaseName, ruleName));
-    }
-    
     private Collection<MetaDataVersion> deleteDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (YamlDataNode each : dataNodes) {
@@ -127,9 +129,7 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
         return result;
     }
     
-    @Override
-    public Collection<RuleConfiguration> load(final String databaseName) {
-        Collection<YamlDataNode> dataNodes = getDataNodes(DatabaseMetaDataNode.getRulesNode(databaseName));
-        return dataNodes.isEmpty() ? Collections.emptyList() : new YamlDataNodeRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
+    private String getActiveVersion(final String databaseName, final String ruleName, final String key) {
+        return repository.getDirectly(DatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, key));
     }
 }

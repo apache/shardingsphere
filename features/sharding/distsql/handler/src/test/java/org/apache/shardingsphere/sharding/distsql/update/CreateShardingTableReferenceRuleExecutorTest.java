@@ -80,12 +80,9 @@ class CreateShardingTableReferenceRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        Collection<ShardingTableReferenceRuleConfiguration> referenceRuleConfigs = currentRuleConfig.getBindingTableGroups();
-        assertThat(referenceRuleConfigs.size(), is(1));
-        Iterator<ShardingTableReferenceRuleConfiguration> iterator = referenceRuleConfigs.iterator();
-        assertThat(iterator.next().getReference(), is("t_1,t_2"));
+        ShardingRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
+        Collection<ShardingTableReferenceRuleConfiguration> referenceRuleConfigs = actual.getBindingTableGroups();
+        assertThat(referenceRuleConfigs.size(), is(0));
     }
     
     private ShardingRuleConfiguration getCurrentRuleConfig() {

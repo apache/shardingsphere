@@ -113,16 +113,6 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
         return result;
     }
     
-    @Override
-    public boolean updateCurrentRuleConfiguration(final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> toBeDroppedShardingTableNames = getToBeDroppedShardingTableNames(sqlStatement);
-        toBeDroppedShardingTableNames.forEach(each -> dropShardingTable(currentRuleConfig, each));
-        UnusedAlgorithmFinder.findUnusedShardingAlgorithm(currentRuleConfig).forEach(each -> currentRuleConfig.getShardingAlgorithms().remove(each));
-        dropUnusedKeyGenerator(currentRuleConfig);
-        dropUnusedAuditor(currentRuleConfig);
-        return currentRuleConfig.isEmpty();
-    }
-    
     private void dropShardingTable(final ShardingRuleConfiguration currentRuleConfig, final String tableName) {
         currentRuleConfig.getTables().removeAll(currentRuleConfig.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()));
         currentRuleConfig.getAutoTables().removeAll(currentRuleConfig.getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()));

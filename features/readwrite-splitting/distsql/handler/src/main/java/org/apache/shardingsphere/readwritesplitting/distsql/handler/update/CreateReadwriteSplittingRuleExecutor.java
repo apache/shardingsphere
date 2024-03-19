@@ -57,12 +57,6 @@ public final class CreateReadwriteSplittingRuleExecutor implements DatabaseRuleC
         return ReadwriteSplittingRuleStatementConverter.convert(segments);
     }
     
-    @Override
-    public void updateCurrentRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig) {
-        currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
-        currentRuleConfig.getLoadBalancers().putAll(toBeCreatedRuleConfig.getLoadBalancers());
-    }
-    
     private Collection<String> getDuplicatedRuleNames(final Collection<ReadwriteSplittingRuleSegment> segments) {
         Collection<String> currentRuleNames = new LinkedList<>();
         if (null != rule) {

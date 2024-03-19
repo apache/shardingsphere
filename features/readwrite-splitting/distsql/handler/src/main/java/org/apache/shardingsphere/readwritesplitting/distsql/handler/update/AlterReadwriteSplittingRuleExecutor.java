@@ -73,12 +73,6 @@ public final class AlterReadwriteSplittingRuleExecutor implements DatabaseRuleAl
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancers);
     }
     
-    @Override
-    public void updateCurrentRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ReadwriteSplittingRuleConfiguration toBeAlteredRuleConfig) {
-        dropRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-        addRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-    }
-    
     private void dropRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ReadwriteSplittingRuleConfiguration toBeAlteredRuleConfig) {
         for (ReadwriteSplittingDataSourceRuleConfiguration each : toBeAlteredRuleConfig.getDataSources()) {
             Optional<ReadwriteSplittingDataSourceRuleConfiguration> toBeRemovedDataSourceRuleConfig =

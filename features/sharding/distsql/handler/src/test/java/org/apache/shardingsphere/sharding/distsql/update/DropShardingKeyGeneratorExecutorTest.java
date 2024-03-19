@@ -69,10 +69,8 @@ class DropShardingKeyGeneratorExecutorTest {
     @Test
     void assertDropSpecifiedKeyGenerator() {
         DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(false, Collections.singleton("uuid_key_generator"));
-        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        currentRuleConfig.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("uuid", new Properties()));
-        new DropShardingKeyGeneratorExecutor().updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
-        assertTrue(currentRuleConfig.getKeyGenerators().isEmpty());
+        ShardingRuleConfiguration actual = new DropShardingKeyGeneratorExecutor().buildToBeDroppedRuleConfiguration(sqlStatement);
+        assertTrue(actual.getKeyGenerators().isEmpty());
     }
     
     @Test

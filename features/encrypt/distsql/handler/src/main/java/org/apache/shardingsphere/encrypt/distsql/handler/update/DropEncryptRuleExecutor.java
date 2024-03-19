@@ -79,13 +79,6 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
         return new EncryptRuleConfiguration(toBeDroppedTables, toBeDroppedEncryptors);
     }
     
-    @Override
-    public boolean updateCurrentRuleConfiguration(final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        sqlStatement.getTables().forEach(this::dropRule);
-        dropUnusedEncryptor(currentRuleConfig);
-        return currentRuleConfig.isEmpty();
-    }
-    
     private void dropRule(final String ruleName) {
         Optional<EncryptTableRuleConfiguration> encryptTableRuleConfig = rule.getConfiguration().getTables().stream()
                 .filter(each -> each.getName().equals(ruleName)).findAny();

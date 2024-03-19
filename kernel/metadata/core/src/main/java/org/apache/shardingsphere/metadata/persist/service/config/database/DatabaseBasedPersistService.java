@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.metadata.persist.service.config.database;
 
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * Database based persist service.
@@ -48,24 +45,23 @@ public interface DatabaseBasedPersistService<T> {
     T load(String databaseName);
     
     /**
-     * Load configuration.
+     * Load configurations.
      *
      * @param databaseName database name
      * @param name name
      * @return configurations
      */
-    default T load(final String databaseName, final String name) {
+    default T load(String databaseName, String name) {
         return null;
     }
     
     /**
-     * Delete rule.
+     * Delete configurations.
      *
      * @param databaseName database name
-     * @param ruleName rule name
+     * @param name name
      */
-    default void delete(final String databaseName, final String ruleName) {
-    }
+    void delete(String databaseName, String name);
     
     /**
      * Delete configurations.
@@ -74,9 +70,7 @@ public interface DatabaseBasedPersistService<T> {
      * @param configs configurations
      * @return meta data versions
      */
-    default Collection<MetaDataVersion> deleteConfig(final String databaseName, final T configs) {
-        return Collections.emptyList();
-    }
+    Collection<MetaDataVersion> deleteConfig(String databaseName, T configs);
     
     /**
      * Persist configurations.
@@ -85,17 +79,5 @@ public interface DatabaseBasedPersistService<T> {
      * @param configs configurations
      * @return meta data versions
      */
-    default Collection<MetaDataVersion> persistConfig(final String databaseName, final T configs) {
-        return Collections.emptyList();
-    }
-    
-    /**
-     * TODO remove this after meta data refactor completed
-     * Append data source properties map.
-     *
-     * @param databaseName database name
-     * @param toBeAppendedPropsMap data source pool properties map to be appended
-     */
-    default void append(final String databaseName, final Map<String, DataSourcePoolProperties> toBeAppendedPropsMap) {
-    }
+    Collection<MetaDataVersion> persistConfig(String databaseName, T configs);
 }

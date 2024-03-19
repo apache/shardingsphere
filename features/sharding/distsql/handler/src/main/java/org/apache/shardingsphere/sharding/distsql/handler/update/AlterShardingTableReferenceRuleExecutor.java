@@ -123,13 +123,6 @@ public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRu
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
-        Collection<String> toBeAlteredRuleNames = getToBeAlteredRuleNames(toBeAlteredRuleConfig);
-        currentRuleConfig.getBindingTableGroups().removeIf(each -> toBeAlteredRuleNames.contains(each.getName()));
-        currentRuleConfig.getBindingTableGroups().addAll(toBeAlteredRuleConfig.getBindingTableGroups());
-    }
-    
-    @Override
     public Class<ShardingRule> getRuleClass() {
         return ShardingRule.class;
     }

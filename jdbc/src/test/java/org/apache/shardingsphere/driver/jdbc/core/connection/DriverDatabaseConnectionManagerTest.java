@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -107,7 +106,6 @@ class DriverDatabaseConnectionManagerTest {
         MetaDataPersistService result = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(result.getDataSourceUnitService().load(DefaultDatabase.LOGIC_NAME))
                 .thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new DataSourcePoolProperties(HikariDataSource.class.getName(), createProperties())));
-        when(result.getGlobalRuleService().loadUsers()).thenReturn(Collections.singletonList(new ShardingSphereUser("root", "root", "localhost")));
         return result;
     }
     

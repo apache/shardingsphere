@@ -104,9 +104,8 @@ class CreateDefaultShardingStrategyExecutorTest {
         AlgorithmSegment algorithm = new AlgorithmSegment("order_id_algorithm", new Properties());
         CreateDefaultShardingStrategyStatement sqlStatement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "standard", "order_id", algorithm);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        StandardShardingStrategyConfiguration defaultTableShardingStrategy = (StandardShardingStrategyConfiguration) currentRuleConfig.getDefaultTableShardingStrategy();
+        ShardingRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
+        StandardShardingStrategyConfiguration defaultTableShardingStrategy = (StandardShardingStrategyConfiguration) actual.getDefaultTableShardingStrategy();
         assertThat(defaultTableShardingStrategy.getShardingAlgorithmName(), is("default_table_order_id_algorithm"));
         assertThat(defaultTableShardingStrategy.getShardingColumn(), is("order_id"));
     }
@@ -120,9 +119,8 @@ class CreateDefaultShardingStrategyExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(statement);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(statement);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        StandardShardingStrategyConfiguration defaultDatabaseShardingStrategy = (StandardShardingStrategyConfiguration) currentRuleConfig.getDefaultDatabaseShardingStrategy();
+        ShardingRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(statement);
+        StandardShardingStrategyConfiguration defaultDatabaseShardingStrategy = (StandardShardingStrategyConfiguration) actual.getDefaultDatabaseShardingStrategy();
         assertThat(defaultDatabaseShardingStrategy.getShardingAlgorithmName(), is("default_database_inline"));
         assertThat(defaultDatabaseShardingStrategy.getShardingColumn(), is("user_id"));
     }
@@ -138,37 +136,13 @@ class CreateDefaultShardingStrategyExecutorTest {
         AlgorithmSegment algorithm = new AlgorithmSegment("order_id_algorithm", new Properties());
         CreateDefaultShardingStrategyStatement sqlStatement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "standard", "order_id", algorithm);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         algorithm = new AlgorithmSegment("user_id_algorithm", new Properties());
         CreateDefaultShardingStrategyStatement statementWithIfNotExists = new CreateDefaultShardingStrategyStatement(true, "TABLE", "standard", "order_id", algorithm);
         executor.checkBeforeUpdate(statementWithIfNotExists);
-        toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(statementWithIfNotExists);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        StandardShardingStrategyConfiguration defaultTableShardingStrategy = (StandardShardingStrategyConfiguration) currentRuleConfig.getDefaultTableShardingStrategy();
-        assertThat(defaultTableShardingStrategy.getShardingAlgorithmName(), is("default_table_order_id_algorithm"));
+        ShardingRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(statementWithIfNotExists);
+        StandardShardingStrategyConfiguration defaultTableShardingStrategy = (StandardShardingStrategyConfiguration) actual.getDefaultTableShardingStrategy();
+        assertThat(defaultTableShardingStrategy.getShardingAlgorithmName(), is("default_table_user_id_algorithm"));
         assertThat(defaultTableShardingStrategy.getShardingColumn(), is("order_id"));
-    }
-    
-    @Test
-    void assertCreateDefaultDatabaseShardingStrategyWithIfNotExists() {
-        AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}")));
-        CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement(false, "DATABASE", "standard", "user_id", databaseAlgorithmSegment);
-        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        ShardingRule rule = mock(ShardingRule.class);
-        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
-        executor.setRule(rule);
-        executor.checkBeforeUpdate(statement);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(statement);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${order_id % 2}")));
-        CreateDefaultShardingStrategyStatement statementWithIfNotExists = new CreateDefaultShardingStrategyStatement(true, "TABLE", "standard", "order_id", databaseAlgorithmSegment);
-        executor.checkBeforeUpdate(statementWithIfNotExists);
-        toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(statementWithIfNotExists);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        StandardShardingStrategyConfiguration defaultDatabaseShardingStrategy = (StandardShardingStrategyConfiguration) currentRuleConfig.getDefaultDatabaseShardingStrategy();
-        assertThat(defaultDatabaseShardingStrategy.getShardingAlgorithmName(), is("default_database_inline"));
-        assertThat(defaultDatabaseShardingStrategy.getShardingColumn(), is("user_id"));
     }
     
     @Test
@@ -181,9 +155,8 @@ class CreateDefaultShardingStrategyExecutorTest {
         executor.setRule(rule);
         CreateDefaultShardingStrategyStatement sqlStatement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "none", null, null);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        NoneShardingStrategyConfiguration defaultTableShardingStrategy = (NoneShardingStrategyConfiguration) currentRuleConfig.getDefaultTableShardingStrategy();
+        ShardingRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
+        NoneShardingStrategyConfiguration defaultTableShardingStrategy = (NoneShardingStrategyConfiguration) actual.getDefaultTableShardingStrategy();
         assertThat(defaultTableShardingStrategy.getType(), is(""));
         assertThat(defaultTableShardingStrategy.getShardingAlgorithmName(), is(""));
     }
@@ -196,9 +169,8 @@ class CreateDefaultShardingStrategyExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        NoneShardingStrategyConfiguration defaultDatabaseShardingStrategy = (NoneShardingStrategyConfiguration) currentRuleConfig.getDefaultDatabaseShardingStrategy();
+        ShardingRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
+        NoneShardingStrategyConfiguration defaultDatabaseShardingStrategy = (NoneShardingStrategyConfiguration) actual.getDefaultDatabaseShardingStrategy();
         assertThat(defaultDatabaseShardingStrategy.getType(), is(""));
         assertThat(defaultDatabaseShardingStrategy.getShardingAlgorithmName(), is(""));
     }

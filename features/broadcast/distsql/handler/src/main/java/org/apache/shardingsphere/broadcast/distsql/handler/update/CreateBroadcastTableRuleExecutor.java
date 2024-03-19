@@ -76,12 +76,6 @@ public final class CreateBroadcastTableRuleExecutor implements DatabaseRuleCreat
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final BroadcastRuleConfiguration currentRuleConfig, final BroadcastRuleConfiguration toBeCreatedRuleConfig) {
-        currentRuleConfig.getTables().clear();
-        currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
-    }
-    
-    @Override
     public Class<BroadcastRule> getRuleClass() {
         return BroadcastRule.class;
     }

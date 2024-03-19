@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
-import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.DropReadwriteSplittingRuleStatement;
@@ -116,15 +115,6 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
         return new ReadwriteSplittingRuleConfiguration(toBeDroppedDataSources, toBeDroppedLoadBalancers);
     }
     
-    @Override
-    public boolean updateCurrentRuleConfiguration(final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        for (String each : sqlStatement.getNames()) {
-            dropRule(each);
-        }
-        dropUnusedLoadBalancer(currentRuleConfig);
-        return currentRuleConfig.isEmpty();
-    }
-    
     private void dropRule(final String ruleName) {
         Optional<ReadwriteSplittingDataSourceRuleConfiguration> dataSourceRuleConfig = rule.getConfiguration().getDataSources().stream().filter(each -> ruleName.equals(each.getName())).findAny();
         dataSourceRuleConfig.ifPresent(optional -> rule.getConfiguration().getDataSources().remove(optional));
@@ -143,13 +133,6 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     public boolean hasAnyOneToBeDropped(final DropReadwriteSplittingRuleStatement sqlStatement) {
         return !Collections.disjoint(
                 rule.getConfiguration().getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getNames());
-    }
-    
-    @Override
-    public void operate(final DropReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabase database) {
-        for (StaticDataSourceRuleAttribute each : database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)) {
-            sqlStatement.getNames().forEach(each::cleanStorageNodeDataSource);
-        }
     }
     
     @Override
