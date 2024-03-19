@@ -927,3 +927,23 @@ CONDITION
 EVALUATE
     : E V A L U A T E
     ;
+
+TERMINATED
+    : T E R M I N A T E D
+    ;
+
+WHITESPACE
+    : W H I T E S P A C E
+    ;
+
+OPTIONALLY
+    :O P T I O N A L L Y
+    ;
+
+ENCLOSED
+    : E N C L O S E D
+    ;
+
+LRTRIM
+    :L R T R I M
+    ;

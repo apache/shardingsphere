@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
+package org.apache.shardingsphere.broadcast.distsql.handler.constant;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-public final class FixtureRule implements ShardingSphereRule {
+/**
+ * Broadcast DistSQL constants.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class BroadcastDistSQLConstants {
     
-    @Override
-    public RuleConfiguration getConfiguration() {
-        return new FixtureRuleConfiguration();
-    }
+    public static final String COMMA = ", ";
     
-    @Override
-    public RuleAttributes getAttributes() {
-        return new RuleAttributes();
-    }
+    public static final String SEMI = ";";
+    
+    public static final String CREATE_BROADCAST_RULE = "CREATE BROADCAST TABLE RULE ";
 }

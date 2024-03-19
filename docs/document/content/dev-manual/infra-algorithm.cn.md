@@ -9,7 +9,7 @@ chapter = true
 
 ### 全限定类名
 
-[`org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/core/src/main/java/org/apache/shardingsphere/infra/algorithm/load/balancer/core/LoadBalanceAlgorithm.java)
+[`org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/core/src/main/java/org/apache/shardingsphere/infra/algorithm/loadbalancer/core/LoadBalanceAlgorithm.java)
 
 ### 定义
 
@@ -19,9 +19,9 @@ chapter = true
 
 | *配置标识*      | *详细说明*        | *全限定类名*                                                                                                                                                                                                                                                                                                                              |
 |-------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ROUND_ROBIN | 基于轮询的负载均衡算法 | [`org.apache.shardingsphere.infra.algorithm.load.balancer.round.robin.RoundRobinLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/type/round-robin/src/main/java/org/apache/shardingsphere/infra/algorithm/load/balancer/round/robin/RoundRobinLoadBalanceAlgorithm.java) |
-| RANDOM      | 基于随机的负载均衡算法 | [`org.apache.shardingsphere.infra.algorithm.load.balancer.random.RandomLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/type/random/src/main/java/org/apache/shardingsphere/infra/algorithm/load/balancer/random/RandomLoadBalanceAlgorithm.java)         |
-| WEIGHT      | 基于权重的负载均衡算法 | [`org.apache.shardingsphere.infra.algorithm.load.balancer.weight.WeightLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/type/weight/src/main/java/org/apache/shardingsphere/infra/algorithm/load/balancer/weight/WeightLoadBalanceAlgorithm.java)         |
+| ROUND_ROBIN | 基于轮询的负载均衡算法 | [`org.apache.shardingsphere.infra.algorithm.loadbalancer.round.robin.RoundRobinLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/type/round-robin/src/main/java/org/apache/shardingsphere/infra/algorithm/loadbalancer/round/robin/RoundRobinLoadBalanceAlgorithm.java) |
+| RANDOM      | 基于随机的负载均衡算法 | [`org.apache.shardingsphere.infra.algorithm.loadbalancer.random.RandomLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/type/random/src/main/java/org/apache/shardingsphere/infra/algorithm/loadbalancer/random/RandomLoadBalanceAlgorithm.java)         |
+| WEIGHT      | 基于权重的负载均衡算法 | [`org.apache.shardingsphere.infra.algorithm.loadbalancer.weight.WeightLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/load-balancer/type/weight/src/main/java/org/apache/shardingsphere/infra/algorithm/loadbalancer/weight/WeightLoadBalanceAlgorithm.java)         |
 
 ## KeyGenerateAlgorithm
 
