@@ -34,10 +34,9 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -71,9 +70,12 @@ class DropDefaultShardingStrategyExecutorTest {
     
     @Test
     void asserBuildToBeDroppedRuleConfiguration() {
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
         ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("Database"));
-        assertNull(actual.getDefaultDatabaseShardingStrategy());
-        assertTrue(actual.getShardingAlgorithms().isEmpty());
+        assertNotNull(actual.getDefaultDatabaseShardingStrategy());
+        assertThat(actual.getShardingAlgorithms().size(), is(1));
     }
     
     @Test
@@ -83,15 +85,18 @@ class DropDefaultShardingStrategyExecutorTest {
         executor.setRule(rule);
         ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("Table"));
         assertNull(actual.getDefaultTableShardingStrategy());
-        assertThat(actual.getShardingAlgorithms().size(), is(1));
+        assertThat(actual.getShardingAlgorithms().size(), is(0));
     }
     
     @Test
     void assertUpdateMultipleStrategies() {
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
         ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("Database"));
         assertNull(actual.getDefaultTableShardingStrategy());
         actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("Table"));
-        assertTrue(actual.getShardingAlgorithms().isEmpty());
+        assertThat(actual.getShardingAlgorithms().size(), is(1));
     }
     
     private DropDefaultShardingStrategyStatement createSQLStatement(final String defaultType) {

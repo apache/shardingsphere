@@ -38,7 +38,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -69,8 +68,9 @@ class DropEncryptRuleExecutorTest {
         EncryptRule rule = mock(EncryptRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
-        assertTrue(executor.updateCurrentRuleConfiguration(createSQLStatement("t_encrypt"), ruleConfig));
-        assertTrue(ruleConfig.getEncryptors().isEmpty());
+        EncryptRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("t_encrypt"));
+        assertThat(toBeDroppedRuleConfig.getTables().size(), is(1));
+        assertThat(toBeDroppedRuleConfig.getEncryptors().size(), is(3));
     }
     
     @Test
@@ -79,8 +79,9 @@ class DropEncryptRuleExecutorTest {
         EncryptRule rule = mock(EncryptRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
-        assertFalse(executor.updateCurrentRuleConfiguration(createSQLStatement("t_encrypt"), ruleConfig));
-        assertThat(ruleConfig.getEncryptors().size(), is(1));
+        EncryptRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("t_encrypt"));
+        assertThat(toBeDroppedRuleConfig.getTables().size(), is(1));
+        assertTrue(toBeDroppedRuleConfig.getEncryptors().isEmpty());
     }
     
     @Test
@@ -90,9 +91,9 @@ class DropEncryptRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
         executor.setRule(rule);
         executor.checkBeforeUpdate(statement);
-        EncryptRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
-        assertFalse(executor.updateCurrentRuleConfiguration(statement, ruleConfig));
-        assertThat(ruleConfig.getEncryptors().size(), is(3));
+        EncryptRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(statement);
+        assertThat(toBeDroppedRuleConfig.getTables().size(), is(1));
+        assertTrue(toBeDroppedRuleConfig.getEncryptors().isEmpty());
     }
     
     private DropEncryptRuleStatement createSQLStatement(final String tableName) {
