@@ -23,7 +23,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmNotFoundException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmNotFoundOnTableException;
 import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
@@ -592,7 +592,7 @@ public final class ShardingRule implements DatabaseRule {
     
     private KeyGenerateAlgorithm getKeyGenerateAlgorithm(final String logicTableName) {
         Optional<ShardingTable> shardingTable = findShardingTable(logicTableName);
-        ShardingSpherePreconditions.checkState(shardingTable.isPresent(), () -> new AlgorithmNotFoundException("key generator", logicTableName));
+        ShardingSpherePreconditions.checkState(shardingTable.isPresent(), () -> new AlgorithmNotFoundOnTableException("key generator", logicTableName));
         return null == shardingTable.get().getKeyGeneratorName() ? defaultKeyGenerateAlgorithm : keyGenerators.get(shardingTable.get().getKeyGeneratorName());
     }
     

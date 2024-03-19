@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Algorithm not found exception.
+ * Algorithm not found on table exception.
  */
-public final class AlgorithmNotFoundException extends MetaDataSQLException {
+public final class AlgorithmNotFoundOnTableException extends MetaDataSQLException {
     
     private static final long serialVersionUID = -6334833729231404326L;
     
-    public AlgorithmNotFoundException(final String algorithmType, final String tableName) {
+    public AlgorithmNotFoundOnTableException(final String algorithmType, final String tableName) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 12, "Can not find '%s' algorithm on table '%s'.", algorithmType, tableName);
     }
 }
