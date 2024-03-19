@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.core.exception;
+package org.apache.shardingsphere.readwritesplitting.rule.attribute;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
+import org.apache.shardingsphere.infra.rule.attribute.resoure.StorageConnectorReusableRuleAttribute;
 
 /**
- * Algorithm not found exception.
+ * Readwrite-splitting storage connector reusable rule attribute.
  */
-public final class AlgorithmNotFoundException extends MetaDataSQLException {
-    
-    private static final long serialVersionUID = -6334833729231404326L;
-    
-    public AlgorithmNotFoundException(final String algorithmType, final String tableName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 12, "Can not find '%s' algorithm on table '%s'.", algorithmType, tableName);
-    }
+public final class ReadwriteSplittingStorageConnectorReusableRuleAttribute implements StorageConnectorReusableRuleAttribute {
 }

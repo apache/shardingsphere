@@ -45,7 +45,7 @@ public final class MaskMergedResult implements MergedResult {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        Optional<MaskAlgorithm> maskAlgorithm = metaData.findMaskAlgorithmByColumnIndex(columnIndex);
+        Optional<MaskAlgorithm> maskAlgorithm = metaData.findMaskAlgorithm(columnIndex);
         if (!maskAlgorithm.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }

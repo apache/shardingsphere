@@ -56,7 +56,7 @@ class MaskMergedResultTest {
         when(mergedResult.getValue(1, Object.class)).thenReturn("VALUE");
         MaskAlgorithm<String, String> maskAlgorithm = mock(MaskAlgorithm.class);
         when(maskAlgorithm.mask("VALUE")).thenReturn("MASK_VALUE");
-        when(metaData.findMaskAlgorithmByColumnIndex(1)).thenReturn(Optional.of(maskAlgorithm));
+        when(metaData.findMaskAlgorithm(1)).thenReturn(Optional.of(maskAlgorithm));
         assertThat(new MaskMergedResult(metaData, mergedResult).getValue(1, String.class), is("MASK_VALUE"));
     }
     

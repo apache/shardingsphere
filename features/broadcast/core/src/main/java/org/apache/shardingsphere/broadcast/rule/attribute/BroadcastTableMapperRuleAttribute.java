@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rule;
+package org.apache.shardingsphere.broadcast.rule.attribute;
 
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableNamesMapper;
 
 import java.util.Collection;
 
 /**
- * Encrypt table mapper rule attribute.
+ * Broadcast table mapper rule attribute.
  */
-public final class EncryptTableMapperRuleAttribute implements TableMapperRuleAttribute {
+public final class BroadcastTableMapperRuleAttribute implements TableMapperRuleAttribute {
     
     private final TableNamesMapper logicalTableMapper;
     
-    public EncryptTableMapperRuleAttribute(final Collection<EncryptTableRuleConfiguration> tables) {
+    public BroadcastTableMapperRuleAttribute(final Collection<String> tables) {
         logicalTableMapper = new TableNamesMapper();
-        tables.stream().map(EncryptTableRuleConfiguration::getName).forEach(logicalTableMapper::put);
+        tables.forEach(logicalTableMapper::put);
     }
     
     @Override
@@ -42,11 +41,11 @@ public final class EncryptTableMapperRuleAttribute implements TableMapperRuleAtt
     
     @Override
     public TableNamesMapper getDistributedTableMapper() {
-        return new TableNamesMapper();
+        return logicalTableMapper;
     }
     
     @Override
     public TableNamesMapper getEnhancedTableMapper() {
-        return logicalTableMapper;
+        return new TableNamesMapper();
     }
 }

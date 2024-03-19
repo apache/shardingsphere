@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.rule;
+package org.apache.shardingsphere.readwritesplitting.rule.attribute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.attribute.exportable.ExportableRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.attribute.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.readwritesplitting.group.type.StaticReadwriteSplittingGroup;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
