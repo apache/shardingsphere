@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.rule;
+package org.apache.shardingsphere.encrypt.rule.attribute;
 
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableNamesMapper;
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 
 import java.util.Collection;
 
 /**
- * Mask table mapper rule attribute.
+ * Encrypt table mapper rule attribute.
  */
-public final class MaskTableMapperRuleAttribute implements TableMapperRuleAttribute {
+public final class EncryptTableMapperRuleAttribute implements TableMapperRuleAttribute {
     
     private final TableNamesMapper logicalTableMapper;
     
-    public MaskTableMapperRuleAttribute(final Collection<MaskTableRuleConfiguration> tables) {
+    public EncryptTableMapperRuleAttribute(final Collection<EncryptTableRuleConfiguration> tables) {
         logicalTableMapper = new TableNamesMapper();
-        tables.stream().map(MaskTableRuleConfiguration::getName).forEach(logicalTableMapper::put);
+        tables.stream().map(EncryptTableRuleConfiguration::getName).forEach(logicalTableMapper::put);
     }
     
     @Override
@@ -47,6 +47,6 @@ public final class MaskTableMapperRuleAttribute implements TableMapperRuleAttrib
     
     @Override
     public TableNamesMapper getEnhancedTableMapper() {
-        return new TableNamesMapper();
+        return logicalTableMapper;
     }
 }

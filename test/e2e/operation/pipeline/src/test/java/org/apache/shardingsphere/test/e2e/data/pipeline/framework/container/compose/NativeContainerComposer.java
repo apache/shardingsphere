@@ -57,6 +57,7 @@ public final class NativeContainerComposer extends BaseContainerComposer {
         String jdbcUrl;
         switch (databaseType.getType()) {
             case "MySQL":
+            case "MariaDB":
                 String queryAllTables = String.format("select table_name from information_schema.tables where table_schema='%s' and table_type='BASE TABLE'", databaseName);
                 jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", actualDatabasePort, databaseName);
                 try (

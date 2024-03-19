@@ -21,8 +21,6 @@ ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 
 
 使用者需要主动使用 GraalVM Reachability Metadata 中央仓库。
 如下配置可供参考，以配置项目额外的 Maven Profiles，以 GraalVM Native Build Tools 的文档为准。
-由于 Gradle 8.6 的限制，用户需要通过 Maven 依赖的形式引入 Metadata Repository 的 JSON 文件。
-参考 https://github.com/graalvm/native-build-tools/issues/572 。
 
 ```xml
 <project>
@@ -72,6 +70,8 @@ ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 
 
 使用者需要主动使用 GraalVM Reachability Metadata 中央仓库。
 如下配置可供参考，以配置项目额外的 Gradle Tasks，以 GraalVM Native Build Tools 的文档为准。
+由于 Gradle 8.6 的限制，用户需要通过 Maven 依赖的形式引入 Metadata Repository 的 JSON 文件。
+参考 https://github.com/graalvm/native-build-tools/issues/572 。
 
 ```groovy
 plugins {

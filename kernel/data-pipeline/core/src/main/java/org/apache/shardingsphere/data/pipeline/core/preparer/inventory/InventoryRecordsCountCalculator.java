@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByUniqueKeyException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.mariadb.type.MariaDBDatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
@@ -72,7 +73,7 @@ public final class InventoryRecordsCountCalculator {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(estimatedCountSQL)) {
-            if (databaseType instanceof MySQLDatabaseType) {
+            if (databaseType instanceof MySQLDatabaseType || databaseType instanceof MariaDBDatabaseType) {
                 preparedStatement.setString(1, connection.getCatalog());
             }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

@@ -30,7 +30,6 @@ import java.util.Optional;
 /**
  * Mask algorithm meta data.
  */
-@SuppressWarnings("rawtypes")
 @RequiredArgsConstructor
 public final class MaskAlgorithmMetaData {
     
@@ -42,14 +41,12 @@ public final class MaskAlgorithmMetaData {
      * Find mask algorithm.
      *
      * @param columnIndex column index
-     * @return maskAlgorithm
+     * @return found mask algorithm
      */
-    public Optional<MaskAlgorithm> findMaskAlgorithmByColumnIndex(final int columnIndex) {
+    @SuppressWarnings("rawtypes")
+    public Optional<MaskAlgorithm> findMaskAlgorithm(final int columnIndex) {
         Optional<ColumnProjection> columnProjection = findColumnProjection(columnIndex);
-        if (!columnProjection.isPresent()) {
-            return Optional.empty();
-        }
-        return maskRule.findMaskAlgorithm(columnProjection.get().getOriginalTable().getValue(), columnProjection.get().getName().getValue());
+        return columnProjection.isPresent() ? maskRule.findAlgorithm(columnProjection.get().getOriginalTable().getValue(), columnProjection.get().getName().getValue()) : Optional.empty();
     }
     
     private Optional<ColumnProjection> findColumnProjection(final int columnIndex) {

@@ -29,6 +29,10 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.exception.rule.InvalidInlineExpressionDataSourceNameException;
+import org.apache.shardingsphere.readwritesplitting.rule.attribute.ReadwriteSplittingDataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.readwritesplitting.rule.attribute.ReadwriteSplittingExportableRuleAttribute;
+import org.apache.shardingsphere.readwritesplitting.rule.attribute.ReadwriteSplittingStaticDataSourceRuleAttribute;
+import org.apache.shardingsphere.readwritesplitting.rule.attribute.ReadwriteSplittingStorageConnectorReusableRuleAttribute;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

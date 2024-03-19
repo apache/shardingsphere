@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.rule;
+package org.apache.shardingsphere.readwritesplitting.rule.attribute;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourc
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceDeletedEvent;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 
 import java.util.Collection;
 import java.util.HashMap;
