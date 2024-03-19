@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.rule;
+package org.apache.shardingsphere.readwritesplitting.rule.attribute;
 
 import org.apache.shardingsphere.infra.rule.attribute.resoure.StorageConnectorReusableRuleAttribute;
 

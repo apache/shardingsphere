@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rule;
+package org.apache.shardingsphere.shadow.rule.attribute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.shadow.rule.ShadowDataSourceRule;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

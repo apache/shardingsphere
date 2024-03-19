@@ -19,6 +19,8 @@ package org.apache.shardingsphere.broadcast.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastDataNodeRuleAttribute;
+import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastTableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;

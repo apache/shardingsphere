@@ -15,38 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rule;
+package org.apache.shardingsphere.mask.rule.attribute;
 
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableNamesMapper;
+import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 
 import java.util.Collection;
 
 /**
- * Sharding table mapper rule attribute.
+ * Mask table mapper rule attribute.
  */
-public final class ShardingTableMapperRuleAttribute implements TableMapperRuleAttribute {
+public final class MaskTableMapperRuleAttribute implements TableMapperRuleAttribute {
     
     private final TableNamesMapper logicalTableMapper;
     
-    private final TableNamesMapper actualTableMapper;
-    
-    public ShardingTableMapperRuleAttribute(final Collection<ShardingTable> shardingTables) {
-        logicalTableMapper = createLogicalTableMapper(shardingTables);
-        actualTableMapper = createActualTableMapper(shardingTables);
-    }
-    
-    private TableNamesMapper createLogicalTableMapper(final Collection<ShardingTable> shardingTables) {
-        TableNamesMapper result = new TableNamesMapper();
-        shardingTables.forEach(each -> result.put(each.getLogicTable()));
-        return result;
-    }
-    
-    private TableNamesMapper createActualTableMapper(final Collection<ShardingTable> shardingTables) {
-        TableNamesMapper result = new TableNamesMapper();
-        shardingTables.stream().flatMap(each -> each.getActualDataNodes().stream()).map(DataNode::getTableName).forEach(result::put);
-        return result;
+    public MaskTableMapperRuleAttribute(final Collection<MaskTableRuleConfiguration> tables) {
+        logicalTableMapper = new TableNamesMapper();
+        tables.stream().map(MaskTableRuleConfiguration::getName).forEach(logicalTableMapper::put);
     }
     
     @Override
@@ -55,17 +41,12 @@ public final class ShardingTableMapperRuleAttribute implements TableMapperRuleAt
     }
     
     @Override
-    public TableNamesMapper getActualTableMapper() {
-        return actualTableMapper;
-    }
-    
-    @Override
     public TableNamesMapper getDistributedTableMapper() {
-        return logicalTableMapper;
+        return new TableNamesMapper();
     }
     
     @Override
     public TableNamesMapper getEnhancedTableMapper() {
-        return logicalTableMapper;
+        return new TableNamesMapper();
     }
 }

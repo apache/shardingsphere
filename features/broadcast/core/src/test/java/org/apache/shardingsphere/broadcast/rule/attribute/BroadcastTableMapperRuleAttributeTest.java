@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rule;
+package org.apache.shardingsphere.broadcast.rule.attribute;
 
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -26,29 +24,14 @@ import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class ShardingTableMapperRuleAttributeTest {
+class BroadcastTableMapperRuleAttributeTest {
     
-    private ShardingTableMapperRuleAttribute ruleAttribute;
-    
-    @BeforeEach
-    void setUp() {
-        ShardingTable shardingTable = mock(ShardingTable.class);
-        when(shardingTable.getLogicTable()).thenReturn("foo_tbl");
-        when(shardingTable.getActualDataNodes()).thenReturn(Collections.singletonList(new DataNode("foo_ds.foo_tbl_0")));
-        ruleAttribute = new ShardingTableMapperRuleAttribute(Collections.singleton(shardingTable));
-    }
+    private final BroadcastTableMapperRuleAttribute ruleAttribute = new BroadcastTableMapperRuleAttribute(Collections.singleton("foo_tbl"));
     
     @Test
     void assertGetLogicTableMapper() {
         assertThat(new LinkedList<>(ruleAttribute.getLogicTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl")));
-    }
-    
-    @Test
-    void assertGetActualTableMapper() {
-        assertThat(new LinkedList<>(ruleAttribute.getActualTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl_0")));
     }
     
     @Test
@@ -58,6 +41,6 @@ class ShardingTableMapperRuleAttributeTest {
     
     @Test
     void assertGetEnhancedTableMapper() {
-        assertThat(new LinkedList<>(ruleAttribute.getEnhancedTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl")));
+        assertThat(new LinkedList<>(ruleAttribute.getEnhancedTableMapper().getTableNames()), is(Collections.emptyList()));
     }
 }

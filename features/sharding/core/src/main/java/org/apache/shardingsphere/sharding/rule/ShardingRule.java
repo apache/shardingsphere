@@ -53,6 +53,8 @@ import org.apache.shardingsphere.sharding.cache.ShardingCache;
 import org.apache.shardingsphere.sharding.exception.metadata.DuplicateSharingActualDataNodeException;
 import org.apache.shardingsphere.sharding.exception.metadata.InvalidBindingTablesException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
+import org.apache.shardingsphere.sharding.rule.attribute.ShardingDataNodeRuleAttribute;
+import org.apache.shardingsphere.sharding.rule.attribute.ShardingTableMapperRuleAttribute;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;

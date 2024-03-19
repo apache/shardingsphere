@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rule;
+package org.apache.shardingsphere.sharding.rule.attribute;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.util.Collection;
 import java.util.Collections;

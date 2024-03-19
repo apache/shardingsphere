@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.rule;
+package org.apache.shardingsphere.readwritesplitting.rule.attribute;
 
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

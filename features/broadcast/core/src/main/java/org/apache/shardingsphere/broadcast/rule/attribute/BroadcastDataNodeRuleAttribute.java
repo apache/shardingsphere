@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.rule;
+package org.apache.shardingsphere.broadcast.rule.attribute;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;

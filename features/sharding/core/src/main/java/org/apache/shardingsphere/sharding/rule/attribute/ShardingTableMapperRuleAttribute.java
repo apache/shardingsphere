@@ -15,28 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.rule;
+package org.apache.shardingsphere.sharding.rule.attribute;
 
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableNamesMapper;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.util.Collection;
 
 /**
- * Broadcast table mapper rule attribute.
+ * Sharding table mapper rule attribute.
  */
-public final class BroadcastTableMapperRuleAttribute implements TableMapperRuleAttribute {
+public final class ShardingTableMapperRuleAttribute implements TableMapperRuleAttribute {
     
     private final TableNamesMapper logicalTableMapper;
     
-    public BroadcastTableMapperRuleAttribute(final Collection<String> tables) {
-        logicalTableMapper = new TableNamesMapper();
-        tables.forEach(logicalTableMapper::put);
+    private final TableNamesMapper actualTableMapper;
+    
+    public ShardingTableMapperRuleAttribute(final Collection<ShardingTable> shardingTables) {
+        logicalTableMapper = createLogicalTableMapper(shardingTables);
+        actualTableMapper = createActualTableMapper(shardingTables);
+    }
+    
+    private TableNamesMapper createLogicalTableMapper(final Collection<ShardingTable> shardingTables) {
+        TableNamesMapper result = new TableNamesMapper();
+        shardingTables.forEach(each -> result.put(each.getLogicTable()));
+        return result;
+    }
+    
+    private TableNamesMapper createActualTableMapper(final Collection<ShardingTable> shardingTables) {
+        TableNamesMapper result = new TableNamesMapper();
+        shardingTables.stream().flatMap(each -> each.getActualDataNodes().stream()).map(DataNode::getTableName).forEach(result::put);
+        return result;
     }
     
     @Override
     public TableNamesMapper getLogicTableMapper() {
         return logicalTableMapper;
+    }
+    
+    @Override
+    public TableNamesMapper getActualTableMapper() {
+        return actualTableMapper;
     }
     
     @Override
@@ -46,6 +67,6 @@ public final class BroadcastTableMapperRuleAttribute implements TableMapperRuleA
     
     @Override
     public TableNamesMapper getEnhancedTableMapper() {
-        return new TableNamesMapper();
+        return logicalTableMapper;
     }
 }
