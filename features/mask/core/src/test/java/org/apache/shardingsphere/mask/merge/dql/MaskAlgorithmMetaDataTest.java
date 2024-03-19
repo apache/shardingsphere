@@ -50,14 +50,14 @@ class MaskAlgorithmMetaDataTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    void assertFindMaskAlgorithmByColumnIndex() {
-        when(maskRule.findMaskAlgorithm("t_order", "order_id")).thenReturn(Optional.of(TypedSPILoader.getService(MaskAlgorithm.class, "MD5")));
+    void assertFindAlgorithmByColumnIndex() {
+        when(maskRule.findAlgorithm("t_order", "order_id")).thenReturn(Optional.of(TypedSPILoader.getService(MaskAlgorithm.class, "MD5")));
         ColumnProjection columnProjection = new ColumnProjection(null, "order_id", null, mock(DatabaseType.class));
         columnProjection.setOriginalColumn(new IdentifierValue("order_id"));
         columnProjection.setOriginalTable(new IdentifierValue("t_order"));
         when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(columnProjection));
         when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_order"));
-        Optional<MaskAlgorithm> actual = new MaskAlgorithmMetaData(maskRule, selectStatementContext).findMaskAlgorithmByColumnIndex(1);
+        Optional<MaskAlgorithm> actual = new MaskAlgorithmMetaData(maskRule, selectStatementContext).findMaskAlgorithm(1);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getType(), is("MD5"));
     }

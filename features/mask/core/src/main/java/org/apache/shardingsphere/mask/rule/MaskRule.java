@@ -17,38 +17,41 @@
 
 package org.apache.shardingsphere.mask.rule;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.rule.attribute.MaskTableMapperRuleAttribute;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Mask rule.
  */
-@SuppressWarnings("rawtypes")
 public final class MaskRule implements DatabaseRule {
     
     @Getter
     private final MaskRuleConfiguration configuration;
     
-    private final Map<String, MaskAlgorithm> maskAlgorithms = new LinkedHashMap<>();
+    private final Map<String, MaskTable> tables;
     
-    private final Map<String, MaskTable> tables = new LinkedHashMap<>();
+    private final Map<String, MaskAlgorithm<?, ?>> maskAlgorithms;
     
     @Getter
     private final RuleAttributes attributes;
     
+    @SuppressWarnings("unchecked")
     public MaskRule(final MaskRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        ruleConfig.getMaskAlgorithms().forEach((key, value) -> maskAlgorithms.put(key, TypedSPILoader.getService(MaskAlgorithm.class, value.getType(), value.getProps())));
-        ruleConfig.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new MaskTable(each)));
+        tables = ruleConfig.getTables().stream().collect(Collectors.toMap(each -> each.getName().toLowerCase(), MaskTable::new, (oldValue, currentValue) -> oldValue, CaseInsensitiveMap::new));
+        maskAlgorithms = ruleConfig.getMaskAlgorithms().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> TypedSPILoader.getService(MaskAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps())));
         attributes = new RuleAttributes(new MaskTableMapperRuleAttribute(ruleConfig.getTables()));
     }
     
@@ -57,10 +60,10 @@ public final class MaskRule implements DatabaseRule {
      *
      * @param logicTable logic table name
      * @param logicColumn logic column name
-     * @return maskAlgorithm
+     * @return mask algorithm
      */
-    public Optional<MaskAlgorithm> findMaskAlgorithm(final String logicTable, final String logicColumn) {
-        String lowerCaseLogicTable = logicTable.toLowerCase();
-        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findMaskAlgorithmName(logicColumn).map(maskAlgorithms::get) : Optional.empty();
+    @SuppressWarnings("rawtypes")
+    public Optional<MaskAlgorithm> findAlgorithm(final String logicTable, final String logicColumn) {
+        return tables.containsKey(logicTable) ? tables.get(logicTable).findAlgorithmName(logicColumn).map(maskAlgorithms::get) : Optional.empty();
     }
 }
