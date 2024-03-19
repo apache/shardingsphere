@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MariaDBContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.PostgreSQLContainer;
@@ -45,6 +46,8 @@ public final class PipelineE2EEnvironment {
     
     private final List<String> mysqlVersions;
     
+    private final List<String> mariadbVersions;
+    
     private final List<String> postgresqlVersions;
     
     private final List<String> openGaussVersions;
@@ -55,6 +58,7 @@ public final class PipelineE2EEnvironment {
         props = loadProperties();
         itEnvType = PipelineEnvTypeEnum.valueOf(props.getProperty("pipeline.it.env.type", PipelineEnvTypeEnum.NONE.name()).toUpperCase());
         mysqlVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.mysql.version", "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
+        mariadbVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.mariadb.version", "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
         postgresqlVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.postgresql.version", "").toString().split(",")).filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList());
         openGaussVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.opengauss.version", "").toString().split(",")).filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList());
         oracleVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.oracle.version", "").toString().split(",")).filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList());
@@ -83,6 +87,8 @@ public final class PipelineE2EEnvironment {
         switch (databaseType.getType()) {
             case "MySQL":
                 return Integer.parseInt(props.getOrDefault("pipeline.it.native.mysql.port", MySQLContainer.MYSQL_EXPOSED_PORT).toString());
+            case "MariaDB":
+                return Integer.parseInt(props.getOrDefault("pipeline.it.native.mariadb.port", MariaDBContainer.EXPOSED_PORT).toString());
             case "PostgreSQL":
                 return Integer.parseInt(props.getOrDefault("pipeline.it.native.postgresql.port", PostgreSQLContainer.POSTGRESQL_EXPOSED_PORT).toString());
             case "openGauss":
@@ -147,6 +153,8 @@ public final class PipelineE2EEnvironment {
         switch (databaseType.getType()) {
             case "MySQL":
                 return mysqlVersions;
+            case "MariaDB":
+                return mariadbVersions;
             case "PostgreSQL":
                 return postgresqlVersions;
             case "openGauss":
