@@ -84,9 +84,11 @@ class AlterEncryptRuleExecutorTest {
     
     @Test
     void assertUpdateCurrentRuleConfigurationWithInUsedEncryptor() {
-        EncryptRuleConfiguration currentRuleConfig = createCurrentRuleConfigurationWithMultipleTableRules();
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, createToBeAlteredRuleConfiguration());
-        assertThat(currentRuleConfig.getEncryptors().size(), is(1));
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
+        EncryptRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(createSQLStatement("MD5"));
+        assertThat(toBeAlteredRuleConfig.getEncryptors().size(), is(3));
     }
     
     private AlterEncryptRuleStatement createSQLStatement(final String encryptorName) {

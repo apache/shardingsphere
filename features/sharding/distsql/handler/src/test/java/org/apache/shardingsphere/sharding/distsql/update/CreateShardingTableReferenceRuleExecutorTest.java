@@ -31,7 +31,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;

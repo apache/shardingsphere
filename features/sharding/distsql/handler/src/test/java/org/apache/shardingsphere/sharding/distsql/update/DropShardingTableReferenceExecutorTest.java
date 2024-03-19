@@ -107,9 +107,9 @@ class DropShardingTableReferenceExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
-        assertThat(actual.getBindingTableGroups().size(), is(1));
-        assertThat(actual.getBindingTableGroups().iterator().next().getReference(), is("t_order,t_order_item"));
+        ShardingRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
+        assertThat(toBeDroppedRuleConfig.getBindingTableGroups().size(), is(1));
+        assertThat(toBeDroppedRuleConfig.getBindingTableGroups().iterator().next().getName(), is("reference_1"));
     }
     
     @Test
@@ -122,6 +122,6 @@ class DropShardingTableReferenceExecutorTest {
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
         ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
-        assertTrue(actual.getBindingTableGroups().isEmpty());
+        assertThat(actual.getBindingTableGroups().size(), is(2));
     }
 }

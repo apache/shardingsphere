@@ -88,24 +88,33 @@ class DropShardingTableRuleExecutorTest {
     
     @Test
     void assertUpdate() {
-        ShardingRuleConfiguration actual = new DropShardingTableRuleExecutor().buildToBeDroppedRuleConfiguration(createSQLStatement("t_order"));
-        assertFalse(getShardingTables(actual).contains("t_order"));
-        assertTrue(getBindingTables(actual).contains("t_order_item"));
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
+        ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("t_order"));
+        assertTrue(getShardingTables(actual).contains("t_order"));
+        assertFalse(getBindingTables(actual).contains("t_order_item"));
     }
     
     @Test
     void assertUpdateWithDifferentCase() {
-        ShardingRuleConfiguration actual = new DropShardingTableRuleExecutor().buildToBeDroppedRuleConfiguration(createSQLStatement("T_ORDER"));
-        assertFalse(getShardingTables(actual).contains("t_order"));
-        assertTrue(getBindingTables(actual).contains("t_order_item"));
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
+        ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("T_ORDER"));
+        assertTrue(getShardingTables(actual).contains("t_order"));
+        assertFalse(getBindingTables(actual).contains("t_order_item"));
     }
     
     @Test
     void assertDropRuleAndUnusedAlgorithm() {
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
         DropShardingTableRuleStatement sqlStatement = createSQLStatement("t_order");
-        ShardingRuleConfiguration actual = new DropShardingTableRuleExecutor().buildToBeDroppedRuleConfiguration(sqlStatement);
-        assertFalse(getShardingTables(actual).contains("t_order"));
-        assertTrue(getBindingTables(actual).contains("t_order_item"));
+        ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
+        assertTrue(getShardingTables(actual).contains("t_order"));
+        assertFalse(getBindingTables(actual).contains("t_order_item"));
         assertThat(actual.getShardingAlgorithms().size(), is(2));
         assertThat(actual.getKeyGenerators().size(), is(1));
         assertThat(actual.getAuditors().size(), is(1));

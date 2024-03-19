@@ -28,7 +28,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,8 +61,8 @@ class DropShadowAlgorithmExecutorTest {
         executor.setRule(rule);
         DropShadowAlgorithmStatement sqlStatement = createSQLStatement("shadow_algorithm");
         executor.checkBeforeUpdate(sqlStatement);
-        executor.updateCurrentRuleConfiguration(sqlStatement, ruleConfig);
-        assertTrue(ruleConfig.getShadowAlgorithms().isEmpty());
+        ShadowRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
+        assertThat(toBeDroppedRuleConfig.getShadowAlgorithms().size(), is(1));
     }
     
     private DropShadowAlgorithmStatement createSQLStatement(final String... ruleName) {

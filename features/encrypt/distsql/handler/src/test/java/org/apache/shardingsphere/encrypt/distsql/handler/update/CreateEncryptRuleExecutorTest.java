@@ -41,8 +41,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -88,9 +86,8 @@ class CreateEncryptRuleExecutorTest {
         CreateEncryptRuleStatement sqlStatement = createAESEncryptRuleSQLStatement(true);
         executor.checkBeforeUpdate(sqlStatement);
         EncryptRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        assertThat(currentRuleConfig.getTables().size(), is(2));
-        assertTrue(currentRuleConfig.getEncryptors().isEmpty());
+        assertTrue(toBeCreatedRuleConfig.getTables().isEmpty());
+        assertTrue(toBeCreatedRuleConfig.getEncryptors().isEmpty());
     }
     
     private CreateEncryptRuleStatement createAESEncryptRuleSQLStatement(final boolean ifNotExists) {
