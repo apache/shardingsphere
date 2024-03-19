@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.rule.attribute.MaskTableMapperRuleAttribute;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.LinkedHashMap;

@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.rule;
+package org.apache.shardingsphere.mask.rule.attribute;
 
+import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -25,9 +26,9 @@ import java.util.LinkedList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class BroadcastTableMapperRuleAttributeTest {
+class MaskTableMapperRuleAttributeTest {
     
-    private final BroadcastTableMapperRuleAttribute ruleAttribute = new BroadcastTableMapperRuleAttribute(Collections.singleton("foo_tbl"));
+    private final MaskTableMapperRuleAttribute ruleAttribute = new MaskTableMapperRuleAttribute(Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList())));
     
     @Test
     void assertGetLogicTableMapper() {
@@ -36,7 +37,7 @@ class BroadcastTableMapperRuleAttributeTest {
     
     @Test
     void assertGetDistributedTableMapper() {
-        assertThat(new LinkedList<>(ruleAttribute.getDistributedTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl")));
+        assertThat(new LinkedList<>(ruleAttribute.getDistributedTableMapper().getTableNames()), is(Collections.emptyList()));
     }
     
     @Test

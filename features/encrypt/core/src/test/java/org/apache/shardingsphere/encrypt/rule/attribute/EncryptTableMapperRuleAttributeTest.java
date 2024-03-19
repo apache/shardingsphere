@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.rule;
+package org.apache.shardingsphere.encrypt.rule.attribute;
 
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -26,9 +26,9 @@ import java.util.LinkedList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MaskTableMapperRuleAttributeTest {
+class EncryptTableMapperRuleAttributeTest {
     
-    private final MaskTableMapperRuleAttribute ruleAttribute = new MaskTableMapperRuleAttribute(Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList())));
+    private final EncryptTableMapperRuleAttribute ruleAttribute = new EncryptTableMapperRuleAttribute(Collections.singleton(new EncryptTableRuleConfiguration("foo_tbl", Collections.emptyList())));
     
     @Test
     void assertGetLogicTableMapper() {
@@ -42,6 +42,6 @@ class MaskTableMapperRuleAttributeTest {
     
     @Test
     void assertGetEnhancedTableMapper() {
-        assertThat(new LinkedList<>(ruleAttribute.getEnhancedTableMapper().getTableNames()), is(Collections.emptyList()));
+        assertThat(new LinkedList<>(ruleAttribute.getEnhancedTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl")));
     }
 }

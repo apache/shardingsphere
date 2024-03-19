@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rule;
+package org.apache.shardingsphere.sharding.rule.attribute;
 
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -25,10 +27,20 @@ import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-class EncryptTableMapperRuleAttributeTest {
+class ShardingTableMapperRuleAttributeTest {
     
-    private final EncryptTableMapperRuleAttribute ruleAttribute = new EncryptTableMapperRuleAttribute(Collections.singleton(new EncryptTableRuleConfiguration("foo_tbl", Collections.emptyList())));
+    private ShardingTableMapperRuleAttribute ruleAttribute;
+    
+    @BeforeEach
+    void setUp() {
+        ShardingTable shardingTable = mock(ShardingTable.class);
+        when(shardingTable.getLogicTable()).thenReturn("foo_tbl");
+        when(shardingTable.getActualDataNodes()).thenReturn(Collections.singletonList(new DataNode("foo_ds.foo_tbl_0")));
+        ruleAttribute = new ShardingTableMapperRuleAttribute(Collections.singleton(shardingTable));
+    }
     
     @Test
     void assertGetLogicTableMapper() {
@@ -36,8 +48,13 @@ class EncryptTableMapperRuleAttributeTest {
     }
     
     @Test
+    void assertGetActualTableMapper() {
+        assertThat(new LinkedList<>(ruleAttribute.getActualTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl_0")));
+    }
+    
+    @Test
     void assertGetDistributedTableMapper() {
-        assertThat(new LinkedList<>(ruleAttribute.getDistributedTableMapper().getTableNames()), is(Collections.emptyList()));
+        assertThat(new LinkedList<>(ruleAttribute.getDistributedTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl")));
     }
     
     @Test
