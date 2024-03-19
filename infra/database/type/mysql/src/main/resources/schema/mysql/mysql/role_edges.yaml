@@ -15,61 +15,43 @@
 # limitations under the License.
 #
 
-name: TABLE_CONSTRAINTS
+name: role_edges
 columns:
-  constraint_catalog:
+  from_host:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: FROM_HOST
+    primaryKey: true
+    visible: true
+  from_user:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: FROM_USER
+    primaryKey: true
+    visible: true
+  to_host:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: TO_HOST
+    primaryKey: true
+    visible: true
+  to_user:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: TO_USER
+    primaryKey: true
+    visible: true
+  with_admin_option:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: CONSTRAINT_CATALOG
+    name: WITH_ADMIN_OPTION
     primaryKey: false
-    unsigned: false
     visible: true
-  constraint_schema:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: CONSTRAINT_SCHEMA
-    primaryKey: false
-    unsigned: false
-    visible: true
-  constraint_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: CONSTRAINT_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  table_schema:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: TABLE_SCHEMA
-    primaryKey: false
-    unsigned: false
-    visible: true
-  table_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: TABLE_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  constraint_type:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: CONSTRAINT_TYPE
-    primaryKey: false
-    unsigned: false
-    visible: true
-  enforced:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: ENFORCED
-    primaryKey: false
-    unsigned: false
-    visible: true
+indexes:
+  primary:
+    name: PRIMARY

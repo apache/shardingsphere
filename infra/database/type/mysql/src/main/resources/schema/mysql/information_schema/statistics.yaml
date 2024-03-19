@@ -145,3 +145,19 @@ columns:
     primaryKey: false
     unsigned: false
     visible: true
+  is_visible:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: IS_VISIBLE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  expression:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EXPRESSION
+    primaryKey: false
+    unsigned: false
+    visible: true
