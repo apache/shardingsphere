@@ -126,6 +126,7 @@
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
+        <druid.version>1.2.22</druid.version>
         
         <prometheus-simpleclient.version>0.11.0</prometheus-simpleclient.version>
         <prometheus-jmx.version>0.16.1</prometheus-jmx.version>
