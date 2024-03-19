@@ -62,7 +62,14 @@ public final class SQLFederationDataTypeUtils {
         return typeFactory.createTypeWithNullability(javaType, true);
     }
     
-    private static Class<?> getSqlTypeClass(final DatabaseType protocolType, final ShardingSphereColumn column) {
+    /**
+     * Get SQL type class.
+     * 
+     * @param protocolType protocol type
+     * @param column ShardingSphere column
+     * @return SQL type class
+     */
+    public static Class<?> getSqlTypeClass(final DatabaseType protocolType, final ShardingSphereColumn column) {
         Optional<Class<?>> typeClazz = Optional.empty();
         if (protocolType instanceof MySQLDatabaseType) {
             typeClazz = findMySQLTypeClass(column);
