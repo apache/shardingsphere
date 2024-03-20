@@ -39,12 +39,12 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
-    public String getDatabaseType() {
-        return "SQLServer";
+    public Optional<String> getDefaultSchema() {
+        return Optional.of("dbo");
     }
     
     @Override
-    public Optional<String> getDefaultSchema() {
-        return Optional.of("dbo");
+    public String getDatabaseType() {
+        return "SQLServer";
     }
 }
