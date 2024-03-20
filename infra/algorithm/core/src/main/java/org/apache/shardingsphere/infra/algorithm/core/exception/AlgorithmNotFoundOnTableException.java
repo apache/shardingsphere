@@ -27,7 +27,7 @@ public final class AlgorithmNotFoundOnTableException extends MetaDataSQLExceptio
     
     private static final long serialVersionUID = -6334833729231404326L;
     
-    public AlgorithmNotFoundOnTableException(final String algorithmType, final String tableName) {
-        super(XOpenSQLState.NOT_FOUND, 13, "Can not find '%s' algorithm on table '%s'.", algorithmType, tableName);
+    public AlgorithmNotFoundOnTableException(final String algorithmType, final String databaseName, final String tableName) {
+        super(XOpenSQLState.NOT_FOUND, 13, "Can not find '%s' algorithm on database.table: '%s'.'%s'.", algorithmType, databaseName, tableName);
     }
 }

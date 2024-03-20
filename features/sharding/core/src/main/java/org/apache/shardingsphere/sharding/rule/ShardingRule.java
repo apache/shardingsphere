@@ -589,23 +589,24 @@ public final class ShardingRule implements DatabaseRule {
      * @return generated keys
      */
     public Collection<? extends Comparable<?>> generateKeys(final AlgorithmSQLContext algorithmSQLContext, final int keyGenerateCount) {
-        return getKeyGenerateAlgorithm(algorithmSQLContext.getTableName()).generateKeys(algorithmSQLContext, keyGenerateCount);
+        return getKeyGenerateAlgorithm(algorithmSQLContext.getDatabaseName(), algorithmSQLContext.getTableName()).generateKeys(algorithmSQLContext, keyGenerateCount);
     }
     
-    private KeyGenerateAlgorithm getKeyGenerateAlgorithm(final String logicTableName) {
+    private KeyGenerateAlgorithm getKeyGenerateAlgorithm(final String databaseName, final String logicTableName) {
         Optional<ShardingTable> shardingTable = findShardingTable(logicTableName);
-        ShardingSpherePreconditions.checkState(shardingTable.isPresent(), () -> new AlgorithmNotFoundOnTableException("key generator", logicTableName));
+        ShardingSpherePreconditions.checkState(shardingTable.isPresent(), () -> new AlgorithmNotFoundOnTableException("key generator", databaseName, logicTableName));
         return null == shardingTable.get().getKeyGeneratorName() ? defaultKeyGenerateAlgorithm : keyGenerators.get(shardingTable.get().getKeyGeneratorName());
     }
     
     /**
      * Judge whether support auto increment or not.
      * 
+     * @param databaseName database name
      * @param logicTableName logic table name
      * @return whether support auto increment or not
      */
-    public boolean isSupportAutoIncrement(final String logicTableName) {
-        return getKeyGenerateAlgorithm(logicTableName).isSupportAutoIncrement();
+    public boolean isSupportAutoIncrement(final String databaseName, final String logicTableName) {
+        return getKeyGenerateAlgorithm(databaseName, logicTableName).isSupportAutoIncrement();
     }
     
     /**

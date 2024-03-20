@@ -29,6 +29,6 @@ public final class AlgorithmNotFoundOnColumnException extends MetaDataSQLExcepti
     
     public AlgorithmNotFoundOnColumnException(final String algorithmType, final String algorithmName, final String databaseName, final String tableName, final String columnName) {
         super(XOpenSQLState.NOT_FOUND, 13,
-                "Can not find '%s' algorithm '%s' on database.table.column '%s'.'%s'.'%s'.", algorithmType, algorithmName, databaseName, tableName, columnName);
+                "Can not find '%s' algorithm '%s' on database.table.column: '%s'.'%s'.'%s'.", algorithmType, algorithmName, databaseName, tableName, columnName);
     }
 }
