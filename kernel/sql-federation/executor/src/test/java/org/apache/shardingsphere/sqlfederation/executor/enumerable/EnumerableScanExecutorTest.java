@@ -64,7 +64,7 @@ class EnumerableScanExecutorTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class, RETURNS_DEEP_STUBS);
         when(table.getName()).thenReturn("test");
         when(table.getColumns().values()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, false, true, false)));
-        Enumerable<Object> enumerable = new EnumerableScanExecutor(null, null, null, optimizerContext, null, executorContext, statistics)
+        Enumerable<Object> enumerable = new EnumerableScanExecutor(null, null, null, optimizerContext, executorContext, null, null, statistics)
                 .execute(table, mock(ScanExecutorContext.class));
         try (Enumerator<Object> actual = enumerable.enumerator()) {
             actual.moveNext();
