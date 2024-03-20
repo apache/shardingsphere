@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Mask table.
@@ -33,10 +34,8 @@ public final class MaskTable {
     private final Map<String, MaskColumn> columns;
     
     public MaskTable(final MaskTableRuleConfiguration config, final Map<String, MaskAlgorithm<?, ?>> maskAlgorithms) {
-        columns = new CaseInsensitiveMap<>();
-        for (MaskColumnRuleConfiguration each : config.getColumns()) {
-            columns.put(each.getLogicColumn(), new MaskColumn(each.getLogicColumn(), maskAlgorithms.get(each.getMaskAlgorithm())));
-        }
+        columns = config.getColumns().stream().collect(Collectors.toMap(MaskColumnRuleConfiguration::getLogicColumn,
+                each -> new MaskColumn(each.getLogicColumn(), maskAlgorithms.get(each.getMaskAlgorithm())), (oldValue, currentValue) -> oldValue, CaseInsensitiveMap::new));
     }
     
     /**
