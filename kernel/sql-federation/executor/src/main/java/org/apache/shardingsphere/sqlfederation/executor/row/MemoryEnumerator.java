@@ -25,12 +25,14 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFederationDataTypeUtils;
 
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Memory enumerator.
@@ -57,9 +59,18 @@ public final class MemoryEnumerator implements Enumerator<Object> {
     private Map<Integer, Class<?>> createColumnTypes(final List<ShardingSphereColumn> columns) {
         Map<Integer, Class<?>> result = new HashMap<>(columns.size(), 1F);
         for (int index = 0; index < columns.size(); index++) {
-            result.put(index, SQLFederationDataTypeUtils.getSqlTypeClass(databaseType, columns.get(index)));
+            int finalIndex = index;
+            getSqlTypeClass(columns, index).ifPresent(optional -> result.put(finalIndex, optional));
         }
         return result;
+    }
+    
+    private Optional<Class<?>> getSqlTypeClass(final List<ShardingSphereColumn> columns, final int index) {
+        try {
+            return Optional.of(SQLFederationDataTypeUtils.getSqlTypeClass(databaseType, columns.get(index)));
+        } catch (final IllegalArgumentException ex) {
+            return Optional.empty();
+        }
     }
     
     @Override
@@ -82,9 +93,19 @@ public final class MemoryEnumerator implements Enumerator<Object> {
     private Object[] convertToTargetType(final Object[] rows) {
         Object[] result = new Object[rows.length];
         for (int index = 0; index < rows.length; index++) {
-            result[index] = ResultSetUtils.convertValue(rows[index], columnTypes.get(index));
+            if (columnTypes.containsKey(index)) {
+                result[index] = convertValue(rows, index);
+            }
         }
         return result;
+    }
+    
+    private Object convertValue(final Object[] rows, final int index) {
+        try {
+            return ResultSetUtils.convertValue(rows[index], columnTypes.get(index));
+        } catch (final SQLFeatureNotSupportedException ex) {
+            return rows[index];
+        }
     }
     
     @Override
