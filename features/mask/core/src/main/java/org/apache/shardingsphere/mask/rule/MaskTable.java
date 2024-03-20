@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.mask.rule;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmNotFoundOnColumnException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
@@ -37,8 +35,6 @@ public final class MaskTable {
     public MaskTable(final MaskTableRuleConfiguration config, final Map<String, MaskAlgorithm<?, ?>> maskAlgorithms) {
         columns = new CaseInsensitiveMap<>();
         for (MaskColumnRuleConfiguration each : config.getColumns()) {
-            ShardingSpherePreconditions.checkState(maskAlgorithms.containsKey(each.getMaskAlgorithm()),
-                    () -> new AlgorithmNotFoundOnColumnException("mask", each.getMaskAlgorithm(), config.getName(), each.getLogicColumn()));
             columns.put(each.getLogicColumn(), new MaskColumn(each.getLogicColumn(), maskAlgorithms.get(each.getMaskAlgorithm())));
         }
     }
