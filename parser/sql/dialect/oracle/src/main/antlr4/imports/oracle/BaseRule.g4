@@ -652,7 +652,7 @@ exprs
 exprList
     : LP_ exprs RP_
     ;
-//新增一个builtinFunctionsExpr
+
 // TODO comb expr
 expr
     : expr andOperator expr
@@ -787,7 +787,7 @@ fromFirstOrLast
 leadLagInfo
     : COMMA_ expr (COMMA_ expr)?
     ;
-//更改
+
 specialFunction
     : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
     | setFunction | translateFunction | cursorFunction | toDateFunction | approxRank | wmConcatFunction
