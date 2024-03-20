@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.mask.merge.dql;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.io.InputStream;
@@ -33,7 +36,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class MaskMergedResult implements MergedResult {
     
-    private final MaskAlgorithmMetaData metaData;
+    private final MaskRule maskRule;
+    
+    private final SelectStatementContext selectStatementContext;
     
     private final MergedResult mergedResult;
     
@@ -45,7 +50,11 @@ public final class MaskMergedResult implements MergedResult {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        Optional<MaskAlgorithm> maskAlgorithm = metaData.findMaskAlgorithm(columnIndex);
+        Optional<ColumnProjection> columnProjection = selectStatementContext.getProjectionsContext().findColumnProjection(columnIndex);
+        if (!columnProjection.isPresent()) {
+            return mergedResult.getValue(columnIndex, type);
+        }
+        Optional<MaskAlgorithm> maskAlgorithm = maskRule.findAlgorithm(columnProjection.get().getOriginalTable().getValue(), columnProjection.get().getName().getValue());
         if (!maskAlgorithm.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }
