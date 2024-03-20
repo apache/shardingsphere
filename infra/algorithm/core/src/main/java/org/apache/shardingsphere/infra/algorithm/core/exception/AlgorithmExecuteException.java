@@ -29,7 +29,7 @@ public final class AlgorithmExecuteException extends MetaDataSQLException {
     private static final long serialVersionUID = -9099514178650043282L;
     
     public AlgorithmExecuteException(final ShardingSphereAlgorithm algorithm, final String reason, final Object... args) {
-        super(XOpenSQLState.GENERAL_ERROR, 13, "Algorithm '%s.%s' execute failed, reason is: %s.",
+        super(XOpenSQLState.GENERAL_ERROR, 15, "Algorithm '%s.%s' execute failed, reason is: %s.",
                 algorithm.getClass().getSuperclass().getSimpleName(), algorithm.getType(), String.format(reason, args));
     }
 }
