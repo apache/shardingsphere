@@ -98,4 +98,9 @@
         <input sql="SELECT * FROM t_user where user_name like '%an%'"/>
         <output sql="SELECT t_user.[user_id], t_user.[user_name_cipher] AS [user_name], t_user.[password_cipher] AS [password], t_user.[email_cipher] AS [email], t_user.[user_telephone_cipher] AS [telephone], t_user.[creation_date] FROM t_user where user_name_like like '%`m%'"/>
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_from_user_with_schema" db-types="SQLServer">
+        <input sql="SELECT * FROM dbo.t_user"/>
+        <output sql="SELECT t_user.[user_id], t_user.[user_name_cipher] AS [user_name], t_user.[password_cipher] AS [password], t_user.[email_cipher] AS [email], t_user.[user_telephone_cipher] AS [telephone], t_user.[creation_date] FROM dbo.t_user"/>
+    </rewrite-assertion>
 </rewrite-assertions>

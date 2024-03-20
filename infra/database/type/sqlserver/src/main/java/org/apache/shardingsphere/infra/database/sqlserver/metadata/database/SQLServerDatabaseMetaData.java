@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 
+import java.util.Optional;
+
 /**
  * Database meta data of SQLServer.
  */
@@ -39,5 +41,10 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     @Override
     public String getDatabaseType() {
         return "SQLServer";
+    }
+    
+    @Override
+    public Optional<String> getDefaultSchema() {
+        return Optional.of("dbo");
     }
 }
