@@ -25,91 +25,83 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class MaskAlgorithmPropertiesCheckerTest {
     
     @Test
     void assertCheckSingleCharConfigWithLengthOne() {
-        MaskAlgorithmPropertiesChecker.checkSingleCharConfiguration(PropertiesBuilder.build(new Property("singleChar", "1")), "singleChar", mockMaskAlgorithm());
+        MaskAlgorithmPropertiesChecker.checkSingleChar(PropertiesBuilder.build(new Property("singleChar", "1")), "singleChar", mock(MaskAlgorithm.class));
     }
     
     @Test
     void assertCheckSingleCharConfigWithEmptyString() {
         assertThrows(AlgorithmInitializationException.class,
-                () -> MaskAlgorithmPropertiesChecker.checkSingleCharConfiguration(PropertiesBuilder.build(new Property("singleChar", "")), "singleChar1", mockMaskAlgorithm()));
+                () -> MaskAlgorithmPropertiesChecker.checkSingleChar(PropertiesBuilder.build(new Property("singleChar", "")), "singleChar1", mock(MaskAlgorithm.class)));
     }
     
     @Test
     void assertCheckSingleCharConfigWithDifferentKey() {
         assertThrows(AlgorithmInitializationException.class,
-                () -> MaskAlgorithmPropertiesChecker.checkSingleCharConfiguration(PropertiesBuilder.build(new Property("singleChar", "1")), "singleChar1", mockMaskAlgorithm()));
+                () -> MaskAlgorithmPropertiesChecker.checkSingleChar(PropertiesBuilder.build(new Property("singleChar", "1")), "singleChar1", mock(MaskAlgorithm.class)));
     }
     
     @Test
     void assertCheckSingleCharConfigWithLengthMoreThanOne() {
         assertThrows(AlgorithmInitializationException.class,
-                () -> MaskAlgorithmPropertiesChecker.checkSingleCharConfiguration(PropertiesBuilder.build(new Property("singleChar", "123")), "singleChar", mockMaskAlgorithm()));
+                () -> MaskAlgorithmPropertiesChecker.checkSingleChar(PropertiesBuilder.build(new Property("singleChar", "123")), "singleChar", mock(MaskAlgorithm.class)));
     }
     
     @Test
     void assertCheckSingleCharConfigWithNull() {
-        assertThrows(AlgorithmInitializationException.class, () -> MaskAlgorithmPropertiesChecker.checkSingleCharConfiguration(PropertiesBuilder.build(), "singleChar", mockMaskAlgorithm()));
+        assertThrows(AlgorithmInitializationException.class, () -> MaskAlgorithmPropertiesChecker.checkSingleChar(PropertiesBuilder.build(), "singleChar", mock(MaskAlgorithm.class)));
     }
     
     @Test
     void assertCheckAtLeastOneCharConfigWithLengthOne() {
-        MaskAlgorithmPropertiesChecker.checkAtLeastOneCharConfiguration(PropertiesBuilder.build(new Property("AtLeastOneChar", "1")), "AtLeastOneChar", mockMaskAlgorithm());
+        MaskAlgorithmPropertiesChecker.checkAtLeastOneChar(PropertiesBuilder.build(new Property("AtLeastOneChar", "1")), "AtLeastOneChar", mock(MaskAlgorithm.class));
     }
     
     @Test
     void assertCheckAtLeastOneCharConfigWithLengthMoreThanOne() {
-        MaskAlgorithmPropertiesChecker.checkAtLeastOneCharConfiguration(PropertiesBuilder.build(new Property("AtLeastOneChar", "1234")), "AtLeastOneChar", mockMaskAlgorithm());
+        MaskAlgorithmPropertiesChecker.checkAtLeastOneChar(PropertiesBuilder.build(new Property("AtLeastOneChar", "1234")), "AtLeastOneChar", mock(MaskAlgorithm.class));
     }
     
     @Test
     void assertCheckAtLeastOneCharConfigWithEmptyString() {
         assertThrows(AlgorithmInitializationException.class,
-                () -> MaskAlgorithmPropertiesChecker.checkAtLeastOneCharConfiguration(PropertiesBuilder.build(new Property("AtLeastOneChar", "")), "AtLeastOneChar", mockMaskAlgorithm()));
+                () -> MaskAlgorithmPropertiesChecker.checkAtLeastOneChar(PropertiesBuilder.build(new Property("AtLeastOneChar", "")), "AtLeastOneChar", mock(MaskAlgorithm.class)));
     }
     
     @Test
     void assertCheckAtLeastOneCharConfigWithNull() {
-        assertThrows(AlgorithmInitializationException.class, () -> MaskAlgorithmPropertiesChecker.checkAtLeastOneCharConfiguration(PropertiesBuilder.build(), "AtLeastOneChar", mockMaskAlgorithm()));
+        assertThrows(AlgorithmInitializationException.class, () -> MaskAlgorithmPropertiesChecker.checkAtLeastOneChar(PropertiesBuilder.build(), "AtLeastOneChar", mock(MaskAlgorithm.class)));
     }
     
     @Test
     void assertCheckAtLeastOneCharConfigWithDifferentKey() {
         assertThrows(AlgorithmInitializationException.class,
-                () -> MaskAlgorithmPropertiesChecker.checkAtLeastOneCharConfiguration(PropertiesBuilder.build(new Property("singleChar", "123")), "AtLeastOneChar", mockMaskAlgorithm()));
+                () -> MaskAlgorithmPropertiesChecker.checkAtLeastOneChar(PropertiesBuilder.build(new Property("singleChar", "123")), "AtLeastOneChar", mock(MaskAlgorithm.class)));
     }
     
     @Test
     void assertCheckIntegerTypeConfigWithInteger() {
-        MaskAlgorithmPropertiesChecker.checkPositiveIntegerConfiguration(PropertiesBuilder.build(new Property("integerTypeConfigKey", "123")), "integerTypeConfigKey", mockMaskAlgorithm());
+        MaskAlgorithmPropertiesChecker.checkPositiveInteger(PropertiesBuilder.build(new Property("integerTypeConfigKey", "123")), "integerTypeConfigKey", mock(MaskAlgorithm.class));
     }
     
     @Test
     void assertCheckIntegerTypeConfigWithDifferentKey() {
-        assertThrows(AlgorithmInitializationException.class, () -> MaskAlgorithmPropertiesChecker.checkPositiveIntegerConfiguration(
-                PropertiesBuilder.build(new Property("integerTypeConfigKey", "123")), "integerTypeConfigKey1", mockMaskAlgorithm()));
+        assertThrows(AlgorithmInitializationException.class, () -> MaskAlgorithmPropertiesChecker.checkPositiveInteger(
+                PropertiesBuilder.build(new Property("integerTypeConfigKey", "123")), "integerTypeConfigKey1", mock(MaskAlgorithm.class)));
     }
     
     @Test
     void assertCheckIntegerTypeConfigWithNotInteger() {
-        assertThrows(AlgorithmInitializationException.class, () -> MaskAlgorithmPropertiesChecker.checkPositiveIntegerConfiguration(
-                PropertiesBuilder.build(new Property("integerTypeConfigKey", "123abc")), "integerTypeConfigKey", mockMaskAlgorithm()));
+        assertThrows(AlgorithmInitializationException.class, () -> MaskAlgorithmPropertiesChecker.checkPositiveInteger(
+                PropertiesBuilder.build(new Property("integerTypeConfigKey", "123abc")), "integerTypeConfigKey", mock(MaskAlgorithm.class)));
     }
     
     @Test
     void assertCheckIntegerTypeConfigWithNull() {
-        assertThrows(AlgorithmInitializationException.class, () -> MaskAlgorithmPropertiesChecker.checkPositiveIntegerConfiguration(
-                PropertiesBuilder.build(), "integerTypeConfigKey", mockMaskAlgorithm()));
-    }
-    
-    private MaskAlgorithm<?, ?> mockMaskAlgorithm() {
-        MaskAlgorithm<?, ?> result = mock(MaskAlgorithm.class);
-        when(result.getType()).thenReturn("maskType");
-        return result;
+        assertThrows(AlgorithmInitializationException.class, () -> MaskAlgorithmPropertiesChecker.checkPositiveInteger(PropertiesBuilder.build(), "integerTypeConfigKey", mock(MaskAlgorithm.class)));
     }
 }
