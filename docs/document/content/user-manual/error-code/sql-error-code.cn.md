@@ -23,8 +23,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
 | 42000     | 10010       | Rule does not exist.                                                           |
 | 44000     | 10011       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
-| 44000     | 10012       | Can not find '%s' algorithm on table '%s'.                                     |
-| 44000     | 10013       | Can not find '%s' algorithm '%s' on table.column '%s'.'%s'.                    |
+| 42S02     | 10012       | Can not find '%s' algorithm on table '%s'.                                     |
+| 42S02     | 10013       | Can not find '%s' algorithm '%s' on database.table.column '%s'.'%s'.'%s'.      |
 | HY000     | 10015       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
 | 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
@@ -271,12 +271,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY004     | 20820       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type.                                |
 | 42000     | 20840       | Insert value of index \`%s\` can not support for shadow.                                          |
 | 44000     | 20881       | Default shadow algorithm class should be implement HintShadowAlgorithm.                           |
-
-### 数据脱敏
-
-| SQL State | Vendor Code | 错误信息                                                        |
-|-----------|-------------|-------------------------------------------------------------|
-| 42S02     | 20990       | Invalid mask algorithm \`%s\` in database \`%s\`.           |
 
 ### 联邦查询
 
