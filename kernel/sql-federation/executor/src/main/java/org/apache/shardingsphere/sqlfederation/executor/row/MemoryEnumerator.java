@@ -17,11 +17,22 @@
 
 package org.apache.shardingsphere.sqlfederation.executor.row;
 
+import lombok.SneakyThrows;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFederationDataTypeUtils;
 
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Memory enumerator.
@@ -30,13 +41,36 @@ public final class MemoryEnumerator implements Enumerator<Object> {
     
     private final Collection<ShardingSphereRowData> rows;
     
-    private Iterator<ShardingSphereRowData> rowDataIterator;
+    private final DatabaseType databaseType;
+    
+    private final Map<Integer, Class<?>> columnTypes;
+    
+    private Iterator<ShardingSphereRowData> iterator;
     
     private Object current;
     
-    public MemoryEnumerator(final Collection<ShardingSphereRowData> rows) {
+    public MemoryEnumerator(final Collection<ShardingSphereRowData> rows, final Collection<ShardingSphereColumn> columns, final DatabaseType databaseType) {
         this.rows = rows;
-        rowDataIterator = rows.iterator();
+        this.databaseType = databaseType;
+        columnTypes = createColumnTypes(new ArrayList<>(columns));
+        iterator = rows.iterator();
+    }
+    
+    private Map<Integer, Class<?>> createColumnTypes(final List<ShardingSphereColumn> columns) {
+        Map<Integer, Class<?>> result = new HashMap<>(columns.size(), 1F);
+        for (int index = 0; index < columns.size(); index++) {
+            int finalIndex = index;
+            getSqlTypeClass(columns, index).ifPresent(optional -> result.put(finalIndex, optional));
+        }
+        return result;
+    }
+    
+    private Optional<Class<?>> getSqlTypeClass(final List<ShardingSphereColumn> columns, final int index) {
+        try {
+            return Optional.of(SQLFederationDataTypeUtils.getSqlTypeClass(databaseType, columns.get(index)));
+        } catch (final IllegalArgumentException ex) {
+            return Optional.empty();
+        }
     }
     
     @Override
@@ -46,13 +80,32 @@ public final class MemoryEnumerator implements Enumerator<Object> {
     
     @Override
     public boolean moveNext() {
-        if (rowDataIterator.hasNext()) {
-            current = rowDataIterator.next().getRows().toArray();
+        if (iterator.hasNext()) {
+            current = convertToTargetType(iterator.next().getRows().toArray());
             return true;
         }
         current = null;
-        rowDataIterator = rows.iterator();
+        iterator = rows.iterator();
         return false;
+    }
+    
+    @SneakyThrows
+    private Object[] convertToTargetType(final Object[] rows) {
+        Object[] result = new Object[rows.length];
+        for (int index = 0; index < rows.length; index++) {
+            if (columnTypes.containsKey(index)) {
+                result[index] = convertValue(rows, index);
+            }
+        }
+        return result;
+    }
+    
+    private Object convertValue(final Object[] rows, final int index) {
+        try {
+            return ResultSetUtils.convertValue(rows[index], columnTypes.get(index));
+        } catch (final SQLFeatureNotSupportedException ex) {
+            return rows[index];
+        }
     }
     
     @Override
@@ -61,7 +114,7 @@ public final class MemoryEnumerator implements Enumerator<Object> {
     
     @Override
     public void close() {
-        rowDataIterator = rows.iterator();
+        iterator = rows.iterator();
         current = null;
     }
 }

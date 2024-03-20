@@ -181,11 +181,11 @@ public final class EnumerableScanExecutor implements ScanExecutor {
     private Enumerable<Object> executeByShardingSphereData(final String databaseName, final String schemaName, final ShardingSphereTable table, final DatabaseType databaseType) {
         // TODO move this logic to ShardingSphere statistics
         if (databaseType instanceof OpenGaussDatabaseType && SYSTEM_CATALOG_TABLES.contains(table.getName())) {
-            return createMemoryEnumerator(createSystemCatalogTableData(table));
+            return createMemoryEnumerator(createSystemCatalogTableData(table), table, databaseType);
         }
         Optional<ShardingSphereTableData> tableData = Optional.ofNullable(statistics.getDatabaseData().get(databaseName)).map(optional -> optional.getSchemaData().get(schemaName))
                 .map(ShardingSphereSchemaData::getTableData).map(shardingSphereData -> shardingSphereData.get(table.getName()));
-        return tableData.map(this::createMemoryEnumerator).orElseGet(this::createEmptyEnumerable);
+        return tableData.map(optional -> createMemoryEnumerator(optional, table, databaseType)).orElseGet(this::createEmptyEnumerable);
     }
     
     private ShardingSphereTableData createSystemCatalogTableData(final ShardingSphereTable table) {
@@ -231,12 +231,12 @@ public final class EnumerableScanExecutor implements ScanExecutor {
         }
     }
     
-    private Enumerable<Object> createMemoryEnumerator(final ShardingSphereTableData tableData) {
+    private Enumerable<Object> createMemoryEnumerator(final ShardingSphereTableData tableData, final ShardingSphereTable table, final DatabaseType databaseType) {
         return new AbstractEnumerable<Object>() {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new MemoryEnumerator(tableData.getRows());
+                return new MemoryEnumerator(tableData.getRows(), table.getColumns().values(), databaseType);
             }
         };
     }

@@ -230,8 +230,8 @@ public final class SQLFederationEngine implements AutoCloseable {
         TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, metaData.getProps(), federationContext);
         EnumerableScanExecutor scanExecutor = new EnumerableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, metaData.getGlobalRuleMetaData(), executorContext, statistics);
         // TODO register only the required tables
-        for (String each : metaData.getDatabase(databaseName).getSchema(schemaName).getAllTableNames()) {
-            Table table = sqlFederationSchema.getTable(each);
+        for (ShardingSphereTable each : metaData.getDatabase(databaseName).getSchema(schemaName).getTables().values()) {
+            Table table = sqlFederationSchema.getTable(each.getName());
             if (table instanceof SQLFederationTable) {
                 ((SQLFederationTable) table).setScanExecutor(scanExecutor);
             }

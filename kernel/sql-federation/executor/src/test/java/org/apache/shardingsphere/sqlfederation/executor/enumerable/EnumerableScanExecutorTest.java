@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqlfederation.executor.enumerable;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContex
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.ScanExecutorContext;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Types;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -59,10 +61,11 @@ class EnumerableScanExecutorTest {
         ShardingSphereTableData tableData = mock(ShardingSphereTableData.class);
         when(tableData.getRows()).thenReturn(Collections.singletonList(new ShardingSphereRowData(Collections.singletonList(1))));
         when(schemaData.getTableData().get("test")).thenReturn(tableData);
-        ShardingSphereTable shardingSphereTable = mock(ShardingSphereTable.class);
-        when(shardingSphereTable.getName()).thenReturn("test");
+        ShardingSphereTable table = mock(ShardingSphereTable.class, RETURNS_DEEP_STUBS);
+        when(table.getName()).thenReturn("test");
+        when(table.getColumns().values()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, false, true, false)));
         Enumerable<Object> enumerable = new EnumerableScanExecutor(null, null, null, optimizerContext, null, executorContext, statistics)
-                .execute(shardingSphereTable, mock(ScanExecutorContext.class));
+                .execute(table, mock(ScanExecutorContext.class));
         try (Enumerator<Object> actual = enumerable.enumerator()) {
             actual.moveNext();
             Object row = actual.current();
