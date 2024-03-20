@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sqlfederation.executor.enumerable;
 
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
-import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
@@ -51,22 +49,21 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
-import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
-import org.apache.shardingsphere.sqlfederation.executor.row.MemoryEnumerator;
-import org.apache.shardingsphere.sqlfederation.executor.row.SQLFederationRowEnumerator;
+import org.apache.shardingsphere.sqlfederation.executor.constant.EnumerableConstants;
+import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
+import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationExecutorContext;
+import org.apache.shardingsphere.sqlfederation.executor.enumerator.JDBCRowEnumerator;
+import org.apache.shardingsphere.sqlfederation.executor.enumerator.MemoryRowEnumerator;
+import org.apache.shardingsphere.sqlfederation.executor.utils.StatisticsAssembleUtils;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.EmptyRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.ScanExecutor;
@@ -77,13 +74,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -93,16 +87,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class EnumerableScanExecutor implements ScanExecutor {
     
-    private static final Collection<String> SYSTEM_CATALOG_TABLES = new CaseInsensitiveSet<>(3, 1F);
-    
-    private static final String DAT_COMPATIBILITY = "PG";
-    
-    private static final String PG_DATABASE = "pg_database";
-    
-    private static final String PG_TABLES = "pg_tables";
-    
-    private static final String PG_ROLES = "pg_roles";
-    
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
     private final JDBCExecutor jdbcExecutor;
@@ -111,19 +95,15 @@ public final class EnumerableScanExecutor implements ScanExecutor {
     
     private final OptimizerContext optimizerContext;
     
-    private final RuleMetaData globalRuleMetaData;
+    private final SQLFederationExecutorContext executorContext;
     
-    private final TableScanExecutorContext executorContext;
+    private final SQLFederationContext federationContext;
+    
+    private final RuleMetaData globalRuleMetaData;
     
     private final ShardingSphereStatistics statistics;
     
     private final ProcessEngine processEngine = new ProcessEngine();
-    
-    static {
-        SYSTEM_CATALOG_TABLES.add(PG_DATABASE);
-        SYSTEM_CATALOG_TABLES.add(PG_TABLES);
-        SYSTEM_CATALOG_TABLES.add(PG_ROLES);
-    }
     
     @Override
     public Enumerable<Object> execute(final ShardingSphereTable table, final ScanExecutorContext scanContext) {
@@ -131,9 +111,8 @@ public final class EnumerableScanExecutor implements ScanExecutor {
         String schemaName = executorContext.getSchemaName();
         DatabaseType databaseType = optimizerContext.getParserContext(databaseName).getDatabaseType();
         if (new SystemDatabase(databaseType).getSystemSchemas().contains(schemaName)) {
-            return executeByShardingSphereData(databaseName, schemaName, table, databaseType);
+            return createMemoryEnumerable(databaseName, schemaName, table, databaseType);
         }
-        SQLFederationExecutorContext federationContext = executorContext.getFederationContext();
         QueryContext queryContext = createQueryContext(federationContext.getMetaData(), scanContext, databaseType, federationContext.getQueryContext().isUseCache());
         ShardingSphereDatabase database = federationContext.getMetaData().getDatabase(databaseName);
         ExecutionContext context = new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, executorContext.getProps(), new ConnectionContext());
@@ -141,10 +120,10 @@ public final class EnumerableScanExecutor implements ScanExecutor {
             federationContext.getPreviewExecutionUnits().addAll(context.getExecutionUnits());
             return createEmptyEnumerable();
         }
-        return createEnumerable(queryContext, database, context);
+        return createJDBCEnumerable(queryContext, database, context);
     }
     
-    private AbstractEnumerable<Object> createEnumerable(final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext context) {
+    private AbstractEnumerable<Object> createJDBCEnumerable(final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext context) {
         return new AbstractEnumerable<Object>() {
             
             @SneakyThrows
@@ -153,16 +132,16 @@ public final class EnumerableScanExecutor implements ScanExecutor {
                 computeConnectionOffsets(context);
                 // TODO pass grantee from proxy and jdbc adapter
                 ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), executorContext.getConnectionOffsets(), context.getExecutionUnits(),
-                        new ExecutionGroupReportContext(executorContext.getFederationContext().getProcessId(), database.getName(), new Grantee("", "")));
+                        new ExecutionGroupReportContext(federationContext.getProcessId(), database.getName(), new Grantee("", "")));
                 setParameters(executionGroupContext.getInputGroups());
-                ShardingSpherePreconditions.checkState(!ProcessRegistry.getInstance().get(executorContext.getFederationContext().getProcessId()).isInterrupted(),
+                ShardingSpherePreconditions.checkState(!ProcessRegistry.getInstance().get(federationContext.getProcessId()).isInterrupted(),
                         SQLExecutionInterruptedException::new);
-                processEngine.executeSQL(executionGroupContext, executorContext.getFederationContext().getQueryContext());
+                processEngine.executeSQL(executionGroupContext, federationContext.getQueryContext());
                 List<QueryResult> queryResults = jdbcExecutor.execute(executionGroupContext, callback).stream().map(QueryResult.class::cast).collect(Collectors.toList());
                 MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
                 MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
                 Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
-                return new SQLFederationRowEnumerator(mergedResult, queryResults.get(0).getMetaData(), statements);
+                return new JDBCRowEnumerator(mergedResult, queryResults.get(0).getMetaData(), statements);
             }
         };
     }
@@ -178,57 +157,13 @@ public final class EnumerableScanExecutor implements ScanExecutor {
         }
     }
     
-    private Enumerable<Object> executeByShardingSphereData(final String databaseName, final String schemaName, final ShardingSphereTable table, final DatabaseType databaseType) {
-        // TODO move this logic to ShardingSphere statistics
-        if (databaseType instanceof OpenGaussDatabaseType && SYSTEM_CATALOG_TABLES.contains(table.getName())) {
-            return createMemoryEnumerator(createSystemCatalogTableData(table), table, databaseType);
+    private Enumerable<Object> createMemoryEnumerable(final String databaseName, final String schemaName, final ShardingSphereTable table, final DatabaseType databaseType) {
+        if (databaseType instanceof OpenGaussDatabaseType && EnumerableConstants.SYSTEM_CATALOG_TABLES.contains(table.getName())) {
+            return createMemoryEnumerator(StatisticsAssembleUtils.assembleTableData(table, federationContext.getMetaData()), table, databaseType);
         }
-        Optional<ShardingSphereTableData> tableData = Optional.ofNullable(statistics.getDatabaseData().get(databaseName)).map(optional -> optional.getSchemaData().get(schemaName))
-                .map(ShardingSphereSchemaData::getTableData).map(shardingSphereData -> shardingSphereData.get(table.getName()));
+        Optional<ShardingSphereTableData> tableData = Optional.ofNullable(statistics.getDatabaseData().get(databaseName))
+                .map(optional -> optional.getSchemaData().get(schemaName)).map(ShardingSphereSchemaData::getTableData).map(optional -> optional.get(table.getName()));
         return tableData.map(optional -> createMemoryEnumerator(optional, table, databaseType)).orElseGet(this::createEmptyEnumerable);
-    }
-    
-    private ShardingSphereTableData createSystemCatalogTableData(final ShardingSphereTable table) {
-        ShardingSphereTableData result = new ShardingSphereTableData(table.getName());
-        ShardingSphereMetaData metaData = executorContext.getFederationContext().getMetaData();
-        if (PG_DATABASE.equalsIgnoreCase(table.getName())) {
-            appendOpenGaussDatabaseData(result, metaData.getDatabases().values());
-        } else if (PG_TABLES.equalsIgnoreCase(table.getName())) {
-            for (ShardingSphereDatabase each : metaData.getDatabases().values()) {
-                appendOpenGaussTableData(result, each.getSchemas());
-            }
-        } else if (PG_ROLES.equalsIgnoreCase(table.getName())) {
-            appendOpenGaussRoleData(result, metaData);
-        }
-        return result;
-    }
-    
-    private void appendOpenGaussDatabaseData(final ShardingSphereTableData tableData, final Collection<ShardingSphereDatabase> databases) {
-        for (ShardingSphereDatabase each : databases) {
-            Object[] rows = new Object[15];
-            rows[0] = each.getName();
-            rows[11] = DAT_COMPATIBILITY;
-            tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(rows)));
-        }
-    }
-    
-    private void appendOpenGaussTableData(final ShardingSphereTableData tableData, final Map<String, ShardingSphereSchema> schemas) {
-        for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
-            for (String each : entry.getValue().getAllTableNames()) {
-                Object[] rows = new Object[10];
-                rows[0] = entry.getKey();
-                rows[1] = each;
-                tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(rows)));
-            }
-        }
-    }
-    
-    private void appendOpenGaussRoleData(final ShardingSphereTableData tableData, final ShardingSphereMetaData metaData) {
-        for (ShardingSphereUser each : metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getConfiguration().getUsers()) {
-            Object[] rows = new Object[27];
-            rows[0] = each.getGrantee().getUsername();
-            tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(rows)));
-        }
     }
     
     private Enumerable<Object> createMemoryEnumerator(final ShardingSphereTableData tableData, final ShardingSphereTable table, final DatabaseType databaseType) {
@@ -236,7 +171,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new MemoryEnumerator(tableData.getRows(), table.getColumns().values(), databaseType);
+                return new MemoryRowEnumerator(tableData.getRows(), table.getColumns().values(), databaseType);
             }
         };
     }
@@ -285,7 +220,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
         }
         List<Object> result = new ArrayList<>();
         for (int each : paramIndexes) {
-            result.add(executorContext.getFederationContext().getQueryContext().getParameters().get(each));
+            result.add(federationContext.getQueryContext().getParameters().get(each));
         }
         return result;
     }

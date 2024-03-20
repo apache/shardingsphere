@@ -15,57 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.executor.row;
+package org.apache.shardingsphere.sqlfederation.executor.utils;
 
-import lombok.SneakyThrows;
-import org.apache.calcite.linq4j.Enumerator;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFederationDataTypeUtils;
 
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Memory enumerator.
+ * Enumerator utilities.
  */
-public final class MemoryEnumerator implements Enumerator<Object> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class EnumeratorUtils {
     
-    private final Collection<ShardingSphereRowData> rows;
-    
-    private final DatabaseType databaseType;
-    
-    private final Map<Integer, Class<?>> columnTypes;
-    
-    private Iterator<ShardingSphereRowData> iterator;
-    
-    private Object current;
-    
-    public MemoryEnumerator(final Collection<ShardingSphereRowData> rows, final Collection<ShardingSphereColumn> columns, final DatabaseType databaseType) {
-        this.rows = rows;
-        this.databaseType = databaseType;
-        columnTypes = createColumnTypes(new ArrayList<>(columns));
-        iterator = rows.iterator();
-    }
-    
-    private Map<Integer, Class<?>> createColumnTypes(final List<ShardingSphereColumn> columns) {
+    /**
+     * Create column types.
+     * 
+     * @param columns columns
+     * @param databaseType database type
+     * @return column types
+     */
+    public static Map<Integer, Class<?>> createColumnTypes(final List<ShardingSphereColumn> columns, final DatabaseType databaseType) {
         Map<Integer, Class<?>> result = new HashMap<>(columns.size(), 1F);
         for (int index = 0; index < columns.size(); index++) {
             int finalIndex = index;
-            getSqlTypeClass(columns, index).ifPresent(optional -> result.put(finalIndex, optional));
+            getSQLTypeClass(columns, databaseType, index).ifPresent(optional -> result.put(finalIndex, optional));
         }
         return result;
     }
     
-    private Optional<Class<?>> getSqlTypeClass(final List<ShardingSphereColumn> columns, final int index) {
+    private static Optional<Class<?>> getSQLTypeClass(final List<ShardingSphereColumn> columns, final DatabaseType databaseType, final int index) {
         try {
             return Optional.of(SQLFederationDataTypeUtils.getSqlTypeClass(databaseType, columns.get(index)));
         } catch (final IllegalArgumentException ex) {
@@ -73,48 +60,28 @@ public final class MemoryEnumerator implements Enumerator<Object> {
         }
     }
     
-    @Override
-    public Object current() {
-        return current;
-    }
-    
-    @Override
-    public boolean moveNext() {
-        if (iterator.hasNext()) {
-            current = convertToTargetType(iterator.next().getRows().toArray());
-            return true;
-        }
-        current = null;
-        iterator = rows.iterator();
-        return false;
-    }
-    
-    @SneakyThrows
-    private Object[] convertToTargetType(final Object[] rows) {
+    /**
+     * Convert to target type.
+     * 
+     * @param columnTypes column types
+     * @param rows rows
+     * @return target type
+     */
+    public static Object[] convertToTargetType(final Map<Integer, Class<?>> columnTypes, final Object[] rows) {
         Object[] result = new Object[rows.length];
         for (int index = 0; index < rows.length; index++) {
             if (columnTypes.containsKey(index)) {
-                result[index] = convertValue(rows, index);
+                result[index] = convertValue(rows, columnTypes, index);
             }
         }
         return result;
     }
     
-    private Object convertValue(final Object[] rows, final int index) {
+    private static Object convertValue(final Object[] rows, final Map<Integer, Class<?>> columnTypes, final int index) {
         try {
             return ResultSetUtils.convertValue(rows[index], columnTypes.get(index));
         } catch (final SQLFeatureNotSupportedException ex) {
             return rows[index];
         }
-    }
-    
-    @Override
-    public void reset() {
-    }
-    
-    @Override
-    public void close() {
-        iterator = rows.iterator();
-        current = null;
     }
 }
