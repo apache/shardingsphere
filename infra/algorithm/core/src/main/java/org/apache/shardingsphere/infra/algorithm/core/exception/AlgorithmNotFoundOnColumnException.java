@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.rule;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Mask column.
+ * Algorithm not found on column exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MaskColumn {
+public final class AlgorithmNotFoundOnColumnException extends MetaDataSQLException {
     
-    private final String logicColumn;
+    private static final long serialVersionUID = -4570489906443880879L;
     
-    private final MaskAlgorithm<?, ?> maskAlgorithm;
+    public AlgorithmNotFoundOnColumnException(final String algorithmType, final String algorithmName, final String tableName, final String columnName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 12, "Can not find '%s' algorithm '%s' on table.column '%s'.%s", algorithmType, algorithmName, tableName, columnName);
+    }
 }
