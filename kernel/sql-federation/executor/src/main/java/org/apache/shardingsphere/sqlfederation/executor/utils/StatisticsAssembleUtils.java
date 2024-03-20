@@ -47,20 +47,21 @@ public final class StatisticsAssembleUtils {
      * @return ShardingSphere table data
      */
     public static ShardingSphereTableData assembleTableData(final ShardingSphereTable table, final ShardingSphereMetaData metaData) {
+        // TODO move this logic to ShardingSphere statistics
         ShardingSphereTableData result = new ShardingSphereTableData(table.getName());
         if (EnumerableConstants.PG_DATABASE.equalsIgnoreCase(table.getName())) {
-            appendOpenGaussDatabaseData(result, metaData.getDatabases().values());
+            assembleOpenGaussDatabaseData(result, metaData.getDatabases().values());
         } else if (EnumerableConstants.PG_TABLES.equalsIgnoreCase(table.getName())) {
             for (ShardingSphereDatabase each : metaData.getDatabases().values()) {
-                appendOpenGaussTableData(result, each.getSchemas());
+                assembleOpenGaussTableData(result, each.getSchemas());
             }
         } else if (EnumerableConstants.PG_ROLES.equalsIgnoreCase(table.getName())) {
-            appendOpenGaussRoleData(result, metaData);
+            assembleOpenGaussRoleData(result, metaData);
         }
         return result;
     }
     
-    private static void appendOpenGaussDatabaseData(final ShardingSphereTableData tableData, final Collection<ShardingSphereDatabase> databases) {
+    private static void assembleOpenGaussDatabaseData(final ShardingSphereTableData tableData, final Collection<ShardingSphereDatabase> databases) {
         for (ShardingSphereDatabase each : databases) {
             Object[] rows = new Object[15];
             rows[0] = each.getName();
@@ -69,7 +70,7 @@ public final class StatisticsAssembleUtils {
         }
     }
     
-    private static void appendOpenGaussTableData(final ShardingSphereTableData tableData, final Map<String, ShardingSphereSchema> schemas) {
+    private static void assembleOpenGaussTableData(final ShardingSphereTableData tableData, final Map<String, ShardingSphereSchema> schemas) {
         for (Map.Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
             for (String each : entry.getValue().getAllTableNames()) {
                 Object[] rows = new Object[10];
@@ -80,7 +81,7 @@ public final class StatisticsAssembleUtils {
         }
     }
     
-    private static void appendOpenGaussRoleData(final ShardingSphereTableData tableData, final ShardingSphereMetaData metaData) {
+    private static void assembleOpenGaussRoleData(final ShardingSphereTableData tableData, final ShardingSphereMetaData metaData) {
         for (ShardingSphereUser each : metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getConfiguration().getUsers()) {
             Object[] rows = new Object[27];
             rows[0] = each.getGrantee().getUsername();
