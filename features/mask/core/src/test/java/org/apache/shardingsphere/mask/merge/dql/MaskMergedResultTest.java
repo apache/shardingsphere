@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.mask.rule.MaskRule;
+import org.apache.shardingsphere.mask.rule.MaskTable;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,7 +64,9 @@ class MaskMergedResultTest {
         MaskAlgorithm<String, String> maskAlgorithm = mock(MaskAlgorithm.class);
         when(maskAlgorithm.mask("VALUE")).thenReturn("MASK_VALUE");
         MaskRule result = mock(MaskRule.class);
-        when(result.findAlgorithm("tbl", "col")).thenReturn(Optional.of(maskAlgorithm));
+        MaskTable maskTable = mock(MaskTable.class);
+        when(maskTable.findAlgorithm("col")).thenReturn(Optional.of(maskAlgorithm));
+        when(result.findMaskTable("tbl")).thenReturn(Optional.of(maskTable));
         return result;
     }
     

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 @Getter
 public final class MaskColumn {
     
-    private final String logicColumn;
+    private final String name;
     
     private final MaskAlgorithm<?, ?> maskAlgorithm;
 }
