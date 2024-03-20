@@ -662,7 +662,7 @@ expr
     | booleanPrimary
     | expr datetimeExpr
     | multisetExpr
-    |builtinFunctionsExpr
+    | builtinFunctionsExpr
     ;
 
 andOperator
