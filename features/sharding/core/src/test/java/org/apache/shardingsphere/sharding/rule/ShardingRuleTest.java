@@ -695,7 +695,7 @@ class ShardingRuleTest {
     }
     
     private Map<String, String> createColumnTableNameMap() {
-        Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new HashMap<>(4, 1F);
         result.put("logic_Table.user_id", "logic_Table");
         result.put("sub_Logic_Table.user_id", "sub_Logic_Table");
         result.put("logic_Table.order_id", "logic_Table");
@@ -806,7 +806,7 @@ class ShardingRuleTest {
     
     @Test
     void assertIsSupportAutoIncrement() {
-        assertFalse(createMaximumShardingRule().isSupportAutoIncrement("logic_table"));
-        assertTrue(createMaximumShardingRule().isSupportAutoIncrement("sub_logic_table"));
+        assertFalse(createMaximumShardingRule().isSupportAutoIncrement("ds_0", "logic_table"));
+        assertTrue(createMaximumShardingRule().isSupportAutoIncrement("ds_0", "sub_logic_table"));
     }
 }
