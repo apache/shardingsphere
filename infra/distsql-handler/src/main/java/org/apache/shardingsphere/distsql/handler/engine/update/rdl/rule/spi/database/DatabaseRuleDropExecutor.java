@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -53,16 +52,6 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Shar
     }
     
     /**
-     * Update current rule configuration.
-     *
-     * @param sqlStatement SQL statement
-     * @param currentRuleConfig current rule configuration to be updated
-     * @return current rule configuration is empty or not
-     */
-    // TODO remove this method after remove Compatible_Cluster mode
-    boolean updateCurrentRuleConfiguration(T sqlStatement, C currentRuleConfig);
-    
-    /**
      * Whether there is dropped data.
      * 
      * @param sqlStatement SQL statement
@@ -70,15 +59,5 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Shar
      */
     default boolean hasAnyOneToBeDropped(final T sqlStatement) {
         return true;
-    }
-    
-    // TODO Remove when metadata structure adjustment completed. #25485
-    /**
-     * Drop rule configuration operate.
-     *
-     * @param sqlStatement SQL statement
-     * @param database database
-     */
-    default void operate(final T sqlStatement, final ShardingSphereDatabase database) {
     }
 }

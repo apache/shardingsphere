@@ -67,13 +67,6 @@ public final class DropDefaultShadowAlgorithmExecutor implements DatabaseRuleDro
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getShadowAlgorithms().remove(currentRuleConfig.getDefaultShadowAlgorithmName());
-        currentRuleConfig.setDefaultShadowAlgorithmName(null);
-        return currentRuleConfig.isEmpty();
-    }
-    
-    @Override
     public Class<ShadowRule> getRuleClass() {
         return ShadowRule.class;
     }

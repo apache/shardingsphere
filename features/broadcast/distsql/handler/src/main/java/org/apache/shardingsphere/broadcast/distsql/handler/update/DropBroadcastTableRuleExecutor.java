@@ -71,13 +71,6 @@ public final class DropBroadcastTableRuleExecutor implements DatabaseRuleDropExe
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final DropBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
-        Collection<String> toBeDroppedTableNames = new CaseInsensitiveSet<>(sqlStatement.getTables());
-        currentRuleConfig.getTables().removeIf(toBeDroppedTableNames::contains);
-        return currentRuleConfig.isEmpty();
-    }
-    
-    @Override
     public Class<BroadcastRule> getRuleClass() {
         return BroadcastRule.class;
     }

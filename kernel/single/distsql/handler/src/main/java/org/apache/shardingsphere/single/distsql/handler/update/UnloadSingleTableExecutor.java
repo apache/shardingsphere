@@ -106,12 +106,6 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
         return null;
     }
     
-    @Override
-    public void updateCurrentRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeAlteredRuleConfig) {
-        currentRuleConfig.getTables().clear();
-        currentRuleConfig.getTables().addAll(toBeAlteredRuleConfig.getTables());
-    }
-    
     private String extractTableName(final String tableNode) {
         List<String> segments = Splitter.on(".").trimResults().splitToList(tableNode);
         return segments.get(segments.size() - 1);

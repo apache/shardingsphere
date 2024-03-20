@@ -129,19 +129,6 @@ public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleA
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
-        if (!toBeAlteredRuleConfig.getShardingAlgorithms().isEmpty()) {
-            currentRuleConfig.getShardingAlgorithms().putAll(toBeAlteredRuleConfig.getShardingAlgorithms());
-        }
-        if (null != toBeAlteredRuleConfig.getDefaultTableShardingStrategy()) {
-            currentRuleConfig.setDefaultTableShardingStrategy(toBeAlteredRuleConfig.getDefaultTableShardingStrategy());
-        }
-        if (null != toBeAlteredRuleConfig.getDefaultDatabaseShardingStrategy()) {
-            currentRuleConfig.setDefaultDatabaseShardingStrategy(toBeAlteredRuleConfig.getDefaultDatabaseShardingStrategy());
-        }
-    }
-    
-    @Override
     public Class<ShardingRule> getRuleClass() {
         return ShardingRule.class;
     }

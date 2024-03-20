@@ -38,11 +38,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
 
@@ -156,11 +154,9 @@ class CreateReadwriteSplittingRuleExecutorTest {
         CreateReadwriteSplittingRuleStatement sqlStatement = createSQLStatement(false, staticSegment);
         executor.setDatabase(database);
         executor.checkBeforeUpdate(sqlStatement);
-        ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(new ArrayList<>(), new HashMap<>());
         executor.setRule(mock(ReadwriteSplittingRule.class));
         ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        assertThat(currentRuleConfig.getDataSources().size(), is(1));
+        assertThat(toBeCreatedRuleConfig.getDataSources().size(), is(1));
     }
     
     private CreateReadwriteSplittingRuleStatement createSQLStatement(final String loadBalancerName) {

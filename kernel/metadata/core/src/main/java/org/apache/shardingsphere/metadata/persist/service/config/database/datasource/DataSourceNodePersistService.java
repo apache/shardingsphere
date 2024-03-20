@@ -58,33 +58,6 @@ public final class DataSourceNodePersistService implements DatabaseBasedPersistS
         }
     }
     
-    @Override
-    public Collection<MetaDataVersion> deleteConfig(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
-        Collection<MetaDataVersion> result = new LinkedList<>();
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
-            String delKey = DatabaseMetaDataNode.getDataSourceNode(databaseName, entry.getKey());
-            repository.delete(delKey);
-            result.add(new MetaDataVersion(delKey));
-        }
-        return result;
-    }
-    
-    @Override
-    public Collection<MetaDataVersion> persistConfig(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
-        Collection<MetaDataVersion> result = new LinkedList<>();
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
-            List<String> versions = repository.getChildrenKeys(DatabaseMetaDataNode.getDataSourceNodeVersionsNode(databaseName, entry.getKey()));
-            String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            repository.persist(DatabaseMetaDataNode.getDataSourceNodeWithVersion(databaseName, entry.getKey(), nextActiveVersion),
-                    YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
-            if (Strings.isNullOrEmpty(getDataSourceActiveVersion(databaseName, entry.getKey()))) {
-                repository.persist(DatabaseMetaDataNode.getDataSourceNodeActiveVersionNode(databaseName, entry.getKey()), DEFAULT_VERSION);
-            }
-            result.add(new MetaDataVersion(DatabaseMetaDataNode.getDataSourceNode(databaseName, entry.getKey()), getDataSourceActiveVersion(databaseName, entry.getKey()), nextActiveVersion));
-        }
-        return result;
-    }
-    
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, DataSourcePoolProperties> load(final String databaseName) {
@@ -110,8 +83,35 @@ public final class DataSourceNodePersistService implements DatabaseBasedPersistS
     }
     
     @Override
-    public void append(final String databaseName, final Map<String, DataSourcePoolProperties> toBeAppendedPropsMap) {
-        persist(databaseName, toBeAppendedPropsMap);
+    public void delete(final String databaseName, final String name) {
+        repository.delete(DatabaseMetaDataNode.getDataSourceNode(databaseName, name));
+    }
+    
+    @Override
+    public Collection<MetaDataVersion> deleteConfig(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
+        Collection<MetaDataVersion> result = new LinkedList<>();
+        for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
+            String delKey = DatabaseMetaDataNode.getDataSourceNode(databaseName, entry.getKey());
+            repository.delete(delKey);
+            result.add(new MetaDataVersion(delKey));
+        }
+        return result;
+    }
+    
+    @Override
+    public Collection<MetaDataVersion> persistConfig(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
+        Collection<MetaDataVersion> result = new LinkedList<>();
+        for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
+            List<String> versions = repository.getChildrenKeys(DatabaseMetaDataNode.getDataSourceNodeVersionsNode(databaseName, entry.getKey()));
+            String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            repository.persist(DatabaseMetaDataNode.getDataSourceNodeWithVersion(databaseName, entry.getKey(), nextActiveVersion),
+                    YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
+            if (Strings.isNullOrEmpty(getDataSourceActiveVersion(databaseName, entry.getKey()))) {
+                repository.persist(DatabaseMetaDataNode.getDataSourceNodeActiveVersionNode(databaseName, entry.getKey()), DEFAULT_VERSION);
+            }
+            result.add(new MetaDataVersion(DatabaseMetaDataNode.getDataSourceNode(databaseName, entry.getKey()), getDataSourceActiveVersion(databaseName, entry.getKey()), nextActiveVersion));
+        }
+        return result;
     }
     
     private String getDataSourceActiveVersion(final String databaseName, final String dataSourceName) {

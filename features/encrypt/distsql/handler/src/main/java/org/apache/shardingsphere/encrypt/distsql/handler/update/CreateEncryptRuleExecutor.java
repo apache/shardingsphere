@@ -152,12 +152,6 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeCreatedRuleConfig) {
-        currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
-        currentRuleConfig.getEncryptors().putAll(toBeCreatedRuleConfig.getEncryptors());
-    }
-    
-    @Override
     public Class<EncryptRule> getRuleClass() {
         return EncryptRule.class;
     }

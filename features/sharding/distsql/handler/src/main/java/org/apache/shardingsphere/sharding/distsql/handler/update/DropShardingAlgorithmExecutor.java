@@ -105,14 +105,6 @@ public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExec
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        for (String each : sqlStatement.getNames()) {
-            dropShardingAlgorithm(each);
-        }
-        return false;
-    }
-    
-    @Override
     public boolean hasAnyOneToBeDropped(final DropShardingAlgorithmStatement sqlStatement) {
         return !Collections.disjoint(getCurrentShardingAlgorithms(), sqlStatement.getNames());
     }

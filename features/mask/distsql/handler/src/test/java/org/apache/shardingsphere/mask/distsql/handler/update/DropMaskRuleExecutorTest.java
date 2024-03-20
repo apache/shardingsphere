@@ -33,7 +33,6 @@ import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -63,9 +62,9 @@ class DropMaskRuleExecutorTest {
         MaskRule rule = mock(MaskRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
-        assertTrue(executor.updateCurrentRuleConfiguration(createSQLStatement(false, "t_mask"), ruleConfig));
-        assertTrue(ruleConfig.getMaskAlgorithms().isEmpty());
-        assertTrue(ruleConfig.getTables().isEmpty());
+        MaskRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement(false, "t_mask"));
+        assertTrue(toBeDroppedRuleConfig.getMaskAlgorithms().isEmpty());
+        assertThat(toBeDroppedRuleConfig.getTables().size(), is(1));
     }
     
     @Test
@@ -78,8 +77,8 @@ class DropMaskRuleExecutorTest {
         MaskRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
-        assertFalse(executor.updateCurrentRuleConfiguration(statement, ruleConfig));
-        assertThat(ruleConfig.getTables().size(), is(1));
+        MaskRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(statement);
+        assertThat(toBeDroppedRuleConfig.getTables().size(), is(1));
     }
     
     private DropMaskRuleStatement createSQLStatement(final boolean ifExists, final String tableName) {

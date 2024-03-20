@@ -38,7 +38,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -88,7 +87,7 @@ class DropShardingAlgorithmExecutorTest {
     }
     
     @Test
-    void assertUpdateCurrentRuleConfiguration() {
+    void assertBuildToBeDroppedRuleConfiguration() {
         String toBeDroppedAlgorithmName = "t_test";
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(3));
@@ -96,25 +95,9 @@ class DropShardingAlgorithmExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
-        executor.updateCurrentRuleConfiguration(createSQLStatement(toBeDroppedAlgorithmName), currentRuleConfig);
-        assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(2));
-        assertFalse(currentRuleConfig.getShardingAlgorithms().containsKey(toBeDroppedAlgorithmName));
-        assertTrue(currentRuleConfig.getShardingAlgorithms().containsKey("t_order_db_inline"));
-    }
-    
-    @Test
-    void assertUpdateCurrentRuleConfigurationWithIfExists() {
-        String toBeDroppedAlgorithmName = "t_test";
-        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(3));
-        assertTrue(currentRuleConfig.getShardingAlgorithms().containsKey(toBeDroppedAlgorithmName));
-        ShardingRule rule = mock(ShardingRule.class);
-        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
-        executor.setRule(rule);
-        executor.updateCurrentRuleConfiguration(createSQLStatementWithIfExists(toBeDroppedAlgorithmName), currentRuleConfig);
-        assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(2));
-        assertFalse(currentRuleConfig.getShardingAlgorithms().containsKey(toBeDroppedAlgorithmName));
-        assertTrue(currentRuleConfig.getShardingAlgorithms().containsKey("t_order_db_inline"));
+        ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement(toBeDroppedAlgorithmName));
+        assertThat(actual.getShardingAlgorithms().size(), is(1));
+        assertTrue(actual.getShardingAlgorithms().containsKey(toBeDroppedAlgorithmName));
     }
     
     private DropShardingAlgorithmStatement createSQLStatement(final String algorithmName) {

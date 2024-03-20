@@ -37,7 +37,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -76,10 +75,10 @@ class DropShadowRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
-        assertTrue(executor.updateCurrentRuleConfiguration(sqlStatement, ruleConfig));
-        assertTrue(ruleConfig.getDataSources().isEmpty());
-        assertTrue(ruleConfig.getTables().isEmpty());
-        assertTrue(ruleConfig.getShadowAlgorithms().isEmpty());
+        ShadowRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
+        assertThat(toBeDroppedRuleConfig.getDataSources().size(), is(1));
+        assertThat(toBeDroppedRuleConfig.getTables().size(), is(1));
+        assertThat(toBeDroppedRuleConfig.getShadowAlgorithms().size(), is(1));
     }
     
     @Test
@@ -90,10 +89,10 @@ class DropShadowRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
-        assertTrue(executor.updateCurrentRuleConfiguration(sqlStatement, ruleConfig));
-        assertTrue(ruleConfig.getDataSources().isEmpty());
-        assertTrue(ruleConfig.getTables().isEmpty());
-        assertThat(ruleConfig.getShadowAlgorithms().size(), is(1));
+        ShadowRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
+        assertThat(toBeDroppedRuleConfig.getDataSources().size(), is(1));
+        assertThat(toBeDroppedRuleConfig.getTables().size(), is(1));
+        assertThat(toBeDroppedRuleConfig.getShadowAlgorithms().size(), is(1));
     }
     
     private DropShadowRuleStatement createSQLStatement(final String... ruleName) {

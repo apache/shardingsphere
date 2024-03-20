@@ -115,13 +115,6 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
         return new EncryptRuleConfiguration(Collections.emptyList(), toBeDroppedEncryptors);
     }
     
-    @Override
-    public void updateCurrentRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeAlteredRuleConfig) {
-        dropRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-        addRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-        dropUnusedEncryptor(currentRuleConfig);
-    }
-    
     private void dropRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeAlteredRuleConfig) {
         for (EncryptTableRuleConfiguration each : toBeAlteredRuleConfig.getTables()) {
             Optional<EncryptTableRuleConfiguration> toBeRemovedTableRuleConfig = currentRuleConfig.getTables().stream().filter(tableRule -> tableRule.getName().equals(each.getName())).findAny();

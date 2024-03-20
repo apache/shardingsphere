@@ -85,13 +85,6 @@ public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<Al
         return new MaskRuleConfiguration(Collections.emptyList(), toBeDroppedAlgorithms);
     }
     
-    @Override
-    public void updateCurrentRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final MaskRuleConfiguration toBeAlteredRuleConfig) {
-        dropRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-        addRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-        dropUnusedAlgorithms(currentRuleConfig);
-    }
-    
     private void dropRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final MaskRuleConfiguration toBeAlteredRuleConfig) {
         Collection<String> toBeAlteredRuleName = toBeAlteredRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
         currentRuleConfig.getTables().removeIf(each -> toBeAlteredRuleName.contains(each.getName()));

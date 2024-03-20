@@ -79,13 +79,6 @@ public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<Drop
         return new MaskRuleConfiguration(toBeDroppedTables, toBeDroppedAlgorithms);
     }
     
-    @Override
-    public boolean updateCurrentRuleConfiguration(final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
-        sqlStatement.getTables().forEach(this::dropRule);
-        dropUnusedAlgorithm(currentRuleConfig);
-        return currentRuleConfig.isEmpty();
-    }
-    
     private void dropRule(final String ruleName) {
         Optional<MaskTableRuleConfiguration> maskTableRuleConfig = rule.getConfiguration().getTables().stream().filter(each -> each.getName().equals(ruleName)).findAny();
         maskTableRuleConfig.ifPresent(optional -> rule.getConfiguration().getTables().remove(maskTableRuleConfig.get()));
