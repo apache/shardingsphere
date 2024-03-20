@@ -55,14 +55,12 @@ public final class MaskRule implements DatabaseRule {
     }
     
     /**
-     * Find mask algorithm.
+     * Find mask table.
      *
-     * @param logicTable logic table name
-     * @param logicColumn logic column name
-     * @return mask algorithm
+     * @param tableName table name
+     * @return found mask table
      */
-    @SuppressWarnings("rawtypes")
-    public Optional<MaskAlgorithm> findAlgorithm(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).findAlgorithm(logicColumn) : Optional.empty();
+    public Optional<MaskTable> findMaskTable(final String tableName) {
+        return Optional.ofNullable(tables.get(tableName));
     }
 }

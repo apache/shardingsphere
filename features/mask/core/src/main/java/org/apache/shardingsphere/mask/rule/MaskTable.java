@@ -46,11 +46,11 @@ public final class MaskTable {
     /**
      * Find mask algorithm.
      *
-     * @param logicColumn logic column name
+     * @param columnName column name
      * @return found mask algorithm
      */
     @SuppressWarnings("rawtypes")
-    public Optional<MaskAlgorithm> findAlgorithm(final String logicColumn) {
-        return columns.containsKey(logicColumn) ? Optional.of(columns.get(logicColumn).getMaskAlgorithm()) : Optional.empty();
+    public Optional<MaskAlgorithm> findAlgorithm(final String columnName) {
+        return columns.containsKey(columnName) ? Optional.of(columns.get(columnName).getMaskAlgorithm()) : Optional.empty();
     }
 }

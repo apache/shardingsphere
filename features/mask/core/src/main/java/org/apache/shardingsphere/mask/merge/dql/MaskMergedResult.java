@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.mask.rule.MaskRule;
+import org.apache.shardingsphere.mask.rule.MaskTable;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.io.InputStream;
@@ -54,7 +55,11 @@ public final class MaskMergedResult implements MergedResult {
         if (!columnProjection.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }
-        Optional<MaskAlgorithm> maskAlgorithm = maskRule.findAlgorithm(columnProjection.get().getOriginalTable().getValue(), columnProjection.get().getName().getValue());
+        Optional<MaskTable> maskTable = maskRule.findMaskTable(columnProjection.get().getOriginalTable().getValue());
+        if (!maskTable.isPresent()) {
+            return mergedResult.getValue(columnIndex, type);
+        }
+        Optional<MaskAlgorithm> maskAlgorithm = maskTable.get().findAlgorithm(columnProjection.get().getName().getValue());
         if (!maskAlgorithm.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }
