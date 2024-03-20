@@ -22,9 +22,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.segment.parameter.impl.ParameterMarkerExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -37,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -62,12 +65,29 @@ public final class SubqueryTableSegmentBinder {
                 statementBinderContext.getDefaultDatabaseName(), outerTableBinderContexts, statementBinderContext.getExternalTableBinderContexts());
         SubquerySegment boundedSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundedSelect, segment.getSubquery().getText());
         boundedSubquerySegment.setSubqueryType(segment.getSubquery().getSubqueryType());
+        IdentifierValue subqueryTableName = segment.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));
+        bindParameterMarkerProjection(boundedSubquerySegment, subqueryTableName);
         SubqueryTableSegment result = new SubqueryTableSegment(boundedSubquerySegment);
         segment.getAliasSegment().ifPresent(result::setAlias);
-        IdentifierValue subqueryTableName = segment.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));
         tableBinderContexts.put(subqueryTableName.getValue().toLowerCase(),
                 new SimpleTableSegmentBinderContext(createSubqueryProjections(boundedSelect.getProjections().getProjections(), subqueryTableName)));
         return result;
+    }
+    
+    private static void bindParameterMarkerProjection(final SubquerySegment boundedSubquerySegment, final IdentifierValue subqueryTableName) {
+        SelectStatement boundedSelect = boundedSubquerySegment.getSelect();
+        Collection<ProjectionSegment> projections = new LinkedList<>(boundedSelect.getProjections().getProjections());
+        boundedSelect.getProjections().getProjections().clear();
+        for (ProjectionSegment each : projections) {
+            if (!(each instanceof ParameterMarkerExpressionSegment)) {
+                boundedSelect.getProjections().getProjections().add(each);
+                continue;
+            }
+            ParameterMarkerExpressionSegment parameterMarkerProjection = (ParameterMarkerExpressionSegment) each;
+            // TODO add database and schema in ColumnSegmentBoundedInfo
+            boundedSelect.getProjections().getProjections().add(ParameterMarkerExpressionSegmentBinder.bind(parameterMarkerProjection, Collections.singletonMap(parameterMarkerProjection,
+                    new ColumnSegmentBoundedInfo(new IdentifierValue(""), new IdentifierValue(""), subqueryTableName, parameterMarkerProjection.getAlias().orElseGet(() -> new IdentifierValue(""))))));
+        }
     }
     
     private static void fillPivotColumnNamesInBinderContext(final SubqueryTableSegment segment, final SQLStatementBinderContext statementBinderContext) {
