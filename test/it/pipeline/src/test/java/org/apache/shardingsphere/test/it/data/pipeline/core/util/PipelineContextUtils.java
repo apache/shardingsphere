@@ -106,8 +106,7 @@ public final class PipelineContextUtils {
         ModeConfiguration modeConfig = new YamlModeConfigurationSwapper().swapToObject(rootConfig.getMode());
         ContextManager contextManager = getContextManager(rootConfig);
         ClusterPersistRepository persistRepository = getClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository());
-        MetaDataBasedPersistService persistService = "Cluster".equals(modeConfig.getType()) ? new MetaDataPersistService(persistRepository) : new MetaDataPersistService(persistRepository);
-        MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), persistService);
+        MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), new MetaDataPersistService(persistRepository));
         PipelineContext pipelineContext = new PipelineContext(modeConfig, new ContextManager(metaDataContexts, contextManager.getInstanceContext()));
         PipelineContextManager.putContext(contextKey, pipelineContext);
     }
