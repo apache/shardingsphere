@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.executor.row;
+package org.apache.shardingsphere.sqlfederation.executor.enumerator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -29,10 +29,10 @@ import java.sql.Statement;
 import java.util.Collection;
 
 /**
- * SQL federation row enumerator.
+ * JDBC row enumerator.
  */
 @RequiredArgsConstructor
-public final class SQLFederationRowEnumerator implements Enumerator<Object> {
+public final class JDBCRowEnumerator implements Enumerator<Object> {
     
     private final MergedResult queryResult;
     

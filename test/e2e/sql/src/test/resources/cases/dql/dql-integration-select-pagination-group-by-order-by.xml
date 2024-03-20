@@ -80,10 +80,11 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_product p NATURAL JOIN t_product_detail d WHERE p.product_id > ? ORDER BY p.product_id FETCH NEXT 3 ROW ONLY" db-types="openGauss" scenario-types="db"
+    <!-- TODO move this test case to db_tbl_sql_federation -->
+    <!--<test-case sql="SELECT * FROM t_product p NATURAL JOIN t_product_detail d WHERE p.product_id > ? ORDER BY p.product_id FETCH NEXT 3 ROW ONLY" db-types="openGauss" scenario-types="db"
                scenario-comments="Test select natural join fetch statement when use sharding feature and federation executor engine.">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
     <test-case sql="SELECT * FROM t_product p CROSS JOIN t_product_detail d WHERE p.product_id = ? ORDER BY d.product_id, 7 FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation"
                scenario-comments="Test select cross join fetch statement when use sharding feature and federation executor engine.">

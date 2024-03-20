@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.executor;
+package org.apache.shardingsphere.sqlfederation.executor.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +29,10 @@ import org.apache.calcite.sql2rel.SqlToRelConverter;
 import java.util.Map;
 
 /**
- * SQL federation data context.
+ * SQL federation bind context.
  */
 @RequiredArgsConstructor
-public final class SQLFederationDataContext implements DataContext {
+public final class SQLFederationBindContext implements DataContext {
     
     private final SqlValidator validator;
     

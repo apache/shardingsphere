@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaD
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
+import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.ScanExecutorContext;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ class EnumerableScanExecutorTest {
     void assertExecuteWithStatistics() {
         OptimizerContext optimizerContext = mock(OptimizerContext.class, RETURNS_DEEP_STUBS);
         when(optimizerContext.getParserContext(any()).getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        TableScanExecutorContext executorContext = mock(TableScanExecutorContext.class);
+        SQLFederationExecutorContext executorContext = mock(SQLFederationExecutorContext.class);
         when(executorContext.getDatabaseName()).thenReturn("db");
         when(executorContext.getSchemaName()).thenReturn("pg_catalog");
         ShardingSphereStatistics statistics = mock(ShardingSphereStatistics.class, RETURNS_DEEP_STUBS);
