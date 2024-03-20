@@ -41,17 +41,16 @@ public final class MaskRule implements DatabaseRule {
     
     private final Map<String, MaskTable> tables;
     
-    private final Map<String, MaskAlgorithm<?, ?>> maskAlgorithms;
-    
     @Getter
     private final RuleAttributes attributes;
     
     @SuppressWarnings("unchecked")
     public MaskRule(final MaskRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        tables = ruleConfig.getTables().stream().collect(Collectors.toMap(each -> each.getName().toLowerCase(), MaskTable::new, (oldValue, currentValue) -> oldValue, CaseInsensitiveMap::new));
-        maskAlgorithms = ruleConfig.getMaskAlgorithms().entrySet().stream()
+        Map<String, MaskAlgorithm<?, ?>> maskAlgorithms = ruleConfig.getMaskAlgorithms().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> TypedSPILoader.getService(MaskAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps())));
+        tables = ruleConfig.getTables().stream()
+                .collect(Collectors.toMap(each -> each.getName().toLowerCase(), each -> new MaskTable(each, maskAlgorithms), (oldValue, currentValue) -> oldValue, CaseInsensitiveMap::new));
         attributes = new RuleAttributes(new MaskTableMapperRuleAttribute(ruleConfig.getTables()));
     }
     
@@ -64,6 +63,6 @@ public final class MaskRule implements DatabaseRule {
      */
     @SuppressWarnings("rawtypes")
     public Optional<MaskAlgorithm> findAlgorithm(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).findAlgorithmName(logicColumn).map(maskAlgorithms::get) : Optional.empty();
+        return tables.containsKey(logicTable) ? tables.get(logicTable).findAlgorithm(logicColumn) : Optional.empty();
     }
 }
