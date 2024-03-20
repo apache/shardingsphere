@@ -28,6 +28,6 @@ public final class AlgorithmNotFoundOnColumnException extends MetaDataSQLExcepti
     private static final long serialVersionUID = -4570489906443880879L;
     
     public AlgorithmNotFoundOnColumnException(final String algorithmType, final String algorithmName, final String tableName, final String columnName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 12, "Can not find '%s' algorithm '%s' on table.column '%s'.%s", algorithmType, algorithmName, tableName, columnName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 13, "Can not find '%s' algorithm '%s' on table.column '%s'.'%s'.", algorithmType, algorithmName, tableName, columnName);
     }
 }
