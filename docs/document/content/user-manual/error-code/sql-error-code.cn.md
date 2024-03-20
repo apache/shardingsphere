@@ -272,12 +272,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42000     | 20840       | Insert value of index \`%s\` can not support for shadow.                                          |
 | 44000     | 20881       | Default shadow algorithm class should be implement HintShadowAlgorithm.                           |
 
-### 数据脱敏
-
-| SQL State | Vendor Code | 错误信息                                                        |
-|-----------|-------------|-------------------------------------------------------------|
-| 42S02     | 20990       | Invalid mask algorithm \`%s\` in database \`%s\`.           |
-
 ### 联邦查询
 
 | SQL State | Vendor Code | 错误信息                                                      |

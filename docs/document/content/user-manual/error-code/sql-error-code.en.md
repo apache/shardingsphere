@@ -287,12 +287,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42000     | 20840       | Insert value of index \`%s\` can not support for shadow.                                          |
 | 44000     | 20881       | Default shadow algorithm class should be implement HintShadowAlgorithm.                           |
 
-### Data Masking
-
-| SQL State | Vendor Code | Reason                                                      |
-|-----------|-------------|-------------------------------------------------------------|
-| 42S02     | 20990       | Invalid mask algorithm \`%s\` in database \`%s\`.           |
-
 ### SQL Federation
 
 | SQL State | Vendor Code | Reason                                                    |
