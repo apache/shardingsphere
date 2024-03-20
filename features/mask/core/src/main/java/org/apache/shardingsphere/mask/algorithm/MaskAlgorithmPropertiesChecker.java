@@ -26,13 +26,13 @@ import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import java.util.Properties;
 
 /**
- * Mask algorithm props checker.
+ * Mask algorithm properties checker.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MaskAlgorithmPropsChecker {
+public final class MaskAlgorithmPropertiesChecker {
     
     /**
-     * Check single char config.
+     * Check single char configuration.
      * 
      * @param props props
      * @param singleCharConfigKey single char config key

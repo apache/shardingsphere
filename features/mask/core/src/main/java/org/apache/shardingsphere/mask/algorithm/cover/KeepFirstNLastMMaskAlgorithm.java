@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropsChecker;
+import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropertiesChecker;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Properties;
@@ -48,17 +48,17 @@ public final class KeepFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object,
     }
     
     private Integer createFirstN(final Properties props) {
-        MaskAlgorithmPropsChecker.checkPositiveIntegerConfiguration(props, FIRST_N, this);
+        MaskAlgorithmPropertiesChecker.checkPositiveIntegerConfiguration(props, FIRST_N, this);
         return Integer.parseInt(props.getProperty(FIRST_N));
     }
     
     private Integer createLastM(final Properties props) {
-        MaskAlgorithmPropsChecker.checkPositiveIntegerConfiguration(props, LAST_M, this);
+        MaskAlgorithmPropertiesChecker.checkPositiveIntegerConfiguration(props, LAST_M, this);
         return Integer.parseInt(props.getProperty(LAST_M));
     }
     
     private Character createReplaceChar(final Properties props) {
-        MaskAlgorithmPropsChecker.checkSingleCharConfiguration(props, REPLACE_CHAR, this);
+        MaskAlgorithmPropertiesChecker.checkSingleCharConfiguration(props, REPLACE_CHAR, this);
         return props.getProperty(REPLACE_CHAR).charAt(0);
     }
     
