@@ -188,7 +188,7 @@ unreservedWord1
     | OTHERS | EXCEPTION | CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA | PERCENT_RANK | ROWID
     | LPAD | ZONE | SESSIONTIMEZONE | TO_CHAR | XMLELEMENT | COLUMN_VALUE | EVALNAME | LEVEL | CONTENT | ON | LOOP | EXIT | ELSIF
     ;
-    
+
 unreservedWord2
     : ABS | ACCESS | ACCOUNT | ACOS | ACTIVE_COMPONENT | ACTIVE_FUNCTION | ACTIVE_TAG | ADD
     | ADD_COLUMN | ADD_GROUP | ADD_MONTHS | ADJ_DATE | ADMIN | ADMINISTRATOR | ALL_ROWS | AND_EQUAL | ANTIJOIN | APPEND
@@ -205,7 +205,7 @@ unreservedWord2
     | COS | COSH | COST_XML_QUERY_REWRITE | COVAR_POP | COVAR_SAMP | CO_AUTH_IND | CPU_COSTING | CPU_PER_CALL | CRASH
     | CREATE_STORED_OUTLINES | CROSSEDITION | CSCONVERT | CUBE_GB | CUME_DIST | CUME_DISTM | CURRENT | CURRENTV | CURRENT_DATE
     | CURRENT_SCHEMA | CURRENT_TIME | CURRENT_TIMESTAMP | CURSOR_SHARING_EXACT | CURSOR_SPECIFIC_SEGMENT | CV
-    | DATABASE_DEFAULT | DATAOBJNO | DATAOBJ_TO_PARTITION | DATE_MODE | DBA | DBMS_STATS | DB_ROLE_CHANGE | DB_VERSION
+    | DATABASE_DEFAULT | DATAOBJNO | DATAOBJ_TO_PARTITION | DATE_MODE | DBA | DBMS_STATS | DBMS_LOB | DB_ROLE_CHANGE | DB_VERSION
     | DEBUGGER | DECLARE | DECOMPOSE | DECR | DEFAULT | DEFAULTS | DEFINED | DEGREE | DELAY | DELETEXML | DENSE_RANKM | DEQUEUE | DEREF
     | DEREF_NO_REWRITE | DETACHED | DIRECT_LOAD | DISABLE_PRESET | DISABLE_RPKE | DISTINGUISHED | DML_UPDATE | DOCFIDELITY
     | DOCUMENT | DOMAIN_INDEX_FILTER | DOMAIN_INDEX_NO_SORT | DOMAIN_INDEX_SORT | DRIVING_SITE | DROP_COLUMN | DROP_GROUP
@@ -652,7 +652,7 @@ exprs
 exprList
     : LP_ exprs RP_
     ;
-
+//新增一个builtinFunctionsExpr
 // TODO comb expr
 expr
     : expr andOperator expr
@@ -662,6 +662,7 @@ expr
     | booleanPrimary
     | expr datetimeExpr
     | multisetExpr
+    |builtinFunctionsExpr
     ;
 
 andOperator
@@ -786,7 +787,7 @@ fromFirstOrLast
 leadLagInfo
     : COMMA_ expr (COMMA_ expr)?
     ;
-
+//更改
 specialFunction
     : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
     | setFunction | translateFunction | cursorFunction | toDateFunction | approxRank | wmConcatFunction
@@ -2089,6 +2090,18 @@ multisetOperator
     | INTERSECT
     | UNION
     ;
+
+builtinFunctionsExpr
+    : (packageIdentifier DOT_ builtinFunction) AT_ dbLink LP_ expr RP_
+    ;
+
+packageIdentifier
+    : identifier
+    ;
+
+builtinFunction
+   : GETLENGTH
+   ;
 
 superview
     : identifier
