@@ -947,3 +947,7 @@ ENCLOSED
 LRTRIM
     :L R T R I M
     ;
+
+GETLENGTH
+    :G E T L E N G T H
+    ;
