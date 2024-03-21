@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.provider;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -140,7 +141,8 @@ public final class ShardingConvertRuleConfigurationProvider implements ConvertRu
         StringBuilder result = new StringBuilder();
         StandardShardingStrategyConfiguration strategyConfig = (StandardShardingStrategyConfiguration) autoTableRuleConfig.getShardingStrategy();
         String shardingColumn = Strings.isNullOrEmpty(strategyConfig.getShardingColumn()) ? ruleConfig.getDefaultShardingColumn() : strategyConfig.getShardingColumn();
-        result.append(String.format(ShardingDistSQLConstants.AUTO_TABLE_STRATEGY, shardingColumn, getAlgorithmType(ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName()))));
+        result.append(String.format(ShardingDistSQLConstants.AUTO_TABLE_STRATEGY,
+                shardingColumn, AlgorithmDistSQLConverter.getAlgorithmType(ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName()))));
         appendKeyGenerateStrategy(ruleConfig.getKeyGenerators(), autoTableRuleConfig.getKeyGenerateStrategy(), result);
         appendAuditStrategy(ruleConfig.getAuditors(), null != autoTableRuleConfig.getAuditStrategy() ? autoTableRuleConfig.getAuditStrategy() : ruleConfig.getDefaultAuditStrategy(), result);
         return result.toString();
@@ -155,7 +157,7 @@ public final class ShardingConvertRuleConfigurationProvider implements ConvertRu
             stringBuilder.append(ShardingDistSQLConstants.COMMA).append(System.lineSeparator());
         }
         String type = strategyConfig.getType().toLowerCase();
-        String algorithmDefinition = getAlgorithmType(shardingAlgorithms.get(strategyConfig.getShardingAlgorithmName()));
+        String algorithmDefinition = AlgorithmDistSQLConverter.getAlgorithmType(shardingAlgorithms.get(strategyConfig.getShardingAlgorithmName()));
         switch (type) {
             case ShardingDistSQLConstants.STANDARD:
                 StandardShardingStrategyConfiguration standardShardingStrategyConfig = (StandardShardingStrategyConfiguration) strategyConfig;
@@ -182,7 +184,7 @@ public final class ShardingConvertRuleConfigurationProvider implements ConvertRu
             return;
         }
         stringBuilder.append(ShardingDistSQLConstants.COMMA).append(System.lineSeparator());
-        String algorithmDefinition = getAlgorithmType(keyGenerators.get(keyGenerateStrategyConfig.getKeyGeneratorName()));
+        String algorithmDefinition = AlgorithmDistSQLConverter.getAlgorithmType(keyGenerators.get(keyGenerateStrategyConfig.getKeyGeneratorName()));
         stringBuilder.append(String.format(ShardingDistSQLConstants.KEY_GENERATOR_STRATEGY, keyGenerateStrategyConfig.getColumn(), algorithmDefinition));
     }
     
@@ -198,7 +200,7 @@ public final class ShardingConvertRuleConfigurationProvider implements ConvertRu
         if (!auditorNames.isEmpty()) {
             Iterator<String> iterator = auditorNames.iterator();
             while (iterator.hasNext()) {
-                result.append(getAlgorithmType(auditors.get(iterator.next())));
+                result.append(AlgorithmDistSQLConverter.getAlgorithmType(auditors.get(iterator.next())));
                 if (iterator.hasNext()) {
                     result.append(ShardingDistSQLConstants.COMMA);
                 }
