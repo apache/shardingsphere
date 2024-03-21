@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.algorithm;
+package org.apache.shardingsphere.mask.algorithm.parameterized;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

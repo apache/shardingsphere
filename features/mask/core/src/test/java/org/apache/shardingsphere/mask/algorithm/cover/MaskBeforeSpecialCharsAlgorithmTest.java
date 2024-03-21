@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mask.algorithm.cover;
 
-import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmArgumentsProvider;
-import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmAssertions;
-import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmCaseAssert;
+import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmArgumentsProvider;
+import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmAssertions;
+import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmCaseAssert;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.params.ParameterizedTest;
