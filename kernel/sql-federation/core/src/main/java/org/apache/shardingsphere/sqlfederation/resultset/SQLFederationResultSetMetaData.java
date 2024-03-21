@@ -22,11 +22,14 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.Table;
+import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationColumnTypeConverter;
 
 import java.sql.ResultSetMetaData;
 import java.util.List;
@@ -50,6 +53,8 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     private final Map<Integer, String> indexAndColumnLabels;
     
+    private final SQLFederationColumnTypeConverter sqlFederationColumnTypeConverter;
+    
     public SQLFederationResultSetMetaData(final ShardingSphereSchema schema, final Schema sqlFederationSchema,
                                           final SelectStatementContext selectStatementContext, final RelDataType resultColumnType, final Map<Integer, String> indexAndColumnLabels) {
         this.schema = schema;
@@ -58,6 +63,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
         this.selectStatementContext = selectStatementContext;
         this.resultColumnType = resultColumnType;
         this.indexAndColumnLabels = indexAndColumnLabels;
+        this.sqlFederationColumnTypeConverter = DatabaseTypedSPILoader.getService(SQLFederationColumnTypeConverter.class, selectStatementContext.getDatabaseType());
     }
     
     @Override
@@ -147,12 +153,16 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public int getColumnType(final int column) {
-        return resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName().getJdbcOrdinal();
+        int jdbcType = resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName().getJdbcOrdinal();
+        return sqlFederationColumnTypeConverter.convertColumnType(jdbcType).orElse(jdbcType);
     }
     
     @Override
     public String getColumnTypeName(final int column) {
-        return resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName().getName();
+        SqlTypeName originalSqlTypeName = resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName();
+        SqlTypeName convertSqlTypeName =
+                SqlTypeName.getNameForJdbcType(sqlFederationColumnTypeConverter.convertColumnType(originalSqlTypeName.getJdbcOrdinal()).orElse(originalSqlTypeName.getJdbcOrdinal()));
+        return null == convertSqlTypeName ? originalSqlTypeName.getName() : convertSqlTypeName.getName();
     }
     
     @Override
