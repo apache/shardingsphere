@@ -27,9 +27,8 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationColumnTypeConverter;
+import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
 
 import java.sql.ResultSetMetaData;
 import java.util.List;
@@ -53,17 +52,18 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     private final Map<Integer, String> indexAndColumnLabels;
     
-    private final SQLFederationColumnTypeConverter sqlFederationColumnTypeConverter;
+    private final SQLFederationColumnTypeConverter columnTypeConverter;
     
     public SQLFederationResultSetMetaData(final ShardingSphereSchema schema, final Schema sqlFederationSchema,
-                                          final SelectStatementContext selectStatementContext, final RelDataType resultColumnType, final Map<Integer, String> indexAndColumnLabels) {
+                                          final SelectStatementContext selectStatementContext, final RelDataType resultColumnType, final Map<Integer, String> indexAndColumnLabels,
+                                          final SQLFederationColumnTypeConverter columnTypeConverter) {
         this.schema = schema;
         this.sqlFederationSchema = sqlFederationSchema;
         this.relDataTypeFactory = new JavaTypeFactoryImpl();
         this.selectStatementContext = selectStatementContext;
         this.resultColumnType = resultColumnType;
         this.indexAndColumnLabels = indexAndColumnLabels;
-        this.sqlFederationColumnTypeConverter = DatabaseTypedSPILoader.getService(SQLFederationColumnTypeConverter.class, selectStatementContext.getDatabaseType());
+        this.columnTypeConverter = columnTypeConverter;
     }
     
     @Override
@@ -154,14 +154,13 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     @Override
     public int getColumnType(final int column) {
         int jdbcType = resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName().getJdbcOrdinal();
-        return sqlFederationColumnTypeConverter.convertColumnType(jdbcType).orElse(jdbcType);
+        return columnTypeConverter.convertColumnType(jdbcType);
     }
     
     @Override
     public String getColumnTypeName(final int column) {
         SqlTypeName originalSqlTypeName = resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName();
-        SqlTypeName convertSqlTypeName =
-                SqlTypeName.getNameForJdbcType(sqlFederationColumnTypeConverter.convertColumnType(originalSqlTypeName.getJdbcOrdinal()).orElse(originalSqlTypeName.getJdbcOrdinal()));
+        SqlTypeName convertSqlTypeName = SqlTypeName.getNameForJdbcType(columnTypeConverter.convertColumnType(originalSqlTypeName.getJdbcOrdinal()));
         return null == convertSqlTypeName ? originalSqlTypeName.getName() : convertSqlTypeName.getName();
     }
     

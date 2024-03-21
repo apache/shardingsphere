@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sqlfederation.resultset.converter.MySQLColumnTypeConverter
-org.apache.shardingsphere.sqlfederation.resultset.converter.OracleColumnTypeConverter
-org.apache.shardingsphere.sqlfederation.resultset.converter.OpenGaussColumnTypeConverter
-org.apache.shardingsphere.sqlfederation.resultset.converter.PostgreSQLColumnTypeConverter
+org.apache.shardingsphere.sqlfederation.resultset.converter.impl.MySQLColumnTypeConverter
+org.apache.shardingsphere.sqlfederation.resultset.converter.impl.OracleColumnTypeConverter
+org.apache.shardingsphere.sqlfederation.resultset.converter.impl.OpenGaussColumnTypeConverter
+org.apache.shardingsphere.sqlfederation.resultset.converter.impl.PostgreSQLColumnTypeConverter

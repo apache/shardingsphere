@@ -17,27 +17,30 @@
 
 package org.apache.shardingsphere.sqlfederation.resultset.converter;
 
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationColumnTypeConverter;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 
 /**
- * PostgreSQL column type converter.
+ * SQL federation column type converter.
  */
-public final class PostgreSQLColumnTypeConverter implements SQLFederationColumnTypeConverter {
+public interface SQLFederationColumnTypeConverter extends DatabaseTypedSPI {
     
-    @Override
-    public Optional<Object> convertColumnValue(final Object columnValue) {
-        return Optional.empty();
+    /**
+     * Convert column value.
+     * 
+     * @param columnValue column value
+     * @return converted column value
+     */
+    default Object convertColumnValue(Object columnValue) {
+        return columnValue;
     }
     
-    @Override
-    public Optional<Integer> convertColumnType(final Integer columnType) {
-        return Optional.empty();
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "PostgreSQL";
+    /**
+     * Convert column type.
+     * 
+     * @param columnType column type
+     * @return converted column type
+     */
+    default int convertColumnType(int columnType) {
+        return columnType;
     }
 }
