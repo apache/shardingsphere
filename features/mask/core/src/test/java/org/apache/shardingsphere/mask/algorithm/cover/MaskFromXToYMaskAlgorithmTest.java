@@ -83,8 +83,7 @@ class MaskFromXToYMaskAlgorithmTest {
                     new MaskAlgorithmCaseAssert("length_less_than_to_Y_plus_one_with_diff", diffProps, "abc12", "abc**"),
                     new MaskAlgorithmCaseAssert("length_less_than_to_Y_plus_one_with_same", sameProps, "abc12", "abc12"),
                     new MaskAlgorithmCaseAssert("length_equals_to_Y_plus_one_with_diff", diffProps, "abc123", "abc***"),
-                    new MaskAlgorithmCaseAssert("length_equals_to_Y_plus_one_with_same", sameProps, "abc123", "abc12*")
-            );
+                    new MaskAlgorithmCaseAssert("length_equals_to_Y_plus_one_with_same", sameProps, "abc123", "abc12*"));
         }
     }
 }

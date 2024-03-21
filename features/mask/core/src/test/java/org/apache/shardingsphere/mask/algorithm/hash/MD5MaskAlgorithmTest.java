@@ -50,8 +50,7 @@ class MD5MaskAlgorithmTest {
             return Arrays.asList(
                     new MaskAlgorithmCaseAssert("null_value", propsWithoutSalt, null, null),
                     new MaskAlgorithmCaseAssert("without_salt", propsWithoutSalt, "abc123456", "0659c7992e268962384eb17fafe88364"),
-                    new MaskAlgorithmCaseAssert("with_salt", propsWithSalt, "abc123456", "02d44390e9354b72dd2aa78d55016f7f")
-            );
+                    new MaskAlgorithmCaseAssert("with_salt", propsWithSalt, "abc123456", "02d44390e9354b72dd2aa78d55016f7f"));
         }
     }
 }

@@ -84,8 +84,7 @@ class MaskFirstNLastMMaskAlgorithmTest {
                     new MaskAlgorithmCaseAssert("length_less_than_first_N_plus_last_M_with_diff", diffProps, "abc1234", "*******"),
                     new MaskAlgorithmCaseAssert("length_less_than_first_N_plus_last_M_with_same", sameProps, "abc123456", "*********"),
                     new MaskAlgorithmCaseAssert("length_equals_first_N_plus_last_M_with_diff", diffProps, "abc12345", "********"),
-                    new MaskAlgorithmCaseAssert("length_equals_first_N_plus_last_M_with_same", sameProps, "abc1234567", "**********")
-            );
+                    new MaskAlgorithmCaseAssert("length_equals_first_N_plus_last_M_with_same", sameProps, "abc1234567", "**********"));
         }
     }
 }
