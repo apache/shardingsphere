@@ -30,6 +30,8 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,5 +67,10 @@ class MetaDataPersistServiceTest {
     @Test
     void assertLoadDataSourceConfigurations() {
         assertTrue(metaDataPersistService.loadDataSourceConfigurations("foo_db").isEmpty());
+    }
+
+    @Test
+    void testPersistGlobalRuleConfiguration() {
+        metaDataPersistService.persistGlobalRuleConfiguration(anyCollection(),any());
     }
 }
