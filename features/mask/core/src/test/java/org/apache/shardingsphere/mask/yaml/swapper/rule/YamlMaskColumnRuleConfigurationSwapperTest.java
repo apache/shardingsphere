@@ -28,21 +28,17 @@ class YamlMaskColumnRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        YamlMaskColumnRuleConfigurationSwapper swapper = new YamlMaskColumnRuleConfigurationSwapper();
-        MaskColumnRuleConfiguration encryptColumnRuleConfig =
-                new MaskColumnRuleConfiguration("logicColumn", "md5_mask");
-        YamlMaskColumnRuleConfiguration actual = swapper.swapToYamlConfiguration(encryptColumnRuleConfig);
+        YamlMaskColumnRuleConfiguration actual = new YamlMaskColumnRuleConfigurationSwapper().swapToYamlConfiguration(new MaskColumnRuleConfiguration("logicColumn", "md5_mask"));
         assertThat(actual.getLogicColumn(), is("logicColumn"));
         assertThat(actual.getMaskAlgorithm(), is("md5_mask"));
     }
     
     @Test
     void assertSwapToObject() {
-        YamlMaskColumnRuleConfigurationSwapper swapper = new YamlMaskColumnRuleConfigurationSwapper();
         YamlMaskColumnRuleConfiguration yamlMaskColumnRuleConfig = new YamlMaskColumnRuleConfiguration();
         yamlMaskColumnRuleConfig.setLogicColumn("logicColumn");
         yamlMaskColumnRuleConfig.setMaskAlgorithm("md5_mask");
-        MaskColumnRuleConfiguration actual = swapper.swapToObject(yamlMaskColumnRuleConfig);
+        MaskColumnRuleConfiguration actual = new YamlMaskColumnRuleConfigurationSwapper().swapToObject(yamlMaskColumnRuleConfig);
         assertThat(actual.getLogicColumn(), is("logicColumn"));
         assertThat(actual.getMaskAlgorithm(), is("md5_mask"));
     }

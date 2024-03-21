@@ -28,43 +28,40 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlMaskDataNodeRuleConfigurationSwapperTest {
     
-    private final YamlMaskDataNodeRuleConfigurationSwapper swapper = new YamlMaskDataNodeRuleConfigurationSwapper();
-    
     @Test
-    void assertSwapEmptyConfigToDataNodes() {
-        MaskRuleConfiguration config = new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
-        Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(0));
+    void assertSwapEmptyConfigurationToDataNodes() {
+        assertTrue(new YamlMaskDataNodeRuleConfigurationSwapper().swapToDataNodes(new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())).isEmpty());
     }
     
     @Test
-    void assertSwapFullConfigToDataNodes() {
+    void assertSwapFullConfigurationToDataNodes() {
         MaskRuleConfiguration config = createMaximumMaskRule();
-        Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(2));
-        Iterator<YamlDataNode> iterator = result.iterator();
+        Collection<YamlDataNode> actual = new YamlMaskDataNodeRuleConfigurationSwapper().swapToDataNodes(config);
+        assertThat(actual.size(), is(2));
+        Iterator<YamlDataNode> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("mask_algorithms/FIXTURE"));
         assertThat(iterator.next().getKey(), is("tables/foo"));
     }
     
     private MaskRuleConfiguration createMaximumMaskRule() {
-        Collection<MaskTableRuleConfiguration> tables = new LinkedList<>();
-        tables.add(new MaskTableRuleConfiguration("foo", Collections.singleton(new MaskColumnRuleConfiguration("foo_column", "FIXTURE"))));
+        Collection<MaskTableRuleConfiguration> tables = Collections.singleton(
+                new MaskTableRuleConfiguration("foo", Collections.singleton(new MaskColumnRuleConfiguration("foo_column", "FIXTURE"))));
         return new MaskRuleConfiguration(tables, Collections.singletonMap("FIXTURE", new AlgorithmConfiguration("FIXTURE", new Properties())));
     }
     
     @Test
     void assertSwapToObjectEmpty() {
-        Collection<YamlDataNode> config = new LinkedList<>();
-        assertFalse(swapper.swapToObject(config).isPresent());
+        assertFalse(new YamlMaskDataNodeRuleConfigurationSwapper().swapToObject(new LinkedList<>()).isPresent());
     }
     
     @Test
@@ -76,14 +73,15 @@ class YamlMaskDataNodeRuleConfigurationSwapperTest {
                 + "    maskAlgorithm: FIXTURE\n"
                 + "name: foo\n"));
         config.add(new YamlDataNode("/metadata/foo_db/rules/mask/mask_algorithms/FIXTURE/versions/0", "type: FIXTURE\n"));
-        MaskRuleConfiguration result = swapper.swapToObject(config).get();
-        assertThat(result.getTables().size(), is(1));
-        assertThat(result.getTables().iterator().next().getName(), is("foo"));
-        assertThat(result.getTables().iterator().next().getColumns().size(), is(1));
-        assertThat(result.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("foo_column"));
-        assertThat(result.getTables().iterator().next().getColumns().iterator().next().getMaskAlgorithm(), is("FIXTURE"));
-        assertThat(result.getMaskAlgorithms().size(), is(1));
-        assertThat(result.getMaskAlgorithms().get("FIXTURE").getType(), is("FIXTURE"));
-        assertThat(result.getMaskAlgorithms().get("FIXTURE").getProps().size(), is(0));
+        Optional<MaskRuleConfiguration> actual = new YamlMaskDataNodeRuleConfigurationSwapper().swapToObject(config);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getTables().size(), is(1));
+        assertThat(actual.get().getTables().iterator().next().getName(), is("foo"));
+        assertThat(actual.get().getTables().iterator().next().getColumns().size(), is(1));
+        assertThat(actual.get().getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("foo_column"));
+        assertThat(actual.get().getTables().iterator().next().getColumns().iterator().next().getMaskAlgorithm(), is("FIXTURE"));
+        assertThat(actual.get().getMaskAlgorithms().size(), is(1));
+        assertThat(actual.get().getMaskAlgorithms().get("FIXTURE").getType(), is("FIXTURE"));
+        assertThat(actual.get().getMaskAlgorithms().get("FIXTURE").getProps().size(), is(0));
     }
 }
