@@ -51,7 +51,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     private final SQLFederationColumnTypeConverter columnTypeConverter;
     
-    public SQLFederationResultSetMetaData(final Schema sqlFederationSchema, final SelectStatementContext selectStatementContext, final RelDataType resultColumnType, 
+    public SQLFederationResultSetMetaData(final Schema sqlFederationSchema, final SelectStatementContext selectStatementContext, final RelDataType resultColumnType,
                                           final Map<Integer, String> indexAndColumnLabels, final SQLFederationColumnTypeConverter columnTypeConverter) {
         this.sqlFederationSchema = sqlFederationSchema;
         this.relDataTypeFactory = new JavaTypeFactoryImpl();
