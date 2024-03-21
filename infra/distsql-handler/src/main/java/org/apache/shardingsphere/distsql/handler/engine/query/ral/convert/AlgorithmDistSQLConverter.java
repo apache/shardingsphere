@@ -42,10 +42,10 @@ public final class AlgorithmDistSQLConverter {
      * @return algorithm type
      */
     public static String getAlgorithmType(final AlgorithmConfiguration algorithmConfig) {
-        StringBuilder result = new StringBuilder();
         if (null == algorithmConfig) {
-            return result.toString();
+            return "";
         }
+        StringBuilder result = new StringBuilder();
         String type = algorithmConfig.getType().toLowerCase();
         result.append(algorithmConfig.getProps().isEmpty()
                 ? String.format(ALGORITHM_TYPE_WITHOUT_PROPS, type)
