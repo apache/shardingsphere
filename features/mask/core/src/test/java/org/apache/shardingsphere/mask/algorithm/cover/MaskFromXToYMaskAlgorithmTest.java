@@ -18,10 +18,14 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,10 +39,10 @@ class MaskFromXToYMaskAlgorithmTest {
     
     @BeforeEach
     void setUp() {
-        maskAlgorithm = new MaskFromXToYMaskAlgorithm();
-        maskAlgorithm.init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", "*")));
-        sameFromXToYMaskAlgorithm = new MaskFromXToYMaskAlgorithm();
-        sameFromXToYMaskAlgorithm.init(PropertiesBuilder.build(new Property("from-x", "5"), new Property("to-y", "5"), new Property("replace-char", "*")));
+        maskAlgorithm = (MaskFromXToYMaskAlgorithm) TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y",
+                PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", "*")));
+        sameFromXToYMaskAlgorithm = (MaskFromXToYMaskAlgorithm) TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y",
+                PropertiesBuilder.build(new Property("from-x", "5"), new Property("to-y", "5"), new Property("replace-char", "*")));
     }
     
     @Test
@@ -73,37 +77,37 @@ class MaskFromXToYMaskAlgorithmTest {
     
     @Test
     void assertInitWhenFromXIsEmpty() {
-        assertThrows(AlgorithmInitializationException.class,
-                () -> new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", ""), new Property("to-y", "5"), new Property("replace-char", "*"))));
+        Properties props = PropertiesBuilder.build(new Property("from-x", ""), new Property("to-y", "5"), new Property("replace-char", "*"));
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y", props));
     }
     
     @Test
     void assertInitWhenToYIsEmpty() {
-        assertThrows(AlgorithmInitializationException.class,
-                () -> new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", ""), new Property("replace-char", "*"))));
+        Properties props = PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", ""), new Property("replace-char", "*"));
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y", props));
     }
     
     @Test
     void assertInitWhenReplaceCharIsEmpty() {
-        assertThrows(AlgorithmInitializationException.class,
-                () -> new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", ""))));
+        Properties props = PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", ""));
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y", props));
     }
     
     @Test
     void assertInitWhenFromXIsNotPositive() {
-        assertThrows(AlgorithmInitializationException.class,
-                () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "-3"), new Property("to-y", "5"), new Property("replace-char", "*"))));
+        Properties props = PropertiesBuilder.build(new Property("from-x", "-3"), new Property("to-y", "5"), new Property("replace-char", "*"));
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y", props));
     }
     
     @Test
     void assertInitWhenToYIsNotPositive() {
-        assertThrows(AlgorithmInitializationException.class,
-                () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "-5"), new Property("replace-char", "*"))));
+        Properties props = PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "-5"), new Property("replace-char", "*"));
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y", props));
     }
     
     @Test
     void assertInitWhenFromXGreaterThanToY() {
-        assertThrows(AlgorithmInitializationException.class,
-                () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "5"), new Property("to-y", "2"), new Property("replace-char", ""))));
+        Properties props = PropertiesBuilder.build(new Property("from-x", "5"), new Property("to-y", "2"), new Property("replace-char", ""));
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y", props));
     }
 }
