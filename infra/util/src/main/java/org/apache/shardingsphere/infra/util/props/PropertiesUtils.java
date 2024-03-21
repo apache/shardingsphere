@@ -31,10 +31,10 @@ import java.util.TreeMap;
 public final class PropertiesUtils {
     
     /**
-     * Get algorithm properties.
+     * Convert properties To string.
      *
      * @param props properties
-     * @return algorithm properties
+     * @return properties string
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static String toString(final Properties props) {
