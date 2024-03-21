@@ -61,4 +61,9 @@
         <input sql="DELETE t FROM t_user as t WHERE t.user_id = 3 and t.user_name = 'test_user' and t.user_name like 'test_%' and t.password = 'admin123'  and t.email = 'admin@gmail.com'" />
         <output sql="DELETE t FROM t_user as t WHERE t.user_id = 3 and t.user_name_cipher = 'o07WOpLlazifLKU747nd8w==' and t.user_name_like like 'udtu_%' and t.password_cipher = 'beO6rTHBW9jmVeSPPb62QA=='  and t.email_cipher = 'zclI1Wk2uaVYHyNckTRYzA=='" />
     </rewrite-assertion>
+    
+    <rewrite-assertion id="delete_user_with_database_and_schema_and_alias_for_literals" db-types="SQLServer">
+        <input sql="DELETE t FROM logic_db.dbo.t_user as t WHERE t.user_id = 4 and t.user_name = 'test_user' and t.user_name like 'test_%' and t.password = 'admin123'  and t.email = 'admin@gmail.com'" />
+        <output sql="DELETE t FROM dbo.t_user as t WHERE t.user_id = 4 and t.user_name_cipher = 'o07WOpLlazifLKU747nd8w==' and t.user_name_like like 'udtu_%' and t.password_cipher = 'beO6rTHBW9jmVeSPPb62QA=='  and t.email_cipher = 'zclI1Wk2uaVYHyNckTRYzA=='" />
+    </rewrite-assertion>
 </rewrite-assertions>
