@@ -34,14 +34,14 @@ import java.util.Properties;
 
 @ExtendWith(MockitoExtension.class)
 public class StandaloneContextManagerBuilderTest {
-
+    
     private StandaloneContextManagerBuilder standaloneContextManagerBuilder;
-
+    
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         standaloneContextManagerBuilder = new StandaloneContextManagerBuilder();
     }
-
+    
     @Test
     void testBuild() throws SQLException {
         ModeConfiguration modeConfig = new ModeConfiguration("Standalone",
@@ -52,16 +52,16 @@ public class StandaloneContextManagerBuilderTest {
                 Collections.emptyList(),
                 PropertiesBuilder.build(new PropertiesBuilder.Property("foo", "foo_value")),
                 null, null, false);
-       try (ContextManager manager = standaloneContextManagerBuilder.build(parameter)) {
-           Assertions.assertNotNull(manager.getInstanceContext());
-       }
+        try (ContextManager manager = standaloneContextManagerBuilder.build(parameter)) {
+            Assertions.assertNotNull(manager.getInstanceContext());
+        }
     }
-
+    
     @Test
     void testGetType() {
         Assertions.assertEquals(standaloneContextManagerBuilder.getType(), "Standalone");
     }
-
+    
     @Test
     void testIsDefault() {
         Assertions.assertTrue(standaloneContextManagerBuilder.isDefault());
