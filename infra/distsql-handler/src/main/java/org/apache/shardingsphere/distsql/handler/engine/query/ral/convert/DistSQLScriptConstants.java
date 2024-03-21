@@ -64,8 +64,4 @@ public final class DistSQLScriptConstants {
             + ")";
     
     public static final String PROPERTY = "'%s'='%s'";
-    
-    public static final String ALGORITHM_TYPE = "TYPE(NAME='%s', PROPERTIES(%s))";
-    
-    public static final String ALGORITHM_TYPE_WITHOUT_PROPS = "TYPE(NAME='%s')";
 }
