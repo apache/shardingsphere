@@ -24,6 +24,7 @@ import org.apache.calcite.schema.Schema;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -82,7 +83,8 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     public SQLFederationResultSet(final Enumerator<Object> enumerator, final ShardingSphereSchema schema, final Schema sqlFederationSchema,
                                   final SelectStatementContext selectStatementContext, final RelDataType resultColumnType) {
         this.enumerator = enumerator;
-        columnTypeConverter = DatabaseTypedSPILoader.getService(SQLFederationColumnTypeConverter.class, selectStatementContext.getDatabaseType());
+        DatabaseType databaseType = selectStatementContext.getDatabaseType().getTrunkDatabaseType().orElse(selectStatementContext.getDatabaseType());
+        columnTypeConverter = DatabaseTypedSPILoader.getService(SQLFederationColumnTypeConverter.class, databaseType);
         columnLabelAndIndexes = new CaseInsensitiveMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
         Map<Integer, String> indexAndColumnLabels = new CaseInsensitiveMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
         handleColumnLabelAndIndex(columnLabelAndIndexes, indexAndColumnLabels, selectStatementContext);
