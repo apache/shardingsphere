@@ -2404,4 +2404,8 @@
             <column name="year_of_birth" start-index="63" stop-index="75"/>
         </column-definition>
     </create-table>
+    
+    <create-table sql-case-id="create_table_with_builtin_function">
+        <table name="tab" start-index="13" stop-index="15"/>
+    </create-table>
 </sql-parser-test-cases>

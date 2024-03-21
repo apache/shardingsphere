@@ -50,7 +50,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -161,8 +160,8 @@ public final class EnumerableScanExecutor implements ScanExecutor {
         if (databaseType instanceof OpenGaussDatabaseType && EnumerableConstants.SYSTEM_CATALOG_TABLES.contains(table.getName())) {
             return createMemoryEnumerator(StatisticsAssembleUtils.assembleTableData(table, federationContext.getMetaData()), table, databaseType);
         }
-        Optional<ShardingSphereTableData> tableData = Optional.ofNullable(statistics.getDatabaseData().get(databaseName))
-                .map(optional -> optional.getSchemaData().get(schemaName)).map(ShardingSphereSchemaData::getTableData).map(optional -> optional.get(table.getName()));
+        Optional<ShardingSphereTableData> tableData = Optional.ofNullable(statistics.getDatabase(databaseName))
+                .map(optional -> optional.getSchema(schemaName)).map(optional -> optional.getTable(table.getName()));
         return tableData.map(optional -> createMemoryEnumerator(optional, table, databaseType)).orElseGet(this::createEmptyEnumerable);
     }
     

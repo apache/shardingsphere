@@ -937,7 +937,7 @@ WHITESPACE
     ;
 
 OPTIONALLY
-    :O P T I O N A L L Y
+    : O P T I O N A L L Y
     ;
 
 ENCLOSED
@@ -945,5 +945,9 @@ ENCLOSED
     ;
 
 LRTRIM
-    :L R T R I M
+    : L R T R I M
+    ;
+
+GETLENGTH
+    : G E T L E N G T H
     ;
