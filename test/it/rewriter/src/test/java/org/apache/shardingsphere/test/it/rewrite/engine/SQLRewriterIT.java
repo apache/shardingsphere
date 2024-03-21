@@ -126,25 +126,26 @@ public abstract class SQLRewriterIT {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType());
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(resourceMetaData.getStorageUnits()).thenReturn(databaseConfig.getStorageUnits());
-        String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(DefaultDatabase.LOGIC_NAME);
+        String databaseName = null != rootConfig.getDatabaseName() ? rootConfig.getDatabaseName() : DefaultDatabase.LOGIC_NAME;
+        String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType()),
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache());
         String sql = SQLHintUtils.removeHint(testParams.getInputSQL());
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
         Collection<ShardingSphereRule> databaseRules = createDatabaseRules(databaseConfig, schemaName, sqlStatement, databaseType);
         RuleMetaData databaseRuleMetaData = new RuleMetaData(databaseRules);
-        ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resourceMetaData, databaseRuleMetaData, mockSchemas(schemaName));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, databaseType, resourceMetaData, databaseRuleMetaData, mockSchemas(schemaName));
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1F);
-        databases.put(schemaName, database);
+        databases.put(databaseName, database);
         RuleMetaData globalRuleMetaData = new RuleMetaData(createGlobalRules());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), globalRuleMetaData, mock(ConfigurationProperties.class));
         HintValueContext hintValueContext = SQLHintUtils.extractHint(testParams.getInputSQL());
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, schemaName, hintValueContext).bind(sqlStatement, Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, databaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(testParams.getInputParameters());
         }
         if (sqlStatementContext instanceof CursorDefinitionAware) {
-            ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(createCursorDefinition(schemaName, metaData, sqlStatementParserEngine));
+            ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(createCursorDefinition(databaseName, metaData, sqlStatementParserEngine));
         }
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, testParams.getInputParameters(), hintValueContext);
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
