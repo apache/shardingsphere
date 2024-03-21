@@ -40,7 +40,8 @@ class YamlMaskDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapEmptyConfigurationToDataNodes() {
-        assertTrue(new YamlMaskDataNodeRuleConfigurationSwapper().swapToDataNodes(new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())).isEmpty());
+        MaskRuleConfiguration config = new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
+        assertThat(new YamlMaskDataNodeRuleConfigurationSwapper().swapToDataNodes(config).size(), is(0));
     }
     
     @Test
