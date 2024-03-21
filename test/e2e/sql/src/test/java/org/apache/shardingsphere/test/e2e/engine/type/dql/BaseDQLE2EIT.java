@@ -71,9 +71,13 @@ public abstract class BaseDQLE2EIT {
     public final void init(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, IOException, JAXBException {
         fillDataOnlyOnce(testParam, containerComposer);
         expectedDataSource = null == containerComposer.getAssertion().getExpectedDataSourceName() || 1 == containerComposer.getExpectedDataSourceMap().size()
-                ? containerComposer.getExpectedDataSourceMap().values().iterator().next()
+                ? getFirstExpectedDataSource(containerComposer.getExpectedDataSourceMap().values())
                 : containerComposer.getExpectedDataSourceMap().get(containerComposer.getAssertion().getExpectedDataSourceName());
         useXMLAsExpectedDataset = null != containerComposer.getAssertion().getExpectedDataFile();
+    }
+    
+    private DataSource getFirstExpectedDataSource(final Collection<DataSource> dataSources) {
+        return dataSources.isEmpty() ? null : dataSources.iterator().next();
     }
     
     private void fillDataOnlyOnce(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws IOException, JAXBException {

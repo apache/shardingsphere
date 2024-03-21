@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sqlfederation.engine;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
 import org.apache.calcite.adapter.enumerable.EnumerableRel;
 import org.apache.calcite.linq4j.Enumerator;
@@ -75,7 +74,6 @@ import java.util.Map.Entry;
 /**
  * SQL federation engine.
  */
-@Slf4j
 @Getter
 public final class SQLFederationEngine implements AutoCloseable {
     
