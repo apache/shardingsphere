@@ -31,6 +31,10 @@ import java.util.TreeMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlgorithmDistSQLConverter {
     
+    private static final String ALGORITHM_TYPE_WITHOUT_PROPS = "TYPE(NAME='%s')";
+    
+    private static final String ALGORITHM_TYPE_WITH_PROPS = "TYPE(NAME='%s', PROPERTIES(%s))";
+    
     /**
      * Get algorithm type.
      *
@@ -44,8 +48,8 @@ public final class AlgorithmDistSQLConverter {
         }
         String type = algorithmConfig.getType().toLowerCase();
         result.append(algorithmConfig.getProps().isEmpty()
-                ? String.format(DistSQLScriptConstants.ALGORITHM_TYPE_WITHOUT_PROPS, type)
-                : String.format(DistSQLScriptConstants.ALGORITHM_TYPE, type, getAlgorithmProperties(algorithmConfig.getProps())));
+                ? String.format(ALGORITHM_TYPE_WITHOUT_PROPS, type)
+                : String.format(ALGORITHM_TYPE_WITH_PROPS, type, getAlgorithmProperties(algorithmConfig.getProps())));
         return result.toString();
     }
     
