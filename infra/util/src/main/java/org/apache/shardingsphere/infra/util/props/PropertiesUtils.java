@@ -33,7 +33,7 @@ public final class PropertiesUtils {
     /**
      * Convert properties To string.
      *
-     * @param props properties
+     * @param props properties 
      * @return properties string
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
