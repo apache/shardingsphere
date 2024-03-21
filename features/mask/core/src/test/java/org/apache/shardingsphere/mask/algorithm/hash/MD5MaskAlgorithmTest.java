@@ -17,34 +17,40 @@
 
 package org.apache.shardingsphere.mask.algorithm.hash;
 
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
+import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmArgumentsProvider;
+import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmAssertions;
+import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmCaseAssert;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Properties;
 
 class MD5MaskAlgorithmTest {
     
-    @Test
-    void assertMask() {
-        assertThat(createAlgorithm("").mask("abc123456"), is("0659c7992e268962384eb17fafe88364"));
+    @ParameterizedTest(name = "{0}: {1}")
+    @ArgumentsSource(AlgorithmMaskArgumentsProvider.class)
+    void assertMask(final String type, @SuppressWarnings("unused") final String name, final Properties props, final Object plainValue, final Object maskedValue) {
+        MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     
-    @Test
-    void assertMaskWhenPlainValueIsNull() {
-        assertNull(createAlgorithm("").mask(null));
-    }
-    
-    @Test
-    void assertMaskWhenConfigSalt() {
-        assertThat(createAlgorithm("202cb962ac5907").mask("abc123456"), is("02d44390e9354b72dd2aa78d55016f7f"));
-    }
-    
-    private MD5MaskAlgorithm createAlgorithm(final String salt) {
-        return (MD5MaskAlgorithm) TypedSPILoader.getService(MaskAlgorithm.class, "MD5", PropertiesBuilder.build(new Property("salt", salt)));
+    private static class AlgorithmMaskArgumentsProvider extends MaskAlgorithmArgumentsProvider {
+        
+        AlgorithmMaskArgumentsProvider() {
+            super("MD5");
+        }
+        
+        @Override
+        protected Collection<MaskAlgorithmCaseAssert> getCaseAsserts() {
+            Properties propsWithoutSalt = new Properties();
+            Properties propsWithSalt = PropertiesBuilder.build(new Property("salt", "202cb962ac5907"));
+            return Arrays.asList(
+                    new MaskAlgorithmCaseAssert("null_value", propsWithoutSalt, null, null),
+                    new MaskAlgorithmCaseAssert("without_salt", propsWithoutSalt, "abc123456", "0659c7992e268962384eb17fafe88364"),
+                    new MaskAlgorithmCaseAssert("with_salt", propsWithSalt, "abc123456", "02d44390e9354b72dd2aa78d55016f7f"));
+        }
     }
 }
