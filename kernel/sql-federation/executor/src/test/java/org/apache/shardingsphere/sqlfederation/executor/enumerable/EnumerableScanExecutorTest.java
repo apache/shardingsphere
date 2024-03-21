@@ -55,12 +55,12 @@ class EnumerableScanExecutorTest {
         when(executorContext.getSchemaName()).thenReturn("pg_catalog");
         ShardingSphereStatistics statistics = mock(ShardingSphereStatistics.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabaseData databaseData = mock(ShardingSphereDatabaseData.class, RETURNS_DEEP_STUBS);
-        when(statistics.getDatabaseData().get("db")).thenReturn(databaseData);
+        when(statistics.getDatabase("db")).thenReturn(databaseData);
         ShardingSphereSchemaData schemaData = mock(ShardingSphereSchemaData.class, RETURNS_DEEP_STUBS);
-        when(databaseData.getSchemaData().get("pg_catalog")).thenReturn(schemaData);
+        when(databaseData.getSchema("pg_catalog")).thenReturn(schemaData);
         ShardingSphereTableData tableData = mock(ShardingSphereTableData.class);
         when(tableData.getRows()).thenReturn(Collections.singletonList(new ShardingSphereRowData(Collections.singletonList(1))));
-        when(schemaData.getTableData().get("test")).thenReturn(tableData);
+        when(schemaData.getTable("test")).thenReturn(tableData);
         ShardingSphereTable table = mock(ShardingSphereTable.class, RETURNS_DEEP_STUBS);
         when(table.getName()).thenReturn("test");
         when(table.getColumns().values()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, false, true, false)));
