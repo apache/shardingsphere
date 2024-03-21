@@ -80,8 +80,8 @@ class MaskAlgorithmPropertiesCheckerTest {
     }
     
     @Test
-    void assertCheckPositiveIntegerFailedWithNegativeDigital() {
-        Properties props = PropertiesBuilder.build(new Property("key", "-123"));
+    void assertCheckPositiveIntegerFailedWithZero() {
+        Properties props = PropertiesBuilder.build(new Property("key", "0"));
         assertThrows(AlgorithmInitializationException.class, () -> MaskAlgorithmPropertiesChecker.checkPositiveInteger(props, "key", mock(MaskAlgorithm.class)));
     }
     
