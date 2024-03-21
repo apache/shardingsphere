@@ -18,14 +18,19 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MaskBeforeSpecialCharsAlgorithmTest {
@@ -34,8 +39,13 @@ class MaskBeforeSpecialCharsAlgorithmTest {
     
     @BeforeEach
     void setUp() {
-        maskAlgorithm = new MaskBeforeSpecialCharsAlgorithm();
-        maskAlgorithm.init(PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", "*")));
+        maskAlgorithm = (MaskBeforeSpecialCharsAlgorithm) TypedSPILoader.getService(MaskAlgorithm.class, "MASK_BEFORE_SPECIAL_CHARS",
+                PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", "*")));
+    }
+    
+    @Test
+    void assertMaskWithNullValue() {
+        assertNull(maskAlgorithm.mask(null));
     }
     
     @Test
@@ -65,13 +75,13 @@ class MaskBeforeSpecialCharsAlgorithmTest {
     
     @Test
     void assertInitWhenSpecialCharsIsEmpty() {
-        assertThrows(AlgorithmInitializationException.class,
-                () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build(new Property("special-chars", ""), new Property("replace-char", "*"))));
+        Properties props = PropertiesBuilder.build(new Property("special-chars", ""), new Property("replace-char", "*"));
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_BEFORE_SPECIAL_CHARS", props));
     }
     
     @Test
     void assertInitWhenReplaceCharIsEmpty() {
-        assertThrows(AlgorithmInitializationException.class,
-                () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", ""))));
+        Properties props = PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", ""));
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_BEFORE_SPECIAL_CHARS", props));
     }
 }

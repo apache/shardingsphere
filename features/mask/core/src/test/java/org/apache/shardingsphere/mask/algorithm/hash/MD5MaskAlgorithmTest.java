@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mask.algorithm.hash;
 
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -29,22 +31,20 @@ class MD5MaskAlgorithmTest {
     
     @Test
     void assertMask() {
-        assertThat(createMaskAlgorithm("").mask("abc123456"), is("0659c7992e268962384eb17fafe88364"));
+        assertThat(createAlgorithm("").mask("abc123456"), is("0659c7992e268962384eb17fafe88364"));
     }
     
     @Test
     void assertMaskWhenPlainValueIsNull() {
-        assertNull(createMaskAlgorithm("").mask(null));
+        assertNull(createAlgorithm("").mask(null));
     }
     
     @Test
     void assertMaskWhenConfigSalt() {
-        assertThat(createMaskAlgorithm("202cb962ac5907").mask("abc123456"), is("02d44390e9354b72dd2aa78d55016f7f"));
+        assertThat(createAlgorithm("202cb962ac5907").mask("abc123456"), is("02d44390e9354b72dd2aa78d55016f7f"));
     }
     
-    private MD5MaskAlgorithm createMaskAlgorithm(final String salt) {
-        MD5MaskAlgorithm result = new MD5MaskAlgorithm();
-        result.init(PropertiesBuilder.build(new Property("salt", salt)));
-        return result;
+    private MD5MaskAlgorithm createAlgorithm(final String salt) {
+        return (MD5MaskAlgorithm) TypedSPILoader.getService(MaskAlgorithm.class, "MD5", PropertiesBuilder.build(new Property("salt", salt)));
     }
 }

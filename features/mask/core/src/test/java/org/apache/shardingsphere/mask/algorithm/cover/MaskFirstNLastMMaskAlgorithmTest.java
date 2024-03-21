@@ -18,13 +18,18 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MaskFirstNLastMMaskAlgorithmTest {
@@ -35,10 +40,15 @@ class MaskFirstNLastMMaskAlgorithmTest {
     
     @BeforeEach
     void setUp() {
-        maskAlgorithm = new MaskFirstNLastMMaskAlgorithm();
-        maskAlgorithm.init(PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", "*")));
-        sameFirstNLastMMaskAlgorithm = new MaskFirstNLastMMaskAlgorithm();
-        sameFirstNLastMMaskAlgorithm.init(PropertiesBuilder.build(new Property("first-n", "5"), new Property("last-m", "5"), new Property("replace-char", "*")));
+        maskAlgorithm = (MaskFirstNLastMMaskAlgorithm) TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FIRST_N_LAST_M",
+                PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", "*")));
+        sameFirstNLastMMaskAlgorithm = (MaskFirstNLastMMaskAlgorithm) TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FIRST_N_LAST_M",
+                PropertiesBuilder.build(new Property("first-n", "5"), new Property("last-m", "5"), new Property("replace-char", "*")));
+    }
+    
+    @Test
+    void assertMaskWithNullValue() {
+        assertNull(maskAlgorithm.mask(null));
     }
     
     @Test
@@ -85,19 +95,19 @@ class MaskFirstNLastMMaskAlgorithmTest {
     
     @Test
     void assertInitWhenFirstNIsEmpty() {
-        assertThrows(AlgorithmInitializationException.class,
-                () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", ""), new Property("last-m", "5"), new Property("replace-char", "*"))));
+        Properties props = PropertiesBuilder.build(new Property("first-n", ""), new Property("last-m", "5"), new Property("replace-char", "*"));
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FIRST_N_LAST_M", props));
     }
     
     @Test
     void assertInitWhenLastMIsEmpty() {
-        assertThrows(AlgorithmInitializationException.class,
-                () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", ""), new Property("replace-char", "*"))));
+        Properties props = PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", ""), new Property("replace-char", "*"));
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FIRST_N_LAST_M", props));
     }
     
     @Test
     void assertInitWhenReplaceCharIsEmpty() {
-        assertThrows(AlgorithmInitializationException.class,
-                () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", ""))));
+        Properties props = PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", ""));
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FIRST_N_LAST_M", props));
     }
 }
