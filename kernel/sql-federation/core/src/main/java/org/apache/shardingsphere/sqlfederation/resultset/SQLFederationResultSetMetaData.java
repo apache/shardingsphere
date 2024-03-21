@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
 
 import java.sql.ResultSetMetaData;
@@ -39,8 +38,6 @@ import java.util.Optional;
  * SQL federation result set meta data.
  */
 public final class SQLFederationResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
-    
-    private final ShardingSphereSchema schema;
     
     private final Schema sqlFederationSchema;
     
@@ -54,10 +51,8 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     private final SQLFederationColumnTypeConverter columnTypeConverter;
     
-    public SQLFederationResultSetMetaData(final ShardingSphereSchema schema, final Schema sqlFederationSchema,
-                                          final SelectStatementContext selectStatementContext, final RelDataType resultColumnType, final Map<Integer, String> indexAndColumnLabels,
-                                          final SQLFederationColumnTypeConverter columnTypeConverter) {
-        this.schema = schema;
+    public SQLFederationResultSetMetaData(final Schema sqlFederationSchema, final SelectStatementContext selectStatementContext, final RelDataType resultColumnType, 
+                                          final Map<Integer, String> indexAndColumnLabels, final SQLFederationColumnTypeConverter columnTypeConverter) {
         this.sqlFederationSchema = sqlFederationSchema;
         this.relDataTypeFactory = new JavaTypeFactoryImpl();
         this.selectStatementContext = selectStatementContext;

@@ -88,7 +88,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
         columnLabelAndIndexes = new CaseInsensitiveMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
         Map<Integer, String> indexAndColumnLabels = new CaseInsensitiveMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
         handleColumnLabelAndIndex(columnLabelAndIndexes, indexAndColumnLabels, selectStatementContext);
-        resultSetMetaData = new SQLFederationResultSetMetaData(schema, sqlFederationSchema, selectStatementContext, resultColumnType, indexAndColumnLabels, columnTypeConverter);
+        resultSetMetaData = new SQLFederationResultSetMetaData(sqlFederationSchema, selectStatementContext, resultColumnType, indexAndColumnLabels, columnTypeConverter);
     }
     
     private void handleColumnLabelAndIndex(final Map<String, Integer> columnLabelAndIndexes, final Map<Integer, String> indexAndColumnLabels, final SelectStatementContext selectStatementContext) {
