@@ -30,6 +30,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MaskBeforeSpecialCharsAlgorithmTest {
@@ -40,6 +41,11 @@ class MaskBeforeSpecialCharsAlgorithmTest {
     void setUp() {
         maskAlgorithm = (MaskBeforeSpecialCharsAlgorithm) TypedSPILoader.getService(MaskAlgorithm.class, "MASK_BEFORE_SPECIAL_CHARS",
                 PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", "*")));
+    }
+    
+    @Test
+    void assertMaskWithNullValue() {
+        assertNull(maskAlgorithm.mask(null));
     }
     
     @Test

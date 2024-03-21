@@ -31,6 +31,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MaskAfterSpecialCharsAlgorithmTest {
@@ -41,6 +42,11 @@ class MaskAfterSpecialCharsAlgorithmTest {
     void setUp() {
         maskAlgorithm = (MaskAfterSpecialCharsAlgorithm) TypedSPILoader.getService(MaskAlgorithm.class, "MASK_AFTER_SPECIAL_CHARS",
                 PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", "*")));
+    }
+    
+    @Test
+    void assertMaskWithNullValue() {
+        assertNull(maskAlgorithm.mask(null));
     }
     
     @Test

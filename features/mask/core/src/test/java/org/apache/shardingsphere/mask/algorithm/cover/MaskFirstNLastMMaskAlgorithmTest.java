@@ -29,6 +29,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MaskFirstNLastMMaskAlgorithmTest {
@@ -43,6 +44,11 @@ class MaskFirstNLastMMaskAlgorithmTest {
                 PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", "*")));
         sameFirstNLastMMaskAlgorithm = (MaskFirstNLastMMaskAlgorithm) TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FIRST_N_LAST_M",
                 PropertiesBuilder.build(new Property("first-n", "5"), new Property("last-m", "5"), new Property("replace-char", "*")));
+    }
+    
+    @Test
+    void assertMaskWithNullValue() {
+        assertNull(maskAlgorithm.mask(null));
     }
     
     @Test

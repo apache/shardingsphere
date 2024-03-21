@@ -29,6 +29,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MaskFromXToYMaskAlgorithmTest {
@@ -43,6 +44,11 @@ class MaskFromXToYMaskAlgorithmTest {
                 PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", "*")));
         sameFromXToYMaskAlgorithm = (MaskFromXToYMaskAlgorithm) TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y",
                 PropertiesBuilder.build(new Property("from-x", "5"), new Property("to-y", "5"), new Property("replace-char", "*")));
+    }
+    
+    @Test
+    void assertMaskWithNullValue() {
+        assertNull(maskAlgorithm.mask(null));
     }
     
     @Test
