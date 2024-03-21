@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.resultset.fixture.converter;
+package org.apache.shardingsphere.sqlfederation.resultset.converter.impl;
 
 import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
 
-public final class SQLFederationColumnTypeConverterFixture implements SQLFederationColumnTypeConverter {
+/**
+ * Oracle column type converter.
+ */
+public final class OracleColumnTypeConverter implements SQLFederationColumnTypeConverter {
     
     @Override
     public String getDatabaseType() {
-        return "FIXTURE";
+        return "Oracle";
     }
 }

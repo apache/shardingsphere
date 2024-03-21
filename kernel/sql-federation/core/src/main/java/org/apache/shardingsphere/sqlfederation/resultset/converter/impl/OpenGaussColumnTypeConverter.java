@@ -15,30 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.spi;
+package org.apache.shardingsphere.sqlfederation.resultset.converter.impl;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
 
 /**
- * SQL federation column type convert.
+ * OpenGauss column type converter.
  */
-public interface SQLFederationColumnTypeConverter extends DatabaseTypedSPI {
+public final class OpenGaussColumnTypeConverter implements SQLFederationColumnTypeConverter {
     
-    /**
-     * Transforming the column results of a federated query.
-     * 
-     * @param columnValue column value
-     * @return convert column value result
-     */
-    Optional<Object> convertColumnValue(Object columnValue);
-    
-    /**
-     * Converting the column types of a federated query.
-     * 
-     * @param columnType column type
-     * @return convert column type result
-     */
-    Optional<Integer> convertColumnType(Integer columnType);
+    @Override
+    public String getDatabaseType() {
+        return "openGauss";
+    }
 }

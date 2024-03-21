@@ -15,29 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.resultset.converter;
+package org.apache.shardingsphere.sqlfederation.resultset.converter.impl;
 
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationColumnTypeConverter;
-
-import java.util.Optional;
+import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
 
 /**
- * OpenGauss column type converter.
+ * MySQL column type converter.
  */
-public final class OpenGaussColumnTypeConverter implements SQLFederationColumnTypeConverter {
+public final class MySQLColumnTypeConverter implements SQLFederationColumnTypeConverter {
     
     @Override
-    public Optional<Object> convertColumnValue(final Object columnValue) {
-        return Optional.empty();
+    public Object convertColumnValue(final Object columnValue) {
+        if (columnValue instanceof Boolean) {
+            return (Boolean) columnValue ? 1 : 0;
+        }
+        return columnValue;
     }
     
     @Override
-    public Optional<Integer> convertColumnType(final Integer columnType) {
-        return Optional.empty();
+    public int convertColumnType(final int columnType) {
+        if (SqlTypeName.BOOLEAN.getJdbcOrdinal() == columnType) {
+            return SqlTypeName.BIGINT.getJdbcOrdinal();
+        }
+        return columnType;
     }
     
     @Override
     public String getDatabaseType() {
-        return "openGauss";
+        return "MySQL";
     }
 }

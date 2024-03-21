@@ -15,29 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.resultset.converter;
+package org.apache.shardingsphere.sqlfederation.resultset.converter.impl;
 
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationColumnTypeConverter;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
 
 /**
- * Oracle column type converter.
+ * PostgreSQL column type converter.
  */
-public final class OracleColumnTypeConverter implements SQLFederationColumnTypeConverter {
-    
-    @Override
-    public Optional<Object> convertColumnValue(final Object columnValue) {
-        return Optional.empty();
-    }
-    
-    @Override
-    public Optional<Integer> convertColumnType(final Integer columnType) {
-        return Optional.empty();
-    }
+public final class PostgreSQLColumnTypeConverter implements SQLFederationColumnTypeConverter {
     
     @Override
     public String getDatabaseType() {
-        return "Oracle";
+        return "PostgreSQL";
     }
 }
