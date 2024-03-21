@@ -36,7 +36,7 @@ public interface ConvertRuleConfigurationProvider extends TypedSPI {
      * Convert rule configuration to DistSQL.
      *
      * @param ruleConfig rule configuration
-     * @return DistSQL script
+     * @return DistSQL
      */
     String convert(RuleConfiguration ruleConfig);
     
