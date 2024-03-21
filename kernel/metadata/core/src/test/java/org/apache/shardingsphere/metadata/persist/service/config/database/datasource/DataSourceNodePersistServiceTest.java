@@ -34,41 +34,40 @@ import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 public class DataSourceNodePersistServiceTest {
-
-
+    
     private DataSourceNodePersistService dataSourceNodeService;
-
+    
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         dataSourceNodeService = new DataSourceNodePersistService(mock(PersistRepository.class));
     }
-
+    
     @Test
     void testPersist() {
         dataSourceNodeService.persist("123", Collections.emptyMap());
     }
-
+    
     @Test
     void testLoad() {
         Map<String, DataSourcePoolProperties> map = dataSourceNodeService.load("123", "234");
         Assertions.assertTrue(map.isEmpty());
     }
-
+    
     @Test
     void testDelete() {
         dataSourceNodeService.delete("123", "234");
     }
-
+    
     @Test
     void testDeleteConfig() {
         Collection<MetaDataVersion> deleted = dataSourceNodeService.deleteConfig("123", Collections.emptyMap());
         Assertions.assertTrue(deleted.isEmpty());
     }
-
+    
     @Test
     void testPersistConfig() {
         Collection<MetaDataVersion> map = dataSourceNodeService.persistConfig("123", Collections.emptyMap());
         Assertions.assertTrue(map.isEmpty());
     }
-
+    
 }

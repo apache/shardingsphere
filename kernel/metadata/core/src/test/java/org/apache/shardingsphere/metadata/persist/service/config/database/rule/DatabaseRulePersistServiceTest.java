@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.metadata.persist.service.config.database.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.Assertions;
@@ -29,47 +28,45 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 public class DatabaseRulePersistServiceTest {
-
-
+    
     private DatabaseRulePersistService databaseRuleService;
-
+    
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         databaseRuleService = new DatabaseRulePersistService(mock(PersistRepository.class));
     }
-
+    
     @Test
     void testPersist() {
         databaseRuleService.persist("123", Collections.emptyList());
     }
-
+    
     @Test
     void testLoad() {
         Collection<RuleConfiguration> load = databaseRuleService.load("123");
         Assertions.assertTrue(load.isEmpty());
     }
-
+    
     @Test
     void testDelete() {
         databaseRuleService.delete("123", "234");
     }
-
+    
     @Test
     void testDeleteConfig() {
         Collection<MetaDataVersion> deleted = databaseRuleService.deleteConfig("123", Collections.emptyList());
         Assertions.assertTrue(deleted.isEmpty());
     }
-
+    
     @Test
     void testPersistConfig() {
         Collection<MetaDataVersion> map = databaseRuleService.persistConfig("123", Collections.emptyList());
         Assertions.assertTrue(map.isEmpty());
     }
-
+    
 }

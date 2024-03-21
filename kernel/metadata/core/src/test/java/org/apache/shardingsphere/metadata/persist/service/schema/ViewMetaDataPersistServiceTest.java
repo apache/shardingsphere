@@ -32,35 +32,34 @@ import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 public class ViewMetaDataPersistServiceTest {
-
-
+    
     private ViewMetaDataPersistService viewMetaDataService;
-
+    
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         viewMetaDataService = new ViewMetaDataPersistService(mock(PersistRepository.class));
     }
-
+    
     @Test
     void testPersist() {
         viewMetaDataService.persist("123", "123", Collections.emptyMap());
     }
-
+    
     @Test
     void testPersistSchemaMetaData() {
         Collection<MetaDataVersion> collection = viewMetaDataService.persistSchemaMetaData("123", "123", Collections.emptyMap());
         Assertions.assertTrue(collection.isEmpty());
     }
-
+    
     @Test
     void testLoad() {
         viewMetaDataService.load("123", "234");
         viewMetaDataService.load("123", "234", "345");
     }
-
+    
     @Test
     void testDelete() {
         viewMetaDataService.delete("123", "234", "345");
     }
-
+    
 }

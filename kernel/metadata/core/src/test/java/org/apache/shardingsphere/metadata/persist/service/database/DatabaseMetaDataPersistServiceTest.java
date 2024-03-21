@@ -39,44 +39,44 @@ import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 public class DatabaseMetaDataPersistServiceTest {
-
+    
     @Mock
     private MetaDataVersionPersistService metaDataVersionPersistService;
-
+    
     private DatabaseMetaDataPersistService databaseMetaDataPersistService;
-
+    
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         databaseMetaDataPersistService = new DatabaseMetaDataPersistService(mock(PersistRepository.class),
                 metaDataVersionPersistService);
     }
-
+    
     @Test
     void testAddDatabase() {
         databaseMetaDataPersistService.addDatabase("123");
     }
-
+    
     @Test
     void testDropDatabase() {
         databaseMetaDataPersistService.dropDatabase("123");
     }
-
+    
     @Test
     void testLoadAllDatabaseNames() {
         Collection<String> collection = databaseMetaDataPersistService.loadAllDatabaseNames();
         Assertions.assertTrue(collection.isEmpty());
     }
-
+    
     @Test
     void testAddSchema() {
         databaseMetaDataPersistService.addSchema("123", "234");
     }
-
+    
     @Test
     void testDropSchema() {
         databaseMetaDataPersistService.dropSchema("123", "234");
     }
-
+    
     @Test
     void testCompareAndPersist() {
         ShardingSphereSchema schema = new ShardingSphereSchema();
@@ -86,7 +86,7 @@ public class DatabaseMetaDataPersistServiceTest {
                 Collections.emptyList(), Collections.emptyList()));
         databaseMetaDataPersistService.compareAndPersist("123", "234", schema);
     }
-
+    
     @Test
     void testPersist() {
         ShardingSphereSchema schema = new ShardingSphereSchema();
@@ -96,7 +96,7 @@ public class DatabaseMetaDataPersistServiceTest {
                 Collections.emptyList(), Collections.emptyList()));
         databaseMetaDataPersistService.persist("123", "234", schema);
     }
-
+    
     @Test
     void testDelete() {
         ShardingSphereSchema schema = new ShardingSphereSchema();
@@ -106,11 +106,11 @@ public class DatabaseMetaDataPersistServiceTest {
                 Collections.emptyList(), Collections.emptyList()));
         databaseMetaDataPersistService.delete("123", "234", schema);
     }
-
+    
     @Test
     void testLoadSchemas() {
         Map<String, ShardingSphereSchema> loadedSchemas = databaseMetaDataPersistService.loadSchemas("123");
         Assertions.assertTrue(loadedSchemas.isEmpty());
     }
-
+    
 }

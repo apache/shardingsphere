@@ -44,27 +44,27 @@ import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class MetaDataPersistServiceTest {
-
+    
     @Mock
     private DataSourceUnitPersistService dataSourceService;
-
+    
     @Mock
     private DatabaseRulePersistService databaseRulePersistService;
-
+    
     @Mock
     private GlobalRulePersistService globalRuleService;
-
+    
     @Mock
     private PropertiesPersistService propsService;
-
+    
     @Mock
     private DatabaseMetaDataPersistService databaseMetaDataService;
-
+    
     @Mock
     private DataSourceUnitPersistService dataSourceUnitService;
-
+    
     private MetaDataPersistService metaDataPersistService;
-
+    
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         metaDataPersistService = new MetaDataPersistService(mock(PersistRepository.class));
@@ -75,23 +75,23 @@ class MetaDataPersistServiceTest {
         setField("databaseMetaDataService", databaseMetaDataService);
         setField("dataSourceUnitService", dataSourceUnitService);
     }
-
+    
     private void setField(final String name, final Object value) throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(metaDataPersistService.getClass().getDeclaredField(name), metaDataPersistService, value);
     }
-
+    
     @Test
     void assertLoadDataSourceConfigurations() {
         assertTrue(metaDataPersistService.loadDataSourceConfigurations("foo_db").isEmpty());
     }
-
+    
     @Test
     void testPersistGlobalRuleConfiguration() {
         doNothing().when(globalRuleService).persist(anyCollection());
         doNothing().when(propsService).persist(any());
         metaDataPersistService.persistGlobalRuleConfiguration(Collections.emptyList(), new Properties());
     }
-
+    
     @Test
     void testPersistConfigurations() {
         doNothing().when(databaseMetaDataService).addDatabase(anyString());

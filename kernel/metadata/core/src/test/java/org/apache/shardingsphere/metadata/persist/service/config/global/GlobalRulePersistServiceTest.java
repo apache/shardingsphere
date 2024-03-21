@@ -28,36 +28,34 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 public class GlobalRulePersistServiceTest {
-
-
+    
     private GlobalRulePersistService globalRulePersistService;
-
+    
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         globalRulePersistService = new GlobalRulePersistService(mock(PersistRepository.class));
     }
-
+    
     @Test
     void testPersist() {
         globalRulePersistService.persist(Collections.emptyList());
     }
-
+    
     @Test
     void testPersistConfig() {
         Collection<MetaDataVersion> collection = globalRulePersistService.persistConfig(Collections.emptyList());
         Assertions.assertEquals(collection.size(), 0);
     }
-
+    
     @Test
     void testLoad() {
         Collection<RuleConfiguration> collection = globalRulePersistService.load();
         Assertions.assertEquals(collection.size(), 0);
     }
-
+    
 }

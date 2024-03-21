@@ -30,31 +30,29 @@ import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 public class MetaDataVersionPersistServiceTest {
-
-
+    
     private MetaDataVersionPersistService metaDataVersionPersistService;
-
+    
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         metaDataVersionPersistService = new MetaDataVersionPersistService(mock(PersistRepository.class));
     }
-
+    
     @Test
     void testSwitchActiveVersion() {
         metaDataVersionPersistService.switchActiveVersion(Collections.emptyList());
     }
-
+    
     @Test
     void testGetActiveVersionByFullPath() {
         String version = metaDataVersionPersistService.getActiveVersionByFullPath("123");
         Assertions.assertNull(version);
     }
-
+    
     @Test
     void testGetVersionPathByActiveVersion() {
         String version = metaDataVersionPersistService.getVersionPathByActiveVersion("123", "234");
         Assertions.assertNull(version);
     }
-
-
+    
 }

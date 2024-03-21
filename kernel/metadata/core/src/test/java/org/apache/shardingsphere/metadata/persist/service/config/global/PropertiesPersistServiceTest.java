@@ -32,30 +32,29 @@ import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 public class PropertiesPersistServiceTest {
-
-
+    
     private PropertiesPersistService propertiesPersistService;
-
+    
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         propertiesPersistService = new PropertiesPersistService(mock(PersistRepository.class));
     }
-
+    
     @Test
     void testPersist() {
         propertiesPersistService.persist(new Properties());
     }
-
+    
     @Test
     void testPersistConfig() {
         Collection<MetaDataVersion> collection = propertiesPersistService.persistConfig(new Properties());
         Assertions.assertEquals(collection.size(), 1);
     }
-
+    
     @Test
     void testLoad() {
         Properties properties = propertiesPersistService.load();
         Assertions.assertNotNull(properties);
     }
-
+    
 }
