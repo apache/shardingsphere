@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.metadata.persist;
 
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.metadata.persist.service.config.database.datasource.DataSourceUnitPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.rule.DatabaseRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.PropertiesPersistService;
+import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,28 +32,39 @@ import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.Properties;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class MetaDataPersistServiceTest {
-    
+
     @Mock
     private DataSourceUnitPersistService dataSourceService;
-    
+
     @Mock
     private DatabaseRulePersistService databaseRulePersistService;
-    
+
     @Mock
     private GlobalRulePersistService globalRuleService;
-    
+
     @Mock
     private PropertiesPersistService propsService;
-    
+
+    @Mock
+    private DatabaseMetaDataPersistService databaseMetaDataService;
+
+    @Mock
+    private DataSourceUnitPersistService dataSourceUnitService;
+
     private MetaDataPersistService metaDataPersistService;
-    
+
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         metaDataPersistService = new MetaDataPersistService(mock(PersistRepository.class));
@@ -58,12 +72,14 @@ class MetaDataPersistServiceTest {
         setField("databaseRulePersistService", databaseRulePersistService);
         setField("globalRuleService", globalRuleService);
         setField("propsService", propsService);
+        setField("databaseMetaDataService", databaseMetaDataService);
+        setField("dataSourceUnitService", dataSourceUnitService);
     }
-    
+
     private void setField(final String name, final Object value) throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(metaDataPersistService.getClass().getDeclaredField(name), metaDataPersistService, value);
     }
-    
+
     @Test
     void assertLoadDataSourceConfigurations() {
         assertTrue(metaDataPersistService.loadDataSourceConfigurations("foo_db").isEmpty());
@@ -71,6 +87,15 @@ class MetaDataPersistServiceTest {
 
     @Test
     void testPersistGlobalRuleConfiguration() {
-        metaDataPersistService.persistGlobalRuleConfiguration(anyCollection(),any());
+        doNothing().when(globalRuleService).persist(anyCollection());
+        doNothing().when(propsService).persist(any());
+        metaDataPersistService.persistGlobalRuleConfiguration(Collections.emptyList(), new Properties());
+    }
+
+    @Test
+    void testPersistConfigurations() {
+        doNothing().when(databaseMetaDataService).addDatabase(anyString());
+        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
+        metaDataPersistService.persistConfigurations("123", databaseConfig, Collections.emptyMap(), Collections.emptyList());
     }
 }

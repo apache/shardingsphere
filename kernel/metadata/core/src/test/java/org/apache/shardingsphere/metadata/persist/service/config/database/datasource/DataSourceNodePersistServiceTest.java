@@ -33,41 +33,41 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public class DataSourceUnitPersistServiceTest {
+public class DataSourceNodePersistServiceTest {
 
 
-    private DataSourceUnitPersistService dataSourceUnitService;
+    private DataSourceNodePersistService dataSourceNodeService;
 
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        dataSourceUnitService = new DataSourceUnitPersistService(mock(PersistRepository.class));
+        dataSourceNodeService = new DataSourceNodePersistService(mock(PersistRepository.class));
     }
 
     @Test
     void testPersist() {
-        dataSourceUnitService.persist("123", Collections.emptyMap());
+        dataSourceNodeService.persist("123", Collections.emptyMap());
     }
 
     @Test
     void testLoad() {
-        Map<String, DataSourcePoolProperties> map = dataSourceUnitService.load("123", "234");
+        Map<String, DataSourcePoolProperties> map = dataSourceNodeService.load("123", "234");
         Assertions.assertTrue(map.isEmpty());
     }
 
     @Test
     void testDelete() {
-        dataSourceUnitService.delete("123", "234");
+        dataSourceNodeService.delete("123", "234");
     }
 
     @Test
     void testDeleteConfig() {
-        Collection<MetaDataVersion> deleted = dataSourceUnitService.deleteConfig("123", Collections.emptyMap());
+        Collection<MetaDataVersion> deleted = dataSourceNodeService.deleteConfig("123", Collections.emptyMap());
         Assertions.assertTrue(deleted.isEmpty());
     }
 
     @Test
     void testPersistConfig() {
-        Collection<MetaDataVersion> map = dataSourceUnitService.persistConfig("123", Collections.emptyMap());
+        Collection<MetaDataVersion> map = dataSourceNodeService.persistConfig("123", Collections.emptyMap());
         Assertions.assertTrue(map.isEmpty());
     }
 

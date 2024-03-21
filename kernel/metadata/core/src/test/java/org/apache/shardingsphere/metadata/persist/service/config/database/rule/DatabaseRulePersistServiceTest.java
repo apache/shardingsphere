@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service.config.database.datasource;
+package org.apache.shardingsphere.metadata.persist.service.config.database.rule;
 
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
@@ -33,41 +34,41 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public class DataSourceUnitPersistServiceTest {
+public class DatabaseRulePersistServiceTest {
 
 
-    private DataSourceUnitPersistService dataSourceUnitService;
+    private DatabaseRulePersistService databaseRuleService;
 
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        dataSourceUnitService = new DataSourceUnitPersistService(mock(PersistRepository.class));
+        databaseRuleService = new DatabaseRulePersistService(mock(PersistRepository.class));
     }
 
     @Test
     void testPersist() {
-        dataSourceUnitService.persist("123", Collections.emptyMap());
+        databaseRuleService.persist("123", Collections.emptyList());
     }
 
     @Test
     void testLoad() {
-        Map<String, DataSourcePoolProperties> map = dataSourceUnitService.load("123", "234");
-        Assertions.assertTrue(map.isEmpty());
+        Collection<RuleConfiguration> load = databaseRuleService.load("123");
+        Assertions.assertTrue(load.isEmpty());
     }
 
     @Test
     void testDelete() {
-        dataSourceUnitService.delete("123", "234");
+        databaseRuleService.delete("123", "234");
     }
 
     @Test
     void testDeleteConfig() {
-        Collection<MetaDataVersion> deleted = dataSourceUnitService.deleteConfig("123", Collections.emptyMap());
+        Collection<MetaDataVersion> deleted = databaseRuleService.deleteConfig("123", Collections.emptyList());
         Assertions.assertTrue(deleted.isEmpty());
     }
 
     @Test
     void testPersistConfig() {
-        Collection<MetaDataVersion> map = dataSourceUnitService.persistConfig("123", Collections.emptyMap());
+        Collection<MetaDataVersion> map = databaseRuleService.persistConfig("123", Collections.emptyList());
         Assertions.assertTrue(map.isEmpty());
     }
 
