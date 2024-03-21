@@ -17,6 +17,7 @@
 
 <dataset>
     <metadata>
+        <column name="oid"/>
         <column name="relname"/>
         <column name="relnamespace"/>
         <column name="reltype"/>
