@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.algorithm.parameterized;
+package org.apache.shardingsphere.mask.algorithm.parameterized.init;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
 
-import java.util.Properties;
+import java.util.Collection;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
-@Getter
-public final class MaskAlgorithmCaseAssert {
+public abstract class MaskAlgorithmInitArgumentsProvider implements ArgumentsProvider {
     
-    private final String name;
+    private final String type;
     
-    private final Properties props;
-    
-    private final Object plainValue;
-    
-    private final Object maskedValue;
-    
-    public MaskAlgorithmCaseAssert(final String name, final Properties props) {
-        this(name, props, null, null);
+    @Override
+    public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        return getCaseAsserts().stream().map(each -> Arguments.of(type, each.getName(), each.getProps()));
     }
+    
+    protected abstract Collection<MaskAlgorithmInitCaseAssert> getCaseAsserts();
 }

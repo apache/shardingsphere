@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.mask.algorithm.cover;
 
-import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmArgumentsProvider;
 import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmAssertions;
-import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmCaseAssert;
+import org.apache.shardingsphere.mask.algorithm.parameterized.execute.MaskAlgorithmExecuteArgumentsProvider;
+import org.apache.shardingsphere.mask.algorithm.parameterized.execute.MaskAlgorithmExecuteCaseAssert;
+import org.apache.shardingsphere.mask.algorithm.parameterized.init.MaskAlgorithmInitArgumentsProvider;
+import org.apache.shardingsphere.mask.algorithm.parameterized.init.MaskAlgorithmInitCaseAssert;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,53 +40,69 @@ class MaskFirstNLastMMaskAlgorithmTest {
     }
     
     @ParameterizedTest(name = "{0}: {1}")
-    @ArgumentsSource(AlgorithmMaskArgumentsProvider.class)
+    @ArgumentsSource(AlgorithmMaskExecuteArgumentsProvider.class)
     void assertMask(final String type, @SuppressWarnings("unused") final String name, final Properties props, final Object plainValue, final Object maskedValue) {
         MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     
-    private static class AlgorithmInitArgumentsProvider extends MaskAlgorithmArgumentsProvider {
+    @ParameterizedTest(name = "{0}: {1}")
+    @ArgumentsSource(AlgorithmMaskExecuteWithSameNMArgumentsProvider.class)
+    void assertMaskWithSameNM(final String type, @SuppressWarnings("unused") final String name, final Properties props, final Object plainValue, final Object maskedValue) {
+        MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
+    }
+    
+    private static class AlgorithmInitArgumentsProvider extends MaskAlgorithmInitArgumentsProvider {
         
         AlgorithmInitArgumentsProvider() {
             super("MASK_FIRST_N_LAST_M");
         }
         
         @Override
-        protected Collection<MaskAlgorithmCaseAssert> getCaseAsserts() {
+        protected Collection<MaskAlgorithmInitCaseAssert> getCaseAsserts() {
             return Arrays.asList(
-                    new MaskAlgorithmCaseAssert("empty_first_N", PropertiesBuilder.build(new Property("first-n", ""), new Property("last-m", "5"), new Property("replace-char", "*"))),
-                    new MaskAlgorithmCaseAssert("empty_last_M", PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", ""), new Property("replace-char", "*"))),
-                    new MaskAlgorithmCaseAssert("empty_replace_char", PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", ""))));
+                    new MaskAlgorithmInitCaseAssert("empty_first_N", PropertiesBuilder.build(new Property("first-n", ""), new Property("last-m", "5"), new Property("replace-char", "*"))),
+                    new MaskAlgorithmInitCaseAssert("empty_last_M", PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", ""), new Property("replace-char", "*"))),
+                    new MaskAlgorithmInitCaseAssert("empty_replace_char", PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", ""))));
         }
     }
     
-    private static class AlgorithmMaskArgumentsProvider extends MaskAlgorithmArgumentsProvider {
+    private static class AlgorithmMaskExecuteArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
         
-        AlgorithmMaskArgumentsProvider() {
-            super("MASK_FIRST_N_LAST_M");
+        AlgorithmMaskExecuteArgumentsProvider() {
+            super("MASK_FIRST_N_LAST_M", PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", "*")));
         }
         
         @Override
-        protected Collection<MaskAlgorithmCaseAssert> getCaseAsserts() {
-            Properties diffProps = PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", "*"));
-            Properties sameProps = PropertiesBuilder.build(new Property("first-n", "5"), new Property("last-m", "5"), new Property("replace-char", "*"));
+        protected Collection<MaskAlgorithmExecuteCaseAssert> getCaseAsserts() {
             return Arrays.asList(
-                    new MaskAlgorithmCaseAssert("null_value", diffProps, null, null),
-                    new MaskAlgorithmCaseAssert("empty_string", diffProps, "", ""),
-                    new MaskAlgorithmCaseAssert("normal_with_diff", diffProps, "abc123456", "***1*****"),
-                    new MaskAlgorithmCaseAssert("normal_with_same", sameProps, "abc123456789", "*****34*****"),
-                    new MaskAlgorithmCaseAssert("length_less_than_first_N_with_diff", diffProps, "ab", "**"),
-                    new MaskAlgorithmCaseAssert("length_less_than_first_N_with_same", sameProps, "abc", "***"),
-                    new MaskAlgorithmCaseAssert("length_equals_first_N_with_diff", diffProps, "abc", "***"),
-                    new MaskAlgorithmCaseAssert("length_equals_first_N_with_same", sameProps, "abc12", "*****"),
-                    new MaskAlgorithmCaseAssert("length_less_than_last_M_with_diff", diffProps, "abc1", "****"),
-                    new MaskAlgorithmCaseAssert("length_less_than_last_M_with_same", sameProps, "abc1", "****"),
-                    new MaskAlgorithmCaseAssert("length_equals_last_M_with_diff", diffProps, "abc12", "*****"),
-                    new MaskAlgorithmCaseAssert("length_equals_last_M_with_same", sameProps, "abc12", "*****"),
-                    new MaskAlgorithmCaseAssert("length_less_than_first_N_plus_last_M_with_diff", diffProps, "abc1234", "*******"),
-                    new MaskAlgorithmCaseAssert("length_less_than_first_N_plus_last_M_with_same", sameProps, "abc123456", "*********"),
-                    new MaskAlgorithmCaseAssert("length_equals_first_N_plus_last_M_with_diff", diffProps, "abc12345", "********"),
-                    new MaskAlgorithmCaseAssert("length_equals_first_N_plus_last_M_with_same", sameProps, "abc1234567", "**********"));
+                    new MaskAlgorithmExecuteCaseAssert("null_value", null, null),
+                    new MaskAlgorithmExecuteCaseAssert("empty_string", "", ""),
+                    new MaskAlgorithmExecuteCaseAssert("normal_with_diff", "abc123456", "***1*****"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_N_with_diff", "ab", "**"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_N_with_diff", "abc", "***"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_last_M_with_diff", "abc1", "****"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_last_M_with_diff", "abc12", "*****"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_N_plus_last_M_with_diff", "abc1234", "*******"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_N_plus_last_M_with_diff", "abc12345", "********"));
+        }
+    }
+    
+    private static class AlgorithmMaskExecuteWithSameNMArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
+        
+        AlgorithmMaskExecuteWithSameNMArgumentsProvider() {
+            super("MASK_FIRST_N_LAST_M", PropertiesBuilder.build(new Property("first-n", "5"), new Property("last-m", "5"), new Property("replace-char", "*")));
+        }
+        
+        @Override
+        protected Collection<MaskAlgorithmExecuteCaseAssert> getCaseAsserts() {
+            return Arrays.asList(
+                    new MaskAlgorithmExecuteCaseAssert("normal_with_same", "abc123456789", "*****34*****"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_N_with_same", "abc", "***"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_N_with_same", "abc12", "*****"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_last_M_with_same", "abc1", "****"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_last_M_with_same", "abc12", "*****"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_N_plus_last_M_with_same", "abc123456", "*********"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_N_plus_last_M_with_same", "abc1234567", "**********"));
         }
     }
 }
