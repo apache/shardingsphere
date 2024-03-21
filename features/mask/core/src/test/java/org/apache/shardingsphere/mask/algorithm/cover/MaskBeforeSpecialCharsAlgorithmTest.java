@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.mask.algorithm.cover;
 
-import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmArgumentsProvider;
+import org.apache.shardingsphere.mask.algorithm.parameterized.execute.MaskAlgorithmExecuteArgumentsProvider;
 import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmAssertions;
-import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmCaseAssert;
+import org.apache.shardingsphere.mask.algorithm.parameterized.execute.MaskAlgorithmExecuteCaseAssert;
+import org.apache.shardingsphere.mask.algorithm.parameterized.init.MaskAlgorithmInitArgumentsProvider;
+import org.apache.shardingsphere.mask.algorithm.parameterized.init.MaskAlgorithmInitCaseAssert;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,40 +40,39 @@ class MaskBeforeSpecialCharsAlgorithmTest {
     }
     
     @ParameterizedTest(name = "{0}: {1}")
-    @ArgumentsSource(AlgorithmMaskArgumentsProvider.class)
+    @ArgumentsSource(AlgorithmMaskExecuteArgumentsProvider.class)
     void assertMask(final String type, @SuppressWarnings("unused") final String name, final Properties props, final Object plainValue, final Object maskedValue) {
         MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     
-    private static class AlgorithmInitArgumentsProvider extends MaskAlgorithmArgumentsProvider {
+    private static class AlgorithmInitArgumentsProvider extends MaskAlgorithmInitArgumentsProvider {
         
         AlgorithmInitArgumentsProvider() {
             super("MASK_BEFORE_SPECIAL_CHARS");
         }
         
         @Override
-        protected Collection<MaskAlgorithmCaseAssert> getCaseAsserts() {
+        protected Collection<MaskAlgorithmInitCaseAssert> getCaseAsserts() {
             return Arrays.asList(
-                    new MaskAlgorithmCaseAssert("empty_special_char", PropertiesBuilder.build(new Property("special-chars", ""))),
-                    new MaskAlgorithmCaseAssert("empty_replace_char", PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", ""))));
+                    new MaskAlgorithmInitCaseAssert("empty_special_char", PropertiesBuilder.build(new Property("special-chars", ""))),
+                    new MaskAlgorithmInitCaseAssert("empty_replace_char", PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", ""))));
         }
     }
     
-    private static class AlgorithmMaskArgumentsProvider extends MaskAlgorithmArgumentsProvider {
+    private static class AlgorithmMaskExecuteArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
         
-        AlgorithmMaskArgumentsProvider() {
-            super("MASK_BEFORE_SPECIAL_CHARS");
+        AlgorithmMaskExecuteArgumentsProvider() {
+            super("MASK_BEFORE_SPECIAL_CHARS", PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", "*")));
         }
         
         @Override
-        protected Collection<MaskAlgorithmCaseAssert> getCaseAsserts() {
-            Properties props = PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", "*"));
+        protected Collection<MaskAlgorithmExecuteCaseAssert> getCaseAsserts() {
             return Arrays.asList(
-                    new MaskAlgorithmCaseAssert("null_value", props, null, null),
-                    new MaskAlgorithmCaseAssert("empty_string", props, "", ""),
-                    new MaskAlgorithmCaseAssert("normal", props, "abcd134", "***d134"),
-                    new MaskAlgorithmCaseAssert("match_multiple_special_chars", props, "abcd1234d1234", "***d1234d1234"),
-                    new MaskAlgorithmCaseAssert("not_match_special_chars", props, "abcd234", "abcd234"));
+                    new MaskAlgorithmExecuteCaseAssert("null_value", null, null),
+                    new MaskAlgorithmExecuteCaseAssert("empty_string", "", ""),
+                    new MaskAlgorithmExecuteCaseAssert("normal", "abcd134", "***d134"),
+                    new MaskAlgorithmExecuteCaseAssert("match_multiple_special_chars", "abcd1234d1234", "***d1234d1234"),
+                    new MaskAlgorithmExecuteCaseAssert("not_match_special_chars", "abcd234", "abcd234"));
         }
     }
 }
