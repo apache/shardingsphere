@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.provider;
 
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -78,7 +79,7 @@ public final class ShadowConvertRuleConfigurationProvider implements ConvertRule
         StringBuilder result = new StringBuilder();
         Iterator<String> iterator = shadowAlgorithmNames.iterator();
         while (iterator.hasNext()) {
-            result.append(getAlgorithmType(algorithmConfigs.get(iterator.next())));
+            result.append(AlgorithmDistSQLConverter.getAlgorithmType(algorithmConfigs.get(iterator.next())));
             if (iterator.hasNext()) {
                 result.append(ShadowDistSQLConstants.COMMA).append(' ');
             }

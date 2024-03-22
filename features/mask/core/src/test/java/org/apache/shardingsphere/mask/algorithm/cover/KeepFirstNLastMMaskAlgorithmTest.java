@@ -17,87 +17,92 @@
 
 package org.apache.shardingsphere.mask.algorithm.cover;
 
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmAssertions;
+import org.apache.shardingsphere.mask.algorithm.parameterized.execute.MaskAlgorithmExecuteArgumentsProvider;
+import org.apache.shardingsphere.mask.algorithm.parameterized.execute.MaskAlgorithmExecuteCaseAssert;
+import org.apache.shardingsphere.mask.algorithm.parameterized.init.MaskAlgorithmInitArgumentsProvider;
+import org.apache.shardingsphere.mask.algorithm.parameterized.init.MaskAlgorithmInitCaseAssert;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Properties;
 
 class KeepFirstNLastMMaskAlgorithmTest {
     
-    private KeepFirstNLastMMaskAlgorithm maskAlgorithm;
-    
-    private KeepFirstNLastMMaskAlgorithm sameFirstNLastMMaskAlgorithm;
-    
-    @BeforeEach
-    void setUp() {
-        maskAlgorithm = new KeepFirstNLastMMaskAlgorithm();
-        maskAlgorithm.init(PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", "*")));
-        sameFirstNLastMMaskAlgorithm = new KeepFirstNLastMMaskAlgorithm();
-        sameFirstNLastMMaskAlgorithm.init(PropertiesBuilder.build(new Property("first-n", "5"), new Property("last-m", "5"), new Property("replace-char", "*")));
+    @ParameterizedTest(name = "{0}: {1}")
+    @ArgumentsSource(AlgorithmInitArgumentsProvider.class)
+    void assertInit(final String type, @SuppressWarnings("unused") final String name, final Properties props) {
+        MaskAlgorithmAssertions.assertInitFailedWithInvalidProperties(type, props);
     }
     
-    @Test
-    void assertMask() {
-        assertThat(maskAlgorithm.mask("abc123456"), is("abc*23456"));
-        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc123456789"), is("abc12**56789"));
+    @ParameterizedTest(name = "{0}: {1}")
+    @ArgumentsSource(AlgorithmMaskExecuteArgumentsProvider.class)
+    void assertMask(final String type, @SuppressWarnings("unused") final String name, final Properties props, final Object plainValue, final Object maskedValue) {
+        MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     
-    @Test
-    void assertMaskWhenPlainValueLengthLessThanFirstN() {
-        assertThat(maskAlgorithm.mask("ab"), is("ab"));
-        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc"), is("abc"));
+    @ParameterizedTest(name = "{0}: {1}")
+    @ArgumentsSource(AlgorithmMaskExecuteWithSameNMArgumentsProvider.class)
+    void assertMaskWithSameNM(final String type, @SuppressWarnings("unused") final String name, final Properties props, final Object plainValue, final Object maskedValue) {
+        MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     
-    @Test
-    void assertMaskWhenPlainValueLengthEqualsFirstN() {
-        assertThat(maskAlgorithm.mask("abc"), is("abc"));
-        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc12"), is("abc12"));
+    private static class AlgorithmInitArgumentsProvider extends MaskAlgorithmInitArgumentsProvider {
+        
+        AlgorithmInitArgumentsProvider() {
+            super("KEEP_FIRST_N_LAST_M");
+        }
+        
+        @Override
+        protected Collection<MaskAlgorithmInitCaseAssert> getCaseAsserts() {
+            return Arrays.asList(
+                    new MaskAlgorithmInitCaseAssert("empty_first_N", PropertiesBuilder.build(new Property("first-n", ""), new Property("last-m", "5"), new Property("replace-char", "*"))),
+                    new MaskAlgorithmInitCaseAssert("empty_last_N", PropertiesBuilder.build(new Property("first-n", "2"), new Property("last-m", ""), new Property("replace-char", "*"))),
+                    new MaskAlgorithmInitCaseAssert("empty_replace_char", PropertiesBuilder.build(new Property("first-n", "2"), new Property("last-m", "5"), new Property("replace-char", ""))));
+        }
     }
     
-    @Test
-    void assertMaskWhenPlainValueLengthLessThanLastM() {
-        assertThat(maskAlgorithm.mask("abc1"), is("abc1"));
-        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc1"), is("abc1"));
+    private static class AlgorithmMaskExecuteArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
+        
+        AlgorithmMaskExecuteArgumentsProvider() {
+            super("KEEP_FIRST_N_LAST_M", PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", "*")));
+        }
+        
+        @Override
+        protected Collection<MaskAlgorithmExecuteCaseAssert> getCaseAsserts() {
+            return Arrays.asList(
+                    new MaskAlgorithmExecuteCaseAssert("null_value", null, null),
+                    new MaskAlgorithmExecuteCaseAssert("empty_string", "", ""),
+                    new MaskAlgorithmExecuteCaseAssert("normal_with_diff", "abc123456", "abc*23456"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_n_with_diff", "ab", "ab"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_n_with_diff", "abc", "abc"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_last_m_with_diff", "abc1", "abc1"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_last_m_with_diff", "abc12", "abc12"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_n_plus_last_m_with_diff", "abc1234", "abc1234"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_n_plus_last_m_with_diff", "abc12345", "abc12345"));
+        }
     }
     
-    @Test
-    void assertMaskWhenPlainValueLengthEqualsLastM() {
-        assertThat(maskAlgorithm.mask("abc12"), is("abc12"));
-        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc12"), is("abc12"));
-    }
-    
-    @Test
-    void assertMaskWhenPlainValueLengthLessThanFirstNPlusLastM() {
-        assertThat(maskAlgorithm.mask("abc1234"), is("abc1234"));
-        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc123456"), is("abc123456"));
-    }
-    
-    @Test
-    void assertMaskWhenPlainValueLengthEqualsFirstNPlusLastM() {
-        assertThat(maskAlgorithm.mask("abc12345"), is("abc12345"));
-        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc1234567"), is("abc1234567"));
-    }
-    
-    @Test
-    void assertInitWhenFirstNIsEmpty() {
-        assertThrows(AlgorithmInitializationException.class,
-                () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", ""), new Property("last-m", "5"), new Property("replace-char", "*"))));
-    }
-    
-    @Test
-    void assertInitWhenLastMIsEmpty() {
-        assertThrows(AlgorithmInitializationException.class,
-                () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "2"), new Property("last-m", ""), new Property("replace-char", "*"))));
-    }
-    
-    @Test
-    void assertInitWhenReplaceCharIsEmpty() {
-        assertThrows(AlgorithmInitializationException.class,
-                () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "2"), new Property("last-m", "5"), new Property("replace-char", ""))));
+    private static class AlgorithmMaskExecuteWithSameNMArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
+        
+        AlgorithmMaskExecuteWithSameNMArgumentsProvider() {
+            super("KEEP_FIRST_N_LAST_M", PropertiesBuilder.build(new Property("first-n", "5"), new Property("last-m", "5"), new Property("replace-char", "*")));
+        }
+        
+        @Override
+        protected Collection<MaskAlgorithmExecuteCaseAssert> getCaseAsserts() {
+            return Arrays.asList(
+                    new MaskAlgorithmExecuteCaseAssert("normal_with_same", "abc123456789", "abc12**56789"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_n_with_same", "abc", "abc"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_n_with_same", "abc12", "abc12"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_last_m_with_same", "abc1", "abc1"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_last_m_with_same", "abc12", "abc12"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_n_plus_last_m_with_same", "abc123456", "abc123456"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_n_plus_last_m_with_same", "abc1234567", "abc1234567"));
+        }
     }
 }
