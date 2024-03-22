@@ -19,9 +19,8 @@ package org.apache.shardingsphere.sharding.distsql.handler.provider;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
@@ -39,17 +38,16 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Sharding convert rule configuration provider.
+ * Sharding rule configuration to DistSQL converter.
  */
-public final class ShardingConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
+public final class ShardingRuleConfigurationToDistSQLConverter implements RuleConfigurationToDistSQLConverter<ShardingRuleConfiguration> {
     
     @Override
-    public String convert(final RuleConfiguration ruleConfig) {
+    public String convert(final ShardingRuleConfiguration ruleConfig) {
         StringBuilder result = new StringBuilder();
-        ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) ruleConfig;
-        appendShardingTableRules(shardingRuleConfig, result);
-        appendShardingBindingTableRules(shardingRuleConfig, result);
-        appendDefaultShardingStrategy(shardingRuleConfig, result);
+        appendShardingTableRules(ruleConfig, result);
+        appendShardingBindingTableRules(ruleConfig, result);
+        appendDefaultShardingStrategy(ruleConfig, result);
         return result.toString();
     }
     

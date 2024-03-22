@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.mask.distsql.handler.provider;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
@@ -31,16 +30,12 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Mask convert rule configuration provider.
+ * Mask rule configuration to DistSQL converter.
  */
-public final class MaskConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
+public final class MaskRuleConfigurationToDistSQLConverter implements RuleConfigurationToDistSQLConverter<MaskRuleConfiguration> {
     
     @Override
-    public String convert(final RuleConfiguration ruleConfig) {
-        return getMaskDistSQL((MaskRuleConfiguration) ruleConfig);
-    }
-    
-    private String getMaskDistSQL(final MaskRuleConfiguration ruleConfig) {
+    public String convert(final MaskRuleConfiguration ruleConfig) {
         if (ruleConfig.getTables().isEmpty()) {
             return "";
         }
