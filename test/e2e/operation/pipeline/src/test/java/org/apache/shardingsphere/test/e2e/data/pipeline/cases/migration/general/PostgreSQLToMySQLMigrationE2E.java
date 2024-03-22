@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.general
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -53,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @PipelineE2ESettings(fetchSingle = true, database = @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/common/none.xml"))
-public class MySQLToPostgreSQLMigrationE2E extends AbstractMigrationE2EIT {
+public class PostgreSQLToMySQLMigrationE2E extends AbstractMigrationE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
@@ -76,8 +77,10 @@ public class MySQLToPostgreSQLMigrationE2E extends AbstractMigrationE2EIT {
             containerComposer.proxyExecuteWithLog("MIGRATE TABLE source_ds.t_order INTO t_order", 2);
             Awaitility.await().ignoreExceptions().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !listJobId(containerComposer).isEmpty());
             String jobId = listJobId(containerComposer).get(0);
+            containerComposer.waitJobStatusReached(String.format("SHOW MIGRATION STATUS %s", jobId), JobStatus.EXECUTE_INCREMENTAL_TASK, 15);
             try (Connection connection = DriverManager.getConnection(jdbcUrl, "postgres", "postgres")) {
-                connection.createStatement().execute(String.format("INSERT INTO t_order (order_id,user_id,status) VALUES (%s, %s, '%s')", "1000000000", 1, "afterStop"));
+                connection.createStatement().execute(String.format("INSERT INTO t_order (order_id,user_id,status) VALUES (%s, %s, '%s')", "1000000000", 1, "incremental"));
+                connection.createStatement().execute(String.format("UPDATE t_order SET status='%s' WHERE order_id IN (1,2)", RandomStringUtils.randomAlphanumeric(10)));
             }
             containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
             assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
@@ -118,19 +121,19 @@ public class MySQLToPostgreSQLMigrationE2E extends AbstractMigrationE2EIT {
         }
     }
     
-    private void initTargetTable(final PipelineContainerComposer containerComposer) throws SQLException {
-        try (Connection connection = containerComposer.getProxyDataSource().getConnection()) {
-            connection.createStatement().execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT PRIMARY KEY,user_id INT,status VARCHAR(10), c_datetime DATETIME(6),c_date DATE,c_time TIME,"
-                    + "c_bytea BLOB,c_decimal DECIMAL(10,2))");
-            connection.createStatement().execute("TRUNCATE TABLE t_order");
-        }
-    }
-    
     private void registerMigrationSourceStorageUnit(final PipelineContainerComposer containerComposer) throws SQLException {
         String jdbcUrl = String.format("jdbc:postgresql://%s:5432/postgres",
                 PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.DOCKER ? "postgresql.host" : "localhost");
         String sql = String.format("REGISTER MIGRATION SOURCE STORAGE UNIT source_ds (URL='%s', USER='postgres', PASSWORD='postgres')", jdbcUrl);
         containerComposer.proxyExecuteWithLog(sql, 2);
+    }
+    
+    private void initTargetTable(final PipelineContainerComposer containerComposer) throws SQLException {
+        try (Connection connection = containerComposer.getProxyDataSource().getConnection()) {
+            connection.createStatement().execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT PRIMARY KEY,user_id INT,status VARCHAR(32), c_datetime DATETIME(6),c_date DATE,c_time TIME,"
+                    + "c_bytea BLOB,c_decimal DECIMAL(10,2))");
+            connection.createStatement().execute("TRUNCATE TABLE t_order");
+        }
     }
     
     private static boolean isEnabled() {
