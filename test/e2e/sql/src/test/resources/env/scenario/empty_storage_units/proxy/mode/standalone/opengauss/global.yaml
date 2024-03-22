@@ -42,3 +42,4 @@ props:
   proxy-frontend-flush-threshold: 128  # The default value is 128.
   sql-show: false
   proxy-frontend-ssl-enabled: true
+  proxy-frontend-database-protocol-type: openGauss

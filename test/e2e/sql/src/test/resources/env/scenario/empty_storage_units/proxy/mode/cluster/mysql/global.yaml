@@ -55,3 +55,4 @@ props:
   sql-show: false
 #  proxy-frontend-ssl-enabled: true
   proxy-meta-data-collector-enabled: true
+  proxy-frontend-database-protocol-type: MySQL
