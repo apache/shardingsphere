@@ -33,7 +33,6 @@ import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -53,11 +52,6 @@ public final class MaskImportRuleConfigurationProvider implements ImportRuleConf
         checkMaskAlgorithmsExisted(maskRuleConfig, database.getName());
     }
     
-    @Override
-    public DatabaseRule build(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
-        return new MaskRule((MaskRuleConfiguration) ruleConfig);
-    }
-    
     private void checkTables(final MaskRuleConfiguration currentRuleConfig, final String databaseName) {
         Collection<String> tableNames = currentRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> duplicatedTables = tableNames.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
@@ -70,12 +64,15 @@ public final class MaskImportRuleConfigurationProvider implements ImportRuleConf
     }
     
     private void checkMaskAlgorithmsExisted(final MaskRuleConfiguration currentRuleConfig, final String databaseName) {
-        Collection<MaskColumnRuleConfiguration> columns = new LinkedList<>();
-        currentRuleConfig.getTables().forEach(each -> columns.addAll(each.getColumns()));
-        Collection<String> notExistedAlgorithms = columns.stream().map(MaskColumnRuleConfiguration::getMaskAlgorithm).collect(Collectors.toList());
-        Collection<String> maskAlgorithms = currentRuleConfig.getMaskAlgorithms().keySet();
-        notExistedAlgorithms.removeIf(maskAlgorithms::contains);
+        Collection<String> notExistedAlgorithms = currentRuleConfig.getTables().stream()
+                .flatMap(each -> each.getColumns().stream()).map(MaskColumnRuleConfiguration::getMaskAlgorithm).collect(Collectors.toList());
+        notExistedAlgorithms.removeIf(currentRuleConfig.getMaskAlgorithms().keySet()::contains);
         ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(), () -> new MissingRequiredAlgorithmException(databaseName, notExistedAlgorithms));
+    }
+    
+    @Override
+    public DatabaseRule build(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
+        return new MaskRule((MaskRuleConfiguration) ruleConfig);
     }
     
     @Override
