@@ -543,7 +543,7 @@
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_database_name_and_schema_name_in_table" db-types="PostgreSQL,openGauss">
-        <input sql="SELECT account_id FROM public.public.t_account WHERE account_id = ?" parameters="100" />
+        <input sql="SELECT account_id FROM logic_db.public.t_account WHERE account_id = ?" parameters="100" />
         <output sql="SELECT account_id FROM public.t_account_0 WHERE account_id = ?" parameters="100" />
     </rewrite-assertion>
 

@@ -133,18 +133,18 @@ public abstract class SQLRewriterIT {
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
         Collection<ShardingSphereRule> databaseRules = createDatabaseRules(databaseConfig, schemaName, sqlStatement, databaseType);
         RuleMetaData databaseRuleMetaData = new RuleMetaData(databaseRules);
-        ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resourceMetaData, databaseRuleMetaData, mockSchemas(schemaName));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, databaseType, resourceMetaData, databaseRuleMetaData, mockSchemas(schemaName));
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1F);
-        databases.put(schemaName, database);
+        databases.put(database.getName(), database);
         RuleMetaData globalRuleMetaData = new RuleMetaData(createGlobalRules());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), globalRuleMetaData, mock(ConfigurationProperties.class));
         HintValueContext hintValueContext = SQLHintUtils.extractHint(testParams.getInputSQL());
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, schemaName, hintValueContext).bind(sqlStatement, Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, database.getName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(testParams.getInputParameters());
         }
         if (sqlStatementContext instanceof CursorDefinitionAware) {
-            ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(createCursorDefinition(schemaName, metaData, sqlStatementParserEngine));
+            ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(createCursorDefinition(database.getName(), metaData, sqlStatementParserEngine));
         }
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, testParams.getInputParameters(), hintValueContext);
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
@@ -174,9 +174,9 @@ public abstract class SQLRewriterIT {
         return result;
     }
     
-    private CursorStatementContext createCursorDefinition(final String schemaName, final ShardingSphereMetaData metaData, final SQLStatementParserEngine sqlStatementParserEngine) {
+    private CursorStatementContext createCursorDefinition(final String databaseName, final ShardingSphereMetaData metaData, final SQLStatementParserEngine sqlStatementParserEngine) {
         SQLStatement sqlStatement = sqlStatementParserEngine.parse("CURSOR t_account_cursor FOR SELECT * FROM t_account WHERE account_id = 100", false);
-        return (CursorStatementContext) new SQLBindEngine(metaData, schemaName, new HintValueContext()).bind(sqlStatement, Collections.emptyList());
+        return (CursorStatementContext) new SQLBindEngine(metaData, databaseName, new HintValueContext()).bind(sqlStatement, Collections.emptyList());
     }
     
     protected abstract void mockDataSource(Map<String, DataSource> dataSources) throws SQLException;
