@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.readwritesplitting.distsql.handler.provider.ReadwriteSplittingConvertRuleConfigurationProvider
+org.apache.shardingsphere.mask.distsql.handler.provider.MaskRuleConfigurationToDistSQLConverter

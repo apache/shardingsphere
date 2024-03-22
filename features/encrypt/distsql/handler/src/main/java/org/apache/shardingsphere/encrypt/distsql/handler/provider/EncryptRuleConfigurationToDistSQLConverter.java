@@ -19,30 +19,25 @@ package org.apache.shardingsphere.encrypt.distsql.handler.provider;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.constant.EncryptDistSQLConstants;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Encrypt convert rule configuration provider.
+ * Encrypt rule configuration to DistSQL converter.
  */
-public final class EncryptConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
+public final class EncryptRuleConfigurationToDistSQLConverter implements RuleConfigurationToDistSQLConverter<EncryptRuleConfiguration> {
     
     @Override
-    public String convert(final RuleConfiguration ruleConfig) {
-        return getEncryptDistSQL((EncryptRuleConfiguration) ruleConfig);
-    }
-    
-    private String getEncryptDistSQL(final EncryptRuleConfiguration ruleConfig) {
+    public String convert(final EncryptRuleConfiguration ruleConfig) {
         if (ruleConfig.getTables().isEmpty()) {
             return "";
         }

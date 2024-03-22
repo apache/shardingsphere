@@ -17,24 +17,19 @@
 
 package org.apache.shardingsphere.single.distsql.handler.provider;
 
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.handler.constant.SingleDistSQLConstants;
 
 import java.util.Iterator;
 
 /**
- * Single convert rule configuration provider.
+ * Single rule configuration to DistSQL converter.
  */
-public final class SingleConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
+public final class SingleRuleConfigurationToDistSQLConverter implements RuleConfigurationToDistSQLConverter<SingleRuleConfiguration> {
     
     @Override
-    public String convert(final RuleConfiguration ruleConfig) {
-        return getSingleDistSQL((SingleRuleConfiguration) ruleConfig);
-    }
-    
-    private String getSingleDistSQL(final SingleRuleConfiguration ruleConfig) {
+    public String convert(final SingleRuleConfiguration ruleConfig) {
         if (ruleConfig.getTables().isEmpty()) {
             return "";
         }
@@ -52,7 +47,7 @@ public final class SingleConvertRuleConfigurationProvider implements ConvertRule
     }
     
     @Override
-    public Class<? extends RuleConfiguration> getType() {
+    public Class<SingleRuleConfiguration> getType() {
         return SingleRuleConfiguration.class;
     }
 }

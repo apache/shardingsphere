@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.DistSQLScriptConstants;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.convert.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
@@ -77,11 +77,12 @@ public final class ConvertYamlConfigurationExecutor implements DistSQLQueryExecu
         return Collections.singleton(new LocalDataQueryResultRow(generateDistSQL(yamlConfig)));
     }
     
+    @SuppressWarnings("unchecked")
     private String generateDistSQL(final YamlProxyDatabaseConfiguration yamlConfig) {
         StringBuilder result = new StringBuilder();
         appendResourceDistSQL(yamlConfig, result);
         for (RuleConfiguration each : swapToRuleConfigs(yamlConfig).values()) {
-            result.append(TypedSPILoader.getService(ConvertRuleConfigurationProvider.class, each.getClass()).convert(each));
+            result.append(TypedSPILoader.getService(RuleConfigurationToDistSQLConverter.class, each.getClass()).convert(each));
         }
         return result.toString();
     }

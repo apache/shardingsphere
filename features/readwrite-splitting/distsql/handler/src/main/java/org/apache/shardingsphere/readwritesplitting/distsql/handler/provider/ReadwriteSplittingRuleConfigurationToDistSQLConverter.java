@@ -19,9 +19,8 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.provider;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.constant.ReadwriteSplittingDistSQLConstants;
@@ -31,16 +30,12 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Readwrite-splitting convert rule configuration provider.
+ * Readwrite-splitting rule configuration to DistSQL converter.
  */
-public final class ReadwriteSplittingConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
+public final class ReadwriteSplittingRuleConfigurationToDistSQLConverter implements RuleConfigurationToDistSQLConverter<ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public String convert(final RuleConfiguration ruleConfig) {
-        return getReadWriteSplittingDistSQL((ReadwriteSplittingRuleConfiguration) ruleConfig);
-    }
-    
-    private String getReadWriteSplittingDistSQL(final ReadwriteSplittingRuleConfiguration ruleConfig) {
+    public String convert(final ReadwriteSplittingRuleConfiguration ruleConfig) {
         if (ruleConfig.getDataSources().isEmpty()) {
             return "";
         }

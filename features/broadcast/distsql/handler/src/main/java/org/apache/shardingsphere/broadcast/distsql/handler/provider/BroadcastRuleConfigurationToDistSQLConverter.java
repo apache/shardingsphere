@@ -19,22 +19,17 @@ package org.apache.shardingsphere.broadcast.distsql.handler.provider;
 
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.handler.constant.BroadcastDistSQLConstants;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 
 import java.util.Iterator;
 
 /**
- * Broadcast convert rule configuration provider.
+ * Broadcast rule configuration to DistSQL converter.
  */
-public final class BroadcastConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
+public final class BroadcastRuleConfigurationToDistSQLConverter implements RuleConfigurationToDistSQLConverter<BroadcastRuleConfiguration> {
     
     @Override
-    public String convert(final RuleConfiguration ruleConfig) {
-        return getBroadcastDistSQL((BroadcastRuleConfiguration) ruleConfig);
-    }
-    
-    private String getBroadcastDistSQL(final BroadcastRuleConfiguration ruleConfig) {
+    public String convert(final BroadcastRuleConfiguration ruleConfig) {
         if (ruleConfig.getTables().isEmpty()) {
             return "";
         }
@@ -52,7 +47,7 @@ public final class BroadcastConvertRuleConfigurationProvider implements ConvertR
     }
     
     @Override
-    public Class<? extends RuleConfiguration> getType() {
+    public Class<BroadcastRuleConfiguration> getType() {
         return BroadcastRuleConfiguration.class;
     }
 }
