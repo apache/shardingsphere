@@ -19,6 +19,8 @@ dataSources:
   encrypt_ds:
     dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
 
+databaseName: encrypt
+
 rules:
 - !ENCRYPT
   tables:
