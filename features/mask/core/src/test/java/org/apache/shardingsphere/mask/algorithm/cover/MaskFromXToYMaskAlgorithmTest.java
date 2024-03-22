@@ -80,11 +80,11 @@ class MaskFromXToYMaskAlgorithmTest {
             return Arrays.asList(
                     new MaskAlgorithmExecuteCaseAssert("null_value", null, null),
                     new MaskAlgorithmExecuteCaseAssert("empty_string", "", ""),
-                    new MaskAlgorithmExecuteCaseAssert("normal_with_diff", "abc123456", "abc***456"),
-                    new MaskAlgorithmExecuteCaseAssert("length_less_than_from_X_plus_one_with_diff", "abc", "abc"),
-                    new MaskAlgorithmExecuteCaseAssert("length_equals_from_X_plus_one_with_diff", "abc1", "abc*"),
-                    new MaskAlgorithmExecuteCaseAssert("length_less_than_to_Y_plus_one_with_diff", "abc12", "abc**"),
-                    new MaskAlgorithmExecuteCaseAssert("length_equals_to_Y_plus_one_with_diff", "abc123", "abc***"));
+                    new MaskAlgorithmExecuteCaseAssert("normal", "abc123456", "abc***456"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_from_X_plus_one", "abc", "abc"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_from_X_plus_one", "abc1", "abc*"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_to_Y_plus_one", "abc12", "abc**"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_to_Y_plus_one", "abc123", "abc***"));
         }
     }
     
@@ -97,11 +97,11 @@ class MaskFromXToYMaskAlgorithmTest {
         @Override
         protected Collection<MaskAlgorithmExecuteCaseAssert> getCaseAsserts() {
             return Arrays.asList(
-                    new MaskAlgorithmExecuteCaseAssert("normal_with_same", "abc123456", "abc12*456"),
-                    new MaskAlgorithmExecuteCaseAssert("length_less_than_from_X_plus_one_with_same", "abc", "abc"),
-                    new MaskAlgorithmExecuteCaseAssert("length_equals_from_X_plus_one_with_same", "abc123", "abc12*"),
-                    new MaskAlgorithmExecuteCaseAssert("length_less_than_to_Y_plus_one_with_same", "abc12", "abc12"),
-                    new MaskAlgorithmExecuteCaseAssert("length_equals_to_Y_plus_one_with_same", "abc123", "abc12*"));
+                    new MaskAlgorithmExecuteCaseAssert("normal", "abc123456", "abc12*456"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_from_X_plus_one", "abc", "abc"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_from_X_plus_one", "abc123", "abc12*"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_to_Y_plus_one", "abc12", "abc12"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_to_Y_plus_one", "abc123", "abc12*"));
         }
     }
 }

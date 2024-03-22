@@ -80,12 +80,12 @@ class KeepFromXToYMaskAlgorithmTest {
             return Arrays.asList(
                     new MaskAlgorithmExecuteCaseAssert("null_value", null, null),
                     new MaskAlgorithmExecuteCaseAssert("empty_string", "", ""),
-                    new MaskAlgorithmExecuteCaseAssert("normal_with_diff", "abc123456", "***123***"),
-                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_less_than_from_X_plus_one_with_diff", "abc", "***"),
-                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_equals_from_X_plus_one_with_diff", "abc1", "***1"),
-                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_equals_from_X_plus_one_with_diff", "abc1", "***1"),
-                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_less_than_to_Y_plus_one_with_diff", "abc12", "***12"),
-                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_equals_to_Y_plus_one_with_diff", "abc123", "***123"));
+                    new MaskAlgorithmExecuteCaseAssert("normal", "abc123456", "***123***"),
+                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_less_than_from_X_plus_one", "abc", "***"),
+                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_equals_from_X_plus_one", "abc1", "***1"),
+                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_equals_from_X_plus_one", "abc1", "***1"),
+                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_less_than_to_Y_plus_one", "abc12", "***12"),
+                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_equals_to_Y_plus_one", "abc123", "***123"));
         }
     }
     
@@ -98,12 +98,12 @@ class KeepFromXToYMaskAlgorithmTest {
         @Override
         protected Collection<MaskAlgorithmExecuteCaseAssert> getCaseAsserts() {
             return Arrays.asList(
-                    new MaskAlgorithmExecuteCaseAssert("normal_with_same", "abc123456", "*****3***"),
-                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_less_than_from_X_plus_one_with_same", "abc", "***"),
-                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_equals_from_X_plus_one_with_same", "abc123", "*****3"),
-                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_equals_from_X_plus_one_with_same", "abc123", "*****3"),
-                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_less_than_to_Y_plus_one_with_same", "abc12", "*****"),
-                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_equals_to_Y_plus_one_with_same", "abc123", "*****3"));
+                    new MaskAlgorithmExecuteCaseAssert("normal", "abc123456", "*****3***"),
+                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_less_than_from_X_plus_one", "abc", "***"),
+                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_equals_from_X_plus_one", "abc123", "*****3"),
+                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_equals_from_X_plus_one", "abc123", "*****3"),
+                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_less_than_to_Y_plus_one", "abc12", "*****"),
+                    new MaskAlgorithmExecuteCaseAssert("plain_value_length_equals_to_Y_plus_one", "abc123", "*****3"));
         }
     }
 }
