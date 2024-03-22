@@ -17,103 +17,91 @@
 
 package org.apache.shardingsphere.mask.algorithm.cover;
 
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
+import org.apache.shardingsphere.mask.algorithm.parameterized.MaskAlgorithmAssertions;
+import org.apache.shardingsphere.mask.algorithm.parameterized.execute.MaskAlgorithmExecuteArgumentsProvider;
+import org.apache.shardingsphere.mask.algorithm.parameterized.execute.MaskAlgorithmExecuteCaseAssert;
+import org.apache.shardingsphere.mask.algorithm.parameterized.init.MaskAlgorithmInitArgumentsProvider;
+import org.apache.shardingsphere.mask.algorithm.parameterized.init.MaskAlgorithmInitCaseAssert;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Properties;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MaskFromXToYMaskAlgorithmTest {
     
-    private MaskFromXToYMaskAlgorithm maskAlgorithm;
-    
-    private MaskFromXToYMaskAlgorithm sameFromXToYMaskAlgorithm;
-    
-    @BeforeEach
-    void setUp() {
-        maskAlgorithm = (MaskFromXToYMaskAlgorithm) TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y",
-                PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", "*")));
-        sameFromXToYMaskAlgorithm = (MaskFromXToYMaskAlgorithm) TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y",
-                PropertiesBuilder.build(new Property("from-x", "5"), new Property("to-y", "5"), new Property("replace-char", "*")));
+    @ParameterizedTest(name = "{0}: {1}")
+    @ArgumentsSource(AlgorithmInitArgumentsProvider.class)
+    void assertInit(final String type, @SuppressWarnings("unused") final String name, final Properties props) {
+        MaskAlgorithmAssertions.assertInitFailedWithInvalidProperties(type, props);
     }
     
-    @Test
-    void assertMaskWithNullValue() {
-        assertNull(maskAlgorithm.mask(null));
+    @ParameterizedTest(name = "{0}: {1}")
+    @ArgumentsSource(AlgorithmMaskExecuteArgumentsProvider.class)
+    void assertMask(final String type, @SuppressWarnings("unused") final String name, final Properties props, final Object plainValue, final Object maskedValue) {
+        MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     
-    @Test
-    void assertMask() {
-        assertThat(maskAlgorithm.mask("abc123456"), is("abc***456"));
-        assertThat(sameFromXToYMaskAlgorithm.mask("abc123456"), is("abc12*456"));
+    @ParameterizedTest(name = "{0}: {1}")
+    @ArgumentsSource(AlgorithmMaskExecuteWithSameXYArgumentsProvider.class)
+    void assertMaskWithSameXY(final String type, @SuppressWarnings("unused") final String name, final Properties props, final Object plainValue, final Object maskedValue) {
+        MaskAlgorithmAssertions.assertMask(type, props, plainValue, maskedValue);
     }
     
-    @Test
-    void assertMaskWhenPlainValueLengthLessThanFromXPlusOne() {
-        assertThat(maskAlgorithm.mask("abc"), is("abc"));
-        assertThat(sameFromXToYMaskAlgorithm.mask("abc"), is("abc"));
+    private static class AlgorithmInitArgumentsProvider extends MaskAlgorithmInitArgumentsProvider {
+        
+        AlgorithmInitArgumentsProvider() {
+            super("MASK_FROM_X_TO_Y");
+        }
+        
+        @Override
+        protected Collection<MaskAlgorithmInitCaseAssert> getCaseAsserts() {
+            return Arrays.asList(
+                    new MaskAlgorithmInitCaseAssert("empty_from_X", PropertiesBuilder.build(new Property("from-x", ""), new Property("to-y", "5"), new Property("replace-char", "*"))),
+                    new MaskAlgorithmInitCaseAssert("empty_to_Y", PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", ""), new Property("replace-char", "*"))),
+                    new MaskAlgorithmInitCaseAssert("empty_replace_char", PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", ""))),
+                    new MaskAlgorithmInitCaseAssert("negative_from_X", PropertiesBuilder.build(new Property("from-x", "-3"), new Property("to-y", "5"), new Property("replace-char", "*"))),
+                    new MaskAlgorithmInitCaseAssert("negative_to_Y", PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "-5"), new Property("replace-char", "*"))),
+                    new MaskAlgorithmInitCaseAssert("from_X_greater_than_to_Y", PropertiesBuilder.build(new Property("from-x", "5"), new Property("to-y", "2"), new Property("replace-char", ""))));
+        }
     }
     
-    @Test
-    void assertMaskWhenPlainValueLengthEqualsFromXPlusOne() {
-        assertThat(maskAlgorithm.mask("abc1"), is("abc*"));
-        assertThat(sameFromXToYMaskAlgorithm.mask("abc123"), is("abc12*"));
+    private static class AlgorithmMaskExecuteArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
+        
+        AlgorithmMaskExecuteArgumentsProvider() {
+            super("MASK_FROM_X_TO_Y", PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", "*")));
+        }
+        
+        @Override
+        protected Collection<MaskAlgorithmExecuteCaseAssert> getCaseAsserts() {
+            return Arrays.asList(
+                    new MaskAlgorithmExecuteCaseAssert("null_value", null, null),
+                    new MaskAlgorithmExecuteCaseAssert("empty_string", "", ""),
+                    new MaskAlgorithmExecuteCaseAssert("normal_with_diff", "abc123456", "abc***456"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_from_X_plus_one_with_diff", "abc", "abc"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_from_X_plus_one_with_diff", "abc1", "abc*"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_to_Y_plus_one_with_diff", "abc12", "abc**"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_to_Y_plus_one_with_diff", "abc123", "abc***"));
+        }
     }
     
-    @Test
-    void assertMaskWhenPlainValueLengthLessThanToYPlusOne() {
-        assertThat(maskAlgorithm.mask("abc12"), is("abc**"));
-        assertThat(sameFromXToYMaskAlgorithm.mask("abc12"), is("abc12"));
-    }
-    
-    @Test
-    void assertMaskWhenPlainValueLengthEqualsToYPlusOne() {
-        assertThat(maskAlgorithm.mask("abc123"), is("abc***"));
-        assertThat(sameFromXToYMaskAlgorithm.mask("abc123"), is("abc12*"));
-    }
-    
-    @Test
-    void assertInitWhenFromXIsEmpty() {
-        Properties props = PropertiesBuilder.build(new Property("from-x", ""), new Property("to-y", "5"), new Property("replace-char", "*"));
-        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y", props));
-    }
-    
-    @Test
-    void assertInitWhenToYIsEmpty() {
-        Properties props = PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", ""), new Property("replace-char", "*"));
-        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y", props));
-    }
-    
-    @Test
-    void assertInitWhenReplaceCharIsEmpty() {
-        Properties props = PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", ""));
-        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y", props));
-    }
-    
-    @Test
-    void assertInitWhenFromXIsNotPositive() {
-        Properties props = PropertiesBuilder.build(new Property("from-x", "-3"), new Property("to-y", "5"), new Property("replace-char", "*"));
-        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y", props));
-    }
-    
-    @Test
-    void assertInitWhenToYIsNotPositive() {
-        Properties props = PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "-5"), new Property("replace-char", "*"));
-        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y", props));
-    }
-    
-    @Test
-    void assertInitWhenFromXGreaterThanToY() {
-        Properties props = PropertiesBuilder.build(new Property("from-x", "5"), new Property("to-y", "2"), new Property("replace-char", ""));
-        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(MaskAlgorithm.class, "MASK_FROM_X_TO_Y", props));
+    private static class AlgorithmMaskExecuteWithSameXYArgumentsProvider extends MaskAlgorithmExecuteArgumentsProvider {
+        
+        AlgorithmMaskExecuteWithSameXYArgumentsProvider() {
+            super("MASK_FROM_X_TO_Y", PropertiesBuilder.build(new Property("from-x", "5"), new Property("to-y", "5"), new Property("replace-char", "*")));
+        }
+        
+        @Override
+        protected Collection<MaskAlgorithmExecuteCaseAssert> getCaseAsserts() {
+            return Arrays.asList(
+                    new MaskAlgorithmExecuteCaseAssert("normal_with_same", "abc123456", "abc12*456"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_from_X_plus_one_with_same", "abc", "abc"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_from_X_plus_one_with_same", "abc123", "abc12*"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_to_Y_plus_one_with_same", "abc12", "abc12"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_to_Y_plus_one_with_same", "abc123", "abc12*"));
+        }
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.provider;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -78,7 +79,7 @@ public final class ReadwriteSplittingConvertRuleConfigurationProvider implements
     
     private String getLoadBalancerType(final AlgorithmConfiguration algorithmConfig) {
         StringBuilder result = new StringBuilder();
-        String loadBalancerType = getAlgorithmType(algorithmConfig);
+        String loadBalancerType = AlgorithmDistSQLConverter.getAlgorithmType(algorithmConfig);
         if (!Strings.isNullOrEmpty(loadBalancerType)) {
             result.append(ReadwriteSplittingDistSQLConstants.COMMA).append(System.lineSeparator()).append(loadBalancerType);
         }

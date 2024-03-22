@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.query.ral.convert;
+package org.apache.shardingsphere.mask.algorithm.parameterized.init;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-/**
- * Convert rule configuration provider.
- */
-@SingletonSPI
-public interface ConvertRuleConfigurationProvider extends TypedSPI {
+import java.util.Properties;
+
+@RequiredArgsConstructor
+@Getter
+public final class MaskAlgorithmInitCaseAssert {
     
-    /**
-     * Convert rule configuration to DistSQL.
-     *
-     * @param ruleConfig rule configuration
-     * @return DistSQL
-     */
-    String convert(RuleConfiguration ruleConfig);
+    private final String name;
     
-    @Override
-    Class<? extends RuleConfiguration> getType();
+    private final Properties props;
 }

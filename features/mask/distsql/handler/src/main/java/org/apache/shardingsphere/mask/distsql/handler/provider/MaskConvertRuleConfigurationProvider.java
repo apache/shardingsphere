@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.provider;
 
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -67,7 +68,7 @@ public final class MaskConvertRuleConfigurationProvider implements ConvertRuleCo
     }
     
     private String getMaskAlgorithms(final MaskColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
-        return getAlgorithmType(maskAlgorithms.get(columnRuleConfig.getMaskAlgorithm()));
+        return AlgorithmDistSQLConverter.getAlgorithmType(maskAlgorithms.get(columnRuleConfig.getMaskAlgorithm()));
     }
     
     @Override

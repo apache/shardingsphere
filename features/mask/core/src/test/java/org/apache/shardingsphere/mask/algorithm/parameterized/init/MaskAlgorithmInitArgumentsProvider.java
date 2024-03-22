@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.query.ral.convert;
+package org.apache.shardingsphere.mask.algorithm.parameterized.init;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
 
-/**
- * Convert rule configuration provider.
- */
-@SingletonSPI
-public interface ConvertRuleConfigurationProvider extends TypedSPI {
+import java.util.Collection;
+import java.util.stream.Stream;
+
+@RequiredArgsConstructor
+public abstract class MaskAlgorithmInitArgumentsProvider implements ArgumentsProvider {
     
-    /**
-     * Convert rule configuration to DistSQL.
-     *
-     * @param ruleConfig rule configuration
-     * @return DistSQL
-     */
-    String convert(RuleConfiguration ruleConfig);
+    private final String type;
     
     @Override
-    Class<? extends RuleConfiguration> getType();
+    public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        return getCaseAsserts().stream().map(each -> Arguments.of(type, each.getName(), each.getProps()));
+    }
+    
+    protected abstract Collection<MaskAlgorithmInitCaseAssert> getCaseAsserts();
 }
