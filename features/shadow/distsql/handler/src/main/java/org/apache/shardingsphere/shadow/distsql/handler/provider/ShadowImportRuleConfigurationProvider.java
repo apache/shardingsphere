@@ -21,13 +21,10 @@ import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.data
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
-import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
@@ -49,11 +46,6 @@ public final class ShadowImportRuleConfigurationProvider implements ImportRuleCo
         checkDataSources(databaseName, database, ruleConfig);
         checkTables(ruleConfig, databaseName);
         checkShadowAlgorithms(ruleConfig);
-    }
-    
-    @Override
-    public DatabaseRule build(final ShardingSphereDatabase database, final ShadowRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
-        return new ShadowRule(ruleConfig);
     }
     
     private void checkDataSources(final String databaseName, final ShardingSphereDatabase database, final ShadowRuleConfiguration currentRuleConfig) {

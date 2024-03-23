@@ -24,12 +24,9 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -75,11 +72,6 @@ public final class EncryptImportRuleConfigurationProvider implements ImportRuleC
         Collection<String> encryptors = config.getEncryptors().keySet();
         notExistedEncryptors.removeIf(encryptors::contains);
         ShardingSpherePreconditions.checkState(notExistedEncryptors.isEmpty(), () -> new MissingRequiredAlgorithmException(databaseName, notExistedEncryptors));
-    }
-    
-    @Override
-    public DatabaseRule build(final ShardingSphereDatabase database, final EncryptRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
-        return new EncryptRule(database.getName(), ruleConfig);
     }
     
     @Override

@@ -25,23 +25,17 @@ import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorith
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
-import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
@@ -61,13 +55,6 @@ public final class ShardingImportRuleConfigurationProvider implements ImportRule
         checkDataSources(database, ruleConfig);
         checkShardingAlgorithms(ruleConfig.getShardingAlgorithms().values());
         checkKeyGeneratorAlgorithms(ruleConfig.getKeyGenerators().values());
-    }
-    
-    @Override
-    public DatabaseRule build(final ShardingSphereDatabase database, final ShardingRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
-        Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, storageUnit -> storageUnit.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return new ShardingRule(ruleConfig, dataSources, instanceContext);
     }
     
     private void checkLogicTables(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) {

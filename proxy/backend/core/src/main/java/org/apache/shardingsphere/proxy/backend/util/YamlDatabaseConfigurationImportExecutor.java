@@ -31,10 +31,13 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapCreator;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
@@ -47,6 +50,7 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyData
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.MissingDatabaseNameException;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,6 +60,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Yaml database configuration import executor.
@@ -135,11 +140,20 @@ public final class YamlDatabaseConfigurationImportExecutor {
         metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
     }
     
+    @SuppressWarnings("unchecked")
     private void addRule(final Collection<RuleConfiguration> ruleConfigs, final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
-        ImportRuleConfigurationProvider provider = TypedSPILoader.getService(ImportRuleConfigurationProvider.class, ruleConfig.getClass());
-        provider.check(database, ruleConfig);
+        TypedSPILoader.getService(ImportRuleConfigurationProvider.class, ruleConfig.getClass()).check(database, ruleConfig);
         ruleConfigs.add(ruleConfig);
-        database.getRuleMetaData().getRules().add(provider.build(database, ruleConfig, ProxyContext.getInstance().getContextManager().getInstanceContext()));
+        database.getRuleMetaData().getRules().add(buildRule(ruleConfig, database));
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private ShardingSphereRule buildRule(final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
+        DatabaseRuleBuilder ruleBuilder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
+        return ruleBuilder.build(ruleConfig, database.getName(), database.getProtocolType(), dataSources, database.getRuleMetaData().getRules(), instanceContext);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
