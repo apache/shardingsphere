@@ -38,7 +38,7 @@ public interface ImportRuleConfigurationProvider<T extends RuleConfiguration> ex
      * @param database database
      * @param ruleConfig rule configuration
      */
-    void check(ShardingSphereDatabase database, T ruleConfig);
+    void check(ShardingSphereDatabase database, T ruleConfig); 
     
     /**
      * Build database rule.
