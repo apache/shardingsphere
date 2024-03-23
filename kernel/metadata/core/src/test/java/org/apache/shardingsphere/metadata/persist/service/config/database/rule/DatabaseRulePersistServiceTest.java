@@ -19,54 +19,117 @@ package org.apache.shardingsphere.metadata.persist.service.config.database.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
+import org.apache.shardingsphere.metadata.persist.fixture.YamlDataNodeRuleConfigurationFixture;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class DatabaseRulePersistServiceTest {
+    
+    @Mock
+    private PersistRepository repository;
     
     private DatabaseRulePersistService databaseRuleService;
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        databaseRuleService = new DatabaseRulePersistService(mock(PersistRepository.class));
+        databaseRuleService = new DatabaseRulePersistService(repository);
     }
     
     @Test
-    void testPersist() {
-        databaseRuleService.persist("123", Collections.emptyList());
+    void testPersistVersionExists() {
+        // Arrange
+        String databaseName = "testDatabase";
+        Collection<RuleConfiguration> expectRuleConfigs = buildRuleConfigs();
+        when(repository.getDirectly(anyString())).thenReturn("0");
+        
+        // Act
+        databaseRuleService.persist(databaseName, expectRuleConfigs);
+        
+        // Assert
+        verify(repository, times(1)).persist(anyString(), anyString());
+    }
+    
+    @Test
+    void testPersistVersionNotExists() {
+        // Arrange
+        String databaseName = "testDatabase";
+        Collection<RuleConfiguration> expectRuleConfigs = buildRuleConfigs();
+        
+        // Act
+        databaseRuleService.persist(databaseName, expectRuleConfigs);
+        
+        // Assert
+        verify(repository, times(2)).persist(anyString(), anyString());
     }
     
     @Test
     void testLoad() {
-        Collection<RuleConfiguration> load = databaseRuleService.load("123");
-        Assertions.assertTrue(load.isEmpty());
+        String databaseName = "testDatabase";
+        when(repository.getChildrenKeys(anyString()))
+                .thenReturn(Collections.singletonList("active_version"))
+                .thenReturn(Collections.emptyList());
+        when(repository.getDirectly(anyString())).thenReturn("0");
+        
+        Collection<RuleConfiguration> actual = databaseRuleService.load(databaseName);
+        
+        assertEquals(1, actual.size());
     }
     
     @Test
     void testDelete() {
-        databaseRuleService.delete("123", "234");
+        String databaseName = "testDatabase";
+        databaseRuleService.delete(databaseName, "foo");
+        
+        verify(repository, times(1)).delete(anyString());
     }
     
     @Test
     void testDeleteConfig() {
-        Collection<MetaDataVersion> deleted = databaseRuleService.deleteConfig("123", Collections.emptyList());
-        Assertions.assertTrue(deleted.isEmpty());
+        // Arrange
+        String databaseName = "testDatabase";
+        Collection<RuleConfiguration> expectRuleConfigs = buildRuleConfigs();
+        
+        Collection<MetaDataVersion> actual = databaseRuleService.deleteConfig(databaseName, expectRuleConfigs);
+        
+        verify(repository, times(expectRuleConfigs.size())).delete(anyString());
+        
+        assertEquals(expectRuleConfigs.size(), actual.size());
     }
     
     @Test
     void testPersistConfig() {
-        Collection<MetaDataVersion> map = databaseRuleService.persistConfig("123", Collections.emptyList());
-        Assertions.assertTrue(map.isEmpty());
+        // Arrange
+        String databaseName = "testDatabase";
+        Collection<RuleConfiguration> expectRuleConfigs = buildRuleConfigs();
+        when(repository.getDirectly(anyString())).thenReturn("0");
+        
+        
+        Collection<MetaDataVersion> actual = databaseRuleService.persistConfig(databaseName, expectRuleConfigs);
+        
+        verify(repository, times(expectRuleConfigs.size())).persist(anyString(), anyString());
+        
+        assertEquals(expectRuleConfigs.size(), actual.size());
+    }
+    
+    private Collection<RuleConfiguration> buildRuleConfigs() {
+        YamlDataNodeRuleConfigurationFixture yamlDataNodeRuleConfigurationFixture = new YamlDataNodeRuleConfigurationFixture();
+        yamlDataNodeRuleConfigurationFixture.setKey("foo");
+        yamlDataNodeRuleConfigurationFixture.setValue("foo_value");
+        return Collections.singletonList(yamlDataNodeRuleConfigurationFixture);
     }
     
 }
