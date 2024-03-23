@@ -63,13 +63,6 @@ public final class ShardingImportRuleConfigurationProvider implements ImportRule
         checkKeyGeneratorAlgorithms(ruleConfig.getKeyGenerators().values());
     }
     
-    @Override
-    public DatabaseRule build(final ShardingSphereDatabase database, final ShardingRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
-        Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, storageUnit -> storageUnit.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return new ShardingRule(ruleConfig, dataSources, instanceContext);
-    }
-    
     private void checkLogicTables(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> logicTables = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
         logicTables.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
@@ -117,6 +110,13 @@ public final class ShardingImportRuleConfigurationProvider implements ImportRule
     
     private void checkKeyGeneratorAlgorithms(final Collection<AlgorithmConfiguration> algorithmConfigs) {
         algorithmConfigs.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, each.getType(), each.getProps()));
+    }
+    
+    @Override
+    public DatabaseRule build(final ShardingSphereDatabase database, final ShardingRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
+        Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, storageUnit -> storageUnit.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return new ShardingRule(ruleConfig, dataSources, instanceContext);
     }
     
     @Override

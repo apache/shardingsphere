@@ -51,11 +51,6 @@ public final class ShadowImportRuleConfigurationProvider implements ImportRuleCo
         checkShadowAlgorithms(ruleConfig);
     }
     
-    @Override
-    public DatabaseRule build(final ShardingSphereDatabase database, final ShadowRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
-        return new ShadowRule(ruleConfig);
-    }
-    
     private void checkDataSources(final String databaseName, final ShardingSphereDatabase database, final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> requiredResource = getRequiredResources(currentRuleConfig);
         Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedDataSources(requiredResource);
@@ -94,6 +89,11 @@ public final class ShadowImportRuleConfigurationProvider implements ImportRuleCo
     
     private void checkShadowAlgorithms(final ShadowRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getShadowAlgorithms().values().forEach(each -> TypedSPILoader.checkService(ShadowAlgorithm.class, each.getType(), each.getProps()));
+    }
+    
+    @Override
+    public DatabaseRule build(final ShardingSphereDatabase database, final ShadowRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
+        return new ShadowRule(ruleConfig);
     }
     
     @Override

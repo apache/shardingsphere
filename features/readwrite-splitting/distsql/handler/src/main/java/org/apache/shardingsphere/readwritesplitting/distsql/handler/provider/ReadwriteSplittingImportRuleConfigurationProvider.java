@@ -48,11 +48,6 @@ public final class ReadwriteSplittingImportRuleConfigurationProvider implements 
         checkLoadBalancers(ruleConfig);
     }
     
-    @Override
-    public DatabaseRule build(final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
-        return new ReadwriteSplittingRule(database.getName(), ruleConfig, instanceContext);
-    }
-    
     private void checkDataSources(final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         Collection<String> requiredDataSources = new LinkedHashSet<>();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : currentRuleConfig.getDataSources()) {
@@ -79,6 +74,11 @@ public final class ReadwriteSplittingImportRuleConfigurationProvider implements 
     
     private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getLoadBalancers().values().forEach(each -> TypedSPILoader.checkService(LoadBalanceAlgorithm.class, each.getType(), each.getProps()));
+    }
+    
+    @Override
+    public DatabaseRule build(final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
+        return new ReadwriteSplittingRule(database.getName(), ruleConfig, instanceContext);
     }
     
     @Override
