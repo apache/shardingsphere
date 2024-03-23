@@ -42,9 +42,6 @@ public final class EncryptImportRuleConfigurationProvider implements ImportRuleC
     
     @Override
     public void check(final ShardingSphereDatabase database, final EncryptRuleConfiguration ruleConfig) {
-        if (null == database || null == ruleConfig) {
-            return;
-        }
         checkTables(database.getName(), ruleConfig);
         checkEncryptors(ruleConfig);
         checkTableEncryptorsExisted(database.getName(), ruleConfig);

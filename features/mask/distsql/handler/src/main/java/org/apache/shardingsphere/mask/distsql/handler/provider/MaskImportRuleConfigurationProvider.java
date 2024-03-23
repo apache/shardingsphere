@@ -39,9 +39,6 @@ public final class MaskImportRuleConfigurationProvider implements ImportRuleConf
     
     @Override
     public void check(final ShardingSphereDatabase database, final MaskRuleConfiguration ruleConfig) {
-        if (null == database || null == ruleConfig) {
-            return;
-        }
         checkTables(database.getName(), ruleConfig);
         checkMaskAlgorithms(ruleConfig);
         checkMaskAlgorithmsExisted(database.getName(), ruleConfig);
