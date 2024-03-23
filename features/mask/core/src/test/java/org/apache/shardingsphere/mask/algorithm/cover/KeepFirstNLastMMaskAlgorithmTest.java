@@ -77,13 +77,13 @@ class KeepFirstNLastMMaskAlgorithmTest {
             return Arrays.asList(
                     new MaskAlgorithmExecuteCaseAssert("null_value", null, null),
                     new MaskAlgorithmExecuteCaseAssert("empty_string", "", ""),
-                    new MaskAlgorithmExecuteCaseAssert("normal_with_diff", "abc123456", "abc*23456"),
-                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_n_with_diff", "ab", "ab"),
-                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_n_with_diff", "abc", "abc"),
-                    new MaskAlgorithmExecuteCaseAssert("length_less_than_last_m_with_diff", "abc1", "abc1"),
-                    new MaskAlgorithmExecuteCaseAssert("length_equals_last_m_with_diff", "abc12", "abc12"),
-                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_n_plus_last_m_with_diff", "abc1234", "abc1234"),
-                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_n_plus_last_m_with_diff", "abc12345", "abc12345"));
+                    new MaskAlgorithmExecuteCaseAssert("normal", "abc123456", "abc*23456"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_n", "ab", "ab"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_n", "abc", "abc"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_last_m", "abc1", "abc1"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_last_m", "abc12", "abc12"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_n_plus_last_m", "abc1234", "abc1234"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_n_plus_last_m", "abc12345", "abc12345"));
         }
     }
     
@@ -96,13 +96,13 @@ class KeepFirstNLastMMaskAlgorithmTest {
         @Override
         protected Collection<MaskAlgorithmExecuteCaseAssert> getCaseAsserts() {
             return Arrays.asList(
-                    new MaskAlgorithmExecuteCaseAssert("normal_with_same", "abc123456789", "abc12**56789"),
-                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_n_with_same", "abc", "abc"),
-                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_n_with_same", "abc12", "abc12"),
-                    new MaskAlgorithmExecuteCaseAssert("length_less_than_last_m_with_same", "abc1", "abc1"),
-                    new MaskAlgorithmExecuteCaseAssert("length_equals_last_m_with_same", "abc12", "abc12"),
-                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_n_plus_last_m_with_same", "abc123456", "abc123456"),
-                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_n_plus_last_m_with_same", "abc1234567", "abc1234567"));
+                    new MaskAlgorithmExecuteCaseAssert("normal", "abc123456789", "abc12**56789"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_n", "abc", "abc"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_n", "abc12", "abc12"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_last_m", "abc1", "abc1"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_last_m", "abc12", "abc12"),
+                    new MaskAlgorithmExecuteCaseAssert("length_less_than_first_n_plus_last_m", "abc123456", "abc123456"),
+                    new MaskAlgorithmExecuteCaseAssert("length_equals_first_n_plus_last_m", "abc1234567", "abc1234567"));
         }
     }
 }

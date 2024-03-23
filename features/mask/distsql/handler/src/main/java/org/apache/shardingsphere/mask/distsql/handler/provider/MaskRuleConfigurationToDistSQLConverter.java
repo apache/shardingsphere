@@ -18,42 +18,48 @@
 package org.apache.shardingsphere.mask.distsql.handler.provider;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
-import org.apache.shardingsphere.mask.distsql.handler.constant.MaskDistSQLConstants;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Mask convert rule configuration provider.
+ * Mask rule configuration to DistSQL converter.
  */
-public final class MaskConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
+public final class MaskRuleConfigurationToDistSQLConverter implements RuleConfigurationToDistSQLConverter<MaskRuleConfiguration> {
+    
+    private static final String CREATE_MASK = "CREATE MASK RULE";
+    
+    private static final String MASK = " %s ("
+            + System.lineSeparator()
+            + "COLUMNS("
+            + System.lineSeparator()
+            + "%s"
+            + System.lineSeparator()
+            + "),";
+    
+    private static final String MASK_COLUMN = "(NAME=%s, %s)";
     
     @Override
-    public String convert(final RuleConfiguration ruleConfig) {
-        return getMaskDistSQL((MaskRuleConfiguration) ruleConfig);
-    }
-    
-    private String getMaskDistSQL(final MaskRuleConfiguration ruleConfig) {
+    public String convert(final MaskRuleConfiguration ruleConfig) {
         if (ruleConfig.getTables().isEmpty()) {
             return "";
         }
-        StringBuilder result = new StringBuilder(MaskDistSQLConstants.CREATE_MASK);
+        StringBuilder result = new StringBuilder(CREATE_MASK);
         Iterator<MaskTableRuleConfiguration> iterator = ruleConfig.getTables().iterator();
         while (iterator.hasNext()) {
             MaskTableRuleConfiguration tableRuleConfig = iterator.next();
-            result.append(String.format(MaskDistSQLConstants.MASK, tableRuleConfig.getName(), getMaskColumns(tableRuleConfig.getColumns(), ruleConfig.getMaskAlgorithms())));
+            result.append(String.format(MASK, tableRuleConfig.getName(), getMaskColumns(tableRuleConfig.getColumns(), ruleConfig.getMaskAlgorithms())));
             if (iterator.hasNext()) {
-                result.append(MaskDistSQLConstants.COMMA).append(System.lineSeparator());
+                result.append(",").append(System.lineSeparator());
             }
         }
-        result.append(MaskDistSQLConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+        result.append(";").append(System.lineSeparator()).append(System.lineSeparator());
         return result.toString();
     }
     
@@ -62,7 +68,7 @@ public final class MaskConvertRuleConfigurationProvider implements ConvertRuleCo
         Iterator<MaskColumnRuleConfiguration> iterator = columnRuleConfig.iterator();
         if (iterator.hasNext()) {
             MaskColumnRuleConfiguration column = iterator.next();
-            result.append(String.format(MaskDistSQLConstants.MASK_COLUMN, column.getLogicColumn(), getMaskAlgorithms(column, maskAlgorithms)));
+            result.append(String.format(MASK_COLUMN, column.getLogicColumn(), getMaskAlgorithms(column, maskAlgorithms)));
         }
         return result.toString();
     }

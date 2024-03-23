@@ -22,10 +22,12 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
- * Convert rule configuration provider.
+ * Rule configuration to DistSQL converter.
+ * 
+ * @param <T> type of rule configuration
  */
 @SingletonSPI
-public interface ConvertRuleConfigurationProvider extends TypedSPI {
+public interface RuleConfigurationToDistSQLConverter<T extends RuleConfiguration> extends TypedSPI {
     
     /**
      * Convert rule configuration to DistSQL.
@@ -33,8 +35,8 @@ public interface ConvertRuleConfigurationProvider extends TypedSPI {
      * @param ruleConfig rule configuration
      * @return DistSQL
      */
-    String convert(RuleConfiguration ruleConfig);
+    String convert(T ruleConfig);
     
     @Override
-    Class<? extends RuleConfiguration> getType();
+    Class<T> getType();
 }

@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.shadow.distsql.handler.provider;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -31,16 +30,12 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Shadow convert rule configuration provider.
+ * Shadow rule configuration to DistSQL converter.
  */
-public final class ShadowConvertRuleConfigurationProvider implements ConvertRuleConfigurationProvider {
+public final class ShadowRuleConfigurationToDistSQLConverter implements RuleConfigurationToDistSQLConverter<ShadowRuleConfiguration> {
     
     @Override
-    public String convert(final RuleConfiguration ruleConfig) {
-        return getShadowDistSQL((ShadowRuleConfiguration) ruleConfig);
-    }
-    
-    private String getShadowDistSQL(final ShadowRuleConfiguration ruleConfig) {
+    public String convert(final ShadowRuleConfiguration ruleConfig) {
         if (ruleConfig.getDataSources().isEmpty()) {
             return "";
         }

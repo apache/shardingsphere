@@ -26,9 +26,11 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
  * Import rule configuration provider.
+ * 
+ * @param <T> type of rule configuration
  */
 @SingletonSPI
-public interface ImportRuleConfigurationProvider extends TypedSPI {
+public interface ImportRuleConfigurationProvider<T extends RuleConfiguration> extends TypedSPI {
     
     /**
      * Check rule configuration.
@@ -36,7 +38,7 @@ public interface ImportRuleConfigurationProvider extends TypedSPI {
      * @param database database
      * @param ruleConfig rule configuration
      */
-    void check(ShardingSphereDatabase database, RuleConfiguration ruleConfig);
+    void check(ShardingSphereDatabase database, T ruleConfig);
     
     /**
      * Build database rule.
@@ -46,8 +48,8 @@ public interface ImportRuleConfigurationProvider extends TypedSPI {
      * @param instanceContext instance context
      * @return built database rule
      */
-    DatabaseRule build(ShardingSphereDatabase database, RuleConfiguration ruleConfig, InstanceContext instanceContext);
+    DatabaseRule build(ShardingSphereDatabase database, T ruleConfig, InstanceContext instanceContext);
     
     @Override
-    Class<? extends RuleConfiguration> getType();
+    Class<T> getType();
 }

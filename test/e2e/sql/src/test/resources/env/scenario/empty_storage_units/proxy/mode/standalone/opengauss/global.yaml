@@ -15,4 +15,31 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mask.distsql.handler.provider.MaskConvertRuleConfigurationProvider
+authority:
+  users:
+    - user: proxy
+      password: Proxy@123
+  privilege:
+    type: ALL_PERMITTED
+
+sqlParser:
+  sqlStatementCache:
+    initialCapacity: 2000
+    maximumSize: 65535
+  parseTreeCache:
+    initialCapacity: 128
+    maximumSize: 1024
+
+sqlFederation:
+  sqlFederationEnabled: true
+  executionPlanCache:
+    initialCapacity: 2000
+    maximumSize: 65535
+
+props:
+  max-connections-size-per-query: 1
+  kernel-executor-size: 16  # Infinite by default.
+  proxy-frontend-flush-threshold: 128  # The default value is 128.
+  sql-show: false
+  proxy-frontend-ssl-enabled: true
+  proxy-frontend-database-protocol-type: openGauss
