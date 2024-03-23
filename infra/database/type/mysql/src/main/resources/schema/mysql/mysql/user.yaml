@@ -377,6 +377,54 @@ columns:
     primaryKey: false
     unsigned: false
     visible: true
+  create_role_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Create_role_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  drop_role_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Drop_role_priv
+    primaryKey: false
+    unsigned: false
+    visible: true
+  password_reuse_history:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: Password_reuse_history
+    primaryKey: false
+    unsigned: false
+    visible: true
+  password_reuse_time:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: Password_reuse_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  password_require_current:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Password_require_current
+    primaryKey: false
+    unsigned: false
+    visible: true
+  user_attributes:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: User_attributes
+    primaryKey: false
+    unsigned: false
+    visible: true
 indexes:
   primary:
     name: PRIMARY
