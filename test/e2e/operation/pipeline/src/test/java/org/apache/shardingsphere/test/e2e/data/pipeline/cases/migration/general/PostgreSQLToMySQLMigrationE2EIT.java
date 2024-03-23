@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @PipelineE2ESettings(fetchSingle = true, database = @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/common/none.xml"))
-public class PostgreSQLToMySQLMigrationE2E extends AbstractMigrationE2EIT {
+class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
