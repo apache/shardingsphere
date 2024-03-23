@@ -32,6 +32,9 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 @ExtendWith(MockitoExtension.class)
 public class StandaloneContextManagerBuilderTest {
     
@@ -41,7 +44,6 @@ public class StandaloneContextManagerBuilderTest {
     void setUp() throws ReflectiveOperationException {
         standaloneContextManagerBuilder = new StandaloneContextManagerBuilder();
     }
-    
     @Test
     void testBuild() throws SQLException {
         ModeConfiguration modeConfig = new ModeConfiguration("Standalone",
@@ -53,7 +55,11 @@ public class StandaloneContextManagerBuilderTest {
                 PropertiesBuilder.build(new PropertiesBuilder.Property("foo", "foo_value")),
                 null, null, false);
         try (ContextManager manager = standaloneContextManagerBuilder.build(parameter)) {
-            Assertions.assertNotNull(manager.getInstanceContext());
+            assertNotNull(manager.getInstanceContext());
+            assertEquals(manager.getInstanceContext().getModeConfiguration().getType(), "Standalone");
+            assertEquals(manager.getInstanceContext().getModeConfiguration().getRepository().getType(), "FIXTURE");
+            assertNotNull(manager.getMetaDataContexts().getPersistService().getPropsService().load());
+            assertEquals(manager.getMetaDataContexts().getPersistService().getPropsService().load().get("foo"), "foo_value");
         }
     }
     
