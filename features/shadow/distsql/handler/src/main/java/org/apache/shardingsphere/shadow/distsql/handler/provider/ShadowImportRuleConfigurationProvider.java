@@ -39,9 +39,6 @@ public final class ShadowImportRuleConfigurationProvider implements ImportRuleCo
     
     @Override
     public void check(final ShardingSphereDatabase database, final ShadowRuleConfiguration ruleConfig) {
-        if (null == database || null == ruleConfig) {
-            return;
-        }
         checkDataSources(database, ruleConfig);
         checkTables(database.getName(), ruleConfig);
         checkShadowAlgorithms(ruleConfig);

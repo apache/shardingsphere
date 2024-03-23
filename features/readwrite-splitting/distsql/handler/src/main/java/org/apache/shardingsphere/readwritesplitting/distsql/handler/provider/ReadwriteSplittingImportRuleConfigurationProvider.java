@@ -38,9 +38,6 @@ public final class ReadwriteSplittingImportRuleConfigurationProvider implements 
     
     @Override
     public void check(final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration ruleConfig) {
-        if (null == database || null == ruleConfig) {
-            return;
-        }
         checkDataSources(database, ruleConfig);
         checkLoadBalancers(ruleConfig);
     }

@@ -48,9 +48,6 @@ public final class ShardingImportRuleConfigurationProvider implements ImportRule
     
     @Override
     public void check(final ShardingSphereDatabase database, final ShardingRuleConfiguration ruleConfig) {
-        if (null == database || null == ruleConfig) {
-            return;
-        }
         checkLogicTables(database.getName(), ruleConfig);
         checkDataSources(database, ruleConfig);
         checkShardingAlgorithms(ruleConfig.getShardingAlgorithms().values());
