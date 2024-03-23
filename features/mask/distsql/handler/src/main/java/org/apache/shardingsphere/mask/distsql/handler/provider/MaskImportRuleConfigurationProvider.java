@@ -20,42 +20,31 @@ package org.apache.shardingsphere.mask.distsql.handler.provider;
 import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
-import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
  * Mask import rule configuration provider.
  */
-public final class MaskImportRuleConfigurationProvider implements ImportRuleConfigurationProvider {
+public final class MaskImportRuleConfigurationProvider implements ImportRuleConfigurationProvider<MaskRuleConfiguration> {
     
     @Override
-    public void check(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
+    public void check(final ShardingSphereDatabase database, final MaskRuleConfiguration ruleConfig) {
         if (null == database || null == ruleConfig) {
             return;
         }
-        MaskRuleConfiguration maskRuleConfig = (MaskRuleConfiguration) ruleConfig;
-        checkTables(maskRuleConfig, database.getName());
-        checkMaskAlgorithms(maskRuleConfig);
-        checkMaskAlgorithmsExisted(maskRuleConfig, database.getName());
-    }
-    
-    @Override
-    public DatabaseRule build(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
-        return new MaskRule((MaskRuleConfiguration) ruleConfig);
+        checkTables(ruleConfig, database.getName());
+        checkMaskAlgorithms(ruleConfig);
+        checkMaskAlgorithmsExisted(ruleConfig, database.getName());
     }
     
     private void checkTables(final MaskRuleConfiguration currentRuleConfig, final String databaseName) {
@@ -70,16 +59,14 @@ public final class MaskImportRuleConfigurationProvider implements ImportRuleConf
     }
     
     private void checkMaskAlgorithmsExisted(final MaskRuleConfiguration currentRuleConfig, final String databaseName) {
-        Collection<MaskColumnRuleConfiguration> columns = new LinkedList<>();
-        currentRuleConfig.getTables().forEach(each -> columns.addAll(each.getColumns()));
-        Collection<String> notExistedAlgorithms = columns.stream().map(MaskColumnRuleConfiguration::getMaskAlgorithm).collect(Collectors.toList());
-        Collection<String> maskAlgorithms = currentRuleConfig.getMaskAlgorithms().keySet();
-        notExistedAlgorithms.removeIf(maskAlgorithms::contains);
+        Collection<String> notExistedAlgorithms = currentRuleConfig.getTables().stream()
+                .flatMap(each -> each.getColumns().stream()).map(MaskColumnRuleConfiguration::getMaskAlgorithm).collect(Collectors.toList());
+        notExistedAlgorithms.removeIf(currentRuleConfig.getMaskAlgorithms().keySet()::contains);
         ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(), () -> new MissingRequiredAlgorithmException(databaseName, notExistedAlgorithms));
     }
     
     @Override
-    public Class<? extends RuleConfiguration> getType() {
+    public Class<MaskRuleConfiguration> getType() {
         return MaskRuleConfiguration.class;
     }
 }

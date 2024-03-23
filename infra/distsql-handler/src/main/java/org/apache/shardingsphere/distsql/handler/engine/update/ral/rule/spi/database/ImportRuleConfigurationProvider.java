@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
  * Import rule configuration provider.
+ * 
+ * @param <T> type of rule configuration
  */
 @SingletonSPI
-public interface ImportRuleConfigurationProvider extends TypedSPI {
+public interface ImportRuleConfigurationProvider<T extends RuleConfiguration> extends TypedSPI {
     
     /**
      * Check rule configuration.
@@ -36,18 +36,8 @@ public interface ImportRuleConfigurationProvider extends TypedSPI {
      * @param database database
      * @param ruleConfig rule configuration
      */
-    void check(ShardingSphereDatabase database, RuleConfiguration ruleConfig);
-    
-    /**
-     * Build database rule.
-     *
-     * @param database database
-     * @param ruleConfig rule configuration
-     * @param instanceContext instance context
-     * @return built database rule
-     */
-    DatabaseRule build(ShardingSphereDatabase database, RuleConfiguration ruleConfig, InstanceContext instanceContext);
+    void check(ShardingSphereDatabase database, T ruleConfig);
     
     @Override
-    Class<? extends RuleConfiguration> getType();
+    Class<T> getType();
 }

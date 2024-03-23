@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Mask rule statement converter.
@@ -54,11 +55,13 @@ public final class MaskRuleStatementConverter {
     }
     
     private static MaskTableRuleConfiguration createMaskTableRuleConfiguration(final MaskRuleSegment ruleSegment) {
-        Collection<MaskColumnRuleConfiguration> columns = new LinkedList<>();
-        for (MaskColumnSegment each : ruleSegment.getColumns()) {
-            columns.add(createMaskColumnRuleConfiguration(ruleSegment.getTableName(), each));
-        }
+        Collection<MaskColumnRuleConfiguration> columns = ruleSegment.getColumns().stream()
+                .map(each -> createMaskColumnRuleConfiguration(ruleSegment.getTableName(), each)).collect(Collectors.toList());
         return new MaskTableRuleConfiguration(ruleSegment.getTableName(), columns);
+    }
+    
+    private static MaskColumnRuleConfiguration createMaskColumnRuleConfiguration(final String tableName, final MaskColumnSegment columnSegment) {
+        return new MaskColumnRuleConfiguration(columnSegment.getName(), getAlgorithmName(tableName, columnSegment));
     }
     
     private static Map<String, AlgorithmConfiguration> createMaskAlgorithmConfigurations(final MaskRuleSegment ruleSegment) {
@@ -67,11 +70,6 @@ public final class MaskRuleStatementConverter {
             result.put(getAlgorithmName(ruleSegment.getTableName(), each), new AlgorithmConfiguration(each.getAlgorithm().getName(), each.getAlgorithm().getProps()));
         }
         return result;
-    }
-    
-    private static MaskColumnRuleConfiguration createMaskColumnRuleConfiguration(final String tableName, final MaskColumnSegment columnSegment) {
-        String maskColumnRuleName = getAlgorithmName(tableName, columnSegment);
-        return new MaskColumnRuleConfiguration(columnSegment.getName(), maskColumnRuleName);
     }
     
     private static String getAlgorithmName(final String tableName, final MaskColumnSegment columnSegment) {

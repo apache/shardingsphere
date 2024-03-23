@@ -24,13 +24,9 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -42,23 +38,16 @@ import java.util.stream.Collectors;
 /**
  * Encrypt import rule configuration provider.
  */
-public final class EncryptImportRuleConfigurationProvider implements ImportRuleConfigurationProvider {
+public final class EncryptImportRuleConfigurationProvider implements ImportRuleConfigurationProvider<EncryptRuleConfiguration> {
     
     @Override
-    public void check(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
+    public void check(final ShardingSphereDatabase database, final EncryptRuleConfiguration ruleConfig) {
         if (null == database || null == ruleConfig) {
             return;
         }
-        EncryptRuleConfiguration encryptRuleConfig = (EncryptRuleConfiguration) ruleConfig;
-        checkTables(encryptRuleConfig, database.getName());
-        checkEncryptors(encryptRuleConfig);
-        checkTableEncryptorsExisted(encryptRuleConfig, database.getName());
-    }
-    
-    @Override
-    public DatabaseRule build(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
-        EncryptRuleConfiguration encryptRuleConfig = (EncryptRuleConfiguration) ruleConfig;
-        return new EncryptRule(database.getName(), encryptRuleConfig);
+        checkTables(ruleConfig, database.getName());
+        checkEncryptors(ruleConfig);
+        checkTableEncryptorsExisted(ruleConfig, database.getName());
     }
     
     private void checkTables(final EncryptRuleConfiguration currentRuleConfig, final String databaseName) {
@@ -86,7 +75,7 @@ public final class EncryptImportRuleConfigurationProvider implements ImportRuleC
     }
     
     @Override
-    public Class<? extends RuleConfiguration> getType() {
+    public Class<EncryptRuleConfiguration> getType() {
         return EncryptRuleConfiguration.class;
     }
 }
