@@ -142,7 +142,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     
     @SuppressWarnings("unchecked")
     private void addRule(final Collection<RuleConfiguration> ruleConfigs, final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
-        TypedSPILoader.getService(ImportRuleConfigurationProvider.class, ruleConfig.getClass()).check(database, ruleConfig);
+        TypedSPILoader.findService(ImportRuleConfigurationProvider.class, ruleConfig.getClass()).ifPresent(optional -> optional.check(database, ruleConfig));
         ruleConfigs.add(ruleConfig);
         database.getRuleMetaData().getRules().add(buildRule(ruleConfig, database));
     }
