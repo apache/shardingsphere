@@ -21,14 +21,11 @@ import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.data
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
-import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Collection;
@@ -66,11 +63,6 @@ public final class MaskImportRuleConfigurationProvider implements ImportRuleConf
                 .flatMap(each -> each.getColumns().stream()).map(MaskColumnRuleConfiguration::getMaskAlgorithm).collect(Collectors.toList());
         notExistedAlgorithms.removeIf(currentRuleConfig.getMaskAlgorithms().keySet()::contains);
         ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(), () -> new MissingRequiredAlgorithmException(databaseName, notExistedAlgorithms));
-    }
-    
-    @Override
-    public DatabaseRule build(final ShardingSphereDatabase database, final MaskRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
-        return new MaskRule(ruleConfig);
     }
     
     @Override

@@ -18,17 +18,8 @@
 package org.apache.shardingsphere.broadcast.distsql.handler.provider;
 
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
-
-import javax.sql.DataSource;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Broadcast import rule configuration provider.
@@ -37,13 +28,6 @@ public final class BroadcastImportRuleConfigurationProvider implements ImportRul
     
     @Override
     public void check(final ShardingSphereDatabase database, final BroadcastRuleConfiguration ruleConfig) {
-    }
-    
-    @Override
-    public DatabaseRule build(final ShardingSphereDatabase database, final BroadcastRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
-        Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return new BroadcastRule(ruleConfig, database.getName(), dataSources, database.getRuleMetaData().getRules());
     }
     
     @Override
