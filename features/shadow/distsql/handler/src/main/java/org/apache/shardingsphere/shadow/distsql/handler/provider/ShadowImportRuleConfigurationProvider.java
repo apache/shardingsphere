@@ -42,23 +42,22 @@ public final class ShadowImportRuleConfigurationProvider implements ImportRuleCo
         if (null == database || null == ruleConfig) {
             return;
         }
-        String databaseName = database.getName();
-        checkDataSources(databaseName, database, ruleConfig);
-        checkTables(ruleConfig, databaseName);
+        checkDataSources(database, ruleConfig);
+        checkTables(database.getName(), ruleConfig);
         checkShadowAlgorithms(ruleConfig);
     }
     
-    private void checkDataSources(final String databaseName, final ShardingSphereDatabase database, final ShadowRuleConfiguration currentRuleConfig) {
-        Collection<String> requiredResource = getRequiredResources(currentRuleConfig);
+    private void checkDataSources(final ShardingSphereDatabase database, final ShadowRuleConfiguration ruleConfig) {
+        Collection<String> requiredResource = getRequiredResources(ruleConfig);
         Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedDataSources(requiredResource);
         Collection<String> logicResources = getLogicDataSources(database);
         notExistedResources.removeIf(logicResources::contains);
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedResources));
+        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedResources));
     }
     
-    private Collection<String> getRequiredResources(final ShadowRuleConfiguration currentRuleConfig) {
+    private Collection<String> getRequiredResources(final ShadowRuleConfiguration ruleConfig) {
         Collection<String> result = new LinkedHashSet<>();
-        currentRuleConfig.getDataSources().forEach(each -> {
+        ruleConfig.getDataSources().forEach(each -> {
             if (null != each.getShadowDataSourceName()) {
                 result.add(each.getShadowDataSourceName());
             }
@@ -77,15 +76,15 @@ public final class ShadowImportRuleConfigurationProvider implements ImportRuleCo
         return result;
     }
     
-    private void checkTables(final ShadowRuleConfiguration currentRuleConfig, final String databaseName) {
-        Collection<String> tableNames = currentRuleConfig.getTables().keySet();
+    private void checkTables(final String databaseName, final ShadowRuleConfiguration ruleConfig) {
+        Collection<String> tableNames = ruleConfig.getTables().keySet();
         Collection<String> duplicatedTables = tableNames.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(duplicatedTables.isEmpty(), () -> new DuplicateRuleException("SHADOW", databaseName, duplicatedTables));
     }
     
-    private void checkShadowAlgorithms(final ShadowRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getShadowAlgorithms().values().forEach(each -> TypedSPILoader.checkService(ShadowAlgorithm.class, each.getType(), each.getProps()));
+    private void checkShadowAlgorithms(final ShadowRuleConfiguration ruleConfig) {
+        ruleConfig.getShadowAlgorithms().values().forEach(each -> TypedSPILoader.checkService(ShadowAlgorithm.class, each.getType(), each.getProps()));
     }
     
     @Override

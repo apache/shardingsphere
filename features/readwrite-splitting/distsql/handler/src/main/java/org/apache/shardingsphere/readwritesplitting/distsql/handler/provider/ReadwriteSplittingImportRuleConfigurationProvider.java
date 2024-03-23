@@ -28,8 +28,8 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.stream.Collectors;
 
 /**
  * Readwrite-splitting import rule configuration provider.
@@ -45,9 +45,9 @@ public final class ReadwriteSplittingImportRuleConfigurationProvider implements 
         checkLoadBalancers(ruleConfig);
     }
     
-    private void checkDataSources(final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    private void checkDataSources(final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration ruleConfig) {
         Collection<String> requiredDataSources = new LinkedHashSet<>();
-        for (ReadwriteSplittingDataSourceRuleConfiguration each : currentRuleConfig.getDataSources()) {
+        for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
             if (null != each.getWriteDataSourceName()) {
                 requiredDataSources.add(each.getWriteDataSourceName());
             }
@@ -62,15 +62,11 @@ public final class ReadwriteSplittingImportRuleConfigurationProvider implements 
     }
     
     private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
-        Collection<String> result = new HashSet<>();
-        for (DataSourceMapperRuleAttribute each : database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)) {
-            result.addAll(each.getDataSourceMapper().keySet());
-        }
-        return result;
+        return database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class).stream().flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toSet());
     }
     
-    private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getLoadBalancers().values().forEach(each -> TypedSPILoader.checkService(LoadBalanceAlgorithm.class, each.getType(), each.getProps()));
+    private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration ruleConfig) {
+        ruleConfig.getLoadBalancers().values().forEach(each -> TypedSPILoader.checkService(LoadBalanceAlgorithm.class, each.getType(), each.getProps()));
     }
     
     @Override
