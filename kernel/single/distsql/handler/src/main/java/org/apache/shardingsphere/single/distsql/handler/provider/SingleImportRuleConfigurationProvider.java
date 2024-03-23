@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.single.distsql.handler.provider;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
@@ -32,22 +31,22 @@ import java.util.stream.Collectors;
 /**
  * Single import rule configuration provider.
  */
-public final class SingleImportRuleConfigurationProvider implements ImportRuleConfigurationProvider {
+public final class SingleImportRuleConfigurationProvider implements ImportRuleConfigurationProvider<SingleRuleConfiguration> {
     
     @Override
-    public void check(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
+    public void check(final ShardingSphereDatabase database, final SingleRuleConfiguration ruleConfig) {
     }
     
     @Override
-    public DatabaseRule build(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
-        return new SingleRule((SingleRuleConfiguration) ruleConfig, database.getName(), database.getProtocolType(),
+    public DatabaseRule build(final ShardingSphereDatabase database, final SingleRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
+        return new SingleRule(ruleConfig, database.getName(), database.getProtocolType(),
                 database.getResourceMetaData().getStorageUnits().entrySet().stream()
                         .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                 database.getRuleMetaData().getRules());
     }
     
     @Override
-    public Class<? extends RuleConfiguration> getType() {
+    public Class<SingleRuleConfiguration> getType() {
         return SingleRuleConfiguration.class;
     }
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.broadcast.distsql.handler.provider;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
@@ -34,21 +33,21 @@ import java.util.stream.Collectors;
 /**
  * Broadcast import rule configuration provider.
  */
-public final class BroadcastImportRuleConfigurationProvider implements ImportRuleConfigurationProvider {
+public final class BroadcastImportRuleConfigurationProvider implements ImportRuleConfigurationProvider<BroadcastRuleConfiguration> {
     
     @Override
-    public void check(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
+    public void check(final ShardingSphereDatabase database, final BroadcastRuleConfiguration ruleConfig) {
     }
     
     @Override
-    public DatabaseRule build(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
+    public DatabaseRule build(final ShardingSphereDatabase database, final BroadcastRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
         Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return new BroadcastRule((BroadcastRuleConfiguration) ruleConfig, database.getName(), dataSources, database.getRuleMetaData().getRules());
+        return new BroadcastRule(ruleConfig, database.getName(), dataSources, database.getRuleMetaData().getRules());
     }
     
     @Override
-    public Class<? extends RuleConfiguration> getType() {
+    public Class<BroadcastRuleConfiguration> getType() {
         return BroadcastRuleConfiguration.class;
     }
 }

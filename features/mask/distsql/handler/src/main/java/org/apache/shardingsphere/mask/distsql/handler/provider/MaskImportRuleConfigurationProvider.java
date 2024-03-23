@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mask.distsql.handler.provider;
 import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -39,17 +38,16 @@ import java.util.stream.Collectors;
 /**
  * Mask import rule configuration provider.
  */
-public final class MaskImportRuleConfigurationProvider implements ImportRuleConfigurationProvider {
+public final class MaskImportRuleConfigurationProvider implements ImportRuleConfigurationProvider<MaskRuleConfiguration> {
     
     @Override
-    public void check(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
+    public void check(final ShardingSphereDatabase database, final MaskRuleConfiguration ruleConfig) {
         if (null == database || null == ruleConfig) {
             return;
         }
-        MaskRuleConfiguration maskRuleConfig = (MaskRuleConfiguration) ruleConfig;
-        checkTables(maskRuleConfig, database.getName());
-        checkMaskAlgorithms(maskRuleConfig);
-        checkMaskAlgorithmsExisted(maskRuleConfig, database.getName());
+        checkTables(ruleConfig, database.getName());
+        checkMaskAlgorithms(ruleConfig);
+        checkMaskAlgorithmsExisted(ruleConfig, database.getName());
     }
     
     private void checkTables(final MaskRuleConfiguration currentRuleConfig, final String databaseName) {
@@ -71,12 +69,12 @@ public final class MaskImportRuleConfigurationProvider implements ImportRuleConf
     }
     
     @Override
-    public DatabaseRule build(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
-        return new MaskRule((MaskRuleConfiguration) ruleConfig);
+    public DatabaseRule build(final ShardingSphereDatabase database, final MaskRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
+        return new MaskRule(ruleConfig);
     }
     
     @Override
-    public Class<? extends RuleConfiguration> getType() {
+    public Class<MaskRuleConfiguration> getType() {
         return MaskRuleConfiguration.class;
     }
 }
