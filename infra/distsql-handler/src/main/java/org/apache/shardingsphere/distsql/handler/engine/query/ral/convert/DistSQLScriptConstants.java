@@ -26,10 +26,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DistSQLScriptConstants {
     
-    public static final String COMMA = ",";
-    
-    public static final String SEMI = ";";
-    
     public static final String CREATE_DATABASE = "CREATE DATABASE %s;";
     
     public static final String USE_DATABASE = "USE %s;";
@@ -42,7 +38,7 @@ public final class DistSQLScriptConstants {
     
     public static final String KEY_PASSWORD = "password";
     
-    public static final String RESOURCE_DEFINITION = " %s ("
+    public static final String STORAGE_UNIT_DEFINITION = " %s ("
             + System.lineSeparator()
             + "URL='%s',"
             + System.lineSeparator()
@@ -54,7 +50,7 @@ public final class DistSQLScriptConstants {
             + System.lineSeparator()
             + ")";
     
-    public static final String RESOURCE_DEFINITION_WITHOUT_PASSWORD = " %s ("
+    public static final String STORAGE_UNIT_DEFINITION_WITHOUT_PASSWORD = " %s ("
             + System.lineSeparator()
             + "URL='%s',"
             + System.lineSeparator()
