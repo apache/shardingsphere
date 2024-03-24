@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.algorithm;
+package org.apache.shardingsphere.infra.exception.algorithm;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.AlgorithmDefinitionException;
 
 import java.util.Collection;
 
 /**
- * Algorithm in used exception.
+ * Duplicate algorithm exception.
  */
-public final class AlgorithmInUsedException extends AlgorithmDefinitionViolationException {
+public final class DuplicateAlgorithmException extends AlgorithmDefinitionException {
     
-    private static final long serialVersionUID = -8735125626190637177L;
+    private static final long serialVersionUID = 3503761639898230997L;
     
-    public AlgorithmInUsedException(final String type, final String databaseName, final Collection<String> algorithmNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 152, "%s algorithms `%s` in database `%s` are still in used.", type, algorithmNames, databaseName);
+    public DuplicateAlgorithmException(final String type, final String databaseName, final Collection<String> auditorNames) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 153, "Duplicate %s algorithms `%s` in database `%s`.", type, auditorNames, databaseName);
     }
 }

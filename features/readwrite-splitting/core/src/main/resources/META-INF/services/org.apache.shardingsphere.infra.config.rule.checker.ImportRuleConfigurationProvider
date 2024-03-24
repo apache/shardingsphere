@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mask.distsql.handler.provider.MaskImportRuleConfigurationProvider
+org.apache.shardingsphere.readwritesplitting.checker.ReadwriteSplittingImportRuleConfigurationProvider

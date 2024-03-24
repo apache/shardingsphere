@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database;
+package org.apache.shardingsphere.infra.config.rule.checker;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

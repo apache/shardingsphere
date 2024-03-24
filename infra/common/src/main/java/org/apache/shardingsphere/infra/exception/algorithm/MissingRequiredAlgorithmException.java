@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.algorithm;
+package org.apache.shardingsphere.infra.exception.algorithm;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.AlgorithmDefinitionException;
 
 import java.util.Collection;
 
 /**
  * Missing required algorithm exception.
  */
-public final class MissingRequiredAlgorithmException extends AlgorithmDefinitionViolationException {
+public final class MissingRequiredAlgorithmException extends AlgorithmDefinitionException {
     
     private static final long serialVersionUID = 4591071898233749618L;
     
