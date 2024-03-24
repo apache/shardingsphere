@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.single.distsql.handler.exception;
 
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
 
 /**
  * Missing required single table exception.
  */
-public final class MissingRequiredSingleTableException extends RuleDefinitionViolationException {
+public final class MissingRequiredSingleTableException extends RuleDefinitionException {
     
     private static final long serialVersionUID = 3155006580453893122L;
     

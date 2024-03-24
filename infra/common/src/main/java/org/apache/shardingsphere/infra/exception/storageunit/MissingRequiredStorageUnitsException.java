@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.rule;
+package org.apache.shardingsphere.infra.exception.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
 
 import java.util.Collection;
 
 /**
- * Rule in used exception.
+ * Missing required storage units exception.
  */
-public final class RuleInUsedException extends RuleDefinitionViolationException {
+public final class MissingRequiredStorageUnitsException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 3308787279125477660L;
+    private static final long serialVersionUID = 1704331180489268L;
     
-    public RuleInUsedException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 102, "%s rules `%s` in database `%s` are still in used.", ruleType, ruleNames, databaseName);
-    }
-    
-    public RuleInUsedException(final String ruleType, final String databaseName, final Collection<String> ruleNames, final String usingType) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 102, "%s rules `%s` in database `%s` are still in used by %s.", ruleType, ruleNames, databaseName, usingType);
+    public MissingRequiredStorageUnitsException(final String databaseName, final Collection<String> storageUnitNames) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Storage units `%s` do not exist in database `%s`.", storageUnitNames, databaseName);
     }
 }

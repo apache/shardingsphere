@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -62,7 +62,7 @@ class DropShardingTableRuleExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithoutExistedTableRule() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithoutExistedTableRule() throws RuleDefinitionException {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(new ShardingRuleConfiguration());
         executor.setRule(rule);
@@ -70,7 +70,7 @@ class DropShardingTableRuleExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementIfExists() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementIfExists() throws RuleDefinitionException {
         DropShardingTableRuleStatement statement = new DropShardingTableRuleStatement(true, Collections.singleton(new TableNameSegment(0, 3, new IdentifierValue("t_order_if_exists"))));
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(new ShardingRuleConfiguration());
@@ -79,7 +79,7 @@ class DropShardingTableRuleExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionException {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);

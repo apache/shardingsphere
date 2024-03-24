@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.storageunit;
+package org.apache.shardingsphere.infra.exception.storageunit;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
+
+import java.util.Collection;
 
 /**
- * Storage unit definition violation exception.
+ * Duplicate storage unit exception.
  */
-public abstract class StorageUnitDefinitionViolationException extends DistSQLException {
+public final class DuplicateStorageUnitExceptionDefinition extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = -2686784350802985974L;
+    private static final long serialVersionUID = 2103793827572264148L;
     
-    protected StorageUnitDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, errorCode, reason, messageArgs);
+    public DuplicateStorageUnitExceptionDefinition(final Collection<String> storageUnitNames) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Duplicate storage unit names `%s`.", storageUnitNames);
     }
 }

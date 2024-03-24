@@ -19,8 +19,8 @@ package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;

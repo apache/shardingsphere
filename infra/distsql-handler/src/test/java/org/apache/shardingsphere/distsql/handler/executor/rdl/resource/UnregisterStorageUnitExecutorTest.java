@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
+import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitInUsedException;
 import org.apache.shardingsphere.distsql.handler.fixture.DistSQLHandlerFixtureRule;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;

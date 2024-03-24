@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.storageunit;
+package org.apache.shardingsphere.infra.exception.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
 
 /**
- * Invalid storage units exception.
+ * Storage unit in used exception.
  */
-public final class InvalidStorageUnitsException extends StorageUnitDefinitionViolationException {
+public final class StorageUnitInUsedException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 7029641448948791509L;
+    private static final long serialVersionUID = -3427324685070457375L;
     
-    public InvalidStorageUnitsException(final Collection<String> errorMessages) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not process invalid storage units, error message is: %s", errorMessages);
+    public StorageUnitInUsedException(final String storageUnitName, final Collection<Class<? extends ShardingSphereRule>> ruleClasses) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Storage unit `%s` is still used by `%s`.", storageUnitName, ruleClasses);
     }
 }

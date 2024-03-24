@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.storageunit;
+package org.apache.shardingsphere.infra.exception.rule;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
 
 import java.util.Collection;
 
 /**
- * Duplicate storage unit exception.
+ * Rule in used exception.
  */
-public final class DuplicateStorageUnitException extends StorageUnitDefinitionViolationException {
+public final class RuleInUsedException extends RuleDefinitionException {
     
-    private static final long serialVersionUID = 2103793827572264148L;
+    private static final long serialVersionUID = 3308787279125477660L;
     
-    public DuplicateStorageUnitException(final Collection<String> storageUnitNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Duplicate storage unit names `%s`.", storageUnitNames);
+    public RuleInUsedException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 102, "%s rules `%s` in database `%s` are still in used.", ruleType, ruleNames, databaseName);
+    }
+    
+    public RuleInUsedException(final String ruleType, final String databaseName, final Collection<String> ruleNames, final String usingType) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 102, "%s rules `%s` in database `%s` are still in used by %s.", ruleType, ruleNames, databaseName, usingType);
     }
 }
