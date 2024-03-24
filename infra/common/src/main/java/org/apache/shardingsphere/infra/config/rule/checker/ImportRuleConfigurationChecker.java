@@ -19,14 +19,19 @@ package org.apache.shardingsphere.infra.config.rule.checker;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
+import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -52,6 +57,9 @@ public final class ImportRuleConfigurationChecker {
             }
             importProvider.get().check(database.getName(), ruleConfig);
         }
+        RuleConfigurationChecker configChecker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource()));
+        configChecker.check(database.getName(), ruleConfig, dataSources, database.getRuleMetaData().getRules());
     }
     
     private static void checkDataSourcesExisted(final ShardingSphereDatabase database, final Collection<String> requiredDataSourceNames) {
