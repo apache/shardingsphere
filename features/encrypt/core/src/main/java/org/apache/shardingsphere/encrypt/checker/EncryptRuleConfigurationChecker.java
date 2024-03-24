@@ -62,7 +62,7 @@ public final class EncryptRuleConfigurationChecker implements RuleConfigurationC
         tableRuleConfigs.forEach(each -> checkColumns(databaseName, each, encryptors));
     }
     
-    private static void checkTablesNotDuplicated(final String databaseName, final Collection<EncryptTableRuleConfiguration> tableRuleConfigs) {
+    private void checkTablesNotDuplicated(final String databaseName, final Collection<EncryptTableRuleConfiguration> tableRuleConfigs) {
         Collection<String> duplicatedTables = tableRuleConfigs.stream().map(EncryptTableRuleConfiguration::getName)
                 .collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream().filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(duplicatedTables.isEmpty(), () -> new DuplicateRuleException("ENCRYPT", databaseName, duplicatedTables));
