@@ -145,7 +145,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 18201       | CDC server exception, reason is: %s.                                              |
 | HY000     | 18202       | CDC login failed, reason is: %s                                                   |
 
-### DistSQL
+### 资源定义
 
 | SQL State | Vendor Code | 错误信息                                                        |
 |-----------|-------------|-------------------------------------------------------------|
@@ -154,12 +154,23 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 19002       | There is no storage unit in the database \`%s\`.            |
 | 44000     | 19003       | Storage units \`%s\` is still used by \`%s\`.               |
 | 44000     | 19004       | Duplicate storage unit names \`%s\`.                        |
-| 44000     | 19100       | Invalid \`%s\` rule \`%s\`, error message is: %s            |
-| 44000     | 19101       | %s rules \`%s\` do not exist in database \`%s\`.            |
-| 44000     | 19102       | %s rules \`%s\` in database \`%s\` are still in used.       |
-| 44000     | 19103       | %s rule \`%s\` has been enabled in database \`%s\`.         |
-| 44000     | 19104       | %s rule \`%s\` has been disabled in database \`%s\`.        |
-| 44000     | 19105       | Duplicate %s rule names \`%s\` in database \`%s\`.          |
+| 44000     | 19005       | Invalid storage unit status, error message is: %s.          |
+| 44000     | 19006       | Read storage unit \`%s\` does not exist in rule \`%s\`.     |
+
+### 规则定义
+
+| SQL State | Vendor Code | 错误信息                                                  |
+|-----------|-------------|-------------------------------------------------------|
+| 44000     | 19100       | Invalid \`%s\` rule \`%s\`, error message is: %s      |
+| 44000     | 19101       | %s rules \`%s\` do not exist in database \`%s\`.      |
+| 44000     | 19102       | %s rules \`%s\` in database \`%s\` are still in used. |
+| 44000     | 19105       | Duplicate %s rule names \`%s\` in database \`%s\`.    |
+| 44000     | 19110       | There is no rule in database '%s'.                    |
+
+### DistSQL
+
+| SQL State | Vendor Code | 错误信息                                                        |
+|-----------|-------------|-------------------------------------------------------------|
 | 44000     | 19150       | Invalid %s algorithm(s) \`%s\`.                             |
 | 44000     | 19151       | %s algorithm(s) \`%s\` do not exist in database \`%s\`.     |
 | 44000     | 19152       | %s algorithms \`%s\` in database \`%s\` are still in used.  |

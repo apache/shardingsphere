@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.storageunit;
+package org.apache.shardingsphere.infra.exception.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
 
 import java.util.Collection;
 
 /**
- * Missing required storage units exception.
+ * Invalid storage units exception.
  */
-public final class MissingRequiredStorageUnitsException extends StorageUnitDefinitionViolationException {
+public final class InvalidStorageUnitsException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 1704331180489268L;
+    private static final long serialVersionUID = 7029641448948791509L;
     
-    public MissingRequiredStorageUnitsException(final String databaseName, final Collection<String> storageUnitNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Storage units `%s` do not exist in database `%s`.", storageUnitNames, databaseName);
+    public InvalidStorageUnitsException(final Collection<String> errorMessages) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not process invalid storage units, error message is: %s", errorMessages);
     }
 }

@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.rule;
+package org.apache.shardingsphere.infra.exception.rule;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
 
 import java.util.Collection;
 
 /**
  * Duplicate rule exception.
  */
-public final class DuplicateRuleException extends RuleDefinitionViolationException {
+public final class DuplicateRuleException extends RuleDefinitionException {
     
     private static final long serialVersionUID = -1738699538105858939L;
     

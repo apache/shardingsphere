@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.exception;
 
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitDefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitDefinitionViolationException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**

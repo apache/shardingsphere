@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.rule;
+package org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.KernelSQLException;
 
 /**
- * Rule does not exist exception.
+ * Resource definition exception.
  */
-public final class RuleNotExistedException extends MetaDataSQLException {
+public abstract class ResourceDefinitionException extends KernelSQLException {
     
-    private static final long serialVersionUID = -4150905802300104824L;
+    private static final long serialVersionUID = -7111524353233598083L;
     
-    public RuleNotExistedException(final String databaseName) {
-        super(XOpenSQLState.SYNTAX_ERROR, 10, "There is no rule in database `%s`.", databaseName);
+    private static final int KERNEL_CODE = 9;
+    
+    protected ResourceDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
     }
 }

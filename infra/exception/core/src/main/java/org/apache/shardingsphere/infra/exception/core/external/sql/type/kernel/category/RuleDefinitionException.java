@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.rule;
+package org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.KernelSQLException;
 
 /**
- * Rule definition violation exception.
+ * Rule definition exception.
  */
-public abstract class RuleDefinitionViolationException extends DistSQLException {
+public abstract class RuleDefinitionException extends KernelSQLException {
     
-    private static final long serialVersionUID = 1090914641996552474L;
+    private static final long serialVersionUID = -6414242067345718028L;
     
-    protected RuleDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, errorCode, reason, messageArgs);
+    private static final int KERNEL_CODE = 9;
+    
+    protected RuleDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
     }
 }

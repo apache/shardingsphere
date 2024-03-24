@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.storageunit;
+package org.apache.shardingsphere.infra.exception.rule;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
 
 /**
- * Storage unit in used exception.
+ * Rule does not exist exception.
  */
-public final class StorageUnitInUsedException extends StorageUnitDefinitionViolationException {
+public final class RuleNotExistedException extends RuleDefinitionException {
     
-    private static final long serialVersionUID = -3427324685070457375L;
+    private static final long serialVersionUID = -4150905802300104824L;
     
-    public StorageUnitInUsedException(final String storageUnitName, final Collection<Class<? extends ShardingSphereRule>> ruleClasses) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Storage unit `%s` is still used by `%s`.", storageUnitName, ruleClasses);
+    public RuleNotExistedException(final String databaseName) {
+        super(XOpenSQLState.SYNTAX_ERROR, 110, "There is no rule in database '%s'.", databaseName);
     }
 }

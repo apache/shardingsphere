@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.rule;
+package org.apache.shardingsphere.infra.exception.rule;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
 
 import java.util.Collection;
 
 /**
  * Invalid rule configuration exception.
  */
-public final class InvalidRuleConfigurationException extends RuleDefinitionViolationException {
+public final class InvalidRuleConfigurationException extends RuleDefinitionException {
     
     private static final long serialVersionUID = 6085010920008859376L;
     

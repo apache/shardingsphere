@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.storageunit;
+package org.apache.shardingsphere.infra.exception.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
 
 /**
  * Empty storage unit exception.
  */
-public final class EmptyStorageUnitException extends StorageUnitDefinitionViolationException {
+public final class EmptyStorageUnitException extends ResourceDefinitionException {
     
     private static final long serialVersionUID = 1704331180489268L;
     
