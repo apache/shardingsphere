@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.provider;
 
+import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationChecker;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -46,7 +47,7 @@ class ReadwriteSplittingImportRuleConfigurationProviderTest {
     void assertCheckDataSources() {
         ShardingSphereDatabase database = mockDatabaseWithDataSource();
         ReadwriteSplittingRuleConfiguration currentRuleConfig = getRuleConfigWithNotExistedDataSources();
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> importRuleConfigProvider.check(database, currentRuleConfig));
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> ImportRuleConfigurationChecker.checkRule(currentRuleConfig, database));
     }
     
     @Test

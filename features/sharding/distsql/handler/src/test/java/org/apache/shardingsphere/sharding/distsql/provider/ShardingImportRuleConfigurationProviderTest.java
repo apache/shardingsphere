@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.provider;
 
+import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationChecker;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
@@ -49,7 +50,7 @@ class ShardingImportRuleConfigurationProviderTest {
     void assertCheckDataSources() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..2}.t_order_${0..2}"));
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> new ShardingImportRuleConfigurationProvider().check(mockDatabaseWithDataSource(), currentRuleConfig));
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> ImportRuleConfigurationChecker.checkRule(currentRuleConfig, mockDatabaseWithDataSource()));
     }
     
     @Test
