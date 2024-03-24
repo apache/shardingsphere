@@ -116,9 +116,9 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
         }
     }
     
-    private Map<String, LoadBalanceAlgorithm> getLoadBalancer(final ReadwriteSplittingRuleConfiguration config) {
-        Map<String, LoadBalanceAlgorithm> result = new LinkedHashMap<>(config.getLoadBalancers().size(), 1F);
-        config.getLoadBalancers().forEach((key, value) -> result.put(key, TypedSPILoader.getService(LoadBalanceAlgorithm.class, value.getType(), value.getProps())));
+    private Map<String, LoadBalanceAlgorithm> getLoadBalancer(final ReadwriteSplittingRuleConfiguration ruleConfig) {
+        Map<String, LoadBalanceAlgorithm> result = new LinkedHashMap<>(ruleConfig.getLoadBalancers().size(), 1F);
+        ruleConfig.getLoadBalancers().forEach((key, value) -> result.put(key, TypedSPILoader.getService(LoadBalanceAlgorithm.class, value.getType(), value.getProps())));
         return result;
     }
     
