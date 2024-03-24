@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -85,14 +86,15 @@ public class PropertiesPersistServiceTest {
         // Arrange
         Properties props = new Properties();
         when(repository.getChildrenKeys(GlobalNode.getPropsVersionsNode())).thenReturn(Collections.singletonList("1"));
-        
+        when(repository.getDirectly(anyString())).thenReturn("1");
         // Act
-        Collection<MetaDataVersion> result = propertiesPersistService.persistConfig(props);
+        Collection<MetaDataVersion> actual = propertiesPersistService.persistConfig(props);
         
         // Assert
-        assertEquals(1, result.size());
-        MetaDataVersion metaDataVersion = result.iterator().next();
+        assertEquals(1, actual.size());
+        MetaDataVersion metaDataVersion = actual.iterator().next();
         assertEquals(GlobalNode.getPropsRootNode(), metaDataVersion.getKey());
+        assertEquals("1", metaDataVersion.getCurrentActiveVersion());
         assertEquals("2", metaDataVersion.getNextActiveVersion());
     }
     
@@ -105,12 +107,12 @@ public class PropertiesPersistServiceTest {
         when(repository.getDirectly(GlobalNode.getPropsVersionNode(activeVersion))).thenReturn(yamlContent);
         
         // Act
-        Properties loadedProps = propertiesPersistService.load();
+        Properties actual = propertiesPersistService.load();
         
         // Assert
-        assertEquals("John", loadedProps.getProperty("firstName"));
-        assertEquals("Doe", loadedProps.getProperty("lastName"));
-        assertEquals(20, loadedProps.get("age"));
+        assertEquals("John", actual.getProperty("firstName"));
+        assertEquals("Doe", actual.getProperty("lastName"));
+        assertEquals(20, actual.get("age"));
     }
     
 }

@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.metadata.persist.service.database;
 
+import com.google.common.collect.Maps;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,12 +34,21 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
 
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class DatabaseMetaDataPersistServiceTest {
+    
+    @Mock
+    private PersistRepository repository;
     
     @Mock
     private MetaDataVersionPersistService metaDataVersionPersistService;
@@ -47,70 +57,131 @@ public class DatabaseMetaDataPersistServiceTest {
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        databaseMetaDataPersistService = new DatabaseMetaDataPersistService(mock(PersistRepository.class),
+        databaseMetaDataPersistService = new DatabaseMetaDataPersistService(repository,
                 metaDataVersionPersistService);
     }
     
     @Test
     void testAddDatabase() {
-        databaseMetaDataPersistService.addDatabase("123");
+        String databaseName = "testDatabase";
+        databaseMetaDataPersistService.addDatabase(databaseName);
+        
+        verify(repository, times(1)).persist(anyString(), anyString());
     }
     
     @Test
     void testDropDatabase() {
-        databaseMetaDataPersistService.dropDatabase("123");
+        String databaseName = "testDatabase";
+        databaseMetaDataPersistService.dropDatabase(databaseName);
+        
+        verify(repository, times(1)).delete(anyString());
     }
     
     @Test
     void testLoadAllDatabaseNames() {
-        Collection<String> collection = databaseMetaDataPersistService.loadAllDatabaseNames();
-        Assertions.assertTrue(collection.isEmpty());
+        when(repository.getChildrenKeys(anyString()))
+                .thenReturn(Collections.singletonList("0"))
+                .thenReturn(Collections.emptyList());
+        Collection<String> actual = databaseMetaDataPersistService.loadAllDatabaseNames();
+        assertEquals(1, actual.size());
+        
+        Collection<String> actualNew = databaseMetaDataPersistService.loadAllDatabaseNames();
+        assertEquals(0, actualNew.size());
     }
     
     @Test
     void testAddSchema() {
-        databaseMetaDataPersistService.addSchema("123", "234");
+        String databaseName = "testDatabase";
+        String schemaName = "testSchema";
+        databaseMetaDataPersistService.addSchema(databaseName, schemaName);
+        
+        verify(repository, times(1)).persist(anyString(), anyString());
     }
     
     @Test
     void testDropSchema() {
-        databaseMetaDataPersistService.dropSchema("123", "234");
+        String databaseName = "testDatabase";
+        String schemaName = "testSchema";
+        databaseMetaDataPersistService.dropSchema(databaseName, schemaName);
+        
+        verify(repository, times(1)).delete(anyString());
     }
     
     @Test
     void testCompareAndPersist() {
-        ShardingSphereSchema schema = new ShardingSphereSchema();
-        schema.getTables().put("t_warehouse", new ShardingSphereTable("t_warehouse", Arrays.asList(
-                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("warehouse_name", Types.VARCHAR, false, false, false, true, false, false)),
-                Collections.emptyList(), Collections.emptyList()));
-        databaseMetaDataPersistService.compareAndPersist("123", "234", schema);
+        String databaseName = "testDatabase";
+        String schemaName = "testSchema";
+        ShardingSphereSchema schema = createSchema();
+        when(repository.getChildrenKeys(anyString()))
+                .thenReturn(Collections.singletonList("t_warehouse"))
+                .thenReturn(Collections.singletonList("0"));
+        when(repository.getDirectly(anyString()))
+                .thenReturn("0")
+                .thenReturn(createTableString());
+        
+        databaseMetaDataPersistService.compareAndPersist(databaseName, schemaName, schema);
     }
     
     @Test
     void testPersist() {
-        ShardingSphereSchema schema = new ShardingSphereSchema();
-        schema.getTables().put("t_warehouse", new ShardingSphereTable("t_warehouse", Arrays.asList(
-                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("warehouse_name", Types.VARCHAR, false, false, false, true, false, false)),
-                Collections.emptyList(), Collections.emptyList()));
-        databaseMetaDataPersistService.persist("123", "234", schema);
+        String databaseName = "testDatabase";
+        String schemaName = "testSchema";
+        ShardingSphereSchema schema = createSchema();
+        databaseMetaDataPersistService.persist(databaseName, schemaName, schema);
+        
+        verify(repository, times(1)).persist(anyString(), anyString());
+        verify(repository, times(0)).delete(anyString());
+        
     }
     
     @Test
     void testDelete() {
+        String databaseName = "testDatabase";
+        String schemaName = "testSchema";
+        ShardingSphereSchema schema = createSchema();
+        databaseMetaDataPersistService.delete(databaseName, schemaName, schema);
+        
+        verify(repository, times(1)).delete(anyString());
+    }
+    
+    @Test
+    void testLoadSchemas() {
+        String databaseName = "testDatabase";
+        when(repository.getChildrenKeys(anyString()))
+                .thenReturn(Collections.singletonList("testSchema"))
+                .thenReturn(Collections.singletonList("t_warehouse"))
+                .thenReturn(Collections.emptyList());
+        
+        when(repository.getDirectly(anyString()))
+                .thenReturn("0")
+                .thenReturn(createTableString());
+        
+        Map<String, ShardingSphereSchema> actual = databaseMetaDataPersistService.loadSchemas(databaseName);
+        
+        assertEquals(1, actual.size());
+        assertTrue(actual.get("testSchema".toLowerCase(Locale.ROOT)).containsTable("t_warehouse"));
+        assertTrue(actual.get("testSchema".toLowerCase(Locale.ROOT)).getViews().isEmpty());
+    }
+    
+    private String createTableString() {
+        Map<String, Object> tableMap = Maps.newHashMap();
+        Map<String, Object> columns = Maps.newHashMap();
+        Map<String, Object> column = Maps.newHashMap();
+        column.put("name", "id");
+        column.put("dataType", Types.VARCHAR);
+        columns.put("id", column);
+        tableMap.put("columns", columns);
+        return JsonUtils.toJsonString(tableMap);
+    }
+    
+    private static ShardingSphereSchema createSchema() {
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("t_warehouse", new ShardingSphereTable("t_warehouse", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("warehouse_name", Types.VARCHAR, false, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        databaseMetaDataPersistService.delete("123", "234", schema);
+        return schema;
     }
     
-    @Test
-    void testLoadSchemas() {
-        Map<String, ShardingSphereSchema> loadedSchemas = databaseMetaDataPersistService.loadSchemas("123");
-        Assertions.assertTrue(loadedSchemas.isEmpty());
-    }
     
 }

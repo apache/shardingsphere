@@ -89,12 +89,12 @@ public class DataSourceUnitPersistServiceTest {
         when(repository.getDirectly(anyString())).thenReturn(JsonUtils.toJsonString(createDataSourceProperties()));
         
         // Act
-        Map<String, DataSourcePoolProperties> actualDataSourceConfigs = dataSourceUnitService.load(databaseName);
+        Map<String, DataSourcePoolProperties> actual = dataSourceUnitService.load(databaseName);
         
         // Assert
-        assertEquals(expectedDataSourceConfigs.size(), actualDataSourceConfigs.size());
+        assertEquals(expectedDataSourceConfigs.size(), actual.size());
         for (String key : expectedDataSourceConfigs.keySet()) {
-            assertEquals(expectedDataSourceConfigs.get(key).getPoolClassName(), actualDataSourceConfigs.get(key).getPoolClassName());
+            assertEquals(expectedDataSourceConfigs.get(key).getPoolClassName(), actual.get(key).getPoolClassName());
         }
     }
     
@@ -107,11 +107,11 @@ public class DataSourceUnitPersistServiceTest {
         when(repository.getDirectly(anyString())).thenReturn(JsonUtils.toJsonString(sourceProperties));
         
         // Act
-        Map<String, DataSourcePoolProperties> actualDataSourceConfigs = dataSourceUnitService.load(databaseName, dataSourceName);
+        Map<String, DataSourcePoolProperties> actual = dataSourceUnitService.load(databaseName, dataSourceName);
         
         // Assert
-        assertEquals(1, actualDataSourceConfigs.size());
-        assertEquals(sourceProperties.get("dataSourceClassName"), actualDataSourceConfigs.get(dataSourceName).getPoolClassName());
+        assertEquals(1, actual.size());
+        assertEquals(sourceProperties.get("dataSourceClassName"), actual.get(dataSourceName).getPoolClassName());
     }
     
     @Test
