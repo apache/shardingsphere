@@ -44,30 +44,33 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
     
     @Override
     public String convert(final ShardingRuleConfiguration ruleConfig) {
+        if (ruleConfig.getTables().isEmpty() && ruleConfig.getAutoTables().isEmpty()) {
+            return "";
+        }
         StringBuilder result = new StringBuilder();
         appendShardingTableRules(ruleConfig, result);
-        appendShardingBindingTableRules(ruleConfig, result);
-        appendDefaultShardingStrategy(ruleConfig, result);
+        if (!ruleConfig.getBindingTableGroups().isEmpty()) {
+            result.append(System.lineSeparator()).append(System.lineSeparator());
+            appendShardingBindingTableRules(ruleConfig, result);
+        }
+        if (null != ruleConfig.getDefaultDatabaseShardingStrategy() || null != ruleConfig.getDefaultTableShardingStrategy()) {
+            result.append(System.lineSeparator()).append(System.lineSeparator());
+            appendDefaultShardingStrategy(ruleConfig, result);
+        }
         return result.toString();
     }
     
     private void appendShardingTableRules(final ShardingRuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
-        if (ruleConfig.getTables().isEmpty() && ruleConfig.getAutoTables().isEmpty()) {
-            return;
-        }
         String tableRules = getTableRules(ruleConfig);
         String autoTableRules = getAutoTableRules(ruleConfig);
         stringBuilder.append(ShardingDistSQLConstants.CREATE_SHARDING_TABLE).append(tableRules);
         if (!Strings.isNullOrEmpty(tableRules) && !Strings.isNullOrEmpty(autoTableRules)) {
             stringBuilder.append(ShardingDistSQLConstants.COMMA);
         }
-        stringBuilder.append(autoTableRules).append(ShardingDistSQLConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+        stringBuilder.append(autoTableRules).append(ShardingDistSQLConstants.SEMI);
     }
     
     private void appendShardingBindingTableRules(final ShardingRuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
-        if (ruleConfig.getBindingTableGroups().isEmpty()) {
-            return;
-        }
         stringBuilder.append(ShardingDistSQLConstants.SHARDING_BINDING_TABLE_RULES);
         Iterator<ShardingTableReferenceRuleConfiguration> iterator = ruleConfig.getBindingTableGroups().iterator();
         while (iterator.hasNext()) {
@@ -77,20 +80,20 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
                 stringBuilder.append(ShardingDistSQLConstants.COMMA);
             }
         }
-        stringBuilder.append(ShardingDistSQLConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+        stringBuilder.append(ShardingDistSQLConstants.SEMI);
     }
     
     private void appendDefaultShardingStrategy(final ShardingRuleConfiguration ruleConfig, final StringBuilder result) {
-        if (null == ruleConfig.getDefaultDatabaseShardingStrategy() && null == ruleConfig.getDefaultTableShardingStrategy()) {
-            return;
-        }
         if (null != ruleConfig.getDefaultDatabaseShardingStrategy()) {
             appendStrategy(ruleConfig.getDefaultDatabaseShardingStrategy(), ShardingDistSQLConstants.DEFAULT_DATABASE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
-            result.append(ShardingDistSQLConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+            result.append(ShardingDistSQLConstants.SEMI);
         }
         if (null != ruleConfig.getDefaultTableShardingStrategy()) {
+            if (null != ruleConfig.getDefaultDatabaseShardingStrategy()) {
+                result.append(System.lineSeparator()).append(System.lineSeparator());
+            }
             appendStrategy(ruleConfig.getDefaultTableShardingStrategy(), ShardingDistSQLConstants.DEFAULT_TABLE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
-            result.append(ShardingDistSQLConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+            result.append(ShardingDistSQLConstants.SEMI);
         }
     }
     

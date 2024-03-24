@@ -47,7 +47,7 @@ public final class ReadwriteSplittingRuleConfigurationToDistSQLConverter impleme
                 result.append(ReadwriteSplittingDistSQLConstants.COMMA);
             }
         }
-        result.append(ReadwriteSplittingDistSQLConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+        result.append(ReadwriteSplittingDistSQLConstants.SEMI);
         return result.toString();
     }
     

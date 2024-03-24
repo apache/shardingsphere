@@ -50,7 +50,7 @@ public final class ShadowRuleConfigurationToDistSQLConverter implements RuleConf
                 result.append(ShadowDistSQLConstants.COMMA);
             }
         }
-        result.append(ShadowDistSQLConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+        result.append(ShadowDistSQLConstants.SEMI);
         return result.toString();
     }
     
