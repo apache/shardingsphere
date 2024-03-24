@@ -33,8 +33,7 @@ class BroadcastRuleConfigurationToDistSQLConverterTest {
     void assertConvert() {
         BroadcastRuleConfiguration ruleConfig = mock(BroadcastRuleConfiguration.class);
         when(ruleConfig.getTables()).thenReturn(Arrays.asList("t_province", "t_city"));
-        BroadcastRuleConfigurationToDistSQLConverter converter = new BroadcastRuleConfigurationToDistSQLConverter();
-        String actual = converter.convert(ruleConfig);
+        String actual = new BroadcastRuleConfigurationToDistSQLConverter().convert(ruleConfig);
         assertThat(actual, is("CREATE BROADCAST TABLE RULE t_province,t_city;"));
     }
 }
