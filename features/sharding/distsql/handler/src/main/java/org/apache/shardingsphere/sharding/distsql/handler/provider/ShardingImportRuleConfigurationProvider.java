@@ -19,14 +19,12 @@ package org.apache.shardingsphere.sharding.distsql.handler.provider;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -49,7 +47,6 @@ public final class ShardingImportRuleConfigurationProvider implements ImportRule
     @Override
     public void check(final ShardingSphereDatabase database, final ShardingRuleConfiguration ruleConfig) {
         checkLogicTables(database.getName(), ruleConfig);
-        checkDataSources(database, ruleConfig);
         checkShardingAlgorithms(ruleConfig.getShardingAlgorithms().values());
         checkKeyGeneratorAlgorithms(ruleConfig.getKeyGenerators().values());
     }
@@ -62,24 +59,20 @@ public final class ShardingImportRuleConfigurationProvider implements ImportRule
         ShardingSpherePreconditions.checkState(duplicatedLogicTables.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicatedLogicTables));
     }
     
-    private void checkDataSources(final ShardingSphereDatabase database, final ShardingRuleConfiguration ruleConfig) {
-        Collection<String> requiredDataSources = getRequiredDataSources(ruleConfig);
-        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
-        Collection<String> logicDataSources = getLogicDataSources(database);
-        notExistedDataSources.removeIf(logicDataSources::contains);
-        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
+    private void checkShardingAlgorithms(final Collection<AlgorithmConfiguration> algorithmConfigs) {
+        algorithmConfigs.forEach(each -> TypedSPILoader.checkService(ShardingAlgorithm.class, each.getType(), each.getProps()));
     }
     
-    private Collection<String> getRequiredDataSources(final ShardingRuleConfiguration ruleConfig) {
+    private void checkKeyGeneratorAlgorithms(final Collection<AlgorithmConfiguration> algorithmConfigs) {
+        algorithmConfigs.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, each.getType(), each.getProps()));
+    }
+    
+    @Override
+    public Collection<String> getRequiredDataSourceNames(final ShardingRuleConfiguration ruleConfig) {
         Collection<String> result = new LinkedHashSet<>();
         ruleConfig.getTables().forEach(each -> result.addAll(getDataSourceNames(each)));
         ruleConfig.getAutoTables().forEach(each -> result.addAll(getDataSourceNames(each)));
         return result;
-    }
-    
-    private Collection<String> getDataSourceNames(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
-        Collection<String> actualDataSources = InlineExpressionParserFactory.newInstance(shardingAutoTableRuleConfig.getActualDataSources()).splitAndEvaluate();
-        return new HashSet<>(actualDataSources);
     }
     
     private Collection<String> getDataSourceNames(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
@@ -87,20 +80,8 @@ public final class ShardingImportRuleConfigurationProvider implements ImportRule
         return actualDataNodes.stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
     }
     
-    private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
-        Collection<String> result = new LinkedHashSet<>();
-        for (DataSourceMapperRuleAttribute each : database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)) {
-            result.addAll(each.getDataSourceMapper().keySet());
-        }
-        return result;
-    }
-    
-    private void checkShardingAlgorithms(final Collection<AlgorithmConfiguration> algorithmConfigs) {
-        algorithmConfigs.forEach(each -> TypedSPILoader.checkService(ShardingAlgorithm.class, each.getType(), each.getProps()));
-    }
-    
-    private void checkKeyGeneratorAlgorithms(final Collection<AlgorithmConfiguration> algorithmConfigs) {
-        algorithmConfigs.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, each.getType(), each.getProps()));
+    private Collection<String> getDataSourceNames(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
+        return new HashSet<>(InlineExpressionParserFactory.newInstance(shardingAutoTableRuleConfig.getActualDataSources()).splitAndEvaluate());
     }
     
     @Override
