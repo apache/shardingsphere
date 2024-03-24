@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shadow.distsql.handler.provider;
 import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -36,8 +35,8 @@ import java.util.stream.Collectors;
 public final class ShadowImportRuleConfigurationProvider implements ImportRuleConfigurationProvider<ShadowRuleConfiguration> {
     
     @Override
-    public void check(final ShardingSphereDatabase database, final ShadowRuleConfiguration ruleConfig) {
-        checkTables(database.getName(), ruleConfig);
+    public void check(final String databaseName, final ShadowRuleConfiguration ruleConfig) {
+        checkTables(databaseName, ruleConfig);
         checkShadowAlgorithms(ruleConfig);
     }
     

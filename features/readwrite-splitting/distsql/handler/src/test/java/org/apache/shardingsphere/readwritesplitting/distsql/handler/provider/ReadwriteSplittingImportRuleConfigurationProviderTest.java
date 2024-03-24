@@ -52,9 +52,8 @@ class ReadwriteSplittingImportRuleConfigurationProviderTest {
     
     @Test
     void assertCheckLoadBalancers() {
-        ShardingSphereDatabase database = mockDatabase();
         ReadwriteSplittingRuleConfiguration currentRuleConfig = createInvalidLoadBalancerRuleConfig();
-        assertThrows(ServiceProviderNotFoundException.class, () -> importRuleConfigProvider.check(database, currentRuleConfig));
+        assertThrows(ServiceProviderNotFoundException.class, () -> importRuleConfigProvider.check("foo_db", currentRuleConfig));
     }
     
     private ShardingSphereDatabase mockDatabaseWithDataSource() {
@@ -72,13 +71,6 @@ class ReadwriteSplittingImportRuleConfigurationProviderTest {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
         dataSources.add(dataSourceRuleConfig);
         return new ReadwriteSplittingRuleConfiguration(dataSources, Collections.emptyMap());
-    }
-    
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
-        when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
-        return result;
     }
     
     private ReadwriteSplittingRuleConfiguration createInvalidLoadBalancerRuleConfig() {

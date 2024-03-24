@@ -19,7 +19,6 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.provider;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -33,7 +32,7 @@ import java.util.LinkedHashSet;
 public final class ReadwriteSplittingImportRuleConfigurationProvider implements ImportRuleConfigurationProvider<ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void check(final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration ruleConfig) {
+    public void check(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig) {
         checkLoadBalancers(ruleConfig);
     }
     

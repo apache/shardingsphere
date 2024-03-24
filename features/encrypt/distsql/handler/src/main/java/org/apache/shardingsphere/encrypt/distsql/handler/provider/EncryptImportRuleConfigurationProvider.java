@@ -26,7 +26,6 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -41,10 +40,10 @@ import java.util.stream.Collectors;
 public final class EncryptImportRuleConfigurationProvider implements ImportRuleConfigurationProvider<EncryptRuleConfiguration> {
     
     @Override
-    public void check(final ShardingSphereDatabase database, final EncryptRuleConfiguration ruleConfig) {
-        checkTables(database.getName(), ruleConfig);
+    public void check(final String databaseName, final EncryptRuleConfiguration ruleConfig) {
+        checkTables(databaseName, ruleConfig);
         checkEncryptors(ruleConfig);
-        checkTableEncryptorsExisted(database.getName(), ruleConfig);
+        checkTableEncryptorsExisted(databaseName, ruleConfig);
     }
     
     private void checkTables(final String databaseName, final EncryptRuleConfiguration ruleConfig) {
