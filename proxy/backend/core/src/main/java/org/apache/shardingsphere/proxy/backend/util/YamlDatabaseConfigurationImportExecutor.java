@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.util;
 import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
 import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNo
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapCreator;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -59,6 +61,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -140,11 +143,30 @@ public final class YamlDatabaseConfigurationImportExecutor {
         metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
     }
     
-    @SuppressWarnings("unchecked")
     private void addRule(final Collection<RuleConfiguration> ruleConfigs, final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
-        TypedSPILoader.findService(ImportRuleConfigurationProvider.class, ruleConfig.getClass()).ifPresent(optional -> optional.check(database, ruleConfig));
+        checkRule(ruleConfig, database);
         ruleConfigs.add(ruleConfig);
         database.getRuleMetaData().getRules().add(buildRule(ruleConfig, database));
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void checkRule(final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
+        Optional<ImportRuleConfigurationProvider> importProvider = TypedSPILoader.findService(ImportRuleConfigurationProvider.class, ruleConfig.getClass());
+        if (importProvider.isPresent()) {
+            Collection<String> requiredDataSourceNames = importProvider.get().getRequiredDataSourceNames(ruleConfig);
+            if (!requiredDataSourceNames.isEmpty()) {
+                checkDataSourcesExisted(database, requiredDataSourceNames);
+            }
+            importProvider.get().check(database, ruleConfig);
+        }
+    }
+    
+    private void checkDataSourcesExisted(final ShardingSphereDatabase database, final Collection<String> requiredDataSourceNames) {
+        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSourceNames);
+        Collection<String> logicDataSources = database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class).stream()
+                .flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toSet());
+        notExistedDataSources.removeIf(logicDataSources::contains);
+        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

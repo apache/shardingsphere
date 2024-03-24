@@ -22,6 +22,9 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Import rule configuration provider.
  * 
@@ -37,6 +40,16 @@ public interface ImportRuleConfigurationProvider<T extends RuleConfiguration> ex
      * @param ruleConfig rule configuration
      */
     void check(ShardingSphereDatabase database, T ruleConfig);
+    
+    /**
+     * Get required data source names.
+     *
+     * @param ruleConfig rule configuration
+     * @return required data source names
+     */
+    default Collection<String> getRequiredDataSourceNames(T ruleConfig) {
+        return Collections.emptyList();
+    }
     
     @Override
     Class<T> getType();

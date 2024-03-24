@@ -18,18 +18,14 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.provider;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.stream.Collectors;
 
 /**
  * Readwrite-splitting import rule configuration provider.
@@ -38,32 +34,25 @@ public final class ReadwriteSplittingImportRuleConfigurationProvider implements 
     
     @Override
     public void check(final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration ruleConfig) {
-        checkDataSources(database, ruleConfig);
         checkLoadBalancers(ruleConfig);
-    }
-    
-    private void checkDataSources(final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration ruleConfig) {
-        Collection<String> requiredDataSources = new LinkedHashSet<>();
-        for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
-            if (null != each.getWriteDataSourceName()) {
-                requiredDataSources.add(each.getWriteDataSourceName());
-            }
-            if (!each.getReadDataSourceNames().isEmpty()) {
-                requiredDataSources.addAll(each.getReadDataSourceNames());
-            }
-        }
-        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
-        Collection<String> logicalDataSources = getLogicDataSources(database);
-        notExistedDataSources.removeIf(logicalDataSources::contains);
-        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
-    }
-    
-    private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class).stream().flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toSet());
     }
     
     private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration ruleConfig) {
         ruleConfig.getLoadBalancers().values().forEach(each -> TypedSPILoader.checkService(LoadBalanceAlgorithm.class, each.getType(), each.getProps()));
+    }
+    
+    @Override
+    public Collection<String> getRequiredDataSourceNames(final ReadwriteSplittingRuleConfiguration ruleConfig) {
+        Collection<String> result = new LinkedHashSet<>();
+        for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
+            if (null != each.getWriteDataSourceName()) {
+                result.add(each.getWriteDataSourceName());
+            }
+            if (!each.getReadDataSourceNames().isEmpty()) {
+                result.addAll(each.getReadDataSourceNames());
+            }
+        }
+        return result;
     }
     
     @Override
