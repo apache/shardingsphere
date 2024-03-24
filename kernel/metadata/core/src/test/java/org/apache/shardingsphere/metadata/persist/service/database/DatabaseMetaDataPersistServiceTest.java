@@ -127,6 +127,8 @@ public class DatabaseMetaDataPersistServiceTest {
         String databaseName = "testDatabase";
         String schemaName = "testSchema";
         ShardingSphereSchema schema = createSchema();
+        when(repository.getDirectly(anyString())).thenReturn("0");
+        
         databaseMetaDataPersistService.persist(databaseName, schemaName, schema);
         
         verify(repository, times(1)).persist(anyString(), anyString());
