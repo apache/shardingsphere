@@ -21,7 +21,6 @@ import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.data
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
@@ -38,10 +37,10 @@ import java.util.stream.Collectors;
 public final class MaskImportRuleConfigurationProvider implements ImportRuleConfigurationProvider<MaskRuleConfiguration> {
     
     @Override
-    public void check(final ShardingSphereDatabase database, final MaskRuleConfiguration ruleConfig) {
-        checkTables(database.getName(), ruleConfig);
+    public void check(final String databaseName, final MaskRuleConfiguration ruleConfig) {
+        checkTables(databaseName, ruleConfig);
         checkMaskAlgorithms(ruleConfig);
-        checkMaskAlgorithmsExisted(database.getName(), ruleConfig);
+        checkMaskAlgorithmsExisted(databaseName, ruleConfig);
     }
     
     private void checkTables(final String databaseName, final MaskRuleConfiguration ruleConfig) {

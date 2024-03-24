@@ -43,7 +43,7 @@ class ShardingImportRuleConfigurationProviderTest {
     
     @Test
     void assertCheckLogicTables() {
-        assertThrows(DuplicateRuleException.class, () -> new ShardingImportRuleConfigurationProvider().check(mock(ShardingSphereDatabase.class), createDuplicatedTablesRuleConfiguration()));
+        assertThrows(DuplicateRuleException.class, () -> new ShardingImportRuleConfigurationProvider().check("foo_db", createDuplicatedTablesRuleConfiguration()));
     }
     
     @Test
@@ -55,12 +55,12 @@ class ShardingImportRuleConfigurationProviderTest {
     
     @Test
     void assertCheckKeyGenerators() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> new ShardingImportRuleConfigurationProvider().check(mockDatabase(), createInvalidKeyGeneratorRuleConfiguration()));
+        assertThrows(ServiceProviderNotFoundException.class, () -> new ShardingImportRuleConfigurationProvider().check("foo_db", createInvalidKeyGeneratorRuleConfiguration()));
     }
     
     @Test
     void assertCheckShardingAlgorithms() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> new ShardingImportRuleConfigurationProvider().check(mockDatabase(), createInvalidShardingAlgorithmRuleConfiguration()));
+        assertThrows(ServiceProviderNotFoundException.class, () -> new ShardingImportRuleConfigurationProvider().check("foo_db", createInvalidShardingAlgorithmRuleConfiguration()));
     }
     
     private ShardingRuleConfiguration createDuplicatedTablesRuleConfiguration() {
@@ -75,13 +75,6 @@ class ShardingImportRuleConfigurationProviderTest {
         Collection<String> dataSources = new LinkedList<>();
         dataSources.add("su_1");
         when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(dataSources);
-        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
-        return result;
-    }
-    
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         return result;
     }

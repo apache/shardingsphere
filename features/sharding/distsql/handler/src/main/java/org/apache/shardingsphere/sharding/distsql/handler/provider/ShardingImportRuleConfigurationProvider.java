@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorith
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -45,8 +44,8 @@ import java.util.stream.Collectors;
 public final class ShardingImportRuleConfigurationProvider implements ImportRuleConfigurationProvider<ShardingRuleConfiguration> {
     
     @Override
-    public void check(final ShardingSphereDatabase database, final ShardingRuleConfiguration ruleConfig) {
-        checkLogicTables(database.getName(), ruleConfig);
+    public void check(final String databaseName, final ShardingRuleConfiguration ruleConfig) {
+        checkLogicTables(databaseName, ruleConfig);
         checkShardingAlgorithms(ruleConfig.getShardingAlgorithms().values());
         checkKeyGeneratorAlgorithms(ruleConfig.getKeyGenerators().values());
     }

@@ -50,7 +50,7 @@ public final class ImportRuleConfigurationChecker {
             if (!requiredDataSourceNames.isEmpty()) {
                 checkDataSourcesExisted(database, requiredDataSourceNames);
             }
-            importProvider.get().check(database, ruleConfig);
+            importProvider.get().check(database.getName(), ruleConfig);
         }
     }
     
