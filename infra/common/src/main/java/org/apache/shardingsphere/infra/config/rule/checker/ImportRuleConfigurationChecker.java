@@ -58,6 +58,10 @@ public final class ImportRuleConfigurationChecker {
             importProvider.get().check(database.getName(), ruleConfig);
         }
         RuleConfigurationChecker configChecker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        Collection<String> requiredDataSourceNames = configChecker.getRequiredDataSourceNames(ruleConfig);
+        if (!requiredDataSourceNames.isEmpty()) {
+            checkDataSourcesExisted(database, requiredDataSourceNames);
+        }
         Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource()));
         configChecker.check(database.getName(), ruleConfig, dataSources, database.getRuleMetaData().getRules());
     }
