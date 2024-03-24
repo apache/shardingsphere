@@ -18,17 +18,12 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.provider;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 /**
@@ -37,40 +32,26 @@ import java.util.LinkedHashSet;
 public final class ReadwriteSplittingImportRuleConfigurationProvider implements ImportRuleConfigurationProvider<ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void check(final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration ruleConfig) {
-        if (null == database || null == ruleConfig) {
-            return;
-        }
-        checkDataSources(database, ruleConfig);
+    public void check(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig) {
         checkLoadBalancers(ruleConfig);
     }
     
-    private void checkDataSources(final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        Collection<String> requiredDataSources = new LinkedHashSet<>();
-        for (ReadwriteSplittingDataSourceRuleConfiguration each : currentRuleConfig.getDataSources()) {
+    private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration ruleConfig) {
+        ruleConfig.getLoadBalancers().values().forEach(each -> TypedSPILoader.checkService(LoadBalanceAlgorithm.class, each.getType(), each.getProps()));
+    }
+    
+    @Override
+    public Collection<String> getRequiredDataSourceNames(final ReadwriteSplittingRuleConfiguration ruleConfig) {
+        Collection<String> result = new LinkedHashSet<>();
+        for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
             if (null != each.getWriteDataSourceName()) {
-                requiredDataSources.add(each.getWriteDataSourceName());
+                result.add(each.getWriteDataSourceName());
             }
             if (!each.getReadDataSourceNames().isEmpty()) {
-                requiredDataSources.addAll(each.getReadDataSourceNames());
+                result.addAll(each.getReadDataSourceNames());
             }
         }
-        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
-        Collection<String> logicalDataSources = getLogicDataSources(database);
-        notExistedDataSources.removeIf(logicalDataSources::contains);
-        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
-    }
-    
-    private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
-        Collection<String> result = new HashSet<>();
-        for (DataSourceMapperRuleAttribute each : database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)) {
-            result.addAll(each.getDataSourceMapper().keySet());
-        }
         return result;
-    }
-    
-    private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getLoadBalancers().values().forEach(each -> TypedSPILoader.checkService(LoadBalanceAlgorithm.class, each.getType(), each.getProps()));
     }
     
     @Override

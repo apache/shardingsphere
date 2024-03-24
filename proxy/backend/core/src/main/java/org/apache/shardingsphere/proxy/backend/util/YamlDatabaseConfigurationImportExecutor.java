@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.util;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
+import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationChecker;
 import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
@@ -39,7 +39,6 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -140,9 +139,8 @@ public final class YamlDatabaseConfigurationImportExecutor {
         metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
     }
     
-    @SuppressWarnings("unchecked")
     private void addRule(final Collection<RuleConfiguration> ruleConfigs, final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
-        TypedSPILoader.findService(ImportRuleConfigurationProvider.class, ruleConfig.getClass()).ifPresent(optional -> optional.check(database, ruleConfig));
+        ImportRuleConfigurationChecker.checkRule(ruleConfig, database);
         ruleConfigs.add(ruleConfig);
         database.getRuleMetaData().getRules().add(buildRule(ruleConfig, database));
     }

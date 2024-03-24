@@ -19,10 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.handler.provider;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -38,27 +35,26 @@ import java.util.stream.Collectors;
 public final class ShadowImportRuleConfigurationProvider implements ImportRuleConfigurationProvider<ShadowRuleConfiguration> {
     
     @Override
-    public void check(final ShardingSphereDatabase database, final ShadowRuleConfiguration ruleConfig) {
-        if (null == database || null == ruleConfig) {
-            return;
-        }
-        String databaseName = database.getName();
-        checkDataSources(databaseName, database, ruleConfig);
-        checkTables(ruleConfig, databaseName);
+    public void check(final String databaseName, final ShadowRuleConfiguration ruleConfig) {
+        checkTables(databaseName, ruleConfig);
         checkShadowAlgorithms(ruleConfig);
     }
     
-    private void checkDataSources(final String databaseName, final ShardingSphereDatabase database, final ShadowRuleConfiguration currentRuleConfig) {
-        Collection<String> requiredResource = getRequiredResources(currentRuleConfig);
-        Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedDataSources(requiredResource);
-        Collection<String> logicResources = getLogicDataSources(database);
-        notExistedResources.removeIf(logicResources::contains);
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedResources));
+    private void checkTables(final String databaseName, final ShadowRuleConfiguration ruleConfig) {
+        Collection<String> tableNames = ruleConfig.getTables().keySet();
+        Collection<String> duplicatedTables = tableNames.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
+                .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(duplicatedTables.isEmpty(), () -> new DuplicateRuleException("SHADOW", databaseName, duplicatedTables));
     }
     
-    private Collection<String> getRequiredResources(final ShadowRuleConfiguration currentRuleConfig) {
+    private void checkShadowAlgorithms(final ShadowRuleConfiguration ruleConfig) {
+        ruleConfig.getShadowAlgorithms().values().forEach(each -> TypedSPILoader.checkService(ShadowAlgorithm.class, each.getType(), each.getProps()));
+    }
+    
+    @Override
+    public Collection<String> getRequiredDataSourceNames(final ShadowRuleConfiguration ruleConfig) {
         Collection<String> result = new LinkedHashSet<>();
-        currentRuleConfig.getDataSources().forEach(each -> {
+        ruleConfig.getDataSources().forEach(each -> {
             if (null != each.getShadowDataSourceName()) {
                 result.add(each.getShadowDataSourceName());
             }
@@ -67,25 +63,6 @@ public final class ShadowImportRuleConfigurationProvider implements ImportRuleCo
             }
         });
         return result;
-    }
-    
-    private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
-        Collection<String> result = new LinkedHashSet<>();
-        for (DataSourceMapperRuleAttribute each : database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)) {
-            result.addAll(each.getDataSourceMapper().keySet());
-        }
-        return result;
-    }
-    
-    private void checkTables(final ShadowRuleConfiguration currentRuleConfig, final String databaseName) {
-        Collection<String> tableNames = currentRuleConfig.getTables().keySet();
-        Collection<String> duplicatedTables = tableNames.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
-                .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(duplicatedTables.isEmpty(), () -> new DuplicateRuleException("SHADOW", databaseName, duplicatedTables));
-    }
-    
-    private void checkShadowAlgorithms(final ShadowRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getShadowAlgorithms().values().forEach(each -> TypedSPILoader.checkService(ShadowAlgorithm.class, each.getType(), each.getProps()));
     }
     
     @Override

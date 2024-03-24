@@ -37,8 +37,8 @@ import java.util.Map;
 public final class MaskRuleConfigurationChecker implements RuleConfigurationChecker<MaskRuleConfiguration> {
     
     @Override
-    public void check(final String databaseName, final MaskRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        checkTables(databaseName, config.getTables(), config.getMaskAlgorithms());
+    public void check(final String databaseName, final MaskRuleConfiguration ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
+        checkTables(databaseName, ruleConfig.getTables(), ruleConfig.getMaskAlgorithms());
     }
     
     private void checkTables(final String databaseName, final Collection<MaskTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> maskAlgorithms) {

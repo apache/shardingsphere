@@ -26,11 +26,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SingleDistSQLConstants {
     
-    public static final String COMMA = ", ";
+    public static final String COMMA = ",";
     
-    public static final String SEMI = ";";
+    public static final String LOAD_SINGLE_TABLE = "LOAD SINGLE TABLE %s;";
     
-    public static final String LOAD_SINGLE_TABLE = "LOAD SINGLE TABLE ";
-    
-    public static final String DATASOURCE_AND_TABLE = "%s.%s";
+    public static final String SET_DEFAULT_SINGLE_TABLE_STORAGE_UNIT = "SET DEFAULT SINGLE TABLE STORAGE UNIT = %s;";
 }

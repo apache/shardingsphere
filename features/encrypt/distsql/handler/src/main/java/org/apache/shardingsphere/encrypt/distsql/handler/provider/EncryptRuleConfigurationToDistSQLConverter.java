@@ -50,7 +50,7 @@ public final class EncryptRuleConfigurationToDistSQLConverter implements RuleCon
                 result.append(EncryptDistSQLConstants.COMMA).append(System.lineSeparator());
             }
         }
-        result.append(EncryptDistSQLConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+        result.append(EncryptDistSQLConstants.SEMI);
         return result.toString();
     }
     

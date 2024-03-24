@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Import rule configuration provider.
@@ -33,10 +35,20 @@ public interface ImportRuleConfigurationProvider<T extends RuleConfiguration> ex
     /**
      * Check rule configuration.
      *
-     * @param database database
+     * @param databaseName database name
      * @param ruleConfig rule configuration
      */
-    void check(ShardingSphereDatabase database, T ruleConfig);
+    void check(String databaseName, T ruleConfig);
+    
+    /**
+     * Get required data source names.
+     *
+     * @param ruleConfig rule configuration
+     * @return required data source names
+     */
+    default Collection<String> getRequiredDataSourceNames(T ruleConfig) {
+        return Collections.emptyList();
+    }
     
     @Override
     Class<T> getType();

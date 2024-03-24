@@ -83,6 +83,7 @@ public final class ConvertYamlConfigurationExecutor implements DistSQLQueryExecu
         appendResourceDistSQL(yamlConfig, result);
         for (RuleConfiguration each : swapToRuleConfigs(yamlConfig).values()) {
             result.append(TypedSPILoader.getService(RuleConfigurationToDistSQLConverter.class, each.getClass()).convert(each));
+            result.append(System.lineSeparator()).append(System.lineSeparator());
         }
         return result.toString();
     }

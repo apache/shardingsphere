@@ -21,7 +21,6 @@ import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.data
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
@@ -38,30 +37,27 @@ import java.util.stream.Collectors;
 public final class MaskImportRuleConfigurationProvider implements ImportRuleConfigurationProvider<MaskRuleConfiguration> {
     
     @Override
-    public void check(final ShardingSphereDatabase database, final MaskRuleConfiguration ruleConfig) {
-        if (null == database || null == ruleConfig) {
-            return;
-        }
-        checkTables(ruleConfig, database.getName());
+    public void check(final String databaseName, final MaskRuleConfiguration ruleConfig) {
+        checkTables(databaseName, ruleConfig);
         checkMaskAlgorithms(ruleConfig);
-        checkMaskAlgorithmsExisted(ruleConfig, database.getName());
+        checkMaskAlgorithmsExisted(databaseName, ruleConfig);
     }
     
-    private void checkTables(final MaskRuleConfiguration currentRuleConfig, final String databaseName) {
-        Collection<String> tableNames = currentRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
+    private void checkTables(final String databaseName, final MaskRuleConfiguration ruleConfig) {
+        Collection<String> tableNames = ruleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> duplicatedTables = tableNames.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(duplicatedTables.isEmpty(), () -> new DuplicateRuleException("MASK", databaseName, duplicatedTables));
     }
     
-    private void checkMaskAlgorithms(final MaskRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getMaskAlgorithms().values().forEach(each -> TypedSPILoader.checkService(MaskAlgorithm.class, each.getType(), each.getProps()));
+    private void checkMaskAlgorithms(final MaskRuleConfiguration ruleConfig) {
+        ruleConfig.getMaskAlgorithms().values().forEach(each -> TypedSPILoader.checkService(MaskAlgorithm.class, each.getType(), each.getProps()));
     }
     
-    private void checkMaskAlgorithmsExisted(final MaskRuleConfiguration currentRuleConfig, final String databaseName) {
-        Collection<String> notExistedAlgorithms = currentRuleConfig.getTables().stream()
+    private void checkMaskAlgorithmsExisted(final String databaseName, final MaskRuleConfiguration ruleConfig) {
+        Collection<String> notExistedAlgorithms = ruleConfig.getTables().stream()
                 .flatMap(each -> each.getColumns().stream()).map(MaskColumnRuleConfiguration::getMaskAlgorithm).collect(Collectors.toList());
-        notExistedAlgorithms.removeIf(currentRuleConfig.getMaskAlgorithms().keySet()::contains);
+        notExistedAlgorithms.removeIf(ruleConfig.getMaskAlgorithms().keySet()::contains);
         ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(), () -> new MissingRequiredAlgorithmException(databaseName, notExistedAlgorithms));
     }
     
