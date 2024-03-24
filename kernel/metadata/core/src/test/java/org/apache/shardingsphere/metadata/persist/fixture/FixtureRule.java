@@ -17,25 +17,22 @@
 
 package org.apache.shardingsphere.metadata.persist.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 
-@Getter
-@Setter
-public final class YamlDataNodeRuleConfigurationFixture implements RuleConfiguration, EnhancedRuleConfiguration {
+import static org.mockito.Mockito.mock;
+
+public final class FixtureRule implements DatabaseRule {
     
-    public YamlDataNodeRuleConfigurationFixture() {
+    @Override
+    public RuleConfiguration getConfiguration() {
+        return mock(RuleConfiguration.class);
     }
     
-    
-    public YamlDataNodeRuleConfigurationFixture(final String key, final String value) {
-        this.key = key;
-        this.value = value;
+    @Override
+    public RuleAttributes getAttributes() {
+        return new RuleAttributes(mock(DataSourceMapperRuleAttribute.class));
     }
-    
-    private String key;
-    private String value;
 }
