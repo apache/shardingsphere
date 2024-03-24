@@ -59,7 +59,7 @@ public final class MaskRuleConfigurationToDistSQLConverter implements RuleConfig
                 result.append(",").append(System.lineSeparator());
             }
         }
-        result.append(";").append(System.lineSeparator()).append(System.lineSeparator());
+        result.append(";");
         return result.toString();
     }
     

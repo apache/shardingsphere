@@ -17,27 +17,24 @@
 
 package org.apache.shardingsphere.broadcast.distsql.handler.provider;
 
-import com.google.common.base.Joiner;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
+import org.junit.jupiter.api.Test;
 
-/**
- * Broadcast rule configuration to DistSQL converter.
- */
-public final class BroadcastRuleConfigurationToDistSQLConverter implements RuleConfigurationToDistSQLConverter<BroadcastRuleConfiguration> {
+import java.util.Arrays;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+class BroadcastRuleConfigurationToDistSQLConverterTest {
     
-    public static final String CREATE_BROADCAST_TABLE_RULE = "CREATE BROADCAST TABLE RULE %s;";
-    
-    @Override
-    public String convert(final BroadcastRuleConfiguration ruleConfig) {
-        if (ruleConfig.getTables().isEmpty()) {
-            return "";
-        }
-        return String.format(CREATE_BROADCAST_TABLE_RULE, Joiner.on(",").join(ruleConfig.getTables()));
-    }
-    
-    @Override
-    public Class<BroadcastRuleConfiguration> getType() {
-        return BroadcastRuleConfiguration.class;
+    @Test
+    void assertConvert() {
+        BroadcastRuleConfiguration ruleConfig = mock(BroadcastRuleConfiguration.class);
+        when(ruleConfig.getTables()).thenReturn(Arrays.asList("t_province", "t_city"));
+        BroadcastRuleConfigurationToDistSQLConverter converter = new BroadcastRuleConfigurationToDistSQLConverter();
+        String actual = converter.convert(ruleConfig);
+        assertThat(actual, is("CREATE BROADCAST TABLE RULE t_province,t_city;"));
     }
 }
