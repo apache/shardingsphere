@@ -43,14 +43,14 @@ import java.util.Set;
 public final class ShadowRuleConfigurationChecker implements RuleConfigurationChecker<ShadowRuleConfiguration> {
     
     @Override
-    public void check(final String databaseName, final ShadowRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        Map<String, ShadowDataSourceConfiguration> dataSources = initShadowDataSources(config.getDataSources());
+    public void check(final String databaseName, final ShadowRuleConfiguration ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
+        Map<String, ShadowDataSourceConfiguration> dataSources = initShadowDataSources(ruleConfig.getDataSources());
         checkDataSources(dataSources, dataSourceMap, databaseName);
-        Map<String, ShadowTableConfiguration> shadowTables = config.getTables();
+        Map<String, ShadowTableConfiguration> shadowTables = ruleConfig.getTables();
         checkShadowTableDataSourcesAutoReferences(shadowTables, dataSources);
         checkShadowTableDataSourcesReferences(shadowTables, dataSources);
-        Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs = config.getShadowAlgorithms();
-        String defaultShadowAlgorithmName = config.getDefaultShadowAlgorithmName();
+        Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs = ruleConfig.getShadowAlgorithms();
+        String defaultShadowAlgorithmName = ruleConfig.getDefaultShadowAlgorithmName();
         checkDefaultShadowAlgorithmConfiguration(defaultShadowAlgorithmName, shadowAlgorithmConfigs);
         checkShadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithmConfigs.keySet(), defaultShadowAlgorithmName);
         checkShadowTableAlgorithmsReferences(shadowTables, databaseName);

@@ -44,15 +44,15 @@ import java.util.Map;
 public final class ShardingRuleConfigurationChecker implements RuleConfigurationChecker<ShardingRuleConfiguration> {
     
     @Override
-    public void check(final String databaseName, final ShardingRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        Collection<String> keyGenerators = config.getKeyGenerators().keySet();
-        Collection<String> auditors = config.getAuditors().keySet();
-        Collection<String> shardingAlgorithms = config.getShardingAlgorithms().keySet();
-        checkTableConfiguration(databaseName, config.getTables(), config.getAutoTables(), keyGenerators, auditors, shardingAlgorithms);
-        checkKeyGenerateStrategy(databaseName, config.getDefaultKeyGenerateStrategy(), keyGenerators);
-        checkAuditStrategy(databaseName, config.getDefaultAuditStrategy(), auditors);
-        checkShardingStrategy(databaseName, config.getDefaultDatabaseShardingStrategy(), shardingAlgorithms);
-        checkShardingStrategy(databaseName, config.getDefaultTableShardingStrategy(), shardingAlgorithms);
+    public void check(final String databaseName, final ShardingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
+        Collection<String> keyGenerators = ruleConfig.getKeyGenerators().keySet();
+        Collection<String> auditors = ruleConfig.getAuditors().keySet();
+        Collection<String> shardingAlgorithms = ruleConfig.getShardingAlgorithms().keySet();
+        checkTableConfiguration(databaseName, ruleConfig.getTables(), ruleConfig.getAutoTables(), keyGenerators, auditors, shardingAlgorithms);
+        checkKeyGenerateStrategy(databaseName, ruleConfig.getDefaultKeyGenerateStrategy(), keyGenerators);
+        checkAuditStrategy(databaseName, ruleConfig.getDefaultAuditStrategy(), auditors);
+        checkShardingStrategy(databaseName, ruleConfig.getDefaultDatabaseShardingStrategy(), shardingAlgorithms);
+        checkShardingStrategy(databaseName, ruleConfig.getDefaultTableShardingStrategy(), shardingAlgorithms);
     }
     
     private void checkTableConfiguration(final String databaseName, final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables,

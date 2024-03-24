@@ -48,10 +48,10 @@ import java.util.Optional;
 public final class ReadwriteSplittingRuleConfigurationChecker implements RuleConfigurationChecker<ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void check(final String databaseName, final ReadwriteSplittingRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs = config.getDataSources();
+    public void check(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
+        Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs = ruleConfig.getDataSources();
         checkDataSources(databaseName, configs, dataSourceMap, builtRules);
-        checkLoadBalancer(databaseName, configs, getLoadBalancer(config));
+        checkLoadBalancer(databaseName, configs, getLoadBalancer(ruleConfig));
     }
     
     private void checkDataSources(final String databaseName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs,

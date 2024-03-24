@@ -38,9 +38,9 @@ public interface RuleConfigurationChecker<T extends RuleConfiguration> extends O
      * Check rule configuration.
      * 
      * @param databaseName database name to be checked
-     * @param config rule configuration to be checked
+     * @param ruleConfig rule configuration to be checked
      * @param dataSourceMap data sources to be checked
      * @param builtRules built rules
      */
-    void check(String databaseName, T config, Map<String, DataSource> dataSourceMap, Collection<ShardingSphereRule> builtRules);
+    void check(String databaseName, T ruleConfig, Map<String, DataSource> dataSourceMap, Collection<ShardingSphereRule> builtRules);
 }
