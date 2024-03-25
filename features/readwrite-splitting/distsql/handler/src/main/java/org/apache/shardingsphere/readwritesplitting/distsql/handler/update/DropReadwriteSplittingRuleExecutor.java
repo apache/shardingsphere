@@ -120,10 +120,6 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
         dataSourceRuleConfig.ifPresent(optional -> rule.getConfiguration().getDataSources().remove(optional));
     }
     
-    private void dropUnusedLoadBalancer(final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        findUnusedLoadBalancers().forEach(each -> currentRuleConfig.getLoadBalancers().remove(each));
-    }
-    
     private Collection<String> findUnusedLoadBalancers() {
         Collection<String> inUsedAlgorithms = rule.getConfiguration().getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getLoadBalancerName).collect(Collectors.toSet());
         return rule.getConfiguration().getLoadBalancers().keySet().stream().filter(each -> !inUsedAlgorithms.contains(each)).collect(Collectors.toSet());

@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.data.loader;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
@@ -40,17 +38,4 @@ public interface DialectMetaDataLoader extends DatabaseTypedSPI {
      * @throws SQLException SQL exception
      */
     Collection<SchemaMetaData> load(MetaDataLoaderMaterial material) throws SQLException;
-    
-    /**
-     * get table type from string value.
-     *
-     * @param type table type string value
-     * @return table type
-     */
-    default TableType getTableType(final String type) {
-        if (Strings.isNullOrEmpty(type)) {
-            return TableType.TABLE;
-        }
-        return type.contains("VIEW") || type.contains("view") ? TableType.VIEW : TableType.TABLE;
-    }
 }

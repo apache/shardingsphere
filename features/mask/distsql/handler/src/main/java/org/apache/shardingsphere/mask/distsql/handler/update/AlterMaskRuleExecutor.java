@@ -85,23 +85,6 @@ public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<Al
         return new MaskRuleConfiguration(Collections.emptyList(), toBeDroppedAlgorithms);
     }
     
-    private void dropRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final MaskRuleConfiguration toBeAlteredRuleConfig) {
-        Collection<String> toBeAlteredRuleName = toBeAlteredRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
-        currentRuleConfig.getTables().removeIf(each -> toBeAlteredRuleName.contains(each.getName()));
-    }
-    
-    private void addRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final MaskRuleConfiguration toBeAlteredRuleConfig) {
-        currentRuleConfig.getTables().addAll(toBeAlteredRuleConfig.getTables());
-        currentRuleConfig.getMaskAlgorithms().putAll(toBeAlteredRuleConfig.getMaskAlgorithms());
-    }
-    
-    private void dropUnusedAlgorithms(final MaskRuleConfiguration currentRuleConfig) {
-        Collection<String> inUsedAlgorithms = currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(MaskColumnRuleConfiguration::getMaskAlgorithm)
-                .collect(Collectors.toSet());
-        Collection<String> unusedAlgorithms = currentRuleConfig.getMaskAlgorithms().keySet().stream().filter(each -> !inUsedAlgorithms.contains(each)).collect(Collectors.toSet());
-        unusedAlgorithms.forEach(each -> currentRuleConfig.getMaskAlgorithms().remove(each));
-    }
-    
     @Override
     public Class<MaskRule> getRuleClass() {
         return MaskRule.class;

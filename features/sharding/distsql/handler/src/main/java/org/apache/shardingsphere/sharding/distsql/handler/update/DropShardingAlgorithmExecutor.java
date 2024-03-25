@@ -109,10 +109,6 @@ public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExec
         return !Collections.disjoint(getCurrentShardingAlgorithms(), sqlStatement.getNames());
     }
     
-    private void dropShardingAlgorithm(final String algorithmName) {
-        getCurrentShardingAlgorithms().removeIf(algorithmName::equalsIgnoreCase);
-    }
-    
     @Override
     public Class<ShardingRule> getRuleClass() {
         return ShardingRule.class;
