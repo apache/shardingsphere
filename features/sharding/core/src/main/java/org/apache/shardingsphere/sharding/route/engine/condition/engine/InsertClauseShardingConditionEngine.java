@@ -176,7 +176,7 @@ public final class InsertClauseShardingConditionEngine {
                     .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
             AlgorithmSQLContext algorithmSQLContext = new AlgorithmSQLContext(database.getName(), schemaName, tableName, generatedKey.get().getColumnName());
             generatedKey.get().getGeneratedValues().addAll(shardingRule.generateKeys(algorithmSQLContext, sqlStatementContext.getValueListCount()));
-            generatedKey.get().setSupportAutoIncrement(shardingRule.isSupportAutoIncrement(database.getName(), tableName));
+            generatedKey.get().setSupportAutoIncrement(shardingRule.isSupportAutoIncrement(tableName));
             if (shardingRule.findShardingColumn(generatedKey.get().getColumnName(), tableName).isPresent()) {
                 appendGeneratedKeyCondition(generatedKey.get(), tableName, shardingConditions);
             }

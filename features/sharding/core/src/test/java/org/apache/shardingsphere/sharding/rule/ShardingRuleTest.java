@@ -21,7 +21,6 @@ import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmNotFoundOnTableException;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
@@ -336,7 +335,7 @@ class ShardingRuleTest {
     void assertGenerateKeyFailure() {
         AlgorithmSQLContext generateContext = mock(AlgorithmSQLContext.class);
         when(generateContext.getTableName()).thenReturn("table_0");
-        assertThrows(AlgorithmNotFoundOnTableException.class, () -> createMaximumShardingRule().generateKeys(generateContext, 1));
+        assertThrows(ShardingTableRuleNotFoundException.class, () -> createMaximumShardingRule().generateKeys(generateContext, 1));
     }
     
     @Test
@@ -806,7 +805,7 @@ class ShardingRuleTest {
     
     @Test
     void assertIsSupportAutoIncrement() {
-        assertFalse(createMaximumShardingRule().isSupportAutoIncrement("ds_0", "logic_table"));
-        assertTrue(createMaximumShardingRule().isSupportAutoIncrement("ds_0", "sub_logic_table"));
+        assertFalse(createMaximumShardingRule().isSupportAutoIncrement("logic_table"));
+        assertTrue(createMaximumShardingRule().isSupportAutoIncrement("sub_logic_table"));
     }
 }
