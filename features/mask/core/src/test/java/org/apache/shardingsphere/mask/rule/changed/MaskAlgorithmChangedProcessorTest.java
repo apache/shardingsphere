@@ -34,9 +34,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class MaskAlgorithmChangedProcessorTest {
-
+    
     @Test
     void assertSwapRuleItemConfiguration() {
         MaskAlgorithmChangedProcessor processor = new MaskAlgorithmChangedProcessor();
@@ -44,7 +45,7 @@ class MaskAlgorithmChangedProcessorTest {
         AlgorithmConfiguration algorithmConfiguration = processor.swapRuleItemConfiguration(event, "type: TEST");
         assertThat(algorithmConfiguration.getType(), is("TEST"));
     }
-
+    
     @Test
     void assertFindRuleConfiguration() {
         MaskAlgorithmChangedProcessor processor = new MaskAlgorithmChangedProcessor();
@@ -53,17 +54,18 @@ class MaskAlgorithmChangedProcessorTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, ruleMetaData, Collections.emptyMap());
         MaskRuleConfiguration maskRuleConfiguration = processor.findRuleConfiguration(database);
         assertThat(maskRuleConfiguration.getMaskAlgorithms().size(), is(0));
-
+        
     }
-
+    
     @Test
     void assertDropRuleItemConfiguration() {
-        MaskAlgorithmChangedProcessor processor = new MaskAlgorithmChangedProcessor();
+        MaskAlgorithmChangedProcessor processor = mock(MaskAlgorithmChangedProcessor.class);
         DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
         MaskRuleConfiguration currentRuleConfig = new MaskRuleConfiguration(Collections.emptyList(), Collections.singletonMap("type: TEST", mock(AlgorithmConfiguration.class)));
         processor.dropRuleItemConfiguration(event, currentRuleConfig);
+        verify(processor).dropRuleItemConfiguration(event, currentRuleConfig);
     }
-
+    
     @Test
     void assertGetType() {
         MaskAlgorithmChangedProcessor processor = new MaskAlgorithmChangedProcessor();

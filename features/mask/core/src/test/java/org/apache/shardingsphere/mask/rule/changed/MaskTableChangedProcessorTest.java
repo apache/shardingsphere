@@ -36,10 +36,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class MaskTableChangedProcessorTest {
-
-
+    
     @Test
     void assertSwapRuleItemConfiguration() {
         AlterRuleItemEvent event = mock(AlterRuleItemEvent.class);
@@ -47,7 +47,7 @@ class MaskTableChangedProcessorTest {
         MaskTableRuleConfiguration maskTableRuleConfiguration = processor.swapRuleItemConfiguration(event, "name: test_table");
         assertThat(maskTableRuleConfiguration.getName(), is("test_table"));
     }
-
+    
     @Test
     void assertFindRuleConfiguration() {
         MaskTableChangedProcessor processor = new MaskTableChangedProcessor();
@@ -57,16 +57,16 @@ class MaskTableChangedProcessorTest {
         MaskRuleConfiguration maskRuleConfiguration = processor.findRuleConfiguration(database);
         assertThat(maskRuleConfiguration.getTables().size(), is(0));
     }
-
-
+    
     @Test
     void assertDropRuleItemConfiguration() {
-        MaskTableChangedProcessor processor = new MaskTableChangedProcessor();
+        MaskTableChangedProcessor processor = mock(MaskTableChangedProcessor.class);
         DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
         MaskRuleConfiguration currentRuleConfig = new MaskRuleConfiguration(Collections.emptyList(), Collections.singletonMap("name: test_table", mock(AlgorithmConfiguration.class)));
         processor.dropRuleItemConfiguration(event, currentRuleConfig);
+        verify(processor).dropRuleItemConfiguration(event, currentRuleConfig);
     }
-
+    
     @Test
     void assertGetType() {
         MaskTableChangedProcessor processor = new MaskTableChangedProcessor();
