@@ -23,7 +23,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
 | 42000     | 10010       | Rule does not exist.                                                           |
 | 44000     | 10011       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
-| 42S02     | 10012       | Can not find '%s' algorithm on database.table: '%s'.'%s'.                      |
 | 42S02     | 10013       | Can not find '%s' algorithm '%s' on database.table.column: '%s'.'%s'.'%s'.     |
 | HY000     | 10015       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
 | 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
