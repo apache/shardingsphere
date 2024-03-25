@@ -20,12 +20,15 @@ package org.apache.shardingsphere.single.distsql.handler.provider;
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.distsql.handler.constant.SingleDistSQLConstants;
 
 /**
  * Single rule configuration to DistSQL converter.
  */
 public final class SingleRuleConfigurationToDistSQLConverter implements RuleConfigurationToDistSQLConverter<SingleRuleConfiguration> {
+    
+    public static final String LOAD_SINGLE_TABLE = "LOAD SINGLE TABLE %s;";
+    
+    public static final String SET_DEFAULT_SINGLE_TABLE_STORAGE_UNIT = "SET DEFAULT SINGLE TABLE STORAGE UNIT = %s;";
     
     @Override
     public String convert(final SingleRuleConfiguration ruleConfig) {
@@ -34,20 +37,23 @@ public final class SingleRuleConfigurationToDistSQLConverter implements RuleConf
         }
         StringBuilder result = new StringBuilder();
         if (!ruleConfig.getTables().isEmpty()) {
-            result.append(convertLoadTable(ruleConfig)).append(System.lineSeparator()).append(System.lineSeparator());
+            result.append(convertLoadTable(ruleConfig));
         }
         if (ruleConfig.getDefaultDataSource().isPresent()) {
-            result.append(convertSetDefaultSingleTableStorageUnit(ruleConfig.getDefaultDataSource().get())).append(System.lineSeparator()).append(System.lineSeparator());
+            if (!ruleConfig.getTables().isEmpty()) {
+                result.append(System.lineSeparator()).append(System.lineSeparator());
+            }
+            result.append(convertSetDefaultSingleTableStorageUnit(ruleConfig.getDefaultDataSource().get()));
         }
         return result.toString();
     }
     
     private String convertLoadTable(final SingleRuleConfiguration ruleConfig) {
-        return String.format(SingleDistSQLConstants.LOAD_SINGLE_TABLE, Joiner.on(SingleDistSQLConstants.COMMA).join(ruleConfig.getTables()));
+        return String.format(LOAD_SINGLE_TABLE, Joiner.on(",").join(ruleConfig.getTables()));
     }
     
     private String convertSetDefaultSingleTableStorageUnit(final String defaultStorageUnitName) {
-        return String.format(SingleDistSQLConstants.SET_DEFAULT_SINGLE_TABLE_STORAGE_UNIT, defaultStorageUnitName);
+        return String.format(SET_DEFAULT_SINGLE_TABLE_STORAGE_UNIT, defaultStorageUnitName);
     }
     
     @Override
