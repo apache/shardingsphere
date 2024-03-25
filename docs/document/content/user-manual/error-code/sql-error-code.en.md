@@ -284,7 +284,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 20705       | Assisted query column of \`%s\` can not be null in database \`%s\`.                                   |
 | 44000     | 20707       | Like query column of \`%s\` can not be null in database \`%s\`.                                       |
 | 44000     | 20709       | Can not find encrypt table: \`%s\`.                                                                   |
-| 44000     | 20710       | Can not found registered encryptor \`%s\` in database \`%s\`.                                         |
 
 ### Shadow Database
 

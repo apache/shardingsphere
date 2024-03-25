@@ -269,7 +269,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 20705       | Assisted query column of \`%s\` can not be null in database \`%s\`.                                |
 | 44000     | 20707       | Like query column of \`%s\` can not be null in database \`%s\`.                                    |
 | 44000     | 20709       | Can not find encrypt table: \`%s\`.                                                                |
-| 44000     | 20710       | Can not found registered encryptor \`%s\` in database \`%s\`.                                      |
 
 ### 影子库
 
