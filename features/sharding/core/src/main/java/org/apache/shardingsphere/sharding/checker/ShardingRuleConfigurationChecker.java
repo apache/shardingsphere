@@ -23,10 +23,9 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -46,9 +45,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -80,7 +77,6 @@ public final class ShardingRuleConfigurationChecker implements RuleConfiguration
     
     private void checkTableConfiguration(final String databaseName, final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables,
                                          final Collection<String> keyGenerators, final Collection<String> auditors, final Collection<String> shardingAlgorithms) {
-        checkTablesNotDuplicated(databaseName, tables, autoTables);
         for (ShardingTableRuleConfiguration each : tables) {
             checkLogicTable(databaseName, each.getLogicTable());
             checkKeyGenerateStrategy(databaseName, each.getKeyGenerateStrategy(), keyGenerators);
@@ -94,14 +90,6 @@ public final class ShardingRuleConfigurationChecker implements RuleConfiguration
             checkAuditStrategy(databaseName, each.getAuditStrategy(), auditors);
             checkShardingStrategy(databaseName, each.getShardingStrategy(), shardingAlgorithms);
         }
-    }
-    
-    private void checkTablesNotDuplicated(final String databaseName, final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables) {
-        Collection<String> logicTables = tables.stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
-        logicTables.addAll(autoTables.stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
-        Set<String> duplicatedLogicTables = logicTables.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
-                .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(duplicatedLogicTables.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicatedLogicTables));
     }
     
     private void checkLogicTable(final String databaseName, final String logicTable) {
@@ -153,6 +141,13 @@ public final class ShardingRuleConfigurationChecker implements RuleConfiguration
     
     private Collection<String> getDataSourceNames(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
         return new HashSet<>(InlineExpressionParserFactory.newInstance(shardingAutoTableRuleConfig.getActualDataSources()).splitAndEvaluate());
+    }
+    
+    @Override
+    public Collection<String> getTableNames(final ShardingRuleConfiguration ruleConfig) {
+        Collection<String> result = ruleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
+        result.addAll(ruleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
+        return result;
     }
     
     @Override

@@ -50,8 +50,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     
     @Override
     public void check(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs = ruleConfig.getDataSources();
-        checkDataSources(databaseName, configs, dataSourceMap, builtRules);
+        checkDataSources(databaseName, ruleConfig.getDataSources(), dataSourceMap, builtRules);
         checkLoadBalancer(databaseName, ruleConfig);
     }
     
