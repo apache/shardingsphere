@@ -46,6 +46,8 @@ public final class DataSourceMetaDataNode {
     
     private static final String ACTIVE_VERSION_SUFFIX = "/([\\w\\-]+)/active_version";
     
+    private static final String DATA_SOURCE_SUFFIX = "/([\\w\\-]+)$";
+    
     /**
      * Get data source units node.
      *
@@ -167,25 +169,49 @@ public final class DataSourceMetaDataNode {
     }
     
     /**
+     * Get data source name by data source unit active version node.
+     *
+     * @param path path
+     * @return data source name
+     */
+    public static Optional<String> getDataSourceNameByDataSourceUnitActiveVersionNode(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNode() + DATABASE_DATA_SOURCES_NODE + DATA_SOURCE_UNITS_NODE + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
      * Get data source name by data source unit node.
      *
      * @param path path
      * @return data source name
      */
     public static Optional<String> getDataSourceNameByDataSourceUnitNode(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNode() + DATABASE_DATA_SOURCES_NODE + DATA_SOURCE_UNITS_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNode() + DATABASE_DATA_SOURCES_NODE + DATA_SOURCE_UNITS_NODE + DATA_SOURCE_SUFFIX, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
     
     /**
-     * Get data source name by data source nodes node.
+     * Get data source name by data source node active version node.
      *
      * @param path path
      * @return data source name
      */
-    public static Optional<String> getDataSourceNameByDataSourceNode(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNode() + DATABASE_DATA_SOURCES_NODE + DATA_SOURCE_NODES_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> getDataSourceNameByDataSourceNodeActiveVersionNode(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNode() + DATABASE_DATA_SOURCES_NODE + DATA_SOURCE_NODES_NODE + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
+     * Get data source name by data source node.
+     *
+     * @param path path
+     * @return data source name
+     */
+    public static Optional<String> getDataSourceNameByDataSourceNodeNode(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNode() + DATABASE_DATA_SOURCES_NODE + DATA_SOURCE_NODES_NODE + DATA_SOURCE_SUFFIX, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
@@ -201,6 +227,16 @@ public final class DataSourceMetaDataNode {
     }
     
     /**
+     * Is data source unit node.
+     *
+     * @param path path
+     * @return true or false
+     */
+    public static boolean isDataSourceUnitNode(final String path) {
+        return Pattern.compile(getMetaDataNode() + DATABASE_DATA_SOURCES_NODE + DATA_SOURCE_UNITS_NODE + DATA_SOURCE_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+    }
+    
+    /**
      * Is data source node active version node.
      *
      * @param path path
@@ -208,6 +244,16 @@ public final class DataSourceMetaDataNode {
      */
     public static boolean isDataSourceNodeActiveVersionNode(final String path) {
         return Pattern.compile(getMetaDataNode() + DATABASE_DATA_SOURCES_NODE + DATA_SOURCE_NODES_NODE + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+    }
+    
+    /**
+     * Is data source node node.
+     *
+     * @param path path
+     * @return true or false
+     */
+    public static boolean isDataSourceNodeNode(final String path) {
+        return Pattern.compile(getMetaDataNode() + DATABASE_DATA_SOURCES_NODE + DATA_SOURCE_NODES_NODE + DATA_SOURCE_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
     }
     
     private static String getMetaDataNode() {

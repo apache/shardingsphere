@@ -41,6 +41,11 @@ class ViewMetaDataNodeTest {
     }
     
     @Test
+    void assertIsViewNode() {
+        assertTrue(ViewMetaDataNode.isViewNode("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
+    }
+    
+    @Test
     void assertGetVersionNodeByActiveVersionPath() {
         assertThat(DatabaseMetaDataNode.getVersionNodeByActiveVersionPath("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "0"),
                 is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));

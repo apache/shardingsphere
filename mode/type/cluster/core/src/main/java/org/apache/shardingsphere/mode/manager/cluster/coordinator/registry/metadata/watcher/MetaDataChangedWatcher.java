@@ -78,10 +78,12 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
             return createSchemaChangedEvent(databaseName.get(), schemaName.get(), event);
         }
         schemaName = DatabaseMetaDataNode.getSchemaNameByTableNode(key);
-        if (databaseName.isPresent() && schemaName.isPresent() && TableMetaDataNode.isTableActiveVersionNode(event.getKey())) {
+        if (databaseName.isPresent() && schemaName.isPresent() && (TableMetaDataNode.isTableActiveVersionNode(event.getKey()))
+                || TableMetaDataNode.isTableNode(event.getKey())) {
             return createTableChangedEvent(databaseName.get(), schemaName.get(), event);
         }
-        if (databaseName.isPresent() && schemaName.isPresent() && ViewMetaDataNode.isViewActiveVersionNode(event.getKey())) {
+        if (databaseName.isPresent() && schemaName.isPresent() && (ViewMetaDataNode.isViewActiveVersionNode(event.getKey())
+                || ViewMetaDataNode.isViewNode(event.getKey()))) {
             return createViewChangedEvent(databaseName.get(), schemaName.get(), event);
         }
         if (!databaseName.isPresent()) {
@@ -114,58 +116,68 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     private Optional<GovernanceEvent> createTableChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        Optional<String> tableName = TableMetaDataNode.getTableNameByActiveVersionNode(event.getKey());
-        Preconditions.checkState(tableName.isPresent(), "Not found table name.");
-        if (Type.DELETED == event.getType()) {
+        if (Type.DELETED == event.getType() && TableMetaDataNode.isTableNode(event.getKey())) {
+            Optional<String> tableName = TableMetaDataNode.getTableName(event.getKey());
+            Preconditions.checkState(tableName.isPresent(), "Not found table name.");
             return Optional.of(new DropTableEvent(databaseName, schemaName, tableName.get()));
         }
-        return Optional.of(new AlterTableEvent(databaseName, schemaName, tableName.get(), event.getKey(), event.getValue()));
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && TableMetaDataNode.isTableActiveVersionNode(event.getKey())) {
+            Optional<String> tableName = TableMetaDataNode.getTableNameByActiveVersionNode(event.getKey());
+            Preconditions.checkState(tableName.isPresent(), "Not found table name.");
+            return Optional.of(new AlterTableEvent(databaseName, schemaName, tableName.get(), event.getKey(), event.getValue()));
+        }
+        return Optional.empty();
     }
     
     private Optional<GovernanceEvent> createViewChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        Optional<String> viewName = ViewMetaDataNode.getViewNameByActiveVersionNode(event.getKey());
-        Preconditions.checkState(viewName.isPresent(), "Not found view name.");
-        if (Type.DELETED == event.getType()) {
+        if (Type.DELETED == event.getType() && ViewMetaDataNode.isViewNode(event.getKey())) {
+            Optional<String> viewName = ViewMetaDataNode.getViewName(event.getKey());
+            Preconditions.checkState(viewName.isPresent(), "Not found view name.");
             return Optional.of(new DropViewEvent(databaseName, schemaName, viewName.get(), event.getKey(), event.getValue()));
         }
-        return Optional.of(new AlterViewEvent(databaseName, schemaName, viewName.get(), event.getKey(), event.getValue()));
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && ViewMetaDataNode.isViewActiveVersionNode(event.getKey())) {
+            Optional<String> viewName = ViewMetaDataNode.getViewNameByActiveVersionNode(event.getKey());
+            Preconditions.checkState(viewName.isPresent(), "Not found view name.");
+            return Optional.of(new AlterViewEvent(databaseName, schemaName, viewName.get(), event.getKey(), event.getValue()));
+        }
+        return Optional.empty();
     }
     
     private Optional<GovernanceEvent> createDataSourceEvent(final String databaseName, final DataChangedEvent event) {
-        if (DataSourceMetaDataNode.isDataSourceUnitActiveVersionNode(event.getKey())) {
+        if (DataSourceMetaDataNode.isDataSourceUnitActiveVersionNode(event.getKey()) || DataSourceMetaDataNode.isDataSourceUnitNode(event.getKey())) {
             return createStorageUnitChangedEvent(databaseName, event);
         }
-        if (DataSourceMetaDataNode.isDataSourceNodeActiveVersionNode(event.getKey())) {
+        if (DataSourceMetaDataNode.isDataSourceNodeActiveVersionNode(event.getKey()) || DataSourceMetaDataNode.isDataSourceNodeNode(event.getKey())) {
             return createStorageNodeChangedEvent(databaseName, event);
         }
         return Optional.empty();
     }
     
     private Optional<GovernanceEvent> createStorageUnitChangedEvent(final String databaseName, final DataChangedEvent event) {
-        Optional<String> dataSourceUnitName = DataSourceMetaDataNode.getDataSourceNameByDataSourceUnitNode(event.getKey());
-        if (!dataSourceUnitName.isPresent()) {
-            return Optional.empty();
+        Optional<String> dataSourceUnitName = DataSourceMetaDataNode.getDataSourceNameByDataSourceUnitActiveVersionNode(event.getKey());
+        if (dataSourceUnitName.isPresent()) {
+            if (Type.ADDED == event.getType()) {
+                return Optional.of(new RegisterStorageUnitEvent(databaseName, dataSourceUnitName.get(), event.getKey(), event.getValue()));
+            }
+            if (Type.UPDATED == event.getType()) {
+                return Optional.of(new AlterStorageUnitEvent(databaseName, dataSourceUnitName.get(), event.getKey(), event.getValue()));
+            }
         }
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new RegisterStorageUnitEvent(databaseName, dataSourceUnitName.get(), event.getKey(), event.getValue()));
-        }
-        if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterStorageUnitEvent(databaseName, dataSourceUnitName.get(), event.getKey(), event.getValue()));
-        }
-        return Optional.of(new UnregisterStorageUnitEvent(databaseName, dataSourceUnitName.get()));
+        dataSourceUnitName = DataSourceMetaDataNode.getDataSourceNameByDataSourceUnitNode(event.getKey());
+        return dataSourceUnitName.map(optional -> new UnregisterStorageUnitEvent(databaseName, optional));
     }
     
     private Optional<GovernanceEvent> createStorageNodeChangedEvent(final String databaseName, final DataChangedEvent event) {
-        Optional<String> dataSourceNodeName = DataSourceMetaDataNode.getDataSourceNameByDataSourceNode(event.getKey());
-        if (!dataSourceNodeName.isPresent()) {
-            return Optional.empty();
+        Optional<String> dataSourceNodeName = DataSourceMetaDataNode.getDataSourceNameByDataSourceNodeActiveVersionNode(event.getKey());
+        if (dataSourceNodeName.isPresent()) {
+            if (Type.ADDED == event.getType()) {
+                return Optional.of(new RegisterStorageNodeEvent(databaseName, dataSourceNodeName.get(), event.getKey(), event.getValue()));
+            }
+            if (Type.UPDATED == event.getType()) {
+                return Optional.of(new AlterStorageNodeEvent(databaseName, dataSourceNodeName.get(), event.getKey(), event.getValue()));
+            }
         }
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new RegisterStorageNodeEvent(databaseName, dataSourceNodeName.get(), event.getKey(), event.getValue()));
-        }
-        if (Type.UPDATED == event.getType()) {
-            return Optional.of(new AlterStorageNodeEvent(databaseName, dataSourceNodeName.get(), event.getKey(), event.getValue()));
-        }
-        return Optional.of(new UnregisterStorageNodeEvent(databaseName, dataSourceNodeName.get()));
+        dataSourceNodeName = DataSourceMetaDataNode.getDataSourceNameByDataSourceNodeNode(event.getKey());
+        return dataSourceNodeName.map(optional -> new UnregisterStorageNodeEvent(databaseName, optional));
     }
 }

@@ -44,6 +44,8 @@ public final class TableMetaDataNode {
     
     private static final String ACTIVE_VERSION_SUFFIX = "/([\\w\\-]+)/active_version";
     
+    private static final String TABLE_SUFFIX = "/([\\w\\-]+)$";
+    
     /**
      * Get meta data tables node.
      *
@@ -136,6 +138,16 @@ public final class TableMetaDataNode {
      */
     public static boolean isTableActiveVersionNode(final String path) {
         return Pattern.compile(getMetaDataNode() + TABLES_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+    }
+    
+    /**
+     * Is table node.
+     *
+     * @param path path
+     * @return true or false
+     */
+    public static boolean isTableNode(final String path) {
+        return Pattern.compile(getMetaDataNode() + TABLES_PATTERN + TABLE_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
     }
     
     private static String getMetaDataNode() {
