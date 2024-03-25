@@ -40,6 +40,11 @@ class TableMetaDataNodeTest {
     }
     
     @Test
+    void assertIsTableNode() {
+        assertTrue(TableMetaDataNode.isTableNode("/metadata/foo_db/schemas/foo_schema/tables/foo_table"));
+    }
+    
+    @Test
     void assertGetTableActiveVersionNode() {
         assertThat(TableMetaDataNode.getTableActiveVersionNode("foo_db", "foo_schema", "foo_table"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table/active_version"));
     }

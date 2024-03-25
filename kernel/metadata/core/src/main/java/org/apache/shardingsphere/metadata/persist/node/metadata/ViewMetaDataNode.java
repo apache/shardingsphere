@@ -44,6 +44,8 @@ public final class ViewMetaDataNode {
     
     private static final String ACTIVE_VERSION_SUFFIX = "/([\\w\\-]+)/active_version";
     
+    private static final String VIEW_SUFFIX = "/([\\w\\-]+)$";
+    
     /**
      * Get meta data views node.
      *
@@ -136,6 +138,16 @@ public final class ViewMetaDataNode {
      */
     public static boolean isViewActiveVersionNode(final String path) {
         return Pattern.compile(getMetaDataNode() + VIEWS_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+    }
+    
+    /**
+     * Is view node.
+     *
+     * @param path path
+     * @return true or false
+     */
+    public static boolean isViewNode(final String path) {
+        return Pattern.compile(getMetaDataNode() + VIEWS_PATTERN + VIEW_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
     }
     
     private static String getMetaDataNode() {
