@@ -41,6 +41,9 @@ public final class ExpectedColumnDefinition extends AbstractExpectedSQLSegment {
     @XmlAttribute(name = "primary-key")
     private boolean primaryKey;
     
+    @XmlAttribute(name = "auto-increment")
+    private boolean autoIncrement;
+    
     @XmlElement
     private ExpectedColumn column;
     
