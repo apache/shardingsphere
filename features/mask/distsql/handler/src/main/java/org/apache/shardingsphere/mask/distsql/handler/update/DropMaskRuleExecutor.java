@@ -84,10 +84,6 @@ public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<Drop
         maskTableRuleConfig.ifPresent(optional -> rule.getConfiguration().getTables().remove(maskTableRuleConfig.get()));
     }
     
-    private void dropUnusedAlgorithm(final MaskRuleConfiguration currentRuleConfig) {
-        findUnusedAlgorithms(currentRuleConfig).forEach(each -> currentRuleConfig.getMaskAlgorithms().remove(each));
-    }
-    
     private Collection<String> findUnusedAlgorithms(final MaskRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedAlgorithms = currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(MaskColumnRuleConfiguration::getMaskAlgorithm)
                 .collect(Collectors.toSet());

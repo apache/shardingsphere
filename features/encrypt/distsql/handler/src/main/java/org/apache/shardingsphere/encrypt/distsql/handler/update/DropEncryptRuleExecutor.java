@@ -85,10 +85,6 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
         encryptTableRuleConfig.ifPresent(optional -> rule.getConfiguration().getTables().remove(encryptTableRuleConfig.get()));
     }
     
-    private void dropUnusedEncryptor(final EncryptRuleConfiguration currentRuleConfig) {
-        UnusedAlgorithmFinder.findUnusedEncryptor(currentRuleConfig).forEach(each -> currentRuleConfig.getEncryptors().remove(each));
-    }
-    
     @Override
     public Class<EncryptRule> getRuleClass() {
         return EncryptRule.class;

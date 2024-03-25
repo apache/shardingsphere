@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.node.metadata.DataSourceMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
@@ -48,12 +48,12 @@ public final class DataSourceUnitPersistService implements DatabaseBasedPersistS
     public void persist(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
         for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
             String activeVersion = getDataSourceActiveVersion(databaseName, entry.getKey());
-            List<String> versions = repository.getChildrenKeys(DatabaseMetaDataNode.getDataSourceUnitVersionsNode(databaseName, entry.getKey()));
-            repository.persist(DatabaseMetaDataNode.getDataSourceUnitNodeWithVersion(databaseName, entry.getKey(), versions.isEmpty()
+            List<String> versions = repository.getChildrenKeys(DataSourceMetaDataNode.getDataSourceUnitVersionsNode(databaseName, entry.getKey()));
+            repository.persist(DataSourceMetaDataNode.getDataSourceUnitVersionNode(databaseName, entry.getKey(), versions.isEmpty()
                     ? DEFAULT_VERSION
                     : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
             if (Strings.isNullOrEmpty(activeVersion)) {
-                repository.persist(DatabaseMetaDataNode.getDataSourceUnitActiveVersionNode(databaseName, entry.getKey()), DEFAULT_VERSION);
+                repository.persist(DataSourceMetaDataNode.getDataSourceUnitActiveVersionNode(databaseName, entry.getKey()), DEFAULT_VERSION);
             }
         }
     }
@@ -62,8 +62,8 @@ public final class DataSourceUnitPersistService implements DatabaseBasedPersistS
     @Override
     public Map<String, DataSourcePoolProperties> load(final String databaseName) {
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>();
-        for (String each : repository.getChildrenKeys(DatabaseMetaDataNode.getDataSourceUnitsNode(databaseName))) {
-            String dataSourceValue = repository.getDirectly(DatabaseMetaDataNode.getDataSourceUnitNodeWithVersion(databaseName, each, getDataSourceActiveVersion(databaseName, each)));
+        for (String each : repository.getChildrenKeys(DataSourceMetaDataNode.getDataSourceUnitsNode(databaseName))) {
+            String dataSourceValue = repository.getDirectly(DataSourceMetaDataNode.getDataSourceUnitVersionNode(databaseName, each, getDataSourceActiveVersion(databaseName, each)));
             if (!Strings.isNullOrEmpty(dataSourceValue)) {
                 result.put(each, new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
             }
@@ -75,7 +75,7 @@ public final class DataSourceUnitPersistService implements DatabaseBasedPersistS
     @Override
     public Map<String, DataSourcePoolProperties> load(final String databaseName, final String name) {
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>();
-        String dataSourceValue = repository.getDirectly(DatabaseMetaDataNode.getDataSourceUnitNodeWithVersion(databaseName, name, getDataSourceActiveVersion(databaseName, name)));
+        String dataSourceValue = repository.getDirectly(DataSourceMetaDataNode.getDataSourceUnitVersionNode(databaseName, name, getDataSourceActiveVersion(databaseName, name)));
         if (!Strings.isNullOrEmpty(dataSourceValue)) {
             result.put(name, new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
         }
@@ -84,14 +84,14 @@ public final class DataSourceUnitPersistService implements DatabaseBasedPersistS
     
     @Override
     public void delete(final String databaseName, final String name) {
-        repository.delete(DatabaseMetaDataNode.getDataSourceUnitNode(databaseName, name));
+        repository.delete(DataSourceMetaDataNode.getDataSourceUnitNode(databaseName, name));
     }
     
     @Override
     public Collection<MetaDataVersion> deleteConfig(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
-            String delKey = DatabaseMetaDataNode.getDataSourceUnitNode(databaseName, entry.getKey());
+            String delKey = DataSourceMetaDataNode.getDataSourceUnitNode(databaseName, entry.getKey());
             repository.delete(delKey);
             result.add(new MetaDataVersion(delKey));
         }
@@ -102,19 +102,19 @@ public final class DataSourceUnitPersistService implements DatabaseBasedPersistS
     public Collection<MetaDataVersion> persistConfig(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
-            List<String> versions = repository.getChildrenKeys(DatabaseMetaDataNode.getDataSourceUnitVersionsNode(databaseName, entry.getKey()));
+            List<String> versions = repository.getChildrenKeys(DataSourceMetaDataNode.getDataSourceUnitVersionsNode(databaseName, entry.getKey()));
             String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            repository.persist(DatabaseMetaDataNode.getDataSourceUnitNodeWithVersion(databaseName, entry.getKey(), nextActiveVersion),
+            repository.persist(DataSourceMetaDataNode.getDataSourceUnitVersionNode(databaseName, entry.getKey(), nextActiveVersion),
                     YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
             if (Strings.isNullOrEmpty(getDataSourceActiveVersion(databaseName, entry.getKey()))) {
-                repository.persist(DatabaseMetaDataNode.getDataSourceUnitActiveVersionNode(databaseName, entry.getKey()), DEFAULT_VERSION);
+                repository.persist(DataSourceMetaDataNode.getDataSourceUnitActiveVersionNode(databaseName, entry.getKey()), DEFAULT_VERSION);
             }
-            result.add(new MetaDataVersion(DatabaseMetaDataNode.getDataSourceUnitNode(databaseName, entry.getKey()), getDataSourceActiveVersion(databaseName, entry.getKey()), nextActiveVersion));
+            result.add(new MetaDataVersion(DataSourceMetaDataNode.getDataSourceUnitNode(databaseName, entry.getKey()), getDataSourceActiveVersion(databaseName, entry.getKey()), nextActiveVersion));
         }
         return result;
     }
     
     private String getDataSourceActiveVersion(final String databaseName, final String dataSourceName) {
-        return repository.getDirectly(DatabaseMetaDataNode.getDataSourceUnitActiveVersionNode(databaseName, dataSourceName));
+        return repository.getDirectly(DataSourceMetaDataNode.getDataSourceUnitActiveVersionNode(databaseName, dataSourceName));
     }
 }
