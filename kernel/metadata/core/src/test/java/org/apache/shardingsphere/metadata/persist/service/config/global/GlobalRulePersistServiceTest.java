@@ -54,10 +54,8 @@ public class GlobalRulePersistServiceTest {
         // Arrange
         Collection<RuleConfiguration> expectRuleConfigs = buildRuleConfigs();
         when(repository.getDirectly(anyString())).thenReturn("0");
-        
         // Act
         globalRulePersistService.persist(expectRuleConfigs);
-
         // Assert
         verify(repository, times(expectRuleConfigs.size())).persist(anyString(), anyString());
     }
