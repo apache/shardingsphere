@@ -47,13 +47,13 @@ public final class RuleConfigurationCheckEngine {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void check(final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
-        RuleConfigurationChecker configChecker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
-        Collection<String> requiredDataSourceNames = configChecker.getRequiredDataSourceNames(ruleConfig);
+        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        Collection<String> requiredDataSourceNames = checker.getRequiredDataSourceNames(ruleConfig);
         if (!requiredDataSourceNames.isEmpty()) {
             checkDataSourcesExisted(database, requiredDataSourceNames);
         }
         Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource()));
-        configChecker.check(database.getName(), ruleConfig, dataSources, database.getRuleMetaData().getRules());
+        checker.check(database.getName(), ruleConfig, dataSources, database.getRuleMetaData().getRules());
     }
     
     private static void checkDataSourcesExisted(final ShardingSphereDatabase database, final Collection<String> requiredDataSourceNames) {
