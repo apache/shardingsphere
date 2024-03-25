@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mask.checker;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmNotFoundOnColumnException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -59,7 +59,7 @@ public final class MaskRuleConfigurationChecker implements RuleConfigurationChec
     
     private void checkColumn(final String databaseName, final String tableName, final MaskColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
         ShardingSpherePreconditions.checkState(maskAlgorithms.containsKey(columnRuleConfig.getMaskAlgorithm()),
-                () -> new AlgorithmNotFoundOnColumnException("mask", columnRuleConfig.getMaskAlgorithm(), databaseName, tableName, columnRuleConfig.getLogicColumn()));
+                () -> new UnregisteredAlgorithmException("Mask", columnRuleConfig.getMaskAlgorithm(), databaseName, tableName, columnRuleConfig.getLogicColumn()));
     }
     
     @Override

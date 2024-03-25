@@ -24,7 +24,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42000     | 10010       | Rule does not exist.                                                           |
 | 44000     | 10011       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
 | 44000     | 10012       | '%s' algorithm on database.table.column: '%s'.'%s'.'%s' is required.           |
-| 42S02     | 10013       | Can not find '%s' algorithm '%s' on database.table.column: '%s'.'%s'.'%s'.     |
+| 42S02     | 10013       | '%s' algorithm '%s' on database.table.column: '%s'.'%s'.'%s' is unregistered.  |
 | HY000     | 10015       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
 | 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
@@ -269,7 +269,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 20705       | Assisted query column of \`%s\` can not be null in database \`%s\`.                                |
 | 44000     | 20707       | Like query column of \`%s\` can not be null in database \`%s\`.                                    |
 | 44000     | 20709       | Can not find encrypt table: \`%s\`.                                                                |
-| 44000     | 20710       | Can not found registered encryptor \`%s\` in database \`%s\`.                                      |
 
 ### 影子库
 

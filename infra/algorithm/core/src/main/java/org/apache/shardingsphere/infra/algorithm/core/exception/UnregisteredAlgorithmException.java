@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.exception.metadata;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
-import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Unregistered encryptor exception.
+ * Unregistered algorithm exception.
  */
-public final class UnregisteredEncryptorException extends EncryptSQLException {
+public final class UnregisteredAlgorithmException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = -1106379155485560944L;
+    private static final long serialVersionUID = -4570489906443880879L;
     
-    public UnregisteredEncryptorException(final String databaseName, final String encryptorName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 10, "Can not found registered encryptor `%s` in database `%s`.", encryptorName, databaseName);
+    public UnregisteredAlgorithmException(final String algorithmType, final String algorithmName, final String databaseName, final String tableName, final String columnName) {
+        super(XOpenSQLState.NOT_FOUND, 13,
+                "'%s' algorithm '%s' on database.table.column: '%s'.'%s'.'%s' is unregistered.", algorithmType, algorithmName, databaseName, tableName, columnName);
     }
 }
