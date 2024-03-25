@@ -23,7 +23,6 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmNotFoundOnTableException;
 import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
@@ -589,24 +588,22 @@ public final class ShardingRule implements DatabaseRule {
      * @return generated keys
      */
     public Collection<? extends Comparable<?>> generateKeys(final AlgorithmSQLContext algorithmSQLContext, final int keyGenerateCount) {
-        return getKeyGenerateAlgorithm(algorithmSQLContext.getDatabaseName(), algorithmSQLContext.getTableName()).generateKeys(algorithmSQLContext, keyGenerateCount);
-    }
-    
-    private KeyGenerateAlgorithm getKeyGenerateAlgorithm(final String databaseName, final String logicTableName) {
-        Optional<ShardingTable> shardingTable = findShardingTable(logicTableName);
-        ShardingSpherePreconditions.checkState(shardingTable.isPresent(), () -> new AlgorithmNotFoundOnTableException("key generator", databaseName, logicTableName));
-        return null == shardingTable.get().getKeyGeneratorName() ? defaultKeyGenerateAlgorithm : keyGenerators.get(shardingTable.get().getKeyGeneratorName());
+        return getKeyGenerateAlgorithm(algorithmSQLContext.getTableName()).generateKeys(algorithmSQLContext, keyGenerateCount);
     }
     
     /**
      * Judge whether support auto increment or not.
      * 
-     * @param databaseName database name
      * @param logicTableName logic table name
      * @return whether support auto increment or not
      */
-    public boolean isSupportAutoIncrement(final String databaseName, final String logicTableName) {
-        return getKeyGenerateAlgorithm(databaseName, logicTableName).isSupportAutoIncrement();
+    public boolean isSupportAutoIncrement(final String logicTableName) {
+        return getKeyGenerateAlgorithm(logicTableName).isSupportAutoIncrement();
+    }
+    
+    private KeyGenerateAlgorithm getKeyGenerateAlgorithm(final String logicTableName) {
+        ShardingTable shardingTable = getShardingTable(logicTableName);
+        return null == shardingTable.getKeyGeneratorName() ? defaultKeyGenerateAlgorithm : keyGenerators.get(shardingTable.getKeyGeneratorName());
     }
     
     /**
