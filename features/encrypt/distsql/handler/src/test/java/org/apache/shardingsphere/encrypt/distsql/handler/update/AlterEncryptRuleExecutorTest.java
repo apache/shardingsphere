@@ -62,8 +62,7 @@ class AlterEncryptRuleExecutorTest {
         EncryptRule rule = mock(EncryptRule.class);
         when(rule.getConfiguration()).thenReturn(new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
         executor.setRule(rule);
-        assertThrows(MissingRequiredRuleException.class,
-                () -> executor.checkBeforeUpdate(createSQLStatement("MD5")));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("MD5")));
     }
     
     @Test

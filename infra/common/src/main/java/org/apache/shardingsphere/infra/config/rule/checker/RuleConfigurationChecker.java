@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -43,4 +44,14 @@ public interface RuleConfigurationChecker<T extends RuleConfiguration> extends O
      * @param builtRules built rules
      */
     void check(String databaseName, T ruleConfig, Map<String, DataSource> dataSourceMap, Collection<ShardingSphereRule> builtRules);
+    
+    /**
+     * Get required data source names.
+     *
+     * @param ruleConfig rule configuration
+     * @return required data source names
+     */
+    default Collection<String> getRequiredDataSourceNames(T ruleConfig) {
+        return Collections.emptyList();
+    }
 }

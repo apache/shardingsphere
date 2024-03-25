@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -39,14 +40,14 @@ class EncryptRuleConfigurationCheckerTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertCheckWhenConfigValidConfiguration() {
-        EncryptRuleConfiguration config = createValidConfiguration();
-        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
+        EncryptRuleConfiguration ruleConfig = createValidConfiguration();
+        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        checker.check("test", ruleConfig, Collections.emptyMap(), Collections.emptyList());
     }
     
     private EncryptRuleConfiguration createValidConfiguration() {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
-        when(result.getEncryptors()).thenReturn(Collections.singletonMap("aes_encryptor", mock(AlgorithmConfiguration.class)));
+        when(result.getEncryptors()).thenReturn(Collections.singletonMap("aes_encryptor", new AlgorithmConfiguration("MD5", new Properties())));
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "aes_encryptor"));
         Collection<EncryptColumnRuleConfiguration> columns = Collections.singleton(columnRuleConfig);
         when(result.getTables()).thenReturn(Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", columns)));

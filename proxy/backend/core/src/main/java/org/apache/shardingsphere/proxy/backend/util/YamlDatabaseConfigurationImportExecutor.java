@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.util;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationCheckEngine;
 import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
@@ -140,7 +140,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void addRule(final Collection<RuleConfiguration> ruleConfigs, final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
-        ImportRuleConfigurationChecker.checkRule(ruleConfig, database);
+        RuleConfigurationCheckEngine.checkRule(ruleConfig, database);
         ruleConfigs.add(ruleConfig);
         database.getRuleMetaData().getRules().add(buildRule(ruleConfig, database));
     }

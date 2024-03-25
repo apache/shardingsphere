@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.algorithm;
+package org.apache.shardingsphere.infra.exception.algorithm;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.AlgorithmDefinitionException;
 
 import java.util.Collection;
 
 /**
  * Invalid algorithm configuration exception.
  */
-public final class InvalidAlgorithmConfigurationException extends AlgorithmDefinitionViolationException {
+public final class InvalidAlgorithmConfigurationException extends AlgorithmDefinitionException {
     
     private static final long serialVersionUID = 1352014079406440573L;
     

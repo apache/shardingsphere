@@ -38,9 +38,10 @@ import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingReq
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Readwrite-splitting rule configuration checker.
@@ -51,7 +52,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     public void check(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs = ruleConfig.getDataSources();
         checkDataSources(databaseName, configs, dataSourceMap, builtRules);
-        checkLoadBalancer(databaseName, configs, getLoadBalancer(ruleConfig));
+        checkLoadBalancer(databaseName, ruleConfig);
     }
     
     private void checkDataSources(final String databaseName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs,
@@ -66,33 +67,28 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     
     private void checkDataSources(final String databaseName, final Map<String, DataSource> dataSourceMap,
                                   final ReadwriteSplittingDataSourceRuleConfiguration config, final Collection<String> addedWriteDataSourceNames,
-                                  final Collection<String> readDataSourceNames, final Collection<ShardingSphereRule> rules) {
+                                  final Collection<String> readDataSourceNames, final Collection<ShardingSphereRule> builtRules) {
         ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(config.getWriteDataSourceName()), () -> new MissingRequiredWriteDataSourceNameException(databaseName));
         ShardingSpherePreconditions.checkState(!config.getReadDataSourceNames().isEmpty(), () -> new MissingRequiredReadDataSourceNamesException(databaseName));
-        checkWriteDataSourceNames(databaseName, dataSourceMap, addedWriteDataSourceNames, config, rules);
+        checkWriteDataSourceNames(databaseName, dataSourceMap, addedWriteDataSourceNames, config, builtRules);
         for (String each : config.getReadDataSourceNames()) {
-            checkReadeDataSourceNames(databaseName, dataSourceMap, readDataSourceNames, each, rules);
+            checkReadeDataSourceNames(databaseName, dataSourceMap, readDataSourceNames, each, builtRules);
         }
     }
     
     private void checkWriteDataSourceNames(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> addedWriteDataSourceNames,
-                                           final ReadwriteSplittingDataSourceRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+                                           final ReadwriteSplittingDataSourceRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
         for (String each : InlineExpressionParserFactory.newInstance(config.getWriteDataSourceName()).splitAndEvaluate()) {
-            ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each) || containsInOtherRules(each, rules),
+            ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each) || containsInOtherRules(each, builtRules),
                     () -> new DataSourceNameNotExistedException(String.format("Write data source name `%s` not in database `%s`.", each, databaseName)));
             ShardingSpherePreconditions.checkState(addedWriteDataSourceNames.add(each),
                     () -> new DuplicateDataSourceException(String.format("Can not config duplicate write data source `%s` in database `%s`.", each, databaseName)));
         }
     }
     
-    private boolean containsInOtherRules(final String datasourceName, final Collection<ShardingSphereRule> rules) {
-        for (ShardingSphereRule each : rules) {
-            Optional<DataSourceMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
-            if (ruleAttribute.isPresent() && ruleAttribute.get().getDataSourceMapper().containsKey(datasourceName)) {
-                return true;
-            }
-        }
-        return false;
+    private boolean containsInOtherRules(final String datasourceName, final Collection<ShardingSphereRule> builtRules) {
+        return builtRules.stream().map(each -> each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class))
+                .anyMatch(ruleAttribute -> ruleAttribute.isPresent() && ruleAttribute.get().getDataSourceMapper().containsKey(datasourceName));
     }
     
     private void checkReadeDataSourceNames(final String databaseName, final Map<String, DataSource> dataSourceMap,
@@ -105,8 +101,10 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
         }
     }
     
-    private void checkLoadBalancer(final String databaseName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs, final Map<String, LoadBalanceAlgorithm> loadBalancers) {
-        for (ReadwriteSplittingDataSourceRuleConfiguration each : configs) {
+    private void checkLoadBalancer(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig) {
+        Map<String, LoadBalanceAlgorithm> loadBalancers = ruleConfig.getLoadBalancers().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> TypedSPILoader.getService(LoadBalanceAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps())));
+        for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
             if (Strings.isNullOrEmpty(each.getLoadBalancerName())) {
                 continue;
             }
@@ -116,9 +114,17 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
         }
     }
     
-    private Map<String, LoadBalanceAlgorithm> getLoadBalancer(final ReadwriteSplittingRuleConfiguration ruleConfig) {
-        Map<String, LoadBalanceAlgorithm> result = new LinkedHashMap<>(ruleConfig.getLoadBalancers().size(), 1F);
-        ruleConfig.getLoadBalancers().forEach((key, value) -> result.put(key, TypedSPILoader.getService(LoadBalanceAlgorithm.class, value.getType(), value.getProps())));
+    @Override
+    public Collection<String> getRequiredDataSourceNames(final ReadwriteSplittingRuleConfiguration ruleConfig) {
+        Collection<String> result = new LinkedHashSet<>();
+        for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
+            if (null != each.getWriteDataSourceName()) {
+                result.add(each.getWriteDataSourceName());
+            }
+            if (!each.getReadDataSourceNames().isEmpty()) {
+                result.addAll(each.getReadDataSourceNames());
+            }
+        }
         return result;
     }
     

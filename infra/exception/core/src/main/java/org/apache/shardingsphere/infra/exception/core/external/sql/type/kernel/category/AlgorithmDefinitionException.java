@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.algorithm;
+package org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.KernelSQLException;
 
 /**
- * Duplicate algorithm exception.
+ * Algorithm definition exception.
  */
-public final class DuplicateAlgorithmException extends AlgorithmDefinitionViolationException {
+public abstract class AlgorithmDefinitionException extends KernelSQLException {
     
-    private static final long serialVersionUID = 3503761639898230997L;
+    private static final long serialVersionUID = -8947223495845000542L;
     
-    public DuplicateAlgorithmException(final String type, final String databaseName, final Collection<String> auditorNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 153, "Duplicate %s algorithms `%s` in database `%s`.", type, auditorNames, databaseName);
+    private static final int KERNEL_CODE = 9;
+    
+    protected AlgorithmDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
     }
 }
