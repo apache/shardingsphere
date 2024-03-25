@@ -33,8 +33,29 @@ class DataSourceMetaDataNodeTest {
     }
     
     @Test
+    void assertGetDataSourceNameByDataSourceUnitActiveVersionNode() {
+        Optional<String> actual = DataSourceMetaDataNode.getDataSourceNameByDataSourceUnitActiveVersionNode("/metadata/logic_db/data_sources/units/foo_ds/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_ds"));
+    }
+    
+    @Test
     void assertGetDataSourceNameByDataSourceUnitNode() {
-        Optional<String> actual = DataSourceMetaDataNode.getDataSourceNameByDataSourceUnitNode("/metadata/logic_db/data_sources/units/foo_ds/versions/0");
+        Optional<String> actual = DataSourceMetaDataNode.getDataSourceNameByDataSourceUnitNode("/metadata/logic_db/data_sources/units/foo_ds");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_ds"));
+    }
+    
+    @Test
+    void assertGetDataSourceNameByDataSourceNodeActiveVersionNode() {
+        Optional<String> actual = DataSourceMetaDataNode.getDataSourceNameByDataSourceNodeActiveVersionNode("/metadata/logic_db/data_sources/nodes/foo_ds/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_ds"));
+    }
+    
+    @Test
+    void assertGetDataSourceNameByDataSourceNodeNode() {
+        Optional<String> actual = DataSourceMetaDataNode.getDataSourceNameByDataSourceNodeNode("/metadata/logic_db/data_sources/nodes/foo_ds");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_ds"));
     }
@@ -42,6 +63,16 @@ class DataSourceMetaDataNodeTest {
     @Test
     void assertIsDataSourceUnitActiveVersionNode() {
         assertTrue(DataSourceMetaDataNode.isDataSourceUnitActiveVersionNode("/metadata/logic_db/data_sources/units/foo_ds/active_version"));
+    }
+    
+    @Test
+    void assertIsDataSourceUnitNode() {
+        assertTrue(DataSourceMetaDataNode.isDataSourceUnitNode("/metadata/logic_db/data_sources/units/foo_ds"));
+    }
+    
+    @Test
+    void assertIsDataSourceNodeNode() {
+        assertTrue(DataSourceMetaDataNode.isDataSourceNodeNode("/metadata/logic_db/data_sources/nodes/foo_ds"));
     }
     
     @Test
