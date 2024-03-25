@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.exception.metadata;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
-import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Missing encryptor exception.
+ * Empty algorithm on column exception.
  */
-public final class MissingEncryptorException extends EncryptSQLException {
+public final class EmptyAlgorithmOnColumnException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = -4847495252826650747L;
+    private static final long serialVersionUID = 8128067899672436211L;
     
-    public MissingEncryptorException(final String tableName, final String logicColumnName, final String encryptorType) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Can not find %s encryptor in table `%s` and column `%s`.", encryptorType, tableName, logicColumnName);
+    public EmptyAlgorithmOnColumnException(final String algorithmType, final String databaseName, final String tableName, final String columnName) {
+        super(XOpenSQLState.NOT_FOUND, 12, "'%s' algorithm on database.table.column: '%s'.'%s'.'%s' is required.", algorithmType, databaseName, tableName, columnName);
     }
 }
