@@ -40,12 +40,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class PropertiesPersistServiceTest {
     
+    private static final String DEFAULT_VERSION = "0";
+    
     private PropertiesPersistService propertiesPersistService;
     
     @Mock
     private PersistRepository repository;
-    
-    private static final String DEFAULT_VERSION = "0";
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
@@ -101,7 +101,7 @@ public class PropertiesPersistServiceTest {
     @Test
     void testLoadWithExistingContent() {
         // Arrange
-        String activeVersion = "1"; // Assume an active version exists
+        String activeVersion = "1";
         String yamlContent = "firstName: \"John\"\nlastName: \"Doe\"\nage: 20";
         when(repository.getDirectly(GlobalNode.getPropsActiveVersionNode())).thenReturn(activeVersion);
         when(repository.getDirectly(GlobalNode.getPropsVersionNode(activeVersion))).thenReturn(yamlContent);

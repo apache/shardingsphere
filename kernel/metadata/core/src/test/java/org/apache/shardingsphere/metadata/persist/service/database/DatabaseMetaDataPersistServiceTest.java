@@ -166,7 +166,7 @@ public class DatabaseMetaDataPersistServiceTest {
     }
     
     private String createTableString() {
-        Map<String, Object> tableMap = Maps.newHashMap();
+        final Map<String, Object> tableMap = Maps.newHashMap();
         Map<String, Object> columns = Maps.newHashMap();
         Map<String, Object> column = Maps.newHashMap();
         column.put("name", "id");
@@ -184,6 +184,5 @@ public class DatabaseMetaDataPersistServiceTest {
                 Collections.emptyList(), Collections.emptyList()));
         return schema;
     }
-    
     
 }

@@ -27,5 +27,6 @@ import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfigur
 public final class YamlDataNodeGlobalRuleConfigurationFixture implements RuleConfiguration, EnhancedRuleConfiguration {
     
     private String key;
+    
     private String value;
 }

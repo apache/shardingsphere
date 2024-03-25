@@ -60,6 +60,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class MetaDataPersistServiceTest {
     
+    private static final String DEFAULT_VERSION = "0";
+    
     @Mock
     private PersistRepository repository;
     
@@ -77,12 +79,10 @@ class MetaDataPersistServiceTest {
     
     private MetaDataPersistService metaDataPersistService;
     
-    private static final String DEFAULT_VERSION = "0";
-    
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        GlobalRulePersistService globalRuleService = new GlobalRulePersistService(repository);
-        PropertiesPersistService propsService = new PropertiesPersistService(repository);
+        final GlobalRulePersistService globalRuleService = new GlobalRulePersistService(repository);
+        final PropertiesPersistService propsService = new PropertiesPersistService(repository);
         metaDataPersistService = new MetaDataPersistService(repository);
         setField("dataSourceUnitService", dataSourceService);
         setField("databaseRulePersistService", databaseRulePersistService);

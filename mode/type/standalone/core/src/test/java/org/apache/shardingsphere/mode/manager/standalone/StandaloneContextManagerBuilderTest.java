@@ -44,6 +44,7 @@ public class StandaloneContextManagerBuilderTest {
     void setUp() throws ReflectiveOperationException {
         standaloneContextManagerBuilder = new StandaloneContextManagerBuilder();
     }
+    
     @Test
     void testBuild() throws SQLException {
         ModeConfiguration modeConfig = new ModeConfiguration("Standalone",

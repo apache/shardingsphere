@@ -21,21 +21,21 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
 @Getter
 @Setter
 public final class YamlDataNodeRuleConfigurationFixture implements RuleConfiguration, EnhancedRuleConfiguration {
     
+    private String key;
+    
+    private String value;
+    
     public YamlDataNodeRuleConfigurationFixture() {
     }
-    
     
     public YamlDataNodeRuleConfigurationFixture(final String key, final String value) {
         this.key = key;
         this.value = value;
     }
     
-    private String key;
-    private String value;
 }

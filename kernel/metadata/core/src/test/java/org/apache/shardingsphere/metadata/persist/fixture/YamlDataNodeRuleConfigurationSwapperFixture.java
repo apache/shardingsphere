@@ -53,7 +53,7 @@ public class YamlDataNodeRuleConfigurationSwapperFixture implements YamlDataNode
     
     @Override
     public Optional<YamlDataNodeRuleConfigurationFixture> swapToObject(final Collection<YamlDataNode> dataNodes) {
-        if(null == dataNodes || dataNodes.isEmpty()){
+        if (null == dataNodes || dataNodes.isEmpty()) {
             return Optional.empty();
         }
         YamlDataNode dataNode = dataNodes.iterator().next();

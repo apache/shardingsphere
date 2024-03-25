@@ -136,7 +136,7 @@ public class ViewMetaDataPersistServiceTest {
         return map;
     }
     
-    private static ShardingSphereView createView(String viewName) {
+    private static ShardingSphereView createView(final String viewName) {
         return new ShardingSphereView(viewName, "select `foo_view`.`foo_view`.`id` AS `id` from `foo_view`.`foo_view`");
     }
     

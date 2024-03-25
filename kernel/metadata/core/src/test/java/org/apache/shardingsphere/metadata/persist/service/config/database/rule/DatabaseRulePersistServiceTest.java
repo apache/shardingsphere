@@ -117,7 +117,6 @@ public class DatabaseRulePersistServiceTest {
         Collection<RuleConfiguration> expectRuleConfigs = buildRuleConfigs();
         when(repository.getDirectly(anyString())).thenReturn("0");
         
-        
         Collection<MetaDataVersion> actual = databaseRuleService.persistConfig(databaseName, expectRuleConfigs);
         
         verify(repository, times(expectRuleConfigs.size())).persist(anyString(), anyString());

@@ -53,8 +53,8 @@ public class MetaDataVersionPersistServiceTest {
         Collection<MetaDataVersion> expect = createMetaData();
         metaDataVersionPersistService.switchActiveVersion(expect);
         
-        
         verify(repository, times(1)).persist(anyString(), anyString());
+        
         verify(repository, times(1)).delete(anyString());
     }
     

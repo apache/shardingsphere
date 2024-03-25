@@ -53,7 +53,7 @@ public class YamlDataNodeGlobalRuleConfigurationSwapperFixture implements YamlDa
     
     @Override
     public Optional<YamlDataNodeGlobalRuleConfigurationFixture> swapToObject(final Collection<YamlDataNode> dataNodes) {
-        if(null == dataNodes || dataNodes.isEmpty()){
+        if (null == dataNodes || dataNodes.isEmpty()) {
             return Optional.empty();
         }
         YamlDataNode dataNode = dataNodes.iterator().next();

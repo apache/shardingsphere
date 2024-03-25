@@ -126,7 +126,7 @@ public class TableMetaDataPersistServiceTest {
     }
     
     private String createTableString() {
-        Map<String, Object> tableMap = Maps.newHashMap();
+        final Map<String, Object> tableMap = Maps.newHashMap();
         Map<String, Object> columns = Maps.newHashMap();
         Map<String, Object> column = Maps.newHashMap();
         column.put("name", "id");
@@ -143,12 +143,11 @@ public class TableMetaDataPersistServiceTest {
         return map;
     }
     
-    private static ShardingSphereTable createTable(String tableName) {
+    private static ShardingSphereTable createTable(final String tableName) {
         return new ShardingSphereTable(tableName, Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("warehouse_name", Types.VARCHAR, false, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList());
     }
-    
     
 }
