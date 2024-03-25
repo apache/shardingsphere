@@ -60,10 +60,7 @@ public final class EncryptRuleConfigurationChecker implements RuleConfigurationC
     }
     
     private void checkColumns(final String databaseName, final EncryptTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> encryptors) {
-        String tableName = tableRuleConfig.getName();
-        for (EncryptColumnRuleConfiguration each : tableRuleConfig.getColumns()) {
-            checkColumn(databaseName, tableName, each, encryptors);
-        }
+        tableRuleConfig.getColumns().forEach(each -> checkColumn(databaseName, tableRuleConfig.getName(), each, encryptors));
     }
     
     private void checkColumn(final String databaseName, final String tableName, final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> encryptors) {

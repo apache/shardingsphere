@@ -50,14 +50,16 @@ public final class MaskRuleConfigurationChecker implements RuleConfigurationChec
     }
     
     private void checkTables(final String databaseName, final Collection<MaskTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
-        tables.forEach(each -> checkColumns(databaseName, each.getName(), each.getColumns(), maskAlgorithms));
+        tables.forEach(each -> checkColumns(databaseName, each, maskAlgorithms));
     }
     
-    private void checkColumns(final String databaseName, final String tableName, final Collection<MaskColumnRuleConfiguration> columns, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
-        for (MaskColumnRuleConfiguration each : columns) {
-            ShardingSpherePreconditions.checkState(maskAlgorithms.containsKey(each.getMaskAlgorithm()),
-                    () -> new AlgorithmNotFoundOnColumnException("mask", each.getMaskAlgorithm(), databaseName, tableName, each.getLogicColumn()));
-        }
+    private void checkColumns(final String databaseName, final MaskTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
+        tableRuleConfig.getColumns().forEach(each -> checkColumn(databaseName, tableRuleConfig.getName(), each, maskAlgorithms));
+    }
+    
+    private void checkColumn(final String databaseName, final String tableName, final MaskColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
+        ShardingSpherePreconditions.checkState(maskAlgorithms.containsKey(columnRuleConfig.getMaskAlgorithm()),
+                () -> new AlgorithmNotFoundOnColumnException("mask", columnRuleConfig.getMaskAlgorithm(), databaseName, tableName, columnRuleConfig.getLogicColumn()));
     }
     
     @Override
