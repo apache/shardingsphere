@@ -86,10 +86,6 @@ public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRu
         return sqlStatement.getRules().stream().map(TableReferenceRuleSegment::getName).collect(Collectors.toSet());
     }
     
-    private Collection<String> getToBeAlteredRuleNames(final ShardingRuleConfiguration ruleConfig) {
-        return ruleConfig.getBindingTableGroups().stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toSet());
-    }
-    
     private void checkToBeReferencedShardingTablesExisted(final AlterShardingTableReferenceRuleStatement sqlStatement) {
         Collection<String> currentShardingTableNames = getCurrentShardingTableNames();
         Collection<String> notExistedTableNames = sqlStatement.getTableNames().stream().filter(each -> !currentShardingTableNames.contains(each)).collect(Collectors.toSet());

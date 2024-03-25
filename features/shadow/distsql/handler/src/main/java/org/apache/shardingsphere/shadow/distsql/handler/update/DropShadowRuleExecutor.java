@@ -110,10 +110,6 @@ public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<Dr
         dataSourceRuleConfig.ifPresent(optional -> rule.getConfiguration().getDataSources().remove(optional));
     }
     
-    private void dropUnusedAlgorithm(final ShadowRuleConfiguration currentRuleConfig) {
-        UnusedAlgorithmFinder.findUnusedShadowAlgorithm(currentRuleConfig).forEach(each -> currentRuleConfig.getShadowAlgorithms().remove(each));
-    }
-    
     @Override
     public Class<ShadowRule> getRuleClass() {
         return ShadowRule.class;
