@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
@@ -52,6 +53,10 @@ public final class RuleConfigurationCheckEngine {
         if (!requiredDataSourceNames.isEmpty()) {
             checkDataSourcesExisted(database, requiredDataSourceNames);
         }
+        Collection<String> tableNames = checker.getTableNames(ruleConfig);
+        if (!tableNames.isEmpty()) {
+            checkTablesNotDuplicated(ruleConfig, database.getName(), tableNames);
+        }
         Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource()));
         checker.check(database.getName(), ruleConfig, dataSources, database.getRuleMetaData().getRules());
     }
@@ -62,5 +67,16 @@ public final class RuleConfigurationCheckEngine {
                 .flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toSet());
         notExistedDataSources.removeIf(logicDataSources::contains);
         ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
+    }
+    
+    private static void checkTablesNotDuplicated(final RuleConfiguration ruleConfig, final String databaseName, final Collection<String> tableNames) {
+        Collection<String> duplicatedTables = tableNames.stream()
+                .collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream().filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(duplicatedTables.isEmpty(), () -> new DuplicateRuleException(getRuleType(ruleConfig), databaseName, duplicatedTables));
+    }
+    
+    private static String getRuleType(final RuleConfiguration ruleConfig) {
+        String ruleConfigClassName = ruleConfig.getClass().getSimpleName();
+        return ruleConfigClassName.substring(0, ruleConfigClassName.indexOf("RuleConfiguration"));
     }
 }

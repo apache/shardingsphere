@@ -51,7 +51,17 @@ public interface RuleConfigurationChecker<T extends RuleConfiguration> extends O
      * @param ruleConfig rule configuration
      * @return required data source names
      */
-    default Collection<String> getRequiredDataSourceNames(T ruleConfig) {
+    default Collection<String> getRequiredDataSourceNames(final T ruleConfig) {
+        return Collections.emptyList();
+    }
+    
+    /**
+     * Get table names.
+     * 
+     * @param ruleConfig rule configuration
+     * @return table names
+     */
+    default Collection<String> getTableNames(final T ruleConfig) {
         return Collections.emptyList();
     }
 }

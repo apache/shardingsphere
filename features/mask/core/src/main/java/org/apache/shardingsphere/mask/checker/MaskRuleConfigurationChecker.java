@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmNotFoundOnColumnException;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -52,14 +50,7 @@ public final class MaskRuleConfigurationChecker implements RuleConfigurationChec
     }
     
     private void checkTables(final String databaseName, final Collection<MaskTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
-        checkTablesNotDuplicated(databaseName, tables);
         tables.forEach(each -> checkColumns(databaseName, each.getName(), each.getColumns(), maskAlgorithms));
-    }
-    
-    private void checkTablesNotDuplicated(final String databaseName, final Collection<MaskTableRuleConfiguration> tables) {
-        Collection<String> duplicatedTables = tables.stream().map(MaskTableRuleConfiguration::getName)
-                .collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream().filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(duplicatedTables.isEmpty(), () -> new DuplicateRuleException("MASK", databaseName, duplicatedTables));
     }
     
     private void checkColumns(final String databaseName, final String tableName, final Collection<MaskColumnRuleConfiguration> columns, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
@@ -67,6 +58,11 @@ public final class MaskRuleConfigurationChecker implements RuleConfigurationChec
             ShardingSpherePreconditions.checkState(maskAlgorithms.containsKey(each.getMaskAlgorithm()),
                     () -> new AlgorithmNotFoundOnColumnException("mask", each.getMaskAlgorithm(), databaseName, tableName, each.getLogicColumn()));
         }
+    }
+    
+    @Override
+    public Collection<String> getTableNames(final MaskRuleConfiguration ruleConfig) {
+        return ruleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
     }
     
     @Override

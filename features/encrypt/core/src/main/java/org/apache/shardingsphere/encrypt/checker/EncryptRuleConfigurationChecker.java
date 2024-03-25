@@ -32,14 +32,12 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -58,14 +56,7 @@ public final class EncryptRuleConfigurationChecker implements RuleConfigurationC
     }
     
     private void checkTables(final String databaseName, final Collection<EncryptTableRuleConfiguration> tableRuleConfigs, final Map<String, AlgorithmConfiguration> encryptors) {
-        checkTablesNotDuplicated(databaseName, tableRuleConfigs);
         tableRuleConfigs.forEach(each -> checkColumns(databaseName, each, encryptors));
-    }
-    
-    private void checkTablesNotDuplicated(final String databaseName, final Collection<EncryptTableRuleConfiguration> tableRuleConfigs) {
-        Collection<String> duplicatedTables = tableRuleConfigs.stream().map(EncryptTableRuleConfiguration::getName)
-                .collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream().filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(duplicatedTables.isEmpty(), () -> new DuplicateRuleException("ENCRYPT", databaseName, duplicatedTables));
     }
     
     private void checkColumns(final String databaseName, final EncryptTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> encryptors) {
@@ -98,6 +89,11 @@ public final class EncryptRuleConfigurationChecker implements RuleConfigurationC
         ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(likeQueryColumnConfig.getEncryptorName()), () -> new MissingEncryptorException(tableName, logicColumnName, "LIKE_QUERY"));
         ShardingSpherePreconditions.checkState(encryptors.containsKey(likeQueryColumnConfig.getEncryptorName()),
                 () -> new UnregisteredEncryptorException(databaseName, likeQueryColumnConfig.getEncryptorName()));
+    }
+    
+    @Override
+    public Collection<String> getTableNames(final EncryptRuleConfiguration ruleConfig) {
+        return ruleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
     }
     
     @Override
