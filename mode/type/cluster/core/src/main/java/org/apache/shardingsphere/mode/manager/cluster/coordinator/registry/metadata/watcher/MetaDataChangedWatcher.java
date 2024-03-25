@@ -123,7 +123,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     private Optional<GovernanceEvent> createViewChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        Optional<String> viewName = ViewMetaDataNode.getViewName(event.getKey());
+        Optional<String> viewName = ViewMetaDataNode.getViewNameByActiveVersionNode(event.getKey());
         Preconditions.checkState(viewName.isPresent(), "Not found view name.");
         if (Type.DELETED == event.getType()) {
             return Optional.of(new DropViewEvent(databaseName, schemaName, viewName.get(), event.getKey(), event.getValue()));
