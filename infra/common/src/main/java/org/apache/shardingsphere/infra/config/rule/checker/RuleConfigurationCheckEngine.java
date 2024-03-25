@@ -40,13 +40,13 @@ import java.util.stream.Collectors;
 public final class RuleConfigurationCheckEngine {
     
     /**
-     * Check rule.
+     * Check rule configuration.
      * 
-     * @param ruleConfig rule configuration
+     * @param ruleConfig rule configuration to be checked
      * @param database database
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static void checkRule(final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
+    public static void check(final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
         RuleConfigurationChecker configChecker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         Collection<String> requiredDataSourceNames = configChecker.getRequiredDataSourceNames(ruleConfig);
         if (!requiredDataSourceNames.isEmpty()) {
