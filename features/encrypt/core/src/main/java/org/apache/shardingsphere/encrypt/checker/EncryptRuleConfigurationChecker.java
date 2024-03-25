@@ -60,11 +60,16 @@ public final class EncryptRuleConfigurationChecker implements RuleConfigurationC
     }
     
     private void checkColumns(final String databaseName, final EncryptTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> encryptors) {
+        String tableName = tableRuleConfig.getName();
         for (EncryptColumnRuleConfiguration each : tableRuleConfig.getColumns()) {
-            checkCipherColumn(databaseName, tableRuleConfig.getName(), each.getName(), each.getCipher(), encryptors);
-            each.getAssistedQuery().ifPresent(optional -> checkAssistColumn(databaseName, tableRuleConfig.getName(), each.getName(), optional, encryptors));
-            each.getLikeQuery().ifPresent(optional -> checkLikeColumn(databaseName, tableRuleConfig.getName(), each.getName(), optional, encryptors));
+            checkColumn(databaseName, tableName, each, encryptors);
         }
+    }
+    
+    private void checkColumn(final String databaseName, final String tableName, final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> encryptors) {
+        checkCipherColumn(databaseName, tableName, columnRuleConfig.getName(), columnRuleConfig.getCipher(), encryptors);
+        columnRuleConfig.getAssistedQuery().ifPresent(optional -> checkAssistColumn(databaseName, tableName, columnRuleConfig.getName(), optional, encryptors));
+        columnRuleConfig.getLikeQuery().ifPresent(optional -> checkLikeColumn(databaseName, tableName, columnRuleConfig.getName(), optional, encryptors));
     }
     
     private void checkCipherColumn(final String databaseName, final String tableName, final String logicColumnName,
