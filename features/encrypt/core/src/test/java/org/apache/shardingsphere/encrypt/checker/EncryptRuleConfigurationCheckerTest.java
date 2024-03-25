@@ -21,8 +21,8 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.exception.metadata.UnregisteredEncryptorException;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.junit.jupiter.api.Test;
@@ -59,7 +59,7 @@ class EncryptRuleConfigurationCheckerTest {
     void assertCheckWhenConfigInvalidCipherColumn() {
         EncryptRuleConfiguration config = createInvalidCipherColumnConfig();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        assertThrows(UnregisteredEncryptorException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
+        assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
     }
     
     private EncryptRuleConfiguration createInvalidCipherColumnConfig() {
@@ -76,7 +76,7 @@ class EncryptRuleConfigurationCheckerTest {
     void assertCheckWhenConfigInvalidAssistColumn() {
         EncryptRuleConfiguration config = createInvalidAssistColumnConfig();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        assertThrows(UnregisteredEncryptorException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
+        assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
     }
     
     private EncryptRuleConfiguration createInvalidAssistColumnConfig() {
@@ -94,7 +94,7 @@ class EncryptRuleConfigurationCheckerTest {
     void assertCheckWhenConfigInvalidLikeColumn() {
         EncryptRuleConfiguration config = createInvalidLikeColumnConfig();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        assertThrows(UnregisteredEncryptorException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
+        assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
     }
     
     private EncryptRuleConfiguration createInvalidLikeColumnConfig() {
