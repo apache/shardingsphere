@@ -19,7 +19,7 @@
 <sql-parser-test-cases>
     <create-table sql-case-id="create_table_with_column_dec">
         <table name="test3" start-index="13" stop-index="17" />
-        <column-definition type="int" start-index="19" stop-index="39">
+        <column-definition type="int" auto-increment="true" start-index="19" stop-index="39">
             <column name="id" />
         </column-definition>
         <column-definition type="dec" start-index="42" stop-index="68">
@@ -426,7 +426,7 @@
     
     <create-table sql-case-id="create_table_with_column_increment">
         <table name="t_order" start-index="13" stop-index="19" />
-        <column-definition type="INT" start-index="22" stop-index="48">
+        <column-definition type="INT" auto-increment="true" start-index="22" stop-index="48">
             <column name="order_id" />
         </column-definition>
         <column-definition type="INT" start-index="51" stop-index="61">
