@@ -28,6 +28,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.Database
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,6 +61,15 @@ public final class MySQLContainerConfigurationFactory {
         return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(majorVersion), Collections.emptyMap(), Collections.emptyMap());
     }
     
+    /**
+     * Create new instance of MySQL container configuration.
+     *
+     * @return created instance
+     */
+    public static StorageContainerConfiguration newInstance() {
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(), Collections.emptyMap(), Collections.emptyMap());
+    }
+    
     private static String getCommand() {
         return "--server-id=" + ContainerUtils.generateMySQLServerId();
     }
@@ -68,6 +78,16 @@ public final class MySQLContainerConfigurationFactory {
         Map<String, String> result = new HashMap<>(2, 1F);
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
+        return result;
+    }
+    
+    private static Map<String, String> getMountedResources() {
+        Map<String, String> result = new HashMap<>(1, 1F);
+        String path = "env/mysql/01-initdb.sql";
+        URL url = Thread.currentThread().getContextClassLoader().getResource(path);
+        if (null != url) {
+            result.put(path, "/docker-entrypoint-initdb.d/01-initdb.sql");
+        }
         return result;
     }
     

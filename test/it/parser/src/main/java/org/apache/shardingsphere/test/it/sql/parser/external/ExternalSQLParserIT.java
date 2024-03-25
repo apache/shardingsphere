@@ -28,8 +28,8 @@ import org.apache.shardingsphere.test.it.sql.parser.external.env.SQLParserExtern
 import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporter;
 import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporterCreator;
 import org.apache.shardingsphere.test.it.sql.parser.loader.ExternalCaseSettings;
-import org.apache.shardingsphere.test.loader.TestParameterLoadTemplate;
 import org.apache.shardingsphere.test.loader.ExternalSQLTestParameter;
+import org.apache.shardingsphere.test.loader.TestParameterLoadTemplate;
 import org.apache.shardingsphere.test.loader.TestParameterLoader;
 import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
 import org.apache.shardingsphere.test.loader.strategy.impl.GitHubTestParameterLoadStrategy;
@@ -44,7 +44,6 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collection;
 import java.util.stream.Stream;
 
 public abstract class ExternalSQLParserIT {
@@ -79,10 +78,10 @@ public abstract class ExternalSQLParserIT {
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) throws ReflectiveOperationException {
             ExternalCaseSettings settings = extensionContext.getRequiredTestClass().getAnnotation(ExternalCaseSettings.class);
             Preconditions.checkNotNull(settings, "Annotation ExternalSQLParserITSettings is required.");
-            return getTestParameters(settings).stream().map(each -> Arguments.of(each.getSqlCaseId(), each.getDatabaseType(), each.getSql(), each.getReportType()));
+            return getTestParameters(settings).map(each -> Arguments.of(each.getSqlCaseId(), each.getDatabaseType(), each.getSql(), each.getReportType()));
         }
         
-        private Collection<ExternalSQLTestParameter> getTestParameters(final ExternalCaseSettings settings) throws ReflectiveOperationException {
+        private Stream<ExternalSQLTestParameter> getTestParameters(final ExternalCaseSettings settings) throws ReflectiveOperationException {
             TestParameterLoadStrategy loadStrategy = new GitHubTestParameterLoadStrategy();
             URI sqlCaseURI = URI.create(settings.caseURL());
             URI resultURI = URI.create(settings.resultURL());

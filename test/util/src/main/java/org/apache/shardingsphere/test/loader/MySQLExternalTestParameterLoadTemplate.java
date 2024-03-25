@@ -15,10 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.external.loader;
-
-import org.apache.shardingsphere.test.loader.TestParameterLoadTemplate;
-import org.apache.shardingsphere.test.loader.ExternalSQLTestParameter;
+package org.apache.shardingsphere.test.loader;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,10 +35,9 @@ public final class MySQLExternalTestParameterLoadTemplate implements TestParamet
                                                      final List<String> resultFileContent, final String databaseType, final String reportType) {
         Collection<ExternalSQLTestParameter> result = new LinkedList<>();
         List<String> lines = new ArrayList<>();
-        int sqlCaseIndex = 1;
         String delimiter = ";";
-        for (String each : sqlCaseFileContent) {
-            String line = each.trim();
+        for (int i = 0; i < sqlCaseFileContent.size(); i++) {
+            String line = sqlCaseFileContent.get(i).trim();
             if (line.isEmpty() || lines.isEmpty() && SQLLineComment.isComment(line)) {
                 continue;
             }
@@ -51,8 +47,8 @@ public final class MySQLExternalTestParameterLoadTemplate implements TestParamet
             }
             lines.add(line);
             if (line.endsWith(delimiter)) {
-                if (existInResultContent(resultFileContent, lines)) {
-                    String sqlCaseId = sqlCaseFileName + sqlCaseIndex++;
+                if (resultFileContent.isEmpty() || existCorrectResultContent(resultFileContent, lines)) {
+                    String sqlCaseId = sqlCaseFileName + ":" + (i + 1);
                     String sql = String.join("\n", lines);
                     sql = sql.substring(0, sql.length() - delimiter.length());
                     result.add(new ExternalSQLTestParameter(sqlCaseId, databaseType, sql, reportType));
@@ -71,7 +67,7 @@ public final class MySQLExternalTestParameterLoadTemplate implements TestParamet
         return newDelimiter.isEmpty() ? delimiter : newDelimiter;
     }
     
-    private boolean existInResultContent(final List<String> resultLines, final List<String> sqlLines) {
+    private boolean existCorrectResultContent(final List<String> resultLines, final List<String> sqlLines) {
         int nextLineIndex = findSQLNextLineIndex(resultLines, sqlLines);
         return -1 != nextLineIndex && (nextLineIndex == resultLines.size() || !resultLines.get(nextLineIndex).contains("ERROR"));
     }
