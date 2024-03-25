@@ -121,7 +121,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
             Preconditions.checkState(tableName.isPresent(), "Not found table name.");
             return Optional.of(new DropTableEvent(databaseName, schemaName, tableName.get()));
         }
-        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType() && TableMetaDataNode.isTableActiveVersionNode(event.getKey()))) {
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && TableMetaDataNode.isTableActiveVersionNode(event.getKey())) {
             Optional<String> tableName = TableMetaDataNode.getTableNameByActiveVersionNode(event.getKey());
             Preconditions.checkState(tableName.isPresent(), "Not found table name.");
             return Optional.of(new AlterTableEvent(databaseName, schemaName, tableName.get(), event.getKey(), event.getValue()));
@@ -135,7 +135,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
             Preconditions.checkState(viewName.isPresent(), "Not found view name.");
             return Optional.of(new DropViewEvent(databaseName, schemaName, viewName.get(), event.getKey(), event.getValue()));
         }
-        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType() && ViewMetaDataNode.isViewActiveVersionNode(event.getKey()))) {
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && ViewMetaDataNode.isViewActiveVersionNode(event.getKey())) {
             Optional<String> viewName = ViewMetaDataNode.getViewNameByActiveVersionNode(event.getKey());
             Preconditions.checkState(viewName.isPresent(), "Not found view name.");
             return Optional.of(new AlterViewEvent(databaseName, schemaName, viewName.get(), event.getKey(), event.getValue()));
