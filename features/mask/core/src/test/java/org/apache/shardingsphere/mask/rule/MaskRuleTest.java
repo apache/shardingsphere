@@ -1,55 +1,74 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.shardingsphere.mask.rule;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
+import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 
 class MaskRuleTest {
 
-    @Mock
-    private MaskRuleConfiguration mockConfiguration;
-
-    @Mock
-    private MaskAlgorithm<Object, Object> mockMaskAlgorithm;
-
     private MaskRule maskRule;
 
+    private MaskRuleConfiguration mockConfiguration;
+
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    public void setUp() {
+        mockConfiguration = getRuleConfiguration();
         maskRule = new MaskRule(mockConfiguration);
     }
 
     @Test
-    void testFindMaskTableWithExistingTable() {
-        // Mock the behavior of the configuration
-        String tableName = "test_table";
-        Map<String, MaskAlgorithm<Object, Object>> maskAlgorithms = new HashMap<>();
-        maskAlgorithms.put("mockAlgorithm", mockMaskAlgorithm);
-
-        when(mockConfiguration.getMaskAlgorithms()).thenReturn(maskAlgorithms);
-        when(mockConfiguration.getTables()).thenReturn(Collections.singletonList(new MaskRuleConfiguration.TableRuleConfiguration(tableName, Collections.emptyList())));
-
-        // Call the method to be tested
+    public void assertTableNameExists() {
+        String tableName = "t_mask";
         Optional<MaskTable> result = maskRule.findMaskTable(tableName);
-
-        // Verify and assert
         assertTrue(result.isPresent());
-        assertEquals(tableName, result.get().getName());
-        verify(mockConfiguration).getMaskAlgorithms();
-        verify(mockConfiguration).getTables();
+        MaskTable maskTable = result.get();
+        Optional<MaskAlgorithm> algorithm = maskTable.findAlgorithm("user_id");
+        String value = (String) algorithm.get().mask("test");
+        String matchValue = DigestUtils.md5Hex("test");
+        assertEquals(value, matchValue);
     }
 
+    @Test
+    public void assertTableNameNoExists() {
+        String tableName = "non_existent_table";
+        Optional<MaskTable> result = maskRule.findMaskTable(tableName);
+        assertFalse(result.isPresent());
+    }
+
+    private MaskRuleConfiguration getRuleConfiguration() {
+        MaskColumnRuleConfiguration maskColumnRuleConfig = new MaskColumnRuleConfiguration("user_id", "t_mask_user_id_md5");
+        MaskTableRuleConfiguration maskTableRuleConfig = new MaskTableRuleConfiguration("t_mask", Collections.singleton(maskColumnRuleConfig));
+        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("md5", new Properties());
+        return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.singletonMap("t_mask_user_id_md5", algorithmConfig));
+    }
 }
