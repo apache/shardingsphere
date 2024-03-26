@@ -35,7 +35,7 @@ class InlineExpressionParserFactoryTest {
         assertThat(InlineExpressionParserFactory.newInstance("<GROOVY>t_order_0, t_order_1").getType(), is("GROOVY"));
         assertThat(InlineExpressionParserFactory.newInstance("<GROOVY>t_order_0, t_order_1").handlePlaceHolder(), is("t_order_0, t_order_1"));
         assertThat(InlineExpressionParserFactory.newInstance("<LITERAL>t_order_0, t_order_1").getType(), is("LITERAL"));
-        assertThat(InlineExpressionParserFactory.newInstance("<LITERAL>t_order_0, t_order_1").handlePlaceHolder(), is("t_order_0, t_order_1"));
+        assertThrows(UnsupportedOperationException.class, () -> InlineExpressionParserFactory.newInstance("<LITERAL>t_order_0, t_order_1").handlePlaceHolder());
     }
     
     @Test
@@ -46,6 +46,7 @@ class InlineExpressionParserFactoryTest {
     
     @Test
     void assertFixtureInstance() {
+        assertThat(InlineExpressionParserFactory.newInstance("<CUSTOM.FIXTURE>spring").handlePlaceHolder(), is("spring"));
         assertThat(InlineExpressionParserFactory.newInstance("<CUSTOM.FIXTURE>spring").splitAndEvaluate(),
                 is(Arrays.asList("t_order_2023_03", "t_order_2023_04", "t_order_2023_05")));
         assertThat(InlineExpressionParserFactory.newInstance("<CUSTOM.FIXTURE>summer").splitAndEvaluate(),
