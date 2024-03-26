@@ -23,6 +23,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
@@ -52,19 +54,11 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
     
     private final QuoteCharacter quoteCharacter;
     
-    public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final Collection<Projection> projections) {
+    public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final Collection<Projection> projections, final DatabaseType databaseType) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.lastColumn = false;
-        this.quoteCharacter = QuoteCharacter.NONE;
-        this.projections = projections;
-    }
-    
-    public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final Collection<Projection> projections, final QuoteCharacter quoteCharacter) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
-        this.lastColumn = false;
-        this.quoteCharacter = quoteCharacter;
+        this.quoteCharacter = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter();
         this.projections = projections;
     }
     

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -40,24 +41,26 @@ class SubstitutableColumnNameTokenTest {
     @Test
     void assertToString() {
         Collection<Projection> projections = Collections.singletonList(new ColumnProjection(null, "id", null, mock(DatabaseType.class)));
-        assertThat(new SubstitutableColumnNameToken(0, 1, projections).toString(mock(RouteUnit.class)), is("id"));
+        assertThat(new SubstitutableColumnNameToken(0, 1, projections, TypedSPILoader.getService(DatabaseType.class, "MySQL")).toString(mock(RouteUnit.class)), is("`id`"));
     }
     
     @Test
     void assertToStringWithQuote() {
         Collection<Projection> projections = Collections.singletonList(new ColumnProjection(null,
                 new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), mock(DatabaseType.class)));
-        assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)), is("`id` AS `id`"));
+        assertThat(new SubstitutableColumnNameToken(0, 1, projections, TypedSPILoader.getService(DatabaseType.class, "MySQL")).toString(mock(RouteUnit.class)), is("`id` AS `id`"));
     }
     
     @Test
     void assertToStringWithOwnerQuote() {
         Collection<Projection> projectionsWithOwnerQuote = Collections.singletonList(new ColumnProjection(new IdentifierValue("temp", QuoteCharacter.BACK_QUOTE),
                 new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), mock(DatabaseType.class)));
-        assertThat(new SubstitutableColumnNameToken(0, 1, projectionsWithOwnerQuote, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)), is("`temp`.`id` AS `id`"));
+        assertThat(new SubstitutableColumnNameToken(0, 1, projectionsWithOwnerQuote, TypedSPILoader.getService(DatabaseType.class, "MySQL")).toString(mock(RouteUnit.class)),
+                is("`temp`.`id` AS `id`"));
         Collection<Projection> projectionsWithoutOwnerQuote = Collections.singletonList(new ColumnProjection(new IdentifierValue("temp", QuoteCharacter.NONE),
                 new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), mock(DatabaseType.class)));
-        assertThat(new SubstitutableColumnNameToken(0, 1, projectionsWithoutOwnerQuote, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)), is("temp.`id` AS `id`"));
+        assertThat(new SubstitutableColumnNameToken(0, 1, projectionsWithoutOwnerQuote, TypedSPILoader.getService(DatabaseType.class, "MySQL")).toString(mock(RouteUnit.class)),
+                is("`temp`.`id` AS `id`"));
     }
     
     @Test
@@ -66,6 +69,6 @@ class SubstitutableColumnNameTokenTest {
                 new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), mock(DatabaseType.class)),
                 new SubqueryProjection(new SubqueryProjectionSegment(null, "(SELECT name FROM t_order)"), new ColumnProjection(null, "name", null, mock(DatabaseType.class)),
                         new IdentifierValue("name"), mock(DatabaseType.class)));
-        assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)), is("`temp`.`id` AS `id`, `name`"));
+        assertThat(new SubstitutableColumnNameToken(0, 1, projections, TypedSPILoader.getService(DatabaseType.class, "MySQL")).toString(mock(RouteUnit.class)), is("`temp`.`id` AS `id`, `name`"));
     }
 }
