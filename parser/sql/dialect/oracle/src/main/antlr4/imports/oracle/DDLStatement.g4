@@ -48,10 +48,10 @@ bindDefinitionClause
     ;
 
 bindDefinition
-    : LP_ dataType (COMMA_ dataType)* RP_ retunDefinition
+    : LP_ dataType (COMMA_ dataType)* RP_ returnDefinition
     ;
 
-retunDefinition
+returnDefinition
     : RETURN returnTypeDef implementsOperator
     ;
 
