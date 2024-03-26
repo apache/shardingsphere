@@ -56,31 +56,30 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     
     private void checkDataSources(final String databaseName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs,
                                   final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        Collection<String> addedWriteDataSourceNames = new HashSet<>();
-        Collection<String> addedReadDataSourceNames = new HashSet<>();
+        Collection<String> writeDataSourceNames = new HashSet<>();
+        Collection<String> readDataSourceNames = new HashSet<>();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : configs) {
             ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(each.getName()), () -> new MissingRequiredDataSourceNameException(databaseName));
-            checkDataSources(databaseName, dataSourceMap, each, addedWriteDataSourceNames, addedReadDataSourceNames, builtRules);
+            checkDataSources(databaseName, dataSourceMap, each, writeDataSourceNames, readDataSourceNames, builtRules);
         }
     }
     
-    private void checkDataSources(final String databaseName, final Map<String, DataSource> dataSourceMap,
-                                  final ReadwriteSplittingDataSourceRuleConfiguration config, final Collection<String> addedWriteDataSourceNames,
-                                  final Collection<String> readDataSourceNames, final Collection<ShardingSphereRule> builtRules) {
+    private void checkDataSources(final String databaseName, final Map<String, DataSource> dataSourceMap, final ReadwriteSplittingDataSourceRuleConfiguration config,
+                                  final Collection<String> writeDataSourceNames, final Collection<String> readDataSourceNames, final Collection<ShardingSphereRule> builtRules) {
         ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(config.getWriteDataSourceName()), () -> new MissingRequiredWriteDataSourceNameException(databaseName));
         ShardingSpherePreconditions.checkState(!config.getReadDataSourceNames().isEmpty(), () -> new MissingRequiredReadDataSourceNamesException(databaseName));
-        checkWriteDataSourceNames(databaseName, dataSourceMap, addedWriteDataSourceNames, config, builtRules);
+        checkWriteDataSourceNames(databaseName, dataSourceMap, writeDataSourceNames, config, builtRules);
         for (String each : config.getReadDataSourceNames()) {
             checkReadeDataSourceNames(databaseName, dataSourceMap, readDataSourceNames, each, builtRules);
         }
     }
     
-    private void checkWriteDataSourceNames(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> addedWriteDataSourceNames,
+    private void checkWriteDataSourceNames(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> writeDataSourceNames,
                                            final ReadwriteSplittingDataSourceRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
         for (String each : InlineExpressionParserFactory.newInstance(config.getWriteDataSourceName()).splitAndEvaluate()) {
             ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each) || containsInOtherRules(each, builtRules),
                     () -> new DataSourceNameNotExistedException(String.format("Write data source name `%s` not in database `%s`.", each, databaseName)));
-            ShardingSpherePreconditions.checkState(addedWriteDataSourceNames.add(each),
+            ShardingSpherePreconditions.checkState(writeDataSourceNames.add(each),
                     () -> new DuplicateDataSourceException(String.format("Can not config duplicate write data source `%s` in database `%s`.", each, databaseName)));
         }
     }
