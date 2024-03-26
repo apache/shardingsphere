@@ -22,13 +22,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Empty algorithm on column exception.
+ * Empty algorithm exception.
  */
-public final class EmptyAlgorithmOnColumnException extends MetaDataSQLException {
+public final class EmptyAlgorithmException extends MetaDataSQLException {
     
     private static final long serialVersionUID = 8128067899672436211L;
     
-    public EmptyAlgorithmOnColumnException(final String algorithmType, final SQLExceptionIdentifier sqlExceptionIdentifier) {
+    public EmptyAlgorithmException(final String algorithmType, final SQLExceptionIdentifier sqlExceptionIdentifier) {
         super(XOpenSQLState.NOT_FOUND, 12, "'%s' algorithm on %s is required.", algorithmType, sqlExceptionIdentifier);
     }
 }
