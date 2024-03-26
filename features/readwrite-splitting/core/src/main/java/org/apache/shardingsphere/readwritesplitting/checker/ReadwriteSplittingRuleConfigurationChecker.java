@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgo
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
@@ -107,7 +108,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
                 continue;
             }
             LoadBalanceAlgorithm loadBalancer = loadBalancers.get(each.getLoadBalancerName());
-            ShardingSpherePreconditions.checkNotNull(loadBalancer, () -> new UnregisteredAlgorithmException("Load balancer", each.getLoadBalancerName(), databaseName));
+            ShardingSpherePreconditions.checkNotNull(loadBalancer, () -> new UnregisteredAlgorithmException("Load balancer", each.getLoadBalancerName(), new SQLExceptionIdentifier(databaseName)));
             loadBalancer.check(databaseName, each.getReadDataSourceNames());
         }
     }

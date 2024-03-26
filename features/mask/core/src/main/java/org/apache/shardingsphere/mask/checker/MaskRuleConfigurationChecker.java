@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
@@ -59,7 +60,7 @@ public final class MaskRuleConfigurationChecker implements RuleConfigurationChec
     
     private void checkColumn(final String databaseName, final String tableName, final MaskColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
         ShardingSpherePreconditions.checkState(maskAlgorithms.containsKey(columnRuleConfig.getMaskAlgorithm()),
-                () -> new UnregisteredAlgorithmException("Mask", columnRuleConfig.getMaskAlgorithm(), databaseName, tableName, columnRuleConfig.getLogicColumn()));
+                () -> new UnregisteredAlgorithmException("Mask", columnRuleConfig.getMaskAlgorithm(), new SQLExceptionIdentifier(databaseName, tableName, columnRuleConfig.getLogicColumn())));
     }
     
     @Override
