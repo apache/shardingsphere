@@ -41,7 +41,7 @@ class SubstitutableColumnNameTokenTest {
     @Test
     void assertToString() {
         Collection<Projection> projections = Collections.singletonList(new ColumnProjection(null, "id", null, mock(DatabaseType.class)));
-        assertThat(new SubstitutableColumnNameToken(0, 1, projections, TypedSPILoader.getService(DatabaseType.class, "MySQL")).toString(mock(RouteUnit.class)), is("`id`"));
+        assertThat(new SubstitutableColumnNameToken(0, 1, projections, TypedSPILoader.getService(DatabaseType.class, "MySQL")).toString(mock(RouteUnit.class)), is("id"));
     }
     
     @Test
@@ -60,13 +60,13 @@ class SubstitutableColumnNameTokenTest {
         Collection<Projection> projectionsWithoutOwnerQuote = Collections.singletonList(new ColumnProjection(new IdentifierValue("temp", QuoteCharacter.NONE),
                 new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), mock(DatabaseType.class)));
         assertThat(new SubstitutableColumnNameToken(0, 1, projectionsWithoutOwnerQuote, TypedSPILoader.getService(DatabaseType.class, "MySQL")).toString(mock(RouteUnit.class)),
-                is("`temp`.`id` AS `id`"));
+                is("temp.`id` AS `id`"));
     }
     
     @Test
     void assertToStringWithSubqueryProjection() {
         Collection<Projection> projections = Arrays.asList(new ColumnProjection(new IdentifierValue("temp", QuoteCharacter.BACK_QUOTE),
-                new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), mock(DatabaseType.class)),
+                        new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), mock(DatabaseType.class)),
                 new SubqueryProjection(new SubqueryProjectionSegment(null, "(SELECT name FROM t_order)"), new ColumnProjection(null, "name", null, mock(DatabaseType.class)),
                         new IdentifierValue("name"), mock(DatabaseType.class)));
         assertThat(new SubstitutableColumnNameToken(0, 1, projections, TypedSPILoader.getService(DatabaseType.class, "MySQL")).toString(mock(RouteUnit.class)), is("`temp`.`id` AS `id`, `name`"));
