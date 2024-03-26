@@ -944,7 +944,11 @@ lobItemList
     ;
 
 dataType
-    : dataTypeName dataTypeLength? | specialDatatype | dataTypeName dataTypeLength? datetimeTypeSuffix | typeAttribute
+    : dataTypeName dataTypeLength? | specialDatatype | dataTypeName dataTypeLength? datetimeTypeSuffix | customDataType | typeAttribute
+    ;
+
+customDataType
+    : dataTypeName DOT_ identifier
     ;
 
 specialDatatype
