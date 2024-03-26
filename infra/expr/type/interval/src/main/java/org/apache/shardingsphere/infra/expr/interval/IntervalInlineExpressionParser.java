@@ -110,11 +110,6 @@ public class IntervalInlineExpressionParser implements InlineExpressionParser {
     }
     
     @Override
-    public String handlePlaceHolder() {
-        return inlineExpression;
-    }
-    
-    @Override
     public List<String> splitAndEvaluate() {
         return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : split();
     }
