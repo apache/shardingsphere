@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.shadow.checker;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.exception.EmptyAlgorithmException;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -27,7 +29,6 @@ import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceCo
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.exception.algorithm.NotImplementHintShadowAlgorithmException;
-import org.apache.shardingsphere.shadow.exception.metadata.MissingRequiredShadowAlgorithmException;
 import org.apache.shardingsphere.shadow.exception.metadata.MissingRequiredShadowConfigurationException;
 import org.apache.shardingsphere.shadow.exception.metadata.ShadowDataSourceMappingNotFoundException;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -109,8 +110,8 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
     }
     
     private void checkShadowTableAlgorithmsReferences(final Map<String, ShadowTableConfiguration> shadowTables, final String databaseName) {
-        shadowTables
-                .forEach((key, value) -> ShardingSpherePreconditions.checkState(!value.getShadowAlgorithmNames().isEmpty(), () -> new MissingRequiredShadowAlgorithmException("Shadow", databaseName)));
+        shadowTables.forEach((key, value) -> ShardingSpherePreconditions.checkState(!value.getShadowAlgorithmNames().isEmpty(),
+                () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier(databaseName))));
     }
     
     private Map<String, ShadowDataSourceConfiguration> initShadowDataSources(final Collection<ShadowDataSourceConfiguration> dataSourceConfigs) {
