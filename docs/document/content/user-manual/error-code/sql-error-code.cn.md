@@ -273,7 +273,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息                                                                                              |
 |-----------|-------------|---------------------------------------------------------------------------------------------------|
-| 44000     | 20800       | \`%s\` algorithm does not exist in database \`%s\`.                                               |
 | 44000     | 20801       | \`%s\` configuration does not exist in database \`%s\`.                                           |
 | 44000     | 20802       | No available shadow data sources mappings in shadow table \`%s\`.                                 |
 | 44000     | 20803       | Column shadow algorithm \`%s\` operation only supports one column mapping in shadow table \`%s\`. |

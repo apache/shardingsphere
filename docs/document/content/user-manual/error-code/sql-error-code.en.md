@@ -288,7 +288,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason                                                                                            |
 |-----------|-------------|---------------------------------------------------------------------------------------------------|
-| 44000     | 20800       | \`%s\` algorithm does not exist in database \`%s\`.                                               |
 | 44000     | 20801       | \`%s\` configuration does not exist in database \`%s\`.                                           |
 | 44000     | 20802       | No available shadow data sources mappings in shadow table \`%s\`.                                 |
 | 44000     | 20803       | Column shadow algorithm \`%s\` operation only supports one column mapping in shadow table \`%s\`. |

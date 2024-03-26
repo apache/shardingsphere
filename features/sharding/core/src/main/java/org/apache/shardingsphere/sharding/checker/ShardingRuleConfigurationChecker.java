@@ -61,7 +61,7 @@ public final class ShardingRuleConfigurationChecker implements RuleConfiguration
         Collection<String> keyGenerators = ruleConfig.getKeyGenerators().keySet();
         Collection<String> auditors = ruleConfig.getAuditors().keySet();
         Collection<String> shardingAlgorithms = ruleConfig.getShardingAlgorithms().keySet();
-        checkTableConfiguration(databaseName, ruleConfig.getTables(), ruleConfig.getAutoTables(), keyGenerators, auditors, shardingAlgorithms);
+        checkTables(databaseName, ruleConfig.getTables(), ruleConfig.getAutoTables(), keyGenerators, auditors, shardingAlgorithms);
         checkKeyGenerateStrategy(databaseName, ruleConfig.getDefaultKeyGenerateStrategy(), keyGenerators);
         checkAuditStrategy(databaseName, ruleConfig.getDefaultAuditStrategy(), auditors);
         checkShardingStrategy(databaseName, ruleConfig.getDefaultDatabaseShardingStrategy(), shardingAlgorithms);
@@ -76,8 +76,8 @@ public final class ShardingRuleConfigurationChecker implements RuleConfiguration
         algorithmConfigs.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, each.getType(), each.getProps()));
     }
     
-    private void checkTableConfiguration(final String databaseName, final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables,
-                                         final Collection<String> keyGenerators, final Collection<String> auditors, final Collection<String> shardingAlgorithms) {
+    private void checkTables(final String databaseName, final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables,
+                             final Collection<String> keyGenerators, final Collection<String> auditors, final Collection<String> shardingAlgorithms) {
         for (ShardingTableRuleConfiguration each : tables) {
             checkLogicTable(databaseName, each.getLogicTable());
             checkKeyGenerateStrategy(databaseName, each.getKeyGenerateStrategy(), keyGenerators);
