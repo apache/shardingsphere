@@ -19,10 +19,11 @@ package org.apache.shardingsphere.encrypt.algorithm.assisted;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.messagedigest.core.MessageDigestAlgorithm;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Properties;
 
@@ -32,25 +33,19 @@ import java.util.Properties;
 @EqualsAndHashCode
 public final class MD5AssistedEncryptAlgorithm implements EncryptAlgorithm {
     
-    private static final String SALT_KEY = "salt";
-    
     @Getter
     private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false);
     
-    private String salt;
+    private MessageDigestAlgorithm digestAlgorithm;
     
     @Override
     public void init(final Properties props) {
-        salt = getSalt(props);
-    }
-    
-    private String getSalt(final Properties props) {
-        return props.getProperty(SALT_KEY, "");
+        digestAlgorithm = TypedSPILoader.getService(MessageDigestAlgorithm.class, getType(), props);
     }
     
     @Override
     public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
-        return null == plainValue ? null : DigestUtils.md5Hex(plainValue + salt);
+        return digestAlgorithm.digest(plainValue);
     }
     
     @Override
