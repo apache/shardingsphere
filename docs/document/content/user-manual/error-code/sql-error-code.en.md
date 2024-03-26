@@ -194,7 +194,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42S01     | 20007       | Index \`%s\` already exists.                                                                                                     |
 | 42S02     | 20008       | Index \`%s\` does not exist.                                                                                                     |
 | 42S01     | 20009       | View name has to bind to %s tables.                                                                                              |
-| 44000     | 20010       | \`%s\` algorithm does not exist in database \`%s\`.                                                                              |
 | 44000     | 20011       | \`%s\` configuration does not exist in database \`%s\`.                                                                          |
 | 44000     | 20012       | Invalid binding table configuration in ShardingRuleConfiguration.                                                                |
 | 44000     | 20013       | Can not find sharding rule.                                                                                                      |
