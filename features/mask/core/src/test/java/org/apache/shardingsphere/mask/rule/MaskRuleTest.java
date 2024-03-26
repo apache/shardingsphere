@@ -35,17 +35,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MaskRuleTest {
-
+    
     private MaskRule maskRule;
-
+    
     private MaskRuleConfiguration mockConfiguration;
-
+    
     @BeforeEach
     public void setUp() {
         mockConfiguration = getRuleConfiguration();
         maskRule = new MaskRule(mockConfiguration);
     }
-
+    
     @Test
     public void assertTableNameExists() {
         String tableName = "t_mask";
@@ -57,14 +57,14 @@ class MaskRuleTest {
         String matchValue = DigestUtils.md5Hex("test");
         assertEquals(value, matchValue);
     }
-
+    
     @Test
     public void assertTableNameNoExists() {
         String tableName = "non_existent_table";
         Optional<MaskTable> result = maskRule.findMaskTable(tableName);
         assertFalse(result.isPresent());
     }
-
+    
     private MaskRuleConfiguration getRuleConfiguration() {
         MaskColumnRuleConfiguration maskColumnRuleConfig = new MaskColumnRuleConfiguration("user_id", "t_mask_user_id_md5");
         MaskTableRuleConfiguration maskTableRuleConfig = new MaskTableRuleConfiguration("t_mask", Collections.singleton(maskColumnRuleConfig));
