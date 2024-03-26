@@ -64,6 +64,12 @@ public class EncryptRuleConfigurationToDistSQLConverterTest {
         
     }
     
+    @Test
+    void assertGetType() {
+        EncryptRuleConfigurationToDistSQLConverter encryptRuleConfigurationToDistSQLConverter = new EncryptRuleConfigurationToDistSQLConverter();
+        assertThat(encryptRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration"));
+    }
+    
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
         EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "test"));
         encryptColumnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("user_assisted", "foo_assist_query_encryptor"));
@@ -76,11 +82,5 @@ public class EncryptRuleConfigurationToDistSQLConverterTest {
         return new EncryptRuleConfiguration(
                 new LinkedList<>(Arrays.asList(encryptTableRuleConfig, new EncryptTableRuleConfiguration("t_encrypt_another", Collections.singleton(encryptColumnRuleConfig)))),
                 Collections.singletonMap("test", shardingSphereAlgorithmConfig));
-    }
-    
-    @Test
-    void assertGetType() {
-        EncryptRuleConfigurationToDistSQLConverter encryptRuleConfigurationToDistSQLConverter = new EncryptRuleConfigurationToDistSQLConverter();
-        assertThat(encryptRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration"));
     }
 }
