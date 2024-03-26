@@ -20,17 +20,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra</artifactId>
+        <artifactId>shardingsphere-infra-algorithm-message-digest-type</artifactId>
         <version>5.4.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-algorithm</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-infra-algorithm-message-digest-md5</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>core</module>
-        <module>key-generator</module>
-        <module>load-balancer</module>
-        <module>message-digest</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-algorithm-message-digest-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+    </dependencies>
 </project>
