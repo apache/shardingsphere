@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAnalyticViewContext;
@@ -1765,5 +1764,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     }
     
     @Override
-    public ASTNode visitCreateOperator(final CreateOperatorContext ctx) { return new OracleCreateOperatorStatement(); }
+    public ASTNode visitCreateOperator(final CreateOperatorContext ctx) {
+        return new OracleCreateOperatorStatement();
+    }
 }
