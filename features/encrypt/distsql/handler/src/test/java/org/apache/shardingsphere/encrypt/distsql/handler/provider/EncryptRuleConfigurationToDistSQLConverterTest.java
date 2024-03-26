@@ -30,7 +30,7 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,16 +49,21 @@ class EncryptRuleConfigurationToDistSQLConverterTest {
     void assertConvert() {
         EncryptRuleConfiguration encryptRuleConfiguration = getEncryptRuleConfiguration();
         EncryptRuleConfigurationToDistSQLConverter encryptRuleConfigurationToDistSQLConverter = new EncryptRuleConfigurationToDistSQLConverter();
-        assertThat(encryptRuleConfigurationToDistSQLConverter.convert(encryptRuleConfiguration), is("CREATE ENCRYPT RULE t_encrypt (\n" +
-                "COLUMNS(\n" +
-                "(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, LIKE_QUERY_COLUMN=user_like, ENCRYPT_ALGORITHM(TYPE(NAME='md5')), ASSISTED_QUERY_ALGORITHM(), LIKE_QUERY_ALGORITHM()),\n"
+        assertThat(encryptRuleConfigurationToDistSQLConverter.convert(encryptRuleConfiguration), is("CREATE ENCRYPT RULE t_encrypt (\nCOLUMNS(\n"
                 +
-                "(NAME=pwd, CIPHER=pwd_cipher, ASSISTED_QUERY_COLUMN=pwd_assisted, LIKE_QUERY_COLUMN=pwd_like, ENCRYPT_ALGORITHM(TYPE(NAME='md5')), ASSISTED_QUERY_ALGORITHM(), LIKE_QUERY_ALGORITHM())\n"
+                "(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, LIKE_QUERY_COLUMN=user_like, ENCRYPT_ALGORITHM(TYPE(NAME='md5')), "
                 +
-                ")),\n" +
-                " t_encrypt_another (\n" +
-                "COLUMNS(\n" +
-                "(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, LIKE_QUERY_COLUMN=user_like, ENCRYPT_ALGORITHM(TYPE(NAME='md5')), ASSISTED_QUERY_ALGORITHM(), LIKE_QUERY_ALGORITHM())\n"
+                "ASSISTED_QUERY_ALGORITHM(), LIKE_QUERY_ALGORITHM()),\n"
+                +
+                "(NAME=pwd, CIPHER=pwd_cipher, ASSISTED_QUERY_COLUMN=pwd_assisted, LIKE_QUERY_COLUMN=pwd_like, ENCRYPT_ALGORITHM(TYPE(NAME='md5')), "
+                +
+                "ASSISTED_QUERY_ALGORITHM(), LIKE_QUERY_ALGORITHM())\n"
+                +
+                ")),\n t_encrypt_another (\nCOLUMNS(\n"
+                +
+                "(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, LIKE_QUERY_COLUMN=user_like, ENCRYPT_ALGORITHM(TYPE(NAME='md5')), "
+                +
+                "ASSISTED_QUERY_ALGORITHM(), LIKE_QUERY_ALGORITHM())\n"
                 +
                 "));"));
         

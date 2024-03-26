@@ -27,7 +27,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -60,4 +60,5 @@ class MaskRuleConfigurationToDistSQLConverterTest {
         AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("md5", new Properties());
         return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.singletonMap("t_mask_user_id_md5", algorithmConfig));
     }
+    
 }

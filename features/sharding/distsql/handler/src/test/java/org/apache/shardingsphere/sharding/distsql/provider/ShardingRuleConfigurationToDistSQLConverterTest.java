@@ -58,18 +58,19 @@ class ShardingRuleConfigurationToDistSQLConverterTest {
         shardingRuleConfiguration.getKeyGenerators().put("snowflake", createKeyGeneratorConfiguration());
         shardingRuleConfiguration.getAuditors().put("sharding_key_required_auditor", createAuditorConfiguration());
         ShardingRuleConfigurationToDistSQLConverter shardingRuleConfigurationToDistSQLConverter = new ShardingRuleConfigurationToDistSQLConverter();
-        assertThat(shardingRuleConfigurationToDistSQLConverter.convert(shardingRuleConfiguration), is("CREATE SHARDING TABLE RULE t_order (\n" +
-                "DATANODES('ds_${0..1}.t_order_${0..1}'),\n" +
-                "TABLE_STRATEGY(TYPE='standard', SHARDING_COLUMN=order_id, SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))),\n" +
-                "KEY_GENERATE_STRATEGY(COLUMN=order_id, TYPE(NAME='snowflake')),\n" +
-                "AUDIT_STRATEGY(TYPE(NAME='dml_sharding_conditions'), ALLOW_HINT_DISABLE=true)\n" +
-                ");\n" +
-                "\n" +
-                "CREATE DEFAULT SHARDING DATABASE STRATEGY(TYPE='standard', SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='ds_${user_id % 2}'))));\n"
+        assertThat(shardingRuleConfigurationToDistSQLConverter.convert(shardingRuleConfiguration), is("CREATE SHARDING TABLE RULE t_order (\nDATANODES('ds_${0..1}.t_order_${0..1}'),\n"
                 +
-                "\n" +
+                "TABLE_STRATEGY(TYPE='standard', SHARDING_COLUMN=order_id, SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))),\n"
+                +
+                "KEY_GENERATE_STRATEGY(COLUMN=order_id, TYPE(NAME='snowflake')),\nAUDIT_STRATEGY(TYPE(NAME='dml_sharding_conditions'), ALLOW_HINT_DISABLE=true)\n);\n\n"
+                +
+                "CREATE DEFAULT SHARDING DATABASE STRATEGY(TYPE='standard', SHARDING_COLUMN=user_id, "
+                +
+                "SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='ds_${user_id % 2}'))));\n\n"
+                +
                 "CREATE DEFAULT SHARDING TABLE STRATEGY(TYPE='none');"));
     }
+    
     @Test
     void assertGetType() {
         ShardingRuleConfigurationToDistSQLConverter shardingRuleConfigurationToDistSQLConverter = new ShardingRuleConfigurationToDistSQLConverter();
