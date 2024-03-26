@@ -35,11 +35,9 @@ import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Shadow rule configuration checker.
@@ -48,42 +46,37 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
     
     @Override
     public void check(final String databaseName, final ShadowRuleConfiguration ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        checkShadowAlgorithms(ruleConfig);
-        Map<String, ShadowDataSourceConfiguration> dataSources = initShadowDataSources(ruleConfig.getDataSources());
-        checkDataSources(dataSources, dataSourceMap, databaseName);
-        Map<String, ShadowTableConfiguration> shadowTables = ruleConfig.getTables();
-        checkShadowTableDataSourcesAutoReferences(shadowTables, dataSources);
-        checkShadowTableDataSourcesReferences(shadowTables, dataSources);
-        Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs = ruleConfig.getShadowAlgorithms();
-        String defaultShadowAlgorithmName = ruleConfig.getDefaultShadowAlgorithmName();
-        checkDefaultShadowAlgorithmConfiguration(defaultShadowAlgorithmName, shadowAlgorithmConfigs);
-        checkShadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithmConfigs.keySet(), defaultShadowAlgorithmName);
-        checkShadowTableAlgorithmsReferences(shadowTables, databaseName);
+        checkShadowAlgorithms(ruleConfig.getShadowAlgorithms());
+        checkDefaultShadowAlgorithmConfiguration(ruleConfig.getDefaultShadowAlgorithmName(), ruleConfig.getShadowAlgorithms());
+        checkDataSources(ruleConfig.getDataSources(), dataSourceMap, databaseName);
+        checkShadowTableDataSourcesAutoReferences(ruleConfig.getTables(), ruleConfig.getDataSources());
+        checkShadowTableDataSourcesReferences(ruleConfig.getTables(), ruleConfig.getDataSources());
+        checkShadowTableAlgorithmsAutoReferences(ruleConfig.getTables(), ruleConfig.getShadowAlgorithms(), ruleConfig.getDefaultShadowAlgorithmName());
+        checkShadowTableAlgorithmsReferences(ruleConfig.getTables(), databaseName);
     }
     
-    private void checkShadowAlgorithms(final ShadowRuleConfiguration ruleConfig) {
-        ruleConfig.getShadowAlgorithms().values().forEach(each -> TypedSPILoader.checkService(ShadowAlgorithm.class, each.getType(), each.getProps()));
+    private void checkShadowAlgorithms(final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
+        shadowAlgorithmConfigs.values().forEach(each -> TypedSPILoader.checkService(ShadowAlgorithm.class, each.getType(), each.getProps()));
     }
     
-    private void checkDataSources(final Map<String, ShadowDataSourceConfiguration> shadowDataSources, final Map<String, DataSource> dataSourceMap, final String databaseName) {
-        Set<String> dataSourceName = dataSourceMap.keySet();
-        for (Entry<String, ShadowDataSourceConfiguration> entry : shadowDataSources.entrySet()) {
-            ShardingSpherePreconditions.checkState(dataSourceName.contains(entry.getValue().getProductionDataSourceName()),
+    private void checkDataSources(final Collection<ShadowDataSourceConfiguration> shadowDataSources, final Map<String, DataSource> dataSourceMap, final String databaseName) {
+        for (ShadowDataSourceConfiguration each : shadowDataSources) {
+            ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each.getProductionDataSourceName()),
                     () -> new MissingRequiredShadowConfigurationException("ProductionDataSourceName", databaseName));
-            ShardingSpherePreconditions.checkState(dataSourceName.contains(entry.getValue().getShadowDataSourceName()),
+            ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each.getShadowDataSourceName()),
                     () -> new MissingRequiredShadowConfigurationException("ShadowDataSourceName", databaseName));
         }
     }
     
-    private void checkShadowTableDataSourcesAutoReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Map<String, ShadowDataSourceConfiguration> dataSources) {
-        if (1 == dataSources.size()) {
-            String dataSourceName = dataSources.keySet().iterator().next();
+    private void checkShadowTableDataSourcesAutoReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Collection<ShadowDataSourceConfiguration> shadowDataSources) {
+        if (1 == shadowDataSources.size()) {
+            String dataSourceName = shadowDataSources.iterator().next().getName();
             shadowTables.values().stream().map(ShadowTableConfiguration::getDataSourceNames).filter(Collection::isEmpty).forEach(dataSourceNames -> dataSourceNames.add(dataSourceName));
         }
     }
     
-    private void checkShadowTableDataSourcesReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Map<String, ShadowDataSourceConfiguration> dataSources) {
-        Set<String> dataSourceNames = dataSources.keySet();
+    private void checkShadowTableDataSourcesReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Collection<ShadowDataSourceConfiguration> shadowDataSources) {
+        Collection<String> dataSourceNames = shadowDataSources.stream().map(ShadowDataSourceConfiguration::getName).collect(Collectors.toSet());
         shadowTables.forEach((key, value) -> {
             for (String each : value.getDataSourceNames()) {
                 ShardingSpherePreconditions.checkState(dataSourceNames.contains(each), () -> new ShadowDataSourceMappingNotFoundException(key));
@@ -94,15 +87,15 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
     private void checkDefaultShadowAlgorithmConfiguration(final String defaultShadowAlgorithmName, final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
         if (null != defaultShadowAlgorithmName) {
             AlgorithmConfiguration algorithmConfig = shadowAlgorithmConfigs.get(defaultShadowAlgorithmName);
-            boolean state = null != algorithmConfig && "SQL_HINT".equals(algorithmConfig.getType());
-            ShardingSpherePreconditions.checkState(state, NotImplementHintShadowAlgorithmException::new);
+            ShardingSpherePreconditions.checkState(null != algorithmConfig && "SQL_HINT".equals(algorithmConfig.getType()), NotImplementHintShadowAlgorithmException::new);
         }
     }
     
-    private void checkShadowTableAlgorithmsAutoReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Set<String> shadowAlgorithmNames, final String defaultShadowAlgorithmName) {
-        for (Entry<String, ShadowTableConfiguration> entry : shadowTables.entrySet()) {
-            Collection<String> names = entry.getValue().getShadowAlgorithmNames();
-            names.removeIf(next -> !shadowAlgorithmNames.contains(next));
+    private void checkShadowTableAlgorithmsAutoReferences(final Map<String, ShadowTableConfiguration> shadowTables,
+                                                          final Map<String, AlgorithmConfiguration> shadowAlgorithms, final String defaultShadowAlgorithmName) {
+        for (ShadowTableConfiguration each : shadowTables.values()) {
+            Collection<String> names = each.getShadowAlgorithmNames();
+            names.removeIf(next -> !shadowAlgorithms.containsKey(next));
             if (null != defaultShadowAlgorithmName && names.isEmpty()) {
                 names.add(defaultShadowAlgorithmName);
             }
@@ -112,14 +105,6 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
     private void checkShadowTableAlgorithmsReferences(final Map<String, ShadowTableConfiguration> shadowTables, final String databaseName) {
         shadowTables.forEach((key, value) -> ShardingSpherePreconditions.checkState(!value.getShadowAlgorithmNames().isEmpty(),
                 () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier(databaseName))));
-    }
-    
-    private Map<String, ShadowDataSourceConfiguration> initShadowDataSources(final Collection<ShadowDataSourceConfiguration> dataSourceConfigs) {
-        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        for (ShadowDataSourceConfiguration each : dataSourceConfigs) {
-            result.put(each.getName(), each);
-        }
-        return result;
     }
     
     @Override
