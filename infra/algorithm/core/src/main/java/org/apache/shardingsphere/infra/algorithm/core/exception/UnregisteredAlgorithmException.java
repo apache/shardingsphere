@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.algorithm.core.exception;
 
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
@@ -27,11 +28,7 @@ public final class UnregisteredAlgorithmException extends MetaDataSQLException {
     
     private static final long serialVersionUID = -4570489906443880879L;
     
-    public UnregisteredAlgorithmException(final String algorithmType, final String algorithmName, final String databaseName) {
-        super(XOpenSQLState.NOT_FOUND, 13, "'%s' algorithm '%s' on database: '%s' is unregistered.", algorithmType, algorithmName, databaseName);
-    }
-    
-    public UnregisteredAlgorithmException(final String algorithmType, final String algorithmName, final String databaseName, final String tableName, final String columnName) {
-        super(XOpenSQLState.NOT_FOUND, 13, "'%s' algorithm '%s' on database.table.column: '%s'.'%s'.'%s' is unregistered.", algorithmType, algorithmName, databaseName, tableName, columnName);
+    public UnregisteredAlgorithmException(final String algorithmType, final String algorithmName, final SQLExceptionIdentifier sqlExceptionIdentifier) {
+        super(XOpenSQLState.NOT_FOUND, 13, "'%s' algorithm '%s' on %s is unregistered.", algorithmType, algorithmName, sqlExceptionIdentifier);
     }
 }

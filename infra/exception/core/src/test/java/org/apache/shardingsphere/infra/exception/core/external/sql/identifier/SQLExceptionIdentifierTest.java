@@ -15,20 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.core.exception;
+package org.apache.shardingsphere.infra.exception.core.external.sql.identifier;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
+import org.junit.jupiter.api.Test;
 
-/**
- * Empty algorithm on column exception.
- */
-public final class EmptyAlgorithmOnColumnException extends MetaDataSQLException {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class SQLExceptionIdentifierTest {
     
-    private static final long serialVersionUID = 8128067899672436211L;
+    @Test
+    void assertToStringForColumnIdentifier() {
+        assertThat(new SQLExceptionIdentifier("foo_db", "foo_tbl", "foo_col").toString(), is("database.table.column: 'foo_db'.'foo_tbl'.'foo_col'"));
+    }
     
-    public EmptyAlgorithmOnColumnException(final String algorithmType, final SQLExceptionIdentifier sqlExceptionIdentifier) {
-        super(XOpenSQLState.NOT_FOUND, 12, "'%s' algorithm on %s is required.", algorithmType, sqlExceptionIdentifier);
+    @Test
+    void assertToStringForTableIdentifier() {
+        assertThat(new SQLExceptionIdentifier("foo_db", "foo_tbl").toString(), is("database.table: 'foo_db'.'foo_tbl'"));
+    }
+    
+    @Test
+    void assertToStringForDatabaseIdentifier() {
+        assertThat(new SQLExceptionIdentifier("foo_db").toString(), is("database: 'foo_db'"));
     }
 }
