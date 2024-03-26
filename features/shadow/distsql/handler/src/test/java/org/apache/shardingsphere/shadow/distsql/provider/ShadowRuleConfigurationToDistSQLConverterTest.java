@@ -62,6 +62,6 @@ class ShadowRuleConfigurationToDistSQLConverterTest {
     @Test
     void assertGetType() {
         ShadowRuleConfigurationToDistSQLConverter shadowRuleConfigurationToDistSQLConverter = new ShadowRuleConfigurationToDistSQLConverter();
-        assertThat(shadowRuleConfigurationToDistSQLConverter.getType().getName(), is(""));
+        assertThat(shadowRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration"));
     }
 }
