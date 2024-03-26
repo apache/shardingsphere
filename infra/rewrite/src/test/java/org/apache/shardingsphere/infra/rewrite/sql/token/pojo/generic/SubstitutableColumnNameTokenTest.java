@@ -66,7 +66,7 @@ class SubstitutableColumnNameTokenTest {
     @Test
     void assertToStringWithSubqueryProjection() {
         Collection<Projection> projections = Arrays.asList(new ColumnProjection(new IdentifierValue("temp", QuoteCharacter.BACK_QUOTE),
-                        new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), mock(DatabaseType.class)),
+                new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), mock(DatabaseType.class)),
                 new SubqueryProjection(new SubqueryProjectionSegment(null, "(SELECT name FROM t_order)"), new ColumnProjection(null, "name", null, mock(DatabaseType.class)),
                         new IdentifierValue("name"), mock(DatabaseType.class)));
         assertThat(new SubstitutableColumnNameToken(0, 1, projections, TypedSPILoader.getService(DatabaseType.class, "MySQL")).toString(mock(RouteUnit.class)), is("`temp`.`id` AS `id`, `name`"));
