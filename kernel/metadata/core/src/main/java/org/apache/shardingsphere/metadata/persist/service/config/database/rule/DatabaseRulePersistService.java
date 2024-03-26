@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.node.metadata.DatabaseRuleMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.config.AbstractPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
@@ -64,13 +64,13 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
     
     @Override
     public Collection<RuleConfiguration> load(final String databaseName) {
-        Collection<YamlDataNode> dataNodes = getDataNodes(DatabaseMetaDataNode.getRulesNode(databaseName));
+        Collection<YamlDataNode> dataNodes = getDataNodes(DatabaseRuleMetaDataNode.getRulesNode(databaseName));
         return dataNodes.isEmpty() ? Collections.emptyList() : new YamlDataNodeRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
     }
     
     @Override
     public void delete(final String databaseName, final String name) {
-        repository.delete(DatabaseMetaDataNode.getDatabaseRuleNode(databaseName, name));
+        repository.delete(DatabaseRuleMetaDataNode.getDatabaseRuleNode(databaseName, name));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -91,13 +91,13 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
     private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (YamlDataNode each : dataNodes) {
-            List<String> versions = repository.getChildrenKeys(DatabaseMetaDataNode.getDatabaseRuleVersionsNode(databaseName, ruleName, each.getKey()));
+            List<String> versions = repository.getChildrenKeys(DatabaseRuleMetaDataNode.getDatabaseRuleVersionsNode(databaseName, ruleName, each.getKey()));
             String nextVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            repository.persist(DatabaseMetaDataNode.getDatabaseRuleVersionNode(databaseName, ruleName, each.getKey(), nextVersion), each.getValue());
+            repository.persist(DatabaseRuleMetaDataNode.getDatabaseRuleVersionNode(databaseName, ruleName, each.getKey(), nextVersion), each.getValue());
             if (Strings.isNullOrEmpty(getActiveVersion(databaseName, ruleName, each.getKey()))) {
-                repository.persist(DatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()), DEFAULT_VERSION);
+                repository.persist(DatabaseRuleMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()), DEFAULT_VERSION);
             }
-            result.add(new MetaDataVersion(DatabaseMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey()), getActiveVersion(databaseName, ruleName, each.getKey()), nextVersion));
+            result.add(new MetaDataVersion(DatabaseRuleMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey()), getActiveVersion(databaseName, ruleName, each.getKey()), nextVersion));
         }
         return result;
     }
@@ -122,7 +122,7 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
     private Collection<MetaDataVersion> deleteDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (YamlDataNode each : dataNodes) {
-            String delKey = DatabaseMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey());
+            String delKey = DatabaseRuleMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey());
             repository.delete(delKey);
             result.add(new MetaDataVersion(delKey));
         }
@@ -130,6 +130,6 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
     }
     
     private String getActiveVersion(final String databaseName, final String ruleName, final String key) {
-        return repository.getDirectly(DatabaseMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, key));
+        return repository.getDirectly(DatabaseRuleMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, key));
     }
 }

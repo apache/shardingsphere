@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.infra.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStatement;

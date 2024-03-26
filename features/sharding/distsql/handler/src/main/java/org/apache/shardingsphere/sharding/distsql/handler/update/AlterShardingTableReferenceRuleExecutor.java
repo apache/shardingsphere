@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -84,10 +84,6 @@ public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRu
     
     private Collection<String> getToBeAlteredRuleNames(final AlterShardingTableReferenceRuleStatement sqlStatement) {
         return sqlStatement.getRules().stream().map(TableReferenceRuleSegment::getName).collect(Collectors.toSet());
-    }
-    
-    private Collection<String> getToBeAlteredRuleNames(final ShardingRuleConfiguration ruleConfig) {
-        return ruleConfig.getBindingTableGroups().stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toSet());
     }
     
     private void checkToBeReferencedShardingTablesExisted(final AlterShardingTableReferenceRuleStatement sqlStatement) {

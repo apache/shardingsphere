@@ -31,5 +31,6 @@
         <module>core</module>
         <module>key-generator</module>
         <module>load-balancer</module>
+        <module>message-digest</module>
     </modules>
 </project>

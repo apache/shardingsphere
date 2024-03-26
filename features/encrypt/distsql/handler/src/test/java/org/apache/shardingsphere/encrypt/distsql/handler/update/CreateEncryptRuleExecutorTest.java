@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;

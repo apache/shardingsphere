@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -29,13 +29,16 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.MissingDatabaseNameException;
 import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -43,9 +46,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -55,6 +61,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class ImportDatabaseConfigurationExecutorTest {
     
     private ImportDatabaseConfigurationExecutor executor;
@@ -139,6 +146,10 @@ class ImportDatabaseConfigurationExecutorTest {
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(new HashMap<>(Collections.singletonMap("foo_ds", storageUnit)));
+        when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(databaseName, database));
         when(result.getMetaDataContexts().getMetaData().getDatabase(databaseName)).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(createProperties()));

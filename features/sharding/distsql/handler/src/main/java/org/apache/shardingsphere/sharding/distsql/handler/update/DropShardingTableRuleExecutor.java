@@ -21,8 +21,8 @@ import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Splitter;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -116,14 +116,6 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
     private void dropShardingTable(final ShardingRuleConfiguration currentRuleConfig, final String tableName) {
         currentRuleConfig.getTables().removeAll(currentRuleConfig.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()));
         currentRuleConfig.getAutoTables().removeAll(currentRuleConfig.getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()));
-    }
-    
-    private void dropUnusedKeyGenerator(final ShardingRuleConfiguration currentRuleConfig) {
-        UnusedAlgorithmFinder.findUnusedKeyGenerator(currentRuleConfig).forEach(each -> currentRuleConfig.getKeyGenerators().remove(each));
-    }
-    
-    private void dropUnusedAuditor(final ShardingRuleConfiguration currentRuleConfig) {
-        UnusedAlgorithmFinder.findUnusedAuditor(currentRuleConfig).forEach(each -> currentRuleConfig.getAuditors().remove(each));
     }
     
     @Override

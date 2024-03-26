@@ -22,8 +22,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,7 +44,7 @@ class ConditionValueTest {
     }
     
     @Test
-    void assertGetValueFromLiteralExpressionSegmentOfNullValue() {
+    void assertGetNullValueFromLiteralExpressionSegment() {
         ExpressionSegment expressionSegment = new LiteralExpressionSegment(0, 0, null);
         ConditionValue conditionValue = new ConditionValue(expressionSegment, new LinkedList<>());
         assertFalse(conditionValue.getValue().isPresent());
@@ -61,12 +63,17 @@ class ConditionValueTest {
     }
     
     @Test
-    void assertGetValueFromParameterMarkerSegmentOfNullValue() {
-        ExpressionSegment expressionSegment = new ParameterMarkerExpressionSegment(0, 0, 0);
-        ConditionValue conditionValue = new ConditionValue(expressionSegment, Collections.singletonList(null));
+    void assertGetNullValueFromParameterMarkerSegment() {
+        List<Object> params = Arrays.asList(1, null);
+        ConditionValue conditionValue = new ConditionValue(new ParameterMarkerExpressionSegment(0, 0, 0), params);
+        assertTrue(conditionValue.getValue().isPresent());
+        assertThat(conditionValue.getValue().get(), is(1));
+        assertTrue(conditionValue.getParameterMarkerIndex().isPresent());
+        assertThat(conditionValue.getParameterMarkerIndex().get(), is(0));
+        conditionValue = new ConditionValue(new ParameterMarkerExpressionSegment(0, 0, 1), params);
         assertFalse(conditionValue.getValue().isPresent());
         assertTrue(conditionValue.isNull());
         assertTrue(conditionValue.getParameterMarkerIndex().isPresent());
-        assertThat(conditionValue.getParameterMarkerIndex().get(), is(0));
+        assertThat(conditionValue.getParameterMarkerIndex().get(), is(1));
     }
 }

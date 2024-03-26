@@ -20,7 +20,7 @@ package org.apache.shardingsphere.broadcast.distsql.handler.update;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.DropBroadcastTableRuleStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

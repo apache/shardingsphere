@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitExceptionDefinition;
+import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
@@ -71,14 +71,14 @@ class RegisterStorageUnitExecutorTest {
     
     @Test
     void assertExecuteUpdateWithDuplicateStorageUnitNamesInStatement() {
-        assertThrows(DuplicateStorageUnitException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatementWithDuplicateStorageUnitNames(), mock(ContextManager.class)));
+        assertThrows(DuplicateStorageUnitExceptionDefinition.class, () -> executor.executeUpdate(createRegisterStorageUnitStatementWithDuplicateStorageUnitNames(), mock(ContextManager.class)));
     }
     
     @Test
     void assertExecuteUpdateWithDuplicateStorageUnitNamesWithResourceMetaData() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getStorageUnits("foo_db").keySet()).thenReturn(Collections.singleton("ds_0"));
-        assertThrows(DuplicateStorageUnitException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
+        assertThrows(DuplicateStorageUnitExceptionDefinition.class, () -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
     }
     
     @Test

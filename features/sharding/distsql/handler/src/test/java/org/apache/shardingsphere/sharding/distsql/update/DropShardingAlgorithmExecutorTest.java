@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.algorithm.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -55,7 +55,7 @@ class DropShardingAlgorithmExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithoutExistedAlgorithm() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithoutExistedAlgorithm() throws RuleDefinitionException {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(new ShardingRuleConfiguration());
         executor.setRule(rule);
@@ -63,7 +63,7 @@ class DropShardingAlgorithmExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithoutExistedAlgorithmWithIfExists() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithoutExistedAlgorithmWithIfExists() throws RuleDefinitionException {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(new ShardingRuleConfiguration());
         executor.setRule(rule);
@@ -71,7 +71,7 @@ class DropShardingAlgorithmExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionException {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
@@ -79,7 +79,7 @@ class DropShardingAlgorithmExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithBindingTableRuleWithIfExists() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithBindingTableRuleWithIfExists() throws RuleDefinitionException {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);

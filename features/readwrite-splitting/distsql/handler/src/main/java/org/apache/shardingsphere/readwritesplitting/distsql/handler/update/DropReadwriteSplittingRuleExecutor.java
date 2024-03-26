@@ -19,8 +19,8 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -118,10 +118,6 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     private void dropRule(final String ruleName) {
         Optional<ReadwriteSplittingDataSourceRuleConfiguration> dataSourceRuleConfig = rule.getConfiguration().getDataSources().stream().filter(each -> ruleName.equals(each.getName())).findAny();
         dataSourceRuleConfig.ifPresent(optional -> rule.getConfiguration().getDataSources().remove(optional));
-    }
-    
-    private void dropUnusedLoadBalancer(final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        findUnusedLoadBalancers().forEach(each -> currentRuleConfig.getLoadBalancers().remove(each));
     }
     
     private Collection<String> findUnusedLoadBalancers() {

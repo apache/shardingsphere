@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.DistSQLScriptConstants;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.convert.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
@@ -74,16 +74,81 @@ public final class ConvertYamlConfigurationExecutor implements DistSQLQueryExecu
         }
         Preconditions.checkNotNull(yamlConfig, "Invalid yaml file `%s`", file.getName());
         Preconditions.checkNotNull(yamlConfig.getDatabaseName(), "`databaseName` in file `%s` is required.", file.getName());
-        return Collections.singleton(new LocalDataQueryResultRow(generateDistSQL(yamlConfig)));
+        return Collections.singleton(new LocalDataQueryResultRow(convertYamlConfigToDistSQL(yamlConfig)));
     }
     
-    private String generateDistSQL(final YamlProxyDatabaseConfiguration yamlConfig) {
+    @SuppressWarnings("unchecked")
+    private String convertYamlConfigToDistSQL(final YamlProxyDatabaseConfiguration yamlConfig) {
         StringBuilder result = new StringBuilder();
-        appendResourceDistSQL(yamlConfig, result);
-        for (RuleConfiguration each : swapToRuleConfigs(yamlConfig).values()) {
-            Class<? extends RuleConfiguration> type = each.getClass();
-            ConvertRuleConfigurationProvider convertRuleConfigProvider = TypedSPILoader.getService(ConvertRuleConfigurationProvider.class, type);
-            result.append(convertRuleConfigProvider.convert(each));
+        result.append(convertDatabase(yamlConfig.getDatabaseName()));
+        if (!yamlConfig.getDataSources().isEmpty()) {
+            result.append(System.lineSeparator()).append(System.lineSeparator());
+            result.append(convertDataSources(yamlConfig.getDataSources()));
+        }
+        if (!yamlConfig.getRules().isEmpty()) {
+            result.append(System.lineSeparator()).append(System.lineSeparator());
+            for (RuleConfiguration each : swapToRuleConfigs(yamlConfig).values()) {
+                result.append(TypedSPILoader.getService(RuleConfigurationToDistSQLConverter.class, each.getClass()).convert(each));
+                result.append(System.lineSeparator()).append(System.lineSeparator());
+            }
+        }
+        return result.toString();
+    }
+    
+    private String convertDatabase(final String databaseName) {
+        return String.format(DistSQLScriptConstants.CREATE_DATABASE, databaseName) + System.lineSeparator() + String.format(DistSQLScriptConstants.USE_DATABASE, databaseName);
+    }
+    
+    private String convertDataSources(final Map<String, YamlProxyDataSourceConfiguration> dataSources) {
+        StringBuilder result = new StringBuilder(DistSQLScriptConstants.REGISTER_STORAGE_UNIT);
+        Iterator<Entry<String, YamlProxyDataSourceConfiguration>> iterator = dataSources.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Entry<String, YamlProxyDataSourceConfiguration> entry = iterator.next();
+            DataSourceConfiguration dataSourceConfig = dataSourceConfigSwapper.swap(entry.getValue());
+            DataSourcePoolProperties props = DataSourcePoolPropertiesCreator.create(dataSourceConfig);
+            result.append(convertDataSource(entry.getKey(), props));
+            if (iterator.hasNext()) {
+                result.append(",");
+            }
+        }
+        result.append(";");
+        return result.toString();
+    }
+    
+    private String convertDataSource(final String resourceName, final DataSourcePoolProperties dataSourcePoolProps) {
+        Map<String, Object> connectionProps = dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties();
+        String url = (String) connectionProps.get(DistSQLScriptConstants.KEY_URL);
+        String username = (String) connectionProps.get(DistSQLScriptConstants.KEY_USERNAME);
+        String password = (String) connectionProps.get(DistSQLScriptConstants.KEY_PASSWORD);
+        String props = getDataSourcePoolProps(dataSourcePoolProps.getPoolPropertySynonyms(), dataSourcePoolProps.getCustomProperties());
+        if (Strings.isNullOrEmpty(password)) {
+            return String.format(DistSQLScriptConstants.STORAGE_UNIT_DEFINITION_WITHOUT_PASSWORD, resourceName, url, username, props);
+        }
+        return String.format(DistSQLScriptConstants.STORAGE_UNIT_DEFINITION, resourceName, url, username, password, props);
+    }
+    
+    private String getDataSourcePoolProps(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourcePoolProperties customDataSourcePoolProps) {
+        StringBuilder result = new StringBuilder();
+        result.append(getDataSourcePoolProps(poolPropertySynonyms.getStandardProperties()));
+        if (!customDataSourcePoolProps.getProperties().isEmpty()) {
+            result.append(",");
+            result.append(getDataSourcePoolProps(customDataSourcePoolProps.getProperties()));
+        }
+        return result.toString();
+    }
+    
+    private String getDataSourcePoolProps(final Map<String, Object> props) {
+        StringBuilder result = new StringBuilder();
+        Iterator<Entry<String, Object>> iterator = props.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Entry<String, Object> entry = iterator.next();
+            if (null == entry.getValue()) {
+                continue;
+            }
+            result.append(String.format(DistSQLScriptConstants.PROPERTY, entry.getKey(), entry.getValue()));
+            if (iterator.hasNext()) {
+                result.append(",");
+            }
         }
         return result.toString();
     }
@@ -97,71 +162,6 @@ public final class ConvertYamlConfigurationExecutor implements DistSQLQueryExecu
             result.put(swapper.getOrder(), (RuleConfiguration) swapper.swapToObject(each));
         }
         return result;
-    }
-    
-    private void appendResourceDistSQL(final YamlProxyDatabaseConfiguration yamlConfig, final StringBuilder stringBuilder) {
-        appendDatabase(yamlConfig.getDatabaseName(), stringBuilder);
-        appendResources(yamlConfig.getDataSources(), stringBuilder);
-    }
-    
-    private void appendDatabase(final String databaseName, final StringBuilder stringBuilder) {
-        stringBuilder.append(String.format(DistSQLScriptConstants.CREATE_DATABASE, databaseName)).append(System.lineSeparator())
-                .append(String.format(DistSQLScriptConstants.USE_DATABASE, databaseName)).append(System.lineSeparator()).append(System.lineSeparator());
-    }
-    
-    private void appendResources(final Map<String, YamlProxyDataSourceConfiguration> dataSources, final StringBuilder stringBuilder) {
-        if (dataSources.isEmpty()) {
-            return;
-        }
-        stringBuilder.append(DistSQLScriptConstants.REGISTER_STORAGE_UNIT);
-        Iterator<Entry<String, YamlProxyDataSourceConfiguration>> iterator = dataSources.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<String, YamlProxyDataSourceConfiguration> entry = iterator.next();
-            DataSourceConfiguration dataSourceConfig = dataSourceConfigSwapper.swap(entry.getValue());
-            DataSourcePoolProperties props = DataSourcePoolPropertiesCreator.create(dataSourceConfig);
-            appendResource(entry.getKey(), props, stringBuilder);
-            if (iterator.hasNext()) {
-                stringBuilder.append(DistSQLScriptConstants.COMMA);
-            }
-        }
-        stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
-    }
-    
-    private void appendResource(final String resourceName, final DataSourcePoolProperties dataSourcePoolProps, final StringBuilder stringBuilder) {
-        Map<String, Object> connectionProps = dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties();
-        String url = (String) connectionProps.get(DistSQLScriptConstants.KEY_URL);
-        String username = (String) connectionProps.get(DistSQLScriptConstants.KEY_USERNAME);
-        String password = (String) connectionProps.get(DistSQLScriptConstants.KEY_PASSWORD);
-        String props = getResourceProperties(dataSourcePoolProps.getPoolPropertySynonyms(), dataSourcePoolProps.getCustomProperties());
-        if (Strings.isNullOrEmpty(password)) {
-            stringBuilder.append(String.format(DistSQLScriptConstants.RESOURCE_DEFINITION_WITHOUT_PASSWORD, resourceName, url, username, props));
-        } else {
-            stringBuilder.append(String.format(DistSQLScriptConstants.RESOURCE_DEFINITION, resourceName, url, username, password, props));
-        }
-    }
-    
-    private String getResourceProperties(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourcePoolProperties customDataSourcePoolProps) {
-        StringBuilder result = new StringBuilder();
-        appendProperties(poolPropertySynonyms.getStandardProperties(), result);
-        if (!customDataSourcePoolProps.getProperties().isEmpty()) {
-            result.append(DistSQLScriptConstants.COMMA);
-            appendProperties(customDataSourcePoolProps.getProperties(), result);
-        }
-        return result.toString();
-    }
-    
-    private void appendProperties(final Map<String, Object> props, final StringBuilder stringBuilder) {
-        Iterator<Entry<String, Object>> iterator = props.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<String, Object> entry = iterator.next();
-            if (null == entry.getValue()) {
-                continue;
-            }
-            stringBuilder.append(String.format(DistSQLScriptConstants.PROPERTY, entry.getKey(), entry.getValue()));
-            if (iterator.hasNext()) {
-                stringBuilder.append(DistSQLScriptConstants.COMMA).append(' ');
-            }
-        }
     }
     
     @Override

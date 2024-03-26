@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
+import org.apache.shardingsphere.infra.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -138,7 +138,7 @@ class CreateShardingTableRuleExecutorTest {
                 + "TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        assertThrows(DistSQLException.class, () -> executor.checkBeforeUpdate(distSQLStatement));
+        assertThrows(InvalidAlgorithmConfigurationException.class, () -> executor.checkBeforeUpdate(distSQLStatement));
     }
     
     @Test

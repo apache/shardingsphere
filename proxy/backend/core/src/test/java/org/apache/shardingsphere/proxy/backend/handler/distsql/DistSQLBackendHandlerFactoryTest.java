@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.AlterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;

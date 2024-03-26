@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;

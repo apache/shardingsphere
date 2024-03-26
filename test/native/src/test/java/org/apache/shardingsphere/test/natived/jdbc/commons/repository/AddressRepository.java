@@ -28,9 +28,6 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
 public final class AddressRepository {
     
@@ -157,31 +154,5 @@ public final class AddressRepository {
             }
         }
         return result;
-    }
-    
-    /**
-     * Assert rollback with transactions.
-     * This is currently just a simple test against a non-existent table and does not involve the competition scenario of distributed transactions.
-     *
-     * @throws SQLException An exception that provides information on a database access error or other errors.
-     */
-    public void assertRollbackWithTransactions() throws SQLException {
-        Connection connection = dataSource.getConnection();
-        try {
-            connection.setAutoCommit(false);
-            connection.createStatement().executeUpdate("INSERT INTO t_address (address_id, address_name) VALUES (2024, 'address_test_2024')");
-            connection.createStatement().executeUpdate("INSERT INTO t_table_does_not_exist (test_id_does_not_exist) VALUES (2024)");
-            connection.commit();
-        } catch (SQLException e) {
-            connection.rollback();
-        } finally {
-            connection.setAutoCommit(true);
-            connection.close();
-        }
-        try (
-                Connection conn = dataSource.getConnection();
-                ResultSet resultSet = conn.createStatement().executeQuery("SELECT * FROM t_address WHERE address_id = 2024")) {
-            assertThat(resultSet.next(), is(false));
-        }
     }
 }

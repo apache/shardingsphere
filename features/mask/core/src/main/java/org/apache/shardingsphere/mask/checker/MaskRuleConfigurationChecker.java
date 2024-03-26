@@ -18,18 +18,22 @@
 package org.apache.shardingsphere.mask.checker;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmNotFoundOnColumnException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.constant.MaskOrder;
+import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Mask rule configuration checker.
@@ -37,21 +41,31 @@ import java.util.Map;
 public final class MaskRuleConfigurationChecker implements RuleConfigurationChecker<MaskRuleConfiguration> {
     
     @Override
-    public void check(final String databaseName, final MaskRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        checkTables(databaseName, config.getTables(), config.getMaskAlgorithms());
+    public void check(final String databaseName, final MaskRuleConfiguration ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
+        checkMaskAlgorithms(ruleConfig.getMaskAlgorithms());
+        checkTables(databaseName, ruleConfig.getTables(), ruleConfig.getMaskAlgorithms());
+    }
+    
+    private void checkMaskAlgorithms(final Map<String, AlgorithmConfiguration> maskAlgorithms) {
+        maskAlgorithms.values().forEach(each -> TypedSPILoader.checkService(MaskAlgorithm.class, each.getType(), each.getProps()));
     }
     
     private void checkTables(final String databaseName, final Collection<MaskTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
-        for (MaskTableRuleConfiguration each : tables) {
-            checkColumns(databaseName, each.getName(), each.getColumns(), maskAlgorithms);
-        }
+        tables.forEach(each -> checkColumns(databaseName, each, maskAlgorithms));
     }
     
-    private void checkColumns(final String databaseName, final String tableName, final Collection<MaskColumnRuleConfiguration> columns, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
-        for (MaskColumnRuleConfiguration each : columns) {
-            ShardingSpherePreconditions.checkState(maskAlgorithms.containsKey(each.getMaskAlgorithm()),
-                    () -> new AlgorithmNotFoundOnColumnException("mask", each.getMaskAlgorithm(), databaseName, tableName, each.getLogicColumn()));
-        }
+    private void checkColumns(final String databaseName, final MaskTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
+        tableRuleConfig.getColumns().forEach(each -> checkColumn(databaseName, tableRuleConfig.getName(), each, maskAlgorithms));
+    }
+    
+    private void checkColumn(final String databaseName, final String tableName, final MaskColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
+        ShardingSpherePreconditions.checkState(maskAlgorithms.containsKey(columnRuleConfig.getMaskAlgorithm()),
+                () -> new UnregisteredAlgorithmException("Mask", columnRuleConfig.getMaskAlgorithm(), new SQLExceptionIdentifier(databaseName, tableName, columnRuleConfig.getLogicColumn())));
+    }
+    
+    @Override
+    public Collection<String> getTableNames(final MaskRuleConfiguration ruleConfig) {
+        return ruleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
     }
     
     @Override
