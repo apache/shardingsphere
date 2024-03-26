@@ -27,8 +27,11 @@ public final class UnregisteredAlgorithmException extends MetaDataSQLException {
     
     private static final long serialVersionUID = -4570489906443880879L;
     
+    public UnregisteredAlgorithmException(final String algorithmType, final String algorithmName, final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 13, "'%s' algorithm '%s' on database: '%s' is unregistered.", algorithmType, algorithmName, databaseName);
+    }
+    
     public UnregisteredAlgorithmException(final String algorithmType, final String algorithmName, final String databaseName, final String tableName, final String columnName) {
-        super(XOpenSQLState.NOT_FOUND, 13,
-                "'%s' algorithm '%s' on database.table.column: '%s'.'%s'.'%s' is unregistered.", algorithmType, algorithmName, databaseName, tableName, columnName);
+        super(XOpenSQLState.NOT_FOUND, 13, "'%s' algorithm '%s' on database.table.column: '%s'.'%s'.'%s' is unregistered.", algorithmType, algorithmName, databaseName, tableName, columnName);
     }
 }
