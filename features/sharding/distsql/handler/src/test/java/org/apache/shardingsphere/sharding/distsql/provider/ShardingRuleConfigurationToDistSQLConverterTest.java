@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.provider;
 
-
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -38,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShardingRuleConfigurationToDistSQLConverterTest {
-
+    
     @Test
     void assertConvertWithEmptyTables() {
         ShardingRuleConfiguration shardingRuleConfiguration = mock(ShardingRuleConfiguration.class);
@@ -47,7 +46,7 @@ class ShardingRuleConfigurationToDistSQLConverterTest {
         ShardingRuleConfigurationToDistSQLConverter shardingRuleConfigurationToDistSQLConverter = new ShardingRuleConfigurationToDistSQLConverter();
         assertThat(shardingRuleConfigurationToDistSQLConverter.convert(shardingRuleConfiguration), is(""));
     }
-
+    
     @Test
     void assertConvert() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
@@ -66,7 +65,8 @@ class ShardingRuleConfigurationToDistSQLConverterTest {
                 "AUDIT_STRATEGY(TYPE(NAME='dml_sharding_conditions'), ALLOW_HINT_DISABLE=true)\n" +
                 ");\n" +
                 "\n" +
-                "CREATE DEFAULT SHARDING DATABASE STRATEGY(TYPE='standard', SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='ds_${user_id % 2}'))));\n" +
+                "CREATE DEFAULT SHARDING DATABASE STRATEGY(TYPE='standard', SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='ds_${user_id % 2}'))));\n"
+                +
                 "\n" +
                 "CREATE DEFAULT SHARDING TABLE STRATEGY(TYPE='none');"));
     }
@@ -75,7 +75,7 @@ class ShardingRuleConfigurationToDistSQLConverterTest {
         ShardingRuleConfigurationToDistSQLConverter shardingRuleConfigurationToDistSQLConverter = new ShardingRuleConfigurationToDistSQLConverter();
         assertThat(shardingRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration"));
     }
-
+    
     private ShardingTableRuleConfiguration createShardingTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
         result.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_inline"));
@@ -83,15 +83,15 @@ class ShardingRuleConfigurationToDistSQLConverterTest {
         result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("sharding_key_required_auditor"), true));
         return result;
     }
-
+    
     private AlgorithmConfiguration createShardingInlineAlgorithmConfiguration(final String algorithmExpression) {
         return new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new PropertiesBuilder.Property("algorithm-expression", algorithmExpression)));
     }
-
+    
     private AlgorithmConfiguration createKeyGeneratorConfiguration() {
         return new AlgorithmConfiguration("SNOWFLAKE", new Properties());
     }
-
+    
     private AlgorithmConfiguration createAuditorConfiguration() {
         return new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties());
     }
