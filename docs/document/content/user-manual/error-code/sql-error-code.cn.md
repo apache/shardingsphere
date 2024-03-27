@@ -224,7 +224,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 20086       | Some routed data sources do not belong to configured data sources. routed data sources: \`%s\`, configured data sources: \`%s\`. |
 | 44000     | 20087       | Please check your sharding conditions \`%s\` to avoid same record in table \`%s\` routing to multiple data nodes.                |
 | 44000     | 20088       | Cannot found routing table factor, data source: %s, actual table: %s.                                                            |
-| HY000     | 20099       | Sharding plugin error, reason is: %s                                                                                             |
 
 ### 读写分离
 
