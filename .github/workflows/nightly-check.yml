@@ -117,7 +117,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - run: sudo npm install -g markdown-link-check@3.10.0
+      - run: sudo npm install -g markdown-link-check@3.12.1
       - name: Check dead link
         run: |
           IGNORED_PATH_LIST=("./docs/document/themes" "./docs/community/content/powered-by" "./docs/blog/content/material" "./docs/blog/themes")
