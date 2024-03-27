@@ -121,11 +121,11 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
-    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), i.product_id FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? GROUP BY i.product_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
+    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), i.product_id FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? GROUP BY i.product_id ORDER BY i.product_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), MIN(m.merchant_name) FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? GROUP BY m.merchant_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
+    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), MIN(m.merchant_name) FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? GROUP BY m.merchant_id ORDER BY m.merchant_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
