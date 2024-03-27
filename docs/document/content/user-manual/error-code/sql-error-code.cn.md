@@ -84,13 +84,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 25000     | 14301       | ShardingSphere Seata-AT transaction has been disabled.                             |
 | 25000     | 14302       | Please config application id within seata.conf file.                               |
 
-### 锁
-
-| SQL State | Vendor Code | 错误信息                                                                                 |
-|-----------|-------------|--------------------------------------------------------------------------------------|
-| HY000     | 15000       | The table \`%s\` of schema \`%s\` is locked.                                         |
-| HY000     | 15001       | The table \`%s\` of schema \`%s\` lock wait timeout of \`%s\` milliseconds exceeded. |
-
 ### 审计
 
 | SQL State | Vendor Code | 错误信息                                 |

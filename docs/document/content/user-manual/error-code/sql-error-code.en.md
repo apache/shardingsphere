@@ -84,13 +84,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 25000     | 14301       | ShardingSphere Seata-AT transaction has been disabled.                             |
 | 25000     | 14302       | Please config application id within seata.conf file.                               |
 
-### Lock
-
-| SQL State | Vendor Code | Reason                                                                               |
-|-----------|-------------|--------------------------------------------------------------------------------------|
-| HY000     | 15000       | The table \`%s\` of schema \`%s\` is locked.                                         |
-| HY000     | 15001       | The table \`%s\` of schema \`%s\` lock wait timeout of \`%s\` milliseconds exceeded. |
-
 ### Audit
 
 | SQL State | Vendor Code | Reason                               |
