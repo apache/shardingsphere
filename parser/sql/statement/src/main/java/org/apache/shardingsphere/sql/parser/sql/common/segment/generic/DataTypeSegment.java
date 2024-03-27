@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
+import java.util.Optional;
+
 @Getter
 @Setter
 public final class DataTypeSegment implements ExpressionSegment {
@@ -36,5 +38,14 @@ public final class DataTypeSegment implements ExpressionSegment {
     @Override
     public String getText() {
         return dataTypeName;
+    }
+    
+    /**
+     * Get data type length.
+     * 
+     * @return data type length segment
+     */
+    public Optional<DataTypeLengthSegment> getDataTypeLength() {
+        return Optional.ofNullable(dataLength);
     }
 }
