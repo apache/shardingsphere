@@ -38,37 +38,33 @@ class MaskRuleTest {
     
     private MaskRule maskRule;
     
-    private MaskRuleConfiguration mockConfiguration;
-    
     @BeforeEach
-    public void setUp() {
-        mockConfiguration = getRuleConfiguration();
-        maskRule = new MaskRule(mockConfiguration);
+    void setUp() {
+        maskRule = new MaskRule(createMaskRuleConfiguration());
     }
     
+    private MaskRuleConfiguration createMaskRuleConfiguration() {
+        MaskColumnRuleConfiguration maskColumnRuleConfig = new MaskColumnRuleConfiguration("user_id", "t_mask_user_id_md5");
+        MaskTableRuleConfiguration maskTableRuleConfig = new MaskTableRuleConfiguration("t_mask", Collections.singleton(maskColumnRuleConfig));
+        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("md5", new Properties());
+        return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.singletonMap("t_mask_user_id_md5", algorithmConfig));
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertTableNameExists() {
+    void assertFindMaskTableWhenTableNameExists() {
         String tableName = "t_mask";
-        Optional<MaskTable> result = maskRule.findMaskTable(tableName);
-        assertTrue(result.isPresent());
-        MaskTable maskTable = result.get();
-        Optional<MaskAlgorithm> algorithm = maskTable.findAlgorithm("user_id");
+        Optional<MaskTable> actual = maskRule.findMaskTable(tableName);
+        assertTrue(actual.isPresent());
+        Optional<MaskAlgorithm> algorithm = actual.get().findAlgorithm("user_id");
+        assertTrue(algorithm.isPresent());
         String value = (String) algorithm.get().mask("test");
         String matchValue = DigestUtils.md5Hex("test");
         assertEquals(value, matchValue);
     }
     
     @Test
-    public void assertTableNameNoExists() {
-        String tableName = "non_existent_table";
-        Optional<MaskTable> result = maskRule.findMaskTable(tableName);
-        assertFalse(result.isPresent());
-    }
-    
-    private MaskRuleConfiguration getRuleConfiguration() {
-        MaskColumnRuleConfiguration maskColumnRuleConfig = new MaskColumnRuleConfiguration("user_id", "t_mask_user_id_md5");
-        MaskTableRuleConfiguration maskTableRuleConfig = new MaskTableRuleConfiguration("t_mask", Collections.singleton(maskColumnRuleConfig));
-        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("md5", new Properties());
-        return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.singletonMap("t_mask_user_id_md5", algorithmConfig));
+    void assertFindMaskTableWhenTableNameDoesNotExist() {
+        assertFalse(maskRule.findMaskTable("non_existent_table").isPresent());
     }
 }
