@@ -238,7 +238,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 20293       | Can not config duplicate %s data source \`%s\` in database \`%s\.`                          |
 | 42S02     | 20294       | %s data source name \`%s\` not in database \`%s\.`                                          |
 | 44000     | 20295       | Auto aware data source name is required in database \`%s\.`                                 |
-| 42S02     | 20296       | Not found load balance type in database \`%s\.`                                             |
 
 ### SQL 方言转换
 
