@@ -53,9 +53,8 @@ class SchemaMetaDataReviseEngineTest {
     @Test
     void assertReviseWithMetaDataReviseEntry() {
         SchemaMetaData schemaMetaData = new SchemaMetaData("expected", Collections.singletonList(createTableMetaData()));
-        SchemaMetaData actual = new SchemaMetaDataReviseEngine(Collections.singleton(new FixtureGlobalRule()),
-                new ConfigurationProperties(new Properties()), mock(DatabaseType.class), mock(DataSource.class))
-                        .revise(schemaMetaData);
+        SchemaMetaData actual = new SchemaMetaDataReviseEngine(
+                Collections.singleton(new FixtureGlobalRule()), new ConfigurationProperties(new Properties()), mock(DatabaseType.class), mock(DataSource.class)).revise(schemaMetaData);
         assertThat(actual.getName(), is(schemaMetaData.getName()));
         assertThat(actual.getTables(), is(schemaMetaData.getTables()));
     }

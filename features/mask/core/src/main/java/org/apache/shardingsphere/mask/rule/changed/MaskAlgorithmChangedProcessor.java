@@ -50,8 +50,8 @@ public final class MaskAlgorithmChangedProcessor implements RuleItemConfiguratio
                 .map(optional -> getConfiguration(optional.getConfiguration())).orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
     }
     
-    private MaskRuleConfiguration getConfiguration(final MaskRuleConfiguration config) {
-        return null == config.getMaskAlgorithms() ? new MaskRuleConfiguration(config.getTables(), new LinkedHashMap<>()) : config;
+    private MaskRuleConfiguration getConfiguration(final MaskRuleConfiguration ruleConfig) {
+        return null == ruleConfig.getMaskAlgorithms() ? new MaskRuleConfiguration(ruleConfig.getTables(), new LinkedHashMap<>()) : ruleConfig;
     }
     
     @Override
