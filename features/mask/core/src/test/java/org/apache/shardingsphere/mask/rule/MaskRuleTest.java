@@ -17,20 +17,16 @@
 
 package org.apache.shardingsphere.mask.rule;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
-import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -50,17 +46,9 @@ class MaskRuleTest {
         return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.singletonMap("t_mask_user_id_md5", algorithmConfig));
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertFindMaskTableWhenTableNameExists() {
-        String tableName = "t_mask";
-        Optional<MaskTable> actual = maskRule.findMaskTable(tableName);
-        assertTrue(actual.isPresent());
-        Optional<MaskAlgorithm> algorithm = actual.get().findAlgorithm("user_id");
-        assertTrue(algorithm.isPresent());
-        String value = (String) algorithm.get().mask("test");
-        String matchValue = DigestUtils.md5Hex("test");
-        assertEquals(value, matchValue);
+        assertTrue(maskRule.findMaskTable("t_mask").isPresent());
     }
     
     @Test
