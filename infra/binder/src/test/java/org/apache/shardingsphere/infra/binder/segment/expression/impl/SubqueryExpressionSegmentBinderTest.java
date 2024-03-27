@@ -37,15 +37,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class SubqueryExpressionSegmentBinderTest {
     
     @Test
-    public void testBind() {
+    void assertBind() {
         SelectStatement selectStatement = new SQLServerSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SubquerySegment subquery = new SubquerySegment(0, 10, selectStatement, "subquery");
         SubqueryExpressionSegment segment = new SubqueryExpressionSegment(subquery);
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(null, null, null, null);
         Map<String, TableSegmentBinderContext> tableBinderContexts = new HashMap<>();
-        SubqueryExpressionSegment expected = new SubqueryExpressionSegment(SubquerySegmentBinder.bind(segment.getSubquery(), statementBinderContext, tableBinderContexts));
         SubqueryExpressionSegment actual = SubqueryExpressionSegmentBinder.bind(segment, statementBinderContext, tableBinderContexts);
+        SubqueryExpressionSegment expected = new SubqueryExpressionSegment(SubquerySegmentBinder.bind(segment.getSubquery(), statementBinderContext, tableBinderContexts));
         assertThat(actual, isA(SubqueryExpressionSegment.class));
         assertThat(actual.getStartIndex(), is(expected.getStartIndex()));
         assertThat(actual.getStopIndex(), is(expected.getStopIndex()));
