@@ -91,6 +91,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateLockdownProfileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateMaterializedViewLogContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateOperatorContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreatePFileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateProfileContext;
@@ -286,6 +287,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateNestedTableTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateObjectTypeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateOperatorStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreatePFileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateProfileStatement;
@@ -1759,5 +1761,10 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         return new OracleDropDatabaseStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateOperator(final CreateOperatorContext ctx) {
+        return new OracleCreateOperatorStatement();
     }
 }

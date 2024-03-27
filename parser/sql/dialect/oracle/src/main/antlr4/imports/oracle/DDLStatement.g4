@@ -39,6 +39,34 @@ createIndex
     : CREATE createIndexSpecification INDEX indexName ON createIndexDefinitionClause usableSpecification? invalidationSpecification?
     ;
 
+createOperator
+    : CREATE OPERATOR operatorName bindDefinitionClause
+    ;
+
+bindDefinitionClause
+    : BINDING bindDefinition (COMMA_ bindDefinition)*
+    ;
+
+bindDefinition
+    : LP_ dataType (COMMA_ dataType)* RP_ returnDefinition
+    ;
+
+returnDefinition
+    : RETURN returnTypeDef implementsOperator
+    ;
+
+implementsOperator
+    : USING functionNameDef
+    ;
+
+returnTypeDef
+    : dataType
+    ;
+
+functionNameDef
+    : identifier (DOT_ functionName)?
+    ;
+
 createType
     : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? TYPE plsqlTypeSource
     ;

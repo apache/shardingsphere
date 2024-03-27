@@ -162,5 +162,6 @@ execute
     | createTrigger
     | show
     | spool
+    | createOperator
     ) SEMI_? SLASH_? EOF
     ;
