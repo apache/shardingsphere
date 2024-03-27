@@ -26,8 +26,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -37,49 +38,36 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ConstraintReviseEngineTest<T extends ShardingSphereRule> {
+class ConstraintReviseEngineTest {
     
     @Mock
-    private T mockRule;
+    private ShardingSphereRule mockRule;
     
     @Mock
-    private MetaDataReviseEntry<T> mockMetaDataReviseEntry;
+    private MetaDataReviseEntry<ShardingSphereRule> mockMetaDataReviseEntry;
     
     @InjectMocks
-    private ConstraintReviseEngine<T> engine;
+    private ConstraintReviseEngine<ShardingSphereRule> engine;
     
     @Test
-    void assertNotPresentReviserReturnsOriginalConstraints() {
+    void assertReviseWithReturnsOriginalConstraints() {
         String tableName = "tableName";
-        doReturn(Optional.empty()).when(mockMetaDataReviseEntry).getConstraintReviser(mockRule, tableName);
-        Collection<ConstraintMetaData> expectedConstraints = new LinkedHashSet<>();
-        expectedConstraints.add(new ConstraintMetaData("constraint1", tableName));
-        expectedConstraints.add(new ConstraintMetaData("constraint2", tableName));
-        
-        Collection<ConstraintMetaData> actualConstraints = engine.revise(tableName, expectedConstraints);
-        assertThat(actualConstraints, is(expectedConstraints));
+        when(mockMetaDataReviseEntry.getConstraintReviser(mockRule, tableName)).thenReturn(Optional.empty());
+        Collection<ConstraintMetaData> expectedConstraints = Arrays.asList(new ConstraintMetaData("constraint1", tableName), new ConstraintMetaData("constraint2", tableName));
+        assertThat(engine.revise(tableName, expectedConstraints), is(expectedConstraints));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
-    void assertReviserReturnsRevisedConstraints() {
+    void assertReviseWithReturnsRevisedConstraints() {
         String tableName = "tableName";
-        ConstraintReviser<T> reviser = mock(ConstraintReviser.class);
+        ConstraintReviser<ShardingSphereRule> reviser = mock(ConstraintReviser.class);
         doReturn(Optional.of(reviser)).when(mockMetaDataReviseEntry).getConstraintReviser(mockRule, tableName);
-        
-        Collection<ConstraintMetaData> originalConstraints = new LinkedHashSet<>();
         ConstraintMetaData constraint1 = new ConstraintMetaData("constraint1", tableName);
         ConstraintMetaData constraint2 = new ConstraintMetaData("constraint2", tableName);
-        originalConstraints.add(constraint1);
-        originalConstraints.add(constraint2);
-        
         ConstraintMetaData constraint3 = new ConstraintMetaData("constraint3", tableName);
         when(reviser.revise(tableName, constraint1, mockRule)).thenReturn(Optional.of(constraint3));
         when(reviser.revise(tableName, constraint2, mockRule)).thenReturn(Optional.empty());
-        Collection<ConstraintMetaData> expectedConstraints = new LinkedHashSet<>();
-        expectedConstraints.add(constraint3);
-        
-        Collection<ConstraintMetaData> actualConstraints = engine.revise(tableName, originalConstraints);
-        assertThat(actualConstraints, is(expectedConstraints));
+        assertThat(engine.revise(tableName, Arrays.asList(constraint1, constraint2)), is(Collections.singleton(constraint3)));
     }
-    
 }
