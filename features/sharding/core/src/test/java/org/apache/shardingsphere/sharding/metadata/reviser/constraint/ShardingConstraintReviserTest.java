@@ -17,14 +17,6 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser.constraint;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
-import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -36,6 +28,14 @@ import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,36 +46,30 @@ class ShardingConstraintReviserTest {
     private ShardingRule shardingRule;
     
     @BeforeEach
-    public void setUp() {
-        shardingRule = mockShardingRule();
+    void setUp() {
+        shardingRule = createShardingRule();
         ShardingTable shardingTable = mock(ShardingTable.class);
+        when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("schema_name", "table_name_0"), new DataNode("schema_name", "table_name_1")));
         reviser = new ShardingConstraintReviser(shardingTable);
-        when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode[]{
-                new DataNode("schema_name", "table_name_0"),
-                new DataNode("schema_name", "table_name_1")
-        }));
     }
     
-    private ShardingRule mockShardingRule() {
+    private ShardingRule createShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("table_name", "ds.table_name");
-        ruleConfig.setTables(Collections.singleton(shardingTableRuleConfig));
-        return new ShardingRule(ruleConfig, Maps.of("ds", new MockedDataSource()), mock(InstanceContext.class));
+        ruleConfig.setTables(Collections.singleton(new ShardingTableRuleConfiguration("table_name", "ds.table_name")));
+        return new ShardingRule(ruleConfig, Collections.singletonMap("ds", new MockedDataSource()), mock(InstanceContext.class));
     }
     
     @Test
-    public void testReviseWhenTableMatches() {
+    void assertReviseWhenTableMatches() {
         ConstraintMetaData originalMetaData = new ConstraintMetaData("test_table_name_1", "referenced_table_name");
-        Optional<ConstraintMetaData> result = reviser.revise("table_name_1", originalMetaData, shardingRule);
-        assertTrue(result.isPresent());
-        assertEquals("test", result.get().getName());
-        assertEquals("referenced_table_name", result.get().getReferencedTableName());
+        Optional<ConstraintMetaData> actual = reviser.revise("table_name_1", originalMetaData, shardingRule);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getName(), is("test"));
+        assertThat(actual.get().getReferencedTableName(), is("referenced_table_name"));
     }
     
     @Test
-    public void testReviseWhenTableDoesNotMatch() {
-        ConstraintMetaData originalMetaData = new ConstraintMetaData("test_table_name_2", "referenced_table_name");
-        Optional<ConstraintMetaData> result = reviser.revise("table_name_1", originalMetaData, shardingRule);
-        assertFalse(result.isPresent());
+    void assertReviseWhenTableDoesNotMatch() {
+        assertFalse(reviser.revise("table_name_1", new ConstraintMetaData("test_table_name_2", "referenced_table_name"), shardingRule).isPresent());
     }
 }

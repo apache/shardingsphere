@@ -19,12 +19,13 @@ package org.apache.shardingsphere.infra.metadata.statistics;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ShardingSphereSchemaDataTest {
+class ShardingSphereSchemaDataTest {
     
     private static final String TEST_TABLE_NAME = "TEST_TABLE_NAME";
     
@@ -36,23 +37,20 @@ public class ShardingSphereSchemaDataTest {
     void assertGetTable() {
         ShardingSphereSchemaData shardingSphereSchemaData = new ShardingSphereSchemaData();
         shardingSphereSchemaData.putTable(TEST_TABLE_NAME, new ShardingSphereTableData(TEST_TABLE_NAME));
-        
         ShardingSphereTableData tableData = shardingSphereSchemaData.getTable(TEST_TABLE_NAME);
         assertTrue(TEST_TABLE_NAME.equalsIgnoreCase(tableData.getName()));
-        ShardingSphereTableData nonExistentTableData = shardingSphereSchemaData.getTable(NON_EXISTENT_TABLE);
-        assertNull(nonExistentTableData);
+        assertNull(shardingSphereSchemaData.getTable(NON_EXISTENT_TABLE));
     }
     
     @Test
     void assertPutTable() {
         ShardingSphereSchemaData shardingSphereSchemaData = new ShardingSphereSchemaData();
         shardingSphereSchemaData.putTable(TEST_TABLE_NAME, new ShardingSphereTableData(TEST_TABLE_NAME));
-        
-        assertEquals(1, shardingSphereSchemaData.getTableData().size());
+        assertThat(shardingSphereSchemaData.getTableData().size(), is(1));
         assertFalse(shardingSphereSchemaData.getTableData().containsKey(TEST_TABLE_2));
         ShardingSphereTableData newTable = new ShardingSphereTableData(TEST_TABLE_2);
         shardingSphereSchemaData.putTable(TEST_TABLE_2, newTable);
-        assertEquals(2, shardingSphereSchemaData.getTableData().size());
+        assertThat(shardingSphereSchemaData.getTableData().size(), is(2));
         assertTrue(shardingSphereSchemaData.containsTable(TEST_TABLE_2));
     }
     
@@ -60,18 +58,15 @@ public class ShardingSphereSchemaDataTest {
     void assertRemoveTable() {
         ShardingSphereSchemaData shardingSphereSchemaData = new ShardingSphereSchemaData();
         shardingSphereSchemaData.putTable(TEST_TABLE_NAME, new ShardingSphereTableData(TEST_TABLE_NAME));
-        
         assertTrue(shardingSphereSchemaData.containsTable(TEST_TABLE_NAME));
         shardingSphereSchemaData.removeTable(TEST_TABLE_NAME);
-        assertEquals(0, shardingSphereSchemaData.getTableData().size());
-        assertFalse(shardingSphereSchemaData.getTableData().containsKey(TEST_TABLE_NAME));
+        assertTrue(shardingSphereSchemaData.getTableData().isEmpty());
     }
     
     @Test
     void assertContainsTable() {
         ShardingSphereSchemaData shardingSphereSchemaData = new ShardingSphereSchemaData();
         shardingSphereSchemaData.putTable(TEST_TABLE_NAME, new ShardingSphereTableData(TEST_TABLE_NAME));
-        
         assertTrue(shardingSphereSchemaData.containsTable(TEST_TABLE_NAME));
         assertFalse(shardingSphereSchemaData.containsTable(NON_EXISTENT_TABLE));
     }
