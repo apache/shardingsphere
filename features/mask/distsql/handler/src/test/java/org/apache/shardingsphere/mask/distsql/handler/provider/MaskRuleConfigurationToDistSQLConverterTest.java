@@ -60,5 +60,4 @@ class MaskRuleConfigurationToDistSQLConverterTest {
         AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("md5", new Properties());
         return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.singletonMap("t_mask_user_id_md5", algorithmConfig));
     }
-    
 }

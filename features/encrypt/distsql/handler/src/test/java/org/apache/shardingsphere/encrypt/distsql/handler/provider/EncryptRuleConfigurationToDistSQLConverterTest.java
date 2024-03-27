@@ -42,7 +42,6 @@ class EncryptRuleConfigurationToDistSQLConverterTest {
         when(encryptRuleConfiguration.getTables()).thenReturn(Collections.emptyList());
         EncryptRuleConfigurationToDistSQLConverter encryptRuleConfigurationToDistSQLConverter = new EncryptRuleConfigurationToDistSQLConverter();
         assertThat(encryptRuleConfigurationToDistSQLConverter.convert(encryptRuleConfiguration), is(""));
-        
     }
     
     @Test
@@ -66,7 +65,6 @@ class EncryptRuleConfigurationToDistSQLConverterTest {
                 "ASSISTED_QUERY_ALGORITHM(), LIKE_QUERY_ALGORITHM())\n"
                 +
                 "));"));
-        
     }
     
     @Test
