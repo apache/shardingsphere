@@ -107,12 +107,13 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         int stopIndex = columnSegment.getStopIndex();
         if (includesLike(whereSegments, columnSegment)) {
             ShardingSpherePreconditions.checkState(encryptColumn.getLikeQuery().isPresent(), () -> new UnsupportedEncryptSQLException("LIKE"));
-            return new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptColumn.getLikeQuery().get().getName(), columnSegment.getIdentifier().getQuoteCharacter()));
+            return new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptColumn.getLikeQuery().get().getName(), columnSegment.getIdentifier().getQuoteCharacter()),
+                    databaseType);
         }
         Collection<Projection> columnProjections =
                 encryptColumn.getAssistedQuery().map(optional -> createColumnProjections(optional.getName(), columnSegment.getIdentifier().getQuoteCharacter()))
                         .orElseGet(() -> createColumnProjections(encryptColumn.getCipher().getName(), columnSegment.getIdentifier().getQuoteCharacter()));
-        return new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections);
+        return new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, databaseType);
     }
     
     private boolean includesLike(final Collection<WhereSegment> whereSegments, final ColumnSegment targetColumnSegment) {

@@ -62,6 +62,7 @@ class EncryptProjectionTokenGeneratorTest {
     @BeforeEach
     void setup() {
         generator.setEncryptRule(mockEncryptRule());
+        generator.setDatabaseType(databaseType);
     }
     
     private EncryptRule mockEncryptRule() {
