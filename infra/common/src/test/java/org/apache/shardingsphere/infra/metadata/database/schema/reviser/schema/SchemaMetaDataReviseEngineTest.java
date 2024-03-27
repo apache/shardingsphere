@@ -18,13 +18,21 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.ConstraintMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRule;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
+import java.sql.Types;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,4 +49,24 @@ class SchemaMetaDataReviseEngineTest {
         assertThat(actual.getName(), is(schemaMetaData.getName()));
         assertThat(actual.getTables(), is(schemaMetaData.getTables()));
     }
+    
+    @Test
+    void assertReviseWithMetaDataReviseEntry() {
+        SchemaMetaData schemaMetaData = new SchemaMetaData("expected", Collections.singletonList(createTableMetaData()));
+        SchemaMetaData actual = new SchemaMetaDataReviseEngine(Collections.singleton(new FixtureGlobalRule()),
+                new ConfigurationProperties(new Properties()), mock(DatabaseType.class), mock(DataSource.class))
+                        .revise(schemaMetaData);
+        assertThat(actual.getName(), is(schemaMetaData.getName()));
+        assertThat(actual.getTables(), is(schemaMetaData.getTables()));
+    }
+    
+    private TableMetaData createTableMetaData() {
+        Collection<ColumnMetaData> columns = new LinkedHashSet<>(Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false, false),
+                new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false, false),
+                new ColumnMetaData("pwd_like", Types.VARCHAR, false, false, true, true, false, false)));
+        IndexMetaData indexMetaData = new IndexMetaData("index_name");
+        ConstraintMetaData constraintMetaData = new ConstraintMetaData("constraint_name", "table_name_2");
+        return new TableMetaData("table_name", columns, Collections.singletonList(indexMetaData), Collections.singleton(constraintMetaData));
+    }
+    
 }
