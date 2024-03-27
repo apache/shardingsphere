@@ -49,11 +49,7 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
         checkShadowAlgorithms(ruleConfig.getShadowAlgorithms());
         checkDefaultShadowAlgorithmConfiguration(ruleConfig.getDefaultShadowAlgorithmName(), ruleConfig.getShadowAlgorithms());
         checkDataSources(ruleConfig.getDataSources(), dataSourceMap, databaseName);
-        // TODO move setDefaultShadowDataSource to yaml swapper
-        setDefaultShadowDataSource(ruleConfig.getTables(), ruleConfig.getDataSources());
         checkShadowTableDataSourcesReferences(ruleConfig.getTables(), ruleConfig.getDataSources());
-        // TODO move setDefaultShadowAlgorithm to yaml swapper
-        setDefaultShadowAlgorithm(ruleConfig.getTables(), ruleConfig.getDefaultShadowAlgorithmName());
         checkShadowTableAlgorithmsReferences(ruleConfig.getTables(), ruleConfig.getShadowAlgorithms(), databaseName);
     }
     
@@ -70,16 +66,6 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
         }
     }
     
-    private void setDefaultShadowDataSource(final Map<String, ShadowTableConfiguration> shadowTables, final Collection<ShadowDataSourceConfiguration> shadowDataSources) {
-        if (1 == shadowDataSources.size()) {
-            for (ShadowTableConfiguration each : shadowTables.values()) {
-                if (each.getDataSourceNames().isEmpty()) {
-                    each.getDataSourceNames().add(shadowDataSources.iterator().next().getName());
-                }
-            }
-        }
-    }
-    
     private void checkShadowTableDataSourcesReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Collection<ShadowDataSourceConfiguration> shadowDataSources) {
         Collection<String> dataSourceNames = shadowDataSources.stream().map(ShadowDataSourceConfiguration::getName).collect(Collectors.toSet());
         shadowTables.forEach((key, value) -> {
@@ -93,15 +79,6 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
         if (null != defaultShadowAlgorithmName) {
             AlgorithmConfiguration algorithmConfig = shadowAlgorithmConfigs.get(defaultShadowAlgorithmName);
             ShardingSpherePreconditions.checkState(null != algorithmConfig && "SQL_HINT".equals(algorithmConfig.getType()), NotImplementHintShadowAlgorithmException::new);
-        }
-    }
-    
-    private void setDefaultShadowAlgorithm(final Map<String, ShadowTableConfiguration> shadowTables, final String defaultShadowAlgorithmName) {
-        for (ShadowTableConfiguration each : shadowTables.values()) {
-            Collection<String> shadowAlgorithmNames = each.getShadowAlgorithmNames();
-            if (null != defaultShadowAlgorithmName && shadowAlgorithmNames.isEmpty()) {
-                shadowAlgorithmNames.add(defaultShadowAlgorithmName);
-            }
         }
     }
     
