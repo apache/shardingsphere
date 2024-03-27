@@ -21,4 +21,6 @@
     <create-operator sql-case-id="create_operator_with_procedure" />
     <create-operator sql-case-id="create_operator_with_function" />
     <create-operator sql-case-id="create_operator_with_schema_qualified_name" />
+    <create-operator sql-case-id="create_operator_with_binding" />
+    <create-operator sql-case-id="create_operator_with_binding_custom_datatype" />
 </sql-parser-test-cases>

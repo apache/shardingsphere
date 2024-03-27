@@ -15,19 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.exception.metadata;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.shadow.exception.ShadowSQLException;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTypeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Missing required shadow algorithm exception.
+ * Oracle create operator statement.
  */
-public final class MissingRequiredShadowAlgorithmException extends ShadowSQLException {
-    
-    private static final long serialVersionUID = -1457753843665735990L;
-    
-    public MissingRequiredShadowAlgorithmException(final String algorithmName, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "`%s` algorithm does not exist in database `%s`.", algorithmName, databaseName);
-    }
+public final class OracleCreateOperatorStatement extends CreateTypeStatement implements OracleStatement {
 }
