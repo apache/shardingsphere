@@ -26,6 +26,11 @@ import java.util.Optional;
 public final class FixtureMetaDataRevise implements MetaDataReviseEntry<FixtureGlobalRule> {
     
     @Override
+    public Optional<SchemaTableAggregationReviser<FixtureGlobalRule>> getSchemaTableAggregationReviser(final ConfigurationProperties props) {
+        return Optional.of(new FixtureSchemaTableAggregationReviser());
+    }
+    
+    @Override
     public int getOrder() {
         return 0;
     }
@@ -33,10 +38,5 @@ public final class FixtureMetaDataRevise implements MetaDataReviseEntry<FixtureG
     @Override
     public Class<FixtureGlobalRule> getTypeClass() {
         return FixtureGlobalRule.class;
-    }
-    
-    @Override
-    public Optional<SchemaTableAggregationReviser<FixtureGlobalRule>> getSchemaTableAggregationReviser(final ConfigurationProperties props) {
-        return Optional.of(new FixtureSchemaTableAggregationReviser());
     }
 }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema.S
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class FixtureSchemaTableAggregationReviser implements SchemaTableAggregationReviser<FixtureGlobalRule> {
+public final class FixtureSchemaTableAggregationReviser implements SchemaTableAggregationReviser<FixtureGlobalRule> {
     
     private final Collection<TableMetaData> tables = new LinkedList<>();
     
