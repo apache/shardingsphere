@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.exception.algorithm.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
@@ -126,19 +126,6 @@ public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleA
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         UnusedAlgorithmFinder.findUnusedShardingAlgorithm(rule.getConfiguration()).forEach(each -> result.getShardingAlgorithms().put(each, rule.getConfiguration().getShardingAlgorithms().get(each)));
         return result;
-    }
-    
-    @Override
-    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
-        if (!toBeAlteredRuleConfig.getShardingAlgorithms().isEmpty()) {
-            currentRuleConfig.getShardingAlgorithms().putAll(toBeAlteredRuleConfig.getShardingAlgorithms());
-        }
-        if (null != toBeAlteredRuleConfig.getDefaultTableShardingStrategy()) {
-            currentRuleConfig.setDefaultTableShardingStrategy(toBeAlteredRuleConfig.getDefaultTableShardingStrategy());
-        }
-        if (null != toBeAlteredRuleConfig.getDefaultDatabaseShardingStrategy()) {
-            currentRuleConfig.setDefaultDatabaseShardingStrategy(toBeAlteredRuleConfig.getDefaultDatabaseShardingStrategy());
-        }
     }
     
     @Override

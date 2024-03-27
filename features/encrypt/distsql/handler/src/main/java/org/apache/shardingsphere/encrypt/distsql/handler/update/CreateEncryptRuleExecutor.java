@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.infra.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
@@ -149,12 +149,6 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
             segments.removeIf(each -> duplicatedRuleNames.contains(each.getTableName()));
         }
         return EncryptRuleStatementConverter.convert(segments);
-    }
-    
-    @Override
-    public void updateCurrentRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeCreatedRuleConfig) {
-        currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
-        currentRuleConfig.getEncryptors().putAll(toBeCreatedRuleConfig.getEncryptors());
     }
     
     @Override

@@ -25,6 +25,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.mariadb.type.MariaDBDatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
@@ -83,7 +84,7 @@ public final class PipelineCaseHelper {
     public static List<Object[]> generateOrderInsertData(final DatabaseType databaseType, final KeyGenerateAlgorithm keyGenerateAlgorithm, final int insertRows) {
         List<Object[]> result = new ArrayList<>(insertRows);
         String emojiText = "☠️x☺️x✋x☹️";
-        if (databaseType instanceof MySQLDatabaseType) {
+        if (databaseType instanceof MySQLDatabaseType || databaseType instanceof MariaDBDatabaseType) {
             for (int i = 0; i < insertRows; i++) {
                 int randomInt = generateInt(-100, 100);
                 Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
@@ -120,7 +121,7 @@ public final class PipelineCaseHelper {
             }
             return result;
         }
-        throw new UnsupportedOperationException("now support generate %s insert data");
+        throw new UnsupportedOperationException(String.format("Not support generate %s insert data", databaseType.getType()));
     }
     
     private static int generateInt(final int min, final int max) {

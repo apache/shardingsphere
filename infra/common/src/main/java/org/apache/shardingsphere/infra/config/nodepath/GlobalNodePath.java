@@ -36,6 +36,8 @@ public final class GlobalNodePath {
     
     private static final String VERSIONS = "versions";
     
+    private static final String ACTIVE_VERSION_SUFFIX = "/active_version$";
+    
     /**
      * Get version.
      *
@@ -60,7 +62,7 @@ public final class GlobalNodePath {
      * @return true or false
      */
     public static boolean isRuleActiveVersionPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(getRuleNameNode() + "/(\\w+)/active_version$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getRuleNameNode() + "/(\\w+)" + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find();
     }
@@ -72,7 +74,7 @@ public final class GlobalNodePath {
      * @return true or false
      */
     public static boolean isPropsActiveVersionPath(final String propsPath) {
-        Pattern pattern = Pattern.compile(getPropsNode() + "/active_version$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getPropsNode() + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(propsPath);
         return matcher.find();
     }
@@ -88,7 +90,7 @@ public final class GlobalNodePath {
      * @return rule name
      */
     public static Optional<String> getRuleName(final String rulePath) {
-        Pattern pattern = Pattern.compile(getRuleNameNode() + "/(\\w+)/active_version$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getRuleNameNode() + "/(\\w+)" + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }

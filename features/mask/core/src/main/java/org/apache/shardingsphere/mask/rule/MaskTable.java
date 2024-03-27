@@ -20,9 +20,11 @@ package org.apache.shardingsphere.mask.rule;
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Mask table.
@@ -31,20 +33,19 @@ public final class MaskTable {
     
     private final Map<String, MaskColumn> columns;
     
-    public MaskTable(final MaskTableRuleConfiguration config) {
-        columns = new CaseInsensitiveMap<>();
-        for (MaskColumnRuleConfiguration each : config.getColumns()) {
-            columns.put(each.getLogicColumn(), new MaskColumn(each.getLogicColumn(), each.getMaskAlgorithm()));
-        }
+    public MaskTable(final MaskTableRuleConfiguration config, final Map<String, MaskAlgorithm<?, ?>> maskAlgorithms) {
+        columns = config.getColumns().stream().collect(Collectors.toMap(MaskColumnRuleConfiguration::getLogicColumn,
+                each -> new MaskColumn(each.getLogicColumn(), maskAlgorithms.get(each.getMaskAlgorithm())), (oldValue, currentValue) -> oldValue, CaseInsensitiveMap::new));
     }
     
     /**
-     * Find mask algorithm name.
+     * Find mask algorithm.
      *
-     * @param logicColumn column name
-     * @return mask algorithm name
+     * @param columnName column name
+     * @return found mask algorithm
      */
-    public Optional<String> findMaskAlgorithmName(final String logicColumn) {
-        return columns.containsKey(logicColumn) ? Optional.of(columns.get(logicColumn).getMaskAlgorithm()) : Optional.empty();
+    @SuppressWarnings("rawtypes")
+    public Optional<MaskAlgorithm> findAlgorithm(final String columnName) {
+        return columns.containsKey(columnName) ? Optional.of(columns.get(columnName).getMaskAlgorithm()) : Optional.empty();
     }
 }

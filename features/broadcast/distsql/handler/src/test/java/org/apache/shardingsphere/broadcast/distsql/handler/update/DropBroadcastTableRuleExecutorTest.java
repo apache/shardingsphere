@@ -20,7 +20,7 @@ package org.apache.shardingsphere.broadcast.distsql.handler.update;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.DropBroadcastTableRuleStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,8 +58,11 @@ class DropBroadcastTableRuleExecutorTest {
     void assertUpdateCurrentRuleConfiguration() {
         BroadcastRuleConfiguration config = new BroadcastRuleConfiguration(new LinkedList<>());
         config.getTables().add("t_address");
+        BroadcastRule rule = mock(BroadcastRule.class);
+        when(rule.getConfiguration()).thenReturn(config);
+        executor.setRule(rule);
         DropBroadcastTableRuleStatement sqlStatement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertTrue(executor.updateCurrentRuleConfiguration(sqlStatement, config));
-        assertTrue(config.getTables().isEmpty());
+        BroadcastRuleConfiguration toBeDroppedConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
+        assertTrue(toBeDroppedConfig.getTables().isEmpty());
     }
 }

@@ -63,22 +63,22 @@
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_schema_name_in_shorthand_projection_for_parameters" db-types="MySQL">
-        <input sql="SELECT logic_db.t_account.* FROM t_account WHERE account_id = ? AND certificate_number = ? AND certificate_number LIKE ?" parameters="100, 200, 300" />
+        <input sql="SELECT encrypt.t_account.* FROM t_account WHERE account_id = ? AND certificate_number = ? AND certificate_number LIKE ?" parameters="100, 200, 300" />
         <output sql="SELECT t_account.`account_id`, t_account.`cipher_certificate_number` AS `certificate_number`, t_account.`cipher_password` AS `password`, t_account.`cipher_amount` AS `amount` FROM t_account WHERE account_id = ? AND assisted_query_certificate_number = ? AND like_query_certificate_number LIKE ?" parameters="100, assisted_query_200, like_query_300" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_schema_name_in_shorthand_projection_for_literals" db-types="MySQL">
-        <input sql="SELECT logic_db.t_account.* FROM t_account WHERE account_id = 100 AND certificate_number = 200 AND certificate_number LIKE 300" />
+        <input sql="SELECT encrypt.t_account.* FROM t_account WHERE account_id = 100 AND certificate_number = 200 AND certificate_number LIKE 300" />
         <output sql="SELECT t_account.`account_id`, t_account.`cipher_certificate_number` AS `certificate_number`, t_account.`cipher_password` AS `password`, t_account.`cipher_amount` AS `amount` FROM t_account WHERE account_id = 100 AND assisted_query_certificate_number = 'assisted_query_200' AND like_query_certificate_number LIKE 'like_query_300'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_schema_name_in_column_projection_for_parameters" db-types="MySQL">
-        <input sql="SELECT logic_db.t_account.account_id FROM t_account WHERE account_id = ?" parameters="100" />
+        <input sql="SELECT encrypt.t_account.account_id FROM t_account WHERE account_id = ?" parameters="100" />
         <output sql="SELECT t_account.account_id FROM t_account WHERE account_id = ?" parameters="100" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_schema_name_in_column_projection_for_literals" db-types="MySQL">
-        <input sql="SELECT logic_db.t_account.account_id FROM t_account WHERE account_id = 100" />
+        <input sql="SELECT encrypt.t_account.account_id FROM t_account WHERE account_id = 100" />
         <output sql="SELECT t_account.account_id FROM t_account WHERE account_id = 100" />
     </rewrite-assertion>
 

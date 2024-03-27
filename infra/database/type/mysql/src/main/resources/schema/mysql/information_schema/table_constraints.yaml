@@ -65,3 +65,11 @@ columns:
     primaryKey: false
     unsigned: false
     visible: true
+  enforced:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ENFORCED
+    primaryKey: false
+    unsigned: false
+    visible: true

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnection
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.RuleNotExistedException;
 import org.apache.shardingsphere.distsql.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.context.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -60,7 +60,7 @@ import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
-import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
+import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -130,7 +130,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
         // TODO move dialect MySQLInsertStatement into database type module @zhangliang
         boolean isReturnGeneratedKeys = sqlStatement instanceof MySQLInsertStatement;
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaData.getProps());
-        SQLFederationExecutorContext context = new SQLFederationExecutorContext(true, queryContext, metaData,
+        SQLFederationContext context = new SQLFederationContext(true, queryContext, metaData,
                 ((ProxyDatabaseConnectionManager) connectionContext.getDatabaseConnectionManager()).getConnectionSession().getProcessId());
         federationEngine.executeQuery(prepareEngine, createPreviewCallback(sqlStatement), context);
         return context.getPreviewExecutionUnits();

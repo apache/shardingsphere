@@ -48,7 +48,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
-import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
+import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -86,8 +86,8 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
         JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext());
         try (SQLFederationEngine sqlFederationEngine = new SQLFederationEngine(databaseName, PG_CATALOG, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor)) {
             DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(metaDataContexts, connectionSession);
-            SQLFederationExecutorContext context =
-                    new SQLFederationExecutorContext(false, new QueryContext(sqlStatementContext, sql, parameters, SQLHintUtils.extractHint(sql)), metaDataContexts.getMetaData(),
+            SQLFederationContext context =
+                    new SQLFederationContext(false, new QueryContext(sqlStatementContext, sql, parameters, SQLHintUtils.extractHint(sql)), metaDataContexts.getMetaData(),
                             connectionSession.getProcessId());
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
             ResultSet resultSet = sqlFederationEngine.executeQuery(prepareEngine,

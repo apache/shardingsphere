@@ -23,7 +23,7 @@ import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration
 import org.apache.shardingsphere.broadcast.distsql.statement.DropBroadcastTableRuleStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -68,13 +68,6 @@ public final class DropBroadcastTableRuleExecutor implements DatabaseRuleDropExe
         Collection<String> toBeDroppedTableNames = new CaseInsensitiveSet<>(sqlStatement.getTables());
         result.getTables().removeIf(toBeDroppedTableNames::contains);
         return result;
-    }
-    
-    @Override
-    public boolean updateCurrentRuleConfiguration(final DropBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
-        Collection<String> toBeDroppedTableNames = new CaseInsensitiveSet<>(sqlStatement.getTables());
-        currentRuleConfig.getTables().removeIf(toBeDroppedTableNames::contains);
-        return currentRuleConfig.isEmpty();
     }
     
     @Override

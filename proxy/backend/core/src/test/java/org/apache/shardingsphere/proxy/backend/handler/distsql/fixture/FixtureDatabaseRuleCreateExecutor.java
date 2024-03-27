@@ -34,10 +34,6 @@ public final class FixtureDatabaseRuleCreateExecutor implements DatabaseRuleCrea
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final MockedRuleConfiguration currentRuleConfig, final MockedRuleConfiguration toBeCreatedRuleConfig) {
-    }
-    
-    @Override
     public void setRule(final MockedRule rule) {
     }
     

@@ -21,7 +21,6 @@ import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmNotFoundException;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
@@ -336,7 +335,7 @@ class ShardingRuleTest {
     void assertGenerateKeyFailure() {
         AlgorithmSQLContext generateContext = mock(AlgorithmSQLContext.class);
         when(generateContext.getTableName()).thenReturn("table_0");
-        assertThrows(AlgorithmNotFoundException.class, () -> createMaximumShardingRule().generateKeys(generateContext, 1));
+        assertThrows(ShardingTableRuleNotFoundException.class, () -> createMaximumShardingRule().generateKeys(generateContext, 1));
     }
     
     @Test
@@ -695,7 +694,7 @@ class ShardingRuleTest {
     }
     
     private Map<String, String> createColumnTableNameMap() {
-        Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new HashMap<>(4, 1F);
         result.put("logic_Table.user_id", "logic_Table");
         result.put("sub_Logic_Table.user_id", "sub_Logic_Table");
         result.put("logic_Table.order_id", "logic_Table");

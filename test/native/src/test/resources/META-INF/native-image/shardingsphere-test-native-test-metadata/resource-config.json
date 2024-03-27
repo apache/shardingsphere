@@ -54,9 +54,12 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"},
     "pattern":"\\Qregistry.conf\\E"
-  },{
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"},
     "pattern":"\\Qseata.conf\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"},
+    "pattern":"\\Qtest-native/sql/seata-script-client-at-postgresql.sql\\E"
   }]},
   "bundles":[]
 }

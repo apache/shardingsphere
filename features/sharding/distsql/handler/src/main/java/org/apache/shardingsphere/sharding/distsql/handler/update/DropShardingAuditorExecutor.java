@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.infra.exception.algorithm.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -84,12 +84,6 @@ public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecut
             result.getAuditors().put(each, rule.getConfiguration().getAuditors().get(each));
         }
         return result;
-    }
-    
-    @Override
-    public boolean updateCurrentRuleConfiguration(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getAuditors().keySet().removeIf(sqlStatement.getNames()::contains);
-        return false;
     }
     
     @Override

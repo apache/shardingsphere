@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.infra.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -64,13 +64,6 @@ public final class DropDefaultShadowAlgorithmExecutor implements DatabaseRuleDro
                 rule.getConfiguration().getShadowAlgorithms().get(rule.getConfiguration().getDefaultShadowAlgorithmName())));
         result.setDefaultShadowAlgorithmName(rule.getConfiguration().getDefaultShadowAlgorithmName());
         return result;
-    }
-    
-    @Override
-    public boolean updateCurrentRuleConfiguration(final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getShadowAlgorithms().remove(currentRuleConfig.getDefaultShadowAlgorithmName());
-        currentRuleConfig.setDefaultShadowAlgorithmName(null);
-        return currentRuleConfig.isEmpty();
     }
     
     @Override

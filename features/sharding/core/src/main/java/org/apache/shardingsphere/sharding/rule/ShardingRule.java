@@ -23,7 +23,6 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmNotFoundException;
 import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
@@ -53,6 +52,8 @@ import org.apache.shardingsphere.sharding.cache.ShardingCache;
 import org.apache.shardingsphere.sharding.exception.metadata.DuplicateSharingActualDataNodeException;
 import org.apache.shardingsphere.sharding.exception.metadata.InvalidBindingTablesException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
+import org.apache.shardingsphere.sharding.rule.attribute.ShardingDataNodeRuleAttribute;
+import org.apache.shardingsphere.sharding.rule.attribute.ShardingTableMapperRuleAttribute;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -590,12 +591,6 @@ public final class ShardingRule implements DatabaseRule {
         return getKeyGenerateAlgorithm(algorithmSQLContext.getTableName()).generateKeys(algorithmSQLContext, keyGenerateCount);
     }
     
-    private KeyGenerateAlgorithm getKeyGenerateAlgorithm(final String logicTableName) {
-        Optional<ShardingTable> shardingTable = findShardingTable(logicTableName);
-        ShardingSpherePreconditions.checkState(shardingTable.isPresent(), () -> new AlgorithmNotFoundException("key generator", logicTableName));
-        return null == shardingTable.get().getKeyGeneratorName() ? defaultKeyGenerateAlgorithm : keyGenerators.get(shardingTable.get().getKeyGeneratorName());
-    }
-    
     /**
      * Judge whether support auto increment or not.
      * 
@@ -604,6 +599,11 @@ public final class ShardingRule implements DatabaseRule {
      */
     public boolean isSupportAutoIncrement(final String logicTableName) {
         return getKeyGenerateAlgorithm(logicTableName).isSupportAutoIncrement();
+    }
+    
+    private KeyGenerateAlgorithm getKeyGenerateAlgorithm(final String logicTableName) {
+        ShardingTable shardingTable = getShardingTable(logicTableName);
+        return null == shardingTable.getKeyGeneratorName() ? defaultKeyGenerateAlgorithm : keyGenerators.get(shardingTable.getKeyGeneratorName());
     }
     
     /**

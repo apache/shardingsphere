@@ -55,8 +55,6 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
     
     @Override
     public void dropDatabase(final String databaseName) {
-        // TODO Avoid drop database to generate child node events
-        contextManager.getMetaDataContexts().getMetaData().dropDatabase(databaseName);
         contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService().dropDatabase(databaseName);
     }
     

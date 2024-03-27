@@ -27,9 +27,12 @@ import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAudi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -63,9 +66,9 @@ class ShardingRuleConfigurationCheckerTest {
     
     private ShardingRuleConfiguration createRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getShardingAlgorithms().put("foo_algorithm", mock(AlgorithmConfiguration.class));
-        result.getAuditors().put("foo_audit", mock(AlgorithmConfiguration.class));
-        result.getKeyGenerators().put("foo_keygen", mock(AlgorithmConfiguration.class));
+        result.getShardingAlgorithms().put("foo_algorithm", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "1"))));
+        result.getAuditors().put("foo_audit", new AlgorithmConfiguration("foo", new Properties()));
+        result.getKeyGenerators().put("foo_keygen", new AlgorithmConfiguration("UUID", new Properties()));
         result.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("foo_col", "foo_keygen"));
         return result;
     }
@@ -91,7 +94,7 @@ class ShardingRuleConfigurationCheckerTest {
                                                                                         final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig,
                                                                                         final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
         ShardingAutoTableRuleConfiguration result = mock(ShardingAutoTableRuleConfiguration.class);
-        when(result.getLogicTable()).thenReturn("foo_tbl");
+        when(result.getLogicTable()).thenReturn("bar_tbl");
         when(result.getShardingStrategy()).thenReturn(null == shardingStrategyConfig ? mock(ShardingStrategyConfiguration.class) : shardingStrategyConfig);
         when(result.getAuditStrategy()).thenReturn(null == shardingAuditStrategyConfig ? mock(ShardingAuditStrategyConfiguration.class) : shardingAuditStrategyConfig);
         when(result.getKeyGenerateStrategy()).thenReturn(null == keyGenerateStrategyConfig ? mock(KeyGenerateStrategyConfiguration.class) : keyGenerateStrategyConfig);

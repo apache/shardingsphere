@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -34,10 +34,9 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -70,28 +69,34 @@ class DropDefaultShardingStrategyExecutorTest {
     }
     
     @Test
-    void assertUpdateCurrentRuleConfiguration() {
-        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        executor.updateCurrentRuleConfiguration(createSQLStatement("Database"), currentRuleConfig);
-        assertNull(currentRuleConfig.getDefaultDatabaseShardingStrategy());
-        assertTrue(currentRuleConfig.getShardingAlgorithms().isEmpty());
+    void asserBuildToBeDroppedRuleConfiguration() {
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
+        ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("Database"));
+        assertNotNull(actual.getDefaultDatabaseShardingStrategy());
+        assertThat(actual.getShardingAlgorithms().size(), is(1));
     }
     
     @Test
-    void assertUpdateCurrentRuleConfigurationWithInUsedAlgorithm() {
-        ShardingRuleConfiguration currentRuleConfig = createMultipleCurrentRuleConfiguration();
-        executor.updateCurrentRuleConfiguration(createSQLStatement("Table"), currentRuleConfig);
-        assertNull(currentRuleConfig.getDefaultTableShardingStrategy());
-        assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(1));
+    void asserBuildToBeDroppedRuleConfigurationWithInUsedAlgorithm() {
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
+        ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("Table"));
+        assertNull(actual.getDefaultTableShardingStrategy());
+        assertThat(actual.getShardingAlgorithms().size(), is(0));
     }
     
     @Test
     void assertUpdateMultipleStrategies() {
-        ShardingRuleConfiguration currentRuleConfig = createMultipleCurrentRuleConfiguration();
-        assertFalse(executor.updateCurrentRuleConfiguration(createSQLStatement("Database"), currentRuleConfig));
-        assertTrue(executor.updateCurrentRuleConfiguration(createSQLStatement("Table"), currentRuleConfig));
-        assertNull(currentRuleConfig.getDefaultTableShardingStrategy());
-        assertTrue(currentRuleConfig.getShardingAlgorithms().isEmpty());
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
+        ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("Database"));
+        assertNull(actual.getDefaultTableShardingStrategy());
+        actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("Table"));
+        assertThat(actual.getShardingAlgorithms().size(), is(1));
     }
     
     private DropDefaultShardingStrategyStatement createSQLStatement(final String defaultType) {

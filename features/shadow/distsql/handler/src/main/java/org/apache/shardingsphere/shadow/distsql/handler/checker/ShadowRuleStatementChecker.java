@@ -19,10 +19,10 @@ package org.apache.shardingsphere.shadow.distsql.handler.checker;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.KernelSQLException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 
@@ -56,7 +56,7 @@ public final class ShadowRuleStatementChecker {
      * @param rules rules to be checked
      * @param thrower exception thrower
      */
-    public static void checkDuplicated(final Collection<String> rules, final Function<Collection<String>, DistSQLException> thrower) {
+    public static void checkDuplicated(final Collection<String> rules, final Function<Collection<String>, KernelSQLException> thrower) {
         Collection<String> duplicated = getDuplicated(rules);
         ShardingSpherePreconditions.checkState(duplicated.isEmpty(), () -> thrower.apply(duplicated));
     }
@@ -68,7 +68,7 @@ public final class ShadowRuleStatementChecker {
      * @param currentRules current rules
      * @param thrower exception thrower
      */
-    public static void checkDuplicated(final Collection<String> requiredRules, final Collection<String> currentRules, final Function<Collection<String>, DistSQLException> thrower) {
+    public static void checkDuplicated(final Collection<String> requiredRules, final Collection<String> currentRules, final Function<Collection<String>, KernelSQLException> thrower) {
         Collection<String> duplicated = getDuplicated(requiredRules, currentRules);
         ShardingSpherePreconditions.checkState(duplicated.isEmpty(), () -> thrower.apply(duplicated));
     }
@@ -80,7 +80,7 @@ public final class ShadowRuleStatementChecker {
      * @param currentRules current rules
      * @param thrower exception thrower
      */
-    public static void checkExisted(final Collection<String> requiredRules, final Collection<String> currentRules, final Function<Collection<String>, DistSQLException> thrower) {
+    public static void checkExisted(final Collection<String> requiredRules, final Collection<String> currentRules, final Function<Collection<String>, KernelSQLException> thrower) {
         Collection<String> notExisted = getNotExisted(requiredRules, currentRules);
         ShardingSpherePreconditions.checkState(notExisted.isEmpty(), () -> thrower.apply(notExisted));
     }

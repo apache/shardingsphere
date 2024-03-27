@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -81,17 +81,6 @@ public final class DropDefaultShardingStrategyExecutor implements DatabaseRuleDr
         }
         UnusedAlgorithmFinder.findUnusedShardingAlgorithm(rule.getConfiguration()).forEach(each -> result.getShardingAlgorithms().put(each, rule.getConfiguration().getShardingAlgorithms().get(each)));
         return result;
-    }
-    
-    @Override
-    public boolean updateCurrentRuleConfiguration(final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (sqlStatement.getDefaultType().equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())) {
-            currentRuleConfig.setDefaultTableShardingStrategy(null);
-        } else {
-            currentRuleConfig.setDefaultDatabaseShardingStrategy(null);
-        }
-        UnusedAlgorithmFinder.findUnusedShardingAlgorithm(currentRuleConfig).forEach(each -> currentRuleConfig.getShardingAlgorithms().remove(each));
-        return currentRuleConfig.isEmpty();
     }
     
     @Override

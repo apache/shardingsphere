@@ -55,7 +55,7 @@ class ShadowRuleConfigurationCheckerTest {
     }
     
     private AlgorithmConfiguration createAlgorithmConfiguration() {
-        return new AlgorithmConfiguration("user-id-insert-match-algorithm",
+        return new AlgorithmConfiguration("REGEX_MATCH",
                 PropertiesBuilder.build(new Property("column", "shadow"), new Property("operation", "insert"), new Property("regex", "[1]")));
     }
 }

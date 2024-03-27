@@ -232,11 +232,13 @@
         <assertion parameters="2500:long, 2500:long" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? MINUS ALL SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="openGauss" scenario-types="db">
+    <!-- TODO move this case to db_tbl_sql_federation -->
+    <!--<test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? MINUS ALL SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="openGauss" scenario-types="db">
         <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
-    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? MINUS SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="openGauss" scenario-types="db">
+    <!-- TODO move this case to db_tbl_sql_federation -->
+    <!--<test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? MINUS SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="openGauss" scenario-types="db">
         <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
 </integration-test-cases>

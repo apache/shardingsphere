@@ -34,7 +34,7 @@ class SystemSchemaManagerTest {
         Collection<String> actualInformationSchema = SystemSchemaManager.getTables("MySQL", "information_schema");
         assertThat(actualInformationSchema.size(), is(62));
         Collection<String> actualMySQLSchema = SystemSchemaManager.getTables("MySQL", "mysql");
-        assertThat(actualMySQLSchema.size(), is(31));
+        assertThat(actualMySQLSchema.size(), is(32));
         Collection<String> actualPerformanceSchema = SystemSchemaManager.getTables("MySQL", "performance_schema");
         assertThat(actualPerformanceSchema.size(), is(87));
         Collection<String> actualSysSchema = SystemSchemaManager.getTables("MySQL", "sys");

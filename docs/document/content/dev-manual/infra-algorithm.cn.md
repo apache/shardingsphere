@@ -39,3 +39,19 @@ chapter = true
 |-----------------|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | SNOWFLAKE       | 基于雪花算法的分布式主键生成算法    | [`org.apache.shardingsphere.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/type/snowflake/src/main/java/org/apache/shardingsphere/infra/algorithm/keygen/snowflake/SnowflakeKeyGenerateAlgorithm.java)    |
 | UUID            | 基于 UUID 的分布式主键生成算法     | [`org.apache.shardingsphere.keygen.uuid.algorithm.UUIDKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/type/uuid/src/main/java/org/apache/shardingsphere/infra/algorithm/keygen/uuid/UUIDKeyGenerateAlgorithm.java)                             |
+
+## MessageDigestAlgorithm
+
+### 全限定类名
+
+[`org.apache.shardingsphere.infra.algorithm.messagedigest.core.MessageDigestAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/message-digest/core/src/main/java/org/apache/shardingsphere/infra/algorithm/messagedigest/core/MessageDigestAlgorithm.java)
+
+### 定义
+
+消息摘要算法，可以使用在数据脱敏、数据加密功能中。
+
+### 已知实现
+
+| *配置标识* | *详细说明*      | *全限定类名*                                                                                                                                                                                                                                                                                               |
+|--------|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| MD5    | MD5 消息摘要算法 | [`org.apache.shardingsphere.infra.algorithm.messagedigest.md5.MD5MessageDigestAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/message-digest/type/md5/src/main/java/org/apache/shardingsphere/infra/algorithm/messagedigest/md5/MD5MessageDigestAlgorithm.java)    |

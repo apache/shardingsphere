@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
@@ -46,9 +46,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -66,7 +64,7 @@ class DropReadwriteSplittingRuleExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithoutToBeDroppedRule() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithoutToBeDroppedRule() throws RuleDefinitionException {
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getConfiguration()).thenReturn(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
         executor.setRule(rule);
@@ -74,12 +72,12 @@ class DropReadwriteSplittingRuleExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithIfExists() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithIfExists() throws RuleDefinitionException {
         executor.checkBeforeUpdate(new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")));
     }
     
     @Test
-    void assertCheckSQLStatementWithInUsed() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithInUsed() throws RuleDefinitionException {
         DataSourceMapperRuleAttribute dataSourceMapperRuleAttribute = mock(DataSourceMapperRuleAttribute.class);
         when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.singleton(dataSourceMapperRuleAttribute));
         DataNodeRuleAttribute dataNodeRuleAttribute = mock(DataNodeRuleAttribute.class);
@@ -94,33 +92,33 @@ class DropReadwriteSplittingRuleExecutorTest {
     }
     
     @Test
-    void assertUpdateCurrentRuleConfiguration() {
+    void assertBuildToBeDroppedRuleConfiguration() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
-        assertTrue(executor.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
-        assertThat(ruleConfig.getLoadBalancers().size(), is(0));
+        ReadwriteSplittingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement());
+        assertThat(actual.getLoadBalancers().size(), is(1));
     }
     
     @Test
-    void assertUpdateCurrentRuleConfigurationWithInUsedLoadBalancer() {
+    void assertBuildToBeDroppedRuleConfigurationWithInUsedLoadBalancer() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createMultipleCurrentRuleConfigurations();
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
-        assertFalse(executor.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
-        assertThat(ruleConfig.getLoadBalancers().size(), is(1));
+        ReadwriteSplittingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement());
+        assertThat(actual.getLoadBalancers().size(), is(0));
     }
     
     @Test
-    void assertUpdateCurrentRuleConfigurationWithoutLoadBalancerName() {
+    void assertBuildToBeDroppedRuleConfigurationWithoutLoadBalancerName() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createCurrentRuleConfigurationWithoutLoadBalancerName();
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
-        assertTrue(executor.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
-        assertThat(ruleConfig.getLoadBalancers().size(), is(0));
+        ReadwriteSplittingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement());
+        assertThat(actual.getLoadBalancers().size(), is(1));
     }
     
     private DropReadwriteSplittingRuleStatement createSQLStatement() {

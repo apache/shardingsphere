@@ -18,16 +18,14 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
+import org.apache.shardingsphere.infra.exception.algorithm.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.handler.converter.ShadowRuleStatementConverter;
 import org.apache.shardingsphere.shadow.distsql.handler.supporter.ShadowRuleStatementSupporter;
@@ -38,7 +36,6 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Alter shadow rule executor.
@@ -86,21 +83,6 @@ public final class AlterShadowRuleExecutor implements DatabaseRuleAlterExecutor<
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         UnusedAlgorithmFinder.findUnusedShadowAlgorithm(rule.getConfiguration()).forEach(each -> result.getShadowAlgorithms().put(each, rule.getConfiguration().getShadowAlgorithms().get(each)));
         return result;
-    }
-    
-    @Override
-    public void updateCurrentRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final ShadowRuleConfiguration toBeAlteredRuleConfig) {
-        updateDataSources(currentRuleConfig, toBeAlteredRuleConfig.getDataSources());
-        updateTables(currentRuleConfig.getTables(), toBeAlteredRuleConfig.getTables());
-        currentRuleConfig.getShadowAlgorithms().putAll(toBeAlteredRuleConfig.getShadowAlgorithms());
-    }
-    
-    private void updateDataSources(final ShadowRuleConfiguration currentRuleConfig, final Collection<ShadowDataSourceConfiguration> toBeAlteredDataSources) {
-        currentRuleConfig.getDataSources().addAll(toBeAlteredDataSources);
-    }
-    
-    private void updateTables(final Map<String, ShadowTableConfiguration> currentTables, final Map<String, ShadowTableConfiguration> toBeAlteredTables) {
-        toBeAlteredTables.forEach(currentTables::replace);
     }
     
     @Override

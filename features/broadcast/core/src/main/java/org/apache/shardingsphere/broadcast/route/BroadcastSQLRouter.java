@@ -128,7 +128,7 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
         return result;
     }
     
-    private static void putAllBroadcastTables(final RouteContext routeContext, final BroadcastRule broadcastRule, final SQLStatementContext sqlStatementContext) {
+    private void putAllBroadcastTables(final RouteContext routeContext, final BroadcastRule broadcastRule, final SQLStatementContext sqlStatementContext) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         for (String each : broadcastRule.getBroadcastRuleTableNames(tableNames)) {
             for (RouteUnit routeUnit : routeContext.getRouteUnits()) {
@@ -137,12 +137,12 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
         }
     }
     
-    private static boolean isResourceGroupStatement(final SQLStatement sqlStatement) {
+    private boolean isResourceGroupStatement(final SQLStatement sqlStatement) {
         // TODO add dropResourceGroupStatement, alterResourceGroupStatement
         return sqlStatement instanceof MySQLCreateResourceGroupStatement || sqlStatement instanceof MySQLSetResourceGroupStatement;
     }
     
-    private static boolean isDCLForSingleTable(final SQLStatementContext sqlStatementContext) {
+    private boolean isDCLForSingleTable(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof TableAvailable) {
             TableAvailable tableSegmentsAvailable = (TableAvailable) sqlStatementContext;
             return 1 == tableSegmentsAvailable.getAllTables().size() && !"*".equals(tableSegmentsAvailable.getAllTables().iterator().next().getTableName().getIdentifier().getValue());

@@ -69,10 +69,12 @@ class LiteralInlineExpressionParserTest {
     
     @Test
     void assertHandlePlaceHolder() {
-        assertThat(TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_$->{[\"new$->{1+2}\"]}"))).handlePlaceHolder(), is("t_$->{[\"new$->{1+2}\"]}"));
-        assertThat(TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_${[\"new$->{1+2}\"]}"))).handlePlaceHolder(), is("t_${[\"new$->{1+2}\"]}"));
+        assertThrows(UnsupportedOperationException.class, () -> {
+            TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", PropertiesBuilder.build(
+                    new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_$->{[\"new$->{1+2}\"]}"))).handlePlaceHolder();
+            TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", PropertiesBuilder.build(
+                    new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_${[\"new$->{1+2}\"]}"))).handlePlaceHolder();
+        });
     }
     
     @Test

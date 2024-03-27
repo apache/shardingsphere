@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -86,10 +86,6 @@ public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRu
         return sqlStatement.getRules().stream().map(TableReferenceRuleSegment::getName).collect(Collectors.toSet());
     }
     
-    private Collection<String> getToBeAlteredRuleNames(final ShardingRuleConfiguration ruleConfig) {
-        return ruleConfig.getBindingTableGroups().stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toSet());
-    }
-    
     private void checkToBeReferencedShardingTablesExisted(final AlterShardingTableReferenceRuleStatement sqlStatement) {
         Collection<String> currentShardingTableNames = getCurrentShardingTableNames();
         Collection<String> notExistedTableNames = sqlStatement.getTableNames().stream().filter(each -> !currentShardingTableNames.contains(each)).collect(Collectors.toSet());
@@ -120,13 +116,6 @@ public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRu
     @Override
     public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration toBeAlteredRuleConfig) {
         return null;
-    }
-    
-    @Override
-    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
-        Collection<String> toBeAlteredRuleNames = getToBeAlteredRuleNames(toBeAlteredRuleConfig);
-        currentRuleConfig.getBindingTableGroups().removeIf(each -> toBeAlteredRuleNames.contains(each.getName()));
-        currentRuleConfig.getBindingTableGroups().addAll(toBeAlteredRuleConfig.getBindingTableGroups());
     }
     
     @Override

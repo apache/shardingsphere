@@ -20,8 +20,6 @@ package org.apache.shardingsphere.distsql.handler.engine.update;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorAwareSetter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.database.DatabaseRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.global.GlobalRuleDefinitionExecuteEngine;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.legacy.LegacyDatabaseRuleDefinitionExecuteEngine;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.legacy.LegacyGlobalRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorRequiredChecker;
@@ -71,36 +69,12 @@ public final class DistSQLUpdateExecuteEngine {
     private void executeRuleDefinitionUpdate() {
         Optional<DatabaseRuleDefinitionExecutor> databaseExecutor = TypedSPILoader.findService(DatabaseRuleDefinitionExecutor.class, sqlStatement.getClass());
         if (databaseExecutor.isPresent()) {
-            executeDatabaseRuleDefinitionUpdate(databaseExecutor.get());
+            new DatabaseRuleDefinitionExecuteEngine((DatabaseRuleDefinitionStatement) sqlStatement, contextManager,
+                    contextManager.getDatabase(databaseName), databaseExecutor.get()).executeUpdate();
         } else {
-            executeGlobalRuleDefinitionUpdate(TypedSPILoader.getService(GlobalRuleDefinitionExecutor.class, sqlStatement.getClass()));
+            new GlobalRuleDefinitionExecuteEngine((GlobalRuleDefinitionStatement) sqlStatement,
+                    contextManager, TypedSPILoader.getService(GlobalRuleDefinitionExecutor.class, sqlStatement.getClass())).executeUpdate();
         }
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private void executeDatabaseRuleDefinitionUpdate(final DatabaseRuleDefinitionExecutor executor) {
-        if (isNormalRuleUpdater()) {
-            new DatabaseRuleDefinitionExecuteEngine((DatabaseRuleDefinitionStatement) sqlStatement, contextManager, contextManager.getDatabase(databaseName), executor).executeUpdate();
-        } else {
-            // TODO Remove when metadata structure adjustment completed. #25485
-            new LegacyDatabaseRuleDefinitionExecuteEngine((DatabaseRuleDefinitionStatement) sqlStatement, contextManager, contextManager.getDatabase(databaseName), executor).executeUpdate();
-        }
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private void executeGlobalRuleDefinitionUpdate(final GlobalRuleDefinitionExecutor executor) {
-        if (isNormalRuleUpdater()) {
-            new GlobalRuleDefinitionExecuteEngine((GlobalRuleDefinitionStatement) sqlStatement, contextManager, executor).executeUpdate();
-        } else {
-            // TODO Remove when metadata structure adjustment completed. #25485
-            new LegacyGlobalRuleDefinitionExecuteEngine((GlobalRuleDefinitionStatement) sqlStatement, contextManager, executor).executeUpdate();
-        }
-    }
-    
-    // TODO Remove when metadata structure adjustment completed. #25485
-    private boolean isNormalRuleUpdater() {
-        String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
-        return "Cluster".equals(modeType) || "Standalone".equals(modeType);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

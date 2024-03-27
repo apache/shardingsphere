@@ -39,3 +39,19 @@ Distributed key generated algorithms, they can be used in sharding feature.
 |----------------------|----------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | SNOWFLAKE            | Snowflake key generate algorithm | [`org.apache.shardingsphere.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/type/snowflake/src/main/java/org/apache/shardingsphere/infra/algorithm/keygen/snowflake/SnowflakeKeyGenerateAlgorithm.java) |
 | UUID                 | UUID key generate algorithm      | [`org.apache.shardingsphere.keygen.uuid.algorithm.UUIDKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/type/uuid/src/main/java/org/apache/shardingsphere/infra/algorithm/keygen/uuid/UUIDKeyGenerateAlgorithm.java)                          |
+
+## MessageDigestAlgorithm
+
+### Fully-qualified class name
+
+[`org.apache.shardingsphere.infra.algorithm.messagedigest.core.MessageDigestAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/message-digest/core/src/main/java/org/apache/shardingsphere/infra/algorithm/messagedigest/core/MessageDigestAlgorithm.java)
+
+### Definition
+
+Message digest algorithms, they can be used in encrypt and mask feature.
+
+### Implementation classes
+
+| *Configuration Type* | *Description*                | *Fully-qualified class name*                                                                                                                                                                                                                                                                          |
+|----------------------|------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| MD5    | MD5 message digest algorithm | [`org.apache.shardingsphere.infra.algorithm.messagedigest.md5.MD5MessageDigestAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/message-digest/type/md5/src/main/java/org/apache/shardingsphere/infra/algorithm/messagedigest/md5/MD5MessageDigestAlgorithm.java)    |

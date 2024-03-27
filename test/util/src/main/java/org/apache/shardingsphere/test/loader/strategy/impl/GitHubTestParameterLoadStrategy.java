@@ -53,8 +53,30 @@ public final class GitHubTestParameterLoadStrategy implements TestParameterLoadS
         if (content.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<FileSummary> result = new LinkedList<>();
         DocumentContext documentContext = JsonPath.parse(content);
+        if (documentContext.read("$") instanceof Collection) {
+            return getFileSummariesByArray(documentContext);
+        } else {
+            return getFileSummaries(documentContext);
+        }
+    }
+    
+    private Collection<FileSummary> getFileSummaries(final DocumentContext documentContext) {
+        Collection<FileSummary> result = new LinkedList<>();
+        String fileName = documentContext.read("$.name");
+        String folderType = documentContext.read("$.type");
+        String downloadURL = documentContext.read("$.download_url");
+        String htmlURL = documentContext.read("$.html_url");
+        if ("file".equals(folderType)) {
+            result.add(new FileSummary(fileName, downloadURL));
+        } else if ("dir".equals(folderType)) {
+            result.addAll(loadSQLCaseFileSummaries(URI.create(htmlURL)));
+        }
+        return result;
+    }
+    
+    private Collection<FileSummary> getFileSummariesByArray(final DocumentContext documentContext) {
+        Collection<FileSummary> result = new LinkedList<>();
         List<String> fileNames = documentContext.read("$..name");
         List<String> folderTypes = documentContext.read("$..type");
         List<String> downloadURLs = documentContext.read("$..download_url");

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
@@ -75,31 +75,23 @@ class CreateMaskRuleExecutorTest {
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
         MaskRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        assertThat(currentRuleConfig.getTables().size(), is(4));
-        assertTrue(currentRuleConfig.getMaskAlgorithms().containsKey("t_mask_1_user_id_md5"));
-        assertTrue(currentRuleConfig.getMaskAlgorithms().containsKey("t_order_1_order_id_md5"));
+        assertThat(toBeCreatedRuleConfig.getTables().size(), is(2));
+        assertTrue(toBeCreatedRuleConfig.getMaskAlgorithms().containsKey("t_mask_1_user_id_md5"));
+        assertTrue(toBeCreatedRuleConfig.getMaskAlgorithms().containsKey("t_order_1_order_id_md5"));
     }
     
     @Test
     void assertCreateMaskRuleWithIfNotExists() {
         MaskRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
-        CreateMaskRuleStatement sqlStatement = createSQLStatement(false, "MD5");
         MaskRule rule = mock(MaskRule.class);
+        CreateMaskRuleStatement sqlStatement = createSQLStatement(true, "MD5");
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
         MaskRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        sqlStatement = createSQLStatement(true, "MD5");
-        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
-        executor.setRule(rule);
-        executor.checkBeforeUpdate(sqlStatement);
-        toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        assertThat(currentRuleConfig.getTables().size(), is(4));
-        assertTrue(currentRuleConfig.getMaskAlgorithms().containsKey("t_mask_1_user_id_md5"));
-        assertTrue(currentRuleConfig.getMaskAlgorithms().containsKey("t_order_1_order_id_md5"));
+        assertThat(toBeCreatedRuleConfig.getTables().size(), is(2));
+        assertTrue(toBeCreatedRuleConfig.getMaskAlgorithms().containsKey("t_mask_1_user_id_md5"));
+        assertTrue(toBeCreatedRuleConfig.getMaskAlgorithms().containsKey("t_order_1_order_id_md5"));
     }
     
     private CreateMaskRuleStatement createSQLStatement(final boolean ifNotExists, final String algorithmType) {

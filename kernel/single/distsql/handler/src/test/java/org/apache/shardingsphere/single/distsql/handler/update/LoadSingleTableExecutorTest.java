@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -97,9 +97,8 @@ class LoadSingleTableExecutorTest {
         SingleRule rule = mock(SingleRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
-        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
-        Iterator<String> iterator = currentConfig.getTables().iterator();
+        SingleRuleConfiguration toBeCreatedConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
+        Iterator<String> iterator = toBeCreatedConfig.getTables().iterator();
         assertThat(iterator.next(), is("ds_0.foo"));
         assertThat(iterator.next(), is("ds_0.bar"));
     }

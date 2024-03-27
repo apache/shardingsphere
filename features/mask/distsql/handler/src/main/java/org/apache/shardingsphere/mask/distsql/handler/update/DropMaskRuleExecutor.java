@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
@@ -79,20 +79,9 @@ public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<Drop
         return new MaskRuleConfiguration(toBeDroppedTables, toBeDroppedAlgorithms);
     }
     
-    @Override
-    public boolean updateCurrentRuleConfiguration(final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
-        sqlStatement.getTables().forEach(this::dropRule);
-        dropUnusedAlgorithm(currentRuleConfig);
-        return currentRuleConfig.isEmpty();
-    }
-    
     private void dropRule(final String ruleName) {
         Optional<MaskTableRuleConfiguration> maskTableRuleConfig = rule.getConfiguration().getTables().stream().filter(each -> each.getName().equals(ruleName)).findAny();
         maskTableRuleConfig.ifPresent(optional -> rule.getConfiguration().getTables().remove(maskTableRuleConfig.get()));
-    }
-    
-    private void dropUnusedAlgorithm(final MaskRuleConfiguration currentRuleConfig) {
-        findUnusedAlgorithms(currentRuleConfig).forEach(each -> currentRuleConfig.getMaskAlgorithms().remove(each));
     }
     
     private Collection<String> findUnusedAlgorithms(final MaskRuleConfiguration currentRuleConfig) {

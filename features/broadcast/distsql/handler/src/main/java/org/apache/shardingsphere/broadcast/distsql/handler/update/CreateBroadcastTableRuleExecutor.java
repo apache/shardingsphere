@@ -21,8 +21,8 @@ import lombok.Setter;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.CreateBroadcastTableRuleStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -73,12 +73,6 @@ public final class CreateBroadcastTableRuleExecutor implements DatabaseRuleCreat
             result.removeIf(getDuplicatedRuleNames(sqlStatement)::contains);
         }
         return result;
-    }
-    
-    @Override
-    public void updateCurrentRuleConfiguration(final BroadcastRuleConfiguration currentRuleConfig, final BroadcastRuleConfiguration toBeCreatedRuleConfig) {
-        currentRuleConfig.getTables().clear();
-        currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
     }
     
     @Override

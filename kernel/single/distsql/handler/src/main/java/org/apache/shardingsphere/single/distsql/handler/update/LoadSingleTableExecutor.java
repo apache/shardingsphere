@@ -19,7 +19,7 @@ package org.apache.shardingsphere.single.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -162,12 +162,6 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
         }
         result.getTables().addAll(getRequiredTables(sqlStatement));
         return result;
-    }
-    
-    @Override
-    public void updateCurrentRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeCreatedRuleConfig) {
-        currentRuleConfig.getTables().clear();
-        currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
     }
     
     @Override

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
@@ -90,9 +90,8 @@ class AlterMaskRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         MaskRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-        assertThat(currentRuleConfig.getMaskAlgorithms().size(), is(1));
-        assertTrue(currentRuleConfig.getMaskAlgorithms().containsKey("t_order_order_id_md5"));
+        assertThat(toBeAlteredRuleConfig.getMaskAlgorithms().size(), is(1));
+        assertTrue(toBeAlteredRuleConfig.getMaskAlgorithms().containsKey("t_order_order_id_md5"));
     }
     
     private AlterMaskRuleStatement createSQLStatement(final String algorithmName) {

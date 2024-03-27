@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rdl.SetDefaultSingleTableStorageUnitStatement;
@@ -57,25 +57,12 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
     }
     
     @Test
-    void assertUpdate() {
-        SingleRuleConfiguration currentConfig = new SingleRuleConfiguration();
-        SingleRule rule = mock(SingleRule.class);
-        when(rule.getConfiguration()).thenReturn(currentConfig);
-        executor.setRule(rule);
-        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
-        executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
-        assertTrue(currentConfig.getDefaultDataSource().isPresent());
-        assertThat(currentConfig.getDefaultDataSource().get(), is("foo_ds"));
-    }
-    
-    @Test
     void assertRandom() {
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration();
         SingleRule rule = mock(SingleRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
-        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement(null));
-        executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
+        executor.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement(null));
         assertFalse(currentConfig.getDefaultDataSource().isPresent());
     }
 }

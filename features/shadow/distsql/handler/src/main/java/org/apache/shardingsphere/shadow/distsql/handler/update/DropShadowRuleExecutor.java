@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -105,24 +105,9 @@ public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<Dr
         return result;
     }
     
-    @Override
-    public boolean updateCurrentRuleConfiguration(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        for (String each : sqlStatement.getNames()) {
-            dropRule(each);
-        }
-        currentRuleConfig.getTables().forEach((key, value) -> value.getDataSourceNames().removeIf(sqlStatement.getNames()::contains));
-        currentRuleConfig.getTables().entrySet().removeIf(entry -> entry.getValue().getDataSourceNames().isEmpty());
-        dropUnusedAlgorithm(currentRuleConfig);
-        return currentRuleConfig.isEmpty();
-    }
-    
     private void dropRule(final String ruleName) {
         Optional<ShadowDataSourceConfiguration> dataSourceRuleConfig = rule.getConfiguration().getDataSources().stream().filter(each -> ruleName.equals(each.getName())).findAny();
         dataSourceRuleConfig.ifPresent(optional -> rule.getConfiguration().getDataSources().remove(optional));
-    }
-    
-    private void dropUnusedAlgorithm(final ShadowRuleConfiguration currentRuleConfig) {
-        UnusedAlgorithmFinder.findUnusedShadowAlgorithm(currentRuleConfig).forEach(each -> currentRuleConfig.getShadowAlgorithms().remove(each));
     }
     
     @Override

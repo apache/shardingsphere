@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
@@ -62,8 +62,7 @@ class AlterEncryptRuleExecutorTest {
         EncryptRule rule = mock(EncryptRule.class);
         when(rule.getConfiguration()).thenReturn(new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
         executor.setRule(rule);
-        assertThrows(MissingRequiredRuleException.class,
-                () -> executor.checkBeforeUpdate(createSQLStatement("MD5")));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("MD5")));
     }
     
     @Test
@@ -84,9 +83,11 @@ class AlterEncryptRuleExecutorTest {
     
     @Test
     void assertUpdateCurrentRuleConfigurationWithInUsedEncryptor() {
-        EncryptRuleConfiguration currentRuleConfig = createCurrentRuleConfigurationWithMultipleTableRules();
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, createToBeAlteredRuleConfiguration());
-        assertThat(currentRuleConfig.getEncryptors().size(), is(1));
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
+        EncryptRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(createSQLStatement("MD5"));
+        assertThat(toBeAlteredRuleConfig.getEncryptors().size(), is(3));
     }
     
     private AlterEncryptRuleStatement createSQLStatement(final String encryptorName) {

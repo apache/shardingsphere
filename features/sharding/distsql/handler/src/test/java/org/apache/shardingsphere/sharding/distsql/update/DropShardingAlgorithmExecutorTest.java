@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.algorithm.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -38,7 +38,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -56,7 +55,7 @@ class DropShardingAlgorithmExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithoutExistedAlgorithm() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithoutExistedAlgorithm() throws RuleDefinitionException {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(new ShardingRuleConfiguration());
         executor.setRule(rule);
@@ -64,7 +63,7 @@ class DropShardingAlgorithmExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithoutExistedAlgorithmWithIfExists() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithoutExistedAlgorithmWithIfExists() throws RuleDefinitionException {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(new ShardingRuleConfiguration());
         executor.setRule(rule);
@@ -72,7 +71,7 @@ class DropShardingAlgorithmExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionException {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
@@ -80,7 +79,7 @@ class DropShardingAlgorithmExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithBindingTableRuleWithIfExists() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithBindingTableRuleWithIfExists() throws RuleDefinitionException {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
@@ -88,7 +87,7 @@ class DropShardingAlgorithmExecutorTest {
     }
     
     @Test
-    void assertUpdateCurrentRuleConfiguration() {
+    void assertBuildToBeDroppedRuleConfiguration() {
         String toBeDroppedAlgorithmName = "t_test";
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(3));
@@ -96,25 +95,9 @@ class DropShardingAlgorithmExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
-        executor.updateCurrentRuleConfiguration(createSQLStatement(toBeDroppedAlgorithmName), currentRuleConfig);
-        assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(2));
-        assertFalse(currentRuleConfig.getShardingAlgorithms().containsKey(toBeDroppedAlgorithmName));
-        assertTrue(currentRuleConfig.getShardingAlgorithms().containsKey("t_order_db_inline"));
-    }
-    
-    @Test
-    void assertUpdateCurrentRuleConfigurationWithIfExists() {
-        String toBeDroppedAlgorithmName = "t_test";
-        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(3));
-        assertTrue(currentRuleConfig.getShardingAlgorithms().containsKey(toBeDroppedAlgorithmName));
-        ShardingRule rule = mock(ShardingRule.class);
-        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
-        executor.setRule(rule);
-        executor.updateCurrentRuleConfiguration(createSQLStatementWithIfExists(toBeDroppedAlgorithmName), currentRuleConfig);
-        assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(2));
-        assertFalse(currentRuleConfig.getShardingAlgorithms().containsKey(toBeDroppedAlgorithmName));
-        assertTrue(currentRuleConfig.getShardingAlgorithms().containsKey("t_order_db_inline"));
+        ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement(toBeDroppedAlgorithmName));
+        assertThat(actual.getShardingAlgorithms().size(), is(1));
+        assertTrue(actual.getShardingAlgorithms().containsKey(toBeDroppedAlgorithmName));
     }
     
     private DropShardingAlgorithmStatement createSQLStatement(final String algorithmName) {

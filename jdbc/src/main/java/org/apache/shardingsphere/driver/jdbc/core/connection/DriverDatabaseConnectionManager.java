@@ -22,6 +22,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import lombok.Getter;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
 import org.apache.shardingsphere.driver.jdbc.core.ShardingSphereSavepoint;
@@ -117,7 +118,8 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         Map<String, DataSourcePoolProperties> propsMap = persistService.getDataSourceUnitService().load(actualDatabaseName);
         Preconditions.checkState(!propsMap.isEmpty(), "Can not get data source properties from meta data.");
         DataSourcePoolProperties propsSample = propsMap.values().iterator().next();
-        Collection<ShardingSphereUser> users = persistService.getGlobalRuleService().loadUsers();
+        Collection<ShardingSphereUser> users = contextManager.getMetaDataContexts().getMetaData()
+                .getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getConfiguration().getUsers();
         Collection<InstanceMetaData> instances = contextManager.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, rule.getLabels()).values();
         return DataSourcePoolCreator.create(createDataSourcePoolPropertiesMap(instances, users, propsSample, actualDatabaseName), true);
     }

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.broadcast.distsql.handler.update;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.CreateBroadcastTableRuleStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.junit.jupiter.api.Test;
@@ -74,10 +74,8 @@ class CreateBroadcastTableRuleExecutorTest {
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
         executor.checkBeforeUpdate(sqlStatement);
         BroadcastRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
-        assertThat(currentConfig.getTables().size(), is(1));
-        assertThat(currentConfig.getTables().iterator().next(), is("t_address"));
-        executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
+        assertThat(toBeCreatedRuleConfig.getTables().size(), is(1));
+        assertThat(toBeCreatedRuleConfig.getTables().iterator().next(), is("t_address"));
     }
     
     private ShardingSphereDatabase mockShardingSphereDatabase() {

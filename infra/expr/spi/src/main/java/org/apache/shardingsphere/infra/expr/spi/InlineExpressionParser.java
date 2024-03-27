@@ -33,19 +33,29 @@ public interface InlineExpressionParser extends TypedSPI {
     String INLINE_EXPRESSION_KEY = "inlineExpression";
     
     /**
-     * This method is used to return the inlineExpression String itself. In some cases, you may want to do
-     * additional processing on inlineExpression to return a specific value, in which case you need to override this method.
-     *
-     * @return result processed inline expression defined by the SPI implementation
-     */
-    String handlePlaceHolder();
-    
-    /**
      * Split and evaluate inline expression.
      *
      * @return result list
      */
     List<String> splitAndEvaluate();
+    
+    /**
+     * This method is used to return the inlineExpression String itself. In some cases, you may want to do
+     * additional processing on inlineExpression to return a specific value, in which case you need to override this method.
+     * Normally there is no need to use this method downstream, because this method only encapsulates the use of Groovy syntax
+     * by ShardingSphere's existing algorithm classes.
+     * An {@link org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser} implementation that implements this method
+     * will provide the following algorithm classes with the ability to convert original expressions.
+     * 1. `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
+     * 2. `org.apache.shardingsphere.sharding.algorithm.sharding.inline.ComplexInlineShardingAlgorithm`
+     * 3. `org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm`
+     *
+     * @return result processed inline expression defined by the SPI implementation
+     * @throws UnsupportedOperationException Thrown to indicate that the requested operation is not supported.
+     */
+    default String handlePlaceHolder() {
+        throw new UnsupportedOperationException("This SPI implementation does not support the use of this method.");
+    }
     
     /**
      * Evaluate with arguments.

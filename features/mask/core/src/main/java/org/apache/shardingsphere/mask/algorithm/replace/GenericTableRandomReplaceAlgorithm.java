@@ -65,9 +65,9 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
         uppercaseLetterCodes = splitPropsToList(props.getProperty(UPPERCASE_LETTER_CODES, DEFAULT_UPPERCASE_LETTER_CODES));
         lowercaseLetterCodes = splitPropsToList(props.getProperty(LOWERCASE_LETTER_CODES, DEFAULT_LOWERCASE_LETTER_CODES));
         digitalCodes = splitPropsToList(props.getProperty(DIGITAL_CODES, DEFAULT_DIGITAL_CODES));
-        ShardingSpherePreconditions.checkState(!digitalCodes.isEmpty(), () -> new AlgorithmInitializationException(this, String.format("'%s' must be not empty", DIGITAL_CODES)));
+        ShardingSpherePreconditions.checkState(!digitalCodes.isEmpty(), () -> new AlgorithmInitializationException(this, "'%s' must be not empty", DIGITAL_CODES));
         specialCodes = splitPropsToList(props.getProperty(SPECIAL_CODES, DEFAULT_SPECIAL_CODES));
-        ShardingSpherePreconditions.checkState(!specialCodes.isEmpty(), () -> new AlgorithmInitializationException(this, String.format("'%s' must be not empty", SPECIAL_CODES)));
+        ShardingSpherePreconditions.checkState(!specialCodes.isEmpty(), () -> new AlgorithmInitializationException(this, "'%s' must be not empty", SPECIAL_CODES));
     }
     
     private List<Character> splitPropsToList(final String props) {

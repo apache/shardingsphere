@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
@@ -79,21 +79,10 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
         return new EncryptRuleConfiguration(toBeDroppedTables, toBeDroppedEncryptors);
     }
     
-    @Override
-    public boolean updateCurrentRuleConfiguration(final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        sqlStatement.getTables().forEach(this::dropRule);
-        dropUnusedEncryptor(currentRuleConfig);
-        return currentRuleConfig.isEmpty();
-    }
-    
     private void dropRule(final String ruleName) {
         Optional<EncryptTableRuleConfiguration> encryptTableRuleConfig = rule.getConfiguration().getTables().stream()
                 .filter(each -> each.getName().equals(ruleName)).findAny();
         encryptTableRuleConfig.ifPresent(optional -> rule.getConfiguration().getTables().remove(encryptTableRuleConfig.get()));
-    }
-    
-    private void dropUnusedEncryptor(final EncryptRuleConfiguration currentRuleConfig) {
-        UnusedAlgorithmFinder.findUnusedEncryptor(currentRuleConfig).forEach(each -> currentRuleConfig.getEncryptors().remove(each));
     }
     
     @Override

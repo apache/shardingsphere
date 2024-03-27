@@ -324,4 +324,5 @@
     <sql-case id="create_table_parallel_with_as_sub_query" value="CREATE TABLE hr.admin_emp_dept PARALLEL COMPRESS AS SELECT * FROM hr.employees WHERE department_id = 10;" db-types="Oracle"/>
     <sql-case id="create_table_with_edge_constraint" value="CREATE TABLE bought ( PurchaseCount INT ,CONSTRAINT EC_BOUGHT CONNECTION (Customer TO Product) ON DELETE NO ACTION );" db-types="SQLServer"/>
     <sql-case id="create_table_with_enclosed" value="CREATE TABLE emp_load(first_name CHAR(15), last_name CHAR(20), year_of_birth CHAR(4)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '(' and ')'LRTRIM LOCATION (info.dat));" db-types="Oracle"/>
+    <sql-case id="create_table_with_builtin_function" value="CREATE TABLE tab AS SELECT DBMS_LOB.GETLENGTH@dbs2(clob_col) len FROM tab@dbs2;" db-types="Oracle"/>
 </sql-cases>
