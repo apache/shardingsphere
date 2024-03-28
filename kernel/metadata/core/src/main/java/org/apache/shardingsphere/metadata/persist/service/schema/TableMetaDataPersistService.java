@@ -51,7 +51,6 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
         for (Entry<String, ShardingSphereTable> entry : tables.entrySet()) {
             String tableName = entry.getKey().toLowerCase();
             List<String> versions = repository.getChildrenKeys(TableMetaDataNode.getTableVersionsNode(databaseName, schemaName, tableName));
-            persistSchemaName(databaseName, schemaName);
             repository.persist(TableMetaDataNode.getTableVersionNode(databaseName, schemaName, tableName, versions.isEmpty()
                     ? DEFAULT_VERSION
                     : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), YamlEngine.marshal(new YamlTableSwapper().swapToYamlConfiguration(entry.getValue())));
