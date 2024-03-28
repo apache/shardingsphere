@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,8 +49,9 @@ class ReadwriteSplittingRuleConfigurationToDistSQLConverterTest {
                 Collections.singletonMap("test", new AlgorithmConfiguration("random", PropertiesBuilder.build(new PropertiesBuilder.Property("read_weight", "2:1")))));
         ReadwriteSplittingRuleConfigurationToDistSQLConverter readwriteSplittingRuleConfigurationToDistSQLConverter = new ReadwriteSplittingRuleConfigurationToDistSQLConverter();
         assertThat(readwriteSplittingRuleConfigurationToDistSQLConverter.convert(readwriteSplittingRuleConfiguration),
-                is("CREATE READWRITE_SPLITTING RULE readwrite_ds (\n" + "WRITE_STORAGE_UNIT=ds_primary,\n" + "READ_STORAGE_UNITS(ds_slave_0,ds_slave_1),\n"
-                        + "TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC',\n" + "TYPE(NAME='random', PROPERTIES('read_weight'='2:1'))\n" + ");"));
+                is("CREATE READWRITE_SPLITTING RULE readwrite_ds (" + System.lineSeparator() + "WRITE_STORAGE_UNIT=ds_primary," + System.lineSeparator() + "READ_STORAGE_UNITS(ds_slave_0,ds_slave_1),"
+                        + System.lineSeparator() + "TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC'," + System.lineSeparator() + "TYPE(NAME='random', PROPERTIES('read_weight'='2:1'))"
+                        + System.lineSeparator() + ");"));
     }
     
     @Test

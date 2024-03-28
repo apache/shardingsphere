@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +45,8 @@ class MaskRuleConfigurationToDistSQLConverterTest {
     void assertConvert() {
         MaskRuleConfiguration maskRuleConfiguration = getMaskRuleConfiguration();
         MaskRuleConfigurationToDistSQLConverter maskRuleConfigurationToDistSQLConverter = new MaskRuleConfigurationToDistSQLConverter();
-        assertThat(maskRuleConfigurationToDistSQLConverter.convert(maskRuleConfiguration), is("CREATE MASK RULE t_mask (\n" + "COLUMNS(\n" + "(NAME=user_id, TYPE(NAME='md5'))\n" + "),;"));
+        assertThat(maskRuleConfigurationToDistSQLConverter.convert(maskRuleConfiguration),
+                is("CREATE MASK RULE t_mask (" + System.lineSeparator() + "COLUMNS(" + System.lineSeparator() + "(NAME=user_id, TYPE(NAME='md5'))" + System.lineSeparator() + "),;"));
     }
     
     @Test

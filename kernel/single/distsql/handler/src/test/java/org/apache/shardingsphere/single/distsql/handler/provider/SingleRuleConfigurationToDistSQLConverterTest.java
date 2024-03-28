@@ -25,8 +25,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +36,8 @@ class SingleRuleConfigurationToDistSQLConverterTest {
     void assertConvert() {
         SingleRuleConfiguration singleRuleConfiguration = new SingleRuleConfiguration(new LinkedList<>(Arrays.asList("t_0", "t_1")), "foo_ds");
         SingleRuleConfigurationToDistSQLConverter singleRuleConfigurationToDistSQLConverter = new SingleRuleConfigurationToDistSQLConverter();
-        assertThat(singleRuleConfigurationToDistSQLConverter.convert(singleRuleConfiguration), is("LOAD SINGLE TABLE t_0,t_1;\n\nSET DEFAULT SINGLE TABLE STORAGE UNIT = foo_ds;"));
+        assertThat(singleRuleConfigurationToDistSQLConverter.convert(singleRuleConfiguration),
+                is("LOAD SINGLE TABLE t_0,t_1;" + System.lineSeparator() + System.lineSeparator() + "SET DEFAULT SINGLE TABLE STORAGE UNIT = foo_ds;"));
     }
     
     @Test

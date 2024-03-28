@@ -50,10 +50,9 @@ class ShadowRuleConfigurationToDistSQLConverterTest {
         shadowRuleConfiguration.getTables().put("t_order", new ShadowTableConfiguration(Collections.singleton("shadow_rule"), Collections.singleton("user_id_select_match_algorithm")));
         shadowRuleConfiguration.getTables().put("t_order_item", new ShadowTableConfiguration(Collections.singleton("shadow_rule"), Collections.singleton("user_id_select_match_algorithm")));
         ShadowRuleConfigurationToDistSQLConverter shadowRuleConfigurationToDistSQLConverter = new ShadowRuleConfigurationToDistSQLConverter();
-        assertThat(shadowRuleConfigurationToDistSQLConverter.convert(shadowRuleConfiguration), is("CREATE SHADOW RULE shadow_rule(\n"
-                +
-                "SOURCE=source,\nSHADOW=shadow,\nt_order(TYPE(NAME='regex_match')),\nt_order_item(TYPE(NAME='regex_match'))\n);"));
-        
+        assertThat(shadowRuleConfigurationToDistSQLConverter.convert(shadowRuleConfiguration),
+                is("CREATE SHADOW RULE shadow_rule(" + System.lineSeparator() + "SOURCE=source," + System.lineSeparator() + "SHADOW=shadow," + System.lineSeparator()
+                        + "t_order(TYPE(NAME='regex_match'))," + System.lineSeparator() + "t_order_item(TYPE(NAME='regex_match'))" + System.lineSeparator() + ");"));
     }
     
     @Test
