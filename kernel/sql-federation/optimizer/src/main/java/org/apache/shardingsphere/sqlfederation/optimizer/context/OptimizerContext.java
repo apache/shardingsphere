@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerMetaData;
 
 import java.util.Map;
 
@@ -36,7 +36,7 @@ public final class OptimizerContext {
     
     private final Map<String, OptimizerParserContext> parserContexts;
     
-    private final Map<String, OptimizerPlannerContext> plannerContexts;
+    private final Map<String, OptimizerMetaData> optimizerMetaData;
     
     /**
      * Get parser context.
@@ -49,12 +49,12 @@ public final class OptimizerContext {
     }
     
     /**
-     * Get planner context.
+     * Get meta data.
      *
      * @param databaseName database name
-     * @return Planner
+     * @return optimizer meta data
      */
-    public OptimizerPlannerContext getPlannerContext(final String databaseName) {
-        return plannerContexts.get(databaseName);
+    public OptimizerMetaData getMetaData(final String databaseName) {
+        return optimizerMetaData.get(databaseName);
     }
 }
