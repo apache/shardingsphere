@@ -49,8 +49,8 @@ public abstract class ShardingSphereSQLException extends ShardingSphereExternalE
     protected ShardingSphereSQLException(final String sqlState, final int typeOffset, final int errorCode, final String reason, final Exception cause) {
         super(reason, cause);
         this.sqlState = sqlState;
-        Preconditions.checkArgument(typeOffset > 0 && typeOffset < 4);
-        Preconditions.checkArgument(errorCode >= 0 && errorCode < 10000);
+        Preconditions.checkArgument(typeOffset > 0 && typeOffset < 4, "The value range of type offset should be [1,3].");
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 10000, "The value range of error code should be [0, 10000).");
         vendorCode = typeOffset * 10000 + errorCode;
         this.reason = reason;
         this.cause = cause;
