@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.transaction.xa.spi;
 
+import jakarta.transaction.TransactionManager;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import javax.sql.XADataSource;
-import javax.transaction.TransactionManager;
 
 /**
  * XA transaction manager provider.

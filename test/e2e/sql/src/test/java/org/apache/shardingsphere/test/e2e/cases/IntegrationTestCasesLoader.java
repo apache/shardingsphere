@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.e2e.cases;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;

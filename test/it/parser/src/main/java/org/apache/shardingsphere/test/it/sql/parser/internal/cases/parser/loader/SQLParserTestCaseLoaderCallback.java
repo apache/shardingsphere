@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.loader;
 
 import com.google.common.base.Preconditions;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.RootSQLParserTestCases;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.loader.CaseFileLoader;
 import org.apache.shardingsphere.test.it.sql.parser.internal.loader.CaseLoaderCallback;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
