@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.exception.core.external.sql;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 
@@ -48,6 +49,8 @@ public abstract class ShardingSphereSQLException extends ShardingSphereExternalE
     protected ShardingSphereSQLException(final String sqlState, final int typeOffset, final int errorCode, final String reason, final Exception cause) {
         super(reason, cause);
         this.sqlState = sqlState;
+        Preconditions.checkArgument(typeOffset > 0 && typeOffset < 4);
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 10000);
         vendorCode = typeOffset * 10000 + errorCode;
         this.reason = reason;
         this.cause = cause;
