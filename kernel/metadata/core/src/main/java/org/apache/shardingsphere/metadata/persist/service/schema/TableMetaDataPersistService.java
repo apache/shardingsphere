@@ -47,6 +47,7 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
     
     @Override
     public void persist(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
+        persistSchemaName(databaseName, schemaName);
         for (Entry<String, ShardingSphereTable> entry : tables.entrySet()) {
             String tableName = entry.getKey().toLowerCase();
             List<String> versions = repository.getChildrenKeys(TableMetaDataNode.getTableVersionsNode(databaseName, schemaName, tableName));
@@ -62,12 +63,12 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
     
     @Override
     public Collection<MetaDataVersion> persistSchemaMetaData(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
+        persistSchemaName(databaseName, schemaName);
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (Entry<String, ShardingSphereTable> entry : tables.entrySet()) {
             String tableName = entry.getKey().toLowerCase();
             List<String> versions = repository.getChildrenKeys(TableMetaDataNode.getTableVersionsNode(databaseName, schemaName, tableName));
             String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            persistSchemaName(databaseName, schemaName);
             repository.persist(TableMetaDataNode.getTableVersionNode(databaseName, schemaName, tableName, nextActiveVersion),
                     YamlEngine.marshal(new YamlTableSwapper().swapToYamlConfiguration(entry.getValue())));
             if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, tableName))) {
