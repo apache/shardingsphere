@@ -51,6 +51,10 @@ rules:
   loadBalancers:
     random:
       type: RANDOM
+# 需要配置单表规则，不然会读不到表
+- !SINGLE
+  tables:
+    - "*.*"
 ```
 
 ## 相关参考
