@@ -35,8 +35,8 @@ public abstract class FeatureSQLException extends ShardingSphereSQLException {
     }
     
     private static int getErrorCode(final int featureCode, final int errorCode) {
-        Preconditions.checkArgument(featureCode >= 0 && featureCode < 100, "The value range of feature code should be [0,100).");
-        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0,100).");
+        Preconditions.checkArgument(featureCode >= 0 && featureCode < 100, "The value range of feature code should be [0, 100).");
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
         return featureCode * 100 + errorCode;
     }
 }

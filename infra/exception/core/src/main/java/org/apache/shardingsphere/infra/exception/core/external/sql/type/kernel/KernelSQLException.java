@@ -39,8 +39,8 @@ public abstract class KernelSQLException extends ShardingSphereSQLException {
     }
     
     private static int getErrorCode(final int kernelCode, final int errorCode) {
-        Preconditions.checkArgument(kernelCode >= 0 && kernelCode < 10, "The value range of kernel code should be [0,10).");
-        Preconditions.checkArgument(errorCode >= 0 && errorCode < 1000, "The value range of error code should be [0,1000).");
+        Preconditions.checkArgument(kernelCode >= 0 && kernelCode < 10, "The value range of kernel code should be [0, 10).");
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 1000, "The value range of error code should be [0, 1000).");
         return kernelCode * 1000 + errorCode;
     }
 }
