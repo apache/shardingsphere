@@ -52,12 +52,28 @@ bindDefinition
     ;
 
 returnDefinition
-    : RETURN returnTypeDef implementsOperator
+    : RETURN returnTypeDef operatorBindClause? implementsOperator
     ;
 
 implementsOperator
     : USING functionNameDef
     ;
+
+operatorBindClause
+    : withIndexContextDef COMMA_ scanContextDef primaryBindingDef?
+    ;
+
+primaryBindingDef
+    : COMPUTE ANCILLARY DATA
+    ;
+
+scanContextDef
+    : SCAN CONTEXT identifier
+    ;
+
+withIndexContextDef
+   : WITH INDEX CONTEXT
+   ;
 
 returnTypeDef
     : dataType
