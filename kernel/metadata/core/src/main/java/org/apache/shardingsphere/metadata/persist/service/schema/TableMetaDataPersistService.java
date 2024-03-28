@@ -50,6 +50,7 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
         for (Entry<String, ShardingSphereTable> entry : tables.entrySet()) {
             String tableName = entry.getKey().toLowerCase();
             List<String> versions = repository.getChildrenKeys(TableMetaDataNode.getTableVersionsNode(databaseName, schemaName, tableName));
+            persistSchemaName(databaseName, schemaName);
             repository.persist(TableMetaDataNode.getTableVersionNode(databaseName, schemaName, tableName, versions.isEmpty()
                     ? DEFAULT_VERSION
                     : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), YamlEngine.marshal(new YamlTableSwapper().swapToYamlConfiguration(entry.getValue())));
@@ -66,6 +67,7 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
             String tableName = entry.getKey().toLowerCase();
             List<String> versions = repository.getChildrenKeys(TableMetaDataNode.getTableVersionsNode(databaseName, schemaName, tableName));
             String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            persistSchemaName(databaseName, schemaName);
             repository.persist(TableMetaDataNode.getTableVersionNode(databaseName, schemaName, tableName, nextActiveVersion),
                     YamlEngine.marshal(new YamlTableSwapper().swapToYamlConfiguration(entry.getValue())));
             if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, tableName))) {
@@ -74,6 +76,12 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
             result.add(new MetaDataVersion(TableMetaDataNode.getTableNode(databaseName, schemaName, tableName), getActiveVersion(databaseName, schemaName, tableName), nextActiveVersion));
         }
         return result;
+    }
+    
+    private void persistSchemaName(final String databaseName, final String schemaName) {
+        if (!repository.isExisted(TableMetaDataNode.getMetaDataTablesNode(databaseName, schemaName))) {
+            repository.persist(TableMetaDataNode.getMetaDataTablesNode(databaseName, schemaName), "");
+        }
     }
     
     private String getActiveVersion(final String databaseName, final String schemaName, final String tableName) {
