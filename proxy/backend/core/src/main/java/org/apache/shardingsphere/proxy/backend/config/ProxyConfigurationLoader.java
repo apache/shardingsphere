@@ -56,10 +56,20 @@ public final class ProxyConfigurationLoader {
     private static final Pattern DATABASE_CONFIG_FILE_PATTERN = Pattern.compile("database-.+\\.yaml");
     
     // TODO remove COMPATIBLE_GLOBAL_CONFIG_FILE in next major version
+    /**
+     * to be removed.
+     * 
+     * @deprecated to be removed
+     */
     @Deprecated
     private static final String COMPATIBLE_GLOBAL_CONFIG_FILE = "server.yaml";
     
     // TODO remove COMPATIBLE_DATABASE_CONFIG_FILE_PATTERN in next major version
+    /**
+     * to be removed.
+     *
+     * @deprecated to be removed
+     */
     @Deprecated
     private static final Pattern COMPATIBLE_DATABASE_CONFIG_FILE_PATTERN = Pattern.compile("config-.+\\.yaml");
     

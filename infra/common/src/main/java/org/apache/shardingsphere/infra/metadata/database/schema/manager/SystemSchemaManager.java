@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.metadata.database.schema.manager;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveSet;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader;
 
@@ -38,8 +38,7 @@ import java.util.stream.Stream;
 /**
  * System schema manager.
  */
-@RequiredArgsConstructor
-@Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SystemSchemaManager {
     
     private static final Map<String, Map<String, Collection<String>>> DATABASE_TYPE_SCHEMA_TABLE_MAP;

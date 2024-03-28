@@ -20,6 +20,11 @@ package org.apache.shardingsphere.metadata.persist.node.metadata;
 /**
  * Database rule meta data node.
  */
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseRuleMetaDataNode {
     
     private static final String ROOT_NODE = "metadata";
