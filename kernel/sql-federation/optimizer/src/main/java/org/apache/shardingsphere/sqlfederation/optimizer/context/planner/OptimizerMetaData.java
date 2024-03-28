@@ -18,38 +18,25 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.context.planner;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.calcite.schema.Schema;
 
 import java.util.Map;
 
 /**
- * Optimize planner context.
+ * Optimize meta data.
  */
 @RequiredArgsConstructor
-public final class OptimizerPlannerContext {
+public final class OptimizerMetaData {
     
-    private final Map<String, SqlValidator> validators;
-    
-    private final Map<String, SqlToRelConverter> converters;
+    private final Map<String, Schema> schemas;
     
     /**
-     * Get validator.
-     * 
-     * @param schemaName schema name
-     * @return validator
-     */
-    public SqlValidator getValidator(final String schemaName) {
-        return validators.get(schemaName);
-    }
-    
-    /**
-     * Get converter.
+     * Get schema.
      *
      * @param schemaName schema name
-     * @return converter
+     * @return schema
      */
-    public SqlToRelConverter getConverter(final String schemaName) {
-        return converters.get(schemaName);
+    public Schema getSchema(final String schemaName) {
+        return schemas.get(schemaName);
     }
 }

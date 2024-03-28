@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerMetaData;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -49,9 +49,9 @@ class OptimizerContextTest {
     }
     
     @Test
-    void assertGetPlannerContext() {
+    void assertGetOptimizerMetaData() {
         OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()));
-        assertThat(actual.getPlannerContext(DefaultDatabase.LOGIC_NAME), instanceOf(OptimizerPlannerContext.class));
+        assertThat(actual.getMetaData(DefaultDatabase.LOGIC_NAME), instanceOf(OptimizerMetaData.class));
     }
     
     private ShardingSphereDatabase createShardingSphereDatabase() {
