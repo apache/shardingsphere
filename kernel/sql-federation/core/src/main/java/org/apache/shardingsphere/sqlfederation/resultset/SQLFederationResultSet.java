@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
 
 import java.io.InputStream;
@@ -80,8 +79,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     private boolean closed;
     
-    public SQLFederationResultSet(final Enumerator<Object> enumerator, final ShardingSphereSchema schema, final Schema sqlFederationSchema,
-                                  final SelectStatementContext selectStatementContext, final RelDataType resultColumnType) {
+    public SQLFederationResultSet(final Enumerator<Object> enumerator, final Schema sqlFederationSchema, final SelectStatementContext selectStatementContext, final RelDataType resultColumnType) {
         this.enumerator = enumerator;
         DatabaseType databaseType = selectStatementContext.getDatabaseType().getTrunkDatabaseType().orElse(selectStatementContext.getDatabaseType());
         columnTypeConverter = DatabaseTypedSPILoader.getService(SQLFederationColumnTypeConverter.class, databaseType);
