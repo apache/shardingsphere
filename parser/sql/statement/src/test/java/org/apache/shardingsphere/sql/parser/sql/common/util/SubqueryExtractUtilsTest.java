@@ -171,17 +171,17 @@ class SubqueryExtractUtilsTest {
     @Test
     void assertGetSubquerySegmentsWithCombineSegment() {
         SelectStatement selectStatement = new MySQLSelectStatement();
-        selectStatement.setCombine(new CombineSegment(0, 0, new MySQLSelectStatement(), CombineType.UNION, createSelectStatementForCombineSegment()));
+        SubquerySegment left = new SubquerySegment(0, 0, new MySQLSelectStatement(), "");
+        selectStatement.setCombine(new CombineSegment(0, 0, left, CombineType.UNION, createSelectStatementForCombineSegment()));
         Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(actual.size(), is(1));
     }
     
-    private SelectStatement createSelectStatementForCombineSegment() {
-        SelectStatement result = new MySQLSelectStatement();
+    private SubquerySegment createSelectStatementForCombineSegment() {
+        SelectStatement selectStatement = new MySQLSelectStatement();
         ExpressionSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
-        result.setWhere(new WhereSegment(0, 0, new InExpression(0, 0,
-                left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSelectStatement(), "")), false)));
-        return result;
+        selectStatement.setWhere(new WhereSegment(0, 0, new InExpression(0, 0, left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSelectStatement(), "")), false)));
+        return new SubquerySegment(0, 0, selectStatement, "");
     }
     
     @Test
