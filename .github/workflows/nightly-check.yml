@@ -117,7 +117,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - run: sudo npm install -g markdown-link-check@3.12.1
+      - run: sudo npm install -g markdown-link-check@3.10.0
       - name: Check dead link
         run: |
           IGNORED_PATH_LIST=("./docs/document/themes" "./docs/community/content/powered-by" "./docs/blog/content/material" "./docs/blog/themes")
@@ -156,7 +156,7 @@ jobs:
           distribution: 'temurin'
           java-version: 11
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: java
       - uses: actions/cache@v4
@@ -169,11 +169,9 @@ jobs:
         run: |
           ./mvnw clean install -DskipTests -B -ntp -T1C
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
         with:
           category: "/language:java"
-          minimum-size: 1GB
-          maximum-size: 5GB
 
   check-stale:
     if: github.repository == 'apache/shardingsphere'
@@ -191,7 +189,7 @@ jobs:
           days-before-pr-stale: -1
           days-before-close: -1
           stale-issue-label: "stale"
-          operations-per-run: 1000
+          operations-per-run: 100
           remove-stale-when-updated: true
           stale-issue-message: >
             There hasn't been any activity on this issue recently, and in order to prioritize active issues, it will be
