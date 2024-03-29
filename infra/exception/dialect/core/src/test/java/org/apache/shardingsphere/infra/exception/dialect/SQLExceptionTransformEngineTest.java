@@ -66,7 +66,7 @@ class SQLExceptionTransformEngineTest {
     void assertToSQLExceptionWithShardingSphereServerException() {
         ShardingSphereServerException cause = mock(ShardingSphereServerException.class);
         when(cause.getMessage()).thenReturn("No reason");
-        assertThat(SQLExceptionTransformEngine.toSQLException(cause, databaseType).getMessage(), is("No reason"));
+        assertThat(SQLExceptionTransformEngine.toSQLException(cause, databaseType).getMessage(), is("Server exception: No reason"));
     }
     
     @Test
