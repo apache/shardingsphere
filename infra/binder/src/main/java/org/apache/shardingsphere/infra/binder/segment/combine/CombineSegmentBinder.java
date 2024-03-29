@@ -50,8 +50,10 @@ public final class CombineSegmentBinder {
         SelectStatement boundedRightSelect = new SelectStatementBinder().bindWithExternalTableContexts(segment.getRight().getSelect(), metaData, defaultDatabaseName, externalTableBinderContexts);
         SubquerySegment boundedLeft = new SubquerySegment(segment.getLeft().getStartIndex(), segment.getLeft().getStopIndex(), segment.getLeft().getText());
         boundedLeft.setSelect(boundedLeftSelect);
+        boundedLeft.setSubqueryType(segment.getLeft().getSubqueryType());
         SubquerySegment boundedRight = new SubquerySegment(segment.getRight().getStartIndex(), segment.getRight().getStopIndex(), segment.getRight().getText());
         boundedRight.setSelect(boundedRightSelect);
+        boundedRight.setSubqueryType(segment.getRight().getSubqueryType());
         return new CombineSegment(segment.getStartIndex(), segment.getStopIndex(), boundedLeft, segment.getCombineType(), boundedRight);
     }
 }
