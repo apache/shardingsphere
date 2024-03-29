@@ -27,6 +27,6 @@ public final class ServerSQLException extends GenericSQLException {
     private static final long serialVersionUID = -4072647406344887711L;
     
     public ServerSQLException(final Exception cause) {
-        super(cause.getMessage(), cause, XOpenSQLState.GENERAL_ERROR, 0);
+        super(String.format("Server exception: %s", cause.getMessage()), cause, XOpenSQLState.GENERAL_ERROR, 4);
     }
 }

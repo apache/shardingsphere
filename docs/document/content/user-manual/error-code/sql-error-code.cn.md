@@ -286,3 +286,4 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 0A000     | 30001       | Unsupported SQL operation: %s   |
 | 0A000     | 30002       | Database protocol exception: %s |
 | 0A000     | 30003       | Unsupported command: %s         |
+| 0A000     | 30004       | Server exception: %s            |
