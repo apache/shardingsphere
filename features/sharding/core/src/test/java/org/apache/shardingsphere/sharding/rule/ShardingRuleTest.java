@@ -600,7 +600,7 @@ class ShardingRuleTest {
         JoinTableSegment joinTable = mock(JoinTableSegment.class);
         when(joinTable.getCondition()).thenReturn(condition);
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
-        when(selectStatement.getFrom()).thenReturn(joinTable);
+        when(selectStatement.getFrom()).thenReturn(Optional.of(joinTable));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
@@ -622,7 +622,7 @@ class ShardingRuleTest {
         JoinTableSegment joinTable = mock(JoinTableSegment.class);
         when(joinTable.getCondition()).thenReturn(condition);
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
-        when(selectStatement.getFrom()).thenReturn(joinTable);
+        when(selectStatement.getFrom()).thenReturn(Optional.of(joinTable));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
@@ -651,7 +651,7 @@ class ShardingRuleTest {
         BinaryOperationExpression condition = createBinaryOperationExpression(databaseJoin, tableJoin, AND);
         when(joinTable.getCondition()).thenReturn(condition);
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
-        when(selectStatement.getFrom()).thenReturn(joinTable);
+        when(selectStatement.getFrom()).thenReturn(Optional.of(joinTable));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);

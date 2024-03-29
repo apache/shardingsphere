@@ -17,13 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -72,6 +67,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Ins
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.InsertRestContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.InsertTargetContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JoinQualContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.LimitClauseContext;
@@ -116,7 +112,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Whe
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowDefinitionListContext;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
@@ -201,8 +196,12 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussUpdateStatement;
 
-import lombok.AccessLevel;
-import lombok.Getter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Statement visitor for openGauss.
@@ -969,7 +968,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
             OpenGaussSelectStatement result = new OpenGaussSelectStatement();
             OpenGaussSelectStatement left = (OpenGaussSelectStatement) visit(ctx.selectClauseN(0));
             result.setProjections(left.getProjections());
-            result.setFrom(left.getFrom());
+            left.getFrom().ifPresent(result::setFrom);
             CombineSegment combineSegment = new CombineSegment(((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), left, getCombineType(ctx),
                     (OpenGaussSelectStatement) visit(ctx.selectClauseN(1)));
             result.setCombine(combineSegment);

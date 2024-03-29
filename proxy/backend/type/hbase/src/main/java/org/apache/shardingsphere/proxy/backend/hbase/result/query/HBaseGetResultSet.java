@@ -173,15 +173,22 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
     
     private void logExecuteTime(final long startMills) {
         long endMills = System.currentTimeMillis();
-        String tableName = statementContext.getSqlStatement().getFrom() instanceof SimpleTableSegment
-                ? ((SimpleTableSegment) statementContext.getSqlStatement().getFrom()).getTableName().getIdentifier().getValue()
-                : statementContext.getSqlStatement().getFrom().toString();
+        String tableName = getTableName();
         String whereClause = getWhereClause();
         if (endMills - startMills > HBaseContext.getInstance().getProps().<Long>getValue(HBasePropertyKey.EXECUTE_TIME_OUT)) {
             log.info(String.format("query hbase table: %s,  where case: %s  ,  query %dms time out", tableName, whereClause, endMills - startMills));
         } else {
             log.info(String.format("query hbase table: %s,  where case: %s  ,  execute time: %dms", tableName, whereClause, endMills - startMills));
         }
+    }
+    
+    private String getTableName() {
+        if (statementContext.getSqlStatement().getFrom().isPresent()) {
+            return statementContext.getSqlStatement().getFrom().get() instanceof SimpleTableSegment
+                    ? ((SimpleTableSegment) statementContext.getSqlStatement().getFrom().get()).getTableName().getIdentifier().getValue()
+                    : statementContext.getSqlStatement().getFrom().toString();
+        }
+        return "DUAL";
     }
     
     private String getWhereClause() {

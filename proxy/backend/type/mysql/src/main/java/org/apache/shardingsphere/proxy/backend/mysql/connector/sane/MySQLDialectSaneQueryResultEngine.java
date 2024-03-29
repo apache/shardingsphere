@@ -66,7 +66,7 @@ public final class MySQLDialectSaneQueryResultEngine implements DialectSaneQuery
     }
     
     private Optional<ExecuteResult> createQueryResult(final SelectStatement sqlStatement) {
-        if (null != sqlStatement.getFrom()) {
+        if (sqlStatement.getFrom().isPresent()) {
             return Optional.empty();
         }
         List<RawQueryResultColumnMetaData> queryResultColumnMetaDataList = new ArrayList<>(sqlStatement.getProjections().getProjections().size());

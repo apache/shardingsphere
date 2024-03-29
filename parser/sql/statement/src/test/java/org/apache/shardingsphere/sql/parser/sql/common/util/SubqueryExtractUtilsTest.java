@@ -99,15 +99,14 @@ class SubqueryExtractUtilsTest {
         subquery.setFrom(new SimpleTableSegment(new TableNameSegment(45, 51, new IdentifierValue("t_order"))));
         subquery.setProjections(new ProjectionsSegment(31, 38));
         subquery.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(31, 38, new IdentifierValue("order_id"))));
-        
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(7, 16));
         selectStatement.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(7, 16, new IdentifierValue("order_id"))));
-        selectStatement.setFrom(new SubqueryTableSegment(new SubquerySegment(23, 71, subquery, "")));
-        
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(23, 71, subquery, ""));
+        selectStatement.setFrom(subqueryTableSegment);
         Collection<SubquerySegment> result = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(result.size(), is(1));
-        assertThat(result.iterator().next(), is(((SubqueryTableSegment) selectStatement.getFrom()).getSubquery()));
+        assertThat(result.iterator().next(), is(subqueryTableSegment.getSubquery()));
     }
     
     @Test

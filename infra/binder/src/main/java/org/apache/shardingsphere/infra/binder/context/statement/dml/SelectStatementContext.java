@@ -121,8 +121,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts, getDatabaseType());
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(getDatabaseType())
-                .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
+        projectionsContext = new ProjectionsContextEngine(getDatabaseType()).createProjectionsContext(getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
         String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
         containsEnhancedTable = isContainsEnhancedTable(metaData, databaseName, getTablesContext().getTableNames());
@@ -166,7 +165,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
      * @return whether contains join query or not
      */
     public boolean isContainsJoinQuery() {
-        return getSqlStatement().getFrom() instanceof JoinTableSegment;
+        return getSqlStatement().getFrom().isPresent() && getSqlStatement().getFrom().get() instanceof JoinTableSegment;
     }
     
     /**
@@ -389,7 +388,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
      * @return whether sql statement contains table subquery segment or not
      */
     public boolean containsTableSubquery() {
-        return getSqlStatement().getFrom() instanceof SubqueryTableSegment;
+        return getSqlStatement().getFrom().isPresent() && getSqlStatement().getFrom().get() instanceof SubqueryTableSegment;
     }
     
     @Override

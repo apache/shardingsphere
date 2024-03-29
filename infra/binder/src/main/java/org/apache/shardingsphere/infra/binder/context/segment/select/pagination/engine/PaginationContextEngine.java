@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -75,7 +76,7 @@ public final class PaginationContextEngine {
     }
     
     private Optional<TopProjectionSegment> findTopProjection(final SelectStatement selectStatement) {
-        List<SubqueryTableSegment> subqueryTableSegments = SQLUtils.getSubqueryTableSegmentFromTableSegment(selectStatement.getFrom());
+        List<SubqueryTableSegment> subqueryTableSegments = selectStatement.getFrom().map(SQLUtils::getSubqueryTableSegmentFromTableSegment).orElse(Collections.emptyList());
         for (SubqueryTableSegment subquery : subqueryTableSegments) {
             SelectStatement subquerySelect = subquery.getSubquery().getSelect();
             for (ProjectionSegment each : subquerySelect.getProjections().getProjections()) {
