@@ -131,7 +131,7 @@ public final class ColumnExtractor {
         statement.getGroupBy().ifPresent(optional -> extractFromGroupBy(columnSegments, optional, containsSubQuery));
         statement.getHaving().ifPresent(optional -> extractFromHaving(columnSegments, optional, containsSubQuery));
         statement.getOrderBy().ifPresent(optional -> extractFromOrderBy(columnSegments, optional, containsSubQuery));
-        statement.getCombine().ifPresent(optional -> extractFromSelectStatement(columnSegments, optional.getRight(), containsSubQuery));
+        statement.getCombine().ifPresent(optional -> extractFromSelectStatement(columnSegments, optional.getRight().getSelect(), containsSubQuery));
     }
     
     /**

@@ -939,12 +939,16 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             PostgreSQLSelectStatement left = (PostgreSQLSelectStatement) visit(ctx.selectClauseN(0));
             result.setProjections(left.getProjections());
             left.getFrom().ifPresent(result::setFrom);
-            CombineSegment combineSegment = new CombineSegment(((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), left, getCombineType(ctx),
-                    (PostgreSQLSelectStatement) visit(ctx.selectClauseN(1)));
+            CombineSegment combineSegment = new CombineSegment(((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(),
+                    createSubquerySegment(ctx.selectClauseN(0), left), getCombineType(ctx), createSubquerySegment(ctx.selectClauseN(1), (PostgreSQLSelectStatement) visit(ctx.selectClauseN(1))));
             result.setCombine(combineSegment);
             return result;
         }
         return visit(ctx.selectWithParens());
+    }
+    
+    private SubquerySegment createSubquerySegment(final SelectClauseNContext ctx, final PostgreSQLSelectStatement selectStatement) {
+        return new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), selectStatement, getOriginalText(ctx));
     }
     
     private CombineType getCombineType(final SelectClauseNContext ctx) {

@@ -82,7 +82,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         if (selectStatement.getCombine().isPresent()) {
             CombineSegment combineSegment = selectStatement.getCombine().get();
             return new SqlBasicCall(CombineOperatorConverter.convert(combineSegment.getCombineType()),
-                    Arrays.asList(convert(combineSegment.getLeft()), convert(combineSegment.getRight())), SqlParserPos.ZERO);
+                    Arrays.asList(convert(combineSegment.getLeft().getSelect()), convert(combineSegment.getRight().getSelect())), SqlParserPos.ZERO);
         }
         return sqlNode;
     }
