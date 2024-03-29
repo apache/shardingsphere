@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
-import com.sphereex.dbplusengine.SphereEx;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
