@@ -182,7 +182,7 @@ public final class SQLFederationEngine implements AutoCloseable {
                     sqlFederationRule.getOptimizerContext().getSqlParserRule(), sqlFederationRule.getOptimizerContext().getParserContext(databaseName).getDatabaseType(), true);
             Schema sqlFederationSchema = catalogReader.getRootSchema().plus().getSubSchema(schemaName);
             SQLFederationExecutionPlan executionPlan = compileQuery(prepareEngine, callback, federationContext, databaseName, schemaName, sqlFederationSchema, converter);
-            resultSet = executePlan(federationContext, executionPlan, validator, converter, databaseName, schemaName, sqlFederationSchema);
+            resultSet = executePlan(federationContext, executionPlan, validator, converter, sqlFederationSchema);
             return resultSet;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
@@ -205,13 +205,12 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     @SuppressWarnings("unchecked")
     private ResultSet executePlan(final SQLFederationContext federationContext, final SQLFederationExecutionPlan executionPlan, final SqlValidator validator, final SqlToRelConverter converter,
-                                  final String databaseName, final String schemaName, final Schema sqlFederationSchema) {
+                                  final Schema sqlFederationSchema) {
         try {
             Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) executionPlan.getPhysicalPlan(), EnumerableRel.Prefer.ARRAY);
             Map<String, Object> params = createParameters(federationContext.getQueryContext().getParameters());
             Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationBindContext(validator, converter, params)).enumerator();
-            ShardingSphereSchema schema = federationContext.getMetaData().getDatabase(databaseName).getSchema(schemaName);
-            return new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, (SelectStatementContext) federationContext.getQueryContext().getSqlStatementContext(),
+            return new SQLFederationResultSet(enumerator, sqlFederationSchema, (SelectStatementContext) federationContext.getQueryContext().getSqlStatementContext(),
                     executionPlan.getResultColumnType());
         } finally {
             processEngine.completeSQLExecution(federationContext.getProcessId());
