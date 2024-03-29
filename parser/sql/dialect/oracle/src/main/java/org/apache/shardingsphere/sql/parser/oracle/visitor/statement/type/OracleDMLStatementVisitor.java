@@ -591,7 +591,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result = new OracleSelectStatement();
             OracleSelectStatement left = (OracleSelectStatement) visit(ctx.selectSubquery(0));
             result.setProjections(left.getProjections());
-            result.setFrom(left.getFrom());
+            left.getFrom().ifPresent(result::setFrom);
             createSelectCombineClause(ctx, result, left);
         } else {
             result = null != ctx.queryBlock() ? (OracleSelectStatement) visit(ctx.queryBlock()) : (OracleSelectStatement) visit(ctx.parenthesisSelectSubquery());

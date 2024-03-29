@@ -83,8 +83,8 @@ public final class TableExtractor {
             extractTablesFromSelect(combineSegment.getLeft());
             extractTablesFromSelect(combineSegment.getRight());
         }
-        if (null != selectStatement.getFrom() && !selectStatement.getCombine().isPresent()) {
-            extractTablesFromTableSegment(selectStatement.getFrom());
+        if (selectStatement.getFrom().isPresent() && !selectStatement.getCombine().isPresent()) {
+            extractTablesFromTableSegment(selectStatement.getFrom().get());
         }
         if (selectStatement.getWhere().isPresent()) {
             extractTablesFromExpression(selectStatement.getWhere().get().getExpr());

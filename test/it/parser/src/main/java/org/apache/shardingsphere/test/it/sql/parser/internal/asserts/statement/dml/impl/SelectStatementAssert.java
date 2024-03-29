@@ -112,13 +112,15 @@ public final class SelectStatementAssert {
         if (null == expected.getFrom()) {
             assertNull(actual.getFrom(), assertContext.getText("Actual simple-table should not exist."));
         } else {
-            TableAssert.assertIs(assertContext, actual.getFrom(), expected.getFrom());
+            assertTrue(actual.getFrom().isPresent(), assertContext.getText("Actual from segment should exist."));
+            TableAssert.assertIs(assertContext, actual.getFrom().get(), expected.getFrom());
         }
         if (actual instanceof MySQLSelectStatement) {
             if (null == expected.getSimpleTable()) {
                 assertFalse(((MySQLSelectStatement) actual).getTable().isPresent(), assertContext.getText("Actual simple-table should not exist."));
             } else {
                 Optional<SimpleTableSegment> table = ((MySQLSelectStatement) actual).getTable();
+                assertTrue(table.isPresent(), assertContext.getText("Actual table segment should exist."));
                 TableAssert.assertIs(assertContext, table.orElse(null), expected.getSimpleTable());
             }
         }

@@ -768,7 +768,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             MySQLSelectStatement result = new MySQLSelectStatement();
             MySQLSelectStatement left = (MySQLSelectStatement) visit(ctx.queryExpressionBody());
             result.setProjections(left.getProjections());
-            result.setFrom(left.getFrom());
+            left.getFrom().ifPresent(result::setFrom);
             left.getTable().ifPresent(result::setTable);
             result.setCombine(createCombineSegment(ctx.combineClause(), left));
             return result;
@@ -777,7 +777,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             MySQLSelectStatement result = new MySQLSelectStatement();
             MySQLSelectStatement left = (MySQLSelectStatement) visit(ctx.queryExpressionParens());
             result.setProjections(left.getProjections());
-            result.setFrom(left.getFrom());
+            left.getFrom().ifPresent(result::setFrom);
             left.getTable().ifPresent(result::setTable);
             result.setCombine(createCombineSegment(ctx.combineClause(), left));
             return result;

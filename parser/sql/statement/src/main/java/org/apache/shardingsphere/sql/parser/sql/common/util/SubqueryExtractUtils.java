@@ -64,7 +64,7 @@ public final class SubqueryExtractUtils {
     
     private static void extractSubquerySegments(final List<SubquerySegment> result, final SelectStatement selectStatement) {
         extractSubquerySegmentsFromProjections(result, selectStatement.getProjections());
-        extractSubquerySegmentsFromTableSegment(result, selectStatement.getFrom());
+        selectStatement.getFrom().ifPresent(optional -> extractSubquerySegmentsFromTableSegment(result, optional));
         if (selectStatement.getWhere().isPresent()) {
             extractSubquerySegmentsFromWhere(result, selectStatement.getWhere().get().getExpr());
         }

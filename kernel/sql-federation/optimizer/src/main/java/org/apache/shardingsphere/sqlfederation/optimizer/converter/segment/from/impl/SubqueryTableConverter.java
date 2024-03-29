@@ -53,7 +53,7 @@ public final class SubqueryTableConverter {
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         if (null == segment.getSubquery().getSelect().getProjections()) {
-            List<SqlNode> tables = TableConverter.convert(segment.getSubquery().getSelect().getFrom()).map(Collections::singletonList).orElseGet(Collections::emptyList);
+            List<SqlNode> tables = segment.getSubquery().getSelect().getFrom().flatMap(TableConverter::convert).map(Collections::singletonList).orElseGet(Collections::emptyList);
             sqlNodes.add(new SqlBasicCall(SqlStdOperatorTable.EXPLICIT_TABLE, tables, SqlParserPos.ZERO));
         } else {
             sqlNodes.add(new SelectStatementConverter().convert(segment.getSubquery().getSelect()));

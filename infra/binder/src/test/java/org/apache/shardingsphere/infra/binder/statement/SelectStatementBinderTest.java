@@ -85,7 +85,8 @@ class SelectStatementBinderTest {
         assertThat(actual, not(selectStatement));
         assertThat(actual.getFrom(), not(selectStatement.getFrom()));
         assertThat(actual.getFrom(), instanceOf(SimpleTableSegment.class));
-        assertThat(((SimpleTableSegment) actual.getFrom()).getTableName(), not(simpleTableSegment.getTableName()));
+        assertTrue(actual.getFrom().isPresent());
+        assertThat(((SimpleTableSegment) actual.getFrom().get()).getTableName(), not(simpleTableSegment.getTableName()));
         assertThat(actual.getProjections(), not(selectStatement.getProjections()));
         List<ProjectionSegment> actualProjections = new ArrayList<>(actual.getProjections().getProjections());
         assertThat(actualProjections, not(selectStatement.getProjections()));

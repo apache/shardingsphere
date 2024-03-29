@@ -125,7 +125,7 @@ public final class ShardingConditions {
                 startIndexShardingConditions.computeIfAbsent(each.getStartIndex(), unused -> new LinkedList<>()).add(each);
             }
             for (SelectStatement each : selectStatements) {
-                if (each.getFrom() instanceof SubqueryTableSegment) {
+                if (each.getFrom().isPresent() && each.getFrom().get() instanceof SubqueryTableSegment) {
                     continue;
                 }
                 if (!each.getWhere().isPresent() || !startIndexShardingConditions.containsKey(each.getWhere().get().getExpr().getStartIndex())) {
