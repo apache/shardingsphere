@@ -69,7 +69,7 @@ class DropDefaultShardingStrategyExecutorTest {
     }
     
     @Test
-    void asserBuildToBeDroppedRuleConfiguration() {
+    void assertBuildToBeDroppedRuleConfiguration() {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
@@ -79,7 +79,7 @@ class DropDefaultShardingStrategyExecutorTest {
     }
     
     @Test
-    void asserBuildToBeDroppedRuleConfigurationWithInUsedAlgorithm() {
+    void assertBuildToBeDroppedRuleConfigurationWithInUsedAlgorithm() {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
