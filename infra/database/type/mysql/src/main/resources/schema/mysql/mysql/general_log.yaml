@@ -22,6 +22,7 @@ columns:
     dataType: 93
     generated: false
     name: event_time
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: -1
     generated: false
     name: user_host
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 4
     generated: false
     name: thread_id
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 4
     generated: false
     name: server_id
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 12
     generated: false
     name: command_type
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: -4
     generated: false
     name: argument
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true

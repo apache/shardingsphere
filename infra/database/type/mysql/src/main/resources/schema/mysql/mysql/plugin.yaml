@@ -22,6 +22,7 @@ columns:
     dataType: 12
     generated: false
     name: name
+    nullable: false
     primaryKey: true
     unsigned: false
     visible: true
@@ -30,9 +31,11 @@ columns:
     dataType: 12
     generated: false
     name: dl
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
 indexes:
   primary:
     name: PRIMARY
+    unique: false

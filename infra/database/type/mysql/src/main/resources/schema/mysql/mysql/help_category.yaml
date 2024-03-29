@@ -22,6 +22,7 @@ columns:
     dataType: 5
     generated: false
     name: help_category_id
+    nullable: false
     primaryKey: true
     unsigned: true
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 1
     generated: false
     name: name
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 5
     generated: false
     name: parent_category_id
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -46,11 +49,14 @@ columns:
     dataType: -1
     generated: false
     name: url
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
 indexes:
   primary:
     name: PRIMARY
+    unique: false
   name:
     name: name
+    unique: false

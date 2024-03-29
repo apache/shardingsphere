@@ -22,6 +22,7 @@ columns:
     dataType: 1
     generated: false
     name: Channel_name
+    nullable: false
     primaryKey: true
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 1
     generated: false
     name: Host
+    nullable: false
     primaryKey: true
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 4
     generated: false
     name: Port
+    nullable: false
     primaryKey: true
     unsigned: true
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 1
     generated: false
     name: Network_namespace
+    nullable: false
     primaryKey: true
     unsigned: false
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: -6
     generated: false
     name: Weight
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,9 +67,11 @@ columns:
     dataType: 1
     generated: false
     name: Managed_name
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
 indexes:
   primary:
     name: PRIMARY
+    unique: false
