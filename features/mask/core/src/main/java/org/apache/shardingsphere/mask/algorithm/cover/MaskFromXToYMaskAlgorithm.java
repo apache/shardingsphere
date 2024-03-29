@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropertiesChecker;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;

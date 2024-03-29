@@ -31,6 +31,13 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
 | 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables.                         |
 | 0A000     | 10040       | Unsupported storage type of \`%s.%s\`.                                         |
+| 44000     | 10090       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
+| 44000     | 10091       | '%s' algorithm on %s is required.                                              |
+| 42S02     | 10092       | '%s' algorithm '%s' on %s is unregistered.                                     |
+| 44000     | 10093       | Invalid %s algorithm '%s', %s.                                                 |
+| 44000     | 10094       | Duplicate %s algorithms '%s' in database '%s'.                                 |
+| 44000     | 10095       | %s algorithms '%s' in database '%s' are still in used.                         |
+| HY000     | 10099       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
 
 ### Data
 
@@ -164,10 +171,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason                                                     |
 |-----------|-------------|------------------------------------------------------------|
-| 44000     | 19150       | Invalid %s algorithm(s) \`%s\`.                            |
-| 44000     | 19151       | %s algorithm(s) \`%s\` do not exist in database \`%s\`.    |
-| 44000     | 19152       | %s algorithms \`%s\` in database \`%s\` are still in used. |
-| 44000     | 19153       | Duplicate %s algorithms \`%s\` in database \`%s\`.         |
 | 44000     | 19154       | Invalid mode, error message is: \`%s\`.                    |
 | 44000     | 19155       | Plugin class \`%s\` not found..                            |
 

@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.core.exception;
+package org.apache.shardingsphere.infra.algorithm.core.exception.type;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
+import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmDefinitionException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Empty algorithm exception.
+ * Algorithm initialization exception.
  */
-public final class EmptyAlgorithmException extends MetaDataSQLException {
+public final class AlgorithmInitializationException extends AlgorithmDefinitionException {
     
-    private static final long serialVersionUID = 8128067899672436211L;
+    private static final long serialVersionUID = -7634670846091616790L;
     
-    public EmptyAlgorithmException(final String algorithmType, final SQLExceptionIdentifier sqlExceptionIdentifier) {
-        super(XOpenSQLState.NOT_FOUND, 12, "'%s' algorithm on %s is required.", algorithmType, sqlExceptionIdentifier);
+    public AlgorithmInitializationException(final ShardingSphereAlgorithm algorithm, final String reason, final Object... args) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 90, "Algorithm '%s.'%s' initialization failed, reason is: %s.",
+                algorithm.getClass().getSuperclass().getSimpleName(), algorithm.getType(), String.format(reason, args));
     }
 }

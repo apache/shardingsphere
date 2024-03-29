@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category;
+package org.apache.shardingsphere.infra.algorithm.core.exception.type;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.KernelSQLException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmDefinitionException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Algorithm definition exception.
+ * Empty algorithm exception.
  */
-public abstract class AlgorithmDefinitionException extends KernelSQLException {
+public final class EmptyAlgorithmException extends AlgorithmDefinitionException {
     
-    private static final long serialVersionUID = -8947223495845000542L;
+    private static final long serialVersionUID = 8128067899672436211L;
     
-    private static final int KERNEL_CODE = 9;
-    
-    protected AlgorithmDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
+    public EmptyAlgorithmException(final String algorithmType, final SQLExceptionIdentifier sqlExceptionIdentifier) {
+        super(XOpenSQLState.NOT_FOUND, 91, "'%s' algorithm on %s is required.", algorithmType, sqlExceptionIdentifier);
     }
 }

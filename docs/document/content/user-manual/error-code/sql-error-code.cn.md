@@ -22,15 +22,18 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42S02     | 10006       | Unknown column '%s' in '%s'.                                                   |
 | 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
 | 42000     | 10010       | Rule does not exist.                                                           |
-| 44000     | 10011       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
-| 44000     | 10012       | '%s' algorithm on %s is required.                                              |
-| 42S02     | 10013       | '%s' algorithm '%s' on %s is unregistered.                                     |
-| HY000     | 10015       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
 | 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
 | 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables.                         |
 | 0A000     | 10040       | Unsupported storage type of \`%s.%s\`.                                         |
+| 44000     | 10090       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
+| 44000     | 10091       | '%s' algorithm on %s is required.                                              |
+| 42S02     | 10092       | '%s' algorithm '%s' on %s is unregistered.                                     |
+| 44000     | 10093       | Invalid %s algorithm '%s', %s.                                                 |
+| 44000     | 10094       | Duplicate %s algorithms '%s' in database '%s'.                                 |
+| 44000     | 10095       | %s algorithms '%s' in database '%s' are still in used.                         |
+| HY000     | 10099       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
 
 ### 数据
 
@@ -164,10 +167,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息                                                        |
 |-----------|-------------|-------------------------------------------------------------|
-| 44000     | 19150       | Invalid %s algorithm(s) \`%s\`.                             |
-| 44000     | 19151       | %s algorithm(s) \`%s\` do not exist in database \`%s\`.     |
-| 44000     | 19152       | %s algorithms \`%s\` in database \`%s\` are still in used.  |
-| 44000     | 19153       | Duplicate %s algorithms \`%s\` in database \`%s\`.          |
 | 44000     | 19154       | Invalid mode, error message is: \`%s\`.                     |
 | 44000     | 19155       | Plugin class \`%s\` not found..                             |
 

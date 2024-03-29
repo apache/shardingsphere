@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.infra.exception.algorithm.AlgorithmInUsedException;
-import org.apache.shardingsphere.infra.exception.algorithm.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -58,9 +59,8 @@ public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExec
     private void checkToBeDroppedShardingAlgorithms(final DropShardingAlgorithmStatement sqlStatement) {
         Collection<String> currentShardingAlgorithms = getCurrentShardingAlgorithms();
         Collection<String> notExistedAlgorithms = sqlStatement.getNames().stream().filter(each -> !currentShardingAlgorithms.contains(each)).collect(Collectors.toList());
-        if (!notExistedAlgorithms.isEmpty()) {
-            throw new MissingRequiredAlgorithmException(database.getName(), notExistedAlgorithms);
-        }
+        ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(),
+                () -> new UnregisteredAlgorithmException("Sharding", notExistedAlgorithms, new SQLExceptionIdentifier(database.getName())));
     }
     
     private void checkShardingAlgorithmsInUsed(final DropShardingAlgorithmStatement sqlStatement) {

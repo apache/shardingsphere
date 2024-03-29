@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.exception.algorithm.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.exception.algorithm.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.EmptyAlgorithmException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
@@ -65,7 +65,7 @@ class CreateDefaultShardingStrategyExecutorTest {
     @Test
     void assertExecuteWithoutAlgorithm() {
         CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "standard", "order_id", null);
-        assertThrows(MissingRequiredAlgorithmException.class, () -> executor.checkBeforeUpdate(statement));
+        assertThrows(EmptyAlgorithmException.class, () -> executor.checkBeforeUpdate(statement));
     }
     
     @Test

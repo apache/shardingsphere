@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.infra.exception.algorithm.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStatement;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.EmptyAlgorithmException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -58,7 +59,7 @@ public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClus
     }
     
     private void checkAlgorithm(final LockClusterStatement sqlStatement) {
-        ShardingSpherePreconditions.checkNotNull(sqlStatement.getLockStrategy(), MissingRequiredAlgorithmException::new);
+        ShardingSpherePreconditions.checkNotNull(sqlStatement.getLockStrategy(), () -> new EmptyAlgorithmException("Lock", new SQLExceptionIdentifier("")));
         TypedSPILoader.checkService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName(), sqlStatement.getLockStrategy().getProps());
     }
     

@@ -19,11 +19,12 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
-import org.apache.shardingsphere.infra.exception.algorithm.DuplicateAlgorithmException;
-import org.apache.shardingsphere.infra.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.DuplicateAlgorithmException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.EmptyAlgorithmException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -67,7 +68,8 @@ public final class CreateDefaultShadowAlgorithmExecutor implements DatabaseRuleC
     }
     
     private void checkAlgorithmCompleteness(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(!sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getName().isEmpty(), () -> new InvalidAlgorithmConfigurationException("Shadow"));
+        ShardingSpherePreconditions.checkState(!sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getName().isEmpty(),
+                () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier("")));
     }
     
     private void checkAlgorithmType(final CreateDefaultShadowAlgorithmStatement sqlStatement) {

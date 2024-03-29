@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.infra.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.exception.storageunit.EmptyStorageUnitException;

@@ -19,11 +19,12 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import com.google.common.base.Strings;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.exception.algorithm.AlgorithmInUsedException;
-import org.apache.shardingsphere.infra.exception.algorithm.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -58,7 +59,8 @@ public final class DropShardingKeyGeneratorExecutor implements DatabaseRuleDropE
     
     private void checkExist(final DropShardingKeyGeneratorStatement sqlStatement) {
         Collection<String> notExistKeyGenerators = sqlStatement.getNames().stream().filter(each -> !rule.getConfiguration().getKeyGenerators().containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistKeyGenerators.isEmpty(), () -> new MissingRequiredAlgorithmException("Key generator", database.getName(), notExistKeyGenerators));
+        ShardingSpherePreconditions.checkState(notExistKeyGenerators.isEmpty(),
+                () -> new UnregisteredAlgorithmException("Key generator", notExistKeyGenerators, new SQLExceptionIdentifier(database.getName())));
     }
     
     private void checkInUsed(final DropShardingKeyGeneratorStatement sqlStatement) {

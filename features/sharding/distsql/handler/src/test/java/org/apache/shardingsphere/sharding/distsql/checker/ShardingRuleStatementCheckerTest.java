@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.checker;
 
-import org.apache.shardingsphere.infra.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;

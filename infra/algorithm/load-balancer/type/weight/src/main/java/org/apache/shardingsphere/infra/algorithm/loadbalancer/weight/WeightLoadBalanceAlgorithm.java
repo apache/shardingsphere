@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.algorithm.loadbalancer.weight;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
