@@ -22,6 +22,7 @@ columns:
     dataType: 12
     generated: false
     name: database_name
+    nullable: false
     primaryKey: true
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: table_name
+    nullable: false
     primaryKey: true
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 93
     generated: false
     name: last_update
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 4
     generated: false
     name: n_rows
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 4
     generated: false
     name: clustered_index_size
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -62,9 +67,11 @@ columns:
     dataType: 4
     generated: false
     name: sum_of_other_index_sizes
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
 indexes:
   primary:
     name: PRIMARY
+    unique: false

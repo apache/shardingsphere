@@ -20,9 +20,17 @@
     <test-case sql="SELECT * FROM mysql.columns_priv" db-types="MySQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_mysql_mysql_columns_priv.xml" />
     </test-case>
+
+    <test-case sql="SELECT * FROM mysql.component" db-types="MySQL" scenario-types="empty_storage_units">
+        <assertion expected-data-file="select_mysql_mysql_component.xml" />
+    </test-case>
     
     <test-case sql="SELECT * FROM mysql.db" db-types="MySQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_mysql_mysql_db.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM mysql.default_roles" db-types="MySQL" scenario-types="empty_storage_units">
+        <assertion expected-data-file="select_mysql_mysql_default_roles.xml" />
     </test-case>
     
     <test-case sql="SELECT * FROM mysql.engine_cost" db-types="MySQL" scenario-types="empty_storage_units">
@@ -39,6 +47,10 @@
     
     <test-case sql="SELECT * FROM mysql.general_log" db-types="MySQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_mysql_mysql_general_log.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM mysql.global_grants" db-types="MySQL" scenario-types="empty_storage_units">
+        <assertion expected-data-file="select_mysql_mysql_global_grants.xml" />
     </test-case>
     
     <test-case sql="SELECT * FROM mysql.gtid_executed" db-types="MySQL" scenario-types="empty_storage_units">
@@ -72,6 +84,10 @@
     <test-case sql="SELECT * FROM mysql.ndb_binlog_index" db-types="MySQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_mysql_mysql_ndb_binlog_index.xml" />
     </test-case>
+
+    <test-case sql="SELECT * FROM mysql.password_history" db-types="MySQL" scenario-types="empty_storage_units">
+        <assertion expected-data-file="select_mysql_mysql_password_history.xml" />
+    </test-case>
     
     <test-case sql="SELECT * FROM mysql.plugin" db-types="MySQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_mysql_mysql_plugin.xml" />
@@ -87,6 +103,26 @@
     
     <test-case sql="SELECT * FROM mysql.proxies_priv" db-types="MySQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_mysql_mysql_proxies_priv.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM mysql.replication_asynchronous_connection_failover" db-types="MySQL" scenario-types="empty_storage_units">
+        <assertion expected-data-file="select_mysql_mysql_replication_asynchronous_connection_failover.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM mysql.replication_asynchronous_connection_failover_managed" db-types="MySQL" scenario-types="empty_storage_units">
+        <assertion expected-data-file="select_mysql_mysql_replication_asynchronous_connection_failover_managed.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM mysql.replication_group_configuration_version" db-types="MySQL" scenario-types="empty_storage_units">
+        <assertion expected-data-file="select_mysql_mysql_replication_group_configuration_version.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM mysql.replication_group_member_actions" db-types="MySQL" scenario-types="empty_storage_units">
+        <assertion expected-data-file="select_mysql_mysql_replication_group_member_actions.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM mysql.role_edges" db-types="MySQL" scenario-types="empty_storage_units">
+        <assertion expected-data-file="select_mysql_mysql_role_edges.xml" />
     </test-case>
     
     <test-case sql="SELECT * FROM mysql.server_cost" db-types="MySQL" scenario-types="empty_storage_units">

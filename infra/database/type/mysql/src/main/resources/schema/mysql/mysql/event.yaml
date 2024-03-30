@@ -22,6 +22,7 @@ columns:
     dataType: 1
     generated: false
     name: db
+    nullable: false
     primaryKey: true
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 1
     generated: false
     name: name
+    nullable: false
     primaryKey: true
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: -4
     generated: false
     name: body
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 1
     generated: false
     name: definer
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 93
     generated: false
     name: execute_at
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 4
     generated: false
     name: interval_value
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 12
     generated: false
     name: interval_field
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,6 +85,7 @@ columns:
     dataType: 93
     generated: false
     name: created
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,6 +94,7 @@ columns:
     dataType: 93
     generated: false
     name: modified
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -94,6 +103,7 @@ columns:
     dataType: 93
     generated: false
     name: last_executed
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -102,6 +112,7 @@ columns:
     dataType: 93
     generated: false
     name: starts
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -110,6 +121,7 @@ columns:
     dataType: 93
     generated: false
     name: ends
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -118,6 +130,7 @@ columns:
     dataType: 12
     generated: false
     name: status
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -126,6 +139,7 @@ columns:
     dataType: 12
     generated: false
     name: on_completion
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -134,6 +148,7 @@ columns:
     dataType: 12
     generated: false
     name: sql_mode
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -142,6 +157,7 @@ columns:
     dataType: 1
     generated: false
     name: comment
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -150,6 +166,7 @@ columns:
     dataType: 4
     generated: false
     name: originator
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -158,6 +175,7 @@ columns:
     dataType: 1
     generated: false
     name: time_zone
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -166,6 +184,7 @@ columns:
     dataType: 1
     generated: false
     name: character_set_client
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -174,6 +193,7 @@ columns:
     dataType: 1
     generated: false
     name: collation_connection
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -182,6 +202,7 @@ columns:
     dataType: 1
     generated: false
     name: db_collation
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -190,9 +211,11 @@ columns:
     dataType: -4
     generated: false
     name: body_utf8
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
 indexes:
   primary:
     name: PRIMARY
+    unique: false

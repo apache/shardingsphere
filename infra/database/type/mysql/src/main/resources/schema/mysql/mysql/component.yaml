@@ -15,58 +15,31 @@
 # limitations under the License.
 #
 
-name: help_topic
+name: component
 columns:
-  help_topic_id:
-    caseSensitive: false
+  component_id:
+    caseSensitive: true
     dataType: 4
-    generated: false
-    name: help_topic_id
+    generated: true
+    name: component_id
     nullable: false
     primaryKey: true
     unsigned: true
     visible: true
-  name:
-    caseSensitive: false
-    dataType: 1
+  component_group_id:
+    caseSensitive: true
+    dataType: 4
     generated: false
-    name: name
-    nullable: false
-    primaryKey: false
-    unsigned: false
-    visible: true
-  help_category_id:
-    caseSensitive: false
-    dataType: 5
-    generated: false
-    name: help_category_id
+    name: component_group_id
     nullable: false
     primaryKey: false
     unsigned: true
     visible: true
-  description:
-    caseSensitive: false
+  component_urn:
+    caseSensitive: true
     dataType: -1
     generated: false
-    name: description
-    nullable: false
-    primaryKey: false
-    unsigned: false
-    visible: true
-  example:
-    caseSensitive: false
-    dataType: -1
-    generated: false
-    name: example
-    nullable: false
-    primaryKey: false
-    unsigned: false
-    visible: true
-  url:
-    caseSensitive: false
-    dataType: -1
-    generated: false
-    name: url
+    name: component_urn
     nullable: false
     primaryKey: false
     unsigned: false
@@ -74,7 +47,4 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
-  name:
-    name: name
     unique: false

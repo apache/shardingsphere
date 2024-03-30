@@ -15,58 +15,40 @@
 # limitations under the License.
 #
 
-name: help_topic
+name: global_grants
 columns:
-  help_topic_id:
-    caseSensitive: false
-    dataType: 4
-    generated: false
-    name: help_topic_id
-    nullable: false
-    primaryKey: true
-    unsigned: true
-    visible: true
-  name:
-    caseSensitive: false
+  user:
+    caseSensitive: true
     dataType: 1
     generated: false
-    name: name
+    name: USER
     nullable: false
-    primaryKey: false
+    primaryKey: true
     unsigned: false
     visible: true
-  help_category_id:
-    caseSensitive: false
-    dataType: 5
+  host:
+    caseSensitive: true
+    dataType: 1
     generated: false
-    name: help_category_id
+    name: HOST
     nullable: false
-    primaryKey: false
-    unsigned: true
-    visible: true
-  description:
-    caseSensitive: false
-    dataType: -1
-    generated: false
-    name: description
-    nullable: false
-    primaryKey: false
+    primaryKey: true
     unsigned: false
     visible: true
-  example:
-    caseSensitive: false
-    dataType: -1
+  priv:
+    caseSensitive: true
+    dataType: 1
     generated: false
-    name: example
+    name: PRIV
     nullable: false
-    primaryKey: false
+    primaryKey: true
     unsigned: false
     visible: true
-  url:
-    caseSensitive: false
-    dataType: -1
+  with_grant_option:
+    caseSensitive: true
+    dataType: 12
     generated: false
-    name: url
+    name: WITH_GRANT_OPTION
     nullable: false
     primaryKey: false
     unsigned: false
@@ -74,7 +56,4 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
-  name:
-    name: name
     unique: false

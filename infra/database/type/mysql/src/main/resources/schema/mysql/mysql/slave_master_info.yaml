@@ -22,6 +22,7 @@ columns:
     dataType: 4
     generated: false
     name: Number_of_lines
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: -1
     generated: false
     name: Master_log_name
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 4
     generated: false
     name: Master_log_pos
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 1
     generated: false
     name: Host
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: -1
     generated: false
     name: User_name
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: -1
     generated: false
     name: User_password
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 4
     generated: false
     name: Port
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -78,6 +85,7 @@ columns:
     dataType: 4
     generated: false
     name: Connect_retry
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -86,6 +94,7 @@ columns:
     dataType: -6
     generated: false
     name: Enabled_ssl
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -94,6 +103,7 @@ columns:
     dataType: -1
     generated: false
     name: Ssl_ca
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -102,6 +112,7 @@ columns:
     dataType: -1
     generated: false
     name: Ssl_capath
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -110,6 +121,7 @@ columns:
     dataType: -1
     generated: false
     name: Ssl_cert
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -118,6 +130,7 @@ columns:
     dataType: -1
     generated: false
     name: Ssl_cipher
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -126,6 +139,7 @@ columns:
     dataType: -1
     generated: false
     name: Ssl_key
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -134,6 +148,7 @@ columns:
     dataType: -6
     generated: false
     name: Ssl_verify_server_cert
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -142,6 +157,7 @@ columns:
     dataType: 7
     generated: false
     name: Heartbeat
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -150,6 +166,7 @@ columns:
     dataType: -1
     generated: false
     name: Bind
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -158,6 +175,7 @@ columns:
     dataType: -1
     generated: false
     name: Ignored_server_ids
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -166,6 +184,7 @@ columns:
     dataType: -1
     generated: false
     name: Uuid
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -174,6 +193,7 @@ columns:
     dataType: 4
     generated: false
     name: Retry_count
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -182,6 +202,7 @@ columns:
     dataType: -1
     generated: false
     name: Ssl_crl
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -190,6 +211,7 @@ columns:
     dataType: -1
     generated: false
     name: Ssl_crlpath
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -198,6 +220,7 @@ columns:
     dataType: -6
     generated: false
     name: Enabled_auto_position
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -206,6 +229,7 @@ columns:
     dataType: 1
     generated: false
     name: Channel_name
+    nullable: false
     primaryKey: true
     unsigned: false
     visible: true
@@ -214,9 +238,11 @@ columns:
     dataType: -1
     generated: false
     name: Tls_version
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
 indexes:
   primary:
     name: PRIMARY
+    unique: false

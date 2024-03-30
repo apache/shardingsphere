@@ -15,66 +15,45 @@
 # limitations under the License.
 #
 
-name: help_topic
+name: default_roles
 columns:
-  help_topic_id:
-    caseSensitive: false
-    dataType: 4
-    generated: false
-    name: help_topic_id
-    nullable: false
-    primaryKey: true
-    unsigned: true
-    visible: true
-  name:
-    caseSensitive: false
+  host:
+    caseSensitive: true
     dataType: 1
     generated: false
-    name: name
+    name: HOST
     nullable: false
-    primaryKey: false
+    primaryKey: true
     unsigned: false
     visible: true
-  help_category_id:
-    caseSensitive: false
-    dataType: 5
+  user:
+    caseSensitive: true
+    dataType: 1
     generated: false
-    name: help_category_id
+    name: USER
     nullable: false
-    primaryKey: false
-    unsigned: true
-    visible: true
-  description:
-    caseSensitive: false
-    dataType: -1
-    generated: false
-    name: description
-    nullable: false
-    primaryKey: false
+    primaryKey: true
     unsigned: false
     visible: true
-  example:
-    caseSensitive: false
-    dataType: -1
+  default_role_host:
+    caseSensitive: true
+    dataType: 1
     generated: false
-    name: example
+    name: DEFAULT_ROLE_HOST
     nullable: false
-    primaryKey: false
+    primaryKey: true
     unsigned: false
     visible: true
-  url:
-    caseSensitive: false
-    dataType: -1
+  default_role_user:
+    caseSensitive: true
+    dataType: 1
     generated: false
-    name: url
+    name: DEFAULT_ROLE_USER
     nullable: false
-    primaryKey: false
+    primaryKey: true
     unsigned: false
     visible: true
 indexes:
   primary:
     name: PRIMARY
-    unique: false
-  name:
-    name: name
     unique: false

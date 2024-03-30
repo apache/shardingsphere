@@ -22,6 +22,7 @@ columns:
     dataType: 4
     generated: true
     name: Time_zone_id
+    nullable: false
     primaryKey: true
     unsigned: true
     visible: true
@@ -30,9 +31,11 @@ columns:
     dataType: 12
     generated: false
     name: Use_leap_seconds
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
 indexes:
   primary:
     name: PRIMARY
+    unique: false
