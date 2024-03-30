@@ -18,10 +18,6 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.infra.algorithm.core.exception.type.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.infra.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
@@ -33,7 +29,11 @@ import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
@@ -101,7 +101,7 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
             return;
         }
         EncryptAlgorithm encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, itemSegment.getEncryptor().getName(), itemSegment.getEncryptor().getProps());
-        ShardingSpherePreconditions.checkState(encryptAlgorithm.getMetaData().isSupportDecrypt(), () -> new InvalidAlgorithmConfigurationException("standard encrypt", encryptAlgorithm.getType()));
+        ShardingSpherePreconditions.checkState(encryptAlgorithm.getMetaData().isSupportDecrypt(), () -> new AlgorithmInitializationException(encryptAlgorithm, "Can not support decrypt"));
     }
     
     private void checkLikeAlgorithmType(final EncryptColumnItemSegment itemSegment) {
@@ -109,7 +109,7 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
             return;
         }
         EncryptAlgorithm encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, itemSegment.getEncryptor().getName(), itemSegment.getEncryptor().getProps());
-        ShardingSpherePreconditions.checkState(encryptAlgorithm.getMetaData().isSupportLike(), () -> new InvalidAlgorithmConfigurationException("like encrypt", encryptAlgorithm.getType()));
+        ShardingSpherePreconditions.checkState(encryptAlgorithm.getMetaData().isSupportLike(), () -> new AlgorithmInitializationException(encryptAlgorithm, "Can not support like"));
     }
     
     private void checkAssistedAlgorithmType(final EncryptColumnItemSegment itemSegment) {
@@ -118,7 +118,7 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
         }
         EncryptAlgorithm encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, itemSegment.getEncryptor().getName(), itemSegment.getEncryptor().getProps());
         ShardingSpherePreconditions.checkState(encryptAlgorithm.getMetaData().isSupportEquivalentFilter(),
-                () -> new InvalidAlgorithmConfigurationException("assisted encrypt", encryptAlgorithm.getType()));
+                () -> new AlgorithmInitializationException(encryptAlgorithm, "Can not support assist query"));
     }
     
     private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) {

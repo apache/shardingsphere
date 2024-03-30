@@ -148,7 +148,7 @@ public final class ShardingTableRuleStatementChecker {
         checkKeyGenerators(rules);
         checkAuditors(rules);
         checkAutoTableRule(rules.stream().filter(AutoTableRuleSegment.class::isInstance).map(AutoTableRuleSegment.class::cast).collect(Collectors.toList()));
-        checkTableRule(databaseName, rules.stream().filter(TableRuleSegment.class::isInstance).map(TableRuleSegment.class::cast).collect(Collectors.toList()));
+        checkTableRule(rules.stream().filter(TableRuleSegment.class::isInstance).map(TableRuleSegment.class::cast).collect(Collectors.toList()));
         if (!isCreated) {
             checkBindingTableRules(rules, currentRuleConfig);
         }
@@ -402,20 +402,17 @@ public final class ShardingTableRuleStatementChecker {
     
     private static void checkAutoTableShardingAlgorithms(final Collection<AutoTableRuleSegment> autoTableRules) {
         autoTableRules.forEach(each -> {
-            ShardingSpherePreconditions.checkState(TypedSPILoader.findService(
-                    ShardingAlgorithm.class, each.getShardingAlgorithmSegment().getName(), each.getShardingAlgorithmSegment().getProps()).isPresent(),
-                    () -> new InvalidAlgorithmConfigurationException("sharding", each.getShardingAlgorithmSegment().getName()));
             ShardingAlgorithm shardingAlgorithm = TypedSPILoader.getService(ShardingAlgorithm.class, each.getShardingAlgorithmSegment().getName(), each.getShardingAlgorithmSegment().getProps());
             ShardingSpherePreconditions.checkState(shardingAlgorithm instanceof ShardingAutoTableAlgorithm,
                     () -> new AlgorithmInitializationException(shardingAlgorithm, "Auto sharding algorithm is required for table '%'`", each.getLogicTable()));
         });
     }
     
-    private static void checkTableRule(final String databaseName, final Collection<TableRuleSegment> tableRules) {
-        checkStrategy(databaseName, tableRules);
+    private static void checkTableRule(final Collection<TableRuleSegment> tableRules) {
+        checkStrategy(tableRules);
     }
     
-    private static void checkStrategy(final String databaseName, final Collection<TableRuleSegment> rules) {
+    private static void checkStrategy(final Collection<TableRuleSegment> rules) {
         for (TableRuleSegment each : rules) {
             Optional<ShardingStrategySegment> databaseStrategySegment = Optional.ofNullable(each.getDatabaseStrategySegment());
             if (databaseStrategySegment.isPresent()) {
@@ -425,7 +422,7 @@ public final class ShardingTableRuleStatementChecker {
                             () -> new InvalidShardingStrategyConfigurationException("database", databaseStrategySegment.get().getType(), "strategy does not match data nodes"));
                 } else {
                     AlgorithmSegment databaseShardingAlgorithm = databaseStrategySegment.get().getShardingAlgorithm();
-                    checkDatabaseShardingAlgorithm(databaseName, each, databaseShardingAlgorithm);
+                    checkDatabaseShardingAlgorithm(each, databaseShardingAlgorithm);
                 }
             }
             Optional<ShardingStrategySegment> tableStrategySegment = Optional.ofNullable(each.getTableStrategySegment());
@@ -436,30 +433,30 @@ public final class ShardingTableRuleStatementChecker {
                             () -> new InvalidShardingStrategyConfigurationException("table", tableStrategySegment.get().getType(), "strategy does not match data nodes"));
                 } else {
                     AlgorithmSegment tableShardingAlgorithm = tableStrategySegment.get().getShardingAlgorithm();
-                    checkTableShardingAlgorithm(databaseName, each, tableShardingAlgorithm);
+                    checkTableShardingAlgorithm(each, tableShardingAlgorithm);
                 }
             }
         }
     }
     
-    private static void checkDatabaseShardingAlgorithm(final String databaseName, final TableRuleSegment each, final AlgorithmSegment databaseShardingAlgorithm) {
+    private static void checkDatabaseShardingAlgorithm(final TableRuleSegment each, final AlgorithmSegment databaseShardingAlgorithm) {
         if (null != databaseShardingAlgorithm) {
             ShardingAlgorithm shardingAlgorithm = TypedSPILoader.getService(ShardingAlgorithm.class, databaseShardingAlgorithm.getName(), databaseShardingAlgorithm.getProps());
             ShardingSpherePreconditions.checkState(!(shardingAlgorithm instanceof ShardingAutoTableAlgorithm),
                     () -> new AlgorithmInitializationException(shardingAlgorithm, "Auto sharding algorithm can not be used to create a table in table '%s'", each.getLogicTable()));
         }
         ShardingSpherePreconditions.checkState(isValidStrategy(each.getDatabaseStrategySegment()),
-                () -> new InvalidAlgorithmConfigurationException(databaseName, null == databaseShardingAlgorithm ? null : databaseShardingAlgorithm.getName()));
+                () -> new InvalidAlgorithmConfigurationException("sharding", null == databaseShardingAlgorithm ? null : databaseShardingAlgorithm.getName()));
     }
     
-    private static void checkTableShardingAlgorithm(final String databaseName, final TableRuleSegment each, final AlgorithmSegment tableShardingAlgorithm) {
+    private static void checkTableShardingAlgorithm(final TableRuleSegment each, final AlgorithmSegment tableShardingAlgorithm) {
         if (null != tableShardingAlgorithm) {
             ShardingAlgorithm shardingAlgorithm = TypedSPILoader.getService(ShardingAlgorithm.class, tableShardingAlgorithm.getName(), tableShardingAlgorithm.getProps());
             ShardingSpherePreconditions.checkState(!(shardingAlgorithm instanceof ShardingAutoTableAlgorithm),
                     () -> new AlgorithmInitializationException(shardingAlgorithm, "Auto sharding algorithm can not be used to create a table in table '%s'", each.getLogicTable()));
         }
         ShardingSpherePreconditions.checkState(isValidStrategy(each.getTableStrategySegment()),
-                () -> new InvalidAlgorithmConfigurationException(databaseName, null == tableShardingAlgorithm ? null : tableShardingAlgorithm.getName()));
+                () -> new InvalidAlgorithmConfigurationException("sharding", null == tableShardingAlgorithm ? null : tableShardingAlgorithm.getName()));
     }
     
     private static boolean isValidStrategy(final ShardingStrategySegment shardingStrategySegment) {
