@@ -29,7 +29,7 @@ public final class AlgorithmInitializationException extends AlgorithmDefinitionE
     private static final long serialVersionUID = -7634670846091616790L;
     
     public AlgorithmInitializationException(final ShardingSphereAlgorithm algorithm, final String reason, final Object... args) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 90, "Algorithm '%s.'%s' initialization failed, reason is: %s.",
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 300, "Algorithm '%s.'%s' initialization failed, reason is: %s.",
                 algorithm.getClass().getSuperclass().getSimpleName(), algorithm.getType(), String.format(reason, args));
     }
 }
