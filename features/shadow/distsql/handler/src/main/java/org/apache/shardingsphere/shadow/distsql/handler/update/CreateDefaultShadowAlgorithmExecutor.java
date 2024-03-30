@@ -32,11 +32,8 @@ import org.apache.shardingsphere.shadow.distsql.statement.CreateDefaultShadowAlg
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Create default shadow algorithm statement executor.
@@ -58,18 +55,13 @@ public final class CreateDefaultShadowAlgorithmExecutor implements DatabaseRuleC
     }
     
     private void checkAlgorithmExisted() {
-        Collection<String> duplicatedAlgorithmNames = getDuplicatedAlgorithmNames();
-        ShardingSpherePreconditions.checkState(duplicatedAlgorithmNames.isEmpty(), () -> new DuplicateAlgorithmException("Shadow", database.getName(), duplicatedAlgorithmNames));
-    }
-    
-    private Collection<String> getDuplicatedAlgorithmNames() {
-        Collection<String> algorithmNames = null == rule ? Collections.emptyList() : rule.getShadowAlgorithms().keySet();
-        return Stream.of("default_shadow_algorithm").filter(algorithmNames::contains).collect(Collectors.toSet());
+        boolean isDuplicatedAlgorithmName = null != rule && rule.getShadowAlgorithms().containsKey("default_shadow_algorithm");
+        ShardingSpherePreconditions.checkState(!isDuplicatedAlgorithmName, () -> new DuplicateAlgorithmException("Shadow", "default_shadow_algorithm", new SQLExceptionIdentifier(database.getName())));
     }
     
     private void checkAlgorithmCompleteness(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
         ShardingSpherePreconditions.checkState(!sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getName().isEmpty(),
-                () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier("")));
+                () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier(database.getName())));
     }
     
     private void checkAlgorithmType(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
@@ -80,8 +72,7 @@ public final class CreateDefaultShadowAlgorithmExecutor implements DatabaseRuleC
     @Override
     public ShadowRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        if (getDuplicatedAlgorithmNames().isEmpty()) {
-            result = new ShadowRuleConfiguration();
+        if (null == rule || !rule.getShadowAlgorithms().containsKey("default_shadow_algorithm")) {
             result.setShadowAlgorithms(buildAlgorithmMap(sqlStatement));
             result.setDefaultShadowAlgorithmName("default_shadow_algorithm");
         }

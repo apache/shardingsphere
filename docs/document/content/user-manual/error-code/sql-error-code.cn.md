@@ -31,7 +31,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 10091       | '%s' algorithm on %s is required.                                              |
 | 42S02     | 10092       | '%s' algorithm '%s' on %s is unregistered.                                     |
 | 44000     | 10093       | Invalid %s algorithm '%s', %s.                                                 |
-| 44000     | 10094       | Duplicate %s algorithms '%s' in database '%s'.                                 |
+| 44000     | 10094       | %s algorithm '%s' on %s is duplicated.                                         |
 | 44000     | 10095       | %s algorithms '%s' in database '%s' are still in used.                         |
 | HY000     | 10099       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
 

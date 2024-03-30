@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.infra.algorithm.core.exception.type;
 
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmDefinitionException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-
-import java.util.Collection;
 
 /**
  * Duplicate algorithm exception.
@@ -29,7 +28,7 @@ public final class DuplicateAlgorithmException extends AlgorithmDefinitionExcept
     
     private static final long serialVersionUID = 3503761639898230997L;
     
-    public DuplicateAlgorithmException(final String type, final String databaseName, final Collection<String> auditorNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 94, "Duplicate %s algorithms '%s' in database '%s'.", type, auditorNames, databaseName);
+    public DuplicateAlgorithmException(final String algorithmType, final String algorithmName, final SQLExceptionIdentifier sqlExceptionIdentifier) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 94, "%s algorithm '%s' on %s is duplicated.", algorithmType, algorithmName, sqlExceptionIdentifier);
     }
 }
