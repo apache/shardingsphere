@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
-import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.InUsedAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.type.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
@@ -66,7 +66,7 @@ public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExec
     private void checkShardingAlgorithmsInUsed(final DropShardingAlgorithmStatement sqlStatement) {
         Collection<String> allInUsed = getAllOfAlgorithmsInUsed();
         Collection<String> usedAlgorithms = sqlStatement.getNames().stream().filter(allInUsed::contains).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(usedAlgorithms.isEmpty(), () -> new AlgorithmInUsedException("Sharding", database.getName(), usedAlgorithms));
+        ShardingSpherePreconditions.checkState(usedAlgorithms.isEmpty(), () -> new InUsedAlgorithmException("Sharding", database.getName(), usedAlgorithms));
     }
     
     private Collection<String> getAllOfAlgorithmsInUsed() {

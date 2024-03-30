@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
-import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.InUsedAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.type.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
@@ -65,7 +65,7 @@ public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecut
     private void checkInUsed(final DropShardingAuditorStatement sqlStatement) {
         Collection<String> usedAuditors = getUsedAuditors();
         Collection<String> inUsedNames = sqlStatement.getNames().stream().filter(usedAuditors::contains).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new AlgorithmInUsedException("Sharding auditor", database.getName(), inUsedNames));
+        ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new InUsedAlgorithmException("Sharding auditor", database.getName(), inUsedNames));
     }
     
     private Collection<String> getUsedAuditors() {

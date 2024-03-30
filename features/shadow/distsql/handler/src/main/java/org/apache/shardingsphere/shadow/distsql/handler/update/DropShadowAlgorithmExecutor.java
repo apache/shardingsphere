@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
-import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.InUsedAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.type.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
@@ -64,9 +64,9 @@ public final class DropShadowAlgorithmExecutor implements DatabaseRuleDropExecut
             ShadowRuleStatementChecker.checkExisted(requiredAlgorithms, currentAlgorithms,
                     notExistedAlgorithms -> new UnregisteredAlgorithmException("Shadow", notExistedAlgorithms, new SQLExceptionIdentifier(database.getName())));
         }
-        checkAlgorithmInUsed(requiredAlgorithms, getAlgorithmInUse(), identical -> new AlgorithmInUsedException("Shadow", database.getName(), identical));
+        checkAlgorithmInUsed(requiredAlgorithms, getAlgorithmInUse(), identical -> new InUsedAlgorithmException("Shadow", database.getName(), identical));
         ShardingSpherePreconditions.checkState(!requiredAlgorithms.contains(defaultShadowAlgorithmName),
-                () -> new AlgorithmInUsedException("Shadow", database.getName(), Collections.singleton(defaultShadowAlgorithmName)));
+                () -> new InUsedAlgorithmException("Shadow", database.getName(), Collections.singleton(defaultShadowAlgorithmName)));
     }
     
     private void checkAlgorithmInUsed(final Collection<String> requiredAlgorithms, final Collection<String> currentAlgorithms, final Function<Collection<String>, KernelSQLException> thrower) {

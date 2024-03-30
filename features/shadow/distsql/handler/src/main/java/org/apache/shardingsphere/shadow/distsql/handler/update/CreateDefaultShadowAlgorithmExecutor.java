@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.InUsedAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.type.EmptyAlgorithmException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
@@ -56,7 +56,7 @@ public final class CreateDefaultShadowAlgorithmExecutor implements DatabaseRuleC
     
     private void checkAlgorithmExisted() {
         boolean isDuplicatedAlgorithmName = null != rule && rule.getShadowAlgorithms().containsKey("default_shadow_algorithm");
-        ShardingSpherePreconditions.checkState(!isDuplicatedAlgorithmName, () -> new AlgorithmInUsedException("Shadow", database.getName(), Collections.singleton("default_shadow_algorithm")));
+        ShardingSpherePreconditions.checkState(!isDuplicatedAlgorithmName, () -> new InUsedAlgorithmException("Shadow", database.getName(), Collections.singleton("default_shadow_algorithm")));
     }
     
     private void checkAlgorithmCompleteness(final CreateDefaultShadowAlgorithmStatement sqlStatement) {

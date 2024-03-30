@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.update;
 
-import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.InUsedAlgorithmException;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
@@ -115,7 +115,7 @@ class AlterShadowRuleExecutorTest {
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
-        assertThrows(AlgorithmInUsedException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+        assertThrows(InUsedAlgorithmException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test
@@ -127,7 +127,7 @@ class AlterShadowRuleExecutorTest {
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
-        assertThrows(AlgorithmInUsedException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+        assertThrows(InUsedAlgorithmException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test

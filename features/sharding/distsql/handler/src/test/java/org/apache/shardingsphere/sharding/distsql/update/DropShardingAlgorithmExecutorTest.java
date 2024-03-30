@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.InUsedAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.type.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -75,7 +75,7 @@ class DropShardingAlgorithmExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
-        assertThrows(AlgorithmInUsedException.class, () -> executor.checkBeforeUpdate(createSQLStatement("t_order_tb_inline")));
+        assertThrows(InUsedAlgorithmException.class, () -> executor.checkBeforeUpdate(createSQLStatement("t_order_tb_inline")));
     }
     
     @Test
@@ -83,7 +83,7 @@ class DropShardingAlgorithmExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
-        assertThrows(AlgorithmInUsedException.class, () -> executor.checkBeforeUpdate(createSQLStatementWithIfExists("t_order_tb_inline")));
+        assertThrows(InUsedAlgorithmException.class, () -> executor.checkBeforeUpdate(createSQLStatementWithIfExists("t_order_tb_inline")));
     }
     
     @Test
