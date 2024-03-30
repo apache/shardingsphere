@@ -30,6 +30,6 @@ public final class InvalidStorageUnitsException extends ResourceDefinitionExcept
     private static final long serialVersionUID = 7029641448948791509L;
     
     public InvalidStorageUnitsException(final Collection<String> errorMessages) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not process invalid storage units, error message is: %s", errorMessages);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 100, "Can not process invalid storage units, error messages are: %s", errorMessages);
     }
 }

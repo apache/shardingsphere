@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.handler.fixture.DistSQLHandlerFixtureRu
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitInUsedException;
+import org.apache.shardingsphere.infra.exception.storageunit.InUsedStorageUnitException;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -112,13 +112,13 @@ class UnregisterStorageUnitExecutorTest {
         when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        assertThrows(StorageUnitInUsedException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
+        assertThrows(InUsedStorageUnitException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
     }
     
     @Test
     void assertExecuteUpdateWithStorageUnitInUsedWithoutIgnoredTables() {
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new DistSQLHandlerFixtureRule())));
-        assertThrows(StorageUnitInUsedException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
+        assertThrows(InUsedStorageUnitException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
     }
     
     @Test
@@ -143,6 +143,6 @@ class UnregisterStorageUnitExecutorTest {
         when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        assertThrows(StorageUnitInUsedException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false), contextManager));
+        assertThrows(InUsedStorageUnitException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false), contextManager));
     }
 }
