@@ -28,10 +28,10 @@ public final class InvalidAlgorithmConfigurationException extends AlgorithmDefin
     private static final long serialVersionUID = 1352014079406440573L;
     
     public InvalidAlgorithmConfigurationException(final String algorithmType, final String algorithm) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 93, "Invalid %s algorithm '%s'.", algorithmType, algorithm);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 94, "Invalid %s algorithm configuration '%s'.", algorithmType, algorithm);
     }
     
     public InvalidAlgorithmConfigurationException(final String algorithmType) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 93, "Invalid %s algorithm.", algorithmType);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 94, "Invalid %s algorithm configuration.", algorithmType);
     }
 }
