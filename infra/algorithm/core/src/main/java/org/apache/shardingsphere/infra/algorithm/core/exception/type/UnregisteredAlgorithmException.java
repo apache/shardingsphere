@@ -31,10 +31,10 @@ public final class UnregisteredAlgorithmException extends AlgorithmDefinitionExc
     private static final long serialVersionUID = -4570489906443880879L;
     
     public UnregisteredAlgorithmException(final String algorithmType, final String algorithmName, final SQLExceptionIdentifier sqlExceptionIdentifier) {
-        super(XOpenSQLState.NOT_FOUND, 302, "'%s' algorithm '%s' on %s is unregistered.", algorithmType, algorithmName, sqlExceptionIdentifier);
+        super(XOpenSQLState.NOT_FOUND, 2, "'%s' algorithm '%s' on %s is unregistered.", algorithmType, algorithmName, sqlExceptionIdentifier);
     }
     
     public UnregisteredAlgorithmException(final String algorithmType, final Collection<String> algorithmNames, final SQLExceptionIdentifier sqlExceptionIdentifier) {
-        super(XOpenSQLState.NOT_FOUND, 302, "'%s' algorithm '%s' on %s are unregistered.", algorithmType, String.join(", ", algorithmNames), sqlExceptionIdentifier);
+        super(XOpenSQLState.NOT_FOUND, 2, "'%s' algorithm '%s' on %s are unregistered.", algorithmType, String.join(", ", algorithmNames), sqlExceptionIdentifier);
     }
 }

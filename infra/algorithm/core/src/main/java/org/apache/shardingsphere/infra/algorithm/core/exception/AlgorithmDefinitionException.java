@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.algorithm.core.exception;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
@@ -27,7 +28,14 @@ public abstract class AlgorithmDefinitionException extends MetaDataSQLException 
     
     private static final long serialVersionUID = -8947223495845000542L;
     
+    private static final int ALGORITHM_CODE = 3;
+    
     protected AlgorithmDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, errorCode, reason, messageArgs);
+        super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    }
+    
+    private static int getErrorCode(final int errorCode) {
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 1000).");
+        return ALGORITHM_CODE * 100 + errorCode;
     }
 }
