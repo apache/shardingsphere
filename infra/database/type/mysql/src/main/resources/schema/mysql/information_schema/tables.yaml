@@ -22,6 +22,7 @@ columns:
     dataType: 12
     generated: false
     name: TABLE_CATALOG
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: TABLE_SCHEMA
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 12
     generated: false
     name: TABLE_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 12
     generated: false
     name: TABLE_TYPE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 12
     generated: false
     name: ENGINE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 4
     generated: false
     name: VERSION
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 12
     generated: false
     name: ROW_FORMAT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,6 +85,7 @@ columns:
     dataType: 4
     generated: false
     name: TABLE_ROWS
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -86,6 +94,7 @@ columns:
     dataType: 4
     generated: false
     name: AVG_ROW_LENGTH
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -94,6 +103,7 @@ columns:
     dataType: 4
     generated: false
     name: DATA_LENGTH
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -102,6 +112,7 @@ columns:
     dataType: 4
     generated: false
     name: MAX_DATA_LENGTH
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -110,6 +121,7 @@ columns:
     dataType: 4
     generated: false
     name: INDEX_LENGTH
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -118,6 +130,7 @@ columns:
     dataType: 4
     generated: false
     name: DATA_FREE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -126,6 +139,7 @@ columns:
     dataType: 4
     generated: false
     name: AUTO_INCREMENT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -134,6 +148,7 @@ columns:
     dataType: 93
     generated: false
     name: CREATE_TIME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -142,6 +157,7 @@ columns:
     dataType: 93
     generated: false
     name: UPDATE_TIME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -150,6 +166,7 @@ columns:
     dataType: 93
     generated: false
     name: CHECK_TIME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -158,6 +175,7 @@ columns:
     dataType: 12
     generated: false
     name: TABLE_COLLATION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -166,6 +184,7 @@ columns:
     dataType: 4
     generated: false
     name: CHECKSUM
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -174,6 +193,7 @@ columns:
     dataType: 12
     generated: false
     name: CREATE_OPTIONS
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -182,6 +202,7 @@ columns:
     dataType: 12
     generated: false
     name: TABLE_COMMENT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true

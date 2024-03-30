@@ -22,6 +22,7 @@ columns:
     dataType: 4
     generated: false
     name: SPACE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 4
     generated: false
     name: FLAG
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 12
     generated: false
     name: FILE_FORMAT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 12
     generated: false
     name: ROW_FORMAT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 4
     generated: false
     name: PAGE_SIZE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 4
     generated: false
     name: ZIP_PAGE_SIZE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -78,6 +85,7 @@ columns:
     dataType: 12
     generated: false
     name: SPACE_TYPE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,6 +94,7 @@ columns:
     dataType: 4
     generated: false
     name: FS_BLOCK_SIZE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -94,6 +103,7 @@ columns:
     dataType: 4
     generated: false
     name: FILE_SIZE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -102,6 +112,7 @@ columns:
     dataType: 4
     generated: false
     name: ALLOCATED_SIZE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true

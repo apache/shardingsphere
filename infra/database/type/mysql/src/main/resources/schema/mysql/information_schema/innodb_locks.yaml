@@ -22,6 +22,7 @@ columns:
     dataType: 12
     generated: false
     name: lock_id
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: lock_trx_id
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 12
     generated: false
     name: lock_mode
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 12
     generated: false
     name: lock_type
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 12
     generated: false
     name: lock_table
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 12
     generated: false
     name: lock_index
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 4
     generated: false
     name: lock_space
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -78,6 +85,7 @@ columns:
     dataType: 4
     generated: false
     name: lock_page
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -86,6 +94,7 @@ columns:
     dataType: 4
     generated: false
     name: lock_rec
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -94,6 +103,7 @@ columns:
     dataType: 12
     generated: false
     name: lock_data
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
