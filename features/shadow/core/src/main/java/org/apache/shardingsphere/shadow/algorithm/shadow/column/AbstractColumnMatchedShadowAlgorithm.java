@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.algorithm.shadow.validator.ShadowValueValidator;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;

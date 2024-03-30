@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.algorithm;
+package org.apache.shardingsphere.infra.algorithm.core.exception.type;
 
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmDefinitionException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.AlgorithmDefinitionException;
-
-import java.util.Collection;
 
 /**
- * Duplicate algorithm exception.
+ * Empty algorithm exception.
  */
-public final class DuplicateAlgorithmException extends AlgorithmDefinitionException {
+public final class EmptyAlgorithmException extends AlgorithmDefinitionException {
     
-    private static final long serialVersionUID = 3503761639898230997L;
+    private static final long serialVersionUID = 8128067899672436211L;
     
-    public DuplicateAlgorithmException(final String type, final String databaseName, final Collection<String> auditorNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 153, "Duplicate %s algorithms `%s` in database `%s`.", type, auditorNames, databaseName);
+    public EmptyAlgorithmException(final String algorithmType, final SQLExceptionIdentifier sqlExceptionIdentifier) {
+        super(XOpenSQLState.NOT_FOUND, 91, "'%s' algorithm on %s is required.", algorithmType, sqlExceptionIdentifier);
     }
 }

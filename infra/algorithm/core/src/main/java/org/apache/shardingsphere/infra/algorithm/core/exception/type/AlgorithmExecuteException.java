@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.algorithm;
+package org.apache.shardingsphere.infra.algorithm.core.exception.type;
 
+import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmDefinitionException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.AlgorithmDefinitionException;
-
-import java.util.Collection;
 
 /**
- * Algorithm in used exception.
+ * Algorithm execute exception.
  */
-public final class AlgorithmInUsedException extends AlgorithmDefinitionException {
+public final class AlgorithmExecuteException extends AlgorithmDefinitionException {
     
-    private static final long serialVersionUID = -8735125626190637177L;
+    private static final long serialVersionUID = -9099514178650043282L;
     
-    public AlgorithmInUsedException(final String type, final String databaseName, final Collection<String> algorithmNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 152, "%s algorithms `%s` in database `%s` are still in used.", type, algorithmNames, databaseName);
+    public AlgorithmExecuteException(final ShardingSphereAlgorithm algorithm, final String reason, final Object... args) {
+        super(XOpenSQLState.GENERAL_ERROR, 99, "Algorithm '%s.%s' execute failed, reason is: %s.",
+                algorithm.getClass().getSuperclass().getSimpleName(), algorithm.getType(), String.format(reason, args));
     }
 }
