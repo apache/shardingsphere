@@ -34,8 +34,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 10090       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
 | 44000     | 10091       | '%s' algorithm on %s is required.                                              |
 | 42S02     | 10092       | '%s' algorithm '%s' on %s is unregistered.                                     |
-| 44000     | 10093       | Invalid %s algorithm '%s', %s.                                                 |
-| 44000     | 10094       | %s algorithms '%s' in database '%s' are still in used.                         |
+| 44000     | 10093       | %s algorithms '%s' in database '%s' are still in used.                         |
+| 44000     | 10094       | Invalid %s algorithm configuration '%s'.                                       |
 | HY000     | 10099       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
 
 ### Data
