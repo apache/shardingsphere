@@ -18,18 +18,15 @@
 package org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.KernelSQLException;
 
 /**
  * Rule definition exception.
  */
-public abstract class RuleDefinitionException extends KernelSQLException {
+public abstract class RuleDefinitionException extends MetaDataSQLException {
     
     private static final long serialVersionUID = -6414242067345718028L;
     
-    private static final int KERNEL_CODE = 9;
-    
     protected RuleDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
+        super(sqlState, errorCode, reason, messageArgs);
     }
 }

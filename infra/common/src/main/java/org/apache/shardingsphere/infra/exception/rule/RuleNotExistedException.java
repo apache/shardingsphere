@@ -28,6 +28,6 @@ public final class RuleNotExistedException extends RuleDefinitionException {
     private static final long serialVersionUID = -4150905802300104824L;
     
     public RuleNotExistedException(final String databaseName) {
-        super(XOpenSQLState.SYNTAX_ERROR, 110, "There is no rule in database '%s'.", databaseName);
+        super(XOpenSQLState.SYNTAX_ERROR, 210, "There is no rule in database '%s'.", databaseName);
     }
 }

@@ -28,6 +28,6 @@ public final class MissingRequiredSingleTableException extends RuleDefinitionExc
     private static final long serialVersionUID = 3155006580453893122L;
     
     public MissingRequiredSingleTableException(final String storageUnitName, final String tableName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 106, String.format("Missing required table `%s` in storage unit `%s`.", tableName, storageUnitName));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 206, String.format("Missing required table `%s` in storage unit `%s`.", tableName, storageUnitName));
     }
 }
