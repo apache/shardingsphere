@@ -14,7 +14,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息                                                                           |
 |-----------|-------------|--------------------------------------------------------------------------------|
-| 42000     | 10000       | There is no storage unit in database \`%s\`.                                   |
 | 08000     | 10001       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\`.          |
 | 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
 | HY004     | 10003       | Invalid format for actual data node \`%s\`.                                    |
@@ -33,6 +32,14 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 10093       | %s algorithms '%s' in database '%s' are still in used.                         |
 | 44000     | 10094       | Invalid %s algorithm configuration '%s'.                                       |
 | HY000     | 10099       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
+| 44000     | 10100       | Can not process invalid storage units, error message is: %s                    |
+| 44000     | 10101       | Storage units \`%s\` do not exist in database \`%s\`.                          |
+| 44000     | 10102       | There is no storage unit in the database \`%s\`.                               |
+| 44000     | 10103       | Storage units \`%s\` is still used by \`%s\`.                                  |
+| 44000     | 10104       | Duplicate storage unit names '%s'.                                             |
+| 44000     | 10105       | Invalid storage unit status, error message is: %s.                             |
+| 44000     | 10106       | Read storage unit \`%s\` does not exist in rule \`%s\`.                        |
+| 42000     | 10107       | There is no storage unit in database \`%s\`.                                   |
 
 ### 数据
 
@@ -139,18 +146,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 18200       | Not find stream data source table.                                                |
 | HY000     | 18201       | CDC server exception, reason is: %s.                                              |
 | HY000     | 18202       | CDC login failed, reason is: %s                                                   |
-
-### 资源定义
-
-| SQL State | Vendor Code | 错误信息                                                        |
-|-----------|-------------|-------------------------------------------------------------|
-| 44000     | 19000       | Can not process invalid storage units, error message is: %s |
-| 44000     | 19001       | Storage units \`%s\` do not exist in database \`%s\`.       |
-| 44000     | 19002       | There is no storage unit in the database \`%s\`.            |
-| 44000     | 19003       | Storage units \`%s\` is still used by \`%s\`.               |
-| 44000     | 19004       | Duplicate storage unit names \`%s\`.                        |
-| 44000     | 19005       | Invalid storage unit status, error message is: %s.          |
-| 44000     | 19006       | Read storage unit \`%s\` does not exist in rule \`%s\`.     |
 
 ### 规则定义
 
