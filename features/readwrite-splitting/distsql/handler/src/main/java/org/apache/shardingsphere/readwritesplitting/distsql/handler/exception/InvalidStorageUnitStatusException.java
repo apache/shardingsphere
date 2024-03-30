@@ -28,6 +28,6 @@ public final class InvalidStorageUnitStatusException extends StorageUnitDefiniti
     private static final long serialVersionUID = 4029749233439176539L;
     
     public InvalidStorageUnitStatusException(final String errorMessages) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 105, "Invalid storage unit status, error message is: %s.", errorMessages);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 5, "Invalid storage unit status, error message is: %s.", errorMessages);
     }
 }

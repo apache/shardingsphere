@@ -28,6 +28,6 @@ public final class EmptyStorageUnitException extends ResourceDefinitionException
     private static final long serialVersionUID = 1704331180489268L;
     
     public EmptyStorageUnitException(final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 102, "There is no storage unit in the database `%s`.", databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "There is no storage unit in the database `%s`.", databaseName);
     }
 }

@@ -48,7 +48,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42S02     | 10302       | '%s' algorithm '%s' on %s is unregistered.                                     |
 | 44000     | 10303       | %s algorithms '%s' in database '%s' are still in used.                         |
 | 44000     | 10304       | Invalid %s algorithm configuration '%s'.                                       |
-| HY000     | 10309       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
+| HY000     | 10350       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
 
 ### Data
 

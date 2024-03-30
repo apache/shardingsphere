@@ -32,6 +32,6 @@ public final class InUsedStorageUnitException extends ResourceDefinitionExceptio
     private static final long serialVersionUID = -3427324685070457375L;
     
     public InUsedStorageUnitException(final String storageUnitName, final Collection<Class<? extends ShardingSphereRule>> ruleClasses) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 103, "Storage unit '%s' still used by '%s'.", storageUnitName, ruleClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(", ")));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Storage unit '%s' still used by '%s'.", storageUnitName, ruleClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(", ")));
     }
 }

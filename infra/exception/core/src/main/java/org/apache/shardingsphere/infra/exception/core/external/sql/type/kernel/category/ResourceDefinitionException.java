@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 
 /**
@@ -26,7 +27,14 @@ public abstract class ResourceDefinitionException extends MetaDataSQLException {
     
     private static final long serialVersionUID = -7111524353233598083L;
     
+    private static final int RESOURCE_CODE = 1;
+    
     protected ResourceDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, errorCode, reason, messageArgs);
+        super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    }
+    
+    private static int getErrorCode(final int errorCode) {
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 1000).");
+        return RESOURCE_CODE * 100 + errorCode;
     }
 }
