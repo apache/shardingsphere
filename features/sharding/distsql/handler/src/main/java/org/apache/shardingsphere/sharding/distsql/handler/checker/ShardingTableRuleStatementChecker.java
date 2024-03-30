@@ -404,7 +404,7 @@ public final class ShardingTableRuleStatementChecker {
         autoTableRules.forEach(each -> {
             ShardingAlgorithm shardingAlgorithm = TypedSPILoader.getService(ShardingAlgorithm.class, each.getShardingAlgorithmSegment().getName(), each.getShardingAlgorithmSegment().getProps());
             ShardingSpherePreconditions.checkState(shardingAlgorithm instanceof ShardingAutoTableAlgorithm,
-                    () -> new AlgorithmInitializationException(shardingAlgorithm, "Auto sharding algorithm is required for table '%'`", each.getLogicTable()));
+                    () -> new AlgorithmInitializationException(shardingAlgorithm, "Auto sharding algorithm is required for table '%s'", each.getLogicTable()));
         });
     }
     
