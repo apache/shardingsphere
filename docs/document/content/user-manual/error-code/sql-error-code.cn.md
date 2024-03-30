@@ -34,6 +34,11 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 10105       | Invalid storage unit status, error message is: %s.                             |
 | 44000     | 10106       | Read storage unit \`%s\` does not exist in rule \`%s\`.                        |
 | 42000     | 10107       | There is no storage unit in database \`%s\`.                                   |
+| 44000     | 10200       | Invalid \`%s\` rule \`%s\`, error message is: %s                               |
+| 44000     | 10201       | %s rules \`%s\` do not exist in database \`%s\`.                               |
+| 44000     | 10202       | %s rules \`%s\` in database \`%s\` are still in used.                          |
+| 44000     | 10205       | Duplicate %s rule names \`%s\` in database \`%s\`.                             |
+| 44000     | 10210       | There is no rule in database '%s'.                                             |
 | 44000     | 10300       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
 | 44000     | 10301       | '%s' algorithm on %s is required.                                              |
 | 42S02     | 10302       | '%s' algorithm '%s' on %s is unregistered.                                     |
@@ -146,16 +151,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 18200       | Not find stream data source table.                                                |
 | HY000     | 18201       | CDC server exception, reason is: %s.                                              |
 | HY000     | 18202       | CDC login failed, reason is: %s                                                   |
-
-### 规则定义
-
-| SQL State | Vendor Code | 错误信息                                                  |
-|-----------|-------------|-------------------------------------------------------|
-| 44000     | 19100       | Invalid \`%s\` rule \`%s\`, error message is: %s      |
-| 44000     | 19101       | %s rules \`%s\` do not exist in database \`%s\`.      |
-| 44000     | 19102       | %s rules \`%s\` in database \`%s\` are still in used. |
-| 44000     | 19105       | Duplicate %s rule names \`%s\` in database \`%s\`.    |
-| 44000     | 19110       | There is no rule in database '%s'.                    |
 
 ### DistSQL
 
