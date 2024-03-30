@@ -29,6 +29,6 @@ public final class EmptyAlgorithmException extends AlgorithmDefinitionException 
     private static final long serialVersionUID = 8128067899672436211L;
     
     public EmptyAlgorithmException(final String algorithmType, final SQLExceptionIdentifier sqlExceptionIdentifier) {
-        super(XOpenSQLState.NOT_FOUND, 91, "'%s' algorithm on %s is required.", algorithmType, sqlExceptionIdentifier);
+        super(XOpenSQLState.NOT_FOUND, 301, "'%s' algorithm on %s is required.", algorithmType, sqlExceptionIdentifier);
     }
 }

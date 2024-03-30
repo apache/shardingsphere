@@ -26,12 +26,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
 | 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables.                         |
 | 0A000     | 10040       | Unsupported storage type of \`%s.%s\`.                                         |
-| 44000     | 10090       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
-| 44000     | 10091       | '%s' algorithm on %s is required.                                              |
-| 42S02     | 10092       | '%s' algorithm '%s' on %s is unregistered.                                     |
-| 44000     | 10093       | %s algorithms '%s' in database '%s' are still in used.                         |
-| 44000     | 10094       | Invalid %s algorithm configuration '%s'.                                       |
-| HY000     | 10099       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
 | 44000     | 10100       | Can not process invalid storage units, error messages are: %s                  |
 | 44000     | 10101       | Storage units \`%s\` do not exist in database \`%s\`.                          |
 | 44000     | 10102       | There is no storage unit in the database \`%s\`.                               |
@@ -40,6 +34,12 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 10105       | Invalid storage unit status, error message is: %s.                             |
 | 44000     | 10106       | Read storage unit \`%s\` does not exist in rule \`%s\`.                        |
 | 42000     | 10107       | There is no storage unit in database \`%s\`.                                   |
+| 44000     | 10300       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
+| 44000     | 10301       | '%s' algorithm on %s is required.                                              |
+| 42S02     | 10302       | '%s' algorithm '%s' on %s is unregistered.                                     |
+| 44000     | 10303       | %s algorithms '%s' in database '%s' are still in used.                         |
+| 44000     | 10304       | Invalid %s algorithm configuration '%s'.                                       |
+| HY000     | 10309       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
 
 ### 数据
 
