@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUni
 import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
+import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<AlterStorageUnitStatement>, DistSQLExecutorDatabaseAware {
     
-    private final DataSourcePoolPropertiesValidator validateHandler = new DataSourcePoolPropertiesValidator();
+    private final DistSQLDataSourcePoolPropertiesValidator validateHandler = new DistSQLDataSourcePoolPropertiesValidator();
     
     private ShardingSphereDatabase database;
     

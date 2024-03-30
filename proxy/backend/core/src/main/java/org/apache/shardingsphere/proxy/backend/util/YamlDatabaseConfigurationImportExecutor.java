@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.util;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationCheckEngine;
 import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
+import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -68,7 +68,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
     
-    private final DataSourcePoolPropertiesValidator validateHandler = new DataSourcePoolPropertiesValidator();
+    private final DistSQLDataSourcePoolPropertiesValidator validateHandler = new DistSQLDataSourcePoolPropertiesValidator();
     
     /**
      * Import proxy database from yaml configuration.

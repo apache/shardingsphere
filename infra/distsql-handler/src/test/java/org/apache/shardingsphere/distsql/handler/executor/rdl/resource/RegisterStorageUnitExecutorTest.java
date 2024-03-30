@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 
 import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitExceptionDefinition;
 import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
+import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
@@ -61,7 +61,7 @@ class RegisterStorageUnitExecutorTest {
         when(database.getName()).thenReturn("foo_db");
         when(database.getRuleMetaData()).thenReturn(mock(RuleMetaData.class));
         executor.setDatabase(database);
-        Plugins.getMemberAccessor().set(executor.getClass().getDeclaredField("validateHandler"), executor, mock(DataSourcePoolPropertiesValidator.class));
+        Plugins.getMemberAccessor().set(executor.getClass().getDeclaredField("validateHandler"), executor, mock(DistSQLDataSourcePoolPropertiesValidator.class));
     }
     
     @Test
