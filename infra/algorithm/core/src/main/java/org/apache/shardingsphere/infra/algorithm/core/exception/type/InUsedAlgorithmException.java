@@ -23,13 +23,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import java.util.Collection;
 
 /**
- * Algorithm in used exception.
+ * in used algorithm exception.
  */
-public final class AlgorithmInUsedException extends AlgorithmDefinitionException {
+public final class InUsedAlgorithmException extends AlgorithmDefinitionException {
     
     private static final long serialVersionUID = -8735125626190637177L;
     
-    public AlgorithmInUsedException(final String type, final String databaseName, final Collection<String> algorithmNames) {
+    public InUsedAlgorithmException(final String type, final String databaseName, final Collection<String> algorithmNames) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 93, "%s algorithms '%s' in database '%s' are still in used.", type, algorithmNames, databaseName);
     }
 }
