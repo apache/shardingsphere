@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAw
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitExceptionDefinition;
 import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
+import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.converter.DataSourceSegmentsConverter;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<RegisterStorageUnitStatement>, DistSQLExecutorDatabaseAware {
     
-    private final DataSourcePoolPropertiesValidator validateHandler = new DataSourcePoolPropertiesValidator();
+    private final DistSQLDataSourcePoolPropertiesValidator validateHandler = new DistSQLDataSourcePoolPropertiesValidator();
     
     private ShardingSphereDatabase database;
     
