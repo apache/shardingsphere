@@ -28,7 +28,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 0A000     | 10040       | Unsupported storage type of \`%s.%s\`.                                         |
 | 44000     | 10100       | Can not %s storage units '%s'.                                                 |
 | 44000     | 10101       | Storage units '%s' do not exist in database '%s'.                              |
-| 44000     | 10102       | There is no storage unit in the database '%s'.                                 |
+| 42S02     | 10102       | There is no storage unit in the database '%s'.                                 |
 | 44000     | 10103       | Storage unit '%s' still used by '%s'.                                          |
 | 44000     | 10104       | Duplicate storage unit names '%s'.                                             |
 | 44000     | 10105       | Invalid storage unit status, error message is: %s.                             |
