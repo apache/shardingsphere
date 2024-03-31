@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.storageunit;
+package org.apache.shardingsphere.infra.exception.resource.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
+import org.apache.shardingsphere.infra.exception.resource.ResourceDefinitionException;
 
 import java.util.Collection;
 

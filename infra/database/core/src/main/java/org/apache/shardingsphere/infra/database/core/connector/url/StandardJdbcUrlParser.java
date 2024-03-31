@@ -51,7 +51,6 @@ public final class StandardJdbcUrlParser {
      * 
      * @param jdbcUrl JDBC URL to be parsed
      * @return parsed JDBC URL
-     * @throws UnrecognizedDatabaseURLException unrecognized database URL exception
      */
     public JdbcUrl parse(final String jdbcUrl) {
         Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcUrl);

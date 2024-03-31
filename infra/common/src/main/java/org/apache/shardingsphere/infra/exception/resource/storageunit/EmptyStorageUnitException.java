@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.storageunit;
+package org.apache.shardingsphere.infra.exception.resource.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.exception.resource.ResourceDefinitionException;
 
 /**
- * Alter storage unit connection info exception.
+ * Empty storage unit exception.
  */
-public final class AlterStorageUnitConnectionInfoException extends ResourceDefinitionException {
+public final class EmptyStorageUnitException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 525999625052706626L;
+    private static final long serialVersionUID = 1704331180489268L;
     
-    public AlterStorageUnitConnectionInfoException(final Collection<String> storageUnitNames) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 11, "Can not alter connection info in storage units: '%s'.", String.join(", ", storageUnitNames));
+    public EmptyStorageUnitException() {
+        super(XOpenSQLState.NOT_FOUND, 1, "There is no storage unit in any database.");
+    }
+    
+    public EmptyStorageUnitException(final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 1, "There is no storage unit in database '%s'.", databaseName);
     }
 }

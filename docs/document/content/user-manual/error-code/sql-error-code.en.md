@@ -14,19 +14,16 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason                                                                         |
 |-----------|-------------|--------------------------------------------------------------------------------|
-| 08000     | 10001       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\`.          |
-| 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
+| 0A000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
 | HY004     | 10003       | Invalid format for actual data node \`%s\`.                                    |
 | HY000     | 10005       | Column '%s' in %s is ambiguous.                                                |
 | 42S02     | 10006       | Unknown column '%s' in '%s'.                                                   |
 | 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
 | 42S02     | 10008       | Missing required table '%s' in storage unit '%s'.                              |
-| 42000     | 10010       | Rule does not exist.                                                           |
 | 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
 | 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables.                         |
-| 0A000     | 10040       | Unsupported storage type of \`%s.%s\`.                                         |
 | HY000     | 10100       | Can not %s storage units '%s'.                                                 |
 | 42S02     | 10101       | There is no storage unit in database '%s'.                                     |
 | 44000     | 10102       | Storage units '%s' do not exist in database '%s'.                              |
@@ -36,12 +33,10 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 0A000     | 10111       | Can not alter connection info in storage units: '%s'.                          |
 | 44000     | 10120       | Invalid storage unit status, error message is: %s.                             |
 | 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                   |
-| 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                   |
 | 42S02     | 10201       | There is no rule in database '%s'.                                             |
 | 42S02     | 10202       | %s rules '%s' do not exist in database '%s'.                                   |
 | 44000     | 10203       | %s rules '%s' in database '%s' are still in used.                              |
 | 42S01     | 10204       | Duplicate %s rule names '%s' in database '%s'.                                 |
-| 44000     | 10210       | There is no rule in database '%s'.                                             |
 | 44000     | 10300       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
 | 44000     | 10301       | '%s' algorithm on %s is required.                                              |
 | 42S02     | 10302       | '%s' algorithm '%s' on %s is unregistered.                                     |
@@ -76,6 +71,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 |-----------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 08000     | 13000       | Can not register driver, reason is: %s                                                                                                                                                                                      |
 | 08000     | 13001       | Can not register SQL federation driver, reason is: %s                                                                                                                                                                       |
+| 08000     | 13002       | The URL '%s' is not recognized, please refer to the pattern '%s'.                                                                                                                                                           |
+| 0A000     | 13003       | Unsupported storage type of URL '%s'.                                                                                                                                                                                       |
 | 01000     | 13010       | Circuit break open, the request has been ignored.                                                                                                                                                                           |
 | 01000     | 13011       | The cluster status is read-only.                                                                                                                                                                                            |
 | 01000     | 13012       | The cluster status is unavailable.                                                                                                                                                                                          |

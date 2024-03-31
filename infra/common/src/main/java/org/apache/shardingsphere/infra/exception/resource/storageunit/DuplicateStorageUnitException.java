@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.storageunit;
+package org.apache.shardingsphere.infra.exception.resource.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
+import org.apache.shardingsphere.infra.exception.resource.ResourceDefinitionException;
+
+import java.util.Collection;
 
 /**
- * Invalid storage unit status exception.
+ * Duplicate storage unit exception.
  */
-public final class InvalidStorageUnitStatusException extends ResourceDefinitionException {
+public final class DuplicateStorageUnitException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 4029749233439176539L;
+    private static final long serialVersionUID = 2103793827572264148L;
     
-    public InvalidStorageUnitStatusException(final String errorMessage) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20, "Invalid storage unit status, error message is: %s.", errorMessage);
+    public DuplicateStorageUnitException(final Collection<String> storageUnitNames) {
+        super(XOpenSQLState.DUPLICATE, 4, "Duplicate storage unit names '%s'.", String.join(", ", storageUnitNames));
     }
 }

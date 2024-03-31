@@ -14,19 +14,16 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息                                                                           |
 |-----------|-------------|--------------------------------------------------------------------------------|
-| 08000     | 10001       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\`.          |
-| 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
+| 0A000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
 | HY004     | 10003       | Invalid format for actual data node \`%s\`.                                    |
 | HY000     | 10005       | Column '%s' in %s is ambiguous.                                                |
 | 42S02     | 10006       | Unknown column '%s' in '%s'.                                                   |
 | 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
 | 42S02     | 10008       | Missing required table '%s' in storage unit '%s'.                              |
-| 42000     | 10010       | Rule does not exist.                                                           |
 | 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
 | 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables.                         |
-| 0A000     | 10040       | Unsupported storage type of \`%s.%s\`.                                         |
 | HY000     | 10100       | Can not %s storage units '%s'.                                                 |
 | 42S02     | 10101       | There is no storage unit in database '%s'.                                     |
 | 44000     | 10102       | Storage units '%s' do not exist in database '%s'.                              |
@@ -74,6 +71,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 |-----------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 08000     | 13000       | Can not register driver, reason is: %s                                                                                                                                                                                      |
 | 08000     | 13001       | Can not register SQL federation driver, reason is: %s                                                                                                                                                                       |
+| 08000     | 13002       | The URL '%s' is not recognized, please refer to the pattern '%s'.                                                                                                                                                           |
+| 0A000     | 13003       | Unsupported storage type of URL '%s'.                                                                                                                                                                                       |
 | 01000     | 13010       | Circuit break open, the request has been ignored.                                                                                                                                                                           |
 | 01000     | 13011       | The cluster status is read-only.                                                                                                                                                                                            |
 | 01000     | 13012       | The cluster status is unavailable.                                                                                                                                                                                          |

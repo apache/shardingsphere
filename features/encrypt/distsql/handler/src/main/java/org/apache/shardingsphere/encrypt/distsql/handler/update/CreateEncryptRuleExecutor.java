@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmIn
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.infra.exception.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 

@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.storageunit;
+package org.apache.shardingsphere.infra.exception.resource.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
+import org.apache.shardingsphere.infra.exception.resource.ResourceDefinitionException;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
- * Empty storage unit exception.
+ * In used storage unit exception.
  */
-public final class EmptyStorageUnitException extends ResourceDefinitionException {
+public final class InUsedStorageUnitException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 1704331180489268L;
+    private static final long serialVersionUID = -3427324685070457375L;
     
-    public EmptyStorageUnitException() {
-        super(XOpenSQLState.NOT_FOUND, 1, "There is no storage unit in any database.");
-    }
-    
-    public EmptyStorageUnitException(final String databaseName) {
-        super(XOpenSQLState.NOT_FOUND, 1, "There is no storage unit in database '%s'.", databaseName);
+    public InUsedStorageUnitException(final String storageUnitName, final Collection<Class<? extends ShardingSphereRule>> ruleClasses) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Storage unit '%s' still used by '%s'.", storageUnitName, ruleClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(", ")));
     }
 }

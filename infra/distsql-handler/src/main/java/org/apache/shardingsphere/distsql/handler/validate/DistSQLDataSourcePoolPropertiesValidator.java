@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.handler.validate;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitsConnectException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.StorageUnitsConnectException;
 
 import java.util.Map;
 

@@ -33,10 +33,10 @@ import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcU
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.exception.storageunit.AlterStorageUnitConnectionInfoException;
-import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitException;
-import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitsOperateException;
-import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.AlterStorageUnitConnectionInfoException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.DuplicateStorageUnitException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.StorageUnitsOperateException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
