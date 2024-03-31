@@ -21,12 +21,10 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42S02     | 10006       | Unknown column '%s' in '%s'.                                                   |
 | 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
 | 42S02     | 10008       | Missing required table '%s' in storage unit '%s'.                              |
-| 42000     | 10010       | Rule does not exist.                                                           |
 | 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
 | 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables.                         |
-| 0A000     | 10040       | Unsupported storage type of \`%s.%s\`.                                         |
 | HY000     | 10100       | Can not %s storage units '%s'.                                                 |
 | 42S02     | 10101       | There is no storage unit in database '%s'.                                     |
 | 44000     | 10102       | Storage units '%s' do not exist in database '%s'.                              |
@@ -83,6 +81,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 08000     | 13030       | Connection has been closed.                                                                                                                                                                                                 |
 | 08000     | 13031       | Result set has been closed.                                                                                                                                                                                                 |
 | 08000     | 13032       | SQL execution has been interrupted.                                                                                                                                                                                         |
+| 0A000     | 13040       | Unsupported storage type of URL '%s'.                                                                                                                                                                                       |
 | HY000     | 13090       | Load datetime from database failed, reason: %s                                                                                                                                                                              |
 
 ### Transaction
