@@ -14,7 +14,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason                                                                         |
 |-----------|-------------|--------------------------------------------------------------------------------|
-| 08000     | 10001       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\`.          |
 | 0A000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
 | HY004     | 10003       | Invalid format for actual data node \`%s\`.                                    |
 | HY000     | 10005       | Column '%s' in %s is ambiguous.                                                |
@@ -32,10 +31,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42S01     | 10104       | Duplicate storage unit names '%s'.                                             |
 | 08000     | 10110       | Storage units can not connect, error messages are: %s.                         |
 | 0A000     | 10111       | Can not alter connection info in storage units: '%s'.                          |
-| 08000     | 10112       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\`.          |
-| 0A000     | 10113       | Unsupported storage type of URL '%s'.                                          |
 | 44000     | 10120       | Invalid storage unit status, error message is: %s.                             |
-| 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                   |
 | 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                   |
 | 42S02     | 10201       | There is no rule in database '%s'.                                             |
 | 42S02     | 10202       | %s rules '%s' do not exist in database '%s'.                                   |
@@ -75,6 +71,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 |-----------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 08000     | 13000       | Can not register driver, reason is: %s                                                                                                                                                                                      |
 | 08000     | 13001       | Can not register SQL federation driver, reason is: %s                                                                                                                                                                       |
+| 08000     | 13002       | The URL '%s' is not recognized, please refer to the pattern '%s'.                                                                                                                                                           |
+| 0A000     | 13003       | Unsupported storage type of URL '%s'.                                                                                                                                                                                       |
 | 01000     | 13010       | Circuit break open, the request has been ignored.                                                                                                                                                                           |
 | 01000     | 13011       | The cluster status is read-only.                                                                                                                                                                                            |
 | 01000     | 13012       | The cluster status is unavailable.                                                                                                                                                                                          |
