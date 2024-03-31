@@ -99,8 +99,7 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
             return;
         }
         Collection<String> duplicatedDataSourceNames = requiredDataSourceNames.stream().filter(logicalDataSourceNames::contains).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(),
-                () -> new InvalidStorageUnitsException(String.format("%s already existed in rule", duplicatedDataSourceNames)));
+        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitExceptionDefinition(duplicatedDataSourceNames));
     }
     
     private Collection<String> getCurrentStorageUnitNames(final ContextManager contextManager) {

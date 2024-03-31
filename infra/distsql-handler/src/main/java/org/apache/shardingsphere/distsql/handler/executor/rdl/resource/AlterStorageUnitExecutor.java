@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcU
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
+import org.apache.shardingsphere.infra.exception.storageunit.AlterStorageUnitConnectionInfoException;
 import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitExceptionDefinition;
 import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
@@ -91,8 +92,7 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
     private void checkDatabase(final AlterStorageUnitStatement sqlStatement) {
         Collection<String> invalidStorageUnitNames = sqlStatement.getStorageUnits().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
                 .filter(each -> !isSameDatabase(each.getValue(), database.getResourceMetaData().getStorageUnits().get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(invalidStorageUnitNames.isEmpty(),
-                () -> new InvalidStorageUnitsException(String.format("Can not alter the database of %s", invalidStorageUnitNames)));
+        ShardingSpherePreconditions.checkState(invalidStorageUnitNames.isEmpty(), () -> new AlterStorageUnitConnectionInfoException(invalidStorageUnitNames));
     }
     
     private boolean isSameDatabase(final DataSourceSegment segment, final StorageUnit storageUnit) {

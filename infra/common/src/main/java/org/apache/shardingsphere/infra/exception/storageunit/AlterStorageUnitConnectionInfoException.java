@@ -23,17 +23,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.c
 import java.util.Collection;
 
 /**
- * Invalid storage units exception.
+ * Alter storage unit connection info exception.
  */
-public final class InvalidStorageUnitsException extends ResourceDefinitionException {
+public final class AlterStorageUnitConnectionInfoException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 7029641448948791509L;
+    private static final long serialVersionUID = 525999625052706626L;
     
-    public InvalidStorageUnitsException(final Exception cause) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not process invalid storage units, error messages is: %s", cause.getMessage());
-    }
-    
-    public InvalidStorageUnitsException(final Collection<String> errorMessages) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not process invalid storage units, error messages are: %s", errorMessages);
+    public AlterStorageUnitConnectionInfoException(final Collection<String> storageUnitNames) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 8, "Can not alter connection info in storage units: '%s'.", String.join(", ", storageUnitNames));
     }
 }

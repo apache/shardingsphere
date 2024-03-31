@@ -20,6 +20,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 10005       | Column '%s' in %s is ambiguous.                                                |
 | 42S02     | 10006       | Unknown column '%s' in '%s'.                                                   |
 | 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
+| 0A000     | 10108       | Can not alter connection info in storage units: '%s'.                          |
 | 42000     | 10010       | Rule does not exist.                                                           |
 | 44000     | 10011       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
 | 44000     | 10012       | '%s' algorithm on %s is required.                                              |
