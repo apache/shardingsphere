@@ -35,10 +35,10 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 0A000     | 10106       | Can not alter connection info in storage units: '%s'.                          |
 | 44000     | 10120       | Invalid storage unit status, error message is: %s.                             |
 | 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                   |
-| 42S02     | 10201       | %s rules '%s' do not exist in database '%s'.                                   |
-| 44000     | 10202       | %s rules '%s' in database '%s' are still in used.                              |
-| 42S01     | 10205       | Duplicate %s rule names '%s' in database '%s'.                                 |
-| 44000     | 10210       | There is no rule in database '%s'.                                             |
+| 42S02     | 10201       | There is no rule in database '%s'.                                             |
+| 42S02     | 10202       | %s rules '%s' do not exist in database '%s'.                                   |
+| 44000     | 10203       | %s rules '%s' in database '%s' are still in used.                              |
+| 42S01     | 10204       | Duplicate %s rule names '%s' in database '%s'.                                 |
 | 44000     | 10300       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
 | 44000     | 10301       | '%s' algorithm on %s is required.                                              |
 | 42S02     | 10302       | '%s' algorithm '%s' on %s is unregistered.                                     |

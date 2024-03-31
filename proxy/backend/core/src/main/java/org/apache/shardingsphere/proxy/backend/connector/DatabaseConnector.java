@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefreshEngin
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
-import org.apache.shardingsphere.infra.exception.rule.RuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.EmptyRuleException;
 import org.apache.shardingsphere.infra.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
@@ -132,7 +132,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         boolean isSystemSchema = SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
         ShardingSpherePreconditions.checkState(isSystemSchema || database.containsDataSource(), () -> new EmptyStorageUnitException(connectionSession.getDatabaseName()));
         if (!isSystemSchema && !database.isComplete()) {
-            throw new RuleNotExistedException(connectionSession.getDatabaseName());
+            throw new EmptyRuleException(connectionSession.getDatabaseName());
         }
     }
     

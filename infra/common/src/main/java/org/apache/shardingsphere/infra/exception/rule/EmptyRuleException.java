@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
 
 /**
- * Rule does not exist exception.
+ * Empty rule unit exception.
  */
-public final class RuleNotExistedException extends RuleDefinitionException {
+public final class EmptyRuleException extends RuleDefinitionException {
     
     private static final long serialVersionUID = -4150905802300104824L;
     
-    public RuleNotExistedException(final String databaseName) {
-        super(XOpenSQLState.SYNTAX_ERROR, 10, "There is no rule in database '%s'.", databaseName);
+    public EmptyRuleException(final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 1, "There is no rule in database '%s'.", databaseName);
     }
 }
