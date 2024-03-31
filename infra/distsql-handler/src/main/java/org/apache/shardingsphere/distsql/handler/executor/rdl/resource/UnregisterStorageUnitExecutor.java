@@ -37,6 +37,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -81,10 +82,15 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
         checkInUsedIgnoreTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits, ignoreUsageCheckRules);
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private Collection<Class<ShardingSphereRule>> getIgnoreUsageCheckRules(final UnregisterStorageUnitStatement sqlStatement) {
-        return ShardingSphereServiceLoader.getServiceInstances(StorageUnitDefinitionProcessor.class).stream()
-                .filter(each -> each.ignoreUsageCheckOnUnregister(sqlStatement)).map(StorageUnitDefinitionProcessor::getRuleClass).collect(Collectors.toList());
+        Collection<Class<ShardingSphereRule>> result = new LinkedList<>();
+        for (StorageUnitDefinitionProcessor each : ShardingSphereServiceLoader.getServiceInstances(StorageUnitDefinitionProcessor.class)) {
+            if (each.ignoreUsageCheckOnUnregister(sqlStatement)) {
+                result.add(each.getRuleClass());
+            }
+        }
+        return result;
     }
     
     private void checkInUsedIgnoreTables(final Collection<String> inUsedResourceNames, final Map<String, Collection<Class<? extends ShardingSphereRule>>> inUsedStorageUnits,
