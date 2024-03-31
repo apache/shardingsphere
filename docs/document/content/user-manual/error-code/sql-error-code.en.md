@@ -34,7 +34,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 0A000     | 10108       | Can not alter connection info in storage units: '%s'.                          |
 | 0A000     | 10109       | Storage units can not connect, error messages are: %s.                         |
 | 44000     | 10120       | Invalid storage unit status, error message is: %s.                             |
-| 44000     | 10150       | Read storage unit '%s' does not exist in rule '%s'.                            |
 | 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                   |
 | 44000     | 10201       | %s rules '%s' do not exist in database '%s'.                                   |
 | 44000     | 10202       | %s rules '%s' in database '%s' are still in used.                              |
@@ -209,16 +208,17 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Readwrite-splitting
 
-| SQL State | Vendor Code | Reason                                                                                      |
-|-----------|-------------|---------------------------------------------------------------------------------------------|
-| 44000     | 20270       | Inline expression %s names size error.                                                      |
-| HY004     | 20280       | Invalid read database weight \`%s\`.                                                        |
-| 44000     | 20290       | Data source name is required in database \`%s\.`                                            |
-| 44000     | 20291       | Write data source name is required in database `\`%s\.`                                     |
-| 44000     | 20292       | Read data source names is required in database `\`%s\.`                                     |
-| 44000     | 20293       | Can not config duplicate %s data source \`%s\` in database \`%s\.`                          |
-| 42S02     | 20294       | %s data source name \`%s\` not in database \`%s\.`                                          |
-| 44000     | 20295       | Auto aware data source name is required in database \`%s\.`                                 |
+| SQL State | Vendor Code | Reason                                                             |
+|-----------|-------------|--------------------------------------------------------------------|
+| 44000     | 20270       | Inline expression %s names size error.                             |
+| HY004     | 20280       | Invalid read database weight \`%s\`.                               |
+| 44000     | 20290       | Data source name is required in database \`%s\.`                   |
+| 44000     | 20291       | Write data source name is required in database `\`%s\.`            |
+| 44000     | 20292       | Read data source names is required in database `\`%s\.`            |
+| 44000     | 20293       | Can not config duplicate %s data source \`%s\` in database \`%s\.` |
+| 42S02     | 20294       | %s data source name \`%s\` not in database \`%s\.`                 |
+| 44000     | 20295       | Auto aware data source name is required in database \`%s\.`        |
+| 44000     | 20296       | Read storage unit '%s' does not exist in rule '%s'.                |
 
 ### Database HA
 
