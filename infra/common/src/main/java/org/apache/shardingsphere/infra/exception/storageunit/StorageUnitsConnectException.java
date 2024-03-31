@@ -20,14 +20,18 @@ package org.apache.shardingsphere.infra.exception.storageunit;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
- * Invalid storage units exception.
+ * Storage units connect exception.
  */
-public final class InvalidStorageUnitsException extends ResourceDefinitionException {
+public final class StorageUnitsConnectException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 7029641448948791509L;
+    private static final long serialVersionUID = 1824912697040264268L;
     
-    public InvalidStorageUnitsException(final Exception cause) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not process invalid storage units, error messages is: %s", cause.getMessage());
+    public StorageUnitsConnectException(final Map<String, Exception> causes) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 9, "Storage units can not connect, error messages are: %s.", causes.entrySet().stream().map(entry -> String.format(
+                "Storage unit name: '%s', error message is: %s", entry.getKey(), entry.getValue().getMessage())).collect(Collectors.joining(System.lineSeparator())));
     }
 }
