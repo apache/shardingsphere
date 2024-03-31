@@ -14,8 +14,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息                                                                           |
 |-----------|-------------|--------------------------------------------------------------------------------|
-| 08000     | 10001       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\`.          |
-| 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
+| 0A000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
 | HY004     | 10003       | Invalid format for actual data node \`%s\`.                                    |
 | HY000     | 10005       | Column '%s' in %s is ambiguous.                                                |
 | 42S02     | 10006       | Unknown column '%s' in '%s'.                                                   |
@@ -32,6 +31,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42S01     | 10104       | Duplicate storage unit names '%s'.                                             |
 | 08000     | 10110       | Storage units can not connect, error messages are: %s.                         |
 | 0A000     | 10111       | Can not alter connection info in storage units: '%s'.                          |
+| 08000     | 10112       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\`.          |
 | 44000     | 10120       | Invalid storage unit status, error message is: %s.                             |
 | 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                   |
 | 42S02     | 10201       | There is no rule in database '%s'.                                             |
