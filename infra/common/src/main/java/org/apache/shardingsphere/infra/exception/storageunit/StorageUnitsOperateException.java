@@ -30,6 +30,6 @@ public final class StorageUnitsOperateException extends ResourceDefinitionExcept
     private static final long serialVersionUID = 7029641448948791509L;
     
     public StorageUnitsOperateException(final String operationType, final Collection<String> storageUnitNames, final Exception cause) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, String.format("Can not %s storage units '%s'.", operationType, String.join(", ", storageUnitNames)), cause);
+        super(XOpenSQLState.GENERAL_ERROR, 0, String.format("Can not %s storage units '%s'.", operationType, String.join(", ", storageUnitNames)), cause);
     }
 }
