@@ -162,8 +162,8 @@ chapter = true
             </a>
         </td>
         <td>
-            <a href="https://github.com/totalo" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/29777558?v=4" style="border-radius:50%; overflow:hidden">
+            <a href="https://github.com/RaigorJiang" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/5668787?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
     </tr>
@@ -202,7 +202,7 @@ chapter = true
             </a>
         </td>
     </tr>
-    <tr align="center">
+  <tr align="center">
         <td>
             <b>陈出新</b>
         </td>
@@ -212,9 +212,9 @@ chapter = true
     </tr>
 </table>
 
-### 提交者
+### Committers
 
- <table style="table-layout:fixed">
+<table style="table-layout:fixed">
     <tr>
         <td>
             <a href="https://github.com/sunbufu" target="_blank">
@@ -246,6 +246,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/48051589?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/dongzl" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/5917359?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -266,13 +271,11 @@ chapter = true
         <td>
             <b>欧阳文</b>
         </td>
+        <td>
+            <b>董宗磊</b>
+        </td>
     </tr>
     <tr>
-        <td>
-            <a href="https://github.com/dongzl" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/5917359?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/SteNicholas" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/10048174?v=4" style="border-radius:50%; overflow:hidden">
@@ -303,11 +306,13 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/5524798?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/ThanoshanMV" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/48581379?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>董宗磊</b>
-        </td>
         <td>
             <b>蒋晓峰</b>
         </td>
@@ -326,13 +331,11 @@ chapter = true
         <td>
             <b>邱鹿</b>
         </td>
+        <td>
+            <b>Thanoshan MV</b>
+        </td>
     </tr>
     <tr>
-        <td>
-            <a href="https://github.com/ThanoshanMV" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/48581379?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/lanchengx" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/52209337?v=4" style="border-radius:50%; overflow:hidden">
@@ -341,6 +344,11 @@ chapter = true
         <td>
             <a href="https://github.com/yx9o" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/12792261?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/totalo" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/29777558?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
         <td>
@@ -366,9 +374,6 @@ chapter = true
     </tr>
     <tr align="center">
         <td>
-            <b>Thanoshan MV</b>
-        </td>
-        <td>
             <b>兰城翔</b>
         </td>
         <td>
@@ -382,7 +387,7 @@ chapter = true
         </td>
         <td>
             <b>汪亮达</b>
-        </td>
+         </td>
         <td>
             <b>尹伟红</b>
         </td>
@@ -416,7 +421,7 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/86716581?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
-       <td>
+        <td>
             <a href="https://github.com/natehuangting" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/26433395?s=96&v=4" style="border-radius:50%; overflow:hidden">
             </a>
@@ -500,7 +505,7 @@ chapter = true
         <td>
             <b>熊高祥</b>
         </td>
-         <td>
+        <td>
             <b>汪子超</b>
         </td>
         <td>
@@ -511,7 +516,7 @@ chapter = true
         </td>
     </tr>
     <tr>
-         <td>
+        <td>
             <a href="https://github.com/Pace2Car" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/37339007?v=4" style="border-radius:50%; overflow:hidden">
             </a>
