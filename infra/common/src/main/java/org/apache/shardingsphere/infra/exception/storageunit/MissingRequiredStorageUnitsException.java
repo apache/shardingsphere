@@ -30,6 +30,6 @@ public final class MissingRequiredStorageUnitsException extends ResourceDefiniti
     private static final long serialVersionUID = 1704331180489268L;
     
     public MissingRequiredStorageUnitsException(final String databaseName, final Collection<String> storageUnitNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Storage units `%s` do not exist in database `%s`.", storageUnitNames, databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Storage units '%s' do not exist in database '%s'.", storageUnitNames, databaseName);
     }
 }

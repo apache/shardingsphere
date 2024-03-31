@@ -28,6 +28,6 @@ public final class MissingRequiredReadStorageUnitException extends StorageUnitDe
     private static final long serialVersionUID = -4252553422332603648L;
     
     public MissingRequiredReadStorageUnitException(final String ruleName, final String storageUnitName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 6, "Read storage unit `%s` does not exist in rule `%s`.", storageUnitName, ruleName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 6, "Read storage unit '%s' does not exist in rule '%s'.", storageUnitName, ruleName);
     }
 }
