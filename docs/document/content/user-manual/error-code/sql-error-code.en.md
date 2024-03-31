@@ -20,12 +20,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 10005       | Column '%s' in %s is ambiguous.                                                |
 | 42S02     | 10006       | Unknown column '%s' in '%s'.                                                   |
 | 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
-| 0A000     | 10108       | Can not alter connection info in storage units: '%s'.                          |
 | 42000     | 10010       | Rule does not exist.                                                           |
-| 44000     | 10011       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
-| 44000     | 10012       | '%s' algorithm on %s is required.                                              |
-| 42S02     | 10013       | '%s' algorithm '%s' on %s is unregistered.                                     |
-| HY000     | 10015       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
 | 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
@@ -39,6 +34,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 10105       | Invalid storage unit status, error message is: %s.                             |
 | 44000     | 10106       | Read storage unit '%s' does not exist in rule '%s'.                            |
 | 42000     | 10107       | There is no storage unit in database '%s'.                                     |
+| 0A000     | 10108       | Can not alter connection info in storage units: '%s'.                          |
+| 0A000     | 10109       | Storage units can not connect, error messages are: %s.                         |
 | 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                   |
 | 44000     | 10201       | %s rules '%s' do not exist in database '%s'.                                   |
 | 44000     | 10202       | %s rules '%s' in database '%s' are still in used.                              |

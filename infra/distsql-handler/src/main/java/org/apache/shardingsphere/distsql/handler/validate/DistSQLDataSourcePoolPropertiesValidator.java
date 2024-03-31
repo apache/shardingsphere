@@ -20,9 +20,8 @@ package org.apache.shardingsphere.distsql.handler.validate;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitsConnectException;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -34,10 +33,9 @@ public final class DistSQLDataSourcePoolPropertiesValidator {
      * Validate data source properties map.
      * 
      * @param propsMap data source pool properties map
-     * @throws InvalidStorageUnitsException invalid storage units exception
      */
     public void validate(final Map<String, DataSourcePoolProperties> propsMap) {
-        Collection<String> errorMessages = DataSourcePoolPropertiesValidator.validate(propsMap);
-        ShardingSpherePreconditions.checkState(errorMessages.isEmpty(), () -> new InvalidStorageUnitsException(errorMessages));
+        Map<String, Exception> exceptions = DataSourcePoolPropertiesValidator.validate(propsMap);
+        ShardingSpherePreconditions.checkState(exceptions.isEmpty(), () -> new StorageUnitsConnectException(exceptions));
     }
 }
