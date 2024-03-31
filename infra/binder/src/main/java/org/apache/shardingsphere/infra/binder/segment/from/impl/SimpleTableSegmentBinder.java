@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.exception.TableDoesNotExistException;
+import org.apache.shardingsphere.infra.exception.TableNotFoundException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
@@ -148,6 +148,6 @@ public final class SimpleTableSegmentBinder {
         ShardingSpherePreconditions.checkState(statementBinderContext.getMetaData().containsDatabase(databaseName)
                 && statementBinderContext.getMetaData().getDatabase(databaseName).containsSchema(schemaName)
                 && statementBinderContext.getMetaData().getDatabase(databaseName).getSchema(schemaName).containsTable(tableName),
-                () -> new TableDoesNotExistException(tableName));
+                () -> new TableNotFoundException(tableName));
     }
 }
