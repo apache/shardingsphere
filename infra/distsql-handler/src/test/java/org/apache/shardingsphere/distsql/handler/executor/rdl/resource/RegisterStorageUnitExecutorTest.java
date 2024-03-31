@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 
-import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitExceptionDefinition;
-import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
+import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitExceptionDefinition;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
@@ -88,7 +87,7 @@ class RegisterStorageUnitExecutorTest {
         DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
         when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("ds_0", Collections.emptyList()));
         when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
-        assertThrows(InvalidStorageUnitsException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
+        assertThrows(DuplicateStorageUnitExceptionDefinition.class, () -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
     }
     
     private RegisterStorageUnitStatement createRegisterStorageUnitStatement() {

@@ -34,6 +34,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 10105       | Invalid storage unit status, error message is: %s.                             |
 | 44000     | 10106       | Read storage unit '%s' does not exist in rule '%s'.                            |
 | 42000     | 10107       | There is no storage unit in database '%s'.                                     |
+| 0A000     | 10108       | Can not alter connection info in storage units: '%s'.                          |
 | 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                   |
 | 44000     | 10201       | %s rules '%s' do not exist in database '%s'.                                   |
 | 44000     | 10202       | %s rules '%s' in database '%s' are still in used.                              |
