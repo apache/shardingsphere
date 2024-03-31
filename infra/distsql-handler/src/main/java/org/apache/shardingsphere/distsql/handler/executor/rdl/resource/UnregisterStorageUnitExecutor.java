@@ -26,8 +26,8 @@ import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.Unregi
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.infra.exception.storageunit.InUsedStorageUnitException;
-import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -37,7 +37,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -76,21 +75,16 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
         if (inUsedStorageUnitNames.isEmpty()) {
             return;
         }
-        Collection<Class<ShardingSphereRule>> ignoreShardingSphereRules = getIgnoreShardingSphereRules(sqlStatement);
+        Collection<Class<ShardingSphereRule>> ignoredRules = getIgnoredRules(sqlStatement);
         String firstResource = inUsedStorageUnitNames.iterator().next();
-        ShardingSpherePreconditions.checkState(!ignoreShardingSphereRules.isEmpty(), () -> new InUsedStorageUnitException(firstResource, inUsedStorageUnits.get(firstResource)));
-        checkInUsedIgnoreTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits, ignoreShardingSphereRules);
+        ShardingSpherePreconditions.checkState(!ignoredRules.isEmpty(), () -> new InUsedStorageUnitException(firstResource, inUsedStorageUnits.get(firstResource)));
+        checkInUsedIgnoreTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits, ignoredRules);
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<Class<ShardingSphereRule>> getIgnoreShardingSphereRules(final UnregisterStorageUnitStatement sqlStatement) {
-        Collection<Class<ShardingSphereRule>> result = new LinkedList<>();
-        for (StorageUnitDefinitionProcessor each : ShardingSphereServiceLoader.getServiceInstances(StorageUnitDefinitionProcessor.class)) {
-            if (each.ignoreUsageCheckOnUnregister(sqlStatement)) {
-                result.add(each.getRuleClass());
-            }
-        }
-        return result;
+    @SuppressWarnings("unchecked")
+    private Collection<Class<ShardingSphereRule>> getIgnoredRules(final UnregisterStorageUnitStatement sqlStatement) {
+        return ShardingSphereServiceLoader.getServiceInstances(StorageUnitDefinitionProcessor.class).stream()
+                .filter(each -> each.ignoreUsageCheckOnUnregister(sqlStatement)).map(StorageUnitDefinitionProcessor::getRuleClass).collect(Collectors.toList());
     }
     
     private void checkInUsedIgnoreTables(final Collection<String> inUsedResourceNames, final Map<String, Collection<Class<? extends ShardingSphereRule>>> inUsedStorageUnits,
