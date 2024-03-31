@@ -32,6 +32,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 08000     | 10110       | Storage units can not connect, error messages are: %s.                         |
 | 0A000     | 10111       | Can not alter connection info in storage units: '%s'.                          |
 | 08000     | 10112       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\`.          |
+| 0A000     | 10113       | Unsupported storage type of URL '%s'.                                          |
 | 44000     | 10120       | Invalid storage unit status, error message is: %s.                             |
 | 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                   |
 | 42S02     | 10201       | There is no rule in database '%s'.                                             |
@@ -79,7 +80,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 08000     | 13030       | Connection has been closed.                                                                                                                                                                                                 |
 | 08000     | 13031       | Result set has been closed.                                                                                                                                                                                                 |
 | 08000     | 13032       | SQL execution has been interrupted.                                                                                                                                                                                         |
-| 0A000     | 13040       | Unsupported storage type of URL '%s'.                                                                                                                                                                                       |
 | HY000     | 13090       | Load datetime from database failed, reason: %s                                                                                                                                                                              |
 
 ### 事务

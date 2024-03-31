@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.core.type;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
  * Unsupported storage type exception. When this exception is thrown, it means that the relevant jdbcUrl lacks the corresponding {@link DatabaseType} SPI implementation.
@@ -47,11 +47,11 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.c
  *
  * @see org.apache.shardingsphere.infra.database.core.type.DatabaseType
  */
-public final class UnsupportedStorageTypeException extends ConnectionSQLException {
+public final class UnsupportedStorageTypeException extends MetaDataSQLException {
     
     private static final long serialVersionUID = 8981789100727786183L;
     
     public UnsupportedStorageTypeException(final String url) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 40, "Unsupported storage type of URL '%s'.", url);
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 13, "Unsupported storage type of URL '%s'.", url);
     }
 }
