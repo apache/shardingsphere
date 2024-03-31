@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Invalid storage units exception.
@@ -33,7 +34,8 @@ public final class InvalidStorageUnitsException extends ResourceDefinitionExcept
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not process invalid storage units, error messages is: %s", cause.getMessage());
     }
     
-    public InvalidStorageUnitsException(final Collection<String> errorMessages) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not process invalid storage units, error messages are: %s", errorMessages);
+    public InvalidStorageUnitsException(final Collection<Exception> causes) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0,
+                "Can not process invalid storage units, error messages are: %s", causes.stream().map(Throwable::getMessage).collect(Collectors.joining(System.lineSeparator())));
     }
 }

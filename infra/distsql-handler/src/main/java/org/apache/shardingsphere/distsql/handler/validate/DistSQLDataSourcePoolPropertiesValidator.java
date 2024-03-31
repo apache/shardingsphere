@@ -37,7 +37,7 @@ public final class DistSQLDataSourcePoolPropertiesValidator {
      * @throws InvalidStorageUnitsException invalid storage units exception
      */
     public void validate(final Map<String, DataSourcePoolProperties> propsMap) {
-        Collection<String> errorMessages = DataSourcePoolPropertiesValidator.validate(propsMap);
-        ShardingSpherePreconditions.checkState(errorMessages.isEmpty(), () -> new InvalidStorageUnitsException(errorMessages));
+        Collection<Exception> exceptions = DataSourcePoolPropertiesValidator.validate(propsMap);
+        ShardingSpherePreconditions.checkState(exceptions.isEmpty(), () -> new InvalidStorageUnitsException(exceptions));
     }
 }

@@ -42,16 +42,16 @@ public final class DataSourcePoolPropertiesValidator {
      * Validate data source pool properties map.
      * 
      * @param propsMap data source pool properties map
-     * @return error messages
+     * @return exceptions
      */
-    public static Collection<String> validate(final Map<String, DataSourcePoolProperties> propsMap) {
-        Collection<String> result = new LinkedList<>();
+    public static Collection<Exception> validate(final Map<String, DataSourcePoolProperties> propsMap) {
+        Collection<Exception> result = new LinkedList<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             try {
                 validateProperties(entry.getKey(), entry.getValue());
                 validateConnection(entry.getKey(), entry.getValue());
             } catch (final InvalidDataSourcePoolPropertiesException ex) {
-                result.add(ex.getMessage());
+                result.add(ex);
             }
         }
         return result;
