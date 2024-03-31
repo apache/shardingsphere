@@ -118,7 +118,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         try {
             ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(databaseName, propsMap);
         } catch (final SQLException ex) {
-            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
+            throw new InvalidStorageUnitsException(ex);
         }
         Map<String, StorageUnit> storageUnits = ProxyContext.getInstance().getContextManager()
                 .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits();

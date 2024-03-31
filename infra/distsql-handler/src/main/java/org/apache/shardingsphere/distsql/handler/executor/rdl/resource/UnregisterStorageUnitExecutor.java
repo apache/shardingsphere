@@ -20,14 +20,14 @@ package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitsException;
-import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.infra.exception.storageunit.InUsedStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.resource.StorageUnitDefinitionProcessor;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.exception.storageunit.InUsedStorageUnitException;
+import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -36,7 +36,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -61,7 +60,7 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
             contextManager.getInstanceContext().getModeContextManager().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
         } catch (final SQLException | ShardingSphereServerException ex) {
             log.error("Unregister storage unit failed", ex);
-            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
+            throw new InvalidStorageUnitsException(ex);
         }
     }
     
