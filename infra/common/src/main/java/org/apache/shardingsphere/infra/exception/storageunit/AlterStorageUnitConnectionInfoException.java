@@ -30,6 +30,6 @@ public final class AlterStorageUnitConnectionInfoException extends ResourceDefin
     private static final long serialVersionUID = 525999625052706626L;
     
     public AlterStorageUnitConnectionInfoException(final Collection<String> storageUnitNames) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 6, "Can not alter connection info in storage units: '%s'.", String.join(", ", storageUnitNames));
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 11, "Can not alter connection info in storage units: '%s'.", String.join(", ", storageUnitNames));
     }
 }
