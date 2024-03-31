@@ -20,14 +20,16 @@ package org.apache.shardingsphere.infra.exception.storageunit;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
 
+import java.util.Collection;
+
 /**
- * Invalid storage units exception.
+ * Storage units operate exception.
  */
-public final class InvalidStorageUnitsException extends ResourceDefinitionException {
+public final class StorageUnitsOperateException extends ResourceDefinitionException {
     
     private static final long serialVersionUID = 7029641448948791509L;
     
-    public InvalidStorageUnitsException(final Exception cause) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not process invalid storage units, error messages is: %s", cause.getMessage());
+    public StorageUnitsOperateException(final String operationType, final Collection<String> storageUnitNames, final Exception cause) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not %s storage units '%s', error messages are: %s", operationType, String.join(", ", storageUnitNames), cause.getMessage());
     }
 }

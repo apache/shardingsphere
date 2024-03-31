@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitExceptionDefinition;
-import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -69,8 +69,7 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
         try {
             contextManager.getInstanceContext().getModeContextManager().registerStorageUnits(database.getName(), propsMap);
         } catch (final SQLException | ShardingSphereExternalException ex) {
-            log.error("Register storage unit failed", ex);
-            throw new InvalidStorageUnitsException(ex);
+            throw new StorageUnitsOperateException("register", propsMap.keySet(), ex);
         }
     }
     
