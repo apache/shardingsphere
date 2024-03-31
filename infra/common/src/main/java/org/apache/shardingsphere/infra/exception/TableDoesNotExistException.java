@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Table not exists exception.
+ * Table does not exist exception.
  */
-public final class TableNotExistsException extends MetaDataSQLException {
+public final class TableDoesNotExistException extends MetaDataSQLException {
     
     private static final long serialVersionUID = -2507596759730534895L;
     
-    public TableNotExistsException(final String tableName) {
+    public TableDoesNotExistException(final String tableName) {
         super(XOpenSQLState.NOT_FOUND, 7, "Table or view `%s` does not exist.", tableName);
     }
 }
