@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.handler.exception;
+package org.apache.shardingsphere.infra.exception.storageunit;
 
-import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitDefinitionViolationException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
 
 /**
  * Invalid storage unit status exception.
  */
-public final class InvalidStorageUnitStatusException extends StorageUnitDefinitionViolationException {
+public final class InvalidStorageUnitStatusException extends ResourceDefinitionException {
     
     private static final long serialVersionUID = 4029749233439176539L;
     
-    public InvalidStorageUnitStatusException(final String errorMessages) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 5, "Invalid storage unit status, error message is: %s.", errorMessages);
+    public InvalidStorageUnitStatusException(final String errorMessage) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20, "Invalid storage unit status, error message is: %s.", errorMessage);
     }
 }
