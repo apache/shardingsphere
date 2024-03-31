@@ -30,10 +30,10 @@ public final class RuleInUsedException extends RuleDefinitionException {
     private static final long serialVersionUID = 3308787279125477660L;
     
     public RuleInUsedException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "%s rules `%s` in database `%s` are still in used.", ruleType, ruleNames, databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "%s rules '%s' in database '%s' are still in used.", ruleType, ruleNames, databaseName);
     }
     
     public RuleInUsedException(final String ruleType, final String databaseName, final Collection<String> ruleNames, final String usingType) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "%s rules `%s` in database `%s` are still in used by %s.", ruleType, ruleNames, databaseName, usingType);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "%s rules '%s' in database '%s' are still in used by %s.", ruleType, ruleNames, databaseName, usingType);
     }
 }

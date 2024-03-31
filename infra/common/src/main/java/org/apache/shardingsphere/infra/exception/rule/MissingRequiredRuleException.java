@@ -34,18 +34,18 @@ public final class MissingRequiredRuleException extends RuleDefinitionException 
     }
     
     public MissingRequiredRuleException(final String ruleType, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "%s rule does not exist in database `%s`.", ruleType, databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "%s rule does not exist in database '%s'.", ruleType, databaseName);
     }
     
     public MissingRequiredRuleException(final String ruleType, final Collection<String> ruleNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "%s rules `%s` do not exist.", ruleType, ruleNames);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "%s rules '%s' do not exist.", ruleType, ruleNames);
     }
     
     public MissingRequiredRuleException(final String ruleType, final String databaseName, final String ruleName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "%s rule `%s` do not exist in database `%s`.", ruleType, ruleName, databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "%s rule '%s' do not exist in database '%s'.", ruleType, ruleName, databaseName);
     }
     
     public MissingRequiredRuleException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "%s rules `%s` do not exist in database `%s`.", ruleType, ruleNames, databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "%s rules '%s' do not exist in database '%s'.", ruleType, ruleNames, databaseName);
     }
 }

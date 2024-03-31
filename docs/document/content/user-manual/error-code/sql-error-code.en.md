@@ -30,18 +30,18 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
 | 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables.                         |
 | 0A000     | 10040       | Unsupported storage type of \`%s.%s\`.                                         |
-| 44000     | 10100       | Can not process invalid storage units, error messages are: %s                  |
-| 44000     | 10101       | Storage units \`%s\` do not exist in database \`%s\`.                          |
-| 44000     | 10102       | There is no storage unit in the database \`%s\`.                               |
+| 44000     | 10100       | Can not process invalid storage units, error messages is: %s                   |
+| 44000     | 10101       | Storage units '%s' do not exist in database '%s'.                              |
+| 44000     | 10102       | There is no storage unit in the database '%s'.                                 |
 | 44000     | 10103       | Storage unit '%s' still used by '%s'.                                          |
 | 44000     | 10104       | Duplicate storage unit names '%s'.                                             |
 | 44000     | 10105       | Invalid storage unit status, error message is: %s.                             |
-| 44000     | 10106       | Read storage unit \`%s\` does not exist in rule \`%s\`.                        |
-| 42000     | 10107       | There is no storage unit in database \`%s\`.                                   |
-| 44000     | 10200       | Invalid \`%s\` rule \`%s\`, error message is: %s                               |
-| 44000     | 10201       | %s rules \`%s\` do not exist in database \`%s\`.                               |
-| 44000     | 10202       | %s rules \`%s\` in database \`%s\` are still in used.                          |
-| 44000     | 10205       | Duplicate %s rule names \`%s\` in database \`%s\`.                             |
+| 44000     | 10106       | Read storage unit '%s' does not exist in rule '%s'.                            |
+| 42000     | 10107       | There is no storage unit in database '%s'.                                     |
+| 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                   |
+| 44000     | 10201       | %s rules '%s' do not exist in database '%s'.                                   |
+| 44000     | 10202       | %s rules '%s' in database '%s' are still in used.                              |
+| 44000     | 10205       | Duplicate %s rule names '%s' in database '%s'.                                 |
 | 44000     | 10210       | There is no rule in database '%s'.                                             |
 | 44000     | 10300       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
 | 44000     | 10301       | '%s' algorithm on %s is required.                                              |

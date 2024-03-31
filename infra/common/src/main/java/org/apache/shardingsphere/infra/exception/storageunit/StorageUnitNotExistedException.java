@@ -32,6 +32,6 @@ public final class StorageUnitNotExistedException extends ResourceDefinitionExce
     }
     
     public StorageUnitNotExistedException(final String databaseName) {
-        super(XOpenSQLState.SYNTAX_ERROR, 7, "There is no storage unit in database `%s`.", databaseName);
+        super(XOpenSQLState.SYNTAX_ERROR, 7, "There is no storage unit in database '%s'.", databaseName);
     }
 }
