@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.storageunit.EmptyStorageUnitException;
-import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitNotExistedException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -100,7 +99,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
             throw new NoDatabaseSelectedException();
         }
         Optional<String> result = databaseNames.stream().filter(each -> ProxyContext.getInstance().getContextManager().getDatabase(each).containsDataSource()).findFirst();
-        ShardingSpherePreconditions.checkState(result.isPresent(), StorageUnitNotExistedException::new);
+        ShardingSpherePreconditions.checkState(result.isPresent(), EmptyStorageUnitException::new);
         return result.get();
     }
     

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.storageunit.EmptyStorageUnitException;
-import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitNotExistedException;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
@@ -76,7 +75,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
         Optional<ShardingSpherePrivileges> privileges = authorityRule.findPrivileges(connectionSession.getGrantee());
         Stream<String> databaseStream = databaseNames.stream().filter(each -> ProxyContext.getInstance().getContextManager().getDatabase(each).containsDataSource());
         Optional<String> result = privileges.map(optional -> databaseStream.filter(optional::hasPrivileges).findFirst()).orElseGet(databaseStream::findFirst);
-        ShardingSpherePreconditions.checkState(result.isPresent(), StorageUnitNotExistedException::new);
+        ShardingSpherePreconditions.checkState(result.isPresent(), EmptyStorageUnitException::new);
         return result.get();
     }
     

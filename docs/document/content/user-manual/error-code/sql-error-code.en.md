@@ -28,12 +28,11 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 0A000     | 10040       | Unsupported storage type of \`%s.%s\`.                                         |
 | 44000     | 10100       | Can not %s storage units '%s'.                                                 |
 | 44000     | 10101       | Storage units '%s' do not exist in database '%s'.                              |
-| 42S02     | 10102       | There is no storage unit in the database '%s'.                                 |
+| 42S02     | 10102       | There is no storage unit in database '%s'.                                     |
 | 44000     | 10103       | Storage unit '%s' still used by '%s'.                                          |
 | 44000     | 10104       | Duplicate storage unit names '%s'.                                             |
 | 44000     | 10105       | Invalid storage unit status, error message is: %s.                             |
 | 44000     | 10106       | Read storage unit '%s' does not exist in rule '%s'.                            |
-| 42000     | 10107       | There is no storage unit in database '%s'.                                     |
 | 0A000     | 10108       | Can not alter connection info in storage units: '%s'.                          |
 | 0A000     | 10109       | Storage units can not connect, error messages are: %s.                         |
 | 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                   |
