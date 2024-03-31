@@ -25,11 +25,11 @@ import java.util.Collection;
 /**
  * Duplicate storage unit exception.
  */
-public final class DuplicateStorageUnitExceptionDefinition extends ResourceDefinitionException {
+public final class DuplicateStorageUnitException extends ResourceDefinitionException {
     
     private static final long serialVersionUID = 2103793827572264148L;
     
-    public DuplicateStorageUnitExceptionDefinition(final Collection<String> storageUnitNames) {
+    public DuplicateStorageUnitException(final Collection<String> storageUnitNames) {
         super(XOpenSQLState.DUPLICATE, 4, "Duplicate storage unit names '%s'.", String.join(", ", storageUnitNames));
     }
 }
