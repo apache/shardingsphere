@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.exception.storageunit.AlterStorageUnitConnectionInfoException;
 import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitExceptionDefinition;
-import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -67,8 +67,7 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
         try {
             contextManager.getInstanceContext().getModeContextManager().alterStorageUnits(database.getName(), propsMap);
         } catch (final SQLException | ShardingSphereExternalException ex) {
-            log.error("Alter storage unit failed", ex);
-            throw new InvalidStorageUnitsException(ex);
+            throw new StorageUnitsOperateException("alter", propsMap.keySet(), ex);
         }
     }
     

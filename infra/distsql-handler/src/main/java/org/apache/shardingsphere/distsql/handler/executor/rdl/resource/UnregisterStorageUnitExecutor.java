@@ -26,7 +26,7 @@ import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.Unregi
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.infra.exception.storageunit.InUsedStorageUnitException;
-import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -59,8 +59,7 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
         try {
             contextManager.getInstanceContext().getModeContextManager().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
         } catch (final SQLException | ShardingSphereServerException ex) {
-            log.error("Unregister storage unit failed", ex);
-            throw new InvalidStorageUnitsException(ex);
+            throw new StorageUnitsOperateException("unregister", sqlStatement.getStorageUnitNames(), ex);
         }
     }
     

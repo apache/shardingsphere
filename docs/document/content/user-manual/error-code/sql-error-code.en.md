@@ -26,7 +26,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
 | 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables.                         |
 | 0A000     | 10040       | Unsupported storage type of \`%s.%s\`.                                         |
-| 44000     | 10100       | Can not process invalid storage units, error messages is: %s                   |
+| 44000     | 10100       | Can not %s storage units '%s'.                                                 |
 | 44000     | 10101       | Storage units '%s' do not exist in database '%s'.                              |
 | 44000     | 10102       | There is no storage unit in the database '%s'.                                 |
 | 44000     | 10103       | Storage unit '%s' still used by '%s'.                                          |
