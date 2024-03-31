@@ -27,12 +27,12 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables.                         |
 | 0A000     | 10040       | Unsupported storage type of \`%s.%s\`.                                         |
 | 44000     | 10100       | Can not %s storage units '%s'.                                                 |
-| 44000     | 10101       | Storage units '%s' do not exist in database '%s'.                              |
-| 42S02     | 10102       | There is no storage unit in database '%s'.                                     |
+| 42S02     | 10101       | There is no storage unit in database '%s'.                                     |
+| 44000     | 10102       | Storage units '%s' do not exist in database '%s'.                              |
 | 44000     | 10103       | Storage unit '%s' still used by '%s'.                                          |
 | 44000     | 10104       | Duplicate storage unit names '%s'.                                             |
-| 0A000     | 10108       | Can not alter connection info in storage units: '%s'.                          |
-| 0A000     | 10109       | Storage units can not connect, error messages are: %s.                         |
+| 0A000     | 10105       | Storage units can not connect, error messages are: %s.                         |
+| 0A000     | 10106       | Can not alter connection info in storage units: '%s'.                          |
 | 44000     | 10120       | Invalid storage unit status, error message is: %s.                             |
 | 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                   |
 | 44000     | 10201       | %s rules '%s' do not exist in database '%s'.                                   |

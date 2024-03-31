@@ -31,7 +31,7 @@ public final class StorageUnitsConnectException extends ResourceDefinitionExcept
     private static final long serialVersionUID = 1824912697040264268L;
     
     public StorageUnitsConnectException(final Map<String, Exception> causes) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 9, "Storage units can not connect, error messages are: %s.", causes.entrySet().stream().map(entry -> String.format(
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 5, "Storage units can not connect, error messages are: %s.", causes.entrySet().stream().map(entry -> String.format(
                 "Storage unit name: '%s', error message is: %s", entry.getKey(), entry.getValue().getMessage())).collect(Collectors.joining(System.lineSeparator())));
     }
 }
