@@ -75,10 +75,10 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
         if (inUsedStorageUnitNames.isEmpty()) {
             return;
         }
-        Collection<Class<ShardingSphereRule>> ignoredRules = getIgnoreUsageCheckRules(sqlStatement);
+        Collection<Class<ShardingSphereRule>> ignoreUsageCheckRules = getIgnoreUsageCheckRules(sqlStatement);
         String firstResource = inUsedStorageUnitNames.iterator().next();
-        ShardingSpherePreconditions.checkState(!ignoredRules.isEmpty(), () -> new InUsedStorageUnitException(firstResource, inUsedStorageUnits.get(firstResource)));
-        checkInUsedIgnoreTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits, ignoredRules);
+        ShardingSpherePreconditions.checkState(!ignoreUsageCheckRules.isEmpty(), () -> new InUsedStorageUnitException(firstResource, inUsedStorageUnits.get(firstResource)));
+        checkInUsedIgnoreTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits, ignoreUsageCheckRules);
     }
     
     @SuppressWarnings("unchecked")
