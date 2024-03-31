@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 /**
  * Invalid algorithm configuration exception.
  */
+// TODO consider about merge with AlgorithmInitializationException
 public final class InvalidAlgorithmConfigurationException extends AlgorithmDefinitionException {
     
     private static final long serialVersionUID = 1352014079406440573L;
