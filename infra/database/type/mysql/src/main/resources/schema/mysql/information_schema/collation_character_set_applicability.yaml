@@ -22,6 +22,7 @@ columns:
     dataType: 12
     generated: false
     name: COLLATION_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: CHARACTER_SET_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true

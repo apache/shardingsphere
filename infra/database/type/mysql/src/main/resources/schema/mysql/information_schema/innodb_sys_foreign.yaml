@@ -22,6 +22,7 @@ columns:
     dataType: 12
     generated: false
     name: ID
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: FOR_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 12
     generated: false
     name: REF_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 4
     generated: false
     name: N_COLS
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 4
     generated: false
     name: TYPE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true

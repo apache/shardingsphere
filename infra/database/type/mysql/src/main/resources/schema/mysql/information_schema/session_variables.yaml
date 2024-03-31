@@ -22,6 +22,7 @@ columns:
     dataType: 12
     generated: false
     name: VARIABLE_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: VARIABLE_VALUE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true

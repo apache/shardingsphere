@@ -22,6 +22,7 @@ columns:
     dataType: 12
     generated: false
     name: TABLE_CATALOG
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: TABLE_SCHEMA
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 12
     generated: false
     name: TABLE_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: -1
     generated: false
     name: VIEW_DEFINITION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 12
     generated: false
     name: CHECK_OPTION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 12
     generated: false
     name: IS_UPDATABLE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 12
     generated: false
     name: DEFINER
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,6 +85,7 @@ columns:
     dataType: 12
     generated: false
     name: SECURITY_TYPE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,6 +94,7 @@ columns:
     dataType: 12
     generated: false
     name: CHARACTER_SET_CLIENT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -94,6 +103,7 @@ columns:
     dataType: 12
     generated: false
     name: COLLATION_CONNECTION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true

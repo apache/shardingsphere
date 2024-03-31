@@ -22,6 +22,7 @@ columns:
     dataType: 4
     generated: false
     name: POOL_ID
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 4
     generated: false
     name: POOL_SIZE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 4
     generated: false
     name: FREE_BUFFERS
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 4
     generated: false
     name: DATABASE_PAGES
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 4
     generated: false
     name: OLD_DATABASE_PAGES
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 4
     generated: false
     name: MODIFIED_DATABASE_PAGES
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 4
     generated: false
     name: PENDING_DECOMPRESS
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -78,6 +85,7 @@ columns:
     dataType: 4
     generated: false
     name: PENDING_READS
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -86,6 +94,7 @@ columns:
     dataType: 4
     generated: false
     name: PENDING_FLUSH_LRU
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -94,6 +103,7 @@ columns:
     dataType: 4
     generated: false
     name: PENDING_FLUSH_LIST
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -102,6 +112,7 @@ columns:
     dataType: 4
     generated: false
     name: PAGES_MADE_YOUNG
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -110,6 +121,7 @@ columns:
     dataType: 4
     generated: false
     name: PAGES_NOT_MADE_YOUNG
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -118,6 +130,7 @@ columns:
     dataType: 8
     generated: false
     name: PAGES_MADE_YOUNG_RATE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -126,6 +139,7 @@ columns:
     dataType: 8
     generated: false
     name: PAGES_MADE_NOT_YOUNG_RATE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -134,6 +148,7 @@ columns:
     dataType: 4
     generated: false
     name: NUMBER_PAGES_READ
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -142,6 +157,7 @@ columns:
     dataType: 4
     generated: false
     name: NUMBER_PAGES_CREATED
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -150,6 +166,7 @@ columns:
     dataType: 4
     generated: false
     name: NUMBER_PAGES_WRITTEN
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -158,6 +175,7 @@ columns:
     dataType: 8
     generated: false
     name: PAGES_READ_RATE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -166,6 +184,7 @@ columns:
     dataType: 8
     generated: false
     name: PAGES_CREATE_RATE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -174,6 +193,7 @@ columns:
     dataType: 8
     generated: false
     name: PAGES_WRITTEN_RATE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -182,6 +202,7 @@ columns:
     dataType: 4
     generated: false
     name: NUMBER_PAGES_GET
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -190,6 +211,7 @@ columns:
     dataType: 4
     generated: false
     name: HIT_RATE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -198,6 +220,7 @@ columns:
     dataType: 4
     generated: false
     name: YOUNG_MAKE_PER_THOUSAND_GETS
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -206,6 +229,7 @@ columns:
     dataType: 4
     generated: false
     name: NOT_YOUNG_MAKE_PER_THOUSAND_GETS
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -214,6 +238,7 @@ columns:
     dataType: 4
     generated: false
     name: NUMBER_PAGES_READ_AHEAD
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -222,6 +247,7 @@ columns:
     dataType: 4
     generated: false
     name: NUMBER_READ_AHEAD_EVICTED
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -230,6 +256,7 @@ columns:
     dataType: 8
     generated: false
     name: READ_AHEAD_RATE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -238,6 +265,7 @@ columns:
     dataType: 8
     generated: false
     name: READ_AHEAD_EVICTED_RATE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -246,6 +274,7 @@ columns:
     dataType: 4
     generated: false
     name: LRU_IO_TOTAL
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -254,6 +283,7 @@ columns:
     dataType: 4
     generated: false
     name: LRU_IO_CURRENT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -262,6 +292,7 @@ columns:
     dataType: 4
     generated: false
     name: UNCOMPRESS_TOTAL
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -270,6 +301,7 @@ columns:
     dataType: 4
     generated: false
     name: UNCOMPRESS_CURRENT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true

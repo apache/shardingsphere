@@ -22,6 +22,7 @@ columns:
     dataType: 12
     generated: false
     name: WORD
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 4
     generated: false
     name: FIRST_DOC_ID
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 4
     generated: false
     name: LAST_DOC_ID
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 4
     generated: false
     name: DOC_COUNT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 4
     generated: false
     name: DOC_ID
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 4
     generated: false
     name: POSITION
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true

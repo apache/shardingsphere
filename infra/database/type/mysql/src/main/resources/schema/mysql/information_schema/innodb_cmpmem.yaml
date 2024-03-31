@@ -22,6 +22,7 @@ columns:
     dataType: 4
     generated: false
     name: page_size
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 4
     generated: false
     name: buffer_pool_instance
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 4
     generated: false
     name: pages_used
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 4
     generated: false
     name: pages_free
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 4
     generated: false
     name: relocation_ops
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 4
     generated: false
     name: relocation_time
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
