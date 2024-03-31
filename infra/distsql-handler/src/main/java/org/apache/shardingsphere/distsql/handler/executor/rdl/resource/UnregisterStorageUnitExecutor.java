@@ -25,9 +25,9 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.resource.Stor
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
-import org.apache.shardingsphere.infra.exception.storageunit.InUsedStorageUnitException;
-import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitsOperateException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.InUsedStorageUnitException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;

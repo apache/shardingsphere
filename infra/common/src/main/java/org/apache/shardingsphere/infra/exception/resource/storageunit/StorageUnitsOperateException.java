@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.storageunit;
+package org.apache.shardingsphere.infra.exception.resource.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
+import org.apache.shardingsphere.infra.exception.resource.ResourceDefinitionException;
 
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Collection;
 
 /**
- * Storage units connect exception.
+ * Storage units operate exception.
  */
-public final class StorageUnitsConnectException extends ResourceDefinitionException {
+public final class StorageUnitsOperateException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 1824912697040264268L;
+    private static final long serialVersionUID = 7029641448948791509L;
     
-    public StorageUnitsConnectException(final Map<String, Exception> causes) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 10, "Storage units can not connect, error messages are: %s.", causes.entrySet().stream().map(entry -> String.format(
-                "Storage unit name: '%s', error message is: %s", entry.getKey(), entry.getValue().getMessage())).collect(Collectors.joining(System.lineSeparator())));
+    public StorageUnitsOperateException(final String operationType, final Collection<String> storageUnitNames, final Exception cause) {
+        super(XOpenSQLState.GENERAL_ERROR, 0, String.format("Can not %s storage units '%s'.", operationType, String.join(", ", storageUnitNames)), cause);
     }
 }

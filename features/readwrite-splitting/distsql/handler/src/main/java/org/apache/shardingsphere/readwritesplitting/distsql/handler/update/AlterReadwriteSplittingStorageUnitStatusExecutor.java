@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.storage.service.StorageNodeStatusService;
-import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitStatusException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.InvalidStorageUnitStatusException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredReadStorageUnitException;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
