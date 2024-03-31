@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnection
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.infra.exception.rule.RuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.EmptyRuleException;
 import org.apache.shardingsphere.distsql.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.context.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -97,7 +97,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
         if (toBePreviewedStatementContext instanceof CursorAvailable && toBePreviewedStatementContext instanceof CursorDefinitionAware) {
             setUpCursorDefinition(toBePreviewedStatementContext);
         }
-        ShardingSpherePreconditions.checkState(database.isComplete(), () -> new RuleNotExistedException(database.getName()));
+        ShardingSpherePreconditions.checkState(database.isComplete(), () -> new EmptyRuleException(database.getName()));
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName()));
         Collection<ExecutionUnit> executionUnits = getExecutionUnits(contextManager, schemaName, metaData, queryContext);

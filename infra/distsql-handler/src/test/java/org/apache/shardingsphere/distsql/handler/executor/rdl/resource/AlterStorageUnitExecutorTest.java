@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.AlterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.exception.storageunit.AlterStorageUnitConnectionInfoException;
-import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitExceptionDefinition;
+import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -75,7 +75,7 @@ class AlterStorageUnitExecutorTest {
     
     @Test
     void assertExecuteUpdateWithDuplicateStorageUnitNames() {
-        assertThrows(DuplicateStorageUnitExceptionDefinition.class, () -> executor.executeUpdate(createAlterStorageUnitStatementWithDuplicateStorageUnitNames(), mock(ContextManager.class)));
+        assertThrows(DuplicateStorageUnitException.class, () -> executor.executeUpdate(createAlterStorageUnitStatementWithDuplicateStorageUnitNames(), mock(ContextManager.class)));
     }
     
     @Test

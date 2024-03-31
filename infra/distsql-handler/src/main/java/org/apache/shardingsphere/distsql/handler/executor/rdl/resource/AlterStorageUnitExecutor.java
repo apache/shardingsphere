@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.exception.storageunit.AlterStorageUnitConnectionInfoException;
-import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitExceptionDefinition;
+import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -80,7 +80,7 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
     
     private void checkDuplicatedStorageUnitNames(final Collection<String> storageUnitNames) {
         Collection<String> duplicatedStorageUnitNames = storageUnitNames.stream().filter(each -> storageUnitNames.stream().filter(each::equals).count() > 1).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(duplicatedStorageUnitNames.isEmpty(), () -> new DuplicateStorageUnitExceptionDefinition(duplicatedStorageUnitNames));
+        ShardingSpherePreconditions.checkState(duplicatedStorageUnitNames.isEmpty(), () -> new DuplicateStorageUnitException(duplicatedStorageUnitNames));
     }
     
     private void checkStorageUnitNameExisted(final Collection<String> storageUnitNames) {

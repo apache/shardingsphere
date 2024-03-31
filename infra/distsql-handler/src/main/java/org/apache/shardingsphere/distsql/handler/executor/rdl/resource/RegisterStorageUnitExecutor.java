@@ -28,7 +28,7 @@ import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.Regist
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitExceptionDefinition;
+import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
@@ -89,7 +89,7 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
             }
             dataSourceNames.add(each.getName());
         }
-        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitExceptionDefinition(duplicatedDataSourceNames));
+        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(duplicatedDataSourceNames));
     }
     
     private void checkDuplicatedLogicalDataSourceNames(final Collection<String> requiredDataSourceNames) {
@@ -98,7 +98,7 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
             return;
         }
         Collection<String> duplicatedDataSourceNames = requiredDataSourceNames.stream().filter(logicalDataSourceNames::contains).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitExceptionDefinition(duplicatedDataSourceNames));
+        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(duplicatedDataSourceNames));
     }
     
     private Collection<String> getCurrentStorageUnitNames(final ContextManager contextManager) {

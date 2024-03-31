@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.single.distsql.handler.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
  * Missing required single table exception.
  */
-public final class MissingRequiredSingleTableException extends RuleDefinitionException {
+public final class MissingRequiredSingleTableException extends MetaDataSQLException {
     
     private static final long serialVersionUID = 3155006580453893122L;
     
     public MissingRequiredSingleTableException(final String storageUnitName, final String tableName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 6, "Missing required table '%s' in storage unit '%s'.", tableName, storageUnitName);
+        super(XOpenSQLState.NOT_FOUND, 8, "Missing required table '%s' in storage unit '%s'.", tableName, storageUnitName);
     }
 }

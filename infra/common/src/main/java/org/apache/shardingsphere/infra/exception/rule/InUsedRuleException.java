@@ -20,14 +20,20 @@ package org.apache.shardingsphere.infra.exception.rule;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
 
+import java.util.Collection;
+
 /**
- * Rule does not exist exception.
+ * In used rule exception.
  */
-public final class RuleNotExistedException extends RuleDefinitionException {
+public final class InUsedRuleException extends RuleDefinitionException {
     
-    private static final long serialVersionUID = -4150905802300104824L;
+    private static final long serialVersionUID = 3308787279125477660L;
     
-    public RuleNotExistedException(final String databaseName) {
-        super(XOpenSQLState.SYNTAX_ERROR, 10, "There is no rule in database '%s'.", databaseName);
+    public InUsedRuleException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "%s rules '%s' in database '%s' are still in used.", ruleType, ruleNames, databaseName);
+    }
+    
+    public InUsedRuleException(final String ruleType, final String databaseName, final Collection<String> ruleNames, final String usingType) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "%s rules '%s' in database '%s' are still in used by %s.", ruleType, ruleNames, databaseName, usingType);
     }
 }

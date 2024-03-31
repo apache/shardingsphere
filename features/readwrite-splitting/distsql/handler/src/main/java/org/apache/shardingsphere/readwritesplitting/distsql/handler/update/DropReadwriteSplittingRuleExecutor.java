@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.exception.rule.RuleInUsedException;
+import org.apache.shardingsphere.infra.exception.rule.InUsedRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -72,7 +72,7 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     private void checkToBeDroppedInUsed(final DropReadwriteSplittingRuleStatement sqlStatement) {
         Collection<String> resourceBeUsed = getInUsedResources();
         Collection<String> ruleInUsed = sqlStatement.getNames().stream().filter(resourceBeUsed::contains).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(ruleInUsed.isEmpty(), () -> new RuleInUsedException("Readwrite-splitting", database.getName(), ruleInUsed));
+        ShardingSpherePreconditions.checkState(ruleInUsed.isEmpty(), () -> new InUsedRuleException("Readwrite-splitting", database.getName(), ruleInUsed));
     }
     
     private Collection<String> getInUsedResources() {

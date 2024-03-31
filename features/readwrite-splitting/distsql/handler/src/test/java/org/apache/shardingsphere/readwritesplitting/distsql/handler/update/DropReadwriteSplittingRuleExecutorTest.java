@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
 import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.exception.rule.RuleInUsedException;
+import org.apache.shardingsphere.infra.exception.rule.InUsedRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
@@ -88,7 +88,7 @@ class DropReadwriteSplittingRuleExecutorTest {
         executor.setDatabase(database);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
-        assertThrows(RuleInUsedException.class, () -> executor.checkBeforeUpdate(createSQLStatement()));
+        assertThrows(InUsedRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement()));
     }
     
     @Test

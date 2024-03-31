@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.exception.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
 
 import java.util.Collection;
 
 /**
- * Rule in used exception.
+ * Duplicate storage unit exception.
  */
-public final class RuleInUsedException extends RuleDefinitionException {
+public final class DuplicateStorageUnitException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 3308787279125477660L;
+    private static final long serialVersionUID = 2103793827572264148L;
     
-    public RuleInUsedException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "%s rules '%s' in database '%s' are still in used.", ruleType, ruleNames, databaseName);
-    }
-    
-    public RuleInUsedException(final String ruleType, final String databaseName, final Collection<String> ruleNames, final String usingType) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "%s rules '%s' in database '%s' are still in used by %s.", ruleType, ruleNames, databaseName, usingType);
+    public DuplicateStorageUnitException(final Collection<String> storageUnitNames) {
+        super(XOpenSQLState.DUPLICATE, 4, "Duplicate storage unit names '%s'.", String.join(", ", storageUnitNames));
     }
 }

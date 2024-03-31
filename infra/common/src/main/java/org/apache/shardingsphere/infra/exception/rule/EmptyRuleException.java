@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.storageunit;
+package org.apache.shardingsphere.infra.exception.rule;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ResourceDefinitionException;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
 
 /**
- * Duplicate storage unit exception.
+ * Empty rule unit exception.
  */
-public final class DuplicateStorageUnitExceptionDefinition extends ResourceDefinitionException {
+public final class EmptyRuleException extends RuleDefinitionException {
     
-    private static final long serialVersionUID = 2103793827572264148L;
+    private static final long serialVersionUID = -4150905802300104824L;
     
-    public DuplicateStorageUnitExceptionDefinition(final Collection<String> storageUnitNames) {
-        super(XOpenSQLState.DUPLICATE, 4, "Duplicate storage unit names '%s'.", String.join(", ", storageUnitNames));
+    public EmptyRuleException(final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 1, "There is no rule in database '%s'.", databaseName);
     }
 }

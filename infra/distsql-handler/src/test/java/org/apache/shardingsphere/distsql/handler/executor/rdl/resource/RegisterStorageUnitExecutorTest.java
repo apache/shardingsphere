@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolP
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
-import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitExceptionDefinition;
+import org.apache.shardingsphere.infra.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
@@ -70,14 +70,14 @@ class RegisterStorageUnitExecutorTest {
     
     @Test
     void assertExecuteUpdateWithDuplicateStorageUnitNamesInStatement() {
-        assertThrows(DuplicateStorageUnitExceptionDefinition.class, () -> executor.executeUpdate(createRegisterStorageUnitStatementWithDuplicateStorageUnitNames(), mock(ContextManager.class)));
+        assertThrows(DuplicateStorageUnitException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatementWithDuplicateStorageUnitNames(), mock(ContextManager.class)));
     }
     
     @Test
     void assertExecuteUpdateWithDuplicateStorageUnitNamesWithResourceMetaData() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getStorageUnits("foo_db").keySet()).thenReturn(Collections.singleton("ds_0"));
-        assertThrows(DuplicateStorageUnitExceptionDefinition.class, () -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
+        assertThrows(DuplicateStorageUnitException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
     }
     
     @Test
@@ -87,7 +87,7 @@ class RegisterStorageUnitExecutorTest {
         DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
         when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("ds_0", Collections.emptyList()));
         when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
-        assertThrows(DuplicateStorageUnitExceptionDefinition.class, () -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
+        assertThrows(DuplicateStorageUnitException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
     }
     
     private RegisterStorageUnitStatement createRegisterStorageUnitStatement() {
