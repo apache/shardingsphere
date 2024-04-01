@@ -46,11 +46,10 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Data
 
-| SQL State | Vendor Code | Reason                                                    |
-|-----------|-------------|-----------------------------------------------------------|
-| HY004     | 11000       | Invalid value \`%s\`.                                     |
-| HY004     | 11001       | Unsupported conversion data type \`%s\` for value \`%s\`. |
-| HY004     | 11010       | Unsupported conversion stream charset \`%s\`.             |
+| SQL State | Vendor Code | Reason                                                |
+|-----------|-------------|-------------------------------------------------------|
+| HY004     | 11000       | Unsupported conversion data type '%s' for value '%s'. |
+| HY004     | 11001       | Unsupported conversion stream charset '%s'.           |
 
 ### Syntax
 
