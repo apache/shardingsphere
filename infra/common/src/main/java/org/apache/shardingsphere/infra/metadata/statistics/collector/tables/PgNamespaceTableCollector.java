@@ -44,7 +44,7 @@ public final class PgNamespaceTableCollector implements ShardingSphereStatistics
     private static final String SELECT_SQL = "SELECT " + COLUMN_NAMES + " FROM pg_catalog.pg_namespace";
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final Map<String, ShardingSphereDatabase> databases, 
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final Map<String, ShardingSphereDatabase> databases,
                                                      final RuleMetaData globalRuleMetaData) throws SQLException {
         Collection<ShardingSphereRowData> rows = ShardingSphereTableDataCollectorUtils.collectRowData(databases.get(databaseName),
                 table, Arrays.stream(COLUMN_NAMES.split(",")).map(String::trim).collect(Collectors.toList()), SELECT_SQL);

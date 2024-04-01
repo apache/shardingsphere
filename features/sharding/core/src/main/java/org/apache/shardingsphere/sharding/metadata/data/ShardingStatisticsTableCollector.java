@@ -49,7 +49,7 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
     private static final String SHARDING_TABLE_STATISTICS = "sharding_table_statistics";
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final Map<String, ShardingSphereDatabase> databases, 
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final Map<String, ShardingSphereDatabase> databases,
                                                      final RuleMetaData globalRuleMetaData) throws SQLException {
         ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_TABLE_STATISTICS);
         DatabaseType protocolType = databases.values().iterator().next().getProtocolType();
