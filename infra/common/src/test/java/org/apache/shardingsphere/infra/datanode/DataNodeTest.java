@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
-import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException;
+import org.apache.shardingsphere.infra.exception.InvalidDataNodeFormatException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -37,17 +37,17 @@ class DataNodeTest {
     
     @Test
     void assertNewInValidDataNodeWithoutDelimiter() {
-        assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode("ds_0tbl_0"));
+        assertThrows(InvalidDataNodeFormatException.class, () -> new DataNode("ds_0tbl_0"));
     }
     
     @Test
     void assertNewInValidDataNodeWithTwoDelimiters() {
-        assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode("ds_0.db_0.tbl_0.tbl_1"));
+        assertThrows(InvalidDataNodeFormatException.class, () -> new DataNode("ds_0.db_0.tbl_0.tbl_1"));
     }
     
     @Test
     void assertNewValidDataNodeWithInvalidDelimiter() {
-        assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode("ds_0,tbl_0"));
+        assertThrows(InvalidDataNodeFormatException.class, () -> new DataNode("ds_0,tbl_0"));
     }
     
     @SuppressWarnings({"SimplifiableAssertion", "ConstantValue"})
@@ -72,12 +72,12 @@ class DataNodeTest {
     
     @Test
     void assertEmptyDataSourceDataNode() {
-        assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode(".tbl_0"));
+        assertThrows(InvalidDataNodeFormatException.class, () -> new DataNode(".tbl_0"));
     }
     
     @Test
     void assertEmptyTableDataNode() {
-        assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode("ds_0."));
+        assertThrows(InvalidDataNodeFormatException.class, () -> new DataNode("ds_0."));
     }
     
     @Test

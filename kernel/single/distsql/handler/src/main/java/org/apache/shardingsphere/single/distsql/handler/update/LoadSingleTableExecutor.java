@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.exception.resource.storageunit.MissingReq
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException;
+import org.apache.shardingsphere.infra.exception.InvalidDataNodeFormatException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -86,10 +86,10 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
         }
         if (isSchemaSupportedDatabaseType) {
             ShardingSpherePreconditions.checkState(singleTableSegment.getSchemaName().isPresent(),
-                    () -> new InvalidDataNodesFormatException(singleTableSegment.toString(), "Current database is schema required, please use format `db.schema.table`"));
+                    () -> new InvalidDataNodeFormatException(singleTableSegment.toString(), "Current database is schema required, please use format `db.schema.table`"));
         } else {
             ShardingSpherePreconditions.checkState(!singleTableSegment.getSchemaName().isPresent(),
-                    () -> new InvalidDataNodesFormatException(singleTableSegment.toString(), "Current database does not support schema, please use format `db.table`"));
+                    () -> new InvalidDataNodeFormatException(singleTableSegment.toString(), "Current database does not support schema, please use format `db.table`"));
         }
     }
     
