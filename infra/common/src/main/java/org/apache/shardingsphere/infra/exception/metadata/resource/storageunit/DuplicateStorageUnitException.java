@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.exception.metadata.resource.storageunit;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.metadata.resource.ResourceDefinitionException;
+
+import java.util.Collection;
 
 /**
- * Schema not found exception.
+ * Duplicate storage unit exception.
  */
-public final class SchemaNotFoundException extends MetaDataSQLException {
+public final class DuplicateStorageUnitException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 2722045034640737328L;
+    private static final long serialVersionUID = 2103793827572264148L;
     
-    public SchemaNotFoundException(final String schemaName) {
-        super(XOpenSQLState.NOT_FOUND, 2, "Schema '%s' does not exist.", schemaName);
+    public DuplicateStorageUnitException(final Collection<String> storageUnitNames) {
+        super(XOpenSQLState.DUPLICATE, 4, "Duplicate storage unit names '%s'.", String.join(", ", storageUnitNames));
     }
 }

@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.resource.storageunit;
+package org.apache.shardingsphere.infra.exception.metadata.resource.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.resource.ResourceDefinitionException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.ResourceDefinitionException;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
- * Duplicate storage unit exception.
+ * In used storage unit exception.
  */
-public final class DuplicateStorageUnitException extends ResourceDefinitionException {
+public final class InUsedStorageUnitException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 2103793827572264148L;
+    private static final long serialVersionUID = -3427324685070457375L;
     
-    public DuplicateStorageUnitException(final Collection<String> storageUnitNames) {
-        super(XOpenSQLState.DUPLICATE, 4, "Duplicate storage unit names '%s'.", String.join(", ", storageUnitNames));
+    public InUsedStorageUnitException(final String storageUnitName, final Collection<Class<? extends ShardingSphereRule>> ruleClasses) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Storage unit '%s' still used by '%s'.", storageUnitName, ruleClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(", ")));
     }
 }

@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.resource.storageunit;
+package org.apache.shardingsphere.infra.exception.metadata.rule;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.resource.ResourceDefinitionException;
 
 /**
- * Empty storage unit exception.
+ * Empty rule unit exception.
  */
-public final class EmptyStorageUnitException extends ResourceDefinitionException {
+public final class EmptyRuleException extends RuleDefinitionException {
     
-    private static final long serialVersionUID = 1704331180489268L;
+    private static final long serialVersionUID = -4150905802300104824L;
     
-    public EmptyStorageUnitException() {
-        super(XOpenSQLState.NOT_FOUND, 1, "There is no storage unit in any database.");
-    }
-    
-    public EmptyStorageUnitException(final String databaseName) {
-        super(XOpenSQLState.NOT_FOUND, 1, "There is no storage unit in database '%s'.", databaseName);
+    public EmptyRuleException(final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 1, "There is no rule in database '%s'.", databaseName);
     }
 }

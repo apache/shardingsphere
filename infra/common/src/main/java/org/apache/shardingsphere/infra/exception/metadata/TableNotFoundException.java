@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.exception.metadata;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Rule definition exception.
+ * Table not found exception.
  */
-public abstract class RuleDefinitionException extends MetaDataSQLException {
+public final class TableNotFoundException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = -6414242067345718028L;
+    private static final long serialVersionUID = -2507596759730534895L;
     
-    private static final int RULE_CODE = 2;
-    
-    protected RuleDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    public TableNotFoundException(final String tableName) {
+        super(XOpenSQLState.NOT_FOUND, 3, "Table or view '%s' does not exist.", tableName);
     }
     
-    private static int getErrorCode(final int errorCode) {
-        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
-        return RULE_CODE * 100 + errorCode;
+    public TableNotFoundException(final String tableName, final String storageUnitName) {
+        super(XOpenSQLState.NOT_FOUND, 3, "Table or view '%s' does not exist in storage unit '%s'.", tableName, storageUnitName);
     }
 }

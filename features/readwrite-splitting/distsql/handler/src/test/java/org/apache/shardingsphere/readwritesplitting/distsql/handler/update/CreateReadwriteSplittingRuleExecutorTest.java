@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.infra.exception.resource.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.metadata.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.metadata.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;

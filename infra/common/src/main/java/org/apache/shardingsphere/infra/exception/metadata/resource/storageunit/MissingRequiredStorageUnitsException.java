@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.resource.storageunit;
+package org.apache.shardingsphere.infra.exception.metadata.resource.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.resource.ResourceDefinitionException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.ResourceDefinitionException;
 
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Collection;
 
 /**
- * Storage units connect exception.
+ * Missing required storage units exception.
  */
-public final class StorageUnitsConnectException extends ResourceDefinitionException {
+public final class MissingRequiredStorageUnitsException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 1824912697040264268L;
+    private static final long serialVersionUID = 1704331180489268L;
     
-    public StorageUnitsConnectException(final Map<String, Exception> causes) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 10, "Storage units can not connect, error messages are: %s.", causes.entrySet().stream().map(entry -> String.format(
-                "Storage unit name: '%s', error message is: %s", entry.getKey(), entry.getValue().getMessage())).collect(Collectors.joining(System.lineSeparator())));
+    public MissingRequiredStorageUnitsException(final String databaseName, final Collection<String> storageUnitNames) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "Storage units '%s' do not exist in database '%s'.", storageUnitNames, databaseName);
     }
 }
