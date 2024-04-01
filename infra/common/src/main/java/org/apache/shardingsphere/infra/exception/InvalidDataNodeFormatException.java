@@ -28,10 +28,10 @@ public final class InvalidDataNodeFormatException extends MetaDataSQLException {
     private static final long serialVersionUID = 192279170808654743L;
     
     public InvalidDataNodeFormatException(final String dataNode) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 3, "Invalid format for actual data node `%s`.", dataNode);
+        super(XOpenSQLState.GENERAL_ERROR, 1, "Invalid format for actual data node `%s`.", dataNode);
     }
     
     public InvalidDataNodeFormatException(final String dataNode, final String reason) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 3, "Invalid format for data node `%s`, reason is: %s.", dataNode, reason);
+        super(XOpenSQLState.GENERAL_ERROR, 1, "Invalid format for data node `%s`, reason is: %s.", dataNode, reason);
     }
 }
