@@ -134,13 +134,11 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
             }
         }
         for (SingleTableSegment each : sqlStatement.getTables()) {
-            if (SingleTableConstants.ASTERISK.equals(each.getTableName())) {
-                continue;
+            if (!SingleTableConstants.ASTERISK.equals(each.getTableName())) {
+                ShardingSpherePreconditions.checkState(actualTableNodes.containsKey(each.getStorageUnitName())
+                                && actualTableNodes.get(each.getStorageUnitName()).get(defaultSchemaName).contains(each.getTableName()),
+                        () -> new MissingRequiredSingleTableException(each.getStorageUnitName(), each.getTableName()));
             }
-            ShardingSpherePreconditions.checkState(actualTableNodes.containsKey(each.getStorageUnitName()),
-                    () -> new MissingRequiredSingleTableException(each.getStorageUnitName(), each.getTableName()));
-            ShardingSpherePreconditions.checkState(actualTableNodes.get(each.getStorageUnitName()).get(defaultSchemaName).contains(each.getTableName()),
-                    () -> new MissingRequiredSingleTableException(each.getStorageUnitName(), each.getTableName()));
         }
     }
     
