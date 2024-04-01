@@ -29,7 +29,7 @@ public final class DuplicateStorageUnitException extends ResourceDefinitionExcep
     
     private static final long serialVersionUID = 2103793827572264148L;
     
-    public DuplicateStorageUnitException(final Collection<String> storageUnitNames) {
-        super(XOpenSQLState.DUPLICATE, 4, "Duplicate storage unit names '%s'.", String.join(", ", storageUnitNames));
+    public DuplicateStorageUnitException(final String databaseName, final Collection<String> storageUnitNames) {
+        super(XOpenSQLState.DUPLICATE, 4, "Duplicate storage unit names '%s' on database '%s'.", String.join(", ", storageUnitNames), databaseName);
     }
 }
