@@ -12,36 +12,37 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 元数据
 
-| SQL State | Vendor Code | 错误信息                                                                       |
-|-----------|-------------|----------------------------------------------------------------------------|
-| HY000     | 10000       | Can not support 3-tier structure for actual data node '%s' with JDBC '%s'. |
-| HY004     | 10001       | Invalid format for actual data node '%s'.                                  |
-| 42S02     | 10002       | Schema '%s' does not exist.                                                |
-| 42S02     | 10003       | Table or view '%s' does not exist.                                         |
-| 42S02     | 10004       | Unknown column '%s' in '%s'.                                               |
-| HY000     | 10005       | Column '%s' in %s is ambiguous.                                            |
-| 42S02     | 10021       | Single table '%s' does not exist.                                          |
-| HY000     | 10022       | Can not load table with database name '%s' and data source name '%s'.      |
-| 0A000     | 10030       | Can not drop schema '%s' because of contains tables.                       |
-| HY000     | 10100       | Can not %s storage units '%s'.                                             |
-| 42S02     | 10101       | There is no storage unit in database '%s'.                                 |
-| 44000     | 10102       | Storage units '%s' do not exist in database '%s'.                          |
-| 44000     | 10103       | Storage unit '%s' still used by '%s'.                                      |
-| 42S01     | 10104       | Duplicate storage unit names '%s'.                                         |
-| 08000     | 10110       | Storage units can not connect, error messages are: %s.                     |
-| 0A000     | 10111       | Can not alter connection info in storage units: '%s'.                      |
-| 44000     | 10120       | Invalid storage unit status, error message is: %s.                         |
-| 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                               |
-| 42S02     | 10201       | There is no rule in database '%s'.                                         |
-| 42S02     | 10202       | %s rules '%s' do not exist in database '%s'.                               |
-| 44000     | 10203       | %s rules '%s' in database '%s' are still in used.                          |
-| 42S01     | 10204       | Duplicate %s rule names '%s' in database '%s'.                             |
-| 44000     | 10300       | Algorithm '%s.'%s' initialization failed, reason is: %s.                   |
-| 44000     | 10301       | '%s' algorithm on %s is required.                                          |
-| 42S02     | 10302       | '%s' algorithm '%s' on %s is unregistered.                                 |
-| 44000     | 10303       | %s algorithms '%s' in database '%s' are still in used.                     |
-| 44000     | 10304       | Invalid %s algorithm configuration '%s'.                                   |
-| HY000     | 10350       | Algorithm '%s.%s' execute failed, reason is: %s.                           |
+| SQL State | Vendor Code | 错误信息                                                                                |
+|-----------|-------------|-------------------------------------------------------------------------------------|
+| HY000     | 10000       | Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.          |
+| HY004     | 10001       | Invalid format for actual data node '%s'.                                           |
+| 42S02     | 10002       | Schema '%s' does not exist.                                                         |
+| 42S02     | 10003       | Table or view '%s' does not exist.                                                  |
+| 42S02     | 10004       | Unknown column '%s' in '%s'.                                                        |
+| HY000     | 10005       | Column '%s' in %s is ambiguous.                                                     |
+| HY000     | 10100       | Can not %s storage units '%s'.                                                      |
+| 42S02     | 10101       | There is no storage unit in database '%s'.                                          |
+| 44000     | 10102       | Storage units '%s' do not exist in database '%s'.                                   |
+| 44000     | 10103       | Storage unit '%s' still used by '%s'.                                               |
+| 42S01     | 10104       | Duplicate storage unit names '%s'.                                                  |
+| 08000     | 10110       | Storage units can not connect, error messages are: %s.                              |
+| 0A000     | 10111       | Can not alter connection info in storage units: '%s'.                               |
+| 44000     | 10120       | Invalid storage unit status, error message is: %s.                                  |
+| 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                        |
+| 42S02     | 10201       | There is no rule in database '%s'.                                                  |
+| 42S02     | 10202       | %s rules '%s' do not exist in database '%s'.                                        |
+| 44000     | 10203       | %s rules '%s' in database '%s' are still in used.                                   |
+| 42S01     | 10204       | Duplicate %s rule names '%s' in database '%s'.                                      |
+| 44000     | 10300       | Algorithm '%s.'%s' initialization failed, reason is: %s.                            |
+| 44000     | 10301       | '%s' algorithm on %s is required.                                                   |
+| 42S02     | 10302       | '%s' algorithm '%s' on %s is unregistered.                                          |
+| 44000     | 10303       | %s algorithms '%s' in database '%s' are still in used.                              |
+| 44000     | 10304       | Invalid %s algorithm configuration '%s'.                                            |
+| HY000     | 10350       | Algorithm '%s.%s' execute failed, reason is: %s.                                    |
+| 44000     | 10400       | Invalid single rule configuration, reason is: %s.                                   |
+| 42S02     | 10401       | Single table '%s' does not exist.                                                   |
+| HY000     | 10402       | Can not load table with database name '%s' and data source name '%s', reason is: %s |
+| 0A000     | 10403       | Can not drop schema '%s' because of contains tables.                                |
 
 ### 数据
 

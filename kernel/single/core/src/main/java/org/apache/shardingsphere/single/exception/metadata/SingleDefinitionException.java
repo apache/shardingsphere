@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.exception;
+package org.apache.shardingsphere.single.exception.metadata;
 
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Single table not found exception.
+ * Single definition exception.
  */
-public final class SingleTableNotFoundException extends MetaDataSQLException {
+public abstract class SingleDefinitionException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = 3498790429190415298L;
+    private static final long serialVersionUID = -1511719427208747948L;
     
-    public SingleTableNotFoundException(final String tableName) {
-        super(XOpenSQLState.NOT_FOUND, 21, "Single table '%s' does not exist.", tableName);
+    private static final int SINGLE_CODE = 4;
+    
+    protected SingleDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    }
+    
+    private static int getErrorCode(final int errorCode) {
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
+        return SINGLE_CODE * 100 + errorCode;
     }
 }

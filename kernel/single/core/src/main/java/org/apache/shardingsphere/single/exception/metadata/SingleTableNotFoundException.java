@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.exception;
+package org.apache.shardingsphere.single.exception.metadata;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
-import java.sql.SQLException;
-
 /**
- * Single tables loading exception.
+ * Single table not found exception.
  */
-public final class SingleTablesLoadingException extends MetaDataSQLException {
+public final class SingleTableNotFoundException extends SingleDefinitionException {
     
-    private static final long serialVersionUID = 698261896187918188L;
+    private static final long serialVersionUID = 3498790429190415298L;
     
-    public SingleTablesLoadingException(final String databaseName, final String dataSourceName, final SQLException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 22, "Can not load table with database name '%s' and data source name '%s', reason is: %s", databaseName, dataSourceName, cause.getMessage());
+    public SingleTableNotFoundException(final String tableName) {
+        super(XOpenSQLState.NOT_FOUND, 1, "Single table '%s' does not exist.", tableName);
     }
 }
