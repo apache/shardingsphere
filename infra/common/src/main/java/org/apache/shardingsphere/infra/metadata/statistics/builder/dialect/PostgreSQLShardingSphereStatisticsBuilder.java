@@ -62,13 +62,13 @@ public final class PostgreSQLShardingSphereStatisticsBuilder implements Sharding
         ShardingSphereStatistics result = new ShardingSphereStatistics();
         for (Entry<String, ShardingSphereDatabase> entry : metaData.getDatabases().entrySet()) {
             ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
-            collectSchemaData(metaData, entry.getValue(), databaseData);
+            collectDatabaseData(metaData, entry.getValue(), databaseData);
             result.getDatabaseData().put(entry.getKey(), databaseData);
         }
         return result;
     }
     
-    private void collectSchemaData(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final ShardingSphereDatabaseData databaseData) {
+    private void collectDatabaseData(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final ShardingSphereDatabaseData databaseData) {
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
             if (SHARDING_SPHERE.equals(entry.getKey())) {
                 ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
@@ -79,7 +79,7 @@ public final class PostgreSQLShardingSphereStatisticsBuilder implements Sharding
             }
             if (COLLECTED_SCHEMA_TABLES.containsKey(entry.getKey())) {
                 ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
-                collectTableData(metaData, database, entry, schemaData);
+                collectSchemaData(metaData, database, entry.getValue(), schemaData);
                 databaseData.getSchemaData().put(entry.getKey(), schemaData);
             }
         }
@@ -91,9 +91,9 @@ public final class PostgreSQLShardingSphereStatisticsBuilder implements Sharding
         schemaData.getTableData().put(CLUSTER_INFORMATION, tableData);
     }
     
-    private void collectTableData(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database,
-                                  final Entry<String, ShardingSphereSchema> schemaEntry, final ShardingSphereSchemaData schemaData) {
-        for (Entry<String, ShardingSphereTable> entry : schemaEntry.getValue().getTables().entrySet()) {
+    private void collectSchemaData(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database,
+                                   final ShardingSphereSchema schema, final ShardingSphereSchemaData schemaData) {
+        for (Entry<String, ShardingSphereTable> entry : schema.getTables().entrySet()) {
             ShardingSphereTableData tableData = new ShardingSphereTableData(entry.getValue().getName());
             collectTableData(metaData, database, entry.getValue(), schemaData);
             schemaData.getTableData().put(entry.getKey(), tableData);
