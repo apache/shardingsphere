@@ -127,11 +127,11 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         Collection<String> result = new LinkedHashSet<>();
         for (DataNode each : configuredDataNodes) {
             ShardingSpherePreconditions.checkState(actualDataNodes.containsKey(each.getTableName()),
-                    () -> new InvalidSingleRuleConfigurationException(String.format("Single table `%s` does not exist", getTableNodeString(isSchemaSupportedDatabaseType, each))));
+                    () -> new InvalidSingleRuleConfigurationException(String.format("Single table '%s' does not exist", getTableNodeString(isSchemaSupportedDatabaseType, each))));
             DataNode actualDataNode = actualDataNodes.get(each.getTableName()).iterator().next();
             String tableNodeStr = getTableNodeString(isSchemaSupportedDatabaseType, actualDataNode);
             ShardingSpherePreconditions.checkState(actualDataNode.equals(each),
-                    () -> new InvalidSingleRuleConfigurationException(String.format("Single table `%s` is found that does not match %s", tableNodeStr,
+                    () -> new InvalidSingleRuleConfigurationException(String.format("Single table '%s' is found that does not match %s", tableNodeStr,
                             getTableNodeString(isSchemaSupportedDatabaseType, each))));
             result.add(tableNodeStr);
         }

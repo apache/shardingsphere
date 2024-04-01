@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.driver.statement;
 
-import org.apache.shardingsphere.infra.exception.UnknownColumnException;
+import org.apache.shardingsphere.infra.exception.ColumnNotFoundException;
 import org.apache.shardingsphere.test.e2e.driver.AbstractShardingDriverTest;
 import org.apache.shardingsphere.test.e2e.driver.fixture.keygen.ResetIncrementKeyGenerateAlgorithmFixture;
 import org.junit.jupiter.api.Test;
@@ -668,6 +668,6 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
     
     @Test
     void assertColumnNotFoundException() {
-        assertThrows(UnknownColumnException.class, () -> getShardingSphereDataSource().getConnection().prepareStatement(UPDATE_WITH_ERROR_COLUMN));
+        assertThrows(ColumnNotFoundException.class, () -> getShardingSphereDataSource().getConnection().prepareStatement(UPDATE_WITH_ERROR_COLUMN));
     }
 }

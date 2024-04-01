@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.distsql.handler.exception;
+package org.apache.shardingsphere.infra.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Missing required single table exception.
+ * Column not found exception.
  */
-public final class MissingRequiredSingleTableException extends MetaDataSQLException {
+public final class ColumnNotFoundException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = 3155006580453893122L;
+    private static final long serialVersionUID = -1305402273592303335L;
     
-    public MissingRequiredSingleTableException(final String storageUnitName, final String tableName) {
-        super(XOpenSQLState.NOT_FOUND, 8, "Missing required table '%s' in storage unit '%s'.", tableName, storageUnitName);
+    public ColumnNotFoundException(final String columnExpression, final String segmentTypeMessage) {
+        super(XOpenSQLState.NOT_FOUND, 4, "Unknown column '%s' in '%s'.", columnExpression, segmentTypeMessage);
     }
 }

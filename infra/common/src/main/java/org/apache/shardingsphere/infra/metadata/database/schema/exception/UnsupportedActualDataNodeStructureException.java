@@ -31,6 +31,6 @@ public final class UnsupportedActualDataNodeStructureException extends MetaDataS
     private static final long serialVersionUID = -8921823916974492519L;
     
     public UnsupportedActualDataNodeStructureException(final DataNode dataNode, final Collection<String> jdbcUrlPrefixes) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 0, "Can not support 3-tier structure for actual data node `%s` with JDBC `%s`.", dataNode.format(), jdbcUrlPrefixes.toString());
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 0, "Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.", dataNode.format(), jdbcUrlPrefixes.toString());
     }
 }
