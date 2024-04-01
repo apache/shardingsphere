@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Unknown column exception.
+ * Column not found exception.
  */
-public final class UnknownColumnException extends MetaDataSQLException {
+public final class ColumnNotFoundException extends MetaDataSQLException {
     
     private static final long serialVersionUID = -1305402273592303335L;
     
-    public UnknownColumnException(final String columnExpression, final String segmentTypeMessage) {
+    public ColumnNotFoundException(final String columnExpression, final String segmentTypeMessage) {
         super(XOpenSQLState.NOT_FOUND, 6, "Unknown column '%s' in '%s'.", columnExpression, segmentTypeMessage);
     }
 }
