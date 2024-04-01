@@ -25,10 +25,14 @@ import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderCon
 import org.apache.shardingsphere.infra.binder.segment.parameter.impl.ParameterMarkerExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
@@ -70,7 +74,7 @@ public final class SubqueryTableSegmentBinder {
         SubqueryTableSegment result = new SubqueryTableSegment(boundedSubquerySegment);
         segment.getAliasSegment().ifPresent(result::setAlias);
         tableBinderContexts.put(subqueryTableName.getValue().toLowerCase(),
-                new SimpleTableSegmentBinderContext(createSubqueryProjections(boundedSelect.getProjections().getProjections(), subqueryTableName)));
+                new SimpleTableSegmentBinderContext(createSubqueryProjections(boundedSelect.getProjections().getProjections(), subqueryTableName, statementBinderContext.getDatabaseType())));
         return result;
     }
     
@@ -94,14 +98,19 @@ public final class SubqueryTableSegmentBinder {
         segment.getPivot().ifPresent(optional -> optional.getPivotColumns().forEach(each -> statementBinderContext.getPivotColumnNames().add(each.getIdentifier().getValue().toLowerCase())));
     }
     
-    private static Collection<ProjectionSegment> createSubqueryProjections(final Collection<ProjectionSegment> projections, final IdentifierValue subqueryTableName) {
+    private static Collection<ProjectionSegment> createSubqueryProjections(final Collection<ProjectionSegment> projections, final IdentifierValue subqueryTableName, final DatabaseType databaseType) {
         Collection<ProjectionSegment> result = new LinkedList<>();
         for (ProjectionSegment each : projections) {
             if (each instanceof ColumnProjectionSegment) {
                 result.add(createColumnProjection((ColumnProjectionSegment) each, subqueryTableName));
             } else if (each instanceof ShorthandProjectionSegment) {
-                result.addAll(createSubqueryProjections(((ShorthandProjectionSegment) each).getActualProjectionSegments(), subqueryTableName));
-            } else {
+                result.addAll(createSubqueryProjections(((ShorthandProjectionSegment) each).getActualProjectionSegments(), subqueryTableName, databaseType));
+            } else if (each instanceof ExpressionProjectionSegment) {
+                result.add(createColumnProjection((ExpressionProjectionSegment) each, subqueryTableName, databaseType));
+            } else if (each instanceof AggregationProjectionSegment) {
+                result.add(createColumnProjection((AggregationProjectionSegment) each, subqueryTableName, databaseType));
+            }
+            else {
                 result.add(each);
             }
         }
@@ -118,6 +127,30 @@ public final class SubqueryTableSegmentBinder {
                         originalColumn.getColumn().getColumnBoundedInfo().getOriginalTable(), originalColumn.getColumn().getColumnBoundedInfo().getOriginalColumn()));
         ColumnProjectionSegment result = new ColumnProjectionSegment(newColumnSegment);
         result.setVisible(originalColumn.isVisible());
+        return result;
+    }
+    
+    private static ColumnProjectionSegment createColumnProjection(final ExpressionProjectionSegment expressionProjectionSegment, final IdentifierValue subqueryTableName,
+                                                                  final DatabaseType databaseType) {
+        ColumnSegment newColumnSegment = new ColumnSegment(0, 0, expressionProjectionSegment.getAlias().orElseGet(() -> new IdentifierValue(expressionProjectionSegment.getText(),
+                new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter())));
+        if (!Strings.isNullOrEmpty(subqueryTableName.getValue())) {
+            newColumnSegment.setOwner(new OwnerSegment(0, 0, subqueryTableName));
+        }
+        ColumnProjectionSegment result = new ColumnProjectionSegment(newColumnSegment);
+        result.setVisible(true);
+        return result;
+    }
+    
+    private static ProjectionSegment createColumnProjection(final AggregationProjectionSegment aggregationProjectionSegment, final IdentifierValue subqueryTableName,
+                                                            final DatabaseType databaseType) {
+        ColumnSegment newColumnSegment = new ColumnSegment(0, 0, aggregationProjectionSegment.getAlias().orElseGet(() -> new IdentifierValue(aggregationProjectionSegment.getText(),
+                new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter())));
+        if (!Strings.isNullOrEmpty(subqueryTableName.getValue())) {
+            newColumnSegment.setOwner(new OwnerSegment(0, 0, subqueryTableName));
+        }
+        ColumnProjectionSegment result = new ColumnProjectionSegment(newColumnSegment);
+        result.setVisible(true);
         return result;
     }
 }
