@@ -194,3 +194,23 @@ jobs:
           stale-issue-message: >
             There hasn't been any activity on this issue recently, and in order to prioritize active issues, it will be
             marked as stale.
+  
+  check-dependency-convergence:
+    if: github.repository == 'apache/shardingsphere'
+    name: Check - Dependency Convergence
+    needs: global-environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
+      - name: Run Dependency Convergence Check
+        run: |
+          sed -i '/<requireMavenVersion>/i \                                    <dependencyConvergence/>' pom.xml
+          ./mvnw clean install -DskipTests -T1C
+
