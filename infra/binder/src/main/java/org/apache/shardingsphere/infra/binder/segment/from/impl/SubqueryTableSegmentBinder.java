@@ -109,8 +109,7 @@ public final class SubqueryTableSegmentBinder {
                 result.add(createColumnProjection((ExpressionProjectionSegment) each, subqueryTableName, databaseType));
             } else if (each instanceof AggregationProjectionSegment) {
                 result.add(createColumnProjection((AggregationProjectionSegment) each, subqueryTableName, databaseType));
-            }
-            else {
+            } else {
                 result.add(each);
             }
         }
