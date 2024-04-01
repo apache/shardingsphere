@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException;
+import org.apache.shardingsphere.infra.exception.InvalidDataNodeFormatException;
 
 import java.util.List;
 
@@ -46,13 +46,13 @@ public final class DataNodeUtils {
      *
      * @param text data node text
      * @return data node
-     * @throws InvalidDataNodesFormatException invalid data nodes format exception
+     * @throws InvalidDataNodeFormatException invalid data nodes format exception
      */
     public static DataNode parseWithSchema(final String text) {
         List<String> segments = Splitter.on(".").splitToList(text);
         boolean hasSchema = 3 == segments.size();
         if (!(2 == segments.size() || hasSchema)) {
-            throw new InvalidDataNodesFormatException(text);
+            throw new InvalidDataNodeFormatException(text);
         }
         DataNode result = new DataNode(segments.get(0), segments.get(segments.size() - 1));
         if (hasSchema) {
