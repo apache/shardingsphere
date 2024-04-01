@@ -14,8 +14,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息                                                                           |
 |-----------|-------------|--------------------------------------------------------------------------------|
-| 0A000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
-| HY004     | 10003       | Invalid format for actual data node \`%s\`.                                    |
+| HY000     | 10000       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
+| HY004     | 10001       | Invalid format for actual data node \`%s\`.                                    |
 | HY000     | 10005       | Column '%s' in %s is ambiguous.                                                |
 | 42S02     | 10006       | Unknown column '%s' in '%s'.                                                   |
 | 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
