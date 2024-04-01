@@ -30,4 +30,8 @@ public final class TableNotFoundException extends MetaDataSQLException {
     public TableNotFoundException(final String tableName) {
         super(XOpenSQLState.NOT_FOUND, 7, "Table or view '%s' does not exist.", tableName);
     }
+    
+    public TableNotFoundException(final String tableName, final String storageUnitName) {
+        super(XOpenSQLState.NOT_FOUND, 7, "Table or view '%s' does not exist in storage unit '%s'.", tableName, storageUnitName);
+    }
 }
