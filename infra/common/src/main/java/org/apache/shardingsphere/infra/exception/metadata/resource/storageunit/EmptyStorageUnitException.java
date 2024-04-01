@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.resource.storageunit;
+package org.apache.shardingsphere.infra.exception.metadata.resource.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.resource.ResourceDefinitionException;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.exception.metadata.resource.ResourceDefinitionException;
 
 /**
- * Duplicate storage unit exception.
+ * Empty storage unit exception.
  */
-public final class DuplicateStorageUnitException extends ResourceDefinitionException {
+public final class EmptyStorageUnitException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 2103793827572264148L;
+    private static final long serialVersionUID = 1704331180489268L;
     
-    public DuplicateStorageUnitException(final Collection<String> storageUnitNames) {
-        super(XOpenSQLState.DUPLICATE, 4, "Duplicate storage unit names '%s'.", String.join(", ", storageUnitNames));
+    public EmptyStorageUnitException() {
+        super(XOpenSQLState.NOT_FOUND, 1, "There is no storage unit in any database.");
+    }
+    
+    public EmptyStorageUnitException(final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 1, "There is no storage unit in database '%s'.", databaseName);
     }
 }

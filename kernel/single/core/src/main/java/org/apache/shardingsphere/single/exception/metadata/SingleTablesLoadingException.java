@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.exception;
+package org.apache.shardingsphere.single.exception.metadata;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
+import java.sql.SQLException;
+
 /**
- * Drop not empty schema exception.
+ * Single tables loading exception.
  */
-public final class DropNotEmptySchemaException extends MetaDataSQLException {
+public final class SingleTablesLoadingException extends SingleDefinitionException {
     
-    private static final long serialVersionUID = 5285619119572894557L;
+    private static final long serialVersionUID = 698261896187918188L;
     
-    public DropNotEmptySchemaException(final String schemaName) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 30, "Can not drop schema `%s` because of contains tables.", schemaName);
+    public SingleTablesLoadingException(final String databaseName, final String dataSourceName, final SQLException cause) {
+        super(XOpenSQLState.GENERAL_ERROR, 2, "Can not load table with database name '%s' and data source name '%s', reason is: %s", databaseName, dataSourceName, cause.getMessage());
     }
 }

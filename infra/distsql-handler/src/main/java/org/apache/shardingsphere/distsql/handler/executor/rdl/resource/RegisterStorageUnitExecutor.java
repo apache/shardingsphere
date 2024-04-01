@@ -28,8 +28,8 @@ import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.Regist
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.exception.resource.storageunit.DuplicateStorageUnitException;
-import org.apache.shardingsphere.infra.exception.resource.storageunit.StorageUnitsOperateException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.storageunit.DuplicateStorageUnitException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.mode.manager.ContextManager;

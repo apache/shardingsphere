@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.exception;
+package org.apache.shardingsphere.infra.exception.metadata.resource.storageunit;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.metadata.resource.ResourceDefinitionException;
+
+import java.util.Collection;
 
 /**
- * Single table not found exception.
+ * Alter storage unit connection info exception.
  */
-public final class SingleTableNotFoundException extends MetaDataSQLException {
+public final class AlterStorageUnitConnectionInfoException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 3498790429190415298L;
+    private static final long serialVersionUID = 525999625052706626L;
     
-    public SingleTableNotFoundException(final String tableName) {
-        super(XOpenSQLState.NOT_FOUND, 21, "Single table `%s` does not exist.", tableName);
+    public AlterStorageUnitConnectionInfoException(final Collection<String> storageUnitNames) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 11, "Can not alter connection info in storage units: '%s'.", String.join(", ", storageUnitNames));
     }
 }

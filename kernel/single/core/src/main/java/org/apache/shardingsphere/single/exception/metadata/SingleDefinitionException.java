@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.exception;
+package org.apache.shardingsphere.single.exception.metadata;
 
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-
-import java.sql.SQLException;
 
 /**
- * Single tables loading exception.
+ * Single definition exception.
  */
-public final class SingleTablesLoadingException extends MetaDataSQLException {
+public abstract class SingleDefinitionException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = 698261896187918188L;
+    private static final long serialVersionUID = -1511719427208747948L;
     
-    public SingleTablesLoadingException(final String databaseName, final String dataSourceName, final SQLException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 22, "Can not load table with database name `%s` and data source name `%s`, reason is: %s", databaseName, dataSourceName, cause.getMessage());
+    private static final int SINGLE_CODE = 4;
+    
+    protected SingleDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    }
+    
+    private static int getErrorCode(final int errorCode) {
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
+        return SINGLE_CODE * 100 + errorCode;
     }
 }

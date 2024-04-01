@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.exception;
+package org.apache.shardingsphere.infra.exception.metadata;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Invalid single rule configuration exception.
+ * Column not found exception.
  */
-public final class InvalidSingleRuleConfigurationException extends MetaDataSQLException {
+public final class ColumnNotFoundException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = 1337703808376580240L;
+    private static final long serialVersionUID = -1305402273592303335L;
     
-    public InvalidSingleRuleConfigurationException(final String message) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 22, "Invalid single rule configuration, reason is: %s.", message);
+    public ColumnNotFoundException(final String columnExpression, final String segmentTypeMessage) {
+        super(XOpenSQLState.NOT_FOUND, 4, "Unknown column '%s' in '%s'.", columnExpression, segmentTypeMessage);
     }
 }

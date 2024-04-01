@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.exception.metadata.resource.storageunit;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.metadata.resource.ResourceDefinitionException;
+
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * Schema not found exception.
+ * Storage units connect exception.
  */
-public final class SchemaNotFoundException extends MetaDataSQLException {
+public final class StorageUnitsConnectException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 2722045034640737328L;
+    private static final long serialVersionUID = 1824912697040264268L;
     
-    public SchemaNotFoundException(final String schemaName) {
-        super(XOpenSQLState.NOT_FOUND, 20, "Schema `%s` does not exist.", schemaName);
+    public StorageUnitsConnectException(final Map<String, Exception> causes) {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 10, "Storage units can not connect, error messages are: %s.", causes.entrySet().stream().map(entry -> String.format(
+                "Storage unit name: '%s', error message is: %s", entry.getKey(), entry.getValue().getMessage())).collect(Collectors.joining(System.lineSeparator())));
     }
 }

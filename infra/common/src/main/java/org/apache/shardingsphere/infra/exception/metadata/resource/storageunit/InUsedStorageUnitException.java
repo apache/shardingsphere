@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.exception.metadata.resource.storageunit;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.metadata.resource.ResourceDefinitionException;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
- * Invalid data node format exception.
+ * In used storage unit exception.
  */
-public final class InvalidDataNodeFormatException extends MetaDataSQLException {
+public final class InUsedStorageUnitException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 192279170808654743L;
+    private static final long serialVersionUID = -3427324685070457375L;
     
-    public InvalidDataNodeFormatException(final String dataNode) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 3, "Invalid format for actual data node `%s`.", dataNode);
-    }
-    
-    public InvalidDataNodeFormatException(final String dataNode, final String reason) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 3, "Invalid format for data node `%s`, reason is: %s.", dataNode, reason);
+    public InUsedStorageUnitException(final String storageUnitName, final Collection<Class<? extends ShardingSphereRule>> ruleClasses) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Storage unit '%s' still used by '%s'.", storageUnitName, ruleClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(", ")));
     }
 }

@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.resource.storageunit;
+package org.apache.shardingsphere.infra.exception.metadata;
 
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.resource.ResourceDefinitionException;
-
-import java.util.Collection;
 
 /**
- * Missing required storage units exception.
+ * Invalid data node format exception.
  */
-public final class MissingRequiredStorageUnitsException extends ResourceDefinitionException {
+public final class InvalidDataNodeFormatException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = 1704331180489268L;
+    private static final long serialVersionUID = 192279170808654743L;
     
-    public MissingRequiredStorageUnitsException(final String databaseName, final Collection<String> storageUnitNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "Storage units '%s' do not exist in database '%s'.", storageUnitNames, databaseName);
+    public InvalidDataNodeFormatException(final String dataNode) {
+        super(XOpenSQLState.GENERAL_ERROR, 1, "Invalid format for actual data node '%s'.", dataNode);
+    }
+    
+    public InvalidDataNodeFormatException(final String dataNode, final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 1, "Invalid format for data node '%s', reason is: %s.", dataNode, reason);
     }
 }

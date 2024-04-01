@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.resource.storageunit;
+package org.apache.shardingsphere.single.exception.metadata;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.resource.ResourceDefinitionException;
-
-import java.util.Collection;
 
 /**
- * Alter storage unit connection info exception.
+ * Drop not empty schema exception.
  */
-public final class AlterStorageUnitConnectionInfoException extends ResourceDefinitionException {
+public final class DropNotEmptySchemaException extends SingleDefinitionException {
     
-    private static final long serialVersionUID = 525999625052706626L;
+    private static final long serialVersionUID = 5285619119572894557L;
     
-    public AlterStorageUnitConnectionInfoException(final Collection<String> storageUnitNames) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 11, "Can not alter connection info in storage units: '%s'.", String.join(", ", storageUnitNames));
+    public DropNotEmptySchemaException(final String schemaName) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 3, "Can not drop schema '%s' because of contains tables.", schemaName);
     }
 }

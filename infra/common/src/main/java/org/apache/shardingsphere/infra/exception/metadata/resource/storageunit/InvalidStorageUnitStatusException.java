@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.exception.metadata.resource.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.ResourceDefinitionException;
 
 /**
- * Unknown column exception.
+ * Invalid storage unit status exception.
  */
-public final class UnknownColumnException extends MetaDataSQLException {
+public final class InvalidStorageUnitStatusException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = -1305402273592303335L;
+    private static final long serialVersionUID = 4029749233439176539L;
     
-    public UnknownColumnException(final String columnExpression, final String segmentTypeMessage) {
-        super(XOpenSQLState.NOT_FOUND, 6, "Unknown column '%s' in '%s'.", columnExpression, segmentTypeMessage);
+    public InvalidStorageUnitStatusException(final String errorMessage) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20, "Invalid storage unit status, error message is: %s.", errorMessage);
     }
 }

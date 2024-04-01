@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.exception.metadata.resource.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.ResourceDefinitionException;
+
+import java.util.Collection;
 
 /**
- * Table not found exception.
+ * Storage units operate exception.
  */
-public final class TableNotFoundException extends MetaDataSQLException {
+public final class StorageUnitsOperateException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = -2507596759730534895L;
+    private static final long serialVersionUID = 7029641448948791509L;
     
-    public TableNotFoundException(final String tableName) {
-        super(XOpenSQLState.NOT_FOUND, 7, "Table or view `%s` does not exist.", tableName);
+    public StorageUnitsOperateException(final String operationType, final Collection<String> storageUnitNames, final Exception cause) {
+        super(XOpenSQLState.GENERAL_ERROR, 0, String.format("Can not %s storage units '%s'.", operationType, String.join(", ", storageUnitNames)), cause);
     }
 }

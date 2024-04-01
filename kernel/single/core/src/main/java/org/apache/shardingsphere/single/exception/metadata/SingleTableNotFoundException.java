@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.single.exception.metadata;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Overall connection not enough exception.
+ * Single table not found exception.
  */
-public final class OverallConnectionNotEnoughException extends ConnectionSQLException {
+public final class SingleTableNotFoundException extends SingleDefinitionException {
     
-    private static final long serialVersionUID = -1297088138042287804L;
+    private static final long serialVersionUID = 3498790429190415298L;
     
-    public OverallConnectionNotEnoughException(final int desiredSize, final int actualSize, final Exception cause) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 20, String.format("Can not get %d connections one time, partition succeed connection(%d) have released. "
-                + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in properties.", desiredSize, actualSize), cause);
+    public SingleTableNotFoundException(final String tableName) {
+        super(XOpenSQLState.NOT_FOUND, 1, "Single table '%s' does not exist.", tableName);
     }
 }

@@ -15,18 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.exception.metadata;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Empty rule unit exception.
+ * Table not found exception.
  */
-public final class EmptyRuleException extends RuleDefinitionException {
+public final class TableNotFoundException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = -4150905802300104824L;
+    private static final long serialVersionUID = -2507596759730534895L;
     
-    public EmptyRuleException(final String databaseName) {
-        super(XOpenSQLState.NOT_FOUND, 1, "There is no rule in database '%s'.", databaseName);
+    public TableNotFoundException(final String tableName) {
+        super(XOpenSQLState.NOT_FOUND, 3, "Table or view '%s' does not exist.", tableName);
+    }
+    
+    public TableNotFoundException(final String tableName, final String storageUnitName) {
+        super(XOpenSQLState.NOT_FOUND, 3, "Table or view '%s' does not exist in storage unit '%s'.", tableName, storageUnitName);
     }
 }

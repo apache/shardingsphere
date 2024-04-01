@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.resource;
+package org.apache.shardingsphere.infra.exception.metadata.resource;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
@@ -39,7 +39,7 @@ public abstract class ResourceDefinitionException extends MetaDataSQLException {
     }
     
     private static int getErrorCode(final int errorCode) {
-        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 1000).");
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
         return RESOURCE_CODE * 100 + errorCode;
     }
 }

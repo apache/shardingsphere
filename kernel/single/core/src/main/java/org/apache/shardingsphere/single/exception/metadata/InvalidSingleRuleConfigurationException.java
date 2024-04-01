@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.single.exception.metadata;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
-import java.util.Collection;
-
 /**
- * In used rule exception.
+ * Invalid single rule configuration exception.
  */
-public final class InUsedRuleException extends RuleDefinitionException {
+public final class InvalidSingleRuleConfigurationException extends SingleDefinitionException {
     
-    private static final long serialVersionUID = 3308787279125477660L;
+    private static final long serialVersionUID = 1337703808376580240L;
     
-    public InUsedRuleException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "%s rules '%s' in database '%s' are still in used.", ruleType, ruleNames, databaseName);
-    }
-    
-    public InUsedRuleException(final String ruleType, final String databaseName, final Collection<String> ruleNames, final String usingType) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "%s rules '%s' in database '%s' are still in used by %s.", ruleType, ruleNames, databaseName, usingType);
+    public InvalidSingleRuleConfigurationException(final String message) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Invalid single rule configuration, reason is: %s.", message);
     }
 }

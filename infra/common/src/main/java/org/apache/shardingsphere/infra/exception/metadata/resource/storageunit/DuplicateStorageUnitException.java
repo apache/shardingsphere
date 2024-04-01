@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.resource.storageunit;
+package org.apache.shardingsphere.infra.exception.metadata.resource.storageunit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.resource.ResourceDefinitionException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.ResourceDefinitionException;
 
 import java.util.Collection;
 
 /**
- * Storage units operate exception.
+ * Duplicate storage unit exception.
  */
-public final class StorageUnitsOperateException extends ResourceDefinitionException {
+public final class DuplicateStorageUnitException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = 7029641448948791509L;
+    private static final long serialVersionUID = 2103793827572264148L;
     
-    public StorageUnitsOperateException(final String operationType, final Collection<String> storageUnitNames, final Exception cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 0, String.format("Can not %s storage units '%s'.", operationType, String.join(", ", storageUnitNames)), cause);
+    public DuplicateStorageUnitException(final Collection<String> storageUnitNames) {
+        super(XOpenSQLState.DUPLICATE, 4, "Duplicate storage unit names '%s'.", String.join(", ", storageUnitNames));
     }
 }
