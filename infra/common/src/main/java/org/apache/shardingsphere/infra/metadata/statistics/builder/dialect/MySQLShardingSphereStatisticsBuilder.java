@@ -52,13 +52,13 @@ public final class MySQLShardingSphereStatisticsBuilder implements ShardingSpher
         ShardingSphereStatistics result = new ShardingSphereStatistics();
         for (Entry<String, ShardingSphereDatabase> entry : metaData.getDatabases().entrySet()) {
             ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
-            collectSchemaData(metaData, entry.getValue(), databaseData);
+            collectDatabaseData(metaData, entry.getValue(), databaseData);
             result.getDatabaseData().put(entry.getKey(), databaseData);
         }
         return result;
     }
     
-    private void collectSchemaData(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final ShardingSphereDatabaseData databaseData) {
+    private void collectDatabaseData(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final ShardingSphereDatabaseData databaseData) {
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
             if (SHARDING_SPHERE.equals(entry.getKey())) {
                 ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
