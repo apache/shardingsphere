@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.metadata;
+package org.apache.shardingsphere.infra.exception.syntax;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
 
 /**
  * Ambiguous column exception.
  */
-public final class AmbiguousColumnException extends MetaDataSQLException {
+public final class AmbiguousColumnException extends SyntaxSQLException {
     
     private static final long serialVersionUID = -9002743483594729164L;
     
     public AmbiguousColumnException(final String columnExpression, final String segmentTypeMessage) {
-        super(XOpenSQLState.GENERAL_ERROR, 5, "Column '%s' in %s is ambiguous.", columnExpression, segmentTypeMessage);
+        super(XOpenSQLState.GENERAL_ERROR, 21, "Column '%s' in %s is ambiguous.", columnExpression, segmentTypeMessage);
     }
 }
