@@ -28,6 +28,6 @@ public final class TableNotFoundException extends MetaDataSQLException {
     private static final long serialVersionUID = -2507596759730534895L;
     
     public TableNotFoundException(final String tableName) {
-        super(XOpenSQLState.NOT_FOUND, 7, "Table or view `%s` does not exist.", tableName);
+        super(XOpenSQLState.NOT_FOUND, 7, "Table or view '%s' does not exist.", tableName);
     }
 }
