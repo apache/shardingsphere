@@ -22,6 +22,7 @@ columns:
     dataType: 4
     generated: false
     name: TABLE_ID
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 12
     generated: false
     name: STATS_INITIALIZED
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 4
     generated: false
     name: NUM_ROWS
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 4
     generated: false
     name: CLUST_INDEX_SIZE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 4
     generated: false
     name: OTHER_INDEX_SIZE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 4
     generated: false
     name: MODIFIED_COUNTER
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -78,6 +85,7 @@ columns:
     dataType: 4
     generated: false
     name: AUTOINC
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -86,6 +94,7 @@ columns:
     dataType: 4
     generated: false
     name: REF_COUNT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true

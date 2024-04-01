@@ -181,12 +181,13 @@
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
         
         <!-- Report plugin versions -->
-        <maven-site-plugin.version>4.0.0-M6</maven-site-plugin.version>
-        <maven-project-info-reports-plugin.version>3.4.2</maven-project-info-reports-plugin.version>
+        <maven-site-plugin.version>4.0.0-M13</maven-site-plugin.version>
+        <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
         <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
         <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
+        <dependency-check-maven.version>9.0.10</dependency-check-maven.version>
     </properties>
     
     <dependencyManagement>
@@ -803,6 +804,11 @@
                         <aggregate>true</aggregate>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>${dependency-check-maven.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         
@@ -899,6 +905,10 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>taglist-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
             </plugin>
         </plugins>
     </reporting>

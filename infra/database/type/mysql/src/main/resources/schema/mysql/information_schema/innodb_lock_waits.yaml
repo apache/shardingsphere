@@ -22,6 +22,7 @@ columns:
     dataType: 12
     generated: false
     name: requesting_trx_id
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: requested_lock_id
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 12
     generated: false
     name: blocking_trx_id
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 12
     generated: false
     name: blocking_lock_id
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true

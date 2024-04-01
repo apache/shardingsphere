@@ -80,8 +80,8 @@ public final class TableExtractor {
     public void extractTablesFromSelect(final SelectStatement selectStatement) {
         if (selectStatement.getCombine().isPresent()) {
             CombineSegment combineSegment = selectStatement.getCombine().get();
-            extractTablesFromSelect(combineSegment.getLeft());
-            extractTablesFromSelect(combineSegment.getRight());
+            extractTablesFromSelect(combineSegment.getLeft().getSelect());
+            extractTablesFromSelect(combineSegment.getRight().getSelect());
         }
         if (selectStatement.getFrom().isPresent() && !selectStatement.getCombine().isPresent()) {
             extractTablesFromTableSegment(selectStatement.getFrom().get());

@@ -14,23 +14,35 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason                                                                         |
 |-----------|-------------|--------------------------------------------------------------------------------|
-| 42000     | 10000       | There is no storage unit in database \`%s\`.                                   |
-| 08000     | 10001       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\`.          |
-| 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
+| 0A000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
 | HY004     | 10003       | Invalid format for actual data node \`%s\`.                                    |
 | HY000     | 10005       | Column '%s' in %s is ambiguous.                                                |
 | 42S02     | 10006       | Unknown column '%s' in '%s'.                                                   |
 | 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
-| 42000     | 10010       | Rule does not exist.                                                           |
-| 44000     | 10011       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
-| 44000     | 10012       | '%s' algorithm on %s is required.                                              |
-| 42S02     | 10013       | '%s' algorithm '%s' on %s is unregistered.                                     |
-| HY000     | 10015       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
+| 42S02     | 10008       | Missing required table '%s' in storage unit '%s'.                              |
 | 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
 | 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables.                         |
-| 0A000     | 10040       | Unsupported storage type of \`%s.%s\`.                                         |
+| HY000     | 10100       | Can not %s storage units '%s'.                                                 |
+| 42S02     | 10101       | There is no storage unit in database '%s'.                                     |
+| 44000     | 10102       | Storage units '%s' do not exist in database '%s'.                              |
+| 44000     | 10103       | Storage unit '%s' still used by '%s'.                                          |
+| 42S01     | 10104       | Duplicate storage unit names '%s'.                                             |
+| 08000     | 10110       | Storage units can not connect, error messages are: %s.                         |
+| 0A000     | 10111       | Can not alter connection info in storage units: '%s'.                          |
+| 44000     | 10120       | Invalid storage unit status, error message is: %s.                             |
+| 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                   |
+| 42S02     | 10201       | There is no rule in database '%s'.                                             |
+| 42S02     | 10202       | %s rules '%s' do not exist in database '%s'.                                   |
+| 44000     | 10203       | %s rules '%s' in database '%s' are still in used.                              |
+| 42S01     | 10204       | Duplicate %s rule names '%s' in database '%s'.                                 |
+| 44000     | 10300       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
+| 44000     | 10301       | '%s' algorithm on %s is required.                                              |
+| 42S02     | 10302       | '%s' algorithm '%s' on %s is unregistered.                                     |
+| 44000     | 10303       | %s algorithms '%s' in database '%s' are still in used.                         |
+| 44000     | 10304       | Invalid %s algorithm configuration '%s'.                                       |
+| HY000     | 10350       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
 
 ### Data
 
@@ -59,6 +71,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 |-----------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 08000     | 13000       | Can not register driver, reason is: %s                                                                                                                                                                                      |
 | 08000     | 13001       | Can not register SQL federation driver, reason is: %s                                                                                                                                                                       |
+| 08000     | 13002       | The URL '%s' is not recognized, please refer to the pattern '%s'.                                                                                                                                                           |
+| 0A000     | 13003       | Unsupported storage type of URL '%s'.                                                                                                                                                                                       |
 | 01000     | 13010       | Circuit break open, the request has been ignored.                                                                                                                                                                           |
 | 01000     | 13011       | The cluster status is read-only.                                                                                                                                                                                            |
 | 01000     | 13012       | The cluster status is unavailable.                                                                                                                                                                                          |
@@ -138,36 +152,10 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 18201       | CDC server exception, reason is: %s.                                              |
 | HY000     | 18202       | CDC login failed, reason is: %s                                                   |
 
-### Resource Definition
-
-| SQL State | Vendor Code | Reason                                                      |
-|-----------|-------------|-------------------------------------------------------------|
-| 44000     | 19000       | Can not process invalid storage units, error message is: %s |
-| 44000     | 19001       | Storage units \`%s\` do not exist in database \`%s\`.       |
-| 44000     | 19002       | There is no storage unit in the database \`%s\`.            |
-| 44000     | 19003       | Storage units \`%s\` is still used by \`%s\`.               |
-| 44000     | 19004       | Duplicate storage unit names \`%s\`.                        |
-| 44000     | 19005       | Invalid storage unit status, error message is: %s.          |
-| 44000     | 19006       | Read storage unit \`%s\` does not exist in rule \`%s\`.     |
-
-### Rule Definition
-
-| SQL State | Vendor Code | Reason                                                |
-|-----------|-------------|-------------------------------------------------------|
-| 44000     | 19100       | Invalid \`%s\` rule \`%s\`, error message is: %s      |
-| 44000     | 19101       | %s rules \`%s\` do not exist in database \`%s\`.      |
-| 44000     | 19102       | %s rules \`%s\` in database \`%s\` are still in used. |
-| 44000     | 19105       | Duplicate %s rule names \`%s\` in database \`%s\`.    |
-| 44000     | 19110       | There is no rule in database '%s'.                    |
-
 ### DistSQL
 
 | SQL State | Vendor Code | Reason                                                     |
 |-----------|-------------|------------------------------------------------------------|
-| 44000     | 19150       | Invalid %s algorithm(s) \`%s\`.                            |
-| 44000     | 19151       | %s algorithm(s) \`%s\` do not exist in database \`%s\`.    |
-| 44000     | 19152       | %s algorithms \`%s\` in database \`%s\` are still in used. |
-| 44000     | 19153       | Duplicate %s algorithms \`%s\` in database \`%s\`.         |
 | 44000     | 19154       | Invalid mode, error message is: \`%s\`.                    |
 | 44000     | 19155       | Plugin class \`%s\` not found..                            |
 
@@ -220,16 +208,17 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Readwrite-splitting
 
-| SQL State | Vendor Code | Reason                                                                                      |
-|-----------|-------------|---------------------------------------------------------------------------------------------|
-| 44000     | 20270       | Inline expression %s names size error.                                                      |
-| HY004     | 20280       | Invalid read database weight \`%s\`.                                                        |
-| 44000     | 20290       | Data source name is required in database \`%s\.`                                            |
-| 44000     | 20291       | Write data source name is required in database `\`%s\.`                                     |
-| 44000     | 20292       | Read data source names is required in database `\`%s\.`                                     |
-| 44000     | 20293       | Can not config duplicate %s data source \`%s\` in database \`%s\.`                          |
-| 42S02     | 20294       | %s data source name \`%s\` not in database \`%s\.`                                          |
-| 44000     | 20295       | Auto aware data source name is required in database \`%s\.`                                 |
+| SQL State | Vendor Code | Reason                                                             |
+|-----------|-------------|--------------------------------------------------------------------|
+| 44000     | 20270       | Inline expression %s names size error.                             |
+| HY004     | 20280       | Invalid read database weight \`%s\`.                               |
+| 44000     | 20290       | Data source name is required in database \`%s\.`                   |
+| 44000     | 20291       | Write data source name is required in database `\`%s\.`            |
+| 44000     | 20292       | Read data source names is required in database `\`%s\.`            |
+| 44000     | 20293       | Can not config duplicate %s data source \`%s\` in database \`%s\.` |
+| 42S02     | 20294       | %s data source name \`%s\` not in database \`%s\.`                 |
+| 44000     | 20295       | Auto aware data source name is required in database \`%s\.`        |
+| 44000     | 20296       | Read storage unit '%s' does not exist in rule '%s'.                |
 
 ### Database HA
 

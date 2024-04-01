@@ -22,6 +22,7 @@ columns:
     dataType: 4
     generated: false
     name: QUERY_ID
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 4
     generated: false
     name: SEQ
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 12
     generated: false
     name: STATE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 3
     generated: false
     name: DURATION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 3
     generated: false
     name: CPU_USER
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 3
     generated: false
     name: CPU_SYSTEM
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 4
     generated: false
     name: CONTEXT_VOLUNTARY
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,6 +85,7 @@ columns:
     dataType: 4
     generated: false
     name: CONTEXT_INVOLUNTARY
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,6 +94,7 @@ columns:
     dataType: 4
     generated: false
     name: BLOCK_OPS_IN
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -94,6 +103,7 @@ columns:
     dataType: 4
     generated: false
     name: BLOCK_OPS_OUT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -102,6 +112,7 @@ columns:
     dataType: 4
     generated: false
     name: MESSAGES_SENT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -110,6 +121,7 @@ columns:
     dataType: 4
     generated: false
     name: MESSAGES_RECEIVED
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -118,6 +130,7 @@ columns:
     dataType: 4
     generated: false
     name: PAGE_FAULTS_MAJOR
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -126,6 +139,7 @@ columns:
     dataType: 4
     generated: false
     name: PAGE_FAULTS_MINOR
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -134,6 +148,7 @@ columns:
     dataType: 4
     generated: false
     name: SWAPS
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -142,6 +157,7 @@ columns:
     dataType: 12
     generated: false
     name: SOURCE_FUNCTION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -150,6 +166,7 @@ columns:
     dataType: 12
     generated: false
     name: SOURCE_FILE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -158,6 +175,7 @@ columns:
     dataType: 4
     generated: false
     name: SOURCE_LINE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true

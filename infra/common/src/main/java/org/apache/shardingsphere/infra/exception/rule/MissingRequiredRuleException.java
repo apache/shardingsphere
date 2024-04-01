@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.exception.rule;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
 
 import java.util.Collection;
 
@@ -30,22 +29,22 @@ public final class MissingRequiredRuleException extends RuleDefinitionException 
     private static final long serialVersionUID = -8464574460917965546L;
     
     public MissingRequiredRuleException(final String ruleType) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 101, String.format("%s rule does not exist.", ruleType));
+        super(XOpenSQLState.NOT_FOUND, 2, "%s rule does not exist.", ruleType);
     }
     
     public MissingRequiredRuleException(final String ruleType, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 101, String.format("%s rule does not exist in database `%s`.", ruleType, databaseName));
+        super(XOpenSQLState.NOT_FOUND, 2, "%s rule does not exist in database '%s'.", ruleType, databaseName);
     }
     
     public MissingRequiredRuleException(final String ruleType, final Collection<String> ruleNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 101, String.format("%s rules `%s` do not exist.", ruleType, ruleNames));
+        super(XOpenSQLState.NOT_FOUND, 2, "%s rules '%s' do not exist.", ruleType, ruleNames);
     }
     
     public MissingRequiredRuleException(final String ruleType, final String databaseName, final String ruleName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 101, String.format("%s rule `%s` do not exist in database `%s`.", ruleType, ruleName, databaseName));
+        super(XOpenSQLState.NOT_FOUND, 2, "%s rule '%s' do not exist in database '%s'.", ruleType, ruleName, databaseName);
     }
     
     public MissingRequiredRuleException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 101, String.format("%s rules `%s` do not exist in database `%s`.", ruleType, ruleNames, databaseName));
+        super(XOpenSQLState.NOT_FOUND, 1, "%s rules '%s' do not exist in database '%s'.", ruleType, ruleNames, databaseName);
     }
 }

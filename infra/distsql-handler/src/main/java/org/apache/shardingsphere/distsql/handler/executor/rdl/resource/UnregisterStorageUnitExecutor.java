@@ -20,14 +20,14 @@ package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.infra.exception.storageunit.InvalidStorageUnitsException;
-import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.infra.exception.storageunit.StorageUnitInUsedException;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.resource.StorageUnitDefinitionProcessor;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.InUsedStorageUnitException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -36,7 +36,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -60,8 +59,7 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
         try {
             contextManager.getInstanceContext().getModeContextManager().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
         } catch (final SQLException | ShardingSphereServerException ex) {
-            log.error("Unregister storage unit failed", ex);
-            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
+            throw new StorageUnitsOperateException("unregister", sqlStatement.getStorageUnitNames(), ex);
         }
     }
     
@@ -78,14 +76,14 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
         if (inUsedStorageUnitNames.isEmpty()) {
             return;
         }
-        Collection<Class<ShardingSphereRule>> ignoreShardingSphereRules = getIgnoreShardingSphereRules(sqlStatement);
+        Collection<Class<ShardingSphereRule>> ignoreUsageCheckRules = getIgnoreUsageCheckRules(sqlStatement);
         String firstResource = inUsedStorageUnitNames.iterator().next();
-        ShardingSpherePreconditions.checkState(!ignoreShardingSphereRules.isEmpty(), () -> new StorageUnitInUsedException(firstResource, inUsedStorageUnits.get(firstResource)));
-        checkInUsedIgnoreTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits, ignoreShardingSphereRules);
+        ShardingSpherePreconditions.checkState(!ignoreUsageCheckRules.isEmpty(), () -> new InUsedStorageUnitException(firstResource, inUsedStorageUnits.get(firstResource)));
+        checkInUsedIgnoreTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits, ignoreUsageCheckRules);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<Class<ShardingSphereRule>> getIgnoreShardingSphereRules(final UnregisterStorageUnitStatement sqlStatement) {
+    private Collection<Class<ShardingSphereRule>> getIgnoreUsageCheckRules(final UnregisterStorageUnitStatement sqlStatement) {
         Collection<Class<ShardingSphereRule>> result = new LinkedList<>();
         for (StorageUnitDefinitionProcessor each : ShardingSphereServiceLoader.getServiceInstances(StorageUnitDefinitionProcessor.class)) {
             if (each.ignoreUsageCheckOnUnregister(sqlStatement)) {
@@ -100,7 +98,7 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
         for (String each : inUsedResourceNames) {
             Collection<Class<? extends ShardingSphereRule>> inUsedRules = inUsedStorageUnits.get(each);
             ignoreShardingSphereRules.forEach(inUsedRules::remove);
-            ShardingSpherePreconditions.checkState(inUsedRules.isEmpty(), () -> new StorageUnitInUsedException(each, inUsedRules));
+            ShardingSpherePreconditions.checkState(inUsedRules.isEmpty(), () -> new InUsedStorageUnitException(each, inUsedRules));
         }
     }
     

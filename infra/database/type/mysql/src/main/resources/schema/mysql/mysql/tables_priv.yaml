@@ -22,6 +22,7 @@ columns:
     dataType: 1
     generated: false
     name: Host
+    nullable: false
     primaryKey: true
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 1
     generated: false
     name: Db
+    nullable: false
     primaryKey: true
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 1
     generated: false
     name: User
+    nullable: false
     primaryKey: true
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 1
     generated: false
     name: Table_name
+    nullable: false
     primaryKey: true
     unsigned: false
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 1
     generated: false
     name: Grantor
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 93
     generated: false
     name: Timestamp
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 12
     generated: false
     name: Table_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,11 +85,14 @@ columns:
     dataType: 12
     generated: false
     name: Column_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
 indexes:
   primary:
     name: PRIMARY
+    unique: false
   grantor:
     name: Grantor
+    unique: false

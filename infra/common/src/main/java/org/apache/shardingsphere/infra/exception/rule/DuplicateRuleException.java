@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.exception.rule;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
 
 import java.util.Collection;
 
@@ -30,14 +29,14 @@ public final class DuplicateRuleException extends RuleDefinitionException {
     private static final long serialVersionUID = -1738699538105858939L;
     
     public DuplicateRuleException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 105, String.format("Duplicate %s rule names `%s` in database `%s`.", ruleType, ruleNames, databaseName));
+        super(XOpenSQLState.DUPLICATE, 4, String.format("Duplicate %s rule names '%s' in database '%s'.", ruleType, ruleNames, databaseName));
     }
     
     public DuplicateRuleException(final String ruleType, final Collection<String> ruleNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 105, String.format("Duplicate %s rule names `%s`.", ruleType, ruleNames));
+        super(XOpenSQLState.DUPLICATE, 4, String.format("Duplicate %s rule names '%s'.", ruleType, ruleNames));
     }
     
     public DuplicateRuleException(final String type, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 105, String.format("Duplicate `%s` in database `%s`.", type, databaseName));
+        super(XOpenSQLState.DUPLICATE, 4, String.format("Duplicate '%s' in database '%s'.", type, databaseName));
     }
 }

@@ -22,6 +22,7 @@ columns:
     dataType: 12
     generated: false
     name: NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: SUBSYSTEM
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 4
     generated: false
     name: COUNT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 4
     generated: false
     name: MAX_COUNT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 4
     generated: false
     name: MIN_COUNT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 8
     generated: false
     name: AVG_COUNT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 4
     generated: false
     name: COUNT_RESET
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,6 +85,7 @@ columns:
     dataType: 4
     generated: false
     name: MAX_COUNT_RESET
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,6 +94,7 @@ columns:
     dataType: 4
     generated: false
     name: MIN_COUNT_RESET
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -94,6 +103,7 @@ columns:
     dataType: 8
     generated: false
     name: AVG_COUNT_RESET
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -102,6 +112,7 @@ columns:
     dataType: 93
     generated: false
     name: TIME_ENABLED
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -110,6 +121,7 @@ columns:
     dataType: 93
     generated: false
     name: TIME_DISABLED
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -118,6 +130,7 @@ columns:
     dataType: 4
     generated: false
     name: TIME_ELAPSED
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -126,6 +139,7 @@ columns:
     dataType: 93
     generated: false
     name: TIME_RESET
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -134,6 +148,7 @@ columns:
     dataType: 12
     generated: false
     name: STATUS
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -142,6 +157,7 @@ columns:
     dataType: 12
     generated: false
     name: TYPE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -150,6 +166,7 @@ columns:
     dataType: 12
     generated: false
     name: COMMENT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true

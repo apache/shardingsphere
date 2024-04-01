@@ -22,6 +22,7 @@ columns:
     dataType: 4
     generated: false
     name: help_keyword_id
+    nullable: false
     primaryKey: true
     unsigned: true
     visible: true
@@ -30,11 +31,14 @@ columns:
     dataType: 1
     generated: false
     name: name
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
 indexes:
   primary:
     name: PRIMARY
+    unique: false
   name:
     name: name
+    unique: false

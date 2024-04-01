@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.exception.algorithm.AlgorithmInUsedException;
-import org.apache.shardingsphere.infra.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.InUsedAlgorithmException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -30,12 +30,11 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -56,7 +55,7 @@ class DropShardingAuditorExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(new ShardingRuleConfiguration());
         executor.setRule(rule);
-        assertThrows(MissingRequiredAlgorithmException.class, () -> executor.checkBeforeUpdate(createSQLStatement("sharding_key_required_auditor")));
+        assertThrows(UnregisteredAlgorithmException.class, () -> executor.checkBeforeUpdate(new DropShardingAuditorStatement(false, Collections.singleton("sharding_key_required_auditor"))));
     }
     
     @Test
@@ -75,7 +74,7 @@ class DropShardingAuditorExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
-        ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("sharding_key_required_auditor"));
+        ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(new DropShardingAuditorStatement(false, Collections.singleton("sharding_key_required_auditor")));
         assertFalse(actual.getAuditors().isEmpty());
     }
     
@@ -87,16 +86,12 @@ class DropShardingAuditorExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
-        assertThrows(AlgorithmInUsedException.class, () -> executor.checkBeforeUpdate(createSQLStatement("sharding_key_required_auditor")));
+        assertThrows(InUsedAlgorithmException.class, () -> executor.checkBeforeUpdate(new DropShardingAuditorStatement(false, Collections.singleton("sharding_key_required_auditor"))));
     }
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
         ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table", null);
         result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("sharding_key_required_auditor"), true));
         return result;
-    }
-    
-    private DropShardingAuditorStatement createSQLStatement(final String... auditorNames) {
-        return new DropShardingAuditorStatement(false, Arrays.asList(auditorNames));
     }
 }

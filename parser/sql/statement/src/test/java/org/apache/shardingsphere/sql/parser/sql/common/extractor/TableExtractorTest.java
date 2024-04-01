@@ -151,7 +151,9 @@ class TableExtractorTest {
     @Test
     void assertExtractTablesFromCombineSegment() {
         MySQLSelectStatement selectStatement = createSelectStatement("t_order");
-        selectStatement.setCombine(new CombineSegment(0, 0, createSelectStatement("t_order"), CombineType.UNION, createSelectStatement("t_order_item")));
+        SubquerySegment left = new SubquerySegment(0, 0, createSelectStatement("t_order"), "");
+        SubquerySegment right = new SubquerySegment(0, 0, createSelectStatement("t_order_item"), "");
+        selectStatement.setCombine(new CombineSegment(0, 0, left, CombineType.UNION, right));
         tableExtractor.extractTablesFromSelect(selectStatement);
         Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
         assertThat(actual.size(), is(2));
@@ -172,7 +174,9 @@ class TableExtractorTest {
     @Test
     void assertExtractTablesFromCombineSegmentWithColumnProjection() {
         MySQLSelectStatement selectStatement = createSelectStatementWithColumnProjection("t_order");
-        selectStatement.setCombine(new CombineSegment(0, 0, createSelectStatementWithColumnProjection("t_order"), CombineType.UNION, createSelectStatementWithColumnProjection("t_order_item")));
+        SubquerySegment left = new SubquerySegment(0, 0, createSelectStatementWithColumnProjection("t_order"), "");
+        SubquerySegment right = new SubquerySegment(0, 0, createSelectStatementWithColumnProjection("t_order_item"), "");
+        selectStatement.setCombine(new CombineSegment(0, 0, left, CombineType.UNION, right));
         tableExtractor.extractTablesFromSelect(selectStatement);
         Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
         assertThat(actual.size(), is(2));
@@ -197,7 +201,9 @@ class TableExtractorTest {
     @Test
     void assertExtractTablesFromCombineWithSubQueryProjection() {
         MySQLSelectStatement selectStatement = createSelectStatementWithSubQueryProjection("t_order");
-        selectStatement.setCombine(new CombineSegment(0, 0, createSelectStatementWithSubQueryProjection("t_order"), CombineType.UNION, createSelectStatementWithSubQueryProjection("t_order_item")));
+        SubquerySegment left = new SubquerySegment(0, 0, createSelectStatementWithSubQueryProjection("t_order"), "");
+        SubquerySegment right = new SubquerySegment(0, 0, createSelectStatementWithSubQueryProjection("t_order_item"), "");
+        selectStatement.setCombine(new CombineSegment(0, 0, left, CombineType.UNION, right));
         tableExtractor.extractTablesFromSelect(selectStatement);
         Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
         assertThat(actual.size(), is(2));

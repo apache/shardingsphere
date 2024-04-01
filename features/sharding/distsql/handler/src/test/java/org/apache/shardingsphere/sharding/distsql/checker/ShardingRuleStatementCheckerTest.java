@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.sharding.distsql.checker;
 
-import org.apache.shardingsphere.infra.exception.algorithm.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
-import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingStrat
 import org.apache.shardingsphere.sharding.distsql.segment.table.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.table.TableRuleSegment;
+import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -166,7 +167,7 @@ class ShardingRuleStatementCheckerTest {
         autoTableRuleSegment.setShardingColumn("product_id");
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("not_exist", PropertiesBuilder.build(new Property("", ""))));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(autoTableRuleSegment);
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
+        assertThrows(ServiceProviderNotFoundException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test
@@ -175,7 +176,7 @@ class ShardingRuleStatementCheckerTest {
         autoTableRuleSegment.setShardingColumn("product_id");
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("complex", PropertiesBuilder.build(new Property("", ""))));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(autoTableRuleSegment);
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
+        assertThrows(ServiceProviderNotFoundException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test
@@ -212,7 +213,7 @@ class ShardingRuleStatementCheckerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"), keyGenerateStrategy, null);
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "user_id", databaseAlgorithmSegment));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(tableRuleSegment);
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
+        assertThrows(AlgorithmInitializationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test
@@ -257,7 +258,7 @@ class ShardingRuleStatementCheckerTest {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${product_id % 2}"))));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(autoTableRuleSegment);
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
+        assertThrows(AlgorithmInitializationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.distsql.update;
 
-import org.apache.shardingsphere.infra.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.DropDefaultShadowAlgorithmExecutor;
@@ -57,7 +57,7 @@ class DropDefaultShadowAlgorithmExecutorTest {
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
-        assertThrows(MissingRequiredAlgorithmException.class, () -> executor.checkBeforeUpdate(new DropDefaultShadowAlgorithmStatement(false)));
+        assertThrows(UnregisteredAlgorithmException.class, () -> executor.checkBeforeUpdate(new DropDefaultShadowAlgorithmStatement(false)));
     }
     
     @Test

@@ -19,11 +19,12 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
-import org.apache.shardingsphere.infra.exception.algorithm.DuplicateAlgorithmException;
-import org.apache.shardingsphere.infra.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.InUsedAlgorithmException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.EmptyAlgorithmException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -31,11 +32,8 @@ import org.apache.shardingsphere.shadow.distsql.statement.CreateDefaultShadowAlg
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Create default shadow algorithm statement executor.
@@ -57,17 +55,13 @@ public final class CreateDefaultShadowAlgorithmExecutor implements DatabaseRuleC
     }
     
     private void checkAlgorithmExisted() {
-        Collection<String> duplicatedAlgorithmNames = getDuplicatedAlgorithmNames();
-        ShardingSpherePreconditions.checkState(duplicatedAlgorithmNames.isEmpty(), () -> new DuplicateAlgorithmException("Shadow", database.getName(), duplicatedAlgorithmNames));
-    }
-    
-    private Collection<String> getDuplicatedAlgorithmNames() {
-        Collection<String> algorithmNames = null == rule ? Collections.emptyList() : rule.getShadowAlgorithms().keySet();
-        return Stream.of("default_shadow_algorithm").filter(algorithmNames::contains).collect(Collectors.toSet());
+        boolean isDuplicatedAlgorithmName = null != rule && rule.getShadowAlgorithms().containsKey("default_shadow_algorithm");
+        ShardingSpherePreconditions.checkState(!isDuplicatedAlgorithmName, () -> new InUsedAlgorithmException("Shadow", database.getName(), Collections.singleton("default_shadow_algorithm")));
     }
     
     private void checkAlgorithmCompleteness(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(!sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getName().isEmpty(), () -> new InvalidAlgorithmConfigurationException("Shadow"));
+        ShardingSpherePreconditions.checkState(!sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getName().isEmpty(),
+                () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier(database.getName())));
     }
     
     private void checkAlgorithmType(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
@@ -78,8 +72,7 @@ public final class CreateDefaultShadowAlgorithmExecutor implements DatabaseRuleC
     @Override
     public ShadowRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        if (getDuplicatedAlgorithmNames().isEmpty()) {
-            result = new ShadowRuleConfiguration();
+        if (null == rule || !rule.getShadowAlgorithms().containsKey("default_shadow_algorithm")) {
             result.setShadowAlgorithms(buildAlgorithmMap(sqlStatement));
             result.setDefaultShadowAlgorithmName("default_shadow_algorithm");
         }

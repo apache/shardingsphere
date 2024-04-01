@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
-import org.apache.shardingsphere.infra.exception.algorithm.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.InUsedAlgorithmException;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
@@ -65,7 +65,7 @@ public final class AlterShadowRuleExecutor implements DatabaseRuleAlterExecutor<
     
     private void checkAlgorithms(final Collection<ShadowRuleSegment> segments) {
         Collection<String> requiredAlgorithms = ShadowRuleStatementSupporter.getAlgorithmNames(segments);
-        ShadowRuleStatementChecker.checkDuplicated(requiredAlgorithms, duplicated -> new AlgorithmInUsedException("Shadow", database.getName(), duplicated));
+        ShadowRuleStatementChecker.checkDuplicated(requiredAlgorithms, duplicated -> new InUsedAlgorithmException("Shadow", database.getName(), duplicated));
     }
     
     private void checkAlgorithmType(final AlterShadowRuleStatement sqlStatement) {

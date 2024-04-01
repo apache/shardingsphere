@@ -22,36 +22,47 @@ columns:
     dataType: 1
     generated: false
     name: FROM_HOST
+    nullable: false
     primaryKey: true
+    unsigned: false
     visible: true
   from_user:
     caseSensitive: false
     dataType: 1
     generated: false
     name: FROM_USER
+    nullable: false
     primaryKey: true
+    unsigned: false
     visible: true
   to_host:
     caseSensitive: false
     dataType: 1
     generated: false
     name: TO_HOST
+    nullable: false
     primaryKey: true
+    unsigned: false
     visible: true
   to_user:
     caseSensitive: false
     dataType: 1
     generated: false
     name: TO_USER
+    nullable: false
     primaryKey: true
+    unsigned: false
     visible: true
   with_admin_option:
     caseSensitive: false
     dataType: 12
     generated: false
     name: WITH_ADMIN_OPTION
+    nullable: false
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
   primary:
     name: PRIMARY
+    unique: false

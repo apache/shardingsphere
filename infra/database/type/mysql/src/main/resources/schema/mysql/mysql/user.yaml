@@ -22,6 +22,7 @@ columns:
     dataType: 1
     generated: false
     name: Host
+    nullable: false
     primaryKey: true
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 1
     generated: false
     name: User
+    nullable: false
     primaryKey: true
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 12
     generated: false
     name: Select_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 12
     generated: false
     name: Insert_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 12
     generated: false
     name: Update_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 12
     generated: false
     name: Delete_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 12
     generated: false
     name: Create_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,6 +85,7 @@ columns:
     dataType: 12
     generated: false
     name: Drop_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,6 +94,7 @@ columns:
     dataType: 12
     generated: false
     name: Reload_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -94,6 +103,7 @@ columns:
     dataType: 12
     generated: false
     name: Shutdown_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -102,6 +112,7 @@ columns:
     dataType: 12
     generated: false
     name: Process_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -110,6 +121,7 @@ columns:
     dataType: 12
     generated: false
     name: File_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -118,6 +130,7 @@ columns:
     dataType: 12
     generated: false
     name: Grant_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -126,6 +139,7 @@ columns:
     dataType: 12
     generated: false
     name: References_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -134,6 +148,7 @@ columns:
     dataType: 12
     generated: false
     name: Index_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -142,6 +157,7 @@ columns:
     dataType: 12
     generated: false
     name: Alter_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -150,6 +166,7 @@ columns:
     dataType: 12
     generated: false
     name: Show_db_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -158,6 +175,7 @@ columns:
     dataType: 12
     generated: false
     name: Super_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -166,6 +184,7 @@ columns:
     dataType: 12
     generated: false
     name: Create_tmp_table_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -174,6 +193,7 @@ columns:
     dataType: 12
     generated: false
     name: Lock_tables_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -182,6 +202,7 @@ columns:
     dataType: 12
     generated: false
     name: Execute_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -190,6 +211,7 @@ columns:
     dataType: 12
     generated: false
     name: Repl_slave_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -198,6 +220,7 @@ columns:
     dataType: 12
     generated: false
     name: Repl_client_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -206,6 +229,7 @@ columns:
     dataType: 12
     generated: false
     name: Create_view_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -214,6 +238,7 @@ columns:
     dataType: 12
     generated: false
     name: Show_view_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -222,6 +247,7 @@ columns:
     dataType: 12
     generated: false
     name: Create_routine_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -230,6 +256,7 @@ columns:
     dataType: 12
     generated: false
     name: Alter_routine_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -238,6 +265,7 @@ columns:
     dataType: 12
     generated: false
     name: Create_user_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -246,6 +274,7 @@ columns:
     dataType: 12
     generated: false
     name: Event_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -254,6 +283,7 @@ columns:
     dataType: 12
     generated: false
     name: Trigger_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -262,6 +292,7 @@ columns:
     dataType: 12
     generated: false
     name: Create_tablespace_priv
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -270,6 +301,7 @@ columns:
     dataType: 12
     generated: false
     name: ssl_type
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -278,6 +310,7 @@ columns:
     dataType: -4
     generated: false
     name: ssl_cipher
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -286,6 +319,7 @@ columns:
     dataType: -4
     generated: false
     name: x509_issuer
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -294,6 +328,7 @@ columns:
     dataType: -4
     generated: false
     name: x509_subject
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -302,6 +337,7 @@ columns:
     dataType: 4
     generated: false
     name: max_questions
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -310,6 +346,7 @@ columns:
     dataType: 4
     generated: false
     name: max_updates
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -318,6 +355,7 @@ columns:
     dataType: 4
     generated: false
     name: max_connections
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -326,6 +364,7 @@ columns:
     dataType: 4
     generated: false
     name: max_user_connections
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -334,6 +373,7 @@ columns:
     dataType: 1
     generated: false
     name: plugin
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -342,6 +382,7 @@ columns:
     dataType: -1
     generated: false
     name: authentication_string
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -350,6 +391,7 @@ columns:
     dataType: 12
     generated: false
     name: password_expired
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -358,6 +400,7 @@ columns:
     dataType: 93
     generated: false
     name: password_last_changed
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -366,6 +409,7 @@ columns:
     dataType: 5
     generated: false
     name: password_lifetime
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -374,9 +418,65 @@ columns:
     dataType: 12
     generated: false
     name: account_locked
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  create_role_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Create_role_priv
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  drop_role_priv:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Drop_role_priv
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  password_reuse_history:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: Password_reuse_history
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  password_reuse_time:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: Password_reuse_time
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  password_require_current:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: Password_require_current
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  user_attributes:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: User_attributes
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
 indexes:
   primary:
     name: PRIMARY
+    unique: false

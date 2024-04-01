@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;

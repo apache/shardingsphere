@@ -766,26 +766,28 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         if (null != ctx.queryExpressionBody()) {
             MySQLSelectStatement result = new MySQLSelectStatement();
-            MySQLSelectStatement left = (MySQLSelectStatement) visit(ctx.queryExpressionBody());
-            result.setProjections(left.getProjections());
-            left.getFrom().ifPresent(result::setFrom);
-            left.getTable().ifPresent(result::setTable);
+            SubquerySegment left = new SubquerySegment(ctx.queryExpressionBody().start.getStartIndex(), ctx.queryExpressionBody().stop.getStopIndex(),
+                    (MySQLSelectStatement) visit(ctx.queryExpressionBody()), getOriginalText(ctx.queryExpressionBody()));
+            result.setProjections(left.getSelect().getProjections());
+            left.getSelect().getFrom().ifPresent(result::setFrom);
+            ((MySQLSelectStatement) left.getSelect()).getTable().ifPresent(result::setTable);
             result.setCombine(createCombineSegment(ctx.combineClause(), left));
             return result;
         }
         if (null != ctx.queryExpressionParens()) {
             MySQLSelectStatement result = new MySQLSelectStatement();
-            MySQLSelectStatement left = (MySQLSelectStatement) visit(ctx.queryExpressionParens());
-            result.setProjections(left.getProjections());
-            left.getFrom().ifPresent(result::setFrom);
-            left.getTable().ifPresent(result::setTable);
+            SubquerySegment left = new SubquerySegment(ctx.queryExpressionParens().start.getStartIndex(), ctx.queryExpressionParens().stop.getStopIndex(),
+                    (MySQLSelectStatement) visit(ctx.queryExpressionParens()), getOriginalText(ctx.queryExpressionParens()));
+            result.setProjections(left.getSelect().getProjections());
+            left.getSelect().getFrom().ifPresent(result::setFrom);
+            ((MySQLSelectStatement) left.getSelect()).getTable().ifPresent(result::setTable);
             result.setCombine(createCombineSegment(ctx.combineClause(), left));
             return result;
         }
         return visit(ctx.queryExpressionParens());
     }
     
-    private CombineSegment createCombineSegment(final CombineClauseContext ctx, final MySQLSelectStatement left) {
+    private CombineSegment createCombineSegment(final CombineClauseContext ctx, final SubquerySegment left) {
         CombineType combineType;
         if (null != ctx.EXCEPT()) {
             combineType = CombineType.EXCEPT;
@@ -794,7 +796,8 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         } else {
             combineType = null == ctx.combineOption() || null == ctx.combineOption().ALL() ? CombineType.UNION : CombineType.UNION_ALL;
         }
-        MySQLSelectStatement right = null == ctx.queryPrimary() ? (MySQLSelectStatement) visit(ctx.queryExpressionParens()) : (MySQLSelectStatement) visit(ctx.queryPrimary());
+        ParserRuleContext ruleContext = null == ctx.queryPrimary() ? ctx.queryExpressionParens() : ctx.queryPrimary();
+        SubquerySegment right = new SubquerySegment(ruleContext.start.getStartIndex(), ruleContext.stop.getStopIndex(), (MySQLSelectStatement) visit(ruleContext), getOriginalText(ruleContext));
         return new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), left, combineType, right);
     }
     
