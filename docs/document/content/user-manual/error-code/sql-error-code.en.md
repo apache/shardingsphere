@@ -27,6 +27,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 08000     | 10110       | Storage units can not connect, error messages are: %s.                              |
 | 0A000     | 10111       | Can not alter connection info in storage units: '%s'.                               |
 | 44000     | 10120       | Invalid storage unit status, error message is: %s.                                  |
+| 42S01     | 10130       | Duplicate data sources '%s' in database '%s' and global data sources.               |
 | 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                        |
 | 42S02     | 10201       | There is no rule in database '%s'.                                                  |
 | 42S02     | 10202       | %s rules '%s' do not exist in database '%s'.                                        |
