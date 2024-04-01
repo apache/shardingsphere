@@ -20,9 +20,9 @@ package org.apache.shardingsphere.proxy.backend.config.checker;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.metadata.resource.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.infra.exception.metadata.resource.datasource.DuplicateDataSourceException;
 
 import java.util.Collection;
 import java.util.Map;
@@ -47,6 +47,6 @@ public final class YamlProxyConfigurationChecker {
     private static void checkDataSources(final Map<String, YamlProxyDataSourceConfiguration> globalDataSources,
                                          final Map<String, YamlProxyDataSourceConfiguration> databaseDataSources, final String databaseName) {
         Collection<String> duplicatedDataSourceNames = globalDataSources.keySet().stream().filter(databaseDataSources.keySet()::contains).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateDataSourceException(databaseName, duplicatedDataSourceNames));
+        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(databaseName, duplicatedDataSourceNames));
     }
 }

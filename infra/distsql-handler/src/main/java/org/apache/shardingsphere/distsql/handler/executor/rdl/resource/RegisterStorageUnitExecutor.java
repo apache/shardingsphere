@@ -89,7 +89,7 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
             }
             dataSourceNames.add(each.getName());
         }
-        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(duplicatedDataSourceNames));
+        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(database.getName(), duplicatedDataSourceNames));
     }
     
     private void checkDuplicatedLogicalDataSourceNames(final Collection<String> requiredDataSourceNames) {
@@ -98,7 +98,7 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
             return;
         }
         Collection<String> duplicatedDataSourceNames = requiredDataSourceNames.stream().filter(logicalDataSourceNames::contains).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(duplicatedDataSourceNames));
+        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(database.getName(), duplicatedDataSourceNames));
     }
     
     private Collection<String> getCurrentStorageUnitNames(final ContextManager contextManager) {

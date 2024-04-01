@@ -80,7 +80,7 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
     
     private void checkDuplicatedStorageUnitNames(final Collection<String> storageUnitNames) {
         Collection<String> duplicatedStorageUnitNames = storageUnitNames.stream().filter(each -> storageUnitNames.stream().filter(each::equals).count() > 1).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(duplicatedStorageUnitNames.isEmpty(), () -> new DuplicateStorageUnitException(duplicatedStorageUnitNames));
+        ShardingSpherePreconditions.checkState(duplicatedStorageUnitNames.isEmpty(), () -> new DuplicateStorageUnitException(database.getName(), duplicatedStorageUnitNames));
     }
     
     private void checkStorageUnitNameExisted(final Collection<String> storageUnitNames) {
