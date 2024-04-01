@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.exception;
+package org.apache.shardingsphere.infra.exception.data;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
@@ -28,6 +28,6 @@ public final class UnsupportedStreamCharsetConversionException extends DataSQLEx
     private static final long serialVersionUID = 4577091201937095156L;
     
     public UnsupportedStreamCharsetConversionException(final String charsetType) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 10, "Unsupported conversion stream charset `%s`.", charsetType);
+        super(XOpenSQLState.INVALID_DATA_TYPE, 1, "Unsupported conversion stream charset '%s'.", charsetType);
     }
 }
