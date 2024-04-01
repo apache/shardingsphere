@@ -16,10 +16,10 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 |-----------|-------------|----------------------------------------------------------------------------|
 | HY000     | 10000       | Can not support 3-tier structure for actual data node '%s' with JDBC '%s'. |
 | HY004     | 10001       | Invalid format for actual data node '%s'.                                  |
+| 42S02     | 10002       | Schema '%s' does not exist.                                                |
+| 42S02     | 10003       | Table or view '%s' does not exist.                                         |
+| 42S02     | 10004       | Unknown column '%s' in '%s'.                                               |
 | HY000     | 10005       | Column '%s' in %s is ambiguous.                                            |
-| 42S02     | 10006       | Unknown column '%s' in '%s'.                                               |
-| 42S02     | 10007       | Table or view '%s' does not exist.                                         |
-| 42S02     | 10020       | Schema '%s' does not exist.                                                |
 | 42S02     | 10021       | Single table '%s' does not exist.                                          |
 | HY000     | 10022       | Can not load table with database name '%s' and data source name '%s'.      |
 | 0A000     | 10030       | Can not drop schema '%s' because of contains tables.                       |
