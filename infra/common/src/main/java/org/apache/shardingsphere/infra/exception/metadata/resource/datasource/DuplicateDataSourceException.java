@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception.metadata.resource.datasource;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.metadata.resource.ResourceDefinitionException;
 
 import java.util.Collection;
 
 /**
- * Duplicated data source exception.
+ * Duplicate data source exception.
  */
-public final class DuplicatedDataSourceException extends MetaDataSQLException {
+public final class DuplicateDataSourceException extends ResourceDefinitionException {
     
     private static final long serialVersionUID = -8215195072425201836L;
     
-    public DuplicatedDataSourceException(final String databaseName, final Collection<String> dataSourceNames) {
-        super(XOpenSQLState.DUPLICATE, 1, "Duplicated data source `%s` in database `%s` and global data sources.", dataSourceNames, databaseName);
+    public DuplicateDataSourceException(final String databaseName, final Collection<String> dataSourceNames) {
+        super(XOpenSQLState.DUPLICATE, 30, "Duplicate data sources '%s' in database '%s' and global data sources.", dataSourceNames, databaseName);
     }
 }
