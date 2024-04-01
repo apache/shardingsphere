@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.statistics.builder.dialect;
 
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -53,6 +55,8 @@ public final class PostgreSQLShardingSphereStatisticsBuilder implements Sharding
     
     private static final Map<String, Collection<String>> COLLECTED_SCHEMA_TABLES = new LinkedHashMap<>();
     
+    private final SystemDatabase systemDatabase = new SystemDatabase(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+    
     static {
         COLLECTED_SCHEMA_TABLES.put("pg_catalog", Arrays.asList("pg_class", "pg_namespace"));
     }
@@ -70,6 +74,9 @@ public final class PostgreSQLShardingSphereStatisticsBuilder implements Sharding
     
     private void collectDatabaseData(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final ShardingSphereDatabaseData databaseData) {
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
+            if (!systemDatabase.getSystemDatabaseSchemaMap().containsKey(entry.getKey())) {
+                continue;
+            }
             if (SHARDING_SPHERE.equals(entry.getKey())) {
                 ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
                 initForClusterInformationTable(schemaData);
@@ -79,7 +86,7 @@ public final class PostgreSQLShardingSphereStatisticsBuilder implements Sharding
             }
             if (COLLECTED_SCHEMA_TABLES.containsKey(entry.getKey())) {
                 ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
-                collectSchemaData(metaData, database, entry.getValue(), schemaData);
+                collectSchemaData(metaData, database, entry.getValue(), COLLECTED_SCHEMA_TABLES.get(entry.getKey()), schemaData);
                 databaseData.getSchemaData().put(entry.getKey(), schemaData);
             }
         }
@@ -92,11 +99,13 @@ public final class PostgreSQLShardingSphereStatisticsBuilder implements Sharding
     }
     
     private void collectSchemaData(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database,
-                                   final ShardingSphereSchema schema, final ShardingSphereSchemaData schemaData) {
+                                   final ShardingSphereSchema schema, final Collection<String> tables, final ShardingSphereSchemaData schemaData) {
         for (Entry<String, ShardingSphereTable> entry : schema.getTables().entrySet()) {
-            ShardingSphereTableData tableData = new ShardingSphereTableData(entry.getValue().getName());
-            collectTableData(metaData, database, entry.getValue(), schemaData);
-            schemaData.getTableData().put(entry.getKey(), tableData);
+            if (tables.contains(entry.getValue().getName())) {
+                ShardingSphereTableData tableData = new ShardingSphereTableData(entry.getValue().getName());
+                collectTableData(metaData, database, entry.getValue(), schemaData);
+                schemaData.getTableData().put(entry.getKey(), tableData);
+            }
         }
     }
     

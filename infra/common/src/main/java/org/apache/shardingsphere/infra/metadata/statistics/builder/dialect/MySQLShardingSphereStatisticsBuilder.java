@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.statistics.builder.dialect;
 
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -47,13 +49,17 @@ public final class MySQLShardingSphereStatisticsBuilder implements ShardingSpher
     
     private static final String SHARDING_TABLE_STATISTICS = "sharding_table_statistics";
     
+    private final SystemDatabase systemDatabase = new SystemDatabase(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+    
     @Override
     public ShardingSphereStatistics build(final ShardingSphereMetaData metaData) {
         ShardingSphereStatistics result = new ShardingSphereStatistics();
         for (Entry<String, ShardingSphereDatabase> entry : metaData.getDatabases().entrySet()) {
-            ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
-            collectDatabaseData(metaData, entry.getValue(), databaseData);
-            result.getDatabaseData().put(entry.getKey(), databaseData);
+            if (systemDatabase.getSystemDatabaseSchemaMap().containsKey(entry.getKey())) {
+                ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
+                collectDatabaseData(metaData, entry.getValue(), databaseData);
+                result.getDatabaseData().put(entry.getKey(), databaseData);
+            }
         }
         return result;
     }
