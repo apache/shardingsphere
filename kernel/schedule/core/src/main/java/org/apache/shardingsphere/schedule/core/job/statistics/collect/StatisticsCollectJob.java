@@ -44,6 +44,9 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Statistics collect job.
+ */
 @RequiredArgsConstructor
 @Slf4j
 public final class StatisticsCollectJob implements SimpleJob {
