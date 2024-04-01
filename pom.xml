@@ -55,6 +55,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
+        <maven.enforcer.fail>true</maven.enforcer.fail>
         <shade.package>org.apache.shardingsphere.shade</shade.package>
         <antlr.output.directory>${basedir}/target/generated-sources/antlr4</antlr.output.directory>
         
@@ -667,7 +668,7 @@
                                         <version>${java.version}</version>
                                     </requireJavaVersion>
                                 </rules>
-                                <fail>true</fail>
+                                <fail>${maven.enforcer.fail}</fail>
                             </configuration>
                         </execution>
                     </executions>
