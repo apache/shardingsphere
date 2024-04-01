@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.exception;
+package org.apache.shardingsphere.single.exception.metadata;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Drop not empty schema exception.
+ * Invalid single rule configuration exception.
  */
-public final class DropNotEmptySchemaException extends MetaDataSQLException {
+public final class InvalidSingleRuleConfigurationException extends SingleDefinitionException {
     
-    private static final long serialVersionUID = 5285619119572894557L;
+    private static final long serialVersionUID = 1337703808376580240L;
     
-    public DropNotEmptySchemaException(final String schemaName) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 30, "Can not drop schema '%s' because of contains tables.", schemaName);
+    public InvalidSingleRuleConfigurationException(final String message) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Invalid single rule configuration, reason is: %s.", message);
     }
 }
