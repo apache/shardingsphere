@@ -15,31 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.resource;
+package org.apache.shardingsphere.infra.exception.metadata.rule;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Resource definition exception.
+ * Rule definition exception.
  */
-public abstract class ResourceDefinitionException extends MetaDataSQLException {
+public abstract class RuleDefinitionException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = -7111524353233598083L;
+    private static final long serialVersionUID = -6414242067345718028L;
     
-    private static final int RESOURCE_CODE = 1;
+    private static final int RULE_CODE = 2;
     
-    protected ResourceDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+    protected RuleDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, getErrorCode(errorCode), reason, messageArgs);
-    }
-    
-    protected ResourceDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Exception cause) {
-        super(sqlState, getErrorCode(errorCode), reason, cause);
     }
     
     private static int getErrorCode(final int errorCode) {
         Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
-        return RESOURCE_CODE * 100 + errorCode;
+        return RULE_CODE * 100 + errorCode;
     }
 }

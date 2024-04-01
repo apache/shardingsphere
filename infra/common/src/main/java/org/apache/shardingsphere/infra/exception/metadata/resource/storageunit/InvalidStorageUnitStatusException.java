@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.exception.metadata.resource.storageunit;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.metadata.resource.ResourceDefinitionException;
 
 /**
- * Overall connection not enough exception.
+ * Invalid storage unit status exception.
  */
-public final class OverallConnectionNotEnoughException extends ConnectionSQLException {
+public final class InvalidStorageUnitStatusException extends ResourceDefinitionException {
     
-    private static final long serialVersionUID = -1297088138042287804L;
+    private static final long serialVersionUID = 4029749233439176539L;
     
-    public OverallConnectionNotEnoughException(final int desiredSize, final int actualSize, final Exception cause) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 20, String.format("Can not get %d connections one time, partition succeed connection(%d) have released. "
-                + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in properties.", desiredSize, actualSize), cause);
+    public InvalidStorageUnitStatusException(final String errorMessage) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20, "Invalid storage unit status, error message is: %s.", errorMessage);
     }
 }

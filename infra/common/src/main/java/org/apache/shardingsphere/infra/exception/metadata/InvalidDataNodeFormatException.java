@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.exception.metadata;
 
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
-import java.util.Collection;
-
 /**
- * In used rule exception.
+ * Invalid data node format exception.
  */
-public final class InUsedRuleException extends RuleDefinitionException {
+public final class InvalidDataNodeFormatException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = 3308787279125477660L;
+    private static final long serialVersionUID = 192279170808654743L;
     
-    public InUsedRuleException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "%s rules '%s' in database '%s' are still in used.", ruleType, ruleNames, databaseName);
+    public InvalidDataNodeFormatException(final String dataNode) {
+        super(XOpenSQLState.GENERAL_ERROR, 1, "Invalid format for actual data node '%s'.", dataNode);
     }
     
-    public InUsedRuleException(final String ruleType, final String databaseName, final Collection<String> ruleNames, final String usingType) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "%s rules '%s' in database '%s' are still in used by %s.", ruleType, ruleNames, databaseName, usingType);
+    public InvalidDataNodeFormatException(final String dataNode, final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 1, "Invalid format for data node '%s', reason is: %s.", dataNode, reason);
     }
 }

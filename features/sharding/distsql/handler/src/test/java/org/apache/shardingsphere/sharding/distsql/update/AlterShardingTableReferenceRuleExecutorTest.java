@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
@@ -82,12 +82,6 @@ class AlterShardingTableReferenceRuleExecutorTest {
         result.getTables().add(new ShardingTableRuleConfiguration("t_1", null));
         result.getTables().add(new ShardingTableRuleConfiguration("t_2", null));
         result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("reference_0", "t_order,t_order_item"));
-        return result;
-    }
-    
-    private ShardingRuleConfiguration createToBeAlteredRuleConfig() {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("reference_0", "t_order,t_order_item,t_1,t_2"));
         return result;
     }
 }

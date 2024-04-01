@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.exception.metadata.rule;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
+
+import java.util.Collection;
 
 /**
- * Ambiguous column exception.
+ * In used rule exception.
  */
-public final class AmbiguousColumnException extends MetaDataSQLException {
+public final class InUsedRuleException extends RuleDefinitionException {
     
-    private static final long serialVersionUID = -9002743483594729164L;
+    private static final long serialVersionUID = 3308787279125477660L;
     
-    public AmbiguousColumnException(final String columnExpression, final String segmentTypeMessage) {
-        super(XOpenSQLState.GENERAL_ERROR, 5, "Column '%s' in %s is ambiguous.", columnExpression, segmentTypeMessage);
+    public InUsedRuleException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "%s rules '%s' in database '%s' are still in used.", ruleType, ruleNames, databaseName);
+    }
+    
+    public InUsedRuleException(final String ruleType, final String databaseName, final Collection<String> ruleNames, final String usingType) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "%s rules '%s' in database '%s' are still in used by %s.", ruleType, ruleNames, databaseName, usingType);
     }
 }

@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.resource.storageunit;
+package org.apache.shardingsphere.infra.exception.metadata;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.resource.ResourceDefinitionException;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Storage units operate exception.
+ * Ambiguous column exception.
  */
-public final class StorageUnitsOperateException extends ResourceDefinitionException {
+public final class AmbiguousColumnException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = 7029641448948791509L;
+    private static final long serialVersionUID = -9002743483594729164L;
     
-    public StorageUnitsOperateException(final String operationType, final Collection<String> storageUnitNames, final Exception cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 0, String.format("Can not %s storage units '%s'.", operationType, String.join(", ", storageUnitNames)), cause);
+    public AmbiguousColumnException(final String columnExpression, final String segmentTypeMessage) {
+        super(XOpenSQLState.GENERAL_ERROR, 5, "Column '%s' in %s is ambiguous.", columnExpression, segmentTypeMessage);
     }
 }
