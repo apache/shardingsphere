@@ -94,6 +94,7 @@ statement
         | forallStatement
         | gotoStatement
         | ifStatement
+        | modifyingStatement
         | nullStatement
         | openStatement
         | openForStatement
@@ -216,6 +217,12 @@ iterationCtlSeq
     : qualIterationCtl (COMMA_ qualIterationCtl)*
     ;
 
+modifyingExpression
+    : INSERTING
+    | DELETING
+    | UPDATING
+    ;
+
 qualIterationCtl
     : REVERSE? iterationCcontrol predClauseSeq
     ;
@@ -310,6 +317,13 @@ gotoStatement
 ifStatement
     : IF booleanExpression THEN statement+
     (ELSIF booleanExpression THEN statement+)*
+    (ELSE statement+)?
+    END IF SEMI_
+    ;
+
+modifyingStatement
+    : IF modifyingExpression THEN statement+
+    (ELSIF modifyingExpression THEN statement+)*
     (ELSE statement+)?
     END IF SEMI_
     ;
@@ -574,7 +588,7 @@ plsqlTriggerSource
     ;
 
 simpleDmlTrigger
-    : (BEFORE | AFTER) dmlEventClause (FOR EACH ROW)? triggerBody
+    : (BEFORE | AFTER) dmlEventClause (FOR EACH ROW)? () ? triggerBody
     ;
 
 dmlEventClause
@@ -582,7 +596,7 @@ dmlEventClause
     ;
 
 dmlEventElement
-    : (DELETE | INSERT | UPDATE) (OF LP_ columnName (COMMA_ columnName)* RP_)?
+    : (DELETE | INSERT | UPDATE) (OF LP_? columnName (COMMA_ columnName)* RP_?)?
     ;
 
 systemTrigger
