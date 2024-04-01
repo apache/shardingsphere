@@ -30,6 +30,6 @@ public final class DuplicateDataSourceException extends ResourceDefinitionExcept
     private static final long serialVersionUID = -8215195072425201836L;
     
     public DuplicateDataSourceException(final String databaseName, final Collection<String> dataSourceNames) {
-        super(XOpenSQLState.DUPLICATE, 30, "Duplicate data sources '%s' in database '%s' and global data sources.", dataSourceNames, databaseName);
+        super(XOpenSQLState.DUPLICATE, 30, "Duplicate data sources '%s' in database '%s' and global data sources.", String.join(", ", dataSourceNames), databaseName);
     }
 }
