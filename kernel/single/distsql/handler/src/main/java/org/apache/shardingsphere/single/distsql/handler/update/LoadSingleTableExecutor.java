@@ -19,13 +19,13 @@ package org.apache.shardingsphere.single.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
-import org.apache.shardingsphere.infra.exception.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.InvalidDataNodeFormatException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
+import org.apache.shardingsphere.infra.exception.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -43,7 +43,6 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -138,10 +137,9 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
             if (SingleTableConstants.ASTERISK.equals(each.getTableName())) {
                 continue;
             }
-            Map<String, Collection<String>> schemaTableMap = actualTableNodes.getOrDefault(each.getStorageUnitName(), new LinkedHashMap<>());
-            ShardingSpherePreconditions.checkState(!schemaTableMap.isEmpty(), () -> new MissingRequiredSingleTableException(each.getStorageUnitName(), each.getTableName()));
-            Collection<String> schemaTables = schemaTableMap.getOrDefault(defaultSchemaName, new LinkedList<>());
-            ShardingSpherePreconditions.checkState(!schemaTables.isEmpty() && schemaTables.contains(each.getTableName()),
+            ShardingSpherePreconditions.checkState(actualTableNodes.containsKey(each.getStorageUnitName()),
+                    () -> new MissingRequiredSingleTableException(each.getStorageUnitName(), each.getTableName()));
+            ShardingSpherePreconditions.checkState(actualTableNodes.get(each.getStorageUnitName()).get(defaultSchemaName).contains(each.getTableName()),
                     () -> new MissingRequiredSingleTableException(each.getStorageUnitName(), each.getTableName()));
         }
     }
