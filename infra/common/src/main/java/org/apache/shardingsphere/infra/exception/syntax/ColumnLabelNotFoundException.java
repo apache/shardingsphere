@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.exception.syntax;
+package org.apache.shardingsphere.infra.exception.syntax;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
@@ -28,6 +28,6 @@ public final class ColumnLabelNotFoundException extends SyntaxSQLException {
     private static final long serialVersionUID = -4634399403612501335L;
     
     public ColumnLabelNotFoundException(final String columnLabel) {
-        super(XOpenSQLState.NOT_FOUND, 11, "Can not find column label `%s`.", columnLabel);
+        super(XOpenSQLState.NOT_FOUND, 11, "Can not find column label '%s'.", columnLabel);
     }
 }

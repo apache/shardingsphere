@@ -29,7 +29,7 @@ class URLProviderNotFoundExceptionTest {
     @Test
     void assertToSQLException() {
         SQLException sqlException = new URLProviderNotFoundException("invalid:xxx").toSQLException();
-        assertThat(sqlException.getMessage(), is("Can not find url provider for `invalid:xxx`."));
+        assertThat(sqlException.getMessage(), is("Can not find url provider for 'invalid:xxx'."));
         assertThat(sqlException.getSQLState(), is("42S02"));
         assertThat(sqlException.getErrorCode(), is(12012));
     }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception.syntax;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
@@ -28,6 +28,6 @@ public final class UnsupportedVariableException extends SyntaxSQLException {
     private static final long serialVersionUID = 1955281568807066737L;
     
     public UnsupportedVariableException(final String variable) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 14, "Can not support variable `%s`.", variable);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 14, "Can not support variable '%s'.", variable);
     }
 }

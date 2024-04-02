@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.exception.syntax;
+package org.apache.shardingsphere.infra.exception.syntax;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
@@ -28,6 +28,6 @@ public final class ColumnIndexOutOfRangeException extends SyntaxSQLException {
     private static final long serialVersionUID = 3599337605134702447L;
     
     public ColumnIndexOutOfRangeException(final int columnIndex) {
-        super(XOpenSQLState.INVALID_COLUMN_NUMBER, 20, "Column index `%d` is out of range.", columnIndex);
+        super(XOpenSQLState.INVALID_COLUMN_NUMBER, 20, "Column index '%d' is out of range.", columnIndex);
     }
 }

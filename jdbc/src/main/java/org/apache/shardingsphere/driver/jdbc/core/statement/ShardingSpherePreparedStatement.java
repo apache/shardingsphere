@@ -30,7 +30,7 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultS
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtils;
 import org.apache.shardingsphere.driver.jdbc.core.statement.metadata.ShardingSphereParameterMetaData;
-import org.apache.shardingsphere.driver.jdbc.exception.syntax.EmptySQLException;
+import org.apache.shardingsphere.infra.exception.syntax.EmptySQLException;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;

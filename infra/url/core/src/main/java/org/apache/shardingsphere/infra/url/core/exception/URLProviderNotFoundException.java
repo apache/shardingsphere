@@ -28,6 +28,6 @@ public final class URLProviderNotFoundException extends SyntaxSQLException {
     private static final long serialVersionUID = 1017115393560838384L;
     
     public URLProviderNotFoundException(final String url) {
-        super(XOpenSQLState.NOT_FOUND, 12, "Can not find url provider for `%s`.", url);
+        super(XOpenSQLState.NOT_FOUND, 12, "Can not find url provider for '%s'.", url);
     }
 }
