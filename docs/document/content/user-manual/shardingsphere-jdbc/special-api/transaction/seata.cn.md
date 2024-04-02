@@ -80,16 +80,16 @@ ALTER TABLE `undo_log` ADD INDEX `ix_log_created` (`log_created`);
 
 `seata.conf` 存在四个属性，
 
-1. `shardingSphere.transaction.seata.at.enable`，当此值为`true`时，开启 ShardingSphere 的 Seata AT 集成，存在默认值为 `true`
-2. `shardingSphere.transaction.seata.tx.timeout`，全局事务超时（秒），存在默认值为 `60`
+1. `shardingsphere.transaction.seata.at.enable`，当此值为`true`时，开启 ShardingSphere 的 Seata AT 集成，存在默认值为 `true`
+2. `shardingsphere.transaction.seata.tx.timeout`，全局事务超时（秒），存在默认值为 `60`
 3. `client.application.id`，应用唯一主键
 4. `client.transaction.service.group`，所属事务组，存在默认值为 `default`
 
 一个完全配置的 `seata.conf` 如下，
 
 ```conf
-shardingSphere.transaction.seata.at.enable = true
-shardingSphere.transaction.seata.tx.timeout = 60
+shardingsphere.transaction.seata.at.enable = true
+shardingsphere.transaction.seata.tx.timeout = 60
 
 client {
     application.id = example
