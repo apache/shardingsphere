@@ -735,7 +735,6 @@ simpleExpr
     | columnName joinOperator?
     | privateExprOfDb
     | PRIOR identifier
-
     ;
 
 functionCall
