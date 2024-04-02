@@ -67,18 +67,17 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息                                                                                                                                                                                                                        |
 |-----------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 08000     | 13000       | Can not register driver, reason is: %s                                                                                                                                                                                      |
-| 08000     | 13001       | Can not register SQL federation driver, reason is: %s                                                                                                                                                                       |
 | 08000     | 13002       | The URL '%s' is not recognized, please refer to the pattern '%s'.                                                                                                                                                           |
 | 0A000     | 13003       | Unsupported storage type of URL '%s'.                                                                                                                                                                                       |
 | 01000     | 13010       | Circuit break open, the request has been ignored.                                                                                                                                                                           |
 | 01000     | 13011       | The cluster status is read-only.                                                                                                                                                                                            |
 | 01000     | 13012       | The cluster status is unavailable.                                                                                                                                                                                          |
 | 08000     | 13020       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties. |
-| 08000     | 13030       | Connection has been closed.                                                                                                                                                                                                 |
-| 08000     | 13031       | Result set has been closed.                                                                                                                                                                                                 |
 | 08000     | 13032       | SQL execution has been interrupted.                                                                                                                                                                                         |
 | HY000     | 13090       | Load datetime from database failed, reason: %s                                                                                                                                                                              |
+| 08000     | 13100       | Can not register driver.                                                                                                                                                                                                    |
+| 08000     | 13101       | Connection has been closed.                                                                                                                                                                                                 |
+| 08000     | 13102       | Result set has been closed.                                                                                                                                                                                                 |
 
 ### 事务
 

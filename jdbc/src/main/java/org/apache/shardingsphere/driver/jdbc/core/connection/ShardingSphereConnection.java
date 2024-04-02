@@ -22,7 +22,7 @@ import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
-import org.apache.shardingsphere.driver.jdbc.exception.connection.ConnectionClosedException;
+import org.apache.shardingsphere.driver.exception.ConnectionClosedException;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.system.Sy
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.executor.exception.SQLExecutionInterruptedException;
+import org.apache.shardingsphere.infra.exception.connection.SQLExecutionInterruptedException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;

@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.exception.connection;
+package org.apache.shardingsphere.infra.exception.connection;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Result set closed exception.
+ * Circuit break exception.
  */
-public final class ResultSetClosedException extends ConnectionSQLException {
+public final class CircuitBreakException extends ConnectionSQLException {
     
-    private static final long serialVersionUID = 3931974854134322934L;
+    private static final long serialVersionUID = 6339672680026286798L;
     
-    public ResultSetClosedException() {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 31, "Result set has been closed.");
+    public CircuitBreakException() {
+        super(XOpenSQLState.GENERAL_WARNING, 10, "Circuit break open, the request has been ignored.");
     }
 }

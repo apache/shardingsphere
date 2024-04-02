@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.exception;
+package org.apache.shardingsphere.driver.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 
 /**
- * SQL execution interrupted exception.
+ * Connection closed exception.
  */
-public final class SQLExecutionInterruptedException extends ConnectionSQLException {
+public final class ConnectionClosedException extends DriverConnectionException {
     
-    private static final long serialVersionUID = 3394283296623445981L;
+    private static final long serialVersionUID = 8667898851939815681L;
     
-    public SQLExecutionInterruptedException() {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 32, "SQL execution has been interrupted.");
+    public ConnectionClosedException() {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 1, "Connection has been closed.");
     }
 }

@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.driver.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Unavailable exception.
+ * Result set closed exception.
  */
-public final class UnavailableException extends ConnectionSQLException {
+public final class ResultSetClosedException extends DriverConnectionException {
     
-    private static final long serialVersionUID = 6036684043129887739L;
+    private static final long serialVersionUID = 3931974854134322934L;
     
-    public UnavailableException() {
-        super(XOpenSQLState.GENERAL_WARNING, 12, "The cluster status is unavailable.");
+    public ResultSetClosedException() {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 2, "Result set has been closed.");
     }
 }

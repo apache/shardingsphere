@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception.connection;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 
 /**
- * Read only exception.
+ * SQL execution interrupted exception.
  */
-public final class ReadOnlyException extends ConnectionSQLException {
+public final class SQLExecutionInterruptedException extends ConnectionSQLException {
     
-    private static final long serialVersionUID = 3834132923835083492L;
+    private static final long serialVersionUID = 3394283296623445981L;
     
-    public ReadOnlyException() {
-        super(XOpenSQLState.GENERAL_WARNING, 11, "The cluster status is read-only.");
+    public SQLExecutionInterruptedException() {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 32, "SQL execution has been interrupted.");
     }
 }
