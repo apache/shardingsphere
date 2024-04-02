@@ -81,16 +81,16 @@ The configuration file format refers to the [JavaDoc](https://github.com/apache/
 
 There are four properties in `seata.conf`,
 
-1. `sharding.transaction.seata.at.enable`, when this value is `true`, ShardingSphere's Seata AT integration is enabled, there is a default value of `true`
-2. `sharding.transaction.seata.tx.timeout`, global transaction timeout in SECONDS, there is a default value of `60`
+1. `shardingSphere.transaction.seata.at.enable`, when this value is `true`, ShardingSphere's Seata AT integration is enabled, there is a default value of `true`
+2. `shardingSphere.transaction.seata.tx.timeout`, global transaction timeout in SECONDS, there is a default value of `60`
 3. `client.application.id`, apply the only primary key
 4. `client.transaction.service.group`, the transaction group it belongs to, there is a default value of `default`
 
 A fully configured `seata.conf` is as follows,
 
 ```conf
-sharding.transaction.seata.at.enable = true
-sharding.transaction.seata.tx.timeout = 60
+shardingSphere.transaction.seata.at.enable = true
+shardingSphere.transaction.seata.tx.timeout = 60
 
 client {
     application.id = example

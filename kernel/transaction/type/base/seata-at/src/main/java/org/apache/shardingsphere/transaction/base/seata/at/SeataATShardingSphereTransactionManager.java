@@ -59,10 +59,10 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     
     public SeataATShardingSphereTransactionManager() {
         FileConfiguration config = new FileConfiguration("seata.conf");
-        enableSeataAT = config.getBoolean("sharding.transaction.seata.at.enable", true);
+        enableSeataAT = config.getBoolean("shardingSphere.transaction.seata.at.enable", true);
         applicationId = config.getConfig("client.application.id");
         transactionServiceGroup = config.getConfig("client.transaction.service.group", "default");
-        globalTXTimeout = config.getInt("sharding.transaction.seata.tx.timeout", 60);
+        globalTXTimeout = config.getInt("shardingSphere.transaction.seata.tx.timeout", 60);
     }
     
     @Override

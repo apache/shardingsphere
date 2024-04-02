@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-sharding.transaction.seata.at.enable = true
+shardingSphere.transaction.seata.at.enable = true
 
 client {
     application.id = jdbc-test
