@@ -27,4 +27,6 @@
     <create-trigger sql-case-id="create_trigger_with_body" />
     <create-trigger sql-case-id="create_trigger_with_execute_immediate_statement" />
     <create-trigger sql-case-id="create_trigger_with_assignment_statement" />
+    <create-trigger sql-case-id="create_trigger_with_dataManipulationLanguage_statement" />
+    <create-trigger sql-case-id="create_trigger_with_exceptionInit_pragma" />
 </sql-parser-test-cases>
