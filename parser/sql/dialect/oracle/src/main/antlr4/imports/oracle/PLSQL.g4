@@ -217,11 +217,7 @@ iterationCtlSeq
     : qualIterationCtl (COMMA_ qualIterationCtl)*
     ;
 
-modifyingExpression
-    : INSERTING
-    | DELETING
-    | UPDATING
-    ;
+modifyingExpression: INSERTING | DELETING | UPDATING;
 
 qualIterationCtl
     : REVERSE? iterationCcontrol predClauseSeq
@@ -321,12 +317,7 @@ ifStatement
     END IF SEMI_
     ;
 
-modifyingStatement
-    : IF modifyingExpression THEN statement+
-    (ELSIF modifyingExpression THEN statement+)*
-    (ELSE statement+)?
-    END IF SEMI_
-    ;
+modifyingStatement: IF modifyingExpression THEN statement+ (ELSIF modifyingExpression THEN statement+)* (ELSE statement+)? END IF SEMI_;
 
 nullStatement
     : NULL SEMI_
@@ -588,7 +579,7 @@ plsqlTriggerSource
     ;
 
 simpleDmlTrigger
-    : (BEFORE | AFTER) dmlEventClause (FOR EACH ROW)? () ? triggerBody
+    : (BEFORE | AFTER) dmlEventClause (FOR EACH ROW)? triggerBody
     ;
 
 dmlEventClause
