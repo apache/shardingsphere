@@ -51,46 +51,43 @@
             :NEW.ID := Contacts_Seq.NEXTVAL;
         END;" db-types="Oracle" />
     <sql-case id="create_trigger_with_dataManipulationLanguage_statement" value="CREATE OR REPLACE TRIGGER lineitems_trigger
-  AFTER INSERT OR UPDATE OR DELETE ON lineitems
-  FOR EACH ROW
-BEGIN
-  IF (INSERTING OR UPDATING)
-  THEN
-    UPDATE orders SET line_items_count = NVL(line_items_count,0)+1
-    WHERE order_id = :new.order_id;
-  END IF;
-  IF (DELETING OR UPDATING)
-  THEN
-    UPDATE orders SET line_items_count = NVL(line_items_count,0)-1
-    WHERE order_id = :old.order_id;
-  END IF;
-END;" db-types="Oracle"/>
+        AFTER INSERT OR UPDATE OR DELETE ON lineitems
+        FOR EACH ROW
+      BEGIN
+        IF (INSERTING OR UPDATING)
+        THEN
+          UPDATE orders SET line_items_count = NVL(line_items_count,0)+1
+          WHERE order_id = :new.order_id;
+        END IF;
+        IF (DELETING OR UPDATING)
+        THEN
+          UPDATE orders SET line_items_count = NVL(line_items_count,0)-1
+          WHERE order_id = :old.order_id;
+        END IF;
+      END;" db-types="Oracle"/>
     <sql-case id="create_trigger_with_exceptionInit_pragma" value="CREATE OR REPLACE TRIGGER Employee_permit_changes
-  BEFORE INSERT OR DELETE OR UPDATE ON employees
-DECLARE
-  Dummy             INTEGER;
-  Not_on_weekends   EXCEPTION;
-  Nonworking_hours  EXCEPTION;
-  PRAGMA EXCEPTION_INIT (Not_on_weekends, -4097);
-  PRAGMA EXCEPTION_INIT (Nonworking_hours, -4099);
-BEGIN
-   
-   IF (TO_CHAR(Sysdate, 'DAY') = 'SAT' OR
-     TO_CHAR(Sysdate, 'DAY') = 'SUN') THEN
-       RAISE Not_on_weekends;
-   END IF;
- 
-  IF (TO_CHAR(Sysdate, 'HH24') &lt; 8 OR
-    TO_CHAR(Sysdate, 'HH24') &gt; 18) THEN
-      RAISE Nonworking_hours;
-  END IF;
- 
-EXCEPTION
-  WHEN Not_on_weekends THEN
-    Raise_application_error(-20324,'Might not change '
-      ||'employee table during the weekend');
-  WHEN Nonworking_hours THEN
-    Raise_application_error(-20326,'Might not change '
-     ||'emp table during Nonworking hours');
-END;" db-types="Oracle"/>
+        BEFORE INSERT OR DELETE OR UPDATE ON employees
+      DECLARE
+        Dummy             INTEGER;
+        Not_on_weekends   EXCEPTION;
+        Nonworking_hours  EXCEPTION;
+        PRAGMA EXCEPTION_INIT (Not_on_weekends, -4097);
+        PRAGMA EXCEPTION_INIT (Nonworking_hours, -4099);
+      BEGIN
+         IF (TO_CHAR(Sysdate, 'DAY') = 'SAT' OR
+           TO_CHAR(Sysdate, 'DAY') = 'SUN') THEN
+             RAISE Not_on_weekends;
+         END IF;
+        IF (TO_CHAR(Sysdate, 'HH24') &lt; 8 OR
+          TO_CHAR(Sysdate, 'HH24') &gt; 18) THEN
+            RAISE Nonworking_hours;
+        END IF;
+      EXCEPTION
+        WHEN Not_on_weekends THEN
+          Raise_application_error(-20324,'Might not change '
+            ||'employee table during the weekend');
+        WHEN Nonworking_hours THEN
+          Raise_application_error(-20326,'Might not change '
+           ||'emp table during Nonworking hours');
+      END;" db-types="Oracle"/>
 </sql-cases>
