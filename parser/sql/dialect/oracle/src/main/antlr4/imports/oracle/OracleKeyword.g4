@@ -7971,3 +7971,7 @@ REP
 APP
     : A P P
     ;
+
+EXCEPTION_INIT
+    : E X C E P T I O N UL_ I N I T
+    ;
