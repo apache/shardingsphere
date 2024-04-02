@@ -78,8 +78,8 @@
                TO_CHAR(Sysdate, 'DAY') = 'SUN') THEN
                  RAISE Not_on_weekends;
              END IF;
-            IF (TO_CHAR(Sysdate, 'HH24') < 8 OR
-              TO_CHAR(Sysdate, 'HH24') > 18) THEN
+            IF (TO_CHAR(Sysdate, 'HH24') &lt; 8 OR
+              TO_CHAR(Sysdate, 'HH24') &gt; 18) THEN
                 RAISE Nonworking_hours;
             END IF;
           EXCEPTION
