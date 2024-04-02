@@ -663,6 +663,11 @@ expr
     | expr datetimeExpr
     | multisetExpr
     | builtinFunctionsExpr
+    | dataManipulationLanguageExpr
+    ;
+
+dataManipulationLanguageExpr
+    : UPDATING | INSERTING | DELETING
     ;
 
 andOperator
@@ -730,6 +735,7 @@ simpleExpr
     | columnName joinOperator?
     | privateExprOfDb
     | PRIOR identifier
+
     ;
 
 functionCall
