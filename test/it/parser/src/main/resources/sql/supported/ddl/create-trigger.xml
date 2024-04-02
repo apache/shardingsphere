@@ -17,37 +17,16 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_trigger" value="CREATE TRIGGER reminder1
-        ON Sales.Customer
-        AFTER INSERT, UPDATE
-        AS INSERT INTO SalesPersonQuotaHistory VALUES(t1, 100)" db-types="SQLServer" />
-    <sql-case id="create_trigger_with_database_scoped" value="CREATE TRIGGER ddl_trig_database
-        ON ALL SERVER
-        AFTER INSERT
-        AS
-            SELECT EVENTDATA()" db-types="SQLServer" />
-
+    <sql-case id="create_trigger" value="CREATE TRIGGER reminder1 ON Sales.Customer AFTER INSERT, UPDATE AS INSERT INTO SalesPersonQuotaHistory VALUES(t1, 100)" db-types="SQLServer" />
+    <sql-case id="create_trigger_with_database_scoped" value="CREATE TRIGGER ddl_trig_database ON ALL SERVER AFTER INSERT AS SELECT EVENTDATA()" db-types="SQLServer" />
     <sql-case id="create_trigger_with_create_view" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN create view v1 as select 1; END" db-types="MySQL" />
     <sql-case id="create_trigger_with_dml_event_clause" value="CREATE TRIGGER scott.emp_permit_changes BEFORE DELETE OR INSERT OR UPDATE ON scott.emp BEGIN IF (IS_SERVERERROR (1017)) THEN NULL; ELSE NULL; END IF; END;" db-types="Oracle" />
-    <sql-case id="create_trigger_with_body" value="CREATE TRIGGER log_errors
-        AFTER SERVERERROR ON DATABASE
-        BEGIN
-        IF (IS_SERVERERROR (1017)) THEN
-          NULL;
-        ELSE
-          NULL;
-        END IF;
-        END;" db-types="Oracle" />
-    <sql-case id="create_trigger_with_execute_immediate_statement" value="CREATE TRIGGER adg_logon_sync_trigger
-        AFTER LOGON ON user.schema
-            begin
-                if (SYS_CONTEXT('USERENV', 'DATABASE_ROLE')  IN ('PHYSICAL STANDBY')) then
-                  execute immediate 'alter session sync with primary';
-            end if;
-        end;" db-types="Oracle" />
-    <sql-case id="create_trigger_with_assignment_statement" value="CREATE TRIGGER Contacts_BI
-            BEFORE INSERT ON Contacts FOR EACH ROW
-        BEGIN
-            :NEW.ID := Contacts_Seq.NEXTVAL;
-        END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_body" value="CREATE TRIGGER log_errors AFTER SERVERERROR ON DATABASE BEGIN IF (IS_SERVERERROR (1017)) THEN NULL; ELSE NULL; END IF; END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_execute_immediate_statement" value="CREATE TRIGGER adg_logon_sync_trigger AFTER LOGON ON user.schema begin if (SYS_CONTEXT('USERENV', 'DATABASE_ROLE')  IN ('PHYSICAL STANDBY')) then execute immediate 'alter session sync with primary'; end if; end;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_assignment_statement" value="CREATE TRIGGER Contacts_BI BEFORE INSERT ON Contacts FOR EACH ROW BEGIN :NEW.ID := Contacts_Seq.NEXTVAL; END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_logon" value="CREATE OR REPLACE TRIGGER check_user AFTER LOGON ON DATABASE BEGIN check_user; EXCEPTION WHEN OTHERS THEN RAISE_APPLICATION_ERROR (-20000, 'Unexpected error: '|| DBMS_Utility.Format_Error_Stack); END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_cascade_1" value="CREATE OR REPLACE TRIGGER dept_cascade3 AFTER UPDATE OF Deptno ON dept BEGIN UPDATE emp SET Update_id = NULL WHERE Update_id = Integritypackage.Updateseq; END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_cascade_2" value="CREATE OR REPLACE TRIGGER dept_del_cascade AFTER DELETE ON dept FOR EACH ROW BEGIN DELETE FROM emp WHERE emp.Deptno = :OLD.Deptno; END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_cascade_3" value="CREATE OR REPLACE TRIGGER dept_cascade2 AFTER DELETE OR UPDATE OF Deptno ON dept FOR EACH ROW BEGIN IF UPDATING THEN UPDATE emp SET Deptno = :NEW.Deptno, Update_id = Integritypackage.Updateseq WHERE emp.Deptno = :OLD.Deptno AND Update_id IS NULL; END IF; IF DELETING THEN DELETE FROM emp WHERE emp.Deptno = :OLD.Deptno; END IF; END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_cascade_4" value="CREATE OR REPLACE TRIGGER dept_restrict BEFORE DELETE OR UPDATE OF Deptno ON dept FOR EACH ROW DECLARE Dummy INTEGER; Employees_present EXCEPTION; employees_not_present  EXCEPTION; CURSOR Dummy_cursor (Dn NUMBER) IS SELECT Deptno FROM emp WHERE Deptno = Dn; BEGIN OPEN Dummy_cursor (:OLD.Deptno); FETCH Dummy_cursor INTO Dummy; IF Dummy_cursor%FOUND THEN RAISE Employees_present; ELSE RAISE Employees_not_present; END IF; CLOSE Dummy_cursor; EXCEPTION WHEN Employees_present THEN CLOSE Dummy_cursor; Raise_application_error(-20001, 'Employees Present in' || ' Department ' || TO_CHAR(:OLD.DEPTNO)); WHEN Employees_not_present THEN CLOSE Dummy_cursor; END;" db-types="Oracle" />
 </sql-cases>
