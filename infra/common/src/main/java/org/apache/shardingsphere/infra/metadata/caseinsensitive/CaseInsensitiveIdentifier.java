@@ -17,26 +17,24 @@
 
 package org.apache.shardingsphere.infra.metadata.caseinsensitive;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import lombok.EqualsAndHashCode;
 
 /**
  * Case insensitive identifier.
  */
 // TODO table name case-sensitive for some database
-@EqualsAndHashCode(of = "lowercase")
+@EqualsAndHashCode
 public final class CaseInsensitiveIdentifier {
     
-    private final String original;
-    
-    private final String lowercase;
+    private final CaseInsensitiveString original;
     
     public CaseInsensitiveIdentifier(final String identifier) {
-        original = identifier;
-        lowercase = null == identifier ? null : identifier.toLowerCase();
+        original = new CaseInsensitiveString(identifier);
     }
     
     @Override
     public String toString() {
-        return original;
+        return original.toString();
     }
 }
