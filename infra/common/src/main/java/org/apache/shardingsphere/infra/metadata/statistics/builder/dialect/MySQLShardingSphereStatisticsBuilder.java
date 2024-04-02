@@ -18,24 +18,18 @@
 package org.apache.shardingsphere.infra.metadata.statistics.builder.dialect;
 
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
-import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collections;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * ShardingSphere statistics builder for MySQL.
@@ -49,50 +43,38 @@ public final class MySQLShardingSphereStatisticsBuilder implements ShardingSpher
     
     private static final String SHARDING_TABLE_STATISTICS = "sharding_table_statistics";
     
-    private final SystemDatabase systemDatabase = new SystemDatabase(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-    
     @Override
     public ShardingSphereStatistics build(final ShardingSphereMetaData metaData) {
         ShardingSphereStatistics result = new ShardingSphereStatistics();
         for (Entry<String, ShardingSphereDatabase> entry : metaData.getDatabases().entrySet()) {
-            if (systemDatabase.getSystemDatabaseSchemaMap().containsKey(entry.getKey())) {
-                ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
-                collectDatabaseData(metaData, entry.getValue(), databaseData);
-                result.getDatabaseData().put(entry.getKey(), databaseData);
+            ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
+            initSchemas(entry.getValue(), databaseData);
+            if (!databaseData.getSchemaData().isEmpty()) {
+                result.putDatabase(entry.getKey(), databaseData);
             }
         }
         return result;
     }
     
-    private void collectDatabaseData(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final ShardingSphereDatabaseData databaseData) {
+    private void initSchemas(final ShardingSphereDatabase database, final ShardingSphereDatabaseData databaseData) {
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
             if (SHARDING_SPHERE.equals(entry.getKey())) {
                 ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
-                initForClusterInformationTable(schemaData);
-                collectTableData(metaData, database, entry.getValue().getTable(SHARDING_TABLE_STATISTICS), schemaData);
-                databaseData.getSchemaData().put(SHARDING_SPHERE, schemaData);
+                initClusterInformationTable(schemaData);
+                initShardingTableStatisticsTable(schemaData);
+                databaseData.putSchema(SHARDING_SPHERE, schemaData);
             }
         }
     }
     
-    private void initForClusterInformationTable(final ShardingSphereSchemaData schemaData) {
+    private void initClusterInformationTable(final ShardingSphereSchemaData schemaData) {
         ShardingSphereTableData tableData = new ShardingSphereTableData(CLUSTER_INFORMATION);
         tableData.getRows().add(new ShardingSphereRowData(Collections.singletonList(ShardingSphereVersion.VERSION)));
-        schemaData.getTableData().put(CLUSTER_INFORMATION, tableData);
+        schemaData.putTable(CLUSTER_INFORMATION, tableData);
     }
     
-    private void collectTableData(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final ShardingSphereTable table, final ShardingSphereSchemaData schemaData) {
-        Optional<ShardingSphereStatisticsCollector> dataCollector = TypedSPILoader.findService(ShardingSphereStatisticsCollector.class, table.getName());
-        ShardingSphereTableData tableData = new ShardingSphereTableData(table.getName());
-        if (dataCollector.isPresent()) {
-            try {
-                dataCollector.get().collect(database.getName(), table, metaData.getDatabases(), metaData.getGlobalRuleMetaData()).ifPresent(optional -> tableData.getRows().addAll(optional.getRows()));
-                // CHECKSTYLE:OFF
-            } catch (final Exception ignored) {
-                // CHECKSTYLE:ON
-            }
-        }
-        schemaData.getTableData().put(table.getName(), tableData);
+    private void initShardingTableStatisticsTable(final ShardingSphereSchemaData schemaData) {
+        schemaData.putTable(SHARDING_TABLE_STATISTICS, new ShardingSphereTableData(SHARDING_TABLE_STATISTICS));
     }
     
     @Override
