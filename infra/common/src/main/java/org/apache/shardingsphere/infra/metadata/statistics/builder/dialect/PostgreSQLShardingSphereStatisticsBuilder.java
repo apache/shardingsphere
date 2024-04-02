@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.statistics.builder.dialect;
 
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
-import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -30,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaD
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,51 +42,62 @@ import java.util.Map.Entry;
 
 public final class PostgreSQLShardingSphereStatisticsBuilder implements ShardingSphereStatisticsBuilder {
     
-    private static final Map<String, Collection<String>> COLLECTED_SCHEMA_TABLES = new LinkedHashMap<>();
+    private static final String SHARDING_SPHERE = "shardingsphere";
+    
+    private static final String CLUSTER_INFORMATION = "cluster_information";
+    
+    private static final String SHARDING_TABLE_STATISTICS = "sharding_table_statistics";
     
     private static final Map<String, Collection<String>> INIT_DATA_SCHEMA_TABLES = new LinkedHashMap<>();
     
-    private final SystemDatabase systemDatabase = new SystemDatabase(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-    
     static {
-        COLLECTED_SCHEMA_TABLES.put("shardingsphere", Collections.singletonList("sharding_table_statistics"));
-        COLLECTED_SCHEMA_TABLES.put("pg_catalog", Arrays.asList("pg_class", "pg_namespace"));
-        INIT_DATA_SCHEMA_TABLES.put("shardingsphere", Collections.singletonList("cluster_information"));
+        INIT_DATA_SCHEMA_TABLES.put("pg_catalog", Arrays.asList("pg_class", "pg_namespace"));
     }
     
     @Override
     public ShardingSphereStatistics build(final ShardingSphereMetaData metaData) {
         ShardingSphereStatistics result = new ShardingSphereStatistics();
         for (Entry<String, ShardingSphereDatabase> entry : metaData.getDatabases().entrySet()) {
-            if (systemDatabase.getSystemDatabaseSchemaMap().containsKey(entry.getKey())) {
-                continue;
-            }
             ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
-            appendSchemaData(entry.getValue(), databaseData);
-            result.getDatabaseData().put(entry.getKey(), databaseData);
+            initSchemas(entry.getValue(), databaseData);
+            if (!databaseData.getSchemaData().isEmpty()) {
+                result.putDatabase(entry.getKey(), databaseData);
+            }
         }
         return result;
     }
     
-    private void appendSchemaData(final ShardingSphereDatabase database, final ShardingSphereDatabaseData databaseData) {
+    private void initSchemas(final ShardingSphereDatabase database, final ShardingSphereDatabaseData databaseData) {
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
-            if (COLLECTED_SCHEMA_TABLES.containsKey(entry.getKey()) || INIT_DATA_SCHEMA_TABLES.containsKey(entry.getKey())) {
+            if (SHARDING_SPHERE.equals(entry.getKey())) {
                 ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
-                appendTableData(entry, schemaData);
-                databaseData.getSchemaData().put(entry.getKey(), schemaData);
+                initClusterInformationTable(schemaData);
+                initShardingTableStatisticsTable(schemaData);
+                databaseData.putSchema(SHARDING_SPHERE, schemaData);
+            }
+            if (INIT_DATA_SCHEMA_TABLES.containsKey(entry.getKey())) {
+                ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
+                initTables(entry.getValue(), INIT_DATA_SCHEMA_TABLES.get(entry.getKey()), schemaData);
+                databaseData.putSchema(entry.getKey(), schemaData);
             }
         }
     }
     
-    private void appendTableData(final Entry<String, ShardingSphereSchema> schemaEntry, final ShardingSphereSchemaData schemaData) {
-        for (Entry<String, ShardingSphereTable> entry : schemaEntry.getValue().getTables().entrySet()) {
-            ShardingSphereTableData tableData = new ShardingSphereTableData(entry.getValue().getName());
-            if (null != COLLECTED_SCHEMA_TABLES.get(schemaEntry.getKey()) && COLLECTED_SCHEMA_TABLES.get(schemaEntry.getKey()).contains(entry.getKey())) {
-                schemaData.getTableData().put(entry.getKey(), tableData);
-            }
-            if (null != INIT_DATA_SCHEMA_TABLES.get(schemaEntry.getKey()) && INIT_DATA_SCHEMA_TABLES.get(schemaEntry.getKey()).contains(entry.getKey())) {
-                tableData.getRows().add(new ShardingSphereRowData(Collections.singletonList(ShardingSphereVersion.VERSION)));
-                schemaData.getTableData().put(entry.getKey(), tableData);
+    private void initClusterInformationTable(final ShardingSphereSchemaData schemaData) {
+        ShardingSphereTableData tableData = new ShardingSphereTableData(CLUSTER_INFORMATION);
+        tableData.getRows().add(new ShardingSphereRowData(Collections.singletonList(ShardingSphereVersion.VERSION)));
+        schemaData.putTable(CLUSTER_INFORMATION, tableData);
+    }
+    
+    private void initShardingTableStatisticsTable(final ShardingSphereSchemaData schemaData) {
+        schemaData.putTable(SHARDING_TABLE_STATISTICS, new ShardingSphereTableData(SHARDING_TABLE_STATISTICS));
+    }
+    
+    private void initTables(final ShardingSphereSchema schema, final Collection<String> tables, final ShardingSphereSchemaData schemaData) {
+        for (Entry<String, ShardingSphereTable> entry : schema.getTables().entrySet()) {
+            if (tables.contains(entry.getValue().getName())) {
+                ShardingSphereTableData tableData = new ShardingSphereTableData(entry.getValue().getName());
+                schemaData.putTable(entry.getKey(), tableData);
             }
         }
     }

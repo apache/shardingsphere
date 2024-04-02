@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.collector;
 
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -39,8 +40,9 @@ public interface ShardingSphereStatisticsCollector extends TypedSPI {
      * @param databaseName database name
      * @param table table
      * @param databases databases
+     * @param globalRuleMetaData global rule meta data
      * @return ShardingSphere table data
      * @throws SQLException SQL exception
      */
-    Optional<ShardingSphereTableData> collect(String databaseName, ShardingSphereTable table, Map<String, ShardingSphereDatabase> databases) throws SQLException;
+    Optional<ShardingSphereTableData> collect(String databaseName, ShardingSphereTable table, Map<String, ShardingSphereDatabase> databases, RuleMetaData globalRuleMetaData) throws SQLException;
 }

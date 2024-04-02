@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.collector.tables;
 
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
@@ -43,7 +44,8 @@ public final class PgNamespaceTableCollector implements ShardingSphereStatistics
     private static final String SELECT_SQL = "SELECT " + COLUMN_NAMES + " FROM pg_catalog.pg_namespace";
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final Map<String, ShardingSphereDatabase> databases) throws SQLException {
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final Map<String, ShardingSphereDatabase> databases,
+                                                     final RuleMetaData globalRuleMetaData) throws SQLException {
         Collection<ShardingSphereRowData> rows = ShardingSphereTableDataCollectorUtils.collectRowData(databases.get(databaseName),
                 table, Arrays.stream(COLUMN_NAMES.split(",")).map(String::trim).collect(Collectors.toList()), SELECT_SQL);
         ShardingSphereTableData result = new ShardingSphereTableData(PG_NAMESPACE);
