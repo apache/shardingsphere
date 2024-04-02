@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.exception.connection;
+package org.apache.shardingsphere.driver.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
+import java.sql.SQLException;
+
 /**
- * Connection closed exception.
+ * Driver register exception.
  */
-public final class ConnectionClosedException extends ConnectionSQLException {
+public final class DriverRegisterException extends DriverConnectionException {
     
-    private static final long serialVersionUID = 8667898851939815681L;
+    private static final long serialVersionUID = -8091239932993280564L;
     
-    public ConnectionClosedException() {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 30, "Connection has been closed.");
+    public DriverRegisterException(final SQLException cause) {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 0, "Can not register driver.", cause);
     }
 }

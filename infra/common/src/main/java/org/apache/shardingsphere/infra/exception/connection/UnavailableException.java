@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.exception;
+package org.apache.shardingsphere.infra.exception.connection;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Circuit break exception.
+ * Unavailable exception.
  */
-public final class CircuitBreakException extends ConnectionSQLException {
+public final class UnavailableException extends ConnectionSQLException {
     
-    private static final long serialVersionUID = 6339672680026286798L;
+    private static final long serialVersionUID = 6036684043129887739L;
     
-    public CircuitBreakException() {
-        super(XOpenSQLState.GENERAL_WARNING, 10, "Circuit break open, the request has been ignored.");
+    public UnavailableException() {
+        super(XOpenSQLState.GENERAL_WARNING, 12, "The cluster status is unavailable.");
     }
 }

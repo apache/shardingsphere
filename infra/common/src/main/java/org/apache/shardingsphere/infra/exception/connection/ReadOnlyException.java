@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver;
+package org.apache.shardingsphere.infra.exception.connection;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
-import java.sql.SQLException;
-
 /**
- * Driver register exception.
+ * Read only exception.
  */
-public final class DriverRegisterException extends ConnectionSQLException {
+public final class ReadOnlyException extends ConnectionSQLException {
     
-    private static final long serialVersionUID = -8091239932993280564L;
+    private static final long serialVersionUID = 3834132923835083492L;
     
-    public DriverRegisterException(final SQLException cause) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 0, "Can not register driver, reason is: %s", cause.getMessage());
+    public ReadOnlyException() {
+        super(XOpenSQLState.GENERAL_WARNING, 11, "The cluster status is read-only.");
     }
 }
