@@ -22,6 +22,7 @@ columns:
     dataType: 4
     generated: false
     name: SPACE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: PATH
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true

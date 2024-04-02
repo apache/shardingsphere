@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
-import org.apache.shardingsphere.sqltranslator.exception.syntax.UnsupportedTranslatedDatabaseException;
+import org.apache.shardingsphere.sqltranslator.exception.UnsupportedTranslatedDatabaseException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

@@ -65,6 +65,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.In
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InsertRestContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InsertTargetContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinQualContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LimitClauseContext;
@@ -110,7 +111,6 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Wh
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowDefinitionListContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParserBaseVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
@@ -938,13 +938,17 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             PostgreSQLSelectStatement result = new PostgreSQLSelectStatement();
             PostgreSQLSelectStatement left = (PostgreSQLSelectStatement) visit(ctx.selectClauseN(0));
             result.setProjections(left.getProjections());
-            result.setFrom(left.getFrom());
-            CombineSegment combineSegment = new CombineSegment(((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), left, getCombineType(ctx),
-                    (PostgreSQLSelectStatement) visit(ctx.selectClauseN(1)));
+            left.getFrom().ifPresent(result::setFrom);
+            CombineSegment combineSegment = new CombineSegment(((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(),
+                    createSubquerySegment(ctx.selectClauseN(0), left), getCombineType(ctx), createSubquerySegment(ctx.selectClauseN(1), (PostgreSQLSelectStatement) visit(ctx.selectClauseN(1))));
             result.setCombine(combineSegment);
             return result;
         }
         return visit(ctx.selectWithParens());
+    }
+    
+    private SubquerySegment createSubquerySegment(final SelectClauseNContext ctx, final PostgreSQLSelectStatement selectStatement) {
+        return new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), selectStatement, getOriginalText(ctx));
     }
     
     private CombineType getCombineType(final SelectClauseNContext ctx) {

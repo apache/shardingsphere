@@ -49,7 +49,7 @@ class AlterViewStatementContextTest {
     @Test
     void assertMySQLNewInstance() {
         SelectStatement select = mock(MySQLSelectStatement.class);
-        when(select.getFrom()).thenReturn(view);
+        when(select.getFrom()).thenReturn(Optional.of(view));
         MySQLAlterViewStatement alterViewStatement = mock(MySQLAlterViewStatement.class);
         when(alterViewStatement.getView()).thenReturn(view);
         when(alterViewStatement.getSelect()).thenReturn(select);

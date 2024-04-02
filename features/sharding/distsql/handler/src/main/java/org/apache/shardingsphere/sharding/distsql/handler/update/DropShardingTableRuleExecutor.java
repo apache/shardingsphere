@@ -21,8 +21,8 @@ import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Splitter;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
-import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.exception.rule.RuleInUsedException;
+import org.apache.shardingsphere.infra.exception.metadata.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.metadata.rule.InUsedRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -79,7 +79,7 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
         Collection<String> bindingTables = getBindingTables();
         Collection<String> usedTableNames = getToBeDroppedShardingTableNames(sqlStatement).stream().filter(bindingTables::contains).collect(Collectors.toList());
         if (!usedTableNames.isEmpty()) {
-            throw new RuleInUsedException("Sharding", database.getName(), usedTableNames, "sharding table reference");
+            throw new InUsedRuleException("Sharding", database.getName(), usedTableNames, "sharding table reference");
         }
     }
     

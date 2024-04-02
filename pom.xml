@@ -55,6 +55,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
+        <maven.enforcer.fail>true</maven.enforcer.fail>
         <shade.package>org.apache.shardingsphere.shade</shade.package>
         <antlr.output.directory>${basedir}/target/generated-sources/antlr4</antlr.output.directory>
         
@@ -181,12 +182,13 @@
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
         
         <!-- Report plugin versions -->
-        <maven-site-plugin.version>4.0.0-M6</maven-site-plugin.version>
-        <maven-project-info-reports-plugin.version>3.4.2</maven-project-info-reports-plugin.version>
+        <maven-site-plugin.version>4.0.0-M13</maven-site-plugin.version>
+        <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
         <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
         <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
+        <dependency-check-maven.version>9.0.10</dependency-check-maven.version>
     </properties>
     
     <dependencyManagement>
@@ -666,7 +668,7 @@
                                         <version>${java.version}</version>
                                     </requireJavaVersion>
                                 </rules>
-                                <fail>true</fail>
+                                <fail>${maven.enforcer.fail}</fail>
                             </configuration>
                         </execution>
                     </executions>
@@ -803,6 +805,11 @@
                         <aggregate>true</aggregate>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>${dependency-check-maven.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         
@@ -899,6 +906,10 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>taglist-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
             </plugin>
         </plugins>
     </reporting>

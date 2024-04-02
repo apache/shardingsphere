@@ -91,6 +91,6 @@ class WhereExtractUtilsTest {
         selectStatement.setFrom(new SubqueryTableSegment(new SubquerySegment(20, 84, subQuerySelectStatement, "")));
         Collection<WhereSegment> subqueryWhereSegments = WhereExtractUtils.getSubqueryWhereSegments(selectStatement);
         WhereSegment actual = subqueryWhereSegments.iterator().next();
-        assertThat(actual.getExpr(), is(((JoinTableSegment) subQuerySelectStatement.getFrom()).getCondition()));
+        assertThat(actual.getExpr(), is(joinTableSegment.getCondition()));
     }
 }

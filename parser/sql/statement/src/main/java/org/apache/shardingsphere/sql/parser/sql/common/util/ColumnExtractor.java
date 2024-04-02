@@ -126,12 +126,12 @@ public final class ColumnExtractor {
      * @param containsSubQuery whether contains sub query
      */
     public static void extractFromSelectStatementWithoutProjection(final Collection<ColumnSegment> columnSegments, final SelectStatement statement, final boolean containsSubQuery) {
-        extractFromTable(columnSegments, statement.getFrom(), containsSubQuery);
+        statement.getFrom().ifPresent(optional -> extractFromTable(columnSegments, optional, containsSubQuery));
         statement.getWhere().ifPresent(optional -> extractFromWhere(columnSegments, optional, containsSubQuery));
         statement.getGroupBy().ifPresent(optional -> extractFromGroupBy(columnSegments, optional, containsSubQuery));
         statement.getHaving().ifPresent(optional -> extractFromHaving(columnSegments, optional, containsSubQuery));
         statement.getOrderBy().ifPresent(optional -> extractFromOrderBy(columnSegments, optional, containsSubQuery));
-        statement.getCombine().ifPresent(optional -> extractFromSelectStatement(columnSegments, optional.getRight(), containsSubQuery));
+        statement.getCombine().ifPresent(optional -> extractFromSelectStatement(columnSegments, optional.getRight().getSelect(), containsSubQuery));
     }
     
     /**
@@ -170,9 +170,6 @@ public final class ColumnExtractor {
     }
     
     private static void extractFromTable(final Collection<ColumnSegment> columnSegments, final TableSegment tableSegment, final boolean containsSubQuery) {
-        if (null == tableSegment) {
-            return;
-        }
         if (tableSegment instanceof CollectionTableSegment) {
             columnSegments.addAll(ExpressionExtractUtils.extractColumns(((CollectionTableSegment) tableSegment).getExpressionSegment(), containsSubQuery));
         }

@@ -591,7 +591,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result = new OracleSelectStatement();
             OracleSelectStatement left = (OracleSelectStatement) visit(ctx.selectSubquery(0));
             result.setProjections(left.getProjections());
-            result.setFrom(left.getFrom());
+            left.getFrom().ifPresent(result::setFrom);
             createSelectCombineClause(ctx, result, left);
         } else {
             result = null != ctx.queryBlock() ? (OracleSelectStatement) visit(ctx.queryBlock()) : (OracleSelectStatement) visit(ctx.parenthesisSelectSubquery());
@@ -615,7 +615,12 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         } else {
             combineType = CombineType.MINUS;
         }
-        result.setCombine(new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), left, combineType, (OracleSelectStatement) visit(ctx.selectSubquery(1))));
+        result.setCombine(new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), createSubquerySegment(ctx.selectSubquery(0), left), combineType,
+                createSubquerySegment(ctx.selectSubquery(1), (OracleSelectStatement) visit(ctx.selectSubquery(1)))));
+    }
+    
+    private SubquerySegment createSubquerySegment(final SelectSubqueryContext ctx, final OracleSelectStatement selectStatement) {
+        return new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), selectStatement, getOriginalText(ctx));
     }
     
     @Override

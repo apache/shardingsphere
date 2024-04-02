@@ -22,6 +22,7 @@ columns:
     dataType: 12
     generated: false
     name: PLUGIN_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: PLUGIN_VERSION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 12
     generated: false
     name: PLUGIN_STATUS
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 12
     generated: false
     name: PLUGIN_TYPE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 12
     generated: false
     name: PLUGIN_TYPE_VERSION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 12
     generated: false
     name: PLUGIN_LIBRARY
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 12
     generated: false
     name: PLUGIN_LIBRARY_VERSION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,6 +85,7 @@ columns:
     dataType: 12
     generated: false
     name: PLUGIN_AUTHOR
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,6 +94,7 @@ columns:
     dataType: -1
     generated: false
     name: PLUGIN_DESCRIPTION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -94,6 +103,7 @@ columns:
     dataType: 12
     generated: false
     name: PLUGIN_LICENSE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -102,6 +112,7 @@ columns:
     dataType: 12
     generated: false
     name: LOAD_OPTION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true

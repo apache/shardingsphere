@@ -70,7 +70,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
     private SqlSelect convertSelect(final SelectStatement selectStatement) {
         SqlNodeList distinct = DistinctConverter.convert(selectStatement.getProjections()).orElse(null);
         SqlNodeList projection = ProjectionsConverter.convert(selectStatement.getProjections()).orElseThrow(IllegalStateException::new);
-        SqlNode from = TableConverter.convert(selectStatement.getFrom()).orElse(null);
+        SqlNode from = selectStatement.getFrom().flatMap(TableConverter::convert).orElse(null);
         SqlNode where = selectStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
         SqlNodeList groupBy = selectStatement.getGroupBy().flatMap(GroupByConverter::convert).orElse(null);
         SqlNode having = selectStatement.getHaving().flatMap(HavingConverter::convert).orElse(null);
@@ -82,7 +82,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         if (selectStatement.getCombine().isPresent()) {
             CombineSegment combineSegment = selectStatement.getCombine().get();
             return new SqlBasicCall(CombineOperatorConverter.convert(combineSegment.getCombineType()),
-                    Arrays.asList(convert(combineSegment.getLeft()), convert(combineSegment.getRight())), SqlParserPos.ZERO);
+                    Arrays.asList(convert(combineSegment.getLeft().getSelect()), convert(combineSegment.getRight().getSelect())), SqlParserPos.ZERO);
         }
         return sqlNode;
     }

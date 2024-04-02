@@ -21,15 +21,15 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
-import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.storage.service.StorageNodeStatusService;
-import org.apache.shardingsphere.readwritesplitting.distsql.handler.exception.InvalidStorageUnitStatusException;
-import org.apache.shardingsphere.readwritesplitting.distsql.handler.exception.MissingRequiredReadStorageUnitException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.storageunit.InvalidStorageUnitStatusException;
+import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredReadStorageUnitException;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -64,10 +64,10 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor
                 () -> new MissingRequiredReadStorageUnitException(dataSourceRule.get().getName(), sqlStatement.getStorageUnitName()));
         if (sqlStatement.isEnable()) {
             ShardingSpherePreconditions.checkState(dataSourceRule.get().getDisabledDataSourceNames().contains(sqlStatement.getStorageUnitName()),
-                    () -> new InvalidStorageUnitStatusException("the storage unit is not disabled"));
+                    () -> new InvalidStorageUnitStatusException("storage unit is not disabled"));
         } else {
             ShardingSpherePreconditions.checkState(!dataSourceRule.get().getDisabledDataSourceNames().contains(sqlStatement.getStorageUnitName()),
-                    () -> new InvalidStorageUnitStatusException("the storage unit is already disabled"));
+                    () -> new InvalidStorageUnitStatusException("storage unit is already disabled"));
         }
     }
     

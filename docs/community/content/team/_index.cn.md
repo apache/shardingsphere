@@ -161,6 +161,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/22066046?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/RaigorJiang" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/5668787?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -181,12 +186,35 @@ chapter = true
         <td>
             <b>王光远</b>
         </td>
+        <td>
+            <b>江龙滔</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/tuichenchuxin" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/86938616?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/zhaojinchao95" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/33742097?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+    </tr>
+  <tr align="center">
+        <td>
+            <b>陈出新</b>
+        </td>
+        <td>
+            <b>赵锦超</b>
+        </td>
     </tr>
 </table>
 
-### 提交者
+### Committers
 
- <table style="table-layout:fixed">
+<table style="table-layout:fixed">
     <tr>
         <td>
             <a href="https://github.com/sunbufu" target="_blank">
@@ -218,6 +246,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/48051589?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/dongzl" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/5917359?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -238,13 +271,11 @@ chapter = true
         <td>
             <b>欧阳文</b>
         </td>
+        <td>
+            <b>董宗磊</b>
+        </td>
     </tr>
     <tr>
-        <td>
-            <a href="https://github.com/dongzl" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/5917359?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/SteNicholas" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/10048174?v=4" style="border-radius:50%; overflow:hidden">
@@ -275,11 +306,13 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/5524798?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/ThanoshanMV" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/48581379?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>董宗磊</b>
-        </td>
         <td>
             <b>蒋晓峰</b>
         </td>
@@ -298,18 +331,11 @@ chapter = true
         <td>
             <b>邱鹿</b>
         </td>
+        <td>
+            <b>Thanoshan MV</b>
+        </td>
     </tr>
     <tr>
-        <td>
-            <a href="https://github.com/RaigorJiang" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/5668787?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
-        <td>
-            <a href="https://github.com/ThanoshanMV" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/48581379?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/lanchengx" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/52209337?v=4" style="border-radius:50%; overflow:hidden">
@@ -330,41 +356,6 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/35389145?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
-        <td>
-            <a href="https://github.com/zhaojinchao95" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/33742097?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
-    </tr>
-    <tr align="center">
-        <td>
-            <b>江龙滔</b>
-        </td>
-        <td>
-            <b>Thanoshan MV</b>
-        </td>
-        <td>
-            <b>兰城翔</b>
-        </td>
-        <td>
-            <b>杨肖</b>
-        </td>
-        <td>
-            <b>唐国城</b>
-        </td>
-        <td>
-            <b>李国平</b>
-        </td>
-        <td>
-            <b>赵锦超</b>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <a href="https://github.com/tuichenchuxin" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/86938616?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
          <td>
             <a href="https://github.com/Liangda-w" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/66914151?v=4" style="border-radius:50%; overflow:hidden">
@@ -380,6 +371,31 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/33794770?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>兰城翔</b>
+        </td>
+        <td>
+            <b>杨肖</b>
+        </td>
+        <td>
+            <b>唐国城</b>
+        </td>
+        <td>
+            <b>李国平</b>
+        </td>
+        <td>
+            <b>汪亮达</b>
+         </td>
+        <td>
+            <b>尹伟红</b>
+        </td>
+        <td>
+            <b>侯阳</b>
+        </td>
+    </tr>
+    <tr>
         <td>
             <a href="https://github.com/galaxylqx" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/9473278?v=4" style="border-radius:50%; overflow:hidden">
@@ -395,31 +411,6 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/76552510?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
-    </tr>
-    <tr align="center">
-        <td>
-            <b>陈出新</b>
-        </td>
-        <td>
-            <b>汪亮达</b>
-        </td>
-        <td>
-            <b>尹伟红</b>
-        </td>
-        <td>
-            <b>侯阳</b>
-        </td>
-        <td>
-            <b>雷群星</b>
-        </td>
-        <td>
-            <b>马称</b>
-        </td>
-        <td>
-            <b>张俊杰</b>
-        </td>
-    </tr>
-    <tr>
         <td>
             <a href="https://github.com/Swastyy" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/64654203?v=4" style="border-radius:50%; overflow:hidden">
@@ -430,7 +421,7 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/86716581?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
-       <td>
+        <td>
             <a href="https://github.com/natehuangting" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/26433395?s=96&v=4" style="border-radius:50%; overflow:hidden">
             </a>
@@ -440,6 +431,31 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/4112856?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>雷群星</b>
+        </td>
+        <td>
+            <b>马称</b>
+        </td>
+        <td>
+            <b>张俊杰</b>
+        </td>
+        <td>
+            <b>Swastika Gupta</b>
+        </td>
+        <td>
+            <b>Yacine Si Tayeb</b>
+        </td>
+        <td>
+            <b>黄挺</b>
+        </td>
+        <td>
+            <b>孙念君</b>
+        </td>
+    </tr>
+    <tr>
         <td>
             <a href="https://github.com/azexcy" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/101622833?v=4" style="border-radius:50%; overflow:hidden">
@@ -455,31 +471,6 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/22319610?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
-    </tr>
-    <tr align="center">
-        <td>
-            <b>Swastika Gupta</b>
-        </td>
-        <td>
-            <b>Yacine Si Tayeb</b>
-        </td>
-        <td>
-            <b>黄挺</b>
-        </td>
-        <td>
-            <b>孙念君</b>
-        </td>
-        <td>
-            <b>郭信泽</b>
-        </td>
-        <td>
-            <b>Everly Precia Suresh</b>
-        </td>
-        <td>
-            <b>苗立尧</b>
-        </td>
-    </tr>
-    <tr>
         <td>
             <a href="https://github.com/gxxiong" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/31501876?v=4" style="border-radius:50%; overflow:hidden">
@@ -500,18 +491,17 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/19788130?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
-         <td>
-            <a href="https://github.com/Pace2Car" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/37339007?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
-         <td>
-            <a href="https://github.com/zihaoAK47" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/106047330?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
     </tr>
     <tr align="center">
+        <td>
+            <b>郭信泽</b>
+        </td>
+        <td>
+            <b>Everly Precia Suresh</b>
+        </td>
+        <td>
+            <b>苗立尧</b>
+        </td>
         <td>
             <b>熊高祥</b>
         </td>
@@ -524,6 +514,20 @@ chapter = true
         <td>
             <b>张成</b>
         </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/Pace2Car" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/37339007?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+         <td>
+            <a href="https://github.com/zihaoAK47" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/106047330?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
         <td>
             <b>陈家豪</b>
         </td>

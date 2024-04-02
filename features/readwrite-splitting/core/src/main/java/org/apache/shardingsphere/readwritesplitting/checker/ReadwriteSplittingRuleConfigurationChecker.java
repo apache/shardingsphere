@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.checker;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;

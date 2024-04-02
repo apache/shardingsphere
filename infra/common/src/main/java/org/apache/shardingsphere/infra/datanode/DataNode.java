@@ -26,7 +26,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException;
+import org.apache.shardingsphere.infra.exception.metadata.InvalidDataNodeFormatException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.util.List;
@@ -60,10 +60,10 @@ public final class DataNode {
         // TODO remove duplicated splitting?
         boolean isIncludeInstance = isActualDataNodesIncludedDataSourceInstance(dataNode);
         if (!isIncludeInstance && !isValidDataNode(dataNode, 2)) {
-            throw new InvalidDataNodesFormatException(dataNode);
+            throw new InvalidDataNodeFormatException(dataNode);
         }
         if (isIncludeInstance && !isValidDataNode(dataNode, 3)) {
-            throw new InvalidDataNodesFormatException(dataNode);
+            throw new InvalidDataNodeFormatException(dataNode);
         }
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
         dataSourceName = isIncludeInstance ? segments.get(0) + DELIMITER + segments.get(1) : segments.get(0);
@@ -78,8 +78,7 @@ public final class DataNode {
      * @param dataNode string of data node. use {@code .} to split data source name and table name
      */
     public DataNode(final String databaseName, final DatabaseType databaseType, final String dataNode) {
-        ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER),
-                () -> new InvalidDataNodesFormatException(dataNode, String.format("Invalid format for data node `%s`", dataNode)));
+        ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER), () -> new InvalidDataNodeFormatException(dataNode));
         boolean containsSchema = isValidDataNode(dataNode, 3);
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
         dataSourceName = segments.get(0);

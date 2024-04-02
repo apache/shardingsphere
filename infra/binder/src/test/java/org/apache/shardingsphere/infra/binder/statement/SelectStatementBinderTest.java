@@ -83,9 +83,10 @@ class SelectStatementBinderTest {
         selectStatement.setWhere(mockWhereSegment());
         SelectStatement actual = new SelectStatementBinder().bind(selectStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
         assertThat(actual, not(selectStatement));
-        assertThat(actual.getFrom(), not(selectStatement.getFrom()));
-        assertThat(actual.getFrom(), instanceOf(SimpleTableSegment.class));
-        assertThat(((SimpleTableSegment) actual.getFrom()).getTableName(), not(simpleTableSegment.getTableName()));
+        assertTrue(actual.getFrom().isPresent());
+        assertThat(actual.getFrom().get(), not(simpleTableSegment));
+        assertThat(actual.getFrom().get(), instanceOf(SimpleTableSegment.class));
+        assertThat(((SimpleTableSegment) actual.getFrom().get()).getTableName(), not(simpleTableSegment.getTableName()));
         assertThat(actual.getProjections(), not(selectStatement.getProjections()));
         List<ProjectionSegment> actualProjections = new ArrayList<>(actual.getProjections().getProjections());
         assertThat(actualProjections, not(selectStatement.getProjections()));

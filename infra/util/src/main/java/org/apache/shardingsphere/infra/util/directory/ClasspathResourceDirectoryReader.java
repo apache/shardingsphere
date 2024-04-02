@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.util.directory;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
@@ -44,7 +45,7 @@ import java.util.stream.Stream;
 /**
  * Classpath resource directory reader.
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClasspathResourceDirectoryReader {
     
     private static final Collection<String> JAR_URL_PROTOCOLS = new HashSet<>(Arrays.asList("jar", "war", "zip", "wsjar", "vfszip"));

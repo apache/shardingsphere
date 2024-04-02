@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;

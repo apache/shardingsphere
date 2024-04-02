@@ -114,7 +114,7 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
     @Override
     public void compareAndPersist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
-            addSchema(databaseName, schemaName);
+            return;
         }
         Map<String, ShardingSphereTable> currentTables = tableMetaDataPersistService.load(databaseName, schemaName);
         metaDataVersionPersistService.switchActiveVersion(tableMetaDataPersistService
@@ -132,7 +132,7 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
     @Override
     public void persist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
-            addSchema(databaseName, schemaName);
+            return;
         }
         metaDataVersionPersistService.switchActiveVersion(tableMetaDataPersistService.persistSchemaMetaData(databaseName, schemaName, schema.getTables()));
     }

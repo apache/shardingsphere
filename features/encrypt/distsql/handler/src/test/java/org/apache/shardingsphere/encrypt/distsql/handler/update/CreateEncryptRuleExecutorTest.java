@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.exception.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.exception.metadata.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;

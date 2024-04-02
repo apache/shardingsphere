@@ -22,6 +22,7 @@ columns:
     dataType: 4
     generated: false
     name: INDEX_ID
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 4
     generated: false
     name: POS
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true

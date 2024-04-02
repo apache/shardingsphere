@@ -112,7 +112,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     }
     
     private Optional<DatabaseAdminExecutor> create(final SelectStatement selectStatement, final String sql, final String databaseName, final List<Object> parameters) {
-        if (null == selectStatement.getFrom()) {
+        if (!selectStatement.getFrom().isPresent()) {
             return findAdminExecutorForSelectWithoutFrom(sql, databaseName, selectStatement);
         }
         if (isQueryInformationSchema(databaseName)) {
@@ -180,7 +180,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         if (hasNoResource()) {
             return Optional.of(new NoResourceShowExecutor(sqlStatement));
         }
-        boolean isNotUseSchema = null == databaseName && null == sqlStatement.getFrom();
+        boolean isNotUseSchema = null == databaseName && !sqlStatement.getFrom().isPresent();
         return isNotUseSchema ? Optional.of(new UnicastResourceShowExecutor(sqlStatement, sql)) : Optional.empty();
     }
     

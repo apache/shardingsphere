@@ -21,10 +21,14 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * YAML shadow rule configuration swapper.
@@ -39,6 +43,8 @@ public final class YamlShadowRuleConfigurationSwapper implements YamlRuleConfigu
     public YamlShadowRuleConfiguration swapToYamlConfiguration(final ShadowRuleConfiguration data) {
         YamlShadowRuleConfiguration result = new YamlShadowRuleConfiguration();
         result.setDefaultShadowAlgorithmName(data.getDefaultShadowAlgorithmName());
+        setTableDefaultShadowDataSource(data.getTables(), data.getDataSources());
+        setTableDefaultShadowAlgorithm(data.getTables(), data.getDefaultShadowAlgorithmName());
         parseDataSources(data, result);
         parseShadowTables(data, result);
         parseShadowAlgorithms(data, result);
@@ -71,6 +77,8 @@ public final class YamlShadowRuleConfigurationSwapper implements YamlRuleConfigu
         parseYamlDataSources(yamlConfig, result);
         parseYamlShadowTables(yamlConfig, result);
         parseYamlShadowAlgorithms(yamlConfig, result);
+        setTableDefaultShadowDataSource(result.getTables(), result.getDataSources());
+        setTableDefaultShadowAlgorithm(result.getTables(), result.getDefaultShadowAlgorithmName());
         return result;
     }
     
@@ -88,6 +96,25 @@ public final class YamlShadowRuleConfigurationSwapper implements YamlRuleConfigu
     
     private ShadowDataSourceConfiguration swapToDataSourceObject(final String name, final YamlShadowDataSourceConfiguration yamlConfig) {
         return new ShadowDataSourceConfiguration(name, yamlConfig.getProductionDataSourceName(), yamlConfig.getShadowDataSourceName());
+    }
+    
+    private void setTableDefaultShadowDataSource(final Map<String, ShadowTableConfiguration> shadowTables, final Collection<ShadowDataSourceConfiguration> shadowDataSources) {
+        if (1 == shadowDataSources.size()) {
+            for (ShadowTableConfiguration each : shadowTables.values()) {
+                if (each.getDataSourceNames().isEmpty()) {
+                    each.getDataSourceNames().add(shadowDataSources.iterator().next().getName());
+                }
+            }
+        }
+    }
+    
+    private void setTableDefaultShadowAlgorithm(final Map<String, ShadowTableConfiguration> shadowTables, final String defaultShadowAlgorithmName) {
+        for (ShadowTableConfiguration each : shadowTables.values()) {
+            Collection<String> shadowAlgorithmNames = each.getShadowAlgorithmNames();
+            if (null != defaultShadowAlgorithmName && shadowAlgorithmNames.isEmpty()) {
+                shadowAlgorithmNames.add(defaultShadowAlgorithmName);
+            }
+        }
     }
     
     @Override

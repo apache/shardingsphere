@@ -62,5 +62,11 @@
         <column name="password_last_changed" />
         <column name="password_lifetime" />
         <column name="account_locked" />
+        <column name="create_role_priv" />
+        <column name="drop_role_priv" />
+        <column name="password_reuse_history" />
+        <column name="password_reuse_time" />
+        <column name="password_require_current" />
+        <column name="user_attributes" />
     </metadata>
 </dataset>

@@ -39,7 +39,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -61,13 +60,12 @@ public final class ProjectionEngine {
     /**
      * Create projection.
      *
-     * @param table table segment
      * @param projectionSegment projection segment
      * @return projection
      */
-    public Optional<Projection> createProjection(final TableSegment table, final ProjectionSegment projectionSegment) {
+    public Optional<Projection> createProjection(final ProjectionSegment projectionSegment) {
         if (projectionSegment instanceof ShorthandProjectionSegment) {
-            return Optional.of(createProjection(table, (ShorthandProjectionSegment) projectionSegment));
+            return Optional.of(createProjection((ShorthandProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof ColumnProjectionSegment) {
             return Optional.of(createProjection((ColumnProjectionSegment) projectionSegment));
@@ -82,7 +80,7 @@ public final class ProjectionEngine {
             return Optional.of(createProjection((AggregationProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof SubqueryProjectionSegment) {
-            return Optional.of(createProjection(table, (SubqueryProjectionSegment) projectionSegment));
+            return Optional.of(createProjection((SubqueryProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof ParameterMarkerExpressionSegment) {
             return Optional.of(createProjection((ParameterMarkerExpressionSegment) projectionSegment));
@@ -94,16 +92,16 @@ public final class ProjectionEngine {
         return new ParameterMarkerProjection(projectionSegment.getParameterMarkerIndex(), projectionSegment.getParameterMarkerType(), projectionSegment.getAlias().orElse(null));
     }
     
-    private SubqueryProjection createProjection(final TableSegment table, final SubqueryProjectionSegment projectionSegment) {
-        Projection subqueryProjection = createProjection(table, projectionSegment.getSubquery().getSelect().getProjections().getProjections().iterator().next())
+    private SubqueryProjection createProjection(final SubqueryProjectionSegment projectionSegment) {
+        Projection subqueryProjection = createProjection(projectionSegment.getSubquery().getSelect().getProjections().getProjections().iterator().next())
                 .orElseThrow(() -> new IllegalArgumentException("Subquery projection must have at least one projection column."));
         return new SubqueryProjection(projectionSegment, subqueryProjection, projectionSegment.getAlias().orElse(null), databaseType);
     }
     
-    private ShorthandProjection createProjection(final TableSegment table, final ShorthandProjectionSegment projectionSegment) {
+    private ShorthandProjection createProjection(final ShorthandProjectionSegment projectionSegment) {
         IdentifierValue owner = projectionSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null);
         Collection<Projection> projections = new LinkedHashSet<>();
-        projectionSegment.getActualProjectionSegments().forEach(each -> createProjection(table, each).ifPresent(projections::add));
+        projectionSegment.getActualProjectionSegments().forEach(each -> createProjection(each).ifPresent(projections::add));
         return new ShorthandProjection(owner, projections);
     }
     

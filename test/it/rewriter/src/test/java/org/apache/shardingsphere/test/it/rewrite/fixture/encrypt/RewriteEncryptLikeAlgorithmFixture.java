@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInitializationException;
 
 import java.io.IOException;
 import java.io.InputStream;

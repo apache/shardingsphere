@@ -64,7 +64,7 @@ public final class SubqueryExtractUtils {
     
     private static void extractSubquerySegments(final List<SubquerySegment> result, final SelectStatement selectStatement) {
         extractSubquerySegmentsFromProjections(result, selectStatement.getProjections());
-        extractSubquerySegmentsFromTableSegment(result, selectStatement.getFrom());
+        selectStatement.getFrom().ifPresent(optional -> extractSubquerySegmentsFromTableSegment(result, optional));
         if (selectStatement.getWhere().isPresent()) {
             extractSubquerySegmentsFromWhere(result, selectStatement.getWhere().get().getExpr());
         }
@@ -161,7 +161,9 @@ public final class SubqueryExtractUtils {
     }
     
     private static void extractSubquerySegmentsFromCombine(final List<SubquerySegment> result, final CombineSegment combineSegment) {
-        extractSubquerySegments(result, combineSegment.getLeft());
-        extractSubquerySegments(result, combineSegment.getRight());
+        result.add(combineSegment.getLeft());
+        result.add(combineSegment.getRight());
+        extractSubquerySegments(result, combineSegment.getLeft().getSelect());
+        extractSubquerySegments(result, combineSegment.getRight().getSelect());
     }
 }

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.RuleDefinitionException;
-import org.apache.shardingsphere.infra.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.exception.rule.RuleInUsedException;
+import org.apache.shardingsphere.infra.exception.metadata.rule.RuleDefinitionException;
+import org.apache.shardingsphere.infra.exception.metadata.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.metadata.rule.InUsedRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -83,7 +83,7 @@ class DropShardingTableRuleExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
-        assertThrows(RuleInUsedException.class, () -> executor.checkBeforeUpdate(createSQLStatement("t_order_item")));
+        assertThrows(InUsedRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("t_order_item")));
     }
     
     @Test

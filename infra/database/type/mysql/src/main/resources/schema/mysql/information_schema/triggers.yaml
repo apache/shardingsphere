@@ -22,6 +22,7 @@ columns:
     dataType: 12
     generated: false
     name: TRIGGER_CATALOG
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: TRIGGER_SCHEMA
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 12
     generated: false
     name: TRIGGER_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 12
     generated: false
     name: EVENT_MANIPULATION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 12
     generated: false
     name: EVENT_OBJECT_CATALOG
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 12
     generated: false
     name: EVENT_OBJECT_SCHEMA
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 12
     generated: false
     name: EVENT_OBJECT_TABLE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,6 +85,7 @@ columns:
     dataType: 4
     generated: false
     name: ACTION_ORDER
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,6 +94,7 @@ columns:
     dataType: -1
     generated: false
     name: ACTION_CONDITION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -94,6 +103,7 @@ columns:
     dataType: -1
     generated: false
     name: ACTION_STATEMENT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -102,6 +112,7 @@ columns:
     dataType: 12
     generated: false
     name: ACTION_ORIENTATION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -110,6 +121,7 @@ columns:
     dataType: 12
     generated: false
     name: ACTION_TIMING
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -118,6 +130,7 @@ columns:
     dataType: 12
     generated: false
     name: ACTION_REFERENCE_OLD_TABLE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -126,6 +139,7 @@ columns:
     dataType: 12
     generated: false
     name: ACTION_REFERENCE_NEW_TABLE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -134,6 +148,7 @@ columns:
     dataType: 12
     generated: false
     name: ACTION_REFERENCE_OLD_ROW
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -142,6 +157,7 @@ columns:
     dataType: 12
     generated: false
     name: ACTION_REFERENCE_NEW_ROW
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -150,6 +166,7 @@ columns:
     dataType: 93
     generated: false
     name: CREATED
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -158,6 +175,7 @@ columns:
     dataType: 12
     generated: false
     name: SQL_MODE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -166,6 +184,7 @@ columns:
     dataType: 12
     generated: false
     name: DEFINER
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -174,6 +193,7 @@ columns:
     dataType: 12
     generated: false
     name: CHARACTER_SET_CLIENT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -182,6 +202,7 @@ columns:
     dataType: 12
     generated: false
     name: COLLATION_CONNECTION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -190,6 +211,7 @@ columns:
     dataType: 12
     generated: false
     name: DATABASE_COLLATION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true

@@ -47,6 +47,7 @@ public final class ViewMetaDataPersistService implements SchemaMetaDataPersistSe
     
     @Override
     public void persist(final String databaseName, final String schemaName, final Map<String, ShardingSphereView> views) {
+        persistSchemaName(databaseName, schemaName);
         for (Entry<String, ShardingSphereView> entry : views.entrySet()) {
             String viewName = entry.getKey().toLowerCase();
             List<String> versions = repository.getChildrenKeys(ViewMetaDataNode.getViewVersionsNode(databaseName, schemaName, viewName));
@@ -61,6 +62,7 @@ public final class ViewMetaDataPersistService implements SchemaMetaDataPersistSe
     
     @Override
     public Collection<MetaDataVersion> persistSchemaMetaData(final String databaseName, final String schemaName, final Map<String, ShardingSphereView> views) {
+        persistSchemaName(databaseName, schemaName);
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (Entry<String, ShardingSphereView> entry : views.entrySet()) {
             String viewName = entry.getKey().toLowerCase();
@@ -74,6 +76,12 @@ public final class ViewMetaDataPersistService implements SchemaMetaDataPersistSe
             result.add(new MetaDataVersion(ViewMetaDataNode.getViewNode(databaseName, schemaName, viewName), getActiveVersion(databaseName, schemaName, viewName), nextActiveVersion));
         }
         return result;
+    }
+    
+    private void persistSchemaName(final String databaseName, final String schemaName) {
+        if (!repository.isExisted(ViewMetaDataNode.getMetaDataViewsNode(databaseName, schemaName))) {
+            repository.persist(ViewMetaDataNode.getMetaDataViewsNode(databaseName, schemaName), "");
+        }
     }
     
     private String getActiveVersion(final String databaseName, final String schemaName, final String viewName) {

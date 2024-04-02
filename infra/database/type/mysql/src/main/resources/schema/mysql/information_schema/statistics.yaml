@@ -22,6 +22,7 @@ columns:
     dataType: 12
     generated: false
     name: TABLE_CATALOG
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 12
     generated: false
     name: TABLE_SCHEMA
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 12
     generated: false
     name: TABLE_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 4
     generated: false
     name: NON_UNIQUE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 12
     generated: false
     name: INDEX_SCHEMA
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 12
     generated: false
     name: INDEX_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 4
     generated: false
     name: SEQ_IN_INDEX
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,6 +85,7 @@ columns:
     dataType: 12
     generated: false
     name: COLUMN_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,6 +94,7 @@ columns:
     dataType: 12
     generated: false
     name: COLLATION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -94,6 +103,7 @@ columns:
     dataType: 4
     generated: false
     name: CARDINALITY
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -102,6 +112,7 @@ columns:
     dataType: 4
     generated: false
     name: SUB_PART
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -110,6 +121,7 @@ columns:
     dataType: 12
     generated: false
     name: PACKED
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -118,6 +130,7 @@ columns:
     dataType: 12
     generated: false
     name: NULLABLE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -126,6 +139,7 @@ columns:
     dataType: 12
     generated: false
     name: INDEX_TYPE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -134,6 +148,7 @@ columns:
     dataType: 12
     generated: false
     name: COMMENT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -142,6 +157,7 @@ columns:
     dataType: 12
     generated: false
     name: INDEX_COMMENT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -150,6 +166,7 @@ columns:
     dataType: 12
     generated: false
     name: IS_VISIBLE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -158,6 +175,7 @@ columns:
     dataType: 12
     generated: false
     name: EXPRESSION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true

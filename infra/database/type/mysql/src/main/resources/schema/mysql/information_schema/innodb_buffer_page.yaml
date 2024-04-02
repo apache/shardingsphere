@@ -22,6 +22,7 @@ columns:
     dataType: 4
     generated: false
     name: POOL_ID
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -30,6 +31,7 @@ columns:
     dataType: 4
     generated: false
     name: BLOCK_ID
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -38,6 +40,7 @@ columns:
     dataType: 4
     generated: false
     name: SPACE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -46,6 +49,7 @@ columns:
     dataType: 4
     generated: false
     name: PAGE_NUMBER
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -54,6 +58,7 @@ columns:
     dataType: 12
     generated: false
     name: PAGE_TYPE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +67,7 @@ columns:
     dataType: 4
     generated: false
     name: FLUSH_TYPE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -70,6 +76,7 @@ columns:
     dataType: 4
     generated: false
     name: FIX_COUNT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -78,6 +85,7 @@ columns:
     dataType: 12
     generated: false
     name: IS_HASHED
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,6 +94,7 @@ columns:
     dataType: 4
     generated: false
     name: NEWEST_MODIFICATION
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -94,6 +103,7 @@ columns:
     dataType: 4
     generated: false
     name: OLDEST_MODIFICATION
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -102,6 +112,7 @@ columns:
     dataType: 4
     generated: false
     name: ACCESS_TIME
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -110,6 +121,7 @@ columns:
     dataType: 12
     generated: false
     name: TABLE_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -118,6 +130,7 @@ columns:
     dataType: 12
     generated: false
     name: INDEX_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -126,6 +139,7 @@ columns:
     dataType: 4
     generated: false
     name: NUMBER_RECORDS
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -134,6 +148,7 @@ columns:
     dataType: 4
     generated: false
     name: DATA_SIZE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -142,6 +157,7 @@ columns:
     dataType: 4
     generated: false
     name: COMPRESSED_SIZE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -150,6 +166,7 @@ columns:
     dataType: 12
     generated: false
     name: PAGE_STATE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -158,6 +175,7 @@ columns:
     dataType: 12
     generated: false
     name: IO_FIX
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -166,6 +184,7 @@ columns:
     dataType: 12
     generated: false
     name: IS_OLD
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -174,6 +193,7 @@ columns:
     dataType: 4
     generated: false
     name: FREE_PAGE_CLOCK
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true

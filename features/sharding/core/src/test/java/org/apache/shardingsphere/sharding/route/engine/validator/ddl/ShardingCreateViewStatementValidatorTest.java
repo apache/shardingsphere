@@ -44,6 +44,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -75,7 +76,7 @@ class ShardingCreateViewStatementValidatorTest {
     void setUp() {
         when(createViewStatementContext.getSqlStatement()).thenReturn(createViewStatement);
         when(createViewStatement.getSelect()).thenReturn(selectStatement);
-        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        when(selectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
         when(createViewStatement.getView()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order_view"))));
         when(routeContext.getRouteUnits().size()).thenReturn(2);
     }
