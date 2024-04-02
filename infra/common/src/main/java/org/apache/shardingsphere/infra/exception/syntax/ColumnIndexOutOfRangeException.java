@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.exception.syntax;
+package org.apache.shardingsphere.infra.exception.syntax;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Column label not found exception.
+ * Column index out of range exception.
  */
-public final class ColumnLabelNotFoundException extends SyntaxSQLException {
+public final class ColumnIndexOutOfRangeException extends SyntaxSQLException {
     
-    private static final long serialVersionUID = -4634399403612501335L;
+    private static final long serialVersionUID = 3599337605134702447L;
     
-    public ColumnLabelNotFoundException(final String columnLabel) {
-        super(XOpenSQLState.NOT_FOUND, 11, "Can not find column label `%s`.", columnLabel);
+    public ColumnIndexOutOfRangeException(final int columnIndex) {
+        super(XOpenSQLState.INVALID_COLUMN_NUMBER, 20, "Column index '%d' is out of range.", columnIndex);
     }
 }

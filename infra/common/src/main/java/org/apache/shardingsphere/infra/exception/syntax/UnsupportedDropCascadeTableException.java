@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.exception.syntax;
+package org.apache.shardingsphere.infra.exception.syntax;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Column index out of range exception.
+ * Unsupported drop cascade table exception.
  */
-public final class ColumnIndexOutOfRangeException extends SyntaxSQLException {
+public final class UnsupportedDropCascadeTableException extends SyntaxSQLException {
     
-    private static final long serialVersionUID = 3599337605134702447L;
+    private static final long serialVersionUID = -5995575055241171117L;
     
-    public ColumnIndexOutOfRangeException(final int columnIndex) {
-        super(XOpenSQLState.INVALID_COLUMN_NUMBER, 20, "Column index `%d` is out of range.", columnIndex);
+    public UnsupportedDropCascadeTableException() {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 100, "DROP TABLE ... CASCADE is not supported.");
     }
 }

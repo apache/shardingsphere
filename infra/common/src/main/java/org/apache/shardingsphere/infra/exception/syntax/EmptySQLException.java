@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception.syntax;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Unsupported variable exception.
+ * Empty SQL exception.
  */
-public final class UnsupportedVariableException extends SyntaxSQLException {
+public final class EmptySQLException extends SyntaxSQLException {
     
-    private static final long serialVersionUID = 1955281568807066737L;
+    private static final long serialVersionUID = -5723825491720138339L;
     
-    public UnsupportedVariableException(final String variable) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 14, "Can not support variable `%s`.", variable);
+    public EmptySQLException() {
+        super(XOpenSQLState.SYNTAX_ERROR, 2, "SQL String can not be NULL or empty.");
     }
 }

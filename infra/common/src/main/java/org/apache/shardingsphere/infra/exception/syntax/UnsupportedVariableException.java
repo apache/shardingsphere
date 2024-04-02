@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.core.exception;
+package org.apache.shardingsphere.infra.exception.syntax;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * URL provider not found exception.
+ * Unsupported variable exception.
  */
-public final class URLProviderNotFoundException extends SyntaxSQLException {
+public final class UnsupportedVariableException extends SyntaxSQLException {
     
-    private static final long serialVersionUID = 1017115393560838384L;
+    private static final long serialVersionUID = 1955281568807066737L;
     
-    public URLProviderNotFoundException(final String url) {
-        super(XOpenSQLState.NOT_FOUND, 12, "Can not find url provider for `%s`.", url);
+    public UnsupportedVariableException(final String variable) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 14, "Can not support variable '%s'.", variable);
     }
 }
