@@ -308,10 +308,10 @@ gotoStatement
     ;
 
 ifStatement
-    : IF booleanExpression THEN statement+
+    : (IF booleanExpression THEN statement+)*
     (ELSIF booleanExpression THEN statement+)*
     (ELSE statement+)?
-    END IF SEMI_
+    (END IF SEMI_)+
     ;
 
 nullStatement
@@ -419,7 +419,15 @@ declareSection
     ;
     
 declareItem
-    : typeDefinition | cursorDeclaration | itemDeclaration | functionDeclaration | procedureDeclaration | cursorDefinition | functionDefinition | procedureDefinition | pragma
+    : typeDefinition
+    | cursorDeclaration
+    | itemDeclaration
+    | functionDeclaration
+    | procedureDeclaration
+    | cursorDefinition
+    | functionDefinition
+    | procedureDefinition
+    | pragma
     ;
 
 cursorDefinition
@@ -502,7 +510,7 @@ cursorVariableDeclaration
     ;
 
 exceptionDeclaration
-    : variableName EXCEPTION SEMI_
+    : variableName (EXCEPTION SEMI_)?
     ;
 
 recordVariableDeclaration
@@ -561,8 +569,16 @@ rowtypeAttribute
     ;
 
 pragma
-    : autonomousTransPragma | restrictReferencesPragma
+    : autonomousTransPragma | restrictReferencesPragma | exceptionInitPragma
     // TODO Support more pragma
+    ;
+
+exceptionInitPragma
+    : (PRAGMA EXCEPTION_INIT LP_ exceptionDeclaration COMMA_ errorCode RP_ SEMI_)+
+    ;
+
+errorCode
+    : MINUS_ INTEGER_
     ;
 
 autonomousTransPragma
