@@ -33,7 +33,7 @@ public final class SingleCountResultRowBuilder implements CountResultRowBuilder<
     @Override
     public Collection<LocalDataQueryResultRow> generateRows(final SingleRule rule, final String databaseName) {
         return Collections.singleton(
-                new LocalDataQueryResultRow("single", databaseName, rule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableMapper().getTableNames().size()));
+                new LocalDataQueryResultRow("single", databaseName, rule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableNames().size()));
     }
     
     @Override

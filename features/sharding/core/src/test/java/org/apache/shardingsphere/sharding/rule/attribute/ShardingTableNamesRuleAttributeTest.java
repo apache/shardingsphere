@@ -30,35 +30,35 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShardingTableMapperRuleAttributeTest {
+class ShardingTableNamesRuleAttributeTest {
     
-    private ShardingTableMapperRuleAttribute ruleAttribute;
+    private ShardingTableNamesRuleAttribute ruleAttribute;
     
     @BeforeEach
     void setUp() {
         ShardingTable shardingTable = mock(ShardingTable.class);
         when(shardingTable.getLogicTable()).thenReturn("foo_tbl");
         when(shardingTable.getActualDataNodes()).thenReturn(Collections.singletonList(new DataNode("foo_ds.foo_tbl_0")));
-        ruleAttribute = new ShardingTableMapperRuleAttribute(Collections.singleton(shardingTable));
+        ruleAttribute = new ShardingTableNamesRuleAttribute(Collections.singleton(shardingTable));
     }
     
     @Test
     void assertGetLogicTableMapper() {
-        assertThat(new LinkedList<>(ruleAttribute.getLogicTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl")));
+        assertThat(new LinkedList<>(ruleAttribute.getLogicTableNames()), is(Collections.singletonList("foo_tbl")));
     }
     
     @Test
     void assertGetActualTableMapper() {
-        assertThat(new LinkedList<>(ruleAttribute.getActualTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl_0")));
+        assertThat(new LinkedList<>(ruleAttribute.getActualTableNames()), is(Collections.singletonList("foo_tbl_0")));
     }
     
     @Test
     void assertGetDistributedTableMapper() {
-        assertThat(new LinkedList<>(ruleAttribute.getDistributedTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl")));
+        assertThat(new LinkedList<>(ruleAttribute.getDistributedTableNames()), is(Collections.singletonList("foo_tbl")));
     }
     
     @Test
     void assertGetEnhancedTableMapper() {
-        assertThat(new LinkedList<>(ruleAttribute.getEnhancedTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl")));
+        assertThat(new LinkedList<>(ruleAttribute.getEnhancedTableNames()), is(Collections.singletonList("foo_tbl")));
     }
 }

@@ -17,30 +17,36 @@
 
 package org.apache.shardingsphere.broadcast.rule.attribute;
 
-import org.junit.jupiter.api.Test;
+import com.cedarsoftware.util.CaseInsensitiveSet;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class BroadcastTableMapperRuleAttributeTest {
+/**
+ * Broadcast table mapper rule attribute.
+ */
+public final class BroadcastTableNamesRuleAttribute implements TableMapperRuleAttribute {
     
-    private final BroadcastTableMapperRuleAttribute ruleAttribute = new BroadcastTableMapperRuleAttribute(Collections.singleton("foo_tbl"));
+    private final CaseInsensitiveSet<String> logicalTableNames;
     
-    @Test
-    void assertGetLogicTableMapper() {
-        assertThat(new LinkedList<>(ruleAttribute.getLogicTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl")));
+    public BroadcastTableNamesRuleAttribute(final Collection<String> tables) {
+        logicalTableNames = new CaseInsensitiveSet<>();
+        logicalTableNames.addAll(tables);
     }
     
-    @Test
-    void assertGetDistributedTableMapper() {
-        assertThat(new LinkedList<>(ruleAttribute.getDistributedTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl")));
+    @Override
+    public Collection<String> getLogicTableNames() {
+        return logicalTableNames;
     }
     
-    @Test
-    void assertGetEnhancedTableMapper() {
-        assertThat(new LinkedList<>(ruleAttribute.getEnhancedTableMapper().getTableNames()), is(Collections.emptyList()));
+    @Override
+    public Collection<String> getDistributedTableNames() {
+        return logicalTableNames;
+    }
+    
+    @Override
+    public Collection<String> getEnhancedTableNames() {
+        return Collections.emptySet();
     }
 }

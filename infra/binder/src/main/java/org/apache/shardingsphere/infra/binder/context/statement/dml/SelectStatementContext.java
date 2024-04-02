@@ -130,7 +130,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     private boolean isContainsEnhancedTable(final ShardingSphereMetaData metaData, final String databaseName, final Collection<String> tableNames) {
         for (TableMapperRuleAttribute each : getTableMapperRuleAttributes(metaData, databaseName)) {
             for (String tableName : tableNames) {
-                if (each.getEnhancedTableMapper().contains(tableName)) {
+                if (each.getEnhancedTableNames().contains(tableName)) {
                     return true;
                 }
             }

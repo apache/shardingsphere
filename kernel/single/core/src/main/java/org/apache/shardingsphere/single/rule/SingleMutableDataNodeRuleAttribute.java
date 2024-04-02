@@ -57,7 +57,7 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
             DataNode dataNode = new DataNode(dataSourceName, tableName);
             dataNode.setSchemaName(schemaName);
             dataNodes.add(dataNode);
-            tableMapperRuleAttribute.getLogicTableMapper().put(tableName);
+            tableMapperRuleAttribute.getLogicTableNames().add(tableName);
             addTableConfiguration(dataSourceName, schemaName, tableName);
         }
     }
@@ -95,7 +95,7 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
         }
         if (dataNodes.isEmpty()) {
             singleTableDataNodes.remove(tableName.toLowerCase());
-            tableMapperRuleAttribute.getLogicTableMapper().remove(tableName);
+            tableMapperRuleAttribute.getLogicTableNames().remove(tableName);
         }
     }
     

@@ -17,36 +17,37 @@
 
 package org.apache.shardingsphere.single.rule;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
-import org.apache.shardingsphere.infra.rule.attribute.table.TableNamesMapper;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Single table mapper rule attribute.
  */
 public final class SingleTableMapperRuleAttribute implements TableMapperRuleAttribute {
     
-    private final TableNamesMapper logicTableMapper;
+    private final CaseInsensitiveSet<String> logicTableMapper;
     
     public SingleTableMapperRuleAttribute(final Collection<Collection<DataNode>> singleTableDataNodes) {
-        logicTableMapper = new TableNamesMapper();
-        singleTableDataNodes.forEach(each -> logicTableMapper.put(each.iterator().next().getTableName()));
+        logicTableMapper = new CaseInsensitiveSet<>();
+        singleTableDataNodes.forEach(each -> logicTableMapper.add(each.iterator().next().getTableName()));
     }
     
     @Override
-    public TableNamesMapper getLogicTableMapper() {
+    public Collection<String> getLogicTableNames() {
         return logicTableMapper;
     }
     
     @Override
-    public TableNamesMapper getDistributedTableMapper() {
-        return new TableNamesMapper();
+    public Collection<String> getDistributedTableNames() {
+        return Collections.emptySet();
     }
     
     @Override
-    public TableNamesMapper getEnhancedTableMapper() {
-        return new TableNamesMapper();
+    public Collection<String> getEnhancedTableNames() {
+        return Collections.emptySet();
     }
 }

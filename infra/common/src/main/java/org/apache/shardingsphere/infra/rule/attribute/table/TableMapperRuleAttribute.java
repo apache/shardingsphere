@@ -19,6 +19,9 @@ package org.apache.shardingsphere.infra.rule.attribute.table;
 
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Table mapper rule attribute.
  */
@@ -29,15 +32,15 @@ public interface TableMapperRuleAttribute extends RuleAttribute {
      *
      * @return logic table mapper
      */
-    TableNamesMapper getLogicTableMapper();
+    Collection<String> getLogicTableNames();
     
     /**
      * Get actual table mapper.
      *
      * @return actual table mapper
      */
-    default TableNamesMapper getActualTableMapper() {
-        return new TableNamesMapper();
+    default Collection<String> getActualTableNames() {
+        return Collections.emptySet();
     }
     
     /**
@@ -45,12 +48,12 @@ public interface TableMapperRuleAttribute extends RuleAttribute {
      *
      * @return distributed table mapper
      */
-    TableNamesMapper getDistributedTableMapper();
+    Collection<String> getDistributedTableNames();
     
     /**
      * Get enhanced table mapper.
      *
      * @return enhanced table mapper
      */
-    TableNamesMapper getEnhancedTableMapper();
+    Collection<String> getEnhancedTableNames();
 }
