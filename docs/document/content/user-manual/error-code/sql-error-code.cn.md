@@ -58,9 +58,9 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42000     | 12001       | Can not accept SQL type '%s'.            |
 | 42000     | 12002       | SQL String can not be NULL or empty.     |
 | 42000     | 12010       | Can not support variable '%s'.           |
-| 42S02     | 12011       | Can not find column label '%s'.          |
 | HV008     | 12020       | Column index '%d' is out of range.       |
-| HY000     | 12021       | Column '%s' in %s is ambiguous.          |
+| 42S02     | 12021       | Can not find column label '%s'.          |
+| HY000     | 12022       | Column '%s' in %s is ambiguous.          |
 | 0A000     | 12100       | DROP TABLE ... CASCADE is not supported. |
 
 ### 连接

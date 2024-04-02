@@ -28,6 +28,6 @@ public final class AmbiguousColumnException extends SyntaxSQLException {
     private static final long serialVersionUID = -9002743483594729164L;
     
     public AmbiguousColumnException(final String columnExpression, final String segmentTypeMessage) {
-        super(XOpenSQLState.GENERAL_ERROR, 21, "Column '%s' in %s is ambiguous.", columnExpression, segmentTypeMessage);
+        super(XOpenSQLState.GENERAL_ERROR, 22, "Column '%s' in %s is ambiguous.", columnExpression, segmentTypeMessage);
     }
 }
