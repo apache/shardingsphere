@@ -17,19 +17,24 @@
 
 package org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.KernelSQLException;
 
 /**
  * Audit SQL exception.
  */
-public abstract class AuditSQLException extends KernelSQLException {
+public abstract class AuditSQLException extends SyntaxSQLException {
     
     private static final long serialVersionUID = -2464996050872874641L;
     
-    private static final int KERNEL_CODE = 6;
+    private static final int AUDIT_CODE = 2;
     
     protected AuditSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
+        super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    }
+    
+    private static int getErrorCode(final int errorCode) {
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
+        return AUDIT_CODE * 100 + errorCode;
     }
 }

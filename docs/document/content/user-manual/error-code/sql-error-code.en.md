@@ -62,6 +62,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42S02     | 12021       | Can not find column label '%s'.          |
 | HY000     | 12022       | Column '%s' in %s is ambiguous.          |
 | 0A000     | 12100       | DROP TABLE ... CASCADE is not supported. |
+| 42000     | 12200       | SQL audit failed, error message: %s.     |
+| 42000     | 12201       | Hint datasource '%s' does not exist.     |
 
 ### Connection
 
@@ -92,18 +94,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 25000     | 14205       | Close transaction manager failed, \`%s\`                                           |
 | 25000     | 14301       | ShardingSphere Seata-AT transaction has been disabled.                             |
 | 25000     | 14302       | Please config application id within seata.conf file.                               |
-
-### Audit
-
-| SQL State | Vendor Code | Reason                               |
-|-----------|-------------|--------------------------------------|
-| 44000     | 16000       | SQL audit failed, error message: %s. |
-| 44000     | 16001       | Hint datasource: %s is not exist.    |
-
-### Authority
-
-| SQL State | Vendor Code | Reason                            |
-|-----------|-------------|-----------------------------------|
 
 ### Cluster
 

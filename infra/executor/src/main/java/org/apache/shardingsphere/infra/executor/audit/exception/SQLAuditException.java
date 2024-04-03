@@ -28,6 +28,6 @@ public final class SQLAuditException extends AuditSQLException {
     private static final long serialVersionUID = 4183020614721058122L;
     
     public SQLAuditException(final String errorMessage) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "SQL audit failed, error message: %s.", errorMessage);
+        super(XOpenSQLState.SYNTAX_ERROR, 0, "SQL audit failed, error message: %s.", errorMessage);
     }
 }
