@@ -52,6 +52,6 @@ public final class UnsupportedStorageTypeException extends ConnectionSQLExceptio
     private static final long serialVersionUID = 8981789100727786183L;
     
     public UnsupportedStorageTypeException(final String url) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 2, "Unsupported storage type of URL '%s'.", url);
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 0, "Unsupported storage type of URL '%s'.", url);
     }
 }
