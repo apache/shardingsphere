@@ -25,8 +25,13 @@
     <create-trigger sql-case-id="create_trigger_with_create_view" />
     <create-trigger sql-case-id="create_trigger_with_dml_event_clause" />
     <create-trigger sql-case-id="create_trigger_with_body" />
-    <create-trigger sql-case-id="create_trigger_with_assignment_statement" />
     <create-trigger sql-case-id="create_trigger_with_execute_immediate_statement" />
+    <create-trigger sql-case-id="create_trigger_with_assignment_statement" />
+    <create-trigger sql-case-id="create_trigger_with_logon" />
+    <create-trigger sql-case-id="create_trigger_with_cascade_1" />
+    <create-trigger sql-case-id="create_trigger_with_cascade_2" />
+    <create-trigger sql-case-id="create_trigger_with_cascade_3" />
+    <create-trigger sql-case-id="create_trigger_with_cascade_4" />
     <create-trigger sql-case-id="create_trigger_with_dataManipulationLanguage_statement" />
     <create-trigger sql-case-id="create_trigger_with_exceptionInit_pragma" />
 </sql-parser-test-cases>
