@@ -50,6 +50,8 @@ public enum MySQLVendorError implements VendorError {
     
     ER_TABLE_EXISTS_ERROR(XOpenSQLState.DUPLICATE, 1050, "Table '%s' already exists"),
     
+    ER_PARSE_ERROR(XOpenSQLState.SYNTAX_ERROR, 1064, "%s near '%s' at line %d"),
+    
     ER_UNKNOWN_CHARACTER_SET(XOpenSQLState.SYNTAX_ERROR, 1115, "Unknown character set: '%s'"),
     
     ER_WRONG_VALUE_COUNT_ON_ROW(XOpenSQLState.MISMATCH_INSERT_VALUES_AND_COLUMNS, 1136, "Column count doesn't match value count at row %d"),

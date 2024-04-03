@@ -15,31 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.exception;
+package org.apache.shardingsphere.infra.exception.mysql.exception;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
 
 /**
- * SQL parsing exception.
+ * Parse error exception.
  */
+@RequiredArgsConstructor
 @Getter
-public final class SQLParsingException extends SyntaxSQLException {
+public final class ParseErrorException extends SQLDialectException {
     
-    private static final long serialVersionUID = -6408790652103666096L;
+    private static final long serialVersionUID = -750654777434834288L;
+    
+    private final String message;
     
     private final Object symbol;
     
     private final int line;
-    
-    public SQLParsingException(final String sql) {
-        this(sql, "", 1);
-    }
-    
-    public SQLParsingException(final String sql, final Object symbol, final int line) {
-        super(XOpenSQLState.SYNTAX_ERROR, 0, "You have an error in your SQL syntax: %s", sql);
-        this.symbol = symbol;
-        this.line = line;
-    }
 }

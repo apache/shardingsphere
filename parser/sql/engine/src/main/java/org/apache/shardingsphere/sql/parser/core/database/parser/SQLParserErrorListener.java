@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 /**
  * SQL parser error listener.
@@ -44,6 +44,6 @@ public final class SQLParserErrorListener extends BaseErrorListener {
     @Override
     public void syntaxError(final Recognizer<?, ?> recognizer, final Object offendingSymbol, final int line, final int charPositionInLine,
                             final String message, final RecognitionException e) {
-        throw new ParseCancellationException(message + " at line " + line + ", position " + charPositionInLine + ", near " + offendingSymbol);
+        throw new SQLParsingException(message, offendingSymbol, line);
     }
 }

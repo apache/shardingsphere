@@ -36,11 +36,12 @@ import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorGlobalVari
 import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorLocalVariableException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.HandshakeException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.IncorrectGlobalLocalVariableException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.ParseErrorException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.TooManyPlaceholdersException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.infra.exception.mysql.exception.TooManyPlaceholdersException;
 import org.apache.shardingsphere.infra.exception.mysql.vendor.MySQLVendorError;
 
 import java.sql.SQLException;
@@ -68,6 +69,10 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
         }
         if (sqlDialectException instanceof TableExistsException) {
             return toSQLException(MySQLVendorError.ER_TABLE_EXISTS_ERROR, ((TableExistsException) sqlDialectException).getTableName());
+        }
+        if (sqlDialectException instanceof ParseErrorException) {
+            return toSQLException(MySQLVendorError.ER_PARSE_ERROR, sqlDialectException.getMessage(), ((ParseErrorException) sqlDialectException).getSymbol(),
+                    ((ParseErrorException) sqlDialectException).getLine());
         }
         if (sqlDialectException instanceof NoSuchTableException) {
             return toSQLException(MySQLVendorError.ER_NO_SUCH_TABLE, ((NoSuchTableException) sqlDialectException).getTableName());
