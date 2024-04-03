@@ -62,6 +62,6 @@ class PostgreSQLErrorPacketFactoryTest {
     void assertRuntimeException() throws ReflectiveOperationException {
         PostgreSQLErrorResponsePacket actual = PostgreSQLErrorPacketFactory.newInstance(new RuntimeException("No reason"));
         Map<Character, String> fields = (Map<Character, String>) Plugins.getMemberAccessor().get(PostgreSQLErrorResponsePacket.class.getDeclaredField("fields"), actual);
-        assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE), is("Unknown exception: No reason"));
+        assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE), is("Unknown exception." + System.lineSeparator() + "More details: No reason"));
     }
 }
