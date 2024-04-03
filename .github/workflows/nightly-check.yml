@@ -212,5 +212,4 @@ jobs:
       - name: Run Dependency Convergence Check
         run: |
           sed -i '/<requireMavenVersion>/i \                                    <dependencyConvergence/>' pom.xml
-          ./mvnw clean install -DskipTests -T1C -Dmaven.enforcer.fail=false
-
+          ./mvnw clean install -DskipTests -T1C -Dmaven.enforcer.fail=true
