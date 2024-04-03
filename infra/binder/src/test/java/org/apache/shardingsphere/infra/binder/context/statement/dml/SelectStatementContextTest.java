@@ -121,7 +121,7 @@ class SelectStatementContextTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
-        when(ruleAttribute.getEnhancedTableMapper().contains("t_order")).thenReturn(true);
+        when(ruleAttribute.getEnhancedTableNames().contains("t_order")).thenReturn(true);
         when(result.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
         return result;
     }

@@ -20,11 +20,11 @@ package org.apache.shardingsphere.broadcast.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastDataNodeRuleAttribute;
-import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastTableMapperRuleAttribute;
+import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastTableNamesRuleAttribute;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -56,7 +56,7 @@ public final class BroadcastRule implements DatabaseRule {
         this.databaseName = databaseName;
         dataSourceNames = getAggregatedDataSourceNames(dataSources, builtRules);
         tables = createBroadcastTables(config.getTables());
-        attributes = new RuleAttributes(new BroadcastDataNodeRuleAttribute(dataSourceNames, tables), new BroadcastTableMapperRuleAttribute(tables));
+        attributes = new RuleAttributes(new BroadcastDataNodeRuleAttribute(dataSourceNames, tables), new BroadcastTableNamesRuleAttribute(tables));
     }
     
     private Collection<String> getAggregatedDataSourceNames(final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {

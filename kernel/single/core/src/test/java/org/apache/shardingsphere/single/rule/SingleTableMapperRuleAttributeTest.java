@@ -32,16 +32,16 @@ class SingleTableMapperRuleAttributeTest {
     
     @Test
     void assertGetLogicTableMapper() {
-        assertThat(new LinkedList<>(ruleAttribute.getLogicTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl")));
+        assertThat(new LinkedList<>(ruleAttribute.getLogicTableNames()), is(Collections.singletonList("foo_tbl")));
     }
     
     @Test
     void assertGetDistributedTableMapper() {
-        assertThat(new LinkedList<>(ruleAttribute.getDistributedTableMapper().getTableNames()), is(Collections.emptyList()));
+        assertThat(new LinkedList<>(ruleAttribute.getDistributedTableNames()), is(Collections.emptyList()));
     }
     
     @Test
     void assertGetEnhancedTableMapper() {
-        assertThat(new LinkedList<>(ruleAttribute.getEnhancedTableMapper().getTableNames()), is(Collections.emptyList()));
+        assertThat(new LinkedList<>(ruleAttribute.getEnhancedTableNames()), is(Collections.emptyList()));
     }
 }
