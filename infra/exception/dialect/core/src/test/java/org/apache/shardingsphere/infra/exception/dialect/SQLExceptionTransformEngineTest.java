@@ -72,7 +72,7 @@ class SQLExceptionTransformEngineTest {
         SQLException actual = SQLExceptionTransformEngine.toSQLException(cause, databaseType);
         assertThat(actual.getSQLState(), is("HY000"));
         assertThat(actual.getErrorCode(), is(30004));
-        assertThat(actual.getMessage(), is("Server exception: No reason"));
+        assertThat(actual.getMessage(), is("Server exception: No reason" + System.lineSeparator() + "More details: No reason"));
     }
     
     @Test
@@ -80,6 +80,6 @@ class SQLExceptionTransformEngineTest {
         SQLException actual = SQLExceptionTransformEngine.toSQLException(new Exception("No reason"), databaseType);
         assertThat(actual.getSQLState(), is("HY000"));
         assertThat(actual.getErrorCode(), is(30000));
-        assertThat(actual.getMessage(), is("Unknown exception: No reason"));
+        assertThat(actual.getMessage(), is("Unknown exception." + System.lineSeparator() + "More details: No reason"));
     }
 }
