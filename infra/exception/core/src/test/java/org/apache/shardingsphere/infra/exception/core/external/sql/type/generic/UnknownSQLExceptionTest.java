@@ -32,6 +32,6 @@ class UnknownSQLExceptionTest {
         SQLException actual = new UnknownSQLException(new RuntimeException("foo_reason")).toSQLException();
         assertThat(actual.getSQLState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
         assertThat(actual.getErrorCode(), is(30000));
-        assertThat(actual.getMessage(), is("Unknown exception: foo_reason"));
+        assertThat(actual.getMessage(), is("Unknown exception." + System.lineSeparator() + "More details: foo_reason"));
     }
 }
