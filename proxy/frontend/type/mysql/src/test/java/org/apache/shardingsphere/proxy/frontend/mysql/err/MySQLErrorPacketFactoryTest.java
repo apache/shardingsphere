@@ -41,6 +41,6 @@ class MySQLErrorPacketFactoryTest {
         MySQLErrPacket actual = MySQLErrorPacketFactory.newInstance(new RuntimeException("No reason"));
         assertThat(actual.getErrorCode(), is(30000));
         assertThat(actual.getSqlState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
-        assertThat(actual.getErrorMessage(), is("Unknown exception: No reason"));
+        assertThat(actual.getErrorMessage(), is("Unknown exception." + System.lineSeparator() + "More details: No reason"));
     }
 }
