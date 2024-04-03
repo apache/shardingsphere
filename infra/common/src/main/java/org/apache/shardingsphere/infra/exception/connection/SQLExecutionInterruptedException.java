@@ -28,6 +28,6 @@ public final class SQLExecutionInterruptedException extends ConnectionSQLExcepti
     private static final long serialVersionUID = 3394283296623445981L;
     
     public SQLExecutionInterruptedException() {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 32, "SQL execution has been interrupted.");
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 11, "SQL execution has been interrupted.");
     }
 }
