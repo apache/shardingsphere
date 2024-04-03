@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.statement.ral.updatable.UpdatableRALSta
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.connection.ReadOnlyException;
+import org.apache.shardingsphere.mode.exception.ClusterStatusException;
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
 import org.apache.shardingsphere.proxy.backend.state.SQLSupportedJudgeEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -48,7 +48,7 @@ public final class ReadOnlyProxyState implements ProxyClusterState {
     
     @Override
     public void check(final SQLStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(judgeEngine.isSupported(sqlStatement), ReadOnlyException::new);
+        ShardingSpherePreconditions.checkState(judgeEngine.isSupported(sqlStatement), () -> new ClusterStatusException(getType(), sqlStatement));
     }
     
     @Override
