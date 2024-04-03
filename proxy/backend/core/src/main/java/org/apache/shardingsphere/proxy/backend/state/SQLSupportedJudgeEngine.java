@@ -23,17 +23,17 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.util.Collection;
 
 /**
- * Supported SQL statement judge engine.
+ * SQL supported judge engine.
  */
 @RequiredArgsConstructor
-public final class SupportedSQLStatementJudgeEngine {
+public final class SQLSupportedJudgeEngine {
     
     private final Collection<Class<? extends SQLStatement>> supportedSQLStatements;
     
     private final Collection<Class<? extends SQLStatement>> unsupportedSQLStatements;
     
     /**
-     * Judge whether SQL statement is supported.
+     * Judge whether to support SQL.
      * 
      * @param sqlStatement SQL statement to be judged
      * @return supported or not

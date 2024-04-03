@@ -70,8 +70,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 08000     | 13002       | The URL '%s' is not recognized, please refer to the pattern '%s'.                                                                                                                                                           |
 | 0A000     | 13003       | Unsupported storage type of URL '%s'.                                                                                                                                                                                       |
 | 01000     | 13010       | Circuit break open, the request has been ignored.                                                                                                                                                                           |
-| 01000     | 13011       | The cluster status is read-only.                                                                                                                                                                                            |
-| 01000     | 13012       | The cluster status is unavailable.                                                                                                                                                                                          |
 | 08000     | 13020       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties. |
 | 08000     | 13032       | SQL execution has been interrupted.                                                                                                                                                                                         |
 | HY000     | 13090       | Load datetime from database failed, reason: %s                                                                                                                                                                              |
@@ -109,11 +107,12 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Cluster
 
-| SQL State | Vendor Code | Reason                                              |
-|-----------|-------------|-----------------------------------------------------|
-| HY000     | 17000       | Work ID assigned failed, which can not exceed 1024. |
-| HY000     | 17002       | File access failed, file is: %s                     |
-| HY000     | 17010       | Cluster persist repository error, reason is: %s     |
+| SQL State | Vendor Code | Reason                                                        |
+|-----------|-------------|---------------------------------------------------------------|
+| HY000     | 17000       | Work ID assigned failed, which can not exceed 1024.           |
+| HY000     | 17002       | File access failed, file is: %s                               |
+| HY000     | 17010       | Cluster persist repository error, reason is: %s               |
+| HY000     | 17020       | The cluster status is %s, can not support SQL statement '%s'. |
 
 ### Migration
 

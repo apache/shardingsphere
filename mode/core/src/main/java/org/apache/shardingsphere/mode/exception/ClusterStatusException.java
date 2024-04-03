@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.connection;
+package org.apache.shardingsphere.mode.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Unavailable exception.
+ * Cluster status exception.
  */
-public final class UnavailableException extends ConnectionSQLException {
+public final class ClusterStatusException extends ClusterSQLException {
     
-    private static final long serialVersionUID = 6036684043129887739L;
+    private static final long serialVersionUID = 3834132923835083492L;
     
-    public UnavailableException() {
-        super(XOpenSQLState.GENERAL_WARNING, 12, "The cluster status is unavailable.");
+    public ClusterStatusException(final String type, final SQLStatement sqlStatement) {
+        super(XOpenSQLState.GENERAL_ERROR, 20, "The cluster status is %s, can not support SQL statement '%s'.", type, sqlStatement.getClass().getSimpleName());
     }
 }
