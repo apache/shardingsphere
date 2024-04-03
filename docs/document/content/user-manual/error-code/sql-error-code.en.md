@@ -54,14 +54,14 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason                                   |
 |-----------|-------------|------------------------------------------|
-| 42000     | 12000       | You have an error in your SQL syntax: %s |
-| 42000     | 12001       | Can not accept SQL type '%s'.            |
-| 42000     | 12002       | SQL String can not be NULL or empty.     |
+| 42000     | 12000       | SQL String can not be NULL or empty.     |
 | 42000     | 12010       | Can not support variable '%s'.           |
 | HV008     | 12020       | Column index '%d' is out of range.       |
 | 42S02     | 12021       | Can not find column label '%s'.          |
 | HY000     | 12022       | Column '%s' in %s is ambiguous.          |
 | 0A000     | 12100       | DROP TABLE ... CASCADE is not supported. |
+| 42000     | 12100       | You have an error in your SQL syntax: %s |
+| 42000     | 12101       | Can not accept SQL type '%s'.            |
 | 42000     | 12200       | SQL audit failed, error message: %s.     |
 | 42000     | 12201       | Hint datasource '%s' does not exist.     |
 

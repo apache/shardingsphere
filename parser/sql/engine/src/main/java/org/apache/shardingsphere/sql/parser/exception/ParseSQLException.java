@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.syntax;
+package org.apache.shardingsphere.sql.parser.exception;
 
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Empty SQL exception.
+ * Parse SQL exception.
  */
-public final class EmptySQLException extends SyntaxSQLException {
+public abstract class ParseSQLException extends SyntaxSQLException {
     
-    private static final long serialVersionUID = -5723825491720138339L;
+    private static final long serialVersionUID = 1922421612933745823L;
     
-    public EmptySQLException() {
-        super(XOpenSQLState.SYNTAX_ERROR, 0, "SQL String can not be NULL or empty.");
+    private static final int PARSE_CODE = 1;
+    
+    protected ParseSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    }
+    
+    private static int getErrorCode(final int errorCode) {
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
+        return PARSE_CODE * 100 + errorCode;
     }
 }
