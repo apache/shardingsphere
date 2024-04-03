@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.schedule.core.job.statistics.collect;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
@@ -34,7 +35,8 @@ import java.util.Optional;
 public final class StatisticsCollectorFixture implements ShardingSphereStatisticsCollector {
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final Map<String, ShardingSphereDatabase> databases) throws SQLException {
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final Map<String, ShardingSphereDatabase> databases,
+                                                     final RuleMetaData globalRuleMetaData) throws SQLException {
         ShardingSphereTableData shardingSphereTableData = new ShardingSphereTableData("test_table");
         shardingSphereTableData.getRows().add(new ShardingSphereRowData(Arrays.asList("1", "2")));
         return Optional.of(shardingSphereTableData);

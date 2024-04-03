@@ -12,75 +12,72 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 元数据
 
-| SQL State | Vendor Code | 错误信息                                                                           |
-|-----------|-------------|--------------------------------------------------------------------------------|
-| 0A000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
-| HY004     | 10003       | Invalid format for actual data node \`%s\`.                                    |
-| HY000     | 10005       | Column '%s' in %s is ambiguous.                                                |
-| 42S02     | 10006       | Unknown column '%s' in '%s'.                                                   |
-| 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
-| 42S02     | 10008       | Missing required table '%s' in storage unit '%s'.                              |
-| 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
-| 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
-| HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
-| 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables.                         |
-| HY000     | 10100       | Can not %s storage units '%s'.                                                 |
-| 42S02     | 10101       | There is no storage unit in database '%s'.                                     |
-| 44000     | 10102       | Storage units '%s' do not exist in database '%s'.                              |
-| 44000     | 10103       | Storage unit '%s' still used by '%s'.                                          |
-| 42S01     | 10104       | Duplicate storage unit names '%s'.                                             |
-| 08000     | 10110       | Storage units can not connect, error messages are: %s.                         |
-| 0A000     | 10111       | Can not alter connection info in storage units: '%s'.                          |
-| 44000     | 10120       | Invalid storage unit status, error message is: %s.                             |
-| 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                   |
-| 42S02     | 10201       | There is no rule in database '%s'.                                             |
-| 42S02     | 10202       | %s rules '%s' do not exist in database '%s'.                                   |
-| 44000     | 10203       | %s rules '%s' in database '%s' are still in used.                              |
-| 42S01     | 10204       | Duplicate %s rule names '%s' in database '%s'.                                 |
-| 44000     | 10300       | Algorithm '%s.'%s' initialization failed, reason is: %s.                       |
-| 44000     | 10301       | '%s' algorithm on %s is required.                                              |
-| 42S02     | 10302       | '%s' algorithm '%s' on %s is unregistered.                                     |
-| 44000     | 10303       | %s algorithms '%s' in database '%s' are still in used.                         |
-| 44000     | 10304       | Invalid %s algorithm configuration '%s'.                                       |
-| HY000     | 10350       | Algorithm '%s.%s' execute failed, reason is: %s.                               |
+| SQL State | Vendor Code | 错误信息                                                                                |
+|-----------|-------------|-------------------------------------------------------------------------------------|
+| HY000     | 10000       | Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.          |
+| HY004     | 10001       | Invalid format for actual data node '%s'.                                           |
+| 42S02     | 10002       | Schema '%s' does not exist.                                                         |
+| 42S02     | 10003       | Table or view '%s' does not exist.                                                  |
+| 42S02     | 10004       | Unknown column '%s' in '%s'.                                                        |
+| HY000     | 10100       | Can not %s storage units '%s'.                                                      |
+| 42S02     | 10101       | There is no storage unit in database '%s'.                                          |
+| 44000     | 10102       | Storage units '%s' do not exist in database '%s'.                                   |
+| 44000     | 10103       | Storage unit '%s' still used by '%s'.                                               |
+| 42S01     | 10104       | Duplicate storage unit names '%s'.                                                  |
+| 08000     | 10110       | Storage units can not connect, error messages are: %s.                              |
+| 0A000     | 10111       | Can not alter connection info in storage units: '%s'.                               |
+| 44000     | 10120       | Invalid storage unit status, error message is: %s.                                  |
+| 44000     | 10200       | Invalid '%s' rule '%s', error message is: %s                                        |
+| 42S02     | 10201       | There is no rule in database '%s'.                                                  |
+| 42S02     | 10202       | %s rules '%s' do not exist in database '%s'.                                        |
+| 44000     | 10203       | %s rules '%s' in database '%s' are still in used.                                   |
+| 42S01     | 10204       | Duplicate %s rule names '%s' in database '%s'.                                      |
+| 44000     | 10300       | Algorithm '%s.'%s' initialization failed, reason is: %s.                            |
+| 44000     | 10301       | '%s' algorithm on %s is required.                                                   |
+| 42S02     | 10302       | '%s' algorithm '%s' on %s is unregistered.                                          |
+| 44000     | 10303       | %s algorithms '%s' in database '%s' are still in used.                              |
+| 44000     | 10304       | Invalid %s algorithm configuration '%s'.                                            |
+| HY000     | 10350       | Algorithm '%s.%s' execute failed, reason is: %s.                                    |
+| 44000     | 10400       | Invalid single rule configuration, reason is: %s.                                   |
+| 42S02     | 10401       | Single table '%s' does not exist.                                                   |
+| HY000     | 10402       | Can not load table with database name '%s' and data source name '%s', reason is: %s |
+| 0A000     | 10403       | Can not drop schema '%s' because of contains tables.                                |
 
 ### 数据
 
-| SQL State | Vendor Code | 错误信息                                                      |
-|-----------|-------------|-----------------------------------------------------------|
-| HY004     | 11000       | Invalid value \`%s\`.                                     |
-| HY004     | 11001       | Unsupported conversion data type \`%s\` for value \`%s\`. |
-| HY004     | 11010       | Unsupported conversion stream charset \`%s\`.             |
+| SQL State | Vendor Code | 错误信息                                                  |
+|-----------|-------------|-------------------------------------------------------|
+| HY004     | 11000       | Unsupported conversion data type '%s' for value '%s'. |
+| HY004     | 11001       | Unsupported conversion stream charset '%s'.           |
 
 ### 语法
 
 | SQL State | Vendor Code | 错误信息                                     |
 |-----------|-------------|------------------------------------------|
 | 42000     | 12000       | You have an error in your SQL syntax: %s |
-| 42000     | 12001       | Can not accept SQL type \`%s\`.          |
+| 42000     | 12001       | Can not accept SQL type '%s'.            |
 | 42000     | 12002       | SQL String can not be NULL or empty.     |
-| 42000     | 12010       | Can not support variable \`%s\`.         |
-| 42S02     | 12011       | Can not find column label \`%s\`.        |
-| 42S02     | 12012       | Can not find url provider for \`%s`\.    |
-| HV008     | 12020       | Column index \`%d\` is out of range.     |
+| 42000     | 12010       | Can not support variable '%s'.           |
+| HV008     | 12020       | Column index '%d' is out of range.       |
+| 42S02     | 12021       | Can not find column label '%s'.          |
+| HY000     | 12022       | Column '%s' in %s is ambiguous.          |
 | 0A000     | 12100       | DROP TABLE ... CASCADE is not supported. |
 
 ### 连接
 
 | SQL State | Vendor Code | 错误信息                                                                                                                                                                                                                        |
 |-----------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 08000     | 13000       | Can not register driver, reason is: %s                                                                                                                                                                                      |
-| 08000     | 13001       | Can not register SQL federation driver, reason is: %s                                                                                                                                                                       |
 | 08000     | 13002       | The URL '%s' is not recognized, please refer to the pattern '%s'.                                                                                                                                                           |
 | 0A000     | 13003       | Unsupported storage type of URL '%s'.                                                                                                                                                                                       |
 | 01000     | 13010       | Circuit break open, the request has been ignored.                                                                                                                                                                           |
 | 01000     | 13011       | The cluster status is read-only.                                                                                                                                                                                            |
 | 01000     | 13012       | The cluster status is unavailable.                                                                                                                                                                                          |
 | 08000     | 13020       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties. |
-| 08000     | 13030       | Connection has been closed.                                                                                                                                                                                                 |
-| 08000     | 13031       | Result set has been closed.                                                                                                                                                                                                 |
 | 08000     | 13032       | SQL execution has been interrupted.                                                                                                                                                                                         |
 | HY000     | 13090       | Load datetime from database failed, reason: %s                                                                                                                                                                              |
+| 08000     | 13100       | Can not register driver.                                                                                                                                                                                                    |
+| 08000     | 13101       | Connection has been closed.                                                                                                                                                                                                 |
+| 08000     | 13102       | Result set has been closed.                                                                                                                                                                                                 |
 
 ### 事务
 

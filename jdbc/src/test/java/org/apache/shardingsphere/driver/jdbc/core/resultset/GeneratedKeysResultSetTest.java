@@ -54,8 +54,9 @@ class GeneratedKeysResultSetTest {
     
     @Test
     void assertNextForEmptyResultSet() {
-        GeneratedKeysResultSet actual = new GeneratedKeysResultSet();
-        assertFalse(actual.next());
+        try (GeneratedKeysResultSet actual = new GeneratedKeysResultSet()) {
+            assertFalse(actual.next());
+        }
     }
     
     @Test
@@ -151,10 +152,10 @@ class GeneratedKeysResultSetTest {
     void assertGetBigDecimal() {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getBigDecimal(1), is(new BigDecimal("1")));
-        assertThat(actualResultSet.getBigDecimal(1, 2), is(new BigDecimal("1").setScale(BigDecimal.ROUND_CEILING, RoundingMode.HALF_UP)));
+        assertThat(actualResultSet.getBigDecimal(1, 2), is(new BigDecimal("1").setScale(2, RoundingMode.HALF_UP)));
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getBigDecimal("order_id"), is(new BigDecimal("2")));
-        assertThat(actualResultSet.getBigDecimal("order_id", 2), is(new BigDecimal("2").setScale(BigDecimal.ROUND_CEILING, RoundingMode.HALF_UP)));
+        assertThat(actualResultSet.getBigDecimal("order_id", 2), is(new BigDecimal("2").setScale(2, RoundingMode.HALF_UP)));
         assertFalse(actualResultSet.next());
     }
     

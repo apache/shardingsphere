@@ -19,13 +19,14 @@ package org.apache.shardingsphere.single.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
-import org.apache.shardingsphere.infra.exception.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.InvalidDataNodeFormatException;
+import org.apache.shardingsphere.infra.exception.metadata.InvalidDataNodeFormatException;
+import org.apache.shardingsphere.infra.exception.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMappe
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
-import org.apache.shardingsphere.single.distsql.handler.exception.MissingRequiredSingleTableException;
 import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
 import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -42,8 +42,6 @@ import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -93,25 +91,14 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
         }
     }
     
-    private Collection<String> getRequiredTables(final LoadSingleTableStatement sqlStatement) {
-        if (null != rule) {
-            return sqlStatement.getTables().stream().map(SingleTableSegment::toString).filter(each -> !rule.getConfiguration().getTables().contains(each)).collect(Collectors.toSet());
-        }
-        return sqlStatement.getTables().stream().map(SingleTableSegment::toString).collect(Collectors.toSet());
-    }
-    
-    private Collection<String> getRequiredDataSources(final LoadSingleTableStatement sqlStatement) {
-        return sqlStatement.getTables().stream().map(SingleTableSegment::getStorageUnitName)
-                .filter(each -> !SingleTableConstants.ASTERISK.equals(each)).collect(Collectors.toSet());
-    }
-    
     private void checkStorageUnits(final LoadSingleTableStatement sqlStatement) {
         Collection<String> requiredDataSources = getRequiredDataSources(sqlStatement);
         if (requiredDataSources.isEmpty()) {
             return;
         }
         Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
-        Collection<String> logicDataSources = getLogicDataSources(database);
+        Collection<String> logicDataSources = database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class).stream()
+                .flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toSet());
         notExistedDataSources.removeIf(logicDataSources::contains);
         ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
     }
@@ -123,33 +110,30 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
         }
         ResourceMetaData resourceMetaData = database.getResourceMetaData();
         Map<String, DataSource> aggregateDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(
-                resourceMetaData.getStorageUnits().entrySet().stream()
-                        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
-                database.getRuleMetaData().getRules());
-        Map<String, Map<String, Collection<String>>> actualTableNodes = new LinkedHashMap<>();
+                resourceMetaData.getStorageUnits().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource())), database.getRuleMetaData().getRules());
+        Map<String, Map<String, Collection<String>>> actualTableNodes = getActualTableNodes(requiredDataSources, aggregateDataSourceMap);
+        for (SingleTableSegment each : sqlStatement.getTables()) {
+            String tableName = each.getTableName();
+            if (!SingleTableConstants.ASTERISK.equals(tableName)) {
+                String storageUnitName = each.getStorageUnitName();
+                ShardingSpherePreconditions.checkState(actualTableNodes.containsKey(storageUnitName) && actualTableNodes.get(storageUnitName).get(defaultSchemaName).contains(tableName),
+                        () -> new TableNotFoundException(storageUnitName, tableName));
+            }
+        }
+    }
+    
+    private Collection<String> getRequiredDataSources(final LoadSingleTableStatement sqlStatement) {
+        return sqlStatement.getTables().stream().map(SingleTableSegment::getStorageUnitName).filter(each -> !SingleTableConstants.ASTERISK.equals(each)).collect(Collectors.toSet());
+    }
+    
+    private Map<String, Map<String, Collection<String>>> getActualTableNodes(final Collection<String> requiredDataSources, final Map<String, DataSource> aggregateDataSourceMap) {
+        Map<String, Map<String, Collection<String>>> result = new LinkedHashMap<>();
         for (String each : requiredDataSources) {
             DataSource dataSource = aggregateDataSourceMap.get(each);
             Map<String, Collection<String>> schemaTableNames = SingleTableDataNodeLoader.loadSchemaTableNames(database.getName(), DatabaseTypeEngine.getStorageType(dataSource), dataSource, each);
             if (!schemaTableNames.isEmpty()) {
-                actualTableNodes.put(each, schemaTableNames);
+                result.put(each, schemaTableNames);
             }
-        }
-        for (SingleTableSegment each : sqlStatement.getTables()) {
-            if (SingleTableConstants.ASTERISK.equals(each.getTableName())) {
-                continue;
-            }
-            Map<String, Collection<String>> schemaTableMap = actualTableNodes.getOrDefault(each.getStorageUnitName(), new LinkedHashMap<>());
-            ShardingSpherePreconditions.checkState(!schemaTableMap.isEmpty(), () -> new MissingRequiredSingleTableException(each.getStorageUnitName(), each.getTableName()));
-            Collection<String> schemaTables = schemaTableMap.getOrDefault(defaultSchemaName, new LinkedList<>());
-            ShardingSpherePreconditions.checkState(!schemaTables.isEmpty() && schemaTables.contains(each.getTableName()),
-                    () -> new MissingRequiredSingleTableException(each.getStorageUnitName(), each.getTableName()));
-        }
-    }
-    
-    private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
-        Collection<String> result = new LinkedHashSet<>();
-        for (DataSourceMapperRuleAttribute each : database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)) {
-            result.addAll(each.getDataSourceMapper().keySet());
         }
         return result;
     }
@@ -162,6 +146,13 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
         }
         result.getTables().addAll(getRequiredTables(sqlStatement));
         return result;
+    }
+    
+    private Collection<String> getRequiredTables(final LoadSingleTableStatement sqlStatement) {
+        if (null != rule) {
+            return sqlStatement.getTables().stream().map(SingleTableSegment::toString).filter(each -> !rule.getConfiguration().getTables().contains(each)).collect(Collectors.toSet());
+        }
+        return sqlStatement.getTables().stream().map(SingleTableSegment::toString).collect(Collectors.toSet());
     }
     
     @Override

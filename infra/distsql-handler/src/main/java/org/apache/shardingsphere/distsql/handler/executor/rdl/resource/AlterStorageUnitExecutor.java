@@ -33,10 +33,10 @@ import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcU
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.exception.resource.storageunit.AlterStorageUnitConnectionInfoException;
-import org.apache.shardingsphere.infra.exception.resource.storageunit.DuplicateStorageUnitException;
-import org.apache.shardingsphere.infra.exception.resource.storageunit.StorageUnitsOperateException;
-import org.apache.shardingsphere.infra.exception.resource.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.storageunit.AlterStorageUnitConnectionInfoException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.storageunit.DuplicateStorageUnitException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.storageunit.StorageUnitsOperateException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -80,7 +80,7 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
     
     private void checkDuplicatedStorageUnitNames(final Collection<String> storageUnitNames) {
         Collection<String> duplicatedStorageUnitNames = storageUnitNames.stream().filter(each -> storageUnitNames.stream().filter(each::equals).count() > 1).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(duplicatedStorageUnitNames.isEmpty(), () -> new DuplicateStorageUnitException(duplicatedStorageUnitNames));
+        ShardingSpherePreconditions.checkState(duplicatedStorageUnitNames.isEmpty(), () -> new DuplicateStorageUnitException(database.getName(), duplicatedStorageUnitNames));
     }
     
     private void checkStorageUnitNameExisted(final Collection<String> storageUnitNames) {

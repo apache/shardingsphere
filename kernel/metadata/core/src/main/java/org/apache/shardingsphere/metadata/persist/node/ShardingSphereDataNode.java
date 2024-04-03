@@ -32,9 +32,13 @@ public final class ShardingSphereDataNode {
     
     private static final String ROOT_NODE = "statistics";
     
+    private static final String DATABASES_NODE = "databases";
+    
     private static final String SCHEMAS_NODE = "schemas";
     
     private static final String TABLES_NODE = "tables";
+    
+    private static final String JOB_NODE = "job";
     
     /**
      * Get ShardingSphere data node path.
@@ -42,7 +46,7 @@ public final class ShardingSphereDataNode {
      * @return meta data node path
      */
     public static String getShardingSphereDataNodePath() {
-        return String.join("/", "", ROOT_NODE);
+        return String.join("/", "", ROOT_NODE, DATABASES_NODE);
     }
     
     /**
@@ -194,5 +198,14 @@ public final class ShardingSphereDataNode {
         Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)" + "/(\\w+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rowPath);
         return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
+     * Get job path.
+     *
+     * @return job path
+     */
+    public static String getJobPath() {
+        return String.join("/", ROOT_NODE, JOB_NODE);
     }
 }

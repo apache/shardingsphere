@@ -28,8 +28,8 @@ import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.Regist
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.exception.resource.storageunit.DuplicateStorageUnitException;
-import org.apache.shardingsphere.infra.exception.resource.storageunit.StorageUnitsOperateException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.storageunit.DuplicateStorageUnitException;
+import org.apache.shardingsphere.infra.exception.metadata.resource.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -89,7 +89,7 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
             }
             dataSourceNames.add(each.getName());
         }
-        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(duplicatedDataSourceNames));
+        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(database.getName(), duplicatedDataSourceNames));
     }
     
     private void checkDuplicatedLogicalDataSourceNames(final Collection<String> requiredDataSourceNames) {
@@ -98,7 +98,7 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
             return;
         }
         Collection<String> duplicatedDataSourceNames = requiredDataSourceNames.stream().filter(logicalDataSourceNames::contains).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(duplicatedDataSourceNames));
+        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(database.getName(), duplicatedDataSourceNames));
     }
     
     private Collection<String> getCurrentStorageUnitNames(final ContextManager contextManager) {

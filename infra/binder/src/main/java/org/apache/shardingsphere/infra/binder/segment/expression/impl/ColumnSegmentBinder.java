@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.binder.segment.from.FunctionTableSegmentB
 import org.apache.shardingsphere.infra.binder.segment.from.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.exception.AmbiguousColumnException;
-import org.apache.shardingsphere.infra.exception.UnknownColumnException;
+import org.apache.shardingsphere.infra.exception.syntax.AmbiguousColumnException;
+import org.apache.shardingsphere.infra.exception.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -158,7 +158,7 @@ public final class ColumnSegmentBinder {
             isFindInputColumn = result != null;
         }
         ShardingSpherePreconditions.checkState(isFindInputColumn || containsFunctionTable(tableBinderContexts, outerTableBinderContexts.values()),
-                () -> new UnknownColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
+                () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         return Optional.ofNullable(result);
     }
     
@@ -246,7 +246,7 @@ public final class ColumnSegmentBinder {
         Collection<TableSegmentBinderContext> tableBinderContextValues = tableBinderContexts.values();
         Collection<ColumnSegment> usingInputColumnSegments = findUsingInputColumnSegments(segment.getIdentifier().getValue(), tableBinderContextValues);
         ShardingSpherePreconditions.checkState(usingInputColumnSegments.size() >= 2,
-                () -> new UnknownColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
+                () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         Iterator<ColumnSegment> iterator = usingInputColumnSegments.iterator();
         result.setColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, iterator.next()));
         result.setOtherUsingColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, iterator.next()));

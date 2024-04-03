@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.state.impl;
 
-import org.apache.shardingsphere.proxy.backend.exception.ReadOnlyException;
+import org.apache.shardingsphere.infra.exception.connection.ReadOnlyException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.jupiter.api.Test;

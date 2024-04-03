@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.InvalidDataNodeFormatException;
+import org.apache.shardingsphere.infra.exception.metadata.InvalidDataNodeFormatException;
 
 import java.util.List;
 

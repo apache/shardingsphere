@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataS
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.proxy.backend.exception.UnavailableException;
+import org.apache.shardingsphere.infra.exception.connection.UnavailableException;
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
 import org.apache.shardingsphere.proxy.backend.state.SupportedSQLStatementJudgeEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;

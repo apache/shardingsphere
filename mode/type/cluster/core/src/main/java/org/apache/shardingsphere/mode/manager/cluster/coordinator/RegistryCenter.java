@@ -100,7 +100,7 @@ public final class RegistryCenter {
         new ClusterStatusSubscriber(repository, eventBusContext);
         new StorageNodeStatusSubscriber(repository, eventBusContext);
         new ClusterProcessSubscriber(repository, eventBusContext);
-        new ShardingSphereSchemaDataRegistrySubscriber(repository, globalLockPersistService, eventBusContext);
+        new ShardingSphereSchemaDataRegistrySubscriber(repository, eventBusContext);
     }
     
     /**

@@ -28,13 +28,9 @@ public final class StatisticsCollectContextManagerLifecycleListener implements C
     
     @Override
     public void onInitialized(final String databaseName, final ContextManager contextManager) {
-        if (!contextManager.getInstanceContext().isCluster()) {
-            return;
+        if (contextManager.getInstanceContext().isCluster() && InstanceType.PROXY == contextManager.getInstanceContext().getInstance().getMetaData().getType()) {
+            StatisticsCollectJobWorker.initialize(contextManager);
         }
-        if (InstanceType.PROXY != contextManager.getInstanceContext().getInstance().getMetaData().getType()) {
-            return;
-        }
-        StatisticsCollectJobWorker.initialize(contextManager);
     }
     
     @Override

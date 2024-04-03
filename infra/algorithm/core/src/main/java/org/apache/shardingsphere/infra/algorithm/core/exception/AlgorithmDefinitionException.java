@@ -35,7 +35,7 @@ public abstract class AlgorithmDefinitionException extends MetaDataSQLException 
     }
     
     private static int getErrorCode(final int errorCode) {
-        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 1000).");
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
         return ALGORITHM_CODE * 100 + errorCode;
     }
 }
