@@ -15,19 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.connection;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
- * Unavailable exception.
+ * Backend data source.
  */
-public final class UnavailableException extends ConnectionSQLException {
+public interface BackendDataSource {
     
-    private static final long serialVersionUID = 6036684043129887739L;
-    
-    public UnavailableException() {
-        super(XOpenSQLState.GENERAL_WARNING, 12, "The cluster status is unavailable.");
-    }
+    /**
+     * Get connections.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @param connectionSize connection size
+     * @param connectionMode connection mode
+     * @return connections
+     * @throws SQLException SQL exception
+     */
+    List<Connection> getConnections(String databaseName, String dataSourceName, int connectionSize, ConnectionMode connectionMode) throws SQLException;
 }

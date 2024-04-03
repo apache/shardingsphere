@@ -15,10 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.connector;
+package org.apache.shardingsphere.mode.exception;
+
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Backend data source.
+ * Cluster status exception.
  */
-public interface BackendDataSource {
+public final class ClusterStatusException extends ClusterSQLException {
+    
+    private static final long serialVersionUID = 3834132923835083492L;
+    
+    public ClusterStatusException(final String type, final SQLStatement sqlStatement) {
+        super(XOpenSQLState.GENERAL_ERROR, 20, "The cluster status is %s, can not support SQL statement '%s'.", type, sqlStatement.getClass().getSimpleName());
+    }
 }

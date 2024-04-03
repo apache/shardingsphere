@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.connection;
-
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
 /**
- * Read only exception.
+ * Online database connection manager.
+ *
+ * @param <C> type of database connection
  */
-public final class ReadOnlyException extends ConnectionSQLException {
-    
-    private static final long serialVersionUID = 3834132923835083492L;
-    
-    public ReadOnlyException() {
-        super(XOpenSQLState.GENERAL_WARNING, 11, "The cluster status is read-only.");
-    }
+public abstract class OnlineDatabaseConnectionManager<C> implements DatabaseConnectionManager<C> {
 }
