@@ -26,9 +26,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 public interface ProxyClusterState extends TypedSPI {
     
     /**
-     * Check sql statement.
+     * Check SQL statement.
      * 
-     * @param sqlStatement sql statement
+     * @param sqlStatement SQL statement
      */
     void check(SQLStatement sqlStatement);
 }
