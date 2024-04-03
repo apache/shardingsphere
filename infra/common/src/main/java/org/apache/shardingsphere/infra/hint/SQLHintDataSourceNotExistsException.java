@@ -28,6 +28,6 @@ public final class SQLHintDataSourceNotExistsException extends AuditSQLException
     private static final long serialVersionUID = -8222967059220727514L;
     
     public SQLHintDataSourceNotExistsException(final String errorMessage) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Hint data source: %s is not exist.", errorMessage);
+        super(XOpenSQLState.SYNTAX_ERROR, 1, "Hint datasource '%s' does not exist.", errorMessage);
     }
 }
