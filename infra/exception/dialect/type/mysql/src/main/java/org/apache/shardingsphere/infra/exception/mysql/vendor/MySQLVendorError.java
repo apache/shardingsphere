@@ -32,6 +32,12 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.vendor.Vendor
 @Getter
 public enum MySQLVendorError implements VendorError {
     
+    ER_DB_CREATE_EXISTS_ERROR(XOpenSQLState.GENERAL_ERROR, 1007, "Can't create database '%s'; database exists"),
+    
+    ER_DB_DROP_NOT_EXISTS_ERROR(XOpenSQLState.GENERAL_ERROR, 1008, "Can't drop database '%s'; database doesn't exist"),
+    
+    ER_CON_COUNT_ERROR(XOpenSQLState.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT, 1040, "Too many connections"),
+    
     ER_HANDSHAKE_ERROR(XOpenSQLState.COMMUNICATION_LINK_FAILURE, 1043, "Bad handshake"),
     
     ER_DBACCESS_DENIED_ERROR(XOpenSQLState.SYNTAX_ERROR, 1044, "Access denied for user '%s'@'%s' to database '%s'"),
@@ -42,23 +48,13 @@ public enum MySQLVendorError implements VendorError {
     
     ER_BAD_DB_ERROR(XOpenSQLState.SYNTAX_ERROR, 1049, "Unknown database '%s'"),
     
-    ER_INTERNAL_ERROR(XOpenSQLState.GENERAL_ERROR, 1815, "Internal error: %s"),
-    
-    ER_UNSUPPORTED_PS(XOpenSQLState.GENERAL_ERROR, 1295, "This command is not supported in the prepared statement protocol yet"),
-    
-    ER_DB_CREATE_EXISTS_ERROR(XOpenSQLState.GENERAL_ERROR, 1007, "Can't create database '%s'; database exists"),
-    
-    ER_DB_DROP_NOT_EXISTS_ERROR(XOpenSQLState.GENERAL_ERROR, 1008, "Can't drop database '%s'; database doesn't exist"),
-    
     ER_TABLE_EXISTS_ERROR(XOpenSQLState.DUPLICATE, 1050, "Table '%s' already exists"),
-    
-    ER_NO_SUCH_TABLE(XOpenSQLState.NOT_FOUND, 1146, "Table '%s' doesn't exist"),
-    
-    ER_CON_COUNT_ERROR(XOpenSQLState.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT, 1040, "Too many connections"),
     
     ER_UNKNOWN_CHARACTER_SET(XOpenSQLState.SYNTAX_ERROR, 1115, "Unknown character set: '%s'"),
     
     ER_WRONG_VALUE_COUNT_ON_ROW(XOpenSQLState.MISMATCH_INSERT_VALUES_AND_COLUMNS, 1136, "Column count doesn't match value count at row %d"),
+    
+    ER_NO_SUCH_TABLE(XOpenSQLState.NOT_FOUND, 1146, "Table '%s' doesn't exist"),
     
     ER_UNKNOWN_SYSTEM_VARIABLE(XOpenSQLState.GENERAL_ERROR, 1193, "Unknown system variable '%s'"),
     
@@ -70,7 +66,11 @@ public enum MySQLVendorError implements VendorError {
     
     ER_UNKNOWN_COLLATION(XOpenSQLState.GENERAL_ERROR, 1273, "Unknown collation: '%s'"),
     
+    ER_UNSUPPORTED_PS(XOpenSQLState.GENERAL_ERROR, 1295, "This command is not supported in the prepared statement protocol yet"),
+    
     ER_PS_MANY_PARAM(XOpenSQLState.GENERAL_ERROR, 1390, "Prepared statement contains too many placeholders"),
+    
+    ER_INTERNAL_ERROR(XOpenSQLState.GENERAL_ERROR, 1815, "Internal error: %s"),
     
     ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE(XOpenSQLState.GENERAL_ERROR, 3176,
             "Please do not modify the %s table with an XA transaction. This is an internal system table used to store GTIDs for committed transactions. "
