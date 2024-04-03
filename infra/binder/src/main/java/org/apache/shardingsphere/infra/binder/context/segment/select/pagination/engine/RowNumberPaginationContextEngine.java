@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.pagination.engine;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveSet;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -34,20 +38,27 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUti
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
  * Pagination context engine for row number.
  */
+@RequiredArgsConstructor
 public final class RowNumberPaginationContextEngine {
     
-    private static final Collection<String> ROW_NUMBER_IDENTIFIERS = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    private static final Collection<String> ROW_NUMBER_IDENTIFIERS = new CaseInsensitiveSet<>(2, 1F);
+    
+    private static final Map<String, String> DATABASE_TYPE_ROW_NUMBER_IDENTIFIERS = new CaseInsensitiveMap<>(2, 1F);
+    
+    private final DatabaseType databaseType;
     
     static {
         ROW_NUMBER_IDENTIFIERS.add("ROWNUM");
         ROW_NUMBER_IDENTIFIERS.add("ROW_NUMBER");
+        DATABASE_TYPE_ROW_NUMBER_IDENTIFIERS.put("Oracle", "ROWNUM");
+        DATABASE_TYPE_ROW_NUMBER_IDENTIFIERS.put("SQLServer", "ROW_NUMBER");
     }
     
     /**
@@ -87,7 +98,7 @@ public final class RowNumberPaginationContextEngine {
                 return result;
             }
         }
-        return Optional.empty();
+        return Optional.ofNullable(DATABASE_TYPE_ROW_NUMBER_IDENTIFIERS.get(databaseType.getType()));
     }
     
     private boolean isRowNumberColumn(final ExpressionSegment predicate, final String rowNumberAlias) {

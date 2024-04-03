@@ -19,6 +19,10 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.pagination
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.sql92.type.SQL92DatabaseType;
+import org.apache.shardingsphere.infra.database.sqlserver.type.SQLServerDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
@@ -49,7 +53,7 @@ class PaginationContextEngineTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
-        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
+        PaginationContext paginationContext = new PaginationContextEngine(new MySQLDatabaseType()).createPaginationContext(
                 selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         assertTrue(paginationContext.getRowCountSegment().isPresent());
@@ -60,7 +64,7 @@ class PaginationContextEngineTest {
         PostgreSQLSelectStatement selectStatement = new PostgreSQLSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
-        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
+        PaginationContext paginationContext = new PaginationContextEngine(new PostgreSQLDatabaseType()).createPaginationContext(
                 selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         assertTrue(paginationContext.getRowCountSegment().isPresent());
@@ -71,7 +75,7 @@ class PaginationContextEngineTest {
         SQL92SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
-        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
+        PaginationContext paginationContext = new PaginationContextEngine(new SQL92DatabaseType()).createPaginationContext(
                 selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         assertTrue(paginationContext.getRowCountSegment().isPresent());
@@ -82,7 +86,7 @@ class PaginationContextEngineTest {
         SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
-        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
+        PaginationContext paginationContext = new PaginationContextEngine(new SQLServerDatabaseType()).createPaginationContext(
                 selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         assertTrue(paginationContext.getRowCountSegment().isPresent());
@@ -96,7 +100,7 @@ class PaginationContextEngineTest {
         SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.getProjections().getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, subquerySelectStatement, ""), ""));
-        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
+        PaginationContext paginationContext = new PaginationContextEngine(new SQLServerDatabaseType()).createPaginationContext(
                 selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
@@ -109,7 +113,7 @@ class PaginationContextEngineTest {
         WhereSegment where = new WhereSegment(0, 10, null);
         selectStatement.setWhere(where);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
-        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
+        PaginationContext paginationContext = new PaginationContextEngine(new SQLServerDatabaseType()).createPaginationContext(
                 selectStatement, projectionsContext, Collections.emptyList(), Collections.singletonList(where));
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
@@ -143,7 +147,7 @@ class PaginationContextEngineTest {
     private void assertCreatePaginationContextWhenResultIsPaginationContext(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
-        assertThat(new PaginationContextEngine().createPaginationContext(
+        assertThat(new PaginationContextEngine(new MySQLDatabaseType()).createPaginationContext(
                 selectStatement, projectionsContext, Collections.emptyList(), Collections.emptyList()), instanceOf(PaginationContext.class));
     }
 }
