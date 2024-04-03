@@ -526,6 +526,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/106047330?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+         <td>
+            <a href="https://github.com/jiangML" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/16010265?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -533,6 +538,9 @@ chapter = true
         </td>
         <td>
             <b>Zihao Niu</b>
+        </td>
+        <td>
+            <b>Maolin Jiang</b>
         </td>
     </tr>
 </table>
