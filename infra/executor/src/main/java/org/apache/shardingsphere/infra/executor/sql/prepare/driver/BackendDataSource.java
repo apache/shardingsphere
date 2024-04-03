@@ -15,10 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.connector;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
+
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Backend data source.
  */
 public interface BackendDataSource {
+    
+    /**
+     * Get connections.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @param connectionSize connection size
+     * @param connectionMode connection mode
+     * @return connections
+     * @throws SQLException SQL exception
+     */
+    List<Connection> getConnections(String databaseName, String dataSourceName, int connectionSize, ConnectionMode connectionMode) throws SQLException;
 }
