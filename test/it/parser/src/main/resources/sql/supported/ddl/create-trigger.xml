@@ -29,4 +29,44 @@
     <sql-case id="create_trigger_with_cascade_2" value="CREATE OR REPLACE TRIGGER dept_del_cascade AFTER DELETE ON dept FOR EACH ROW BEGIN DELETE FROM emp WHERE emp.Deptno = :OLD.Deptno; END;" db-types="Oracle" />
     <sql-case id="create_trigger_with_cascade_3" value="CREATE OR REPLACE TRIGGER dept_cascade2 AFTER DELETE OR UPDATE OF Deptno ON dept FOR EACH ROW BEGIN IF UPDATING THEN UPDATE emp SET Deptno = :NEW.Deptno, Update_id = Integritypackage.Updateseq WHERE emp.Deptno = :OLD.Deptno AND Update_id IS NULL; END IF; IF DELETING THEN DELETE FROM emp WHERE emp.Deptno = :OLD.Deptno; END IF; END;" db-types="Oracle" />
     <sql-case id="create_trigger_with_cascade_4" value="CREATE OR REPLACE TRIGGER dept_restrict BEFORE DELETE OR UPDATE OF Deptno ON dept FOR EACH ROW DECLARE Dummy INTEGER; Employees_present EXCEPTION; employees_not_present  EXCEPTION; CURSOR Dummy_cursor (Dn NUMBER) IS SELECT Deptno FROM emp WHERE Deptno = Dn; BEGIN OPEN Dummy_cursor (:OLD.Deptno); FETCH Dummy_cursor INTO Dummy; IF Dummy_cursor%FOUND THEN RAISE Employees_present; ELSE RAISE Employees_not_present; END IF; CLOSE Dummy_cursor; EXCEPTION WHEN Employees_present THEN CLOSE Dummy_cursor; Raise_application_error(-20001, 'Employees Present in' || ' Department ' || TO_CHAR(:OLD.DEPTNO)); WHEN Employees_not_present THEN CLOSE Dummy_cursor; END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_dataManipulationLanguage_statement" value="CREATE OR REPLACE TRIGGER lineitems_trigger
+        AFTER INSERT OR UPDATE OR DELETE ON lineitems
+        FOR EACH ROW
+      BEGIN
+        IF (INSERTING OR UPDATING)
+        THEN
+          UPDATE orders SET line_items_count = NVL(line_items_count,0)+1
+          WHERE order_id = :new.order_id;
+        END IF;
+        IF (DELETING OR UPDATING)
+        THEN
+          UPDATE orders SET line_items_count = NVL(line_items_count,0)-1
+          WHERE order_id = :old.order_id;
+        END IF;
+      END;" db-types="Oracle"/>
+    <sql-case id="create_trigger_with_exceptionInit_pragma" value="CREATE OR REPLACE TRIGGER Employee_permit_changes
+            BEFORE INSERT OR DELETE OR UPDATE ON employees
+          DECLARE
+            Dummy             INTEGER;
+            Not_on_weekends   EXCEPTION;
+            Nonworking_hours  EXCEPTION;
+            PRAGMA EXCEPTION_INIT (Not_on_weekends, -4097);
+            PRAGMA EXCEPTION_INIT (Nonworking_hours, -4099);
+          BEGIN
+             IF (TO_CHAR(Sysdate, 'DAY') = 'SAT' OR
+               TO_CHAR(Sysdate, 'DAY') = 'SUN') THEN
+                 RAISE Not_on_weekends;
+             END IF;
+            IF (TO_CHAR(Sysdate, 'HH24') &lt; 8 OR
+              TO_CHAR(Sysdate, 'HH24') &gt; 18) THEN
+                RAISE Nonworking_hours;
+            END IF;
+          EXCEPTION
+            WHEN Not_on_weekends THEN
+              Raise_application_error(-20324,'Might not change '
+                ||'employee table during the weekend');
+            WHEN Nonworking_hours THEN
+              Raise_application_error(-20326,'Might not change '
+               ||'emp table during Nonworking hours');
+          END;" db-types="Oracle"/>
 </sql-cases>

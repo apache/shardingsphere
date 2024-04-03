@@ -663,6 +663,11 @@ expr
     | expr datetimeExpr
     | multisetExpr
     | builtinFunctionsExpr
+    | dataManipulationLanguageExpr
+    ;
+
+dataManipulationLanguageExpr
+    : UPDATING | INSERTING | DELETING
     ;
 
 andOperator
