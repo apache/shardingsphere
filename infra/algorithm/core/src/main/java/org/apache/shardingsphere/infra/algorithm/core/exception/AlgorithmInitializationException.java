@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.core.exception.type;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
 import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmDefinitionException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**

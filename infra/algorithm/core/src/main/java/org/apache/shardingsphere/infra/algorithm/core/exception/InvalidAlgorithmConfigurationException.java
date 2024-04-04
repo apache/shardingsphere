@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.core.exception.type;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
-import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmDefinitionException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Algorithm execute exception.
+ * Invalid algorithm configuration exception.
  */
-// TODO It is runnable exception, consider about move out from AlgorithmDefinitionException
-public final class AlgorithmExecuteException extends AlgorithmDefinitionException {
+// TODO consider about merge with AlgorithmInitializationException
+public final class InvalidAlgorithmConfigurationException extends AlgorithmDefinitionException {
     
-    private static final long serialVersionUID = -9099514178650043282L;
+    private static final long serialVersionUID = 1352014079406440573L;
     
-    public AlgorithmExecuteException(final ShardingSphereAlgorithm algorithm, final String reason, final Object... args) {
-        super(XOpenSQLState.GENERAL_ERROR, 50, "Algorithm '%s.%s' execute failed, reason is: %s.",
-                algorithm.getClass().getSuperclass().getSimpleName(), algorithm.getType(), String.format(reason, args));
+    public InvalidAlgorithmConfigurationException(final String algorithmType, final String algorithm) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Invalid %s algorithm configuration '%s'.", algorithmType, algorithm);
+    }
+    
+    public InvalidAlgorithmConfigurationException(final String algorithmType) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Invalid %s algorithm configuration.", algorithmType);
     }
 }

@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.core.exception.type;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmDefinitionException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
-import java.util.Collection;
-
 /**
- * Unregistered algorithm exception.
+ * Empty algorithm exception.
  */
-public final class UnregisteredAlgorithmException extends AlgorithmDefinitionException {
+public final class EmptyAlgorithmException extends AlgorithmDefinitionException {
     
-    private static final long serialVersionUID = -4570489906443880879L;
+    private static final long serialVersionUID = 8128067899672436211L;
     
-    public UnregisteredAlgorithmException(final String algorithmType, final String algorithmName, final SQLExceptionIdentifier sqlExceptionIdentifier) {
-        super(XOpenSQLState.NOT_FOUND, 2, "'%s' algorithm '%s' on %s is unregistered.", algorithmType, algorithmName, sqlExceptionIdentifier);
-    }
-    
-    public UnregisteredAlgorithmException(final String algorithmType, final Collection<String> algorithmNames, final SQLExceptionIdentifier sqlExceptionIdentifier) {
-        super(XOpenSQLState.NOT_FOUND, 2, "'%s' algorithm '%s' on %s are unregistered.", algorithmType, algorithmNames, sqlExceptionIdentifier);
+    public EmptyAlgorithmException(final String algorithmType, final SQLExceptionIdentifier sqlExceptionIdentifier) {
+        super(XOpenSQLState.NOT_FOUND, 1, "'%s' algorithm on %s is required.", algorithmType, sqlExceptionIdentifier);
     }
 }

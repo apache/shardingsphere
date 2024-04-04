@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
 import com.google.common.math.LongMath;
-import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.math.RoundingMode;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.checker;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.exception.type.EmptyAlgorithmException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.EmptyAlgorithmException;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
