@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.core.exception.type;
+package org.apache.shardingsphere.infra.exception.metadata.datanode;
 
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmDefinitionException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
-import java.util.Collection;
-
 /**
- * in used algorithm exception.
+ * Invalid data node format exception.
  */
-public final class InUsedAlgorithmException extends AlgorithmDefinitionException {
+public final class InvalidDataNodeFormatException extends DataNodeDefinitionException {
     
-    private static final long serialVersionUID = -8735125626190637177L;
+    private static final long serialVersionUID = 192279170808654743L;
     
-    public InUsedAlgorithmException(final String type, final String databaseName, final Collection<String> algorithmNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "%s algorithms '%s' in database '%s' are still in used.", type, algorithmNames, databaseName);
+    public InvalidDataNodeFormatException(final String dataNode) {
+        super(XOpenSQLState.GENERAL_ERROR, 0, "Invalid format for actual data node '%s'.", dataNode);
+    }
+    
+    public InvalidDataNodeFormatException(final String dataNode, final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 0, "Invalid format for data node '%s', reason is: %s.", dataNode, reason);
     }
 }

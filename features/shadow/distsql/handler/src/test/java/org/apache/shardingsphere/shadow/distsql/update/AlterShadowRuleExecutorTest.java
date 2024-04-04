@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.update;
 
-import org.apache.shardingsphere.infra.algorithm.core.exception.type.InUsedAlgorithmException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.InUsedAlgorithmException;
 import org.apache.shardingsphere.infra.exception.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.exception.metadata.resource.storageunit.MissingRequiredStorageUnitsException;

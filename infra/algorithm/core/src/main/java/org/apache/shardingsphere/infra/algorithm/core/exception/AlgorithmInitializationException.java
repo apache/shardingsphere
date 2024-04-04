@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.exception.metadata;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
+import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Single table not found exception.
+ * Algorithm initialization exception.
  */
-public final class SingleTableNotFoundException extends SingleDefinitionException {
+public final class AlgorithmInitializationException extends AlgorithmDefinitionException {
     
-    private static final long serialVersionUID = 3498790429190415298L;
+    private static final long serialVersionUID = -7634670846091616790L;
     
-    public SingleTableNotFoundException(final String tableName) {
-        super(XOpenSQLState.NOT_FOUND, 1, "Single table '%s' does not exist.", tableName);
+    public AlgorithmInitializationException(final ShardingSphereAlgorithm algorithm, final String reason, final Object... args) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Algorithm '%s.'%s' initialization failed, reason is: %s.",
+                algorithm.getClass().getSuperclass().getSimpleName(), algorithm.getType(), String.format(reason, args));
     }
 }

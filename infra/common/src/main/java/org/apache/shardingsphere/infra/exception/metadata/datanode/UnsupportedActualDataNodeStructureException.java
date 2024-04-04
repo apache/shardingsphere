@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.core.exception.type;
+package org.apache.shardingsphere.infra.exception.metadata.datanode;
 
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmDefinitionException;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
+import java.util.Collection;
+
 /**
- * Invalid algorithm configuration exception.
+ * Unsupported actual data node structure exception.
  */
-// TODO consider about merge with AlgorithmInitializationException
-public final class InvalidAlgorithmConfigurationException extends AlgorithmDefinitionException {
+public final class UnsupportedActualDataNodeStructureException extends DataNodeDefinitionException {
     
-    private static final long serialVersionUID = 1352014079406440573L;
+    private static final long serialVersionUID = -8921823916974492519L;
     
-    public InvalidAlgorithmConfigurationException(final String algorithmType, final String algorithm) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Invalid %s algorithm configuration '%s'.", algorithmType, algorithm);
-    }
-    
-    public InvalidAlgorithmConfigurationException(final String algorithmType) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Invalid %s algorithm configuration.", algorithmType);
+    public UnsupportedActualDataNodeStructureException(final DataNode dataNode, final Collection<String> jdbcUrlPrefixes) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 1, "Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.", dataNode.format(), jdbcUrlPrefixes);
     }
 }

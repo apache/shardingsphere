@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.exception.metadata;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
-import java.sql.SQLException;
-
 /**
- * Single tables loading exception.
+ * Invalid algorithm configuration exception.
  */
-public final class SingleTablesLoadingException extends SingleDefinitionException {
+// TODO consider about merge with AlgorithmInitializationException
+public final class InvalidAlgorithmConfigurationException extends AlgorithmDefinitionException {
     
-    private static final long serialVersionUID = 698261896187918188L;
+    private static final long serialVersionUID = 1352014079406440573L;
     
-    public SingleTablesLoadingException(final String databaseName, final String dataSourceName, final SQLException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 2, String.format("Can not load table with database name '%s' and data source name '%s'.", databaseName, dataSourceName), cause);
+    public InvalidAlgorithmConfigurationException(final String algorithmType, final String algorithm) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Invalid %s algorithm configuration '%s'.", algorithmType, algorithm);
+    }
+    
+    public InvalidAlgorithmConfigurationException(final String algorithmType) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Invalid %s algorithm configuration.", algorithmType);
     }
 }

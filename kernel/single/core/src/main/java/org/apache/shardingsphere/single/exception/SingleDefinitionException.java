@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.core.exception;
+package org.apache.shardingsphere.single.exception;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Algorithm definition exception.
+ * Single definition exception.
  */
-public abstract class AlgorithmDefinitionException extends MetaDataSQLException {
+public abstract class SingleDefinitionException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = -8947223495845000542L;
+    private static final long serialVersionUID = -1511719427208747948L;
     
-    private static final int ALGORITHM_CODE = 4;
+    private static final int SINGLE_CODE = 5;
     
-    protected AlgorithmDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+    protected SingleDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, getErrorCode(errorCode), reason, messageArgs);
     }
     
     private static int getErrorCode(final int errorCode) {
         Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
-        return ALGORITHM_CODE * 100 + errorCode;
+        return SINGLE_CODE * 100 + errorCode;
     }
 }

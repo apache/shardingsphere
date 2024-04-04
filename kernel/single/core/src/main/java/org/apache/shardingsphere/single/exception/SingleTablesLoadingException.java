@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.core.exception.type;
+package org.apache.shardingsphere.single.exception;
 
-import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmDefinitionException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
+import java.sql.SQLException;
+
 /**
- * Algorithm execute exception.
+ * Single tables loading exception.
  */
-// TODO It is runnable exception, consider about move out from AlgorithmDefinitionException
-public final class AlgorithmExecuteException extends AlgorithmDefinitionException {
+public final class SingleTablesLoadingException extends SingleDefinitionException {
     
-    private static final long serialVersionUID = -9099514178650043282L;
+    private static final long serialVersionUID = 698261896187918188L;
     
-    public AlgorithmExecuteException(final ShardingSphereAlgorithm algorithm, final String reason, final Object... args) {
-        super(XOpenSQLState.GENERAL_ERROR, 50, "Algorithm '%s.%s' execute failed, reason is: %s.",
-                algorithm.getClass().getSuperclass().getSimpleName(), algorithm.getType(), String.format(reason, args));
+    public SingleTablesLoadingException(final String databaseName, final String dataSourceName, final SQLException cause) {
+        super(XOpenSQLState.GENERAL_ERROR, 2, String.format("Can not load table with database name '%s' and data source name '%s'.", databaseName, dataSourceName), cause);
     }
 }

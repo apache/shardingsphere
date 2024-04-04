@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.core.exception.type;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
-import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmDefinitionException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Algorithm initialization exception.
+ * Empty algorithm exception.
  */
-public final class AlgorithmInitializationException extends AlgorithmDefinitionException {
+public final class EmptyAlgorithmException extends AlgorithmDefinitionException {
     
-    private static final long serialVersionUID = -7634670846091616790L;
+    private static final long serialVersionUID = 8128067899672436211L;
     
-    public AlgorithmInitializationException(final ShardingSphereAlgorithm algorithm, final String reason, final Object... args) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Algorithm '%s.'%s' initialization failed, reason is: %s.",
-                algorithm.getClass().getSuperclass().getSimpleName(), algorithm.getType(), String.format(reason, args));
+    public EmptyAlgorithmException(final String algorithmType, final SQLExceptionIdentifier sqlExceptionIdentifier) {
+        super(XOpenSQLState.NOT_FOUND, 1, "'%s' algorithm on %s is required.", algorithmType, sqlExceptionIdentifier);
     }
 }

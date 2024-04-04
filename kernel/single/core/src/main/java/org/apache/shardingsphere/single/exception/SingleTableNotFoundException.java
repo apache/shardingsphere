@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.exception.metadata;
+package org.apache.shardingsphere.single.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Invalid single rule configuration exception.
+ * Single table not found exception.
  */
-public final class InvalidSingleRuleConfigurationException extends SingleDefinitionException {
+public final class SingleTableNotFoundException extends SingleDefinitionException {
     
-    private static final long serialVersionUID = 1337703808376580240L;
+    private static final long serialVersionUID = 3498790429190415298L;
     
-    public InvalidSingleRuleConfigurationException(final String message) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Invalid single rule configuration, reason is: %s.", message);
+    public SingleTableNotFoundException(final String tableName) {
+        super(XOpenSQLState.NOT_FOUND, 1, "Single table '%s' does not exist.", tableName);
     }
 }

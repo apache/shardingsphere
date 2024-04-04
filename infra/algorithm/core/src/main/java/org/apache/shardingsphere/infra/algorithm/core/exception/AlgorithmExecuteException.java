@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.exception;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
+import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
-import java.util.Collection;
-
 /**
- * Unsupported actual data node structure exception.
+ * Algorithm execute exception.
  */
-public final class UnsupportedActualDataNodeStructureException extends MetaDataSQLException {
+// TODO It is runnable exception, consider about move out from AlgorithmDefinitionException
+public final class AlgorithmExecuteException extends AlgorithmDefinitionException {
     
-    private static final long serialVersionUID = -8921823916974492519L;
+    private static final long serialVersionUID = -9099514178650043282L;
     
-    public UnsupportedActualDataNodeStructureException(final DataNode dataNode, final Collection<String> jdbcUrlPrefixes) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 0, "Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.", dataNode.format(), jdbcUrlPrefixes);
+    public AlgorithmExecuteException(final ShardingSphereAlgorithm algorithm, final String reason, final Object... args) {
+        super(XOpenSQLState.GENERAL_ERROR, 50, "Algorithm '%s.%s' execute failed, reason is: %s.",
+                algorithm.getClass().getSuperclass().getSimpleName(), algorithm.getType(), String.format(reason, args));
     }
 }

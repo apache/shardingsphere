@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.exception.metadata;
+package org.apache.shardingsphere.infra.exception.metadata.datanode;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Single definition exception.
+ * Data node definition exception.
  */
-public abstract class SingleDefinitionException extends MetaDataSQLException {
+public abstract class DataNodeDefinitionException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = -1511719427208747948L;
+    private static final long serialVersionUID = 3963278512142275045L;
     
-    private static final int SINGLE_CODE = 4;
+    private static final int DATA_NODE_CODE = 3;
     
-    protected SingleDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+    protected DataNodeDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, getErrorCode(errorCode), reason, messageArgs);
     }
     
     private static int getErrorCode(final int errorCode) {
         Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
-        return SINGLE_CODE * 100 + errorCode;
+        return DATA_NODE_CODE * 100 + errorCode;
     }
 }

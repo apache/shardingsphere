@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.core.exception.type;
+package org.apache.shardingsphere.infra.algorithm.core.exception;
 
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmDefinitionException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
+import java.util.Collection;
+
 /**
- * Empty algorithm exception.
+ * in used algorithm exception.
  */
-public final class EmptyAlgorithmException extends AlgorithmDefinitionException {
+public final class InUsedAlgorithmException extends AlgorithmDefinitionException {
     
-    private static final long serialVersionUID = 8128067899672436211L;
+    private static final long serialVersionUID = -8735125626190637177L;
     
-    public EmptyAlgorithmException(final String algorithmType, final SQLExceptionIdentifier sqlExceptionIdentifier) {
-        super(XOpenSQLState.NOT_FOUND, 1, "'%s' algorithm on %s is required.", algorithmType, sqlExceptionIdentifier);
+    public InUsedAlgorithmException(final String type, final String databaseName, final Collection<String> algorithmNames) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "%s algorithms '%s' in database '%s' are still in used.", type, algorithmNames, databaseName);
     }
 }
