@@ -17,21 +17,20 @@
 
 package org.apache.shardingsphere.infra.exception.metadata.datanode;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Invalid data node format exception.
  */
-public final class InvalidDataNodeFormatException extends MetaDataSQLException {
+public final class InvalidDataNodeFormatException extends DataNodeDefinitionException {
     
     private static final long serialVersionUID = 192279170808654743L;
     
     public InvalidDataNodeFormatException(final String dataNode) {
-        super(XOpenSQLState.GENERAL_ERROR, 1, "Invalid format for actual data node '%s'.", dataNode);
+        super(XOpenSQLState.GENERAL_ERROR, 0, "Invalid format for actual data node '%s'.", dataNode);
     }
     
     public InvalidDataNodeFormatException(final String dataNode, final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 1, "Invalid format for data node '%s', reason is: %s.", dataNode, reason);
+        super(XOpenSQLState.GENERAL_ERROR, 0, "Invalid format for data node '%s', reason is: %s.", dataNode, reason);
     }
 }

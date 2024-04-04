@@ -14,12 +14,10 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason                                                                              |
 |-----------|-------------|-------------------------------------------------------------------------------------|
-| HY000     | 10000       | Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.          |
-| HY004     | 10001       | Invalid format for actual data node '%s'.                                           |
-| 42S02     | 10010       | Database is required.                                                               |
-| 42S02     | 10011       | Schema '%s' does not exist.                                                         |
-| 42S02     | 10012       | Table or view '%s' does not exist.                                                  |
-| 42S02     | 10013       | Unknown column '%s' in '%s'.                                                        |
+| 42S02     | 10000       | Database is required.                                                               |
+| 42S02     | 10001       | Schema '%s' does not exist.                                                         |
+| 42S02     | 10002       | Table or view '%s' does not exist.                                                  |
+| 42S02     | 10003       | Unknown column '%s' in '%s'.                                                        |
 | HY000     | 10100       | Can not %s storage units '%s'.                                                      |
 | 42S02     | 10101       | There is no storage unit in database '%s'.                                          |
 | 44000     | 10102       | Storage units '%s' do not exist in database '%s'.                                   |
@@ -33,16 +31,18 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42S02     | 10202       | %s rules '%s' do not exist in database '%s'.                                        |
 | 44000     | 10203       | %s rules '%s' in database '%s' are still in used.                                   |
 | 42S01     | 10204       | Duplicate %s rule names '%s' in database '%s'.                                      |
-| 44000     | 10300       | Algorithm '%s.'%s' initialization failed, reason is: %s.                            |
-| 44000     | 10301       | '%s' algorithm on %s is required.                                                   |
-| 42S02     | 10302       | '%s' algorithm '%s' on %s is unregistered.                                          |
-| 44000     | 10303       | %s algorithms '%s' in database '%s' are still in used.                              |
-| 44000     | 10304       | Invalid %s algorithm configuration '%s'.                                            |
-| HY000     | 10350       | Algorithm '%s.%s' execute failed, reason is: %s.                                    |
-| 44000     | 10400       | Invalid single rule configuration, reason is: %s.                                   |
-| 42S02     | 10401       | Single table '%s' does not exist.                                                   |
-| HY000     | 10402       | Can not load table with database name '%s' and data source name '%s', reason is: %s |
-| 0A000     | 10403       | Can not drop schema '%s' because of contains tables.                                |
+| HY004     | 13000       | Invalid format for actual data node '%s'.                                           |
+| HY000     | 13001       | Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.          |
+| 44000     | 10400       | Algorithm '%s.'%s' initialization failed, reason is: %s.                            |
+| 44000     | 10401       | '%s' algorithm on %s is required.                                                   |
+| 42S02     | 10402       | '%s' algorithm '%s' on %s is unregistered.                                          |
+| 44000     | 10403       | %s algorithms '%s' in database '%s' are still in used.                              |
+| 44000     | 10404       | Invalid %s algorithm configuration '%s'.                                            |
+| HY000     | 10450       | Algorithm '%s.%s' execute failed, reason is: %s.                                    |
+| 44000     | 10500       | Invalid single rule configuration, reason is: %s.                                   |
+| 42S02     | 10501       | Single table '%s' does not exist.                                                   |
+| HY000     | 10502       | Can not load table with database name '%s' and data source name '%s', reason is: %s |
+| 0A000     | 10503       | Can not drop schema '%s' because of contains tables.                                |
 
 ### Data
 

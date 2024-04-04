@@ -28,7 +28,7 @@ public abstract class SingleDefinitionException extends MetaDataSQLException {
     
     private static final long serialVersionUID = -1511719427208747948L;
     
-    private static final int SINGLE_CODE = 4;
+    private static final int SINGLE_CODE = 5;
     
     protected SingleDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, getErrorCode(errorCode), reason, messageArgs);

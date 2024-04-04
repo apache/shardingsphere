@@ -28,6 +28,6 @@ public final class MissingRequiredDatabaseException extends MetaDataSQLException
     private static final long serialVersionUID = -1248634756191801109L;
     
     public MissingRequiredDatabaseException() {
-        super(XOpenSQLState.NOT_FOUND, 10, "Database is required.");
+        super(XOpenSQLState.NOT_FOUND, 0, "Database is required.");
     }
 }
