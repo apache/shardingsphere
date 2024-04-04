@@ -187,6 +187,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 20086       | 44000     | Some routed data sources do not belong to configured data sources. routed data sources: \`%s\`, configured data sources: \`%s\`. |
 | 20087       | 44000     | Please check your sharding conditions \`%s\` to avoid same record in table \`%s\` routing to multiple data nodes.                |
 | 20088       | 44000     | Cannot found routing table factor, data source: %s, actual table: %s.                                                            |
+| 20090       | 42000     | Not allow DML operation without sharding conditions.                                                                             |
 
 ### Readwrite-splitting
 

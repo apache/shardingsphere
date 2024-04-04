@@ -65,7 +65,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 12100       | 42000     | You have an error in your SQL syntax: %s |
 | 12101       | 42000     | Can not accept SQL type '%s'.            |
 | 12200       | 42000     | Hint data source '%s' does not exist.    |
-| 12201       | 42000     | SQL audit failed, error message: %s.     |
 
 ### 连接
 
@@ -187,6 +186,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 20086       | 44000     | Some routed data sources do not belong to configured data sources. routed data sources: \`%s\`, configured data sources: \`%s\`. |
 | 20087       | 44000     | Please check your sharding conditions \`%s\` to avoid same record in table \`%s\` routing to multiple data nodes.                |
 | 20088       | 44000     | Cannot found routing table factor, data source: %s, actual table: %s.                                                            |
+| 20090       | 42000     | Not allow DML operation without sharding conditions.                                                                             |
 
 ### 读写分离
 
