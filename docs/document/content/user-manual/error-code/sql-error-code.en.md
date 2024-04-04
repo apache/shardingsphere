@@ -64,8 +64,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 12100       | 0A000     | DROP TABLE ... CASCADE is not supported. |
 | 12100       | 42000     | You have an error in your SQL syntax: %s |
 | 12101       | 42000     | Can not accept SQL type '%s'.            |
-| 12200       | 42000     | SQL audit failed, error message: %s.     |
-| 12201       | 42000     | Hint datasource '%s' does not exist.     |
+| 12200       | 42000     | Hint data source '%s' does not exist.    |
+| 12201       | 42000     | SQL audit failed, error message: %s.     |
 
 ### Connection
 
