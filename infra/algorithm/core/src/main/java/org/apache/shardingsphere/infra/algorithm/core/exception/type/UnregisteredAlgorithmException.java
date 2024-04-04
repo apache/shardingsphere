@@ -35,6 +35,6 @@ public final class UnregisteredAlgorithmException extends AlgorithmDefinitionExc
     }
     
     public UnregisteredAlgorithmException(final String algorithmType, final Collection<String> algorithmNames, final SQLExceptionIdentifier sqlExceptionIdentifier) {
-        super(XOpenSQLState.NOT_FOUND, 2, "'%s' algorithm '%s' on %s are unregistered.", algorithmType, String.join(", ", algorithmNames), sqlExceptionIdentifier);
+        super(XOpenSQLState.NOT_FOUND, 2, "'%s' algorithm '%s' on %s are unregistered.", algorithmType, algorithmNames, sqlExceptionIdentifier);
     }
 }
