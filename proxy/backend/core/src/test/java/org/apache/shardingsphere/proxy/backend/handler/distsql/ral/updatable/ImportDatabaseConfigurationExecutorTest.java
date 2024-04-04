@@ -49,11 +49,13 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -125,7 +127,9 @@ class ImportDatabaseConfigurationExecutorTest {
     
     private void assertExecute(final String databaseName, final String filePath) throws SQLException {
         init(databaseName);
-        executor.executeUpdate(new ImportDatabaseConfigurationStatement(ImportDatabaseConfigurationExecutorTest.class.getResource(filePath).getPath()), mock(ContextManager.class));
+        URL url = ImportDatabaseConfigurationExecutorTest.class.getResource(filePath);
+        assertNotNull(url);
+        executor.executeUpdate(new ImportDatabaseConfigurationStatement(url.getPath()), mock(ContextManager.class));
     }
     
     @SneakyThrows({IllegalAccessException.class, NoSuchFieldException.class})
