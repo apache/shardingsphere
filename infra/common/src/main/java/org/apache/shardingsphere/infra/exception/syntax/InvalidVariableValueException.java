@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception.syntax;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
 
 /**
  * Invalid variable value exception.
  */
-public final class InvalidVariableValueException extends DistSQLException {
+public final class InvalidVariableValueException extends SyntaxSQLException {
     
     private static final long serialVersionUID = 1840341880422454371L;
     
     public InvalidVariableValueException(final String value) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 0, "Invalid variable value `%s`.", value);
+        super(XOpenSQLState.INVALID_DATA_TYPE, 11, "Invalid variable value '%s'.", value);
     }
 }

@@ -56,6 +56,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 |-----------|-------------|------------------------------------------|
 | 42000     | 12000       | SQL String can not be NULL or empty.     |
 | 42000     | 12010       | Can not support variable '%s'.           |
+| HY004     | 12011       | Invalid variable value '%s'.             |
 | HV008     | 12020       | Column index '%d' is out of range.       |
 | 42S02     | 12021       | Can not find column label '%s'.          |
 | HY000     | 12022       | Column '%s' in %s is ambiguous.          |
