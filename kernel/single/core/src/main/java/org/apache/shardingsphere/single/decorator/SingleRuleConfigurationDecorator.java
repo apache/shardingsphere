@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
-import org.apache.shardingsphere.single.exception.metadata.InvalidSingleRuleConfigurationException;
-import org.apache.shardingsphere.single.exception.metadata.SingleTableNotFoundException;
+import org.apache.shardingsphere.single.exception.InvalidSingleRuleConfigurationException;
+import org.apache.shardingsphere.single.exception.SingleTableNotFoundException;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 

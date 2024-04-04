@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
-import org.apache.shardingsphere.single.exception.metadata.SingleTablesLoadingException;
+import org.apache.shardingsphere.single.exception.SingleTablesLoadingException;
 import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 
 import javax.sql.DataSource;
