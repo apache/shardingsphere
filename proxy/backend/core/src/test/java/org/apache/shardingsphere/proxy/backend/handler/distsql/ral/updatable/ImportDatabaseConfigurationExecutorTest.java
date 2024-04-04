@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundExce
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.MissingDatabaseNameException;
+import org.apache.shardingsphere.infra.exception.metadata.MissingRequiredDatabaseException;
 import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
@@ -105,7 +105,7 @@ class ImportDatabaseConfigurationExecutorTest {
     
     @Test
     void assertImportEmptyDatabaseName() {
-        assertThrows(MissingDatabaseNameException.class, () -> assertExecute("sharding_db", "/conf/import/database-empty-database-name.yaml"));
+        assertThrows(MissingRequiredDatabaseException.class, () -> assertExecute("sharding_db", "/conf/import/database-empty-database-name.yaml"));
     }
     
     @Test

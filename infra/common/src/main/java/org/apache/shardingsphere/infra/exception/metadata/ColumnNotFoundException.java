@@ -28,6 +28,6 @@ public final class ColumnNotFoundException extends MetaDataSQLException {
     private static final long serialVersionUID = -1305402273592303335L;
     
     public ColumnNotFoundException(final String columnExpression, final String segmentTypeMessage) {
-        super(XOpenSQLState.NOT_FOUND, 4, "Unknown column '%s' in '%s'.", columnExpression, segmentTypeMessage);
+        super(XOpenSQLState.NOT_FOUND, 13, "Unknown column '%s' in '%s'.", columnExpression, segmentTypeMessage);
     }
 }

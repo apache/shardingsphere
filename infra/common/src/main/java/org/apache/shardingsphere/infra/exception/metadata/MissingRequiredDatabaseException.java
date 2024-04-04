@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception.metadata;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Missing database name exception.
+ * Missing required database exception.
  */
-public final class MissingDatabaseNameException extends DistSQLException {
+public final class MissingRequiredDatabaseException extends MetaDataSQLException {
     
     private static final long serialVersionUID = -1248634756191801109L;
     
-    public MissingDatabaseNameException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 8, "Missing required property `databaseName`.");
+    public MissingRequiredDatabaseException() {
+        super(XOpenSQLState.NOT_FOUND, 10, "Database is required.");
     }
 }
