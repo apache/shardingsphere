@@ -99,7 +99,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason                                                        |
 |-----------|-------------|---------------------------------------------------------------|
-| HY000     | 17000       | Work ID assigned failed, which can not exceed 1024.           |
+| 44000     | 17000       | Mode must be 'cluster'.                                       |
+| HY000     | 17001       | Work ID assigned failed, which can not exceed 1024.           |
 | HY000     | 17002       | File access failed, file is: %s                               |
 | HY000     | 17010       | Cluster persist repository error, reason is: %s               |
 | HY000     | 17020       | The cluster status is %s, can not support SQL statement '%s'. |
