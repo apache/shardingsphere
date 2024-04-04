@@ -47,7 +47,7 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceCo
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.MissingDatabaseNameException;
+import org.apache.shardingsphere.infra.exception.metadata.MissingRequiredDatabaseException;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -90,7 +90,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void checkDatabase(final String databaseName) {
-        ShardingSpherePreconditions.checkNotNull(databaseName, MissingDatabaseNameException::new);
+        ShardingSpherePreconditions.checkNotNull(databaseName, MissingRequiredDatabaseException::new);
         if (ProxyContext.getInstance().databaseExists(databaseName)) {
             ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getResourceMetaData().getStorageUnits().isEmpty(),
                     () -> new UnsupportedSQLOperationException(String.format("Database `%s` exists and is not empty，overwrite is not supported", databaseName)));

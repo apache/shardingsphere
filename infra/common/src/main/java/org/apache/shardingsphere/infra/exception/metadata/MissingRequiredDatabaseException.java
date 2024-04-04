@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.plugin;
+package org.apache.shardingsphere.infra.exception.metadata;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Plugin not found exception.
+ * Missing required database exception.
  */
-public final class PluginNotFoundException extends DistSQLException {
+public final class MissingRequiredDatabaseException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = -2938352776606947755L;
+    private static final long serialVersionUID = -1248634756191801109L;
     
-    public PluginNotFoundException(final String pluginClass) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 155, String.format("Plugin class `%s` not found.", pluginClass));
+    public MissingRequiredDatabaseException() {
+        super(XOpenSQLState.NOT_FOUND, 10, "Database is required.");
     }
 }

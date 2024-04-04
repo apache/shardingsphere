@@ -16,9 +16,10 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 |-----------|-------------|-------------------------------------------------------------------------------------|
 | HY000     | 10000       | Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.          |
 | HY004     | 10001       | Invalid format for actual data node '%s'.                                           |
-| 42S02     | 10002       | Schema '%s' does not exist.                                                         |
-| 42S02     | 10003       | Table or view '%s' does not exist.                                                  |
-| 42S02     | 10004       | Unknown column '%s' in '%s'.                                                        |
+| 42S02     | 10010       | Database is required.                                                               |
+| 42S02     | 10011       | Schema '%s' does not exist.                                                         |
+| 42S02     | 10012       | Table or view '%s' does not exist.                                                  |
+| 42S02     | 10013       | Unknown column '%s' in '%s'.                                                        |
 | HY000     | 10100       | Can not %s storage units '%s'.                                                      |
 | 42S02     | 10101       | There is no storage unit in database '%s'.                                          |
 | 44000     | 10102       | Storage units '%s' do not exist in database '%s'.                                   |
@@ -56,6 +57,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 |-----------|-------------|------------------------------------------|
 | 42000     | 12000       | SQL String can not be NULL or empty.     |
 | 42000     | 12010       | Can not support variable '%s'.           |
+| HY004     | 12011       | Invalid variable value '%s'.             |
 | HV008     | 12020       | Column index '%d' is out of range.       |
 | 42S02     | 12021       | Can not find column label '%s'.          |
 | HY000     | 12022       | Column '%s' in %s is ambiguous.          |
@@ -99,7 +101,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息                                                          |
 |-----------|-------------|---------------------------------------------------------------|
-| HY000     | 17000       | Work ID assigned failed, which can not exceed 1024.           |
+| 44000     | 17000       | Mode must be 'cluster'.                                       |
+| HY000     | 17001       | Work ID assigned failed, which can not exceed 1024.           |
 | HY000     | 17002       | File access failed, file is: %s                               |
 | HY000     | 17010       | Cluster persist repository error, reason is: %s               |
 | HY000     | 17020       | The cluster status is %s, can not support SQL statement '%s'. |
@@ -137,13 +140,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 18200       | Not find stream data source table.                                                |
 | HY000     | 18201       | CDC server exception, reason is: %s.                                              |
 | HY000     | 18202       | CDC login failed, reason is: %s                                                   |
-
-### DistSQL
-
-| SQL State | Vendor Code | 错误信息                                                        |
-|-----------|-------------|-------------------------------------------------------------|
-| 44000     | 19154       | Invalid mode, error message is: \`%s\`.                     |
-| 44000     | 19155       | Plugin class \`%s\` not found..                             |
 
 ## 功能异常
 
@@ -257,8 +253,9 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息                            |
 |-----------|-------------|---------------------------------|
-| HY004     | 30000       | Unknown exception: %s           |
+| HY000     | 30000       | Unknown exception: %s           |
 | 0A000     | 30001       | Unsupported SQL operation: %s   |
 | 0A000     | 30002       | Database protocol exception: %s |
 | 0A000     | 30003       | Unsupported command: %s         |
-| 0A000     | 30004       | Server exception: %s            |
+| HY000     | 30004       | Server exception: %s            |
+| HY000     | 30010       | Can not find plugin class '%s'. |

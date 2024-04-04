@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception.core.external.sql.type.generic;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 
 /**
- * Invalid variable value exception.
+ * Plugin not found exception.
  */
-public final class InvalidVariableValueException extends DistSQLException {
+public final class PluginNotFoundException extends GenericSQLException {
     
-    private static final long serialVersionUID = 1840341880422454371L;
+    private static final long serialVersionUID = -2938352776606947755L;
     
-    public InvalidVariableValueException(final String value) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 0, "Invalid variable value `%s`.", value);
+    public PluginNotFoundException(final String pluginClass) {
+        super(XOpenSQLState.GENERAL_ERROR, 10, "Can not find plugin class '%s'.", pluginClass);
     }
 }

@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundExce
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.MissingDatabaseNameException;
+import org.apache.shardingsphere.infra.exception.metadata.MissingRequiredDatabaseException;
 import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
@@ -49,11 +49,13 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -105,7 +107,7 @@ class ImportDatabaseConfigurationExecutorTest {
     
     @Test
     void assertImportEmptyDatabaseName() {
-        assertThrows(MissingDatabaseNameException.class, () -> assertExecute("sharding_db", "/conf/import/database-empty-database-name.yaml"));
+        assertThrows(MissingRequiredDatabaseException.class, () -> assertExecute("sharding_db", "/conf/import/database-empty-database-name.yaml"));
     }
     
     @Test
@@ -125,7 +127,9 @@ class ImportDatabaseConfigurationExecutorTest {
     
     private void assertExecute(final String databaseName, final String filePath) throws SQLException {
         init(databaseName);
-        executor.executeUpdate(new ImportDatabaseConfigurationStatement(ImportDatabaseConfigurationExecutorTest.class.getResource(filePath).getPath()), mock(ContextManager.class));
+        URL url = ImportDatabaseConfigurationExecutorTest.class.getResource(filePath);
+        assertNotNull(url);
+        executor.executeUpdate(new ImportDatabaseConfigurationStatement(url.getPath()), mock(ContextManager.class));
     }
     
     @SneakyThrows({IllegalAccessException.class, NoSuchFieldException.class})

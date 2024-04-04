@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception.syntax;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
 
 /**
- * Missing database name exception.
+ * Invalid variable value exception.
  */
-public final class MissingDatabaseNameException extends DistSQLException {
+public final class InvalidVariableValueException extends SyntaxSQLException {
     
-    private static final long serialVersionUID = -1248634756191801109L;
+    private static final long serialVersionUID = 1840341880422454371L;
     
-    public MissingDatabaseNameException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 8, "Missing required property `databaseName`.");
+    public InvalidVariableValueException(final String value) {
+        super(XOpenSQLState.INVALID_DATA_TYPE, 11, "Invalid variable value '%s'.", value);
     }
 }

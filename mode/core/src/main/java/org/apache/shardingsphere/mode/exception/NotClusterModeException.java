@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.mode;
+package org.apache.shardingsphere.mode.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
 
 /**
- * Invalid mode exception.
+ * Not cluster mode exception.
  */
-public final class InvalidModeException extends DistSQLException {
+public final class NotClusterModeException extends ClusterSQLException {
     
     private static final long serialVersionUID = 7094702927472630479L;
     
-    public InvalidModeException(final String errorMessage) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 154, "Invalid mode, error message is: %s", errorMessage);
+    public NotClusterModeException() {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Mode must be 'cluster'.");
     }
 }
