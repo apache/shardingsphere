@@ -61,11 +61,11 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 12020       | HV008     | Column index '%d' is out of range.       |
 | 12021       | 42S02     | Can not find column label '%s'.          |
 | 12022       | HY000     | Column '%s' in %s is ambiguous.          |
-| 12030       | 42000     | Hint data source '%s' does not exist.    |
 | 12100       | 0A000     | DROP TABLE ... CASCADE is not supported. |
 | 12100       | 42000     | You have an error in your SQL syntax: %s |
 | 12101       | 42000     | Can not accept SQL type '%s'.            |
-| 12200       | 42000     | SQL audit failed, error message: %s.     |
+| 12200       | 42000     | Hint data source '%s' does not exist.    |
+| 12201       | 42000     | SQL audit failed, error message: %s.     |
 
 ### 连接
 

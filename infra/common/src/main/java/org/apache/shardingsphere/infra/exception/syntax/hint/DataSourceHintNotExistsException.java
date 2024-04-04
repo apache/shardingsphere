@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.syntax.audit;
+package org.apache.shardingsphere.infra.exception.syntax.hint;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * SQL audit exception.
+ * Data source hint not exists exception.
  */
-public final class SQLAuditException extends AuditSQLException {
+public final class DataSourceHintNotExistsException extends HintSQLException {
     
-    private static final long serialVersionUID = 4183020614721058122L;
+    private static final long serialVersionUID = -8222967059220727514L;
     
-    public SQLAuditException(final String errorMessage) {
-        super(XOpenSQLState.SYNTAX_ERROR, 1, "SQL audit failed, error message: %s.", errorMessage);
+    public DataSourceHintNotExistsException(final String errorMessage) {
+        super(XOpenSQLState.SYNTAX_ERROR, 0, "Hint data source '%s' does not exist.", errorMessage);
     }
 }

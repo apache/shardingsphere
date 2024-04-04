@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.exception.syntax.audit.SQLHintDataSourceNotExistsException;
+import org.apache.shardingsphere.infra.exception.syntax.hint.DataSourceHintNotExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -83,7 +83,7 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     private Optional<String> findDataSourceByHint(final HintValueContext hintValueContext, final Map<String, StorageUnit> storageUnits) {
         Optional<String> result = HintManager.isInstantiated() && HintManager.getDataSourceName().isPresent() ? HintManager.getDataSourceName() : hintValueContext.findHintDataSourceName();
         if (result.isPresent() && !storageUnits.containsKey(result.get())) {
-            throw new SQLHintDataSourceNotExistsException(result.get());
+            throw new DataSourceHintNotExistsException(result.get());
         }
         return result;
     }

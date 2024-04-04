@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.syntax.audit;
+package org.apache.shardingsphere.infra.exception.syntax.hint;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
 
 /**
- * SQL Hint data source not exists exception.
+ * Hint SQL exception.
  */
-public final class SQLHintDataSourceNotExistsException extends SyntaxSQLException {
+public abstract class HintSQLException extends SyntaxSQLException {
     
-    private static final long serialVersionUID = -8222967059220727514L;
+    private static final long serialVersionUID = -1856442132834477905L;
     
-    public SQLHintDataSourceNotExistsException(final String errorMessage) {
-        super(XOpenSQLState.SYNTAX_ERROR, 30, "Hint data source '%s' does not exist.", errorMessage);
+    private static final int HINT_CODE = 2;
+    
+    protected HintSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    }
+    
+    private static int getErrorCode(final int errorCode) {
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
+        return HINT_CODE * 100 + errorCode;
     }
 }
