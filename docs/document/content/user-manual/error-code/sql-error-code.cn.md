@@ -141,12 +141,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 18201       | CDC server exception, reason is: %s.                                              |
 | HY000     | 18202       | CDC login failed, reason is: %s                                                   |
 
-### DistSQL
-
-| SQL State | Vendor Code | 错误信息                                                        |
-|-----------|-------------|-------------------------------------------------------------|
-| 44000     | 19155       | Plugin class \`%s\` not found..                             |
-
 ## 功能异常
 
 ### 数据分片
@@ -259,8 +253,9 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息                            |
 |-----------|-------------|---------------------------------|
-| HY004     | 30000       | Unknown exception: %s           |
+| HY000     | 30000       | Unknown exception: %s           |
 | 0A000     | 30001       | Unsupported SQL operation: %s   |
 | 0A000     | 30002       | Database protocol exception: %s |
 | 0A000     | 30003       | Unsupported command: %s         |
-| 0A000     | 30004       | Server exception: %s            |
+| HY000     | 30004       | Server exception: %s            |
+| HY000     | 30010       | Can not find plugin class '%s'. |

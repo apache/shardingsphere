@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.plugin;
+package org.apache.shardingsphere.infra.exception.core.external.sql.type.generic;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 
 /**
  * Plugin not found exception.
  */
-public final class PluginNotFoundException extends DistSQLException {
+public final class PluginNotFoundException extends GenericSQLException {
     
     private static final long serialVersionUID = -2938352776606947755L;
     
     public PluginNotFoundException(final String pluginClass) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 155, String.format("Plugin class `%s` not found.", pluginClass));
+        super(XOpenSQLState.GENERAL_ERROR, 10, "Can not find plugin class '%s'.", pluginClass);
     }
 }

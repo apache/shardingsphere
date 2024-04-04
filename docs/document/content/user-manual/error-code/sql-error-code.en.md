@@ -141,13 +141,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 18201       | CDC server exception, reason is: %s.                                              |
 | HY000     | 18202       | CDC login failed, reason is: %s                                                   |
 
-### DistSQL
-
-| SQL State | Vendor Code | Reason                                                     |
-|-----------|-------------|------------------------------------------------------------|
-| 44000     | 19154       | Invalid mode, error message is: \`%s\`.                    |
-| 44000     | 19155       | Plugin class \`%s\` not found..                            |
-
 ## Feature Exception
 
 ### Data Sharding
@@ -209,21 +202,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 20295       | Auto aware data source name is required in database \`%s\.`        |
 | 44000     | 20296       | Read storage unit '%s' does not exist in rule '%s'.                |
 
-### Database HA
-
-| SQL State | Vendor Code | Reason                                                                       |
-|-----------|-------------|------------------------------------------------------------------------------|
-| 44000     | 20300       | No available database discovery rule configuration in database \`%s\`.       |
-| 44000     | 20301       | Group name is required.                                                      |
-| 44000     | 20302       | Data source names are required.                                              |
-| 44000     | 20303       | Can not found database discovery data source rule in database \`%s\`.        |
-| HY000     | 20380       | MGR plugin is not active in database \`%s\`.                                 |
-| 44000     | 20381       | MGR is not in single primary mode in database \`%s\`.                        |
-| 44000     | 20382       | \`%s\` is not in MGR replication group member in database \`%s\`.            |
-| 44000     | 20383       | Group name in MGR is not same with configured one \`%s\` in database \`%s\`. |
-| 42S01     | 20390       | MySQL Duplicate primary data source in database \`%s\`.                      |
-| 42S02     | 20391       | Primary data source not found in database \`%s\`.                            |
-
 ### SQL Dialect Translator
 
 | SQL State | Vendor Code | Reason                                              |
@@ -275,8 +253,9 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason                          |
 |-----------|-------------|---------------------------------|
-| HY004     | 30000       | Unknown exception: %s           |
+| HY000     | 30000       | Unknown exception: %s           |
 | 0A000     | 30001       | Unsupported SQL operation: %s   |
 | 0A000     | 30002       | Database protocol exception: %s |
 | 0A000     | 30003       | Unsupported command: %s         |
-| 0A000     | 30004       | Server exception: %s            |
+| HY000     | 30004       | Server exception: %s            |
+| HY000     | 30010       | Can not find plugin class '%s'. |
