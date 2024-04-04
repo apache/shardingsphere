@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.syntax.audit;
+package org.apache.shardingsphere.sharding.exception.audit;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * SQL audit exception.
+ * DML without sharding key exception.
  */
-public final class SQLAuditException extends AuditSQLException {
+public final class DMLWithoutShardingKeyException extends ShardingSQLException {
     
-    private static final long serialVersionUID = 4183020614721058122L;
+    private static final long serialVersionUID = -2856743119521264343L;
     
-    public SQLAuditException(final String errorMessage) {
-        super(XOpenSQLState.SYNTAX_ERROR, 1, "SQL audit failed, error message: %s.", errorMessage);
+    public DMLWithoutShardingKeyException() {
+        super(XOpenSQLState.SYNTAX_ERROR, 90, "Not allow DML operation without sharding conditions.");
     }
 }
