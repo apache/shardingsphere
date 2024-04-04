@@ -23,6 +23,9 @@ import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExt
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere SQL exception.
@@ -44,7 +47,7 @@ public abstract class ShardingSphereSQLException extends ShardingSphereExternalE
     }
     
     protected ShardingSphereSQLException(final String sqlState, final int typeOffset, final int errorCode, final String reason, final Object... messageArgs) {
-        this(sqlState, typeOffset, errorCode, null == reason ? null : String.format(reason, messageArgs), (Exception) null);
+        this(sqlState, typeOffset, errorCode, null == reason ? null : String.format(reason, formatMessageArguments(messageArgs)), (Exception) null);
     }
     
     protected ShardingSphereSQLException(final String sqlState, final int typeOffset, final int errorCode, final String reason, final Exception cause) {
@@ -57,6 +60,11 @@ public abstract class ShardingSphereSQLException extends ShardingSphereExternalE
                 ? reason
                 : String.format("%s%sMore details: %s", reason, System.lineSeparator(), cause.getMessage());
         this.cause = cause;
+    }
+    
+    private static Object[] formatMessageArguments(final Object... messageArgs) {
+        return Arrays.stream(messageArgs)
+                .map(each -> each instanceof Collection ? ((Collection<?>) each).stream().map(Object::toString).collect(Collectors.joining(", ")) : each).toArray(Object[]::new);
     }
     
     /**
