@@ -16,9 +16,10 @@
 #
 
 name: columns_priv
+type: TABLE
 columns:
   host:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 1
     generated: false
     name: Host
@@ -73,7 +74,7 @@ columns:
     visible: true
   column_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Column_priv
     nullable: false
@@ -83,4 +84,10 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - Host
+      - User
+      - Db
+      - Table_name
+      - Column_name

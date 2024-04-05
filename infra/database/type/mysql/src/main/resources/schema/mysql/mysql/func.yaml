@@ -16,6 +16,7 @@
 #
 
 name: func
+type: TABLE
 columns:
   name:
     caseSensitive: true
@@ -46,7 +47,7 @@ columns:
     visible: true
   type:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: type
     nullable: false
@@ -56,4 +57,6 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - name

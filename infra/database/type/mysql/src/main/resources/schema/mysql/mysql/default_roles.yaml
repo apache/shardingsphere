@@ -16,9 +16,10 @@
 #
 
 name: default_roles
+type: TABLE
 columns:
   host:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 1
     generated: false
     name: HOST
@@ -36,7 +37,7 @@ columns:
     unsigned: false
     visible: true
   default_role_host:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 1
     generated: false
     name: DEFAULT_ROLE_HOST
@@ -56,4 +57,9 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - HOST
+      - USER
+      - DEFAULT_ROLE_HOST
+      - DEFAULT_ROLE_USER

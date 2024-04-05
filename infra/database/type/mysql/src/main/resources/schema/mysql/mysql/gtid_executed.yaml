@@ -16,6 +16,7 @@
 #
 
 name: gtid_executed
+type: TABLE
 columns:
   source_uuid:
     caseSensitive: false
@@ -28,7 +29,7 @@ columns:
     visible: true
   interval_start:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: interval_start
     nullable: false
@@ -37,14 +38,27 @@ columns:
     visible: true
   interval_end:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: interval_end
     nullable: false
     primaryKey: false
     unsigned: false
     visible: true
+  gtid_tag:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: gtid_tag
+    nullable: false
+    primaryKey: true
+    unsigned: false
+    visible: true
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - source_uuid
+      - gtid_tag
+      - interval_start

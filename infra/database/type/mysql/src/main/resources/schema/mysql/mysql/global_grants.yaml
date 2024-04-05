@@ -16,6 +16,7 @@
 #
 
 name: global_grants
+type: TABLE
 columns:
   user:
     caseSensitive: true
@@ -27,7 +28,7 @@ columns:
     unsigned: false
     visible: true
   host:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 1
     generated: false
     name: HOST
@@ -36,7 +37,7 @@ columns:
     unsigned: false
     visible: true
   priv:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 1
     generated: false
     name: PRIV
@@ -45,8 +46,8 @@ columns:
     unsigned: false
     visible: true
   with_grant_option:
-    caseSensitive: true
-    dataType: 12
+    caseSensitive: false
+    dataType: 1
     generated: false
     name: WITH_GRANT_OPTION
     nullable: false
@@ -56,4 +57,8 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - USER
+      - HOST
+      - PRIV

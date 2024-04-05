@@ -16,9 +16,10 @@
 #
 
 name: replication_asynchronous_connection_failover_managed
+type: TABLE
 columns:
   channel_name:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 1
     generated: false
     name: Channel_name
@@ -27,7 +28,7 @@ columns:
     unsigned: false
     visible: true
   managed_name:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 1
     generated: false
     name: Managed_name
@@ -36,7 +37,7 @@ columns:
     unsigned: false
     visible: true
   managed_type:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 1
     generated: false
     name: Managed_type
@@ -45,15 +46,18 @@ columns:
     unsigned: false
     visible: true
   configuration:
-    caseSensitive: true
-    dataType: 1
+    caseSensitive: false
+    dataType: -1
     generated: false
     name: Configuration
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - Channel_name
+      - Managed_name

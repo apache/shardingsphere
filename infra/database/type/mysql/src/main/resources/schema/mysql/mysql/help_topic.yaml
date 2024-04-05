@@ -16,6 +16,7 @@
 #
 
 name: help_topic
+type: TABLE
 columns:
   help_topic_id:
     caseSensitive: false
@@ -74,7 +75,11 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - help_topic_id
   name:
     name: name
-    unique: false
+    unique: true
+    columns:
+      - name

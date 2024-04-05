@@ -16,6 +16,7 @@
 #
 
 name: time_zone_name
+type: TABLE
 columns:
   name:
     caseSensitive: false
@@ -38,4 +39,6 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - Name

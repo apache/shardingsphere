@@ -16,6 +16,7 @@
 #
 
 name: innodb_table_stats
+type: TABLE
 columns:
   database_name:
     caseSensitive: true
@@ -46,7 +47,7 @@ columns:
     visible: true
   n_rows:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: n_rows
     nullable: false
@@ -55,7 +56,7 @@ columns:
     visible: true
   clustered_index_size:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: clustered_index_size
     nullable: false
@@ -64,7 +65,7 @@ columns:
     visible: true
   sum_of_other_index_sizes:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: sum_of_other_index_sizes
     nullable: false
@@ -74,4 +75,7 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - database_name
+      - table_name
