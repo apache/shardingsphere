@@ -86,9 +86,10 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | Vendor Code | SQL State | Reason                                                                         |
 |-------------|-----------|--------------------------------------------------------------------------------|
 | 14000       | 25000     | Switch transaction type failed, please terminate the current transaction.      |
-| 14001       | 25000     | Can not find transaction manager of '%s'.                                      |
-| 14002       | 25000     | Transaction timeout should more than 0.                                        |
-| 14003       | 25000     | Close transaction manager failed.                                              |
+| 14001       | 42S02     | Can not find transaction manager of '%s'.                                      |
+| 14002       | 44000     | Max length of unique resource name '%s' exceeded, should be less than 45.      |
+| 14003       | 25000     | Transaction timeout should more than 0.                                        |
+| 14004       | 25000     | Close transaction manager failed.                                              |
 | 14200       | 25000     | Can not start new XA transaction in a active transaction.                      |
 | 14201       | 25000     | Failed to create \`%s\` XA data source.                                        |
 | 14202       | 25000     | Max length of xa unique resource name \`%s\` exceeded: should be less than 45. |

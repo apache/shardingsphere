@@ -29,6 +29,6 @@ public final class TransactionManagerNotFoundException extends TransactionSQLExc
     private static final long serialVersionUID = 3831707403758598143L;
     
     public TransactionManagerNotFoundException(final TransactionType transactionType) {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 1, "Can not find transaction manager of '%s'.", transactionType);
+        super(XOpenSQLState.NOT_FOUND, 1, "Can not find transaction manager of '%s'.", transactionType);
     }
 }

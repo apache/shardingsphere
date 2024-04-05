@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.TransactionSQLException;
 
 /**
- * XA unique resource name length exceeded exception.
+ * Resource name length exceeded exception.
  */
-public final class XAResourceNameLengthExceededException extends TransactionSQLException {
+public final class ResourceNameLengthExceededException extends TransactionSQLException {
     
     private static final long serialVersionUID = 6190231034576044165L;
     
-    public XAResourceNameLengthExceededException(final String uniqueResourceName) {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 202, String.format("Max length of xa unique resource name `%s` exceeded: should be less than 45.", uniqueResourceName));
+    public ResourceNameLengthExceededException(final String uniqueResourceName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "Max length of unique resource name '%s' exceeded, should be less than 45.", uniqueResourceName);
     }
 }
