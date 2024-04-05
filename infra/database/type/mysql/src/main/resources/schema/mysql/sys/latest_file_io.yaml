@@ -16,12 +16,14 @@
 #
 
 name: latest_file_io
+type: TABLE
 columns:
   thread:
     caseSensitive: false
     dataType: 12
     generated: false
     name: thread
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,14 +32,16 @@ columns:
     dataType: 12
     generated: false
     name: file
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,14 +50,16 @@ columns:
     dataType: 12
     generated: false
     name: operation
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   requested:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: requested
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

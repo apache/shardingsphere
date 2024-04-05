@@ -16,12 +16,14 @@
 #
 
 name: statements_with_sorting
+type: TABLE
 columns:
   query:
     caseSensitive: false
     dataType: -1
     generated: false
     name: query
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,30 +32,34 @@ columns:
     dataType: 12
     generated: false
     name: db
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   exec_count:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: exec_count
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   total_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: total_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   sort_merge_passes:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: sort_merge_passes
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -62,30 +68,34 @@ columns:
     dataType: 3
     generated: false
     name: avg_sort_merges
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   sorts_using_scans:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: sorts_using_scans
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   sort_using_range:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: sort_using_range
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   rows_sorted:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: rows_sorted
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -94,6 +104,7 @@ columns:
     dataType: 3
     generated: false
     name: avg_rows_sorted
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -102,6 +113,7 @@ columns:
     dataType: 93
     generated: false
     name: first_seen
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -110,6 +122,7 @@ columns:
     dataType: 93
     generated: false
     name: last_seen
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -118,6 +131,7 @@ columns:
     dataType: 12
     generated: false
     name: digest
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

@@ -16,108 +16,122 @@
 #
 
 name: io_global_by_wait_by_bytes
+type: TABLE
 columns:
   event_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: event_name
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   total:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: total
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   total_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: total_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   min_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: min_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   avg_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: avg_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   max_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: max_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   count_read:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: count_read
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   total_read:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: total_read
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   avg_read:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: avg_read
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   count_write:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: count_write
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   total_written:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: total_written
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   avg_written:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: avg_written
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   total_requested:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: total_requested
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

@@ -16,20 +16,23 @@
 #
 
 name: schema_redundant_indexes
+type: TABLE
 columns:
   table_schema:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: table_schema
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   table_name:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: table_name
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +41,7 @@ columns:
     dataType: 12
     generated: false
     name: redundant_index_name
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +50,7 @@ columns:
     dataType: -1
     generated: false
     name: redundant_index_columns
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +59,7 @@ columns:
     dataType: 4
     generated: false
     name: redundant_index_non_unique
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +68,7 @@ columns:
     dataType: 12
     generated: false
     name: dominant_index_name
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +77,7 @@ columns:
     dataType: -1
     generated: false
     name: dominant_index_columns
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,6 +86,7 @@ columns:
     dataType: 4
     generated: false
     name: dominant_index_non_unique
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,6 +95,7 @@ columns:
     dataType: 4
     generated: false
     name: subpart_exists
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -94,6 +104,7 @@ columns:
     dataType: 12
     generated: false
     name: sql_drop_index
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

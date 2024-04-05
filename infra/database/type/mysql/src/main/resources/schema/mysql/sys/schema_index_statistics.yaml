@@ -16,12 +16,14 @@
 #
 
 name: schema_index_statistics
+type: TABLE
 columns:
   table_schema:
     caseSensitive: false
     dataType: 12
     generated: false
     name: table_schema
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +32,7 @@ columns:
     dataType: 12
     generated: false
     name: table_name
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,70 +41,79 @@ columns:
     dataType: 12
     generated: false
     name: index_name
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   rows_selected:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: rows_selected
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   select_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: select_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   rows_inserted:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: rows_inserted
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   insert_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: insert_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   rows_updated:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: rows_updated
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   update_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: update_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   rows_deleted:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: rows_deleted
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   delete_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: delete_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

@@ -16,12 +16,14 @@
 #
 
 name: memory_by_user_by_current_bytes
+type: TABLE
 columns:
   user:
     caseSensitive: true
     dataType: 12
     generated: false
     name: user
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,38 +32,43 @@ columns:
     dataType: 3
     generated: false
     name: current_count_used
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   current_allocated:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: current_allocated
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   current_avg_alloc:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: current_avg_alloc
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   current_max_alloc:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: current_max_alloc
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   total_allocated:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: total_allocated
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

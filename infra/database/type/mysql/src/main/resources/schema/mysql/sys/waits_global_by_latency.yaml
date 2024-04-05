@@ -16,44 +16,50 @@
 #
 
 name: waits_global_by_latency
+type: TABLE
 columns:
   events:
     caseSensitive: false
     dataType: 12
     generated: false
     name: events
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   total:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: total
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   total_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: total_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   avg_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: avg_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   max_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: max_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

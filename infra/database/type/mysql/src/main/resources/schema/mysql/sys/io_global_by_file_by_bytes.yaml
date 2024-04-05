@@ -16,68 +16,77 @@
 #
 
 name: io_global_by_file_by_bytes
+type: TABLE
 columns:
   file:
     caseSensitive: false
     dataType: 12
     generated: false
     name: file
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   count_read:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: count_read
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   total_read:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: total_read
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   avg_read:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: avg_read
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   count_write:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: count_write
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   total_written:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: total_written
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   avg_write:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: avg_write
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   total:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: total
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,6 +95,7 @@ columns:
     dataType: 3
     generated: false
     name: write_pct
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true

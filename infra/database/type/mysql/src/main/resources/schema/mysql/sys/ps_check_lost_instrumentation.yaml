@@ -16,12 +16,14 @@
 #
 
 name: ps_check_lost_instrumentation
+type: TABLE
 columns:
   variable_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: variable_name
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +32,7 @@ columns:
     dataType: 12
     generated: false
     name: variable_value
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

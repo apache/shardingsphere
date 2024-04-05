@@ -16,12 +16,14 @@
 #
 
 name: user_summary
+type: TABLE
 columns:
   user:
     caseSensitive: true
     dataType: 12
     generated: false
     name: user
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,22 +32,25 @@ columns:
     dataType: 3
     generated: false
     name: statements
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   statement_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: statement_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   statement_avg_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: statement_avg_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +59,7 @@ columns:
     dataType: 3
     generated: false
     name: table_scans
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,14 +68,16 @@ columns:
     dataType: 3
     generated: false
     name: file_ios
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   file_io_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: file_io_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,6 +86,7 @@ columns:
     dataType: 3
     generated: false
     name: current_connections
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,30 +95,34 @@ columns:
     dataType: 3
     generated: false
     name: total_connections
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   unique_hosts:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: unique_hosts
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   current_memory:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: current_memory
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   total_memory_allocated:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: total_memory_allocated
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

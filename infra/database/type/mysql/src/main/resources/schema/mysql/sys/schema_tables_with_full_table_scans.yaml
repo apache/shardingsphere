@@ -16,12 +16,14 @@
 #
 
 name: schema_tables_with_full_table_scans
+type: TABLE
 columns:
   object_schema:
     caseSensitive: false
     dataType: 12
     generated: false
     name: object_schema
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,22 +32,25 @@ columns:
     dataType: 12
     generated: false
     name: object_name
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   rows_full_scanned:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: rows_full_scanned
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

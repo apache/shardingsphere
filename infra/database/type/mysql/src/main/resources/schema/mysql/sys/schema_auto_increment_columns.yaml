@@ -16,20 +16,23 @@
 #
 
 name: schema_auto_increment_columns
+type: TABLE
 columns:
   table_schema:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: table_schema
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   table_name:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: table_name
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,22 +41,25 @@ columns:
     dataType: 12
     generated: false
     name: column_name
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   data_type:
-    caseSensitive: false
-    dataType: 12
+    caseSensitive: true
+    dataType: -1
     generated: false
     name: data_type
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   column_type:
-    caseSensitive: false
+    caseSensitive: true
     dataType: -1
     generated: false
     name: column_type
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +68,7 @@ columns:
     dataType: 4
     generated: false
     name: is_signed
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,22 +77,25 @@ columns:
     dataType: 4
     generated: false
     name: is_unsigned
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   max_value:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: max_value
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   auto_increment:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: auto_increment
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
@@ -94,6 +104,7 @@ columns:
     dataType: 3
     generated: false
     name: auto_increment_ratio
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true

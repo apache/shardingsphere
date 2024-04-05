@@ -16,60 +16,68 @@
 #
 
 name: memory_global_by_current_bytes
+type: TABLE
 columns:
   event_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: event_name
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   current_count:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: current_count
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   current_alloc:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: current_alloc
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   current_avg_alloc:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: current_avg_alloc
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   high_count:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: high_count
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   high_alloc:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: high_alloc
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   high_avg_alloc:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: high_avg_alloc
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
