@@ -16,6 +16,7 @@
 #
 
 name: PLUGINS
+type: TABLE
 columns:
   plugin_name:
     caseSensitive: false
@@ -67,7 +68,7 @@ columns:
     dataType: 12
     generated: false
     name: PLUGIN_LIBRARY
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -76,7 +77,7 @@ columns:
     dataType: 12
     generated: false
     name: PLUGIN_LIBRARY_VERSION
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -85,16 +86,16 @@ columns:
     dataType: 12
     generated: false
     name: PLUGIN_AUTHOR
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   plugin_description:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: PLUGIN_DESCRIPTION
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -103,7 +104,7 @@ columns:
     dataType: 12
     generated: false
     name: PLUGIN_LICENSE
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

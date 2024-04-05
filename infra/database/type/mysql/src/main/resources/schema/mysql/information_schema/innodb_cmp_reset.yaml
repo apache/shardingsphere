@@ -16,6 +16,7 @@
 #
 
 name: INNODB_CMP_RESET
+type: TABLE
 columns:
   page_size:
     caseSensitive: false

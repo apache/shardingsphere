@@ -16,9 +16,10 @@
 #
 
 name: VIEWS
+type: TABLE
 columns:
   table_catalog:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: TABLE_CATALOG
@@ -27,7 +28,7 @@ columns:
     unsigned: false
     visible: true
   table_schema:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: TABLE_SCHEMA
@@ -36,7 +37,7 @@ columns:
     unsigned: false
     visible: true
   table_name:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: TABLE_NAME
@@ -45,47 +46,47 @@ columns:
     unsigned: false
     visible: true
   view_definition:
-    caseSensitive: false
+    caseSensitive: true
     dataType: -1
     generated: false
     name: VIEW_DEFINITION
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   check_option:
-    caseSensitive: false
-    dataType: 12
+    caseSensitive: true
+    dataType: 1
     generated: false
     name: CHECK_OPTION
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   is_updatable:
-    caseSensitive: false
-    dataType: 12
+    caseSensitive: true
+    dataType: 1
     generated: false
     name: IS_UPDATABLE
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   definer:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: DEFINER
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   security_type:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: SECURITY_TYPE
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

@@ -16,9 +16,10 @@
 #
 
 name: SCHEMATA
+type: TABLE
 columns:
   catalog_name:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: CATALOG_NAME
@@ -27,7 +28,7 @@ columns:
     unsigned: false
     visible: true
   schema_name:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: SCHEMA_NAME
@@ -55,16 +56,16 @@ columns:
     visible: true
   sql_path:
     caseSensitive: false
-    dataType: 12
+    dataType: -2
     generated: false
     name: SQL_PATH
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   default_encryption:
-    caseSensitive: false
-    dataType: 12
+    caseSensitive: true
+    dataType: 1
     generated: false
     name: DEFAULT_ENCRYPTION
     nullable: false

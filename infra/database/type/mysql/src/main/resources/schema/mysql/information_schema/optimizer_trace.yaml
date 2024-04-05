@@ -16,10 +16,11 @@
 #
 
 name: OPTIMIZER_TRACE
+type: TABLE
 columns:
   query:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: QUERY
     nullable: false
@@ -28,7 +29,7 @@ columns:
     visible: true
   trace:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: TRACE
     nullable: false
