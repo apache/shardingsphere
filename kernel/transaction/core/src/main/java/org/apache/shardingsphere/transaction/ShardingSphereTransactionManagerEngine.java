@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.exception.TransactionManagerNotExistedException;
+import org.apache.shardingsphere.transaction.exception.TransactionManagerNotFoundException;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import javax.sql.DataSource;
@@ -62,7 +62,7 @@ public final class ShardingSphereTransactionManagerEngine {
      */
     public ShardingSphereTransactionManager getTransactionManager(final TransactionType transactionType) {
         if (TransactionType.LOCAL != transactionType) {
-            ShardingSpherePreconditions.checkNotNull(transactionManager, () -> new TransactionManagerNotExistedException(transactionType));
+            ShardingSpherePreconditions.checkNotNull(transactionManager, () -> new TransactionManagerNotFoundException(transactionType));
         }
         return transactionManager;
     }
