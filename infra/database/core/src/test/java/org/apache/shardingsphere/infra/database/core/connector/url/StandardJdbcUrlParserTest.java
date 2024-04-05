@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.core.connector.url;
 
+import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatabaseURLException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.connection;
+package org.apache.shardingsphere.infra.database.core.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 
 /**
- * SQL execution interrupted exception.
+ * Unrecognized database URL exception.
  */
-public final class SQLExecutionInterruptedException extends ConnectionSQLException {
+public final class UnrecognizedDatabaseURLException extends ConnectionURLException {
     
-    private static final long serialVersionUID = 3394283296623445981L;
+    private static final long serialVersionUID = -1551117178863766353L;
     
-    public SQLExecutionInterruptedException() {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 1, "SQL execution has been interrupted.");
+    public UnrecognizedDatabaseURLException(final String url, final String pattern) {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 1, "The URL `%s` is not recognized, please refer to the pattern `%s`.", url, pattern);
     }
 }

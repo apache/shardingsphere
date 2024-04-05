@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception.core.external.sql.type.generic;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
 
 import java.io.File;
 
 /**
  * File IO exception.
  */
-public final class FileIOException extends ClusterSQLException {
+public final class FileIOException extends GenericSQLException {
     
     private static final long serialVersionUID = 1104839422339487793L;
     
     public FileIOException(final File file) {
-        super(XOpenSQLState.GENERAL_ERROR, 2, "File access failed, file is: %s", file.getAbsolutePath());
+        super(XOpenSQLState.GENERAL_ERROR, 20, "File access failed, file is: %s", file.getAbsolutePath());
     }
 }

@@ -71,15 +71,15 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | Vendor Code | SQL State | Reason                                                                                                                                                                                                                      |
 |-------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 13000       | 0A000     | Unsupported storage type of URL '%s'.                                                                                                                                                                                       |
-| 13001       | 08000     | The URL '%s' is not recognized, please refer to the pattern '%s'.                                                                                                                                                           |
-| 13010       | 08000     | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties. |
-| 13011       | 08000     | SQL execution has been interrupted.                                                                                                                                                                                         |
-| 13030       | 01000     | Circuit break open, the request has been ignored.                                                                                                                                                                           |
-| 13040       | HY000     | Load datetime from database failed, reason: %s                                                                                                                                                                              |
-| 13100       | 08000     | Can not register driver.                                                                                                                                                                                                    |
-| 13101       | 08000     | Connection has been closed.                                                                                                                                                                                                 |
-| 13102       | 08000     | Result set has been closed.                                                                                                                                                                                                 |
+| 13000       | 08000     | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties. |
+| 13001       | 08000     | SQL execution has been interrupted.                                                                                                                                                                                         |
+| 13010       | 01000     | Circuit break open, the request has been ignored.                                                                                                                                                                           |
+| 13100       | 0A000     | Unsupported storage type of URL '%s'.                                                                                                                                                                                       |
+| 13101       | 08000     | The URL '%s' is not recognized, please refer to the pattern '%s'.                                                                                                                                                           |
+| 13200       | 08000     | Can not register driver.                                                                                                                                                                                                    |
+| 13201       | 08000     | Connection has been closed.                                                                                                                                                                                                 |
+| 13202       | 08000     | Result set has been closed.                                                                                                                                                                                                 |
+| 13400       | HY000     | Load datetime from database failed, reason: %s                                                                                                                                                                              |
 
 ### Transaction
 
@@ -103,7 +103,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 |-------------|-----------|---------------------------------------------------------------|
 | 17000       | 44000     | Mode must be 'cluster'.                                       |
 | 17001       | HY000     | Work ID assigned failed, which can not exceed 1024.           |
-| 17002       | HY000     | File access failed, file is: %s                               |
 | 17010       | HY000     | Cluster persist repository error, reason is: %s               |
 | 17020       | HY000     | The cluster status is %s, can not support SQL statement '%s'. |
 
@@ -260,3 +259,4 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 30003       | 0A000     | Unsupported command: %s         |
 | 30004       | HY000     | Server exception: %s            |
 | 30010       | HY000     | Can not find plugin class '%s'. |
+| 30020       | HY000     | File access failed, file is: %s |

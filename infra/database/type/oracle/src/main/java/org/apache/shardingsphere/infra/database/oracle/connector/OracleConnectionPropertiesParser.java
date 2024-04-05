@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.connector.StandardConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.url.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatabaseURLException;
 
 import java.util.Arrays;
 import java.util.List;

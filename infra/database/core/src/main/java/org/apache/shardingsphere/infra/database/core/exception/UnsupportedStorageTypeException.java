@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.type;
+package org.apache.shardingsphere.infra.database.core.exception;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 
 /**
  * Unsupported storage type exception. When this exception is thrown, it means that the relevant jdbcUrl lacks the corresponding {@link DatabaseType} SPI implementation.
@@ -47,7 +47,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.c
  *
  * @see org.apache.shardingsphere.infra.database.core.type.DatabaseType
  */
-public final class UnsupportedStorageTypeException extends ConnectionSQLException {
+public final class UnsupportedStorageTypeException extends ConnectionURLException {
     
     private static final long serialVersionUID = 8981789100727786183L;
     
