@@ -97,8 +97,7 @@ class ShardingSQLAuditorTest {
     void assertCheckFailed() {
         ShardingAuditAlgorithm auditAlgorithm = rule.getAuditors().get("auditor_1");
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
-        doThrow(new DMLWithoutShardingKeyException())
-                .when(auditAlgorithm).check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"));
+        doThrow(new DMLWithoutShardingKeyException()).when(auditAlgorithm).check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"));
         DMLWithoutShardingKeyException ex = assertThrows(DMLWithoutShardingKeyException.class,
                 () -> new ShardingSQLAuditor().audit(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"), rule, hintValueContext));
         assertThat(ex.getMessage(), is("Not allow DML operation without sharding conditions."));
