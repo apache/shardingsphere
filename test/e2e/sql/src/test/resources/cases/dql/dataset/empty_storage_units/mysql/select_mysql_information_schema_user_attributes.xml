@@ -20,8 +20,5 @@
         <column name="user" />
         <column name="host" />
         <column name="attribute" />
-        <column name="compress_time" />
-        <column name="uncompress_ops" />
-        <column name="uncompress_time" />
     </metadata>
 </dataset>
