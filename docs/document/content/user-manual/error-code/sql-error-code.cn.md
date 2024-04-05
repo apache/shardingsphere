@@ -82,19 +82,20 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 事务
 
-| Vendor Code | SQL State | 错误信息                                                                               |
-|-------------|-----------|------------------------------------------------------------------------------------|
-| 14000       | 25000     | Switch transaction type failed, please terminate the current transaction.          |
-| 14001       | 25000     | Can not find transaction manager of \`%s\`.                                        |
-| 14002       | 25000     | Transaction timeout should more than 0s.                                           |
-| 14200       | 25000     | Can not start new XA transaction in a active transaction.                          |
-| 14201       | 25000     | Failed to create \`%s\` XA data source.                                            |
-| 14202       | 25000     | Max length of xa unique resource name \`%s\` exceeded: should be less than 45.     |
-| 14203       | 25000     | Check privileges failed on data source, reason is: \`%s\`                          |
-| 14204       | 25000     | Failed to create XA transaction manager, requires \`%s\` privileges                |
-| 14205       | 25000     | Close transaction manager failed, \`%s\`                                           |
-| 14301       | 25000     | ShardingSphere Seata-AT transaction has been disabled.                             |
-| 14302       | 25000     | Please config application id within seata.conf file.                               |
+| Vendor Code | SQL State | 错误信息                                                                           |
+|-------------|-----------|--------------------------------------------------------------------------------|
+| 14000       | 25000     | Switch transaction type failed, please terminate the current transaction.      |
+| 14001       | 42S02     | Can not find transaction manager of '%s'.                                      |
+| 14002       | 44000     | Max length of unique resource name '%s' exceeded, should be less than 45.      |
+| 14003       | 25000     | Transaction timeout should more than 0.                                        |
+| 14004       | 25000     | Close transaction manager failed.                                              |
+| 14200       | 25000     | Can not start new XA transaction in a active transaction.                      |
+| 14201       | 25000     | Failed to create \`%s\` XA data source.                                        |
+| 14202       | 25000     | Max length of xa unique resource name \`%s\` exceeded: should be less than 45. |
+| 14203       | 25000     | Check privileges failed on data source, reason is: \`%s\`                      |
+| 14204       | 25000     | Failed to create XA transaction manager, requires \`%s\` privileges            |
+| 14301       | 25000     | ShardingSphere Seata-AT transaction has been disabled.                         |
+| 14302       | 25000     | Please config application id within seata.conf file.                           |
 
 ### 集群
 

@@ -22,13 +22,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.c
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
 /**
- * Transaction manager not existed exception.
+ * Transaction manager not found exception.
  */
-public final class TransactionManagerNotExistedException extends TransactionSQLException {
+public final class TransactionManagerNotFoundException extends TransactionSQLException {
     
     private static final long serialVersionUID = 3831707403758598143L;
     
-    public TransactionManagerNotExistedException(final TransactionType transactionType) {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 1, String.format("Can not find transaction manager of `%s`", transactionType));
+    public TransactionManagerNotFoundException(final TransactionType transactionType) {
+        super(XOpenSQLState.NOT_FOUND, 1, "Can not find transaction manager of '%s'.", transactionType);
     }
 }
