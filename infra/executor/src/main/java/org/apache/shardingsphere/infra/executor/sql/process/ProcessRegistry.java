@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.connection.SQLExecutionInterruptedException;
+import org.apache.shardingsphere.infra.exception.kernel.connection.SQLExecutionInterruptedException;
 
 import java.util.Collection;
 import java.util.Map;

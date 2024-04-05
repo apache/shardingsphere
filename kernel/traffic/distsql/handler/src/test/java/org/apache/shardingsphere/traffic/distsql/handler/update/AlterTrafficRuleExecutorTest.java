@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.traffic.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.exception.metadata.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;

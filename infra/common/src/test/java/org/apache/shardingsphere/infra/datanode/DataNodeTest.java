@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
-import org.apache.shardingsphere.infra.exception.metadata.datanode.InvalidDataNodeFormatException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
