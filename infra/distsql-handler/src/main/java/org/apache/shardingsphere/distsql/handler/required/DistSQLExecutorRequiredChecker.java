@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.handler.required;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.exception.NotClusterModeException;
-import org.apache.shardingsphere.infra.exception.metadata.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.database.type.DropRuleStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;

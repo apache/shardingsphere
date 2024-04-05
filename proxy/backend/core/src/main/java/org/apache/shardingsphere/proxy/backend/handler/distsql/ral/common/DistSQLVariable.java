@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common;
 
-import org.apache.shardingsphere.infra.exception.syntax.UnsupportedVariableException;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
 
 /**
  * DistSQL variable.
