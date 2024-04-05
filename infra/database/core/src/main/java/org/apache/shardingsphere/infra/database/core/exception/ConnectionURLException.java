@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.connector.url;
+package org.apache.shardingsphere.infra.database.core.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 
 /**
- * Unrecognized database URL exception.
+ * Connection URL exception.
  */
-public final class UnrecognizedDatabaseURLException extends ConnectionSQLException {
+public class ConnectionURLException extends ConnectionSQLException {
     
-    private static final long serialVersionUID = -1551117178863766353L;
+    private static final long serialVersionUID = 6410735261100319966L;
     
-    public UnrecognizedDatabaseURLException(final String url, final String pattern) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 1, "The URL `%s` is not recognized, please refer to the pattern `%s`.", url, pattern);
+    private static final int URL_CODE = 1;
+    
+    protected ConnectionURLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    }
+    
+    private static int getErrorCode(final int errorCode) {
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
+        return URL_CODE * 100 + errorCode;
     }
 }
