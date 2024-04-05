@@ -21,7 +21,5 @@
         <column name="name" />
         <column name="n_cols" />
         <column name="space" />
-        <column name="per_table_tablespace" />
-        <column name="is_compressed" />
     </metadata>
 </dataset>
