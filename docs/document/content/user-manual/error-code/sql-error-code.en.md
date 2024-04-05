@@ -103,7 +103,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 |-------------|-----------|---------------------------------------------------------------|
 | 17000       | 44000     | Mode must be 'cluster'.                                       |
 | 17001       | HY000     | Work ID assigned failed, which can not exceed 1024.           |
-| 17002       | HY000     | File access failed, file is: %s                               |
 | 17010       | HY000     | Cluster persist repository error, reason is: %s               |
 | 17020       | HY000     | The cluster status is %s, can not support SQL statement '%s'. |
 
@@ -260,3 +259,4 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 30003       | 0A000     | Unsupported command: %s         |
 | 30004       | HY000     | Server exception: %s            |
 | 30010       | HY000     | Can not find plugin class '%s'. |
+| 30020       | HY000     | File access failed, file is: %s |
