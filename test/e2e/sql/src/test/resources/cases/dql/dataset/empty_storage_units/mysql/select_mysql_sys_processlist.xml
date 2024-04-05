@@ -25,9 +25,11 @@
         <column name="state"/>
         <column name="time"/>
         <column name="current_statement"/>
+        <column name="execution_engine"/>
         <column name="statement_latency"/>
         <column name="progress"/>
         <column name="lock_latency"/>
+        <column name="cpu_latency"/>
         <column name="rows_examined"/>
         <column name="rows_sent"/>
         <column name="rows_affected"/>
