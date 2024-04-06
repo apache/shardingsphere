@@ -16,10 +16,11 @@
 #
 
 name: INNODB_TEMP_TABLE_INFO
+type: TABLE
 columns:
   table_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: TABLE_ID
     nullable: false
@@ -31,7 +32,7 @@ columns:
     dataType: 12
     generated: false
     name: NAME
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -52,22 +53,4 @@ columns:
     nullable: false
     primaryKey: false
     unsigned: true
-    visible: true
-  per_table_tablespace:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: PER_TABLE_TABLESPACE
-    nullable: false
-    primaryKey: false
-    unsigned: false
-    visible: true
-  is_compressed:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: IS_COMPRESSED
-    nullable: false
-    primaryKey: false
-    unsigned: false
     visible: true

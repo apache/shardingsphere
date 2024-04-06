@@ -1,0 +1,59 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="file_id" />
+        <column name="file_name" />
+        <column name="file_type" />
+        <column name="tablespace_name" />
+        <column name="table_catalog" />
+        <column name="table_schema" />
+        <column name="table_name" />
+        <column name="logfile_group_name" />
+        <column name="logfile_group_number" />
+        <column name="engine" />
+        <column name="fulltext_keys" />
+        <column name="deleted_rows" />
+        <column name="update_count" />
+        <column name="free_extents" />
+        <column name="total_extents" />
+        <column name="extent_size" />
+        <column name="initial_size" />
+        <column name="maximum_size" />
+        <column name="autoextend_size" />
+        <column name="creation_time" />
+        <column name="last_update_time" />
+        <column name="last_access_time" />
+        <column name="recover_time" />
+        <column name="transaction_counter" />
+        <column name="version" />
+        <column name="row_format" />
+        <column name="table_rows" />
+        <column name="avg_row_length" />
+        <column name="data_length" />
+        <column name="max_data_length" />
+        <column name="index_length" />
+        <column name="data_free" />
+        <column name="create_time" />
+        <column name="update_time" />
+        <column name="check_time" />
+        <column name="checksum" />
+        <column name="status" />
+        <column name="extra" />
+    </metadata>
+</dataset>
