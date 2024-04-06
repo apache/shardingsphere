@@ -91,9 +91,9 @@ columns:
     unsigned: false
     visible: true
 indexes:
-  name: PRIMARY
-  unique: true
   primary:
+    name: PRIMARY
+    unique: true
     columns:
       - OBJECT_INSTANCE_BEGIN
   owner_thread_id:

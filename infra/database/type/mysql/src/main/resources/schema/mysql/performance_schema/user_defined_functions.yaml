@@ -68,4 +68,4 @@ indexes:
     name: PRIMARY
     unique: true
     columns:
-    - UDF_NAME
+      - UDF_NAME

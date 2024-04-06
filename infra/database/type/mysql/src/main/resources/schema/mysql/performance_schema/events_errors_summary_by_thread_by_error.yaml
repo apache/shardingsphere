@@ -95,5 +95,5 @@ indexes:
     name: THREAD_ID
     unique: true
     columns:
-    - THREAD_ID
-    - ERROR_NUMBER
+      - THREAD_ID
+      - ERROR_NUMBER

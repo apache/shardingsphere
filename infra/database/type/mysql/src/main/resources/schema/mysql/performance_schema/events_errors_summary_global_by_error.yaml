@@ -86,4 +86,4 @@ indexes:
     name: ERROR_NUMBER
     unique: true
     columns:
-    - ERROR_NUMBER
+      - ERROR_NUMBER

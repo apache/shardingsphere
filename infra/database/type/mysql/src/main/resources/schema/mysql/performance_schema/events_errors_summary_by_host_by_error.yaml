@@ -95,5 +95,5 @@ indexes:
     name: HOST
     unique: true
     columns:
-    - HOST
-    - ERROR_NUMBER
+      - HOST
+      - ERROR_NUMBER

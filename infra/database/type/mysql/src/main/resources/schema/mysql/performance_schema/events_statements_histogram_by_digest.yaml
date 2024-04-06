@@ -95,6 +95,6 @@ indexes:
     name: SCHEMA_NAME
     unique: true
     columns:
-    - SCHEMA_NAME
-    - DIGEST
-    - BUCKET_NUMBER
+      - SCHEMA_NAME
+      - DIGEST
+      - BUCKET_NUMBER

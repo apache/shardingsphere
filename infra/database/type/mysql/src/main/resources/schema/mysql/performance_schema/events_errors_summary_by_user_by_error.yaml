@@ -95,5 +95,5 @@ indexes:
     name: USER
     unique: true
     columns:
-    - USER
-    - ERROR_NUMBER
+      - USER
+      - ERROR_NUMBER

@@ -55,9 +55,9 @@ columns:
     unsigned: false
     visible: true
 indexes:
-  name: ACCOUNT
-  unique: true
   account:
+    name: ACCOUNT
+    unique: true
     columns:
       - USER
       - HOST

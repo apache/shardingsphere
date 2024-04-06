@@ -77,4 +77,4 @@ indexes:
     name: PRIMARY
     unique: true
     columns:
-    - BUCKET_NUMBER
+      - BUCKET_NUMBER

@@ -64,8 +64,8 @@ columns:
     unsigned: true
     visible: true
 indexes:
-  name: USER
-  unique: true
   user:
+    name: USER
+    unique: true
     columns:
       - USER

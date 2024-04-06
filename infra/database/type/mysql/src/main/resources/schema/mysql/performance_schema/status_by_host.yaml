@@ -46,9 +46,9 @@ columns:
     unsigned: false
     visible: true
 indexes:
-  name: HOST
-  unique: true
   host:
+    name: HOST
+    unique: true
     columns:
       - HOST
       - VARIABLE_NAME

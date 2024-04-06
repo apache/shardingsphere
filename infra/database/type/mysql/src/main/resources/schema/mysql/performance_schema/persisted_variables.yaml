@@ -41,4 +41,4 @@ indexes:
     name: PRIMARY
     unique: true
     columns:
-    - VARIABLE_NAME
+      - VARIABLE_NAME

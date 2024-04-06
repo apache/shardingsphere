@@ -64,9 +64,9 @@ columns:
     unsigned: false
     visible: true
 indexes:
-  name: OBJECT
-  unique: true
   object:
+    name: OBJECT
+    unique: true
     columns:
       - OBJECT_TYPE
       - OBJECT_SCHEMA

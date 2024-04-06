@@ -37,8 +37,8 @@ columns:
     unsigned: false
     visible: true
 indexes:
-  name: PRIMARY
-  unique: true
   primary:
+    name: PRIMARY
+    unique: true
     columns:
       - NAME

@@ -104,4 +104,4 @@ indexes:
     name: PRIMARY
     unique: true
     columns:
-    - ID
+      - ID

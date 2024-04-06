@@ -46,9 +46,9 @@ columns:
     unsigned: false
     visible: true
 indexes:
-  name: USER
-  unique: true
   user:
+    name: USER
+    unique: true
     columns:
       - USER
       - VARIABLE_NAME

@@ -104,6 +104,6 @@ indexes:
     name: ACCOUNT
     unique: true
     columns:
-    - USER
-    - HOST
-    - ERROR_NUMBER
+      - USER
+      - HOST
+      - ERROR_NUMBER

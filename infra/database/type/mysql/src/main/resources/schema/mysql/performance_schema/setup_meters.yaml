@@ -59,4 +59,4 @@ indexes:
     name: PRIMARY
     unique: true
     columns:
-    - NAME
+      - NAME

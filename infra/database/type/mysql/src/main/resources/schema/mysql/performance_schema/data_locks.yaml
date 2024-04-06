@@ -164,19 +164,19 @@ indexes:
     name: OBJECT_SCHEMA
     unique: false
     columns:
-    - OBJECT_SCHEMA
-    - OBJECT_NAME
-    - PARTITION_NAME
-    - SUBPARTITION_NAME
+      - OBJECT_SCHEMA
+      - OBJECT_NAME
+      - PARTITION_NAME
+      - SUBPARTITION_NAME
   thread_id:
     name: THREAD_ID
     unique: false
     columns:
-    - THREAD_ID
-    - EVENT_ID
+      - THREAD_ID
+      - EVENT_ID
   engine_transaction_id:
     name: ENGINE_TRANSACTION_ID
     unique: false
     columns:
-    - ENGINE_TRANSACTION_ID
-    - ENGINE
+      - ENGINE_TRANSACTION_ID
+      - ENGINE

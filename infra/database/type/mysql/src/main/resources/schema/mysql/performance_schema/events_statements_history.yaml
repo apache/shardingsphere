@@ -434,8 +434,8 @@ columns:
     visible: true
 indexes:
   primary:
+    name: PRIMARY
+    unique: true
     columns:
       - THREAD_ID
       - EVENT_ID
-    name: PRIMARY
-    unique: true
