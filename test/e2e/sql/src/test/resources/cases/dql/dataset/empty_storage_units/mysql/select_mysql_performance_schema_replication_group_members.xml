@@ -22,5 +22,8 @@
         <column name="member_host" />
         <column name="member_port" />
         <column name="member_state" />
+        <column name="member_role" />
+        <column name="member_version" />
+        <column name="member_communication_stack" />
     </metadata>
 </dataset>

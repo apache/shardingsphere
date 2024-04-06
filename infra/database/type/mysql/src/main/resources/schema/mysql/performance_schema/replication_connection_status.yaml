@@ -16,13 +16,15 @@
 #
 
 name: replication_connection_status
+type: TABLE
 columns:
   channel_name:
     caseSensitive: false
     dataType: 1
     generated: false
     name: CHANNEL_NAME
-    primaryKey: false
+    nullable: false
+    primaryKey: true
     unsigned: false
     visible: true
   group_name:
@@ -30,6 +32,7 @@ columns:
     dataType: 1
     generated: false
     name: GROUP_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,30 +41,34 @@ columns:
     dataType: 1
     generated: false
     name: SOURCE_UUID
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   thread_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: THREAD_ID
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   service_state:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: SERVICE_STATE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   count_received_heartbeats:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: COUNT_RECEIVED_HEARTBEATS
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -70,6 +77,7 @@ columns:
     dataType: 93
     generated: false
     name: LAST_HEARTBEAT_TIMESTAMP
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,6 +86,7 @@ columns:
     dataType: -1
     generated: false
     name: RECEIVED_TRANSACTION_SET
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,6 +95,7 @@ columns:
     dataType: 4
     generated: false
     name: LAST_ERROR_NUMBER
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -94,6 +104,7 @@ columns:
     dataType: 12
     generated: false
     name: LAST_ERROR_MESSAGE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -102,6 +113,99 @@ columns:
     dataType: 93
     generated: false
     name: LAST_ERROR_TIMESTAMP
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
+  last_queued_transaction:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: LAST_QUEUED_TRANSACTION
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_queued_transaction_original_commit_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_QUEUED_TRANSACTION_ORIGINAL_COMMIT_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_queued_transaction_immediate_commit_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_QUEUED_TRANSACTION_IMMEDIATE_COMMIT_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_queued_transaction_start_queue_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_QUEUED_TRANSACTION_START_QUEUE_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_queued_transaction_end_queue_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_QUEUED_TRANSACTION_END_QUEUE_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  queueing_transaction:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: QUEUEING_TRANSACTION
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  queueing_transaction_original_commit_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: QUEUEING_TRANSACTION_ORIGINAL_COMMIT_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  queueing_transaction_immediate_commit_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: QUEUEING_TRANSACTION_IMMEDIATE_COMMIT_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  queueing_transaction_start_queue_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: QUEUEING_TRANSACTION_START_QUEUE_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - CHANNEL_NAME
+  thread_id:
+    name: THREAD_ID
+    unique: false
+    columns:
+      - THREAD_ID

@@ -16,12 +16,14 @@
 #
 
 name: status_by_user
+type: TABLE
 columns:
   user:
     caseSensitive: true
     dataType: 1
     generated: false
     name: USER
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +32,7 @@ columns:
     dataType: 12
     generated: false
     name: VARIABLE_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +41,14 @@ columns:
     dataType: 12
     generated: false
     name: VARIABLE_VALUE
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
+indexes:
+  user:
+    name: USER
+    unique: true
+    columns:
+      - USER
+      - VARIABLE_NAME

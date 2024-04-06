@@ -1,0 +1,83 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: innodb_redo_log_files
+type: TABLE
+columns:
+  file_id:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: FILE_ID
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  file_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: FILE_NAME
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  start_lsn:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: START_LSN
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  end_lsn:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: END_LSN
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  size_in_bytes:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SIZE_IN_BYTES
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  is_full:
+    caseSensitive: false
+    dataType: -6
+    generated: false
+    name: IS_FULL
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  consumer_level:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: CONSUMER_LEVEL
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true

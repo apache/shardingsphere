@@ -16,21 +16,24 @@
 #
 
 name: session_account_connect_attrs
+type: TABLE
 columns:
   processlist_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: PROCESSLIST_ID
-    primaryKey: false
-    unsigned: false
+    nullable: false
+    primaryKey: true
+    unsigned: true
     visible: true
   attr_name:
     caseSensitive: true
     dataType: 12
     generated: false
     name: ATTR_NAME
-    primaryKey: false
+    nullable: false
+    primaryKey: true
     unsigned: false
     visible: true
   attr_value:
@@ -38,6 +41,7 @@ columns:
     dataType: 12
     generated: false
     name: ATTR_VALUE
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +50,14 @@ columns:
     dataType: 4
     generated: false
     name: ORDINAL_POSITION
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - PROCESSLIST_ID
+      - ATTR_NAME

@@ -16,12 +16,14 @@
 #
 
 name: setup_objects
+type: TABLE
 columns:
   object_type:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: OBJECT_TYPE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +32,7 @@ columns:
     dataType: 12
     generated: false
     name: OBJECT_SCHEMA
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,22 +41,33 @@ columns:
     dataType: 12
     generated: false
     name: OBJECT_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   enabled:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: ENABLED
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   timed:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: TIMED
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
+indexes:
+  object:
+    name: OBJECT
+    unique: true
+    columns:
+      - OBJECT_TYPE
+      - OBJECT_SCHEMA
+      - OBJECT_NAME

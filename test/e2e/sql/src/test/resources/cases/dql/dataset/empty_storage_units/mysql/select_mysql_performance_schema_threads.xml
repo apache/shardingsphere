@@ -34,5 +34,12 @@
         <column name="history" />
         <column name="connection_type" />
         <column name="thread_os_id" />
+        <column name="resource_group" />
+        <column name="execution_engine" />
+        <column name="controlled_memory" />
+        <column name="max_controlled_memory" />
+        <column name="total_memory" />
+        <column name="max_total_memory" />
+        <column name="telemetry_active" />
     </metadata>
 </dataset>

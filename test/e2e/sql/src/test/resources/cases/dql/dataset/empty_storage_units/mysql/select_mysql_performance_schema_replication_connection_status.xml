@@ -28,5 +28,14 @@
         <column name="last_error_number" />
         <column name="last_error_message" />
         <column name="last_error_timestamp" />
+        <column name="last_queued_transaction" />
+        <column name="last_queued_transaction_original_commit_timestamp" />
+        <column name="last_queued_transaction_immediate_commit_timestamp" />
+        <column name="last_queued_transaction_start_queue_timestamp" />
+        <column name="last_queued_transaction_end_queue_timestamp" />
+        <column name="queueing_transaction" />
+        <column name="queueing_transaction_original_commit_timestamp" />
+        <column name="queueing_transaction_immediate_commit_timestamp" />
+        <column name="queueing_transaction_start_queue_timestamp" />
     </metadata>
 </dataset>

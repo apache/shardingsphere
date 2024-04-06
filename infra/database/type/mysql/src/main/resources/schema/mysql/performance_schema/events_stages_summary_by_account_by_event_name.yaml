@@ -16,20 +16,23 @@
 #
 
 name: events_stages_summary_by_account_by_event_name
+type: TABLE
 columns:
   user:
     caseSensitive: true
     dataType: 1
     generated: false
     name: USER
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   host:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 1
     generated: false
     name: HOST
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,46 +41,60 @@ columns:
     dataType: 12
     generated: false
     name: EVENT_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   count_star:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: COUNT_STAR
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   sum_timer_wait:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: SUM_TIMER_WAIT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   min_timer_wait:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: MIN_TIMER_WAIT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   avg_timer_wait:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: AVG_TIMER_WAIT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   max_timer_wait:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: MAX_TIMER_WAIT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
+indexes:
+  account:
+    name: ACCOUNT
+    unique: true
+    columns:
+      - USER
+      - HOST
+      - EVENT_NAME

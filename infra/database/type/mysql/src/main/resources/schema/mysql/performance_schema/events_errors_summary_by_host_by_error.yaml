@@ -1,0 +1,99 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: events_errors_summary_by_host_by_error
+type: TABLE
+columns:
+  host:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: HOST
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  error_number:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: ERROR_NUMBER
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  error_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ERROR_NAME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sql_state:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SQL_STATE
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sum_error_raised:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_ERROR_RAISED
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_error_handled:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: SUM_ERROR_HANDLED
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  first_seen:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: FIRST_SEEN
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_seen:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_SEEN
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  host:
+    name: HOST
+    unique: true
+    columns:
+      - HOST
+      - ERROR_NUMBER

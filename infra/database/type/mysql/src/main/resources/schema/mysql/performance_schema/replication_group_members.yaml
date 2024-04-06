@@ -16,12 +16,14 @@
 #
 
 name: replication_group_members
+type: TABLE
 columns:
   channel_name:
     caseSensitive: false
     dataType: 1
     generated: false
     name: CHANNEL_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,14 +32,16 @@ columns:
     dataType: 1
     generated: false
     name: MEMBER_ID
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   member_host:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 1
     generated: false
     name: MEMBER_HOST
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +50,7 @@ columns:
     dataType: 4
     generated: false
     name: MEMBER_PORT
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +59,34 @@ columns:
     dataType: 1
     generated: false
     name: MEMBER_STATE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  member_role:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: MEMBER_ROLE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  member_version:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: MEMBER_VERSION
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  member_communication_stack:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: MEMBER_COMMUNICATION_STACK
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
