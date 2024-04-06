@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.checker.dialect;
 
-import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.checker.XATransactionPrivilegeChecker;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionPrivilegeCheckException;
 
@@ -46,7 +46,7 @@ public final class MySQLXATransactionPrivilegeChecker implements XATransactionPr
                 checkPrivilege(connection);
             }
         } catch (final SQLException ex) {
-            throw new UnknownSQLException(ex);
+            throw new SQLWrapperException(ex);
         }
     }
     

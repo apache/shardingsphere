@@ -114,8 +114,8 @@ public final class JDBCRepository implements StandalonePersistRepository {
             }
         } catch (final SQLException ex) {
             log.error("Get children {} data by key: {} failed", getType(), key, ex);
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
     }
     
     @Override

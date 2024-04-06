@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.showprocesslist.engine;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.showprocesslist.container.composer.ClusterShowProcessListContainerComposer;
 import org.apache.shardingsphere.test.e2e.showprocesslist.env.ShowProcessListEnvironment;
@@ -77,7 +78,7 @@ class ShowProcessListE2EIT {
                     Statement statement = connection.createStatement()) {
                 statement.executeQuery(SELECT_SLEEP);
             } catch (final SQLException ex) {
-                throw new RuntimeException(ex);
+                throw new SQLWrapperException(ex);
             }
         };
     }
