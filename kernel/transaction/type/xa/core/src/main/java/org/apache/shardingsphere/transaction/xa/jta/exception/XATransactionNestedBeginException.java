@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.transaction.xa.jta.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.TransactionSQLException;
 
 /**
  * XA transaction nested begin exception.
  */
-public final class XATransactionNestedBeginException extends TransactionSQLException {
+public final class XATransactionNestedBeginException extends XATransactionSQLException {
     
     private static final long serialVersionUID = 7761100591709104351L;
     
     public XATransactionNestedBeginException() {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 200, "Can not start new XA transaction in a active transaction.");
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 1, "Can not start new XA transaction in a active transaction.");
     }
 }
