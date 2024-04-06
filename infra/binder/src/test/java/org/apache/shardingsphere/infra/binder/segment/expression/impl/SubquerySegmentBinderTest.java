@@ -44,7 +44,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 public class SubquerySegmentBinderTest {
 
     /**
-     * Test common scenarios
+     * Test common scenarios.
      */
     @Test
     public void assertBind() {
@@ -94,7 +94,7 @@ public class SubquerySegmentBinderTest {
     }
 
     /**
-     * Test the 'With' clause scenario
+     * Test the 'With' clause scenario.
      */
     @Test
     public void assertBindUseWithClause() {
