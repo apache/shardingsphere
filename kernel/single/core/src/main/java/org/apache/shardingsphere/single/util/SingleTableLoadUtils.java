@@ -88,8 +88,8 @@ public final class SingleTableLoadUtils {
         for (ShardingSphereRule each : builtRules) {
             Optional<TableMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(TableMapperRuleAttribute.class);
             if (ruleAttribute.isPresent()) {
-                result.addAll(ruleAttribute.get().getDistributedTableMapper().getTableNames());
-                result.addAll(ruleAttribute.get().getActualTableMapper().getTableNames());
+                result.addAll(ruleAttribute.get().getDistributedTableNames());
+                result.addAll(ruleAttribute.get().getActualTableNames());
             }
         }
         return result;
@@ -108,10 +108,10 @@ public final class SingleTableLoadUtils {
             if (!ruleAttribute.isPresent()) {
                 continue;
             }
-            if (ruleAttribute.get().getEnhancedTableMapper().getTableNames().isEmpty() || !ruleAttribute.get().getDistributedTableMapper().getTableNames().isEmpty()) {
+            if (ruleAttribute.get().getEnhancedTableNames().isEmpty() || !ruleAttribute.get().getDistributedTableNames().isEmpty()) {
                 continue;
             }
-            result.addAll(ruleAttribute.get().getEnhancedTableMapper().getTableNames());
+            result.addAll(ruleAttribute.get().getEnhancedTableNames());
         }
         return result;
     }

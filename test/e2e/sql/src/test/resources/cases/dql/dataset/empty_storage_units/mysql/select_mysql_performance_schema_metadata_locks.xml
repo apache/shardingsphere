@@ -20,6 +20,7 @@
         <column name="object_type" />
         <column name="object_schema" />
         <column name="object_name" />
+        <column name="column_name" />
         <column name="object_instance_begin" />
         <column name="lock_type" />
         <column name="lock_duration" />

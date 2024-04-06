@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.exception.mysql.mapper;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
+import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.connection.TooManyConnectionsException;

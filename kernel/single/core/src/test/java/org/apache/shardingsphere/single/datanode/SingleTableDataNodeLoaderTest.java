@@ -98,7 +98,7 @@ class SingleTableDataNodeLoaderTest {
     void assertLoad() {
         ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
         TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
-        when(ruleAttribute.getDistributedTableMapper().getTableNames()).thenReturn(Arrays.asList("salary", "employee", "student"));
+        when(ruleAttribute.getDistributedTableNames()).thenReturn(Arrays.asList("salary", "employee", "student"));
         when(builtRule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, databaseType, dataSourceMap, Collections.singleton(builtRule), configuredSingleTables);
         assertFalse(actual.containsKey("employee"));

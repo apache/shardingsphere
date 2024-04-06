@@ -20,5 +20,9 @@
         <column name="name" />
         <column name="enabled" />
         <column name="timed" />
+        <column name="properties" />
+        <column name="flags" />
+        <column name="volatility" />
+        <column name="documentation" />
     </metadata>
 </dataset>

@@ -87,7 +87,7 @@ public final class GenericSchemaBuilder {
     private static Collection<String> getAllTableNames(final Collection<ShardingSphereRule> rules) {
         Collection<String> result = new HashSet<>();
         for (ShardingSphereRule each : rules) {
-            each.getAttributes().findAttribute(TableMapperRuleAttribute.class).ifPresent(mapperRule -> result.addAll(mapperRule.getLogicTableMapper().getTableNames()));
+            each.getAttributes().findAttribute(TableMapperRuleAttribute.class).ifPresent(mapperRule -> result.addAll(mapperRule.getLogicTableNames()));
         }
         return result;
     }

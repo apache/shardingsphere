@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.data.UnsupportedDataTypeConversionException;
-import org.apache.shardingsphere.infra.exception.data.UnsupportedStreamCharsetConversionException;
+import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
+import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedStreamCharsetConversionException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.stream.AbstractStreamQueryResult;
 

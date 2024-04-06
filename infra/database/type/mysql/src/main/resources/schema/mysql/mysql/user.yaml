@@ -16,9 +16,10 @@
 #
 
 name: user
+type: TABLE
 columns:
   host:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 1
     generated: false
     name: Host
@@ -37,7 +38,7 @@ columns:
     visible: true
   select_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Select_priv
     nullable: false
@@ -46,7 +47,7 @@ columns:
     visible: true
   insert_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Insert_priv
     nullable: false
@@ -55,7 +56,7 @@ columns:
     visible: true
   update_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Update_priv
     nullable: false
@@ -64,7 +65,7 @@ columns:
     visible: true
   delete_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Delete_priv
     nullable: false
@@ -73,7 +74,7 @@ columns:
     visible: true
   create_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Create_priv
     nullable: false
@@ -82,7 +83,7 @@ columns:
     visible: true
   drop_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Drop_priv
     nullable: false
@@ -91,7 +92,7 @@ columns:
     visible: true
   reload_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Reload_priv
     nullable: false
@@ -100,7 +101,7 @@ columns:
     visible: true
   shutdown_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Shutdown_priv
     nullable: false
@@ -109,7 +110,7 @@ columns:
     visible: true
   process_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Process_priv
     nullable: false
@@ -118,7 +119,7 @@ columns:
     visible: true
   file_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: File_priv
     nullable: false
@@ -127,7 +128,7 @@ columns:
     visible: true
   grant_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Grant_priv
     nullable: false
@@ -136,7 +137,7 @@ columns:
     visible: true
   references_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: References_priv
     nullable: false
@@ -145,7 +146,7 @@ columns:
     visible: true
   index_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Index_priv
     nullable: false
@@ -154,7 +155,7 @@ columns:
     visible: true
   alter_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Alter_priv
     nullable: false
@@ -163,7 +164,7 @@ columns:
     visible: true
   show_db_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Show_db_priv
     nullable: false
@@ -172,7 +173,7 @@ columns:
     visible: true
   super_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Super_priv
     nullable: false
@@ -181,7 +182,7 @@ columns:
     visible: true
   create_tmp_table_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Create_tmp_table_priv
     nullable: false
@@ -190,7 +191,7 @@ columns:
     visible: true
   lock_tables_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Lock_tables_priv
     nullable: false
@@ -199,7 +200,7 @@ columns:
     visible: true
   execute_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Execute_priv
     nullable: false
@@ -208,7 +209,7 @@ columns:
     visible: true
   repl_slave_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Repl_slave_priv
     nullable: false
@@ -217,7 +218,7 @@ columns:
     visible: true
   repl_client_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Repl_client_priv
     nullable: false
@@ -226,7 +227,7 @@ columns:
     visible: true
   create_view_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Create_view_priv
     nullable: false
@@ -235,7 +236,7 @@ columns:
     visible: true
   show_view_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Show_view_priv
     nullable: false
@@ -244,7 +245,7 @@ columns:
     visible: true
   create_routine_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Create_routine_priv
     nullable: false
@@ -253,7 +254,7 @@ columns:
     visible: true
   alter_routine_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Alter_routine_priv
     nullable: false
@@ -262,7 +263,7 @@ columns:
     visible: true
   create_user_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Create_user_priv
     nullable: false
@@ -271,7 +272,7 @@ columns:
     visible: true
   event_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Event_priv
     nullable: false
@@ -280,7 +281,7 @@ columns:
     visible: true
   trigger_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Trigger_priv
     nullable: false
@@ -289,7 +290,7 @@ columns:
     visible: true
   create_tablespace_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Create_tablespace_priv
     nullable: false
@@ -298,7 +299,7 @@ columns:
     visible: true
   ssl_type:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: ssl_type
     nullable: false
@@ -382,13 +383,13 @@ columns:
     dataType: -1
     generated: false
     name: authentication_string
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   password_expired:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: password_expired
     nullable: false
@@ -400,7 +401,7 @@ columns:
     dataType: 93
     generated: false
     name: password_last_changed
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -409,13 +410,13 @@ columns:
     dataType: 5
     generated: false
     name: password_lifetime
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   account_locked:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: account_locked
     nullable: false
@@ -424,7 +425,7 @@ columns:
     visible: true
   create_role_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Create_role_priv
     nullable: false
@@ -433,7 +434,7 @@ columns:
     visible: true
   drop_role_priv:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Drop_role_priv
     nullable: false
@@ -445,25 +446,25 @@ columns:
     dataType: 5
     generated: false
     name: Password_reuse_history
-    nullable: false
+    nullable: true
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true
   password_reuse_time:
     caseSensitive: false
     dataType: 5
     generated: false
     name: Password_reuse_time
-    nullable: false
+    nullable: true
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true
   password_require_current:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Password_require_current
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -472,11 +473,14 @@ columns:
     dataType: -1
     generated: false
     name: User_attributes
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - Host
+      - User

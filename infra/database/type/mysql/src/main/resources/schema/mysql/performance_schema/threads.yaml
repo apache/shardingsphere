@@ -16,13 +16,15 @@
 #
 
 name: threads
+type: TABLE
 columns:
   thread_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: THREAD_ID
-    primaryKey: false
+    nullable: false
+    primaryKey: true
     unsigned: true
     visible: true
   name:
@@ -30,6 +32,7 @@ columns:
     dataType: 12
     generated: false
     name: NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,14 +41,16 @@ columns:
     dataType: 12
     generated: false
     name: TYPE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   processlist_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: PROCESSLIST_ID
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
@@ -54,6 +59,7 @@ columns:
     dataType: 12
     generated: false
     name: PROCESSLIST_USER
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +68,7 @@ columns:
     dataType: 12
     generated: false
     name: PROCESSLIST_HOST
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +77,7 @@ columns:
     dataType: 12
     generated: false
     name: PROCESSLIST_DB
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,14 +86,16 @@ columns:
     dataType: 12
     generated: false
     name: PROCESSLIST_COMMAND
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   processlist_time:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: PROCESSLIST_TIME
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -94,6 +104,7 @@ columns:
     dataType: 12
     generated: false
     name: PROCESSLIST_STATE
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -102,14 +113,16 @@ columns:
     dataType: -1
     generated: false
     name: PROCESSLIST_INFO
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   parent_thread_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: PARENT_THREAD_ID
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
@@ -118,22 +131,25 @@ columns:
     dataType: 12
     generated: false
     name: ROLE
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   instrumented:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: INSTRUMENTED
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   history:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: HISTORY
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -142,14 +158,116 @@ columns:
     dataType: 12
     generated: false
     name: CONNECTION_TYPE
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   thread_os_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: THREAD_OS_ID
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
+  resource_group:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: RESOURCE_GROUP
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  execution_engine:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: EXECUTION_ENGINE
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  controlled_memory:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: CONTROLLED_MEMORY
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_controlled_memory:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MAX_CONTROLLED_MEMORY
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  total_memory:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: TOTAL_MEMORY
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_total_memory:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MAX_TOTAL_MEMORY
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  telemetry_active:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: TELEMETRY_ACTIVE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - THREAD_ID
+  resource_group:
+    name: RESOURCE_GROUP
+    unique: false
+    columns:
+      - RESOURCE_GROUP
+  processlist_account:
+    name: PROCESSLIST_ACCOUNT
+    unique: false
+    columns:
+      - PROCESSLIST_USER
+      - PROCESSLIST_HOST
+  thread_os_id:
+    name: THREAD_OS_ID
+    unique: false
+    columns:
+      - THREAD_OS_ID
+  processlist_id:
+    name: PROCESSLIST_ID
+    unique: false
+    columns:
+      - PROCESSLIST_ID
+  processlist_host:
+    name: PROCESSLIST_HOST
+    unique: false
+    columns:
+      - PROCESSLIST_HOST
+  name:
+    name: NAME
+    unique: false
+    columns:
+      - NAME

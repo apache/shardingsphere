@@ -17,36 +17,37 @@
 
 package org.apache.shardingsphere.encrypt.rule.attribute;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
-import org.apache.shardingsphere.infra.rule.attribute.table.TableNamesMapper;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Encrypt table mapper rule attribute.
  */
 public final class EncryptTableMapperRuleAttribute implements TableMapperRuleAttribute {
     
-    private final TableNamesMapper logicalTableMapper;
+    private final CaseInsensitiveSet<String> logicalTableMapper;
     
     public EncryptTableMapperRuleAttribute(final Collection<EncryptTableRuleConfiguration> tables) {
-        logicalTableMapper = new TableNamesMapper();
-        tables.stream().map(EncryptTableRuleConfiguration::getName).forEach(logicalTableMapper::put);
+        logicalTableMapper = new CaseInsensitiveSet<>();
+        tables.stream().map(EncryptTableRuleConfiguration::getName).forEach(logicalTableMapper::add);
     }
     
     @Override
-    public TableNamesMapper getLogicTableMapper() {
+    public Collection<String> getLogicTableNames() {
         return logicalTableMapper;
     }
     
     @Override
-    public TableNamesMapper getDistributedTableMapper() {
-        return new TableNamesMapper();
+    public Collection<String> getDistributedTableNames() {
+        return Collections.emptySet();
     }
     
     @Override
-    public TableNamesMapper getEnhancedTableMapper() {
+    public Collection<String> getEnhancedTableNames() {
         return logicalTableMapper;
     }
 }

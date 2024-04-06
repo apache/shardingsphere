@@ -122,7 +122,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(getDatabaseType()).createProjectionsContext(getSqlStatement().getProjections(), groupByContext, orderByContext);
-        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
+        paginationContext = new PaginationContextEngine(getDatabaseType()).createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
         String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
         containsEnhancedTable = isContainsEnhancedTable(metaData, databaseName, getTablesContext().getTableNames());
     }
@@ -130,7 +130,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     private boolean isContainsEnhancedTable(final ShardingSphereMetaData metaData, final String databaseName, final Collection<String> tableNames) {
         for (TableMapperRuleAttribute each : getTableMapperRuleAttributes(metaData, databaseName)) {
             for (String tableName : tableNames) {
-                if (each.getEnhancedTableMapper().contains(tableName)) {
+                if (each.getEnhancedTableNames().contains(tableName)) {
                     return true;
                 }
             }
@@ -393,6 +393,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     @Override
     public void setUpParameters(final List<Object> params) {
-        paginationContext = new PaginationContextEngine().createPaginationContext(getSqlStatement(), projectionsContext, params, whereSegments);
+        paginationContext = new PaginationContextEngine(getDatabaseType()).createPaginationContext(getSqlStatement(), projectionsContext, params, whereSegments);
     }
 }

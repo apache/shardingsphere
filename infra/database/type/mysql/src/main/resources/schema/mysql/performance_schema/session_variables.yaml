@@ -16,13 +16,15 @@
 #
 
 name: session_variables
+type: TABLE
 columns:
   variable_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: VARIABLE_NAME
-    primaryKey: false
+    nullable: false
+    primaryKey: true
     unsigned: false
     visible: true
   variable_value:
@@ -30,6 +32,13 @@ columns:
     dataType: 12
     generated: false
     name: VARIABLE_VALUE
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - VARIABLE_NAME

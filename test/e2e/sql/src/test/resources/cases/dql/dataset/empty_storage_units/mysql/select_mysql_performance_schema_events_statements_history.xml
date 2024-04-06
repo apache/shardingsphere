@@ -58,5 +58,10 @@
         <column name="nesting_event_id" />
         <column name="nesting_event_type" />
         <column name="nesting_event_level" />
+        <column name="statement_id" />
+        <column name="cpu_time" />
+        <column name="max_controlled_memory" />
+        <column name="max_total_memory" />
+        <column name="execution_engine" />
     </metadata>
 </dataset>

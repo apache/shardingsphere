@@ -31,7 +31,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.base.seata.at.exception.SeataATConfigurationException;
+import org.apache.shardingsphere.transaction.base.seata.at.exception.SeataATApplicationIDNotFoundException;
 import org.apache.shardingsphere.transaction.base.seata.at.exception.SeataATDisabledException;
 import org.apache.shardingsphere.transaction.exception.TransactionTimeoutException;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
@@ -74,7 +74,7 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     }
     
     private void initSeataRPCClient() {
-        ShardingSpherePreconditions.checkNotNull(applicationId, () -> new SeataATConfigurationException("Please config application id within seata.conf file"));
+        ShardingSpherePreconditions.checkNotNull(applicationId, SeataATApplicationIDNotFoundException::new);
         TMClient.init(applicationId, transactionServiceGroup);
         RMClient.init(applicationId, transactionServiceGroup);
     }

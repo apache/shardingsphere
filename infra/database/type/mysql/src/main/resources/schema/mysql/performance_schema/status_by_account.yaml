@@ -16,20 +16,23 @@
 #
 
 name: status_by_account
+type: TABLE
 columns:
   user:
     caseSensitive: true
     dataType: 1
     generated: false
     name: USER
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   host:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 1
     generated: false
     name: HOST
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +41,7 @@ columns:
     dataType: 12
     generated: false
     name: VARIABLE_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +50,15 @@ columns:
     dataType: 12
     generated: false
     name: VARIABLE_VALUE
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
+indexes:
+  account:
+    name: ACCOUNT
+    unique: true
+    columns:
+      - USER
+      - HOST
+      - VARIABLE_NAME

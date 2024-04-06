@@ -16,12 +16,14 @@
 #
 
 name: metadata_locks
+type: TABLE
 columns:
   object_type:
     caseSensitive: false
     dataType: 12
     generated: false
     name: OBJECT_TYPE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +32,7 @@ columns:
     dataType: 12
     generated: false
     name: OBJECT_SCHEMA
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,15 +41,26 @@ columns:
     dataType: 12
     generated: false
     name: OBJECT_NAME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  column_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COLUMN_NAME
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   object_instance_begin:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: OBJECT_INSTANCE_BEGIN
-    primaryKey: false
+    nullable: false
+    primaryKey: true
     unsigned: true
     visible: true
   lock_type:
@@ -54,6 +68,7 @@ columns:
     dataType: 12
     generated: false
     name: LOCK_TYPE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +77,7 @@ columns:
     dataType: 12
     generated: false
     name: LOCK_DURATION
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +86,7 @@ columns:
     dataType: 12
     generated: false
     name: LOCK_STATUS
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,22 +95,45 @@ columns:
     dataType: 12
     generated: false
     name: SOURCE
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   owner_thread_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: OWNER_THREAD_ID
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   owner_event_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: OWNER_EVENT_ID
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - OBJECT_INSTANCE_BEGIN
+  owner_thread_id:
+    name: OWNER_THREAD_ID
+    unique: false
+    columns:
+      - OWNER_THREAD_ID
+      - OWNER_EVENT_ID
+  object_type:
+    name: OBJECT_TYPE
+    unique: false
+    columns:
+      - OBJECT_TYPE
+      - OBJECT_SCHEMA
+      - OBJECT_NAME
+      - COLUMN_NAME

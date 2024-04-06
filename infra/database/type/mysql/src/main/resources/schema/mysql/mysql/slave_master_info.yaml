@@ -16,6 +16,7 @@
 #
 
 name: slave_master_info
+type: TABLE
 columns:
   number_of_lines:
     caseSensitive: false
@@ -37,7 +38,7 @@ columns:
     visible: true
   master_log_pos:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: Master_log_pos
     nullable: false
@@ -45,11 +46,11 @@ columns:
     unsigned: true
     visible: true
   host:
-    caseSensitive: true
-    dataType: 1
+    caseSensitive: false
+    dataType: 12
     generated: false
     name: Host
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -58,7 +59,7 @@ columns:
     dataType: -1
     generated: false
     name: User_name
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -67,7 +68,7 @@ columns:
     dataType: -1
     generated: false
     name: User_password
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -103,7 +104,7 @@ columns:
     dataType: -1
     generated: false
     name: Ssl_ca
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -112,7 +113,7 @@ columns:
     dataType: -1
     generated: false
     name: Ssl_capath
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -121,7 +122,7 @@ columns:
     dataType: -1
     generated: false
     name: Ssl_cert
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -130,7 +131,7 @@ columns:
     dataType: -1
     generated: false
     name: Ssl_cipher
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -139,7 +140,7 @@ columns:
     dataType: -1
     generated: false
     name: Ssl_key
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -166,7 +167,7 @@ columns:
     dataType: -1
     generated: false
     name: Bind
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -175,7 +176,7 @@ columns:
     dataType: -1
     generated: false
     name: Ignored_server_ids
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -184,13 +185,13 @@ columns:
     dataType: -1
     generated: false
     name: Uuid
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   retry_count:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: Retry_count
     nullable: false
@@ -202,7 +203,7 @@ columns:
     dataType: -1
     generated: false
     name: Ssl_crl
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -211,7 +212,7 @@ columns:
     dataType: -1
     generated: false
     name: Ssl_crlpath
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -226,7 +227,7 @@ columns:
     visible: true
   channel_name:
     caseSensitive: false
-    dataType: 1
+    dataType: 12
     generated: false
     name: Channel_name
     nullable: false
@@ -238,6 +239,78 @@ columns:
     dataType: -1
     generated: false
     name: Tls_version
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  public_key_path:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Public_key_path
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  get_public_key:
+    caseSensitive: false
+    dataType: -6
+    generated: false
+    name: Get_public_key
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  network_namespace:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Network_namespace
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  master_compression_algorithm:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: Master_compression_algorithm
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  master_zstd_compression_level:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: Master_zstd_compression_level
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  tls_ciphersuites:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Tls_ciphersuites
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  source_connection_auto_failover:
+    caseSensitive: false
+    dataType: -6
+    generated: false
+    name: Source_connection_auto_failover
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  gtid_only:
+    caseSensitive: false
+    dataType: -6
+    generated: false
+    name: Gtid_only
     nullable: false
     primaryKey: false
     unsigned: false
@@ -245,4 +318,6 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - Channel_name

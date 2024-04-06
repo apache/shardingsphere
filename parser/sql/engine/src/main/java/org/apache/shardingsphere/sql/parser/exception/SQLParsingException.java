@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.sql.parser.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
 
 /**
  * SQL parsing exception.
  */
-public final class SQLParsingException extends SyntaxSQLException {
+public final class SQLParsingException extends ParseSQLException {
     
     private static final long serialVersionUID = -6408790652103666096L;
     

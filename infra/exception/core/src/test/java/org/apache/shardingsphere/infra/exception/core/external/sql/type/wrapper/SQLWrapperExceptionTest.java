@@ -31,6 +31,6 @@ class SQLWrapperExceptionTest {
         SQLException actual = new SQLWrapperException(new SQLException("reason", "1", 10)).toSQLException();
         assertThat(actual.getSQLState(), is("1"));
         assertThat(actual.getErrorCode(), is(10));
-        assertThat(actual.getMessage(), is("reason"));
+        assertThat(actual.getMessage(), is(System.lineSeparator() + "More details: reason"));
     }
 }

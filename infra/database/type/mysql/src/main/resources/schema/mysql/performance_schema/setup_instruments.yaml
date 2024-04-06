@@ -16,28 +16,74 @@
 #
 
 name: setup_instruments
+type: TABLE
 columns:
   name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: NAME
-    primaryKey: false
+    nullable: false
+    primaryKey: true
     unsigned: false
     visible: true
   enabled:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: ENABLED
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   timed:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: TIMED
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
+  properties:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: PROPERTIES
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  flags:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: FLAGS
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  volatility:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: VOLATILITY
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  documentation:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: DOCUMENTATION
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - NAME

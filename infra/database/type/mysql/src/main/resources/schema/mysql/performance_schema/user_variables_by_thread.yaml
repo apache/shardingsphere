@@ -16,13 +16,15 @@
 #
 
 name: user_variables_by_thread
+type: TABLE
 columns:
   thread_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: THREAD_ID
-    primaryKey: false
+    nullable: false
+    primaryKey: true
     unsigned: true
     visible: true
   variable_name:
@@ -30,7 +32,8 @@ columns:
     dataType: 12
     generated: false
     name: VARIABLE_NAME
-    primaryKey: false
+    nullable: false
+    primaryKey: true
     unsigned: false
     visible: true
   variable_value:
@@ -38,6 +41,14 @@ columns:
     dataType: -4
     generated: false
     name: VARIABLE_VALUE
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - THREAD_ID
+      - VARIABLE_NAME

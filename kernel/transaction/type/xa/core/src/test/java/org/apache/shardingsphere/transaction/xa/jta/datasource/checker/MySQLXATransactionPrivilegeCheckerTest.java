@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.checker;
 
 import org.apache.shardingsphere.transaction.xa.jta.datasource.checker.dialect.MySQLXATransactionPrivilegeChecker;
-import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionCheckPrivilegeFailedException;
-import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionPrivilegeException;
+import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionPrivilegeCheckException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -86,7 +85,7 @@ class MySQLXATransactionPrivilegeCheckerTest {
     void assertCheckPrivilegeLackPrivilegesInMySQL8() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(8);
-        assertThrows(XATransactionPrivilegeException.class, () -> new MySQLXATransactionPrivilegeChecker().check(dataSource));
+        assertThrows(XATransactionPrivilegeCheckException.class, () -> new MySQLXATransactionPrivilegeChecker().check(dataSource));
     }
     
     @Test
@@ -94,6 +93,6 @@ class MySQLXATransactionPrivilegeCheckerTest {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(8);
         when(resultSet.next()).thenThrow(new SQLException(""));
-        assertThrows(XATransactionCheckPrivilegeFailedException.class, () -> new MySQLXATransactionPrivilegeChecker().check(dataSource));
+        assertThrows(XATransactionPrivilegeCheckException.class, () -> new MySQLXATransactionPrivilegeChecker().check(dataSource));
     }
 }

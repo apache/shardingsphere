@@ -1,0 +1,182 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: data_locks
+type: TABLE
+columns:
+  engine:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ENGINE
+    nullable: false
+    primaryKey: true
+    unsigned: false
+    visible: true
+  engine_lock_id:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ENGINE_LOCK_ID
+    nullable: false
+    primaryKey: true
+    unsigned: false
+    visible: true
+  engine_transaction_id:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: ENGINE_TRANSACTION_ID
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  thread_id:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: THREAD_ID
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  event_id:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: EVENT_ID
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  object_schema:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: OBJECT_SCHEMA
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  object_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: OBJECT_NAME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  partition_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PARTITION_NAME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  subpartition_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SUBPARTITION_NAME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  index_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: INDEX_NAME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  object_instance_begin:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: OBJECT_INSTANCE_BEGIN
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  lock_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: LOCK_TYPE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lock_mode:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: LOCK_MODE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lock_status:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: LOCK_STATUS
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lock_data:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: LOCK_DATA
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - ENGINE_LOCK_ID
+      - ENGINE
+  object_schema:
+    name: OBJECT_SCHEMA
+    unique: false
+    columns:
+      - OBJECT_SCHEMA
+      - OBJECT_NAME
+      - PARTITION_NAME
+      - SUBPARTITION_NAME
+  thread_id:
+    name: THREAD_ID
+    unique: false
+    columns:
+      - THREAD_ID
+      - EVENT_ID
+  engine_transaction_id:
+    name: ENGINE_TRANSACTION_ID
+    unique: false
+    columns:
+      - ENGINE_TRANSACTION_ID
+      - ENGINE

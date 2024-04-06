@@ -23,5 +23,6 @@
         <column name="cost_value" />
         <column name="last_update" />
         <column name="comment" />
+        <column name="default_value" />
     </metadata>
 </dataset>

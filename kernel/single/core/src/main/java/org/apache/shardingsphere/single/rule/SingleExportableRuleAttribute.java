@@ -34,6 +34,6 @@ public final class SingleExportableRuleAttribute implements ExportableRuleAttrib
     
     @Override
     public Map<String, Object> getExportData() {
-        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableMapperRuleAttribute.getLogicTableMapper().getTableNames());
+        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableMapperRuleAttribute.getLogicTableNames());
     }
 }

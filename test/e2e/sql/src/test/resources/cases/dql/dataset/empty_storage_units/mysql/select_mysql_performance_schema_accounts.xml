@@ -21,5 +21,7 @@
         <column name="host" />
         <column name="current_connections" />
         <column name="total_connections" />
+        <column name="max_session_controlled_memory" />
+        <column name="max_session_total_memory" />
     </metadata>
 </dataset>

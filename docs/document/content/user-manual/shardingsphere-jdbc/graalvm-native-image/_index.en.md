@@ -17,6 +17,7 @@ JDK through `SDKMAN!`. Same reason applicable to downstream distributions of `Gr
 and `Mandrel`.
 
 - GraalVM CE 23.1.2 For JDK 21.0.2, corresponding to `21.0.2-graalce` of SDKMAN!
+- GraalVM CE 24.0.0 For JDK 22, corresponding to `22-graalce` of SDKMAN!
 
 ### Maven Ecology
 

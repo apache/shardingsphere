@@ -30,11 +30,14 @@ public final class CaseInsensitiveIdentifier {
     private final CaseInsensitiveString original;
     
     public CaseInsensitiveIdentifier(final String identifier) {
-        original = new CaseInsensitiveString(identifier);
+        original = null == identifier ? null : new CaseInsensitiveString(identifier);
     }
     
     @Override
     public String toString() {
+        if (null == original) {
+            return null;
+        }
         return original.toString();
     }
 }

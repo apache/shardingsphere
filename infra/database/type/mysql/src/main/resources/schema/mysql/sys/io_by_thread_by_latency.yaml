@@ -16,12 +16,14 @@
 #
 
 name: io_by_thread_by_latency
+type: TABLE
 columns:
   user:
     caseSensitive: false
     dataType: 12
     generated: false
     name: user
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,54 +32,61 @@ columns:
     dataType: 3
     generated: false
     name: total
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   total_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: total_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   min_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: min_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   avg_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: avg_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   max_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: max_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   thread_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: thread_id
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   processlist_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: processlist_id
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true

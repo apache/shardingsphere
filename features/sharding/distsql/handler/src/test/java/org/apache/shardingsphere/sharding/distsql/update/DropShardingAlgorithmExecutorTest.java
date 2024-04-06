@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.exception.type.InUsedAlgorithmException;
-import org.apache.shardingsphere.infra.algorithm.core.exception.type.UnregisteredAlgorithmException;
-import org.apache.shardingsphere.infra.exception.metadata.rule.RuleDefinitionException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.InUsedAlgorithmException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.RuleDefinitionException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;

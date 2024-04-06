@@ -16,6 +16,7 @@
 #
 
 name: general_log
+type: TABLE
 columns:
   event_time:
     caseSensitive: false
@@ -37,7 +38,7 @@ columns:
     visible: true
   thread_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: thread_id
     nullable: false

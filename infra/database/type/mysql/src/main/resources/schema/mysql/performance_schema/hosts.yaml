@@ -16,28 +16,56 @@
 #
 
 name: hosts
+type: TABLE
 columns:
   host:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 1
     generated: false
     name: HOST
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   current_connections:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: CURRENT_CONNECTIONS
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   total_connections:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: TOTAL_CONNECTIONS
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
+  max_session_controlled_memory:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MAX_SESSION_CONTROLLED_MEMORY
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_session_total_memory:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MAX_SESSION_TOTAL_MEMORY
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+indexes:
+  host:
+    name: HOST
+    unique: true
+    columns:
+      - HOST

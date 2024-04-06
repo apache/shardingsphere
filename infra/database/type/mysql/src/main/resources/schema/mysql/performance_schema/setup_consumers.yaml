@@ -16,20 +16,29 @@
 #
 
 name: setup_consumers
+type: TABLE
 columns:
   name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: NAME
-    primaryKey: false
+    nullable: false
+    primaryKey: true
     unsigned: false
     visible: true
   enabled:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: ENABLED
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - NAME

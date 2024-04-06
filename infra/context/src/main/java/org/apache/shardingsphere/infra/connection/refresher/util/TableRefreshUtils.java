@@ -64,7 +64,7 @@ public final class TableRefreshUtils {
      * @return whether single table
      */
     public static boolean isSingleTable(final String tableName, final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class).stream().noneMatch(each -> each.getDistributedTableMapper().contains(tableName));
+        return database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class).stream().noneMatch(each -> each.getDistributedTableNames().contains(tableName));
     }
     
     /**

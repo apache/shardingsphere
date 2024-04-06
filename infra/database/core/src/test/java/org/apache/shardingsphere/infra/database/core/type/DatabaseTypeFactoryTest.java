@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.core.type;
 
+import org.apache.shardingsphere.infra.database.core.exception.UnsupportedStorageTypeException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

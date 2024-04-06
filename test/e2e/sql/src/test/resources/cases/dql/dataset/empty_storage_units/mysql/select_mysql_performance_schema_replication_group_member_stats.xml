@@ -26,5 +26,9 @@
         <column name="count_transactions_rows_validating" />
         <column name="transactions_committed_all_members" />
         <column name="last_conflict_free_transaction" />
+        <column name="count_transactions_remote_in_applier_queue" />
+        <column name="count_transactions_remote_applied" />
+        <column name="count_transactions_local_proposed" />
+        <column name="count_transactions_local_rollback" />
     </metadata>
 </dataset>

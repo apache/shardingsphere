@@ -21,6 +21,10 @@
         <column name="wait_age"/>
         <column name="wait_age_secs"/>
         <column name="locked_table"/>
+        <column name="locked_table_schema"/>
+        <column name="locked_table_name"/>
+        <column name="locked_table_partition"/>
+        <column name="locked_table_subpartition"/>
         <column name="locked_index"/>
         <column name="locked_type"/>
         <column name="waiting_trx_id"/>

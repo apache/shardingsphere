@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.c
 /**
  * Driver connection exception.
  */
-public class DriverConnectionException extends ConnectionSQLException {
+public abstract class DriverConnectionException extends ConnectionSQLException {
     
     private static final long serialVersionUID = -4543547821709772632L;
     
-    private static final int DRIVER_CODE = 1;
+    private static final int DRIVER_CODE = 2;
     
     protected DriverConnectionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, getErrorCode(errorCode), reason, messageArgs);

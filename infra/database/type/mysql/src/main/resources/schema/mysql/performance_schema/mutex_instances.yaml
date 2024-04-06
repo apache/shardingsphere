@@ -16,28 +16,48 @@
 #
 
 name: mutex_instances
+type: TABLE
 columns:
   name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   object_instance_begin:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: OBJECT_INSTANCE_BEGIN
-    primaryKey: false
+    nullable: false
+    primaryKey: true
     unsigned: true
     visible: true
   locked_by_thread_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: LOCKED_BY_THREAD_ID
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - OBJECT_INSTANCE_BEGIN
+  locked_by_thread_id:
+    name: LOCKED_BY_THREAD_ID
+    unique: false
+    columns:
+      - LOCKED_BY_THREAD_ID
+  name:
+    name: NAME
+    unique: false
+    columns:
+      - NAME

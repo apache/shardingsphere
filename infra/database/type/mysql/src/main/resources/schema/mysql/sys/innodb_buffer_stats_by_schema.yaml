@@ -16,52 +16,59 @@
 #
 
 name: innodb_buffer_stats_by_schema
+type: TABLE
 columns:
   object_schema:
     caseSensitive: false
     dataType: -1
     generated: false
     name: object_schema
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   allocated:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: allocated
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   data:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: data
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   pages:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: pages
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   pages_hashed:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: pages_hashed
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   pages_old:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: pages_old
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +77,7 @@ columns:
     dataType: 3
     generated: false
     name: rows_cached
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

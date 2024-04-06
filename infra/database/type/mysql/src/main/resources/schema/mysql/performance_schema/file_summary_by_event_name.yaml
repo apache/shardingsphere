@@ -16,188 +16,218 @@
 #
 
 name: file_summary_by_event_name
+type: TABLE
 columns:
   event_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: EVENT_NAME
-    primaryKey: false
+    nullable: false
+    primaryKey: true
     unsigned: false
     visible: true
   count_star:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: COUNT_STAR
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   sum_timer_wait:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: SUM_TIMER_WAIT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   min_timer_wait:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: MIN_TIMER_WAIT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   avg_timer_wait:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: AVG_TIMER_WAIT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   max_timer_wait:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: MAX_TIMER_WAIT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   count_read:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: COUNT_READ
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   sum_timer_read:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: SUM_TIMER_READ
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   min_timer_read:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: MIN_TIMER_READ
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   avg_timer_read:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: AVG_TIMER_READ
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   max_timer_read:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: MAX_TIMER_READ
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   sum_number_of_bytes_read:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: SUM_NUMBER_OF_BYTES_READ
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   count_write:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: COUNT_WRITE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   sum_timer_write:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: SUM_TIMER_WRITE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   min_timer_write:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: MIN_TIMER_WRITE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   avg_timer_write:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: AVG_TIMER_WRITE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   max_timer_write:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: MAX_TIMER_WRITE
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   sum_number_of_bytes_write:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: SUM_NUMBER_OF_BYTES_WRITE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   count_misc:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: COUNT_MISC
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   sum_timer_misc:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: SUM_TIMER_MISC
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   min_timer_misc:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: MIN_TIMER_MISC
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   avg_timer_misc:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: AVG_TIMER_MISC
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   max_timer_misc:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: MAX_TIMER_MISC
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - EVENT_NAME

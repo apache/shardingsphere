@@ -16,6 +16,7 @@
 #
 
 name: COLLATION_CHARACTER_SET_APPLICABILITY
+type: TABLE
 columns:
   collation_name:
     caseSensitive: false

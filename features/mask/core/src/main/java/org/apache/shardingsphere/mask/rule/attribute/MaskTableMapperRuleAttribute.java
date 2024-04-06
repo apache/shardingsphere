@@ -17,36 +17,37 @@
 
 package org.apache.shardingsphere.mask.rule.attribute;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
-import org.apache.shardingsphere.infra.rule.attribute.table.TableNamesMapper;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Mask table mapper rule attribute.
  */
 public final class MaskTableMapperRuleAttribute implements TableMapperRuleAttribute {
     
-    private final TableNamesMapper logicalTableMapper;
+    private final CaseInsensitiveSet<String> logicalTableMapper;
     
     public MaskTableMapperRuleAttribute(final Collection<MaskTableRuleConfiguration> tables) {
-        logicalTableMapper = new TableNamesMapper();
-        tables.stream().map(MaskTableRuleConfiguration::getName).forEach(logicalTableMapper::put);
+        logicalTableMapper = new CaseInsensitiveSet<>();
+        tables.stream().map(MaskTableRuleConfiguration::getName).forEach(logicalTableMapper::add);
     }
     
     @Override
-    public TableNamesMapper getLogicTableMapper() {
+    public Collection<String> getLogicTableNames() {
         return logicalTableMapper;
     }
     
     @Override
-    public TableNamesMapper getDistributedTableMapper() {
-        return new TableNamesMapper();
+    public Collection<String> getDistributedTableNames() {
+        return Collections.emptySet();
     }
     
     @Override
-    public TableNamesMapper getEnhancedTableMapper() {
-        return new TableNamesMapper();
+    public Collection<String> getEnhancedTableNames() {
+        return Collections.emptySet();
     }
 }
