@@ -49,5 +49,9 @@
         <column name="sum_sort_scan" />
         <column name="sum_no_index_used" />
         <column name="sum_no_good_index_used" />
+        <column name="sum_cpu_time" />
+        <column name="max_controlled_memory" />
+        <column name="max_total_memory" />
+        <column name="count_secondary" />
     </metadata>
 </dataset>

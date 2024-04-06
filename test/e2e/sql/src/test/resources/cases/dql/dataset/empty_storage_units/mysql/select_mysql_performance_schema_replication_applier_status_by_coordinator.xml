@@ -23,5 +23,14 @@
         <column name="last_error_number" />
         <column name="last_error_message" />
         <column name="last_error_timestamp" />
+        <column name="last_processed_transaction" />
+        <column name="last_processed_transaction_original_commit_timestamp" />
+        <column name="last_processed_transaction_immediate_commit_timestamp" />
+        <column name="last_processed_transaction_start_buffer_timestamp" />
+        <column name="last_processed_transaction_end_buffer_timestamp" />
+        <column name="processing_transaction" />
+        <column name="processing_transaction_original_commit_timestamp" />
+        <column name="processing_transaction_immediate_commit_timestamp" />
+        <column name="processing_transaction_start_buffer_timestamp" />
     </metadata>
 </dataset>
