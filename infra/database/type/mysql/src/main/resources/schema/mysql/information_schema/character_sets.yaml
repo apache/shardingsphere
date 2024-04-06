@@ -16,6 +16,7 @@
 #
 
 name: CHARACTER_SETS
+type: TABLE
 columns:
   character_set_name:
     caseSensitive: false
@@ -51,5 +52,5 @@ columns:
     name: MAXLEN
     nullable: false
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true

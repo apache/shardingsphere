@@ -16,9 +16,10 @@
 #
 
 name: KEY_COLUMN_USAGE
+type: TABLE
 columns:
   constraint_catalog:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: CONSTRAINT_CATALOG
@@ -27,7 +28,7 @@ columns:
     unsigned: false
     visible: true
   constraint_schema:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: CONSTRAINT_SCHEMA
@@ -40,12 +41,12 @@ columns:
     dataType: 12
     generated: false
     name: CONSTRAINT_NAME
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   table_catalog:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: TABLE_CATALOG
@@ -54,7 +55,7 @@ columns:
     unsigned: false
     visible: true
   table_schema:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: TABLE_SCHEMA
@@ -63,7 +64,7 @@ columns:
     unsigned: false
     visible: true
   table_name:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: TABLE_NAME
@@ -76,7 +77,7 @@ columns:
     dataType: 12
     generated: false
     name: COLUMN_NAME
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -87,32 +88,32 @@ columns:
     name: ORDINAL_POSITION
     nullable: false
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true
   position_in_unique_constraint:
     caseSensitive: false
     dataType: 4
     generated: false
     name: POSITION_IN_UNIQUE_CONSTRAINT
-    nullable: false
+    nullable: true
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true
   referenced_table_schema:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: REFERENCED_TABLE_SCHEMA
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   referenced_table_name:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: REFERENCED_TABLE_NAME
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -121,7 +122,7 @@ columns:
     dataType: 12
     generated: false
     name: REFERENCED_COLUMN_NAME
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

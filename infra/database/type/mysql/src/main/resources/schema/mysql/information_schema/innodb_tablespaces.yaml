@@ -1,0 +1,155 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: INNODB_TABLESPACES
+type: TABLE
+columns:
+  space:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SPACE
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: NAME
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  flag:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: FLAG
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  row_format:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ROW_FORMAT
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  page_size:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PAGE_SIZE
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  zip_page_size:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: ZIP_PAGE_SIZE
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  space_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SPACE_TYPE
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  fs_block_size:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: FS_BLOCK_SIZE
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  file_size:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: FILE_SIZE
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  allocated_size:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: ALLOCATED_SIZE
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  autoextend_size:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: AUTOEXTEND_SIZE
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  server_version:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SERVER_VERSION
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  space_version:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SPACE_VERSION
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  encryption:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ENCRYPTION
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  state:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: STATE
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true

@@ -16,9 +16,10 @@
 #
 
 name: COLUMNS
+type: TABLE
 columns:
   table_catalog:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: TABLE_CATALOG
@@ -27,7 +28,7 @@ columns:
     unsigned: false
     visible: true
   table_schema:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: TABLE_SCHEMA
@@ -36,7 +37,7 @@ columns:
     unsigned: false
     visible: true
   table_name:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: TABLE_NAME
@@ -49,7 +50,7 @@ columns:
     dataType: 12
     generated: false
     name: COLUMN_NAME
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -63,11 +64,11 @@ columns:
     unsigned: true
     visible: true
   column_default:
-    caseSensitive: false
+    caseSensitive: true
     dataType: -1
     generated: false
     name: COLUMN_DEFAULT
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -81,47 +82,47 @@ columns:
     unsigned: false
     visible: true
   data_type:
-    caseSensitive: false
-    dataType: 12
+    caseSensitive: true
+    dataType: -1
     generated: false
     name: DATA_TYPE
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   character_maximum_length:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: CHARACTER_MAXIMUM_LENGTH
-    nullable: false
+    nullable: true
     primaryKey: false
-    unsigned: true
+    unsigned: false
     visible: true
   character_octet_length:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: CHARACTER_OCTET_LENGTH
-    nullable: false
+    nullable: true
     primaryKey: false
-    unsigned: true
+    unsigned: false
     visible: true
   numeric_precision:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: NUMERIC_PRECISION
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   numeric_scale:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: NUMERIC_SCALE
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
@@ -130,7 +131,7 @@ columns:
     dataType: 4
     generated: false
     name: DATETIME_PRECISION
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
@@ -139,7 +140,7 @@ columns:
     dataType: 12
     generated: false
     name: CHARACTER_SET_NAME
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -148,12 +149,12 @@ columns:
     dataType: 12
     generated: false
     name: COLLATION_NAME
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   column_type:
-    caseSensitive: false
+    caseSensitive: true
     dataType: -1
     generated: false
     name: COLUMN_TYPE
@@ -162,8 +163,8 @@ columns:
     unsigned: false
     visible: true
   column_key:
-    caseSensitive: false
-    dataType: 12
+    caseSensitive: true
+    dataType: 1
     generated: false
     name: COLUMN_KEY
     nullable: false
@@ -175,7 +176,7 @@ columns:
     dataType: 12
     generated: false
     name: EXTRA
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -184,13 +185,13 @@ columns:
     dataType: 12
     generated: false
     name: PRIVILEGES
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   column_comment:
-    caseSensitive: false
-    dataType: 12
+    caseSensitive: true
+    dataType: -1
     generated: false
     name: COLUMN_COMMENT
     nullable: false
@@ -198,11 +199,20 @@ columns:
     unsigned: false
     visible: true
   generation_expression:
-    caseSensitive: false
+    caseSensitive: true
     dataType: -1
     generated: false
     name: GENERATION_EXPRESSION
     nullable: false
     primaryKey: false
     unsigned: false
+    visible: true
+  srs_id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SRS_ID
+    nullable: true
+    primaryKey: false
+    unsigned: true
     visible: true

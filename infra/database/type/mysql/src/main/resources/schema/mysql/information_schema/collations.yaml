@@ -16,6 +16,7 @@
 #
 
 name: COLLATIONS
+type: TABLE
 columns:
   collation_name:
     caseSensitive: false
@@ -37,12 +38,12 @@ columns:
     visible: true
   id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: ID
     nullable: false
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true
   is_default:
     caseSensitive: false
@@ -67,6 +68,15 @@ columns:
     dataType: 4
     generated: false
     name: SORTLEN
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pad_attribute:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: PAD_ATTRIBUTE
     nullable: false
     primaryKey: false
     unsigned: false

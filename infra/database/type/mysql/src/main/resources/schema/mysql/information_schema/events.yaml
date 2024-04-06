@@ -16,9 +16,10 @@
 #
 
 name: EVENTS
+type: TABLE
 columns:
   event_catalog:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: EVENT_CATALOG
@@ -27,7 +28,7 @@ columns:
     unsigned: false
     visible: true
   event_schema:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: EVENT_SCHEMA
@@ -45,7 +46,7 @@ columns:
     unsigned: false
     visible: true
   definer:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: DEFINER
@@ -54,7 +55,7 @@ columns:
     unsigned: false
     visible: true
   time_zone:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: TIME_ZONE
@@ -72,7 +73,7 @@ columns:
     unsigned: false
     visible: true
   event_definition:
-    caseSensitive: false
+    caseSensitive: true
     dataType: -1
     generated: false
     name: EVENT_DEFINITION
@@ -94,7 +95,7 @@ columns:
     dataType: 93
     generated: false
     name: EXECUTE_AT
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -103,34 +104,34 @@ columns:
     dataType: 12
     generated: false
     name: INTERVAL_VALUE
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   interval_field:
-    caseSensitive: false
-    dataType: 12
+    caseSensitive: true
+    dataType: 1
     generated: false
     name: INTERVAL_FIELD
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   sql_mode:
-    caseSensitive: false
-    dataType: 12
+    caseSensitive: true
+    dataType: 1
     generated: false
     name: SQL_MODE
     nullable: false
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true
   starts:
     caseSensitive: false
     dataType: 93
     generated: false
     name: STARTS
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -139,12 +140,12 @@ columns:
     dataType: 93
     generated: false
     name: ENDS
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   status:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: STATUS
@@ -184,12 +185,12 @@ columns:
     dataType: 93
     generated: false
     name: LAST_EXECUTED
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   event_comment:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: EVENT_COMMENT
@@ -204,7 +205,7 @@ columns:
     name: ORIGINATOR
     nullable: false
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true
   character_set_client:
     caseSensitive: false

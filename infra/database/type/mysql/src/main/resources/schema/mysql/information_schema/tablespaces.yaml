@@ -16,6 +16,7 @@
 #
 
 name: TABLESPACES
+type: TABLE
 columns:
   tablespace_name:
     caseSensitive: false
@@ -40,7 +41,7 @@ columns:
     dataType: 12
     generated: false
     name: TABLESPACE_TYPE
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -49,43 +50,43 @@ columns:
     dataType: 12
     generated: false
     name: LOGFILE_GROUP_NAME
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   extent_size:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: EXTENT_SIZE
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   autoextend_size:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: AUTOEXTEND_SIZE
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   maximum_size:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: MAXIMUM_SIZE
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   nodegroup_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: NODEGROUP_ID
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
@@ -94,7 +95,7 @@ columns:
     dataType: 12
     generated: false
     name: TABLESPACE_COMMENT
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
