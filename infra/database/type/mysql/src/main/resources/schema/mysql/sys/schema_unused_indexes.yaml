@@ -16,12 +16,14 @@
 #
 
 name: schema_unused_indexes
+type: TABLE
 columns:
   object_schema:
     caseSensitive: false
     dataType: 12
     generated: false
     name: object_schema
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +32,7 @@ columns:
     dataType: 12
     generated: false
     name: object_name
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +41,7 @@ columns:
     dataType: 12
     generated: false
     name: index_name
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

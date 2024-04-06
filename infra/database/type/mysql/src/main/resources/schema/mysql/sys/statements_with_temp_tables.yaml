@@ -16,12 +16,14 @@
 #
 
 name: statements_with_temp_tables
+type: TABLE
 columns:
   query:
     caseSensitive: false
     dataType: -1
     generated: false
     name: query
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,38 +32,43 @@ columns:
     dataType: 12
     generated: false
     name: db
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   exec_count:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: exec_count
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   total_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: total_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   memory_tmp_tables:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: memory_tmp_tables
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   disk_tmp_tables:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: disk_tmp_tables
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -70,6 +77,7 @@ columns:
     dataType: 3
     generated: false
     name: avg_tmp_tables_per_query
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,6 +86,7 @@ columns:
     dataType: 3
     generated: false
     name: tmp_tables_to_disk_pct
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,6 +95,7 @@ columns:
     dataType: 93
     generated: false
     name: first_seen
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -94,6 +104,7 @@ columns:
     dataType: 93
     generated: false
     name: last_seen
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -102,6 +113,7 @@ columns:
     dataType: 12
     generated: false
     name: digest
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

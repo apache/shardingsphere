@@ -16,12 +16,14 @@
 #
 
 name: metrics
+type: TABLE
 columns:
   variable_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Variable_name
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,6 +32,7 @@ columns:
     dataType: -1
     generated: false
     name: Variable_value
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +41,7 @@ columns:
     dataType: 12
     generated: false
     name: Type
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -46,6 +50,7 @@ columns:
     dataType: 12
     generated: false
     name: Enabled
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
