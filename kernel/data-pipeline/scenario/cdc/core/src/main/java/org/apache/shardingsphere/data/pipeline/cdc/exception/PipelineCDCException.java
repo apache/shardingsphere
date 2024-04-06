@@ -17,17 +17,25 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.exception;
 
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * CDC login exception.
+ * Pipeline CDC exception.
  */
-public final class CDCLoginException extends PipelineSQLException {
+public abstract class PipelineCDCException extends PipelineSQLException {
     
-    private static final long serialVersionUID = 6951330476924442374L;
+    private static final long serialVersionUID = -7954289125693933632L;
     
-    public CDCLoginException(final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 202, String.format("CDC login failed, reason is: %s", reason));
+    private static final int CDC_CODE = 4;
+    
+    protected PipelineCDCException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    }
+    
+    private static int getErrorCode(final int errorCode) {
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
+        return CDC_CODE * 100 + errorCode;
     }
 }

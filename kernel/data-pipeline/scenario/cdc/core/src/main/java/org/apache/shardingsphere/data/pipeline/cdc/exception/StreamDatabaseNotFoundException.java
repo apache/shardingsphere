@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category;
+package org.apache.shardingsphere.data.pipeline.cdc.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.KernelSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Pipeline SQL exception.
+ * Stream database not found exception.
  */
-public abstract class PipelineSQLException extends KernelSQLException {
+public final class StreamDatabaseNotFoundException extends PipelineCDCException {
     
-    private static final long serialVersionUID = 139616805450096292L;
+    private static final long serialVersionUID = -1064162731346147038L;
     
-    private static final int KERNEL_CODE = 8;
-    
-    protected PipelineSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
+    public StreamDatabaseNotFoundException(final String database) {
+        super(XOpenSQLState.NOT_FOUND, 1, "Database '%s' does not exist.", database);
     }
 }

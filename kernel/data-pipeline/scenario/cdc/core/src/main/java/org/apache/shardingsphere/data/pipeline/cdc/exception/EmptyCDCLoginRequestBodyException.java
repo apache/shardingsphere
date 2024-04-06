@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Not find stream data source table exception.
+ * Empty CDC login request body exception.
  */
-public final class NotFindStreamDataSourceTableException extends PipelineSQLException {
+public final class EmptyCDCLoginRequestBodyException extends PipelineCDCException {
     
-    private static final long serialVersionUID = 4003436152767041454L;
+    private static final long serialVersionUID = 6951330476924442374L;
     
-    public NotFindStreamDataSourceTableException() {
-        super(XOpenSQLState.GENERAL_ERROR, 200, "Not find stream data source table exception");
+    public EmptyCDCLoginRequestBodyException() {
+        super(XOpenSQLState.NOT_FOUND, 10, "CDC Login request body is empty.");
     }
 }

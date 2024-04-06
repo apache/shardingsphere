@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category;
+package org.apache.shardingsphere.data.pipeline.cdc.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.KernelSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Pipeline SQL exception.
+ * CDC login failed exception.
  */
-public abstract class PipelineSQLException extends KernelSQLException {
+public final class CDCLoginFailedException extends PipelineCDCException {
     
-    private static final long serialVersionUID = 139616805450096292L;
+    private static final long serialVersionUID = -2609355980890040117L;
     
-    private static final int KERNEL_CODE = 8;
-    
-    protected PipelineSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
+    public CDCLoginFailedException() {
+        super(XOpenSQLState.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT, 11, "Illegal username or password.");
     }
 }
