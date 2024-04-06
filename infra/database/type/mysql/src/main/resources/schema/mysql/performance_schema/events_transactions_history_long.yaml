@@ -16,28 +16,32 @@
 #
 
 name: events_transactions_history_long
+type: TABLE
 columns:
   thread_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: THREAD_ID
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   event_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: EVENT_ID
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   end_event_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: END_EVENT_ID
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
@@ -46,22 +50,25 @@ columns:
     dataType: 12
     generated: false
     name: EVENT_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   state:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: STATE
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   trx_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: TRX_ID
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
@@ -70,6 +77,7 @@ columns:
     dataType: 12
     generated: false
     name: GTID
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,6 +86,7 @@ columns:
     dataType: 4
     generated: false
     name: XID_FORMAT_ID
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,6 +95,7 @@ columns:
     dataType: 12
     generated: false
     name: XID_GTRID
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -94,6 +104,7 @@ columns:
     dataType: 12
     generated: false
     name: XID_BQUAL
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -102,6 +113,7 @@ columns:
     dataType: 12
     generated: false
     name: XA_STATE
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -110,38 +122,43 @@ columns:
     dataType: 12
     generated: false
     name: SOURCE
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   timer_start:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: TIMER_START
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   timer_end:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: TIMER_END
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   timer_wait:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: TIMER_WAIT
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   access_mode:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: ACCESS_MODE
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -150,62 +167,70 @@ columns:
     dataType: 12
     generated: false
     name: ISOLATION_LEVEL
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   autocommit:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: AUTOCOMMIT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   number_of_savepoints:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: NUMBER_OF_SAVEPOINTS
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   number_of_rollback_to_savepoint:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: NUMBER_OF_ROLLBACK_TO_SAVEPOINT
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   number_of_release_savepoint:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: NUMBER_OF_RELEASE_SAVEPOINT
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   object_instance_begin:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: OBJECT_INSTANCE_BEGIN
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   nesting_event_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: NESTING_EVENT_ID
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   nesting_event_type:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: NESTING_EVENT_TYPE
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

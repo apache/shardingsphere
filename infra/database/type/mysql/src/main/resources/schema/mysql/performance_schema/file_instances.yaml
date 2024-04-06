@@ -16,13 +16,15 @@
 #
 
 name: file_instances
+type: TABLE
 columns:
   file_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: FILE_NAME
-    primaryKey: false
+    nullable: false
+    primaryKey: true
     unsigned: false
     visible: true
   event_name:
@@ -30,6 +32,7 @@ columns:
     dataType: 12
     generated: false
     name: EVENT_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -38,6 +41,18 @@ columns:
     dataType: 4
     generated: false
     name: OPEN_COUNT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - FILE_NAME
+  event_name:
+    name: EVENT_NAME
+    unique: false
+    columns:
+      - EVENT_NAME

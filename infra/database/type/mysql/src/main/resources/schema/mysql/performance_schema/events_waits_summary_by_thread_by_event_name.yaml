@@ -16,13 +16,15 @@
 #
 
 name: events_waits_summary_by_thread_by_event_name
+type: TABLE
 columns:
   thread_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: THREAD_ID
-    primaryKey: false
+    nullable: false
+    primaryKey: true
     unsigned: true
     visible: true
   event_name:
@@ -30,46 +32,59 @@ columns:
     dataType: 12
     generated: false
     name: EVENT_NAME
-    primaryKey: false
+    nullable: false
+    primaryKey: true
     unsigned: false
     visible: true
   count_star:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: COUNT_STAR
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   sum_timer_wait:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: SUM_TIMER_WAIT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   min_timer_wait:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: MIN_TIMER_WAIT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   avg_timer_wait:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: AVG_TIMER_WAIT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   max_timer_wait:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: MAX_TIMER_WAIT
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - THREAD_ID
+      - EVENT_NAME

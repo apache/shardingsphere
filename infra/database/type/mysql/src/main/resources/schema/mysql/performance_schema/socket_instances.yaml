@@ -16,28 +16,32 @@
 #
 
 name: socket_instances
+type: TABLE
 columns:
   event_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: EVENT_NAME
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   object_instance_begin:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: OBJECT_INSTANCE_BEGIN
-    primaryKey: false
+    nullable: false
+    primaryKey: true
     unsigned: true
     visible: true
   thread_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: THREAD_ID
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
@@ -46,6 +50,7 @@ columns:
     dataType: 4
     generated: false
     name: SOCKET_ID
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +59,7 @@ columns:
     dataType: 12
     generated: false
     name: IP
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,14 +68,38 @@ columns:
     dataType: 4
     generated: false
     name: PORT
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   state:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: STATE
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - OBJECT_INSTANCE_BEGIN
+  ip:
+    name: IP
+    unique: false
+    columns:
+      - IP
+      - PORT
+  socket_id:
+    name: SOCKET_ID
+    unique: false
+    columns:
+      - SOCKET_ID
+  thread_id:
+    name: THREAD_ID
+    unique: false
+    columns:
+      - THREAD_ID
