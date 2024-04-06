@@ -33,38 +33,34 @@ import org.apache.shardingsphere.encrypt.metadata.reviser.index.EncryptIndexRevi
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.junit.jupiter.api.Test;
 
-public class EncryptMetaDataReviseEntryTest {
+class EncryptMetaDataReviseEntryTest {
     
-    private final EncryptMetaDataReviseEntry reviseEntry = new EncryptMetaDataReviseEntry();
-    
-    private final EncryptRule rule = createEncryptRule();
-    
-    private EncryptRule createEncryptRule() {
-        EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Collections.singleton(
-                new EncryptTableRuleConfiguration("test_table", Collections.emptyList())), new HashMap<>());
-        
-        return new EncryptRule("test_database", ruleConfig);
-    }
+    private static final String TABLE_NAME = "t_encrypt";
     
     @Test
     void assertGetIndexReviser() {
-        Optional<EncryptIndexReviser> indexReviser = reviseEntry.getIndexReviser(rule, "test_table");
+        Optional<EncryptIndexReviser> indexReviser = new EncryptMetaDataReviseEntry().getIndexReviser(createEncryptRule(), TABLE_NAME);
         assertTrue(indexReviser.isPresent());
         assertThat(indexReviser.get().getClass(), is(EncryptIndexReviser.class));
     }
     
     @Test
     void assertGetColumnNameReviser() {
-        Optional<EncryptColumnNameReviser> columnNameReviser = reviseEntry.getColumnNameReviser(rule, "test_table");
+        Optional<EncryptColumnNameReviser> columnNameReviser = new EncryptMetaDataReviseEntry().getColumnNameReviser(createEncryptRule(), TABLE_NAME);
         assertTrue(columnNameReviser.isPresent());
         assertThat(columnNameReviser.get().getClass(), is(EncryptColumnNameReviser.class));
-        
     }
     
     @Test
     void assertGetColumnExistedReviser() {
-        Optional<EncryptColumnExistedReviser> columnExistedReviser = reviseEntry.getColumnExistedReviser(rule, "test_table");
+        Optional<EncryptColumnExistedReviser> columnExistedReviser = new EncryptMetaDataReviseEntry().getColumnExistedReviser(createEncryptRule(), TABLE_NAME);
         assertTrue(columnExistedReviser.isPresent());
         assertThat(columnExistedReviser.get().getClass(), is(EncryptColumnExistedReviser.class));
+    }
+    
+    private EncryptRule createEncryptRule() {
+        EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Collections.singleton(
+                new EncryptTableRuleConfiguration(TABLE_NAME, Collections.emptyList())), new HashMap<>());
+        return new EncryptRule("foo_db", ruleConfig);
     }
 }
