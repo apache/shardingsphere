@@ -17,17 +17,25 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.TransactionSQLException;
 
 /**
- * Seata AT configuration exception.
+ * Seata AT transaction SQL exception.
  */
-public final class SeataATConfigurationException extends TransactionSQLException {
+public abstract class SeataATTransactionSQLException extends TransactionSQLException {
     
-    private static final long serialVersionUID = 3742525073470768226L;
+    private static final long serialVersionUID = 7649367025303908263L;
     
-    public SeataATConfigurationException(final String errorMessage) {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 302, errorMessage);
+    private static final int SEATA_CODE = 4;
+    
+    protected SeataATTransactionSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    }
+    
+    private static int getErrorCode(final int errorCode) {
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
+        return SEATA_CODE * 100 + errorCode;
     }
 }

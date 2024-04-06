@@ -20,13 +20,13 @@ package org.apache.shardingsphere.transaction.base.seata.at.exception;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Seata AT disabled exception.
+ * Seata AT application ID not found exception.
  */
-public final class SeataATDisabledException extends SeataATTransactionSQLException {
+public final class SeataATApplicationIDNotFoundException extends SeataATTransactionSQLException {
     
     private static final long serialVersionUID = 3742525073470768226L;
     
-    public SeataATDisabledException() {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 1, "Seata-AT transaction has been disabled.");
+    public SeataATApplicationIDNotFoundException() {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "No application id within 'seata.conf' file.");
     }
 }
