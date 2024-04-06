@@ -47,7 +47,7 @@ class SystemSchemaBuilderTest {
         Map<String, ShardingSphereSchema> actualPerformanceSchema = SystemSchemaBuilder.build("performance_schema", databaseType, configProps);
         assertThat(actualPerformanceSchema.size(), is(1));
         assertTrue(actualPerformanceSchema.containsKey("performance_schema"));
-        assertThat(actualPerformanceSchema.get("performance_schema").getTables().size(), is(87));
+        assertThat(actualPerformanceSchema.get("performance_schema").getTables().size(), is(114));
         Map<String, ShardingSphereSchema> actualSysSchema = SystemSchemaBuilder.build("sys", databaseType, configProps);
         assertThat(actualSysSchema.size(), is(1));
         assertTrue(actualSysSchema.containsKey("sys"));
