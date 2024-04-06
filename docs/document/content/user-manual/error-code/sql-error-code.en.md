@@ -130,7 +130,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 18087       | HY000     | Source data source required \`%s = %s\`, now is \`%s\`.                           |
 | 18088       | HY000     | User \`%s\` does exist.                                                           |
 | 18089       | 08000     | Check privileges failed on source data source, reason is: %s                      |
-| 18090       | 08000     | Data sources can not connect, reason is: %s                                       |
 | 18091       | HY000     | Importer job write data failed.                                                   |
 | 18092       | 08000     | Get binlog position failed by job \`%s\`, reason is: %s                           |
 | 18095       | HY000     | Can not find consistency check job of \`%s\`.                                     |

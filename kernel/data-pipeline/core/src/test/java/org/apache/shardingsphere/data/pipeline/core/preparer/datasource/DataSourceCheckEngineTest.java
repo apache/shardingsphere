@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
 import org.apache.shardingsphere.data.pipeline.core.checker.DataSourceCheckEngine;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -80,7 +80,7 @@ class DataSourceCheckEngineTest {
     @Test
     void assertCheckConnectionFailed() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException("error"));
-        assertThrows(PrepareJobWithInvalidConnectionException.class, () -> dataSourceCheckEngine.checkConnection(dataSources));
+        assertThrows(SQLWrapperException.class, () -> dataSourceCheckEngine.checkConnection(dataSources));
     }
     
     @Test
