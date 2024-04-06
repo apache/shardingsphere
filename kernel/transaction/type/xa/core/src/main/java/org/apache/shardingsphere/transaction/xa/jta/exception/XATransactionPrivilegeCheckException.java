@@ -18,22 +18,21 @@
 package org.apache.shardingsphere.transaction.xa.jta.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.TransactionSQLException;
 
 import java.sql.SQLException;
 
 /**
- * XA transaction check privilege failed exception.
+ * XA transaction privilege check exception.
  */
-public final class XATransactionCheckPrivilegeFailedException extends TransactionSQLException {
+public final class XATransactionPrivilegeCheckException extends XATransactionSQLException {
     
     private static final long serialVersionUID = 6073175429050058508L;
     
-    public XATransactionCheckPrivilegeFailedException(final SQLException cause) {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 203, String.format("Check xa transaction privileges failed on data source, reason is: `%s`", cause.getMessage()), cause);
+    public XATransactionPrivilegeCheckException(final String privilege) {
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 2, "Check XA transaction privileges failed on data source, please grant '%s' to current user.", privilege);
     }
     
-    public XATransactionCheckPrivilegeFailedException(final SQLException cause, final String advice) {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 203, String.format("Check xa transaction privileges failed on data source, reason is: `%s`, please `%s`", cause.getMessage(), advice), cause);
+    public XATransactionPrivilegeCheckException(final String privilege, final SQLException cause) {
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 2, String.format("Check XA transaction privileges failed on data source, please grant '%s' to current user.", privilege), cause);
     }
 }
