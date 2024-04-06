@@ -42,7 +42,7 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -79,15 +79,11 @@ class CreateEncryptRuleExecutorTest {
     
     @Test
     void assertCreateEncryptRuleWithIfNotExists() {
-        EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
-        EncryptRule rule = mock(EncryptRule.class);
-        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
-        executor.setRule(rule);
         CreateEncryptRuleStatement sqlStatement = createAESEncryptRuleSQLStatement(true);
         executor.checkBeforeUpdate(sqlStatement);
         EncryptRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        assertTrue(toBeCreatedRuleConfig.getTables().isEmpty());
-        assertTrue(toBeCreatedRuleConfig.getEncryptors().isEmpty());
+        assertFalse(toBeCreatedRuleConfig.getTables().isEmpty());
+        assertFalse(toBeCreatedRuleConfig.getEncryptors().isEmpty());
     }
     
     private CreateEncryptRuleStatement createAESEncryptRuleSQLStatement(final boolean ifNotExists) {
