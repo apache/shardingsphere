@@ -33,8 +33,8 @@ import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.exception.InvalidVariableValueException;
-import org.apache.shardingsphere.infra.exception.syntax.UnsupportedVariableException;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.InvalidVariableValueException;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;

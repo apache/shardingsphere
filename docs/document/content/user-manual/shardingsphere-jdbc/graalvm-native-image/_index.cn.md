@@ -16,6 +16,7 @@ ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 
 适用于 `Oracle GraalVM`， `Liberica Native Image Kit` 和 `Mandrel` 等 `GraalVM CE` 的下游发行版。
 
 - GraalVM CE 23.1.2 For JDK 21.0.2，对应于 SDKMAN! 的 `21.0.2-graalce`
+- GraalVM CE 24.0.0 For JDK 22，对应于 SDKMAN! 的 `22-graalce`
 
 ### Maven 生态
 

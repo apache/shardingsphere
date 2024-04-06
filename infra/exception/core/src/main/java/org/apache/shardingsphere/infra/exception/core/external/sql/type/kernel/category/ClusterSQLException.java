@@ -27,9 +27,13 @@ public abstract class ClusterSQLException extends KernelSQLException {
     
     private static final long serialVersionUID = -2839102961922546497L;
     
-    private static final int KERNEL_CODE = 7;
+    private static final int KERNEL_CODE = 5;
     
     protected ClusterSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
+    }
+    
+    protected ClusterSQLException(final SQLState sqlState, final int errorCode, final String reason, final Exception cause) {
+        super(sqlState, KERNEL_CODE, errorCode, reason, cause);
     }
 }

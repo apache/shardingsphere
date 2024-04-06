@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCluster
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetInstanceStatusStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.mode.event.compute.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;

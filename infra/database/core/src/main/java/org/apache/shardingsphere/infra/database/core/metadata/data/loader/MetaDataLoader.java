@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.loader.type.T
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -74,7 +73,7 @@ public final class MetaDataLoader {
             if (ex.getCause() instanceof SQLException) {
                 throw (SQLException) ex.getCause();
             }
-            throw new UnknownSQLException(ex).toSQLException();
+            throw new SQLException(ex);
         }
         return result;
     }

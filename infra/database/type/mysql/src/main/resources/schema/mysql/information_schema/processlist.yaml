@@ -16,10 +16,11 @@
 #
 
 name: PROCESSLIST
+type: TABLE
 columns:
   id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: ID
     nullable: false
@@ -49,7 +50,7 @@ columns:
     dataType: 12
     generated: false
     name: DB
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -76,16 +77,16 @@ columns:
     dataType: 12
     generated: false
     name: STATE
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   info:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: INFO
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

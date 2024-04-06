@@ -16,6 +16,7 @@
 #
 
 name: INNODB_FT_CONFIG
+type: TABLE
 columns:
   key:
     caseSensitive: false

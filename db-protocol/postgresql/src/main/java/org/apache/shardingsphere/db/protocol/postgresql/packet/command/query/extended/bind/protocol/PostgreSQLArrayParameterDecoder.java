@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;

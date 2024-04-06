@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
-import org.apache.shardingsphere.infra.database.core.connector.url.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;

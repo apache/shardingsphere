@@ -18,10 +18,14 @@
 package org.apache.shardingsphere.infra.exception.core.external.sql;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere SQL exception.
@@ -43,7 +47,7 @@ public abstract class ShardingSphereSQLException extends ShardingSphereExternalE
     }
     
     protected ShardingSphereSQLException(final String sqlState, final int typeOffset, final int errorCode, final String reason, final Object... messageArgs) {
-        this(sqlState, typeOffset, errorCode, null == reason ? null : String.format(reason, messageArgs), (Exception) null);
+        this(sqlState, typeOffset, errorCode, null == reason ? null : String.format(reason, formatMessageArguments(messageArgs)), (Exception) null);
     }
     
     protected ShardingSphereSQLException(final String sqlState, final int typeOffset, final int errorCode, final String reason, final Exception cause) {
@@ -52,8 +56,15 @@ public abstract class ShardingSphereSQLException extends ShardingSphereExternalE
         Preconditions.checkArgument(typeOffset >= 0 && typeOffset < 4, "The value range of type offset should be [0, 3].");
         Preconditions.checkArgument(errorCode >= 0 && errorCode < 10000, "The value range of error code should be [0, 10000).");
         vendorCode = typeOffset * 10000 + errorCode;
-        this.reason = reason;
+        this.reason = null == cause || Strings.isNullOrEmpty(cause.getMessage())
+                ? reason
+                : String.format("%s%sMore details: %s", reason, System.lineSeparator(), cause.getMessage());
         this.cause = cause;
+    }
+    
+    private static Object[] formatMessageArguments(final Object... messageArgs) {
+        return Arrays.stream(messageArgs)
+                .map(each -> each instanceof Collection ? ((Collection<?>) each).stream().map(Object::toString).collect(Collectors.joining(", ")) : each).toArray(Object[]::new);
     }
     
     /**

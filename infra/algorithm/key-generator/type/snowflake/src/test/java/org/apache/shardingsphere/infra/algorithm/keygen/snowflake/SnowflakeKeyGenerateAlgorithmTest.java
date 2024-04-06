@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.algorithm.keygen.snowflake;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
-import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmExecuteException;
-import org.apache.shardingsphere.infra.algorithm.core.exception.type.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmExecuteException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.fixture.FixedTimeService;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.fixture.WorkerIdGeneratorFixture;

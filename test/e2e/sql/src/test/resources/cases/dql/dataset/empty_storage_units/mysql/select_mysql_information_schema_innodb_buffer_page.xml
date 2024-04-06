@@ -37,5 +37,6 @@
         <column name="io_fix" />
         <column name="is_old" />
         <column name="free_page_clock" />
+        <column name="is_stale" />
     </metadata>
 </dataset>

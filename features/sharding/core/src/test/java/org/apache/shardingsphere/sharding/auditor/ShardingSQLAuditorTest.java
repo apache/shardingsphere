@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.auditor;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.executor.audit.exception.SQLAuditException;
+import org.apache.shardingsphere.sharding.exception.audit.DMLWithoutShardingKeyException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -97,11 +97,10 @@ class ShardingSQLAuditorTest {
     void assertCheckFailed() {
         ShardingAuditAlgorithm auditAlgorithm = rule.getAuditors().get("auditor_1");
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
-        doThrow(new SQLAuditException("Not allow DML operation without sharding conditions"))
-                .when(auditAlgorithm).check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"));
-        SQLAuditException ex = assertThrows(SQLAuditException.class,
+        doThrow(new DMLWithoutShardingKeyException()).when(auditAlgorithm).check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"));
+        DMLWithoutShardingKeyException ex = assertThrows(DMLWithoutShardingKeyException.class,
                 () -> new ShardingSQLAuditor().audit(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"), rule, hintValueContext));
-        assertThat(ex.getMessage(), is("SQL audit failed, error message: Not allow DML operation without sharding conditions."));
+        assertThat(ex.getMessage(), is("Not allow DML operation without sharding conditions."));
         verify(rule.getAuditors().get("auditor_1")).check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"));
     }
 }

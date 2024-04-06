@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -80,7 +80,7 @@ class ImportMetaDataExecutorTest {
     void assertCheckImportEmptyMetaData() {
         init(null);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        assertThrows(MissingRequiredDataSourcesException.class, () -> executor.executeUpdate(
+        assertThrows(EmptyStorageUnitException.class, () -> executor.executeUpdate(
                 new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataExecutorTest.class.getResource(featureMap.get(EMPTY))).getPath()), contextManager));
     }
     

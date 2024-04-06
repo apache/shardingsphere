@@ -28,7 +28,7 @@ public abstract class AlgorithmDefinitionException extends MetaDataSQLException 
     
     private static final long serialVersionUID = -8947223495845000542L;
     
-    private static final int ALGORITHM_CODE = 3;
+    private static final int ALGORITHM_CODE = 4;
     
     protected AlgorithmDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, getErrorCode(errorCode), reason, messageArgs);

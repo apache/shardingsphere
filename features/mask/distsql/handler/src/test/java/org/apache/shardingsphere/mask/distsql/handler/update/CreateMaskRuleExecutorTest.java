@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.exception.metadata.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;

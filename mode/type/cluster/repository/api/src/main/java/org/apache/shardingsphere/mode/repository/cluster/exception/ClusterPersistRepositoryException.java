@@ -28,6 +28,6 @@ public final class ClusterPersistRepositoryException extends ClusterSQLException
     private static final long serialVersionUID = -6417179023552012152L;
     
     public ClusterPersistRepositoryException(final Exception cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 10, "Cluster persist repository error, reason is: %s", cause.getMessage());
+        super(XOpenSQLState.GENERAL_ERROR, 10, "Cluster persist repository error.", cause);
     }
 }

@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
-import org.apache.shardingsphere.infra.exception.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundExce
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.MissingDatabaseNameException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.MissingRequiredDatabaseException;
 import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
@@ -49,11 +49,13 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -105,12 +107,12 @@ class ImportDatabaseConfigurationExecutorTest {
     
     @Test
     void assertImportEmptyDatabaseName() {
-        assertThrows(MissingDatabaseNameException.class, () -> assertExecute("sharding_db", "/conf/import/database-empty-database-name.yaml"));
+        assertThrows(MissingRequiredDatabaseException.class, () -> assertExecute("sharding_db", "/conf/import/database-empty-database-name.yaml"));
     }
     
     @Test
     void assertImportEmptyDataSource() {
-        assertThrows(MissingRequiredDataSourcesException.class, () -> assertExecute("sharding_db", "/conf/import/database-empty-data-source.yaml"));
+        assertThrows(EmptyStorageUnitException.class, () -> assertExecute("sharding_db", "/conf/import/database-empty-data-source.yaml"));
     }
     
     @Test
@@ -125,7 +127,9 @@ class ImportDatabaseConfigurationExecutorTest {
     
     private void assertExecute(final String databaseName, final String filePath) throws SQLException {
         init(databaseName);
-        executor.executeUpdate(new ImportDatabaseConfigurationStatement(ImportDatabaseConfigurationExecutorTest.class.getResource(filePath).getPath()), mock(ContextManager.class));
+        URL url = ImportDatabaseConfigurationExecutorTest.class.getResource(filePath);
+        assertNotNull(url);
+        executor.executeUpdate(new ImportDatabaseConfigurationStatement(url.getPath()), mock(ContextManager.class));
     }
     
     @SneakyThrows({IllegalAccessException.class, NoSuchFieldException.class})
