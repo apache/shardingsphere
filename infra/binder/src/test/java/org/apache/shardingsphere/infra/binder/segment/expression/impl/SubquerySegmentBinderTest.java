@@ -43,6 +43,9 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 public class SubquerySegmentBinderTest {
 
+    /**
+     * Test common scenarios
+     */
     @Test
     public void assertBind() {
         MySQLSelectStatement mySQLSelectStatement = new MySQLSelectStatement();
@@ -90,6 +93,9 @@ public class SubquerySegmentBinderTest {
         assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
     }
 
+    /**
+     * Test the 'With' clause scenario
+     */
     @Test
     public void assertBindUseWithClause() {
         ColumnSegment columnSegment = new ColumnSegment(29, 36, new IdentifierValue("order_id"));
