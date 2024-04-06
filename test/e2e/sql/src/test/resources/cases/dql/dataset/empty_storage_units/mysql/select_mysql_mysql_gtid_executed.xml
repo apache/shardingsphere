@@ -20,5 +20,6 @@
         <column name="source_uuid" />
         <column name="interval_start" />
         <column name="interval_end" />
+        <column name="gtid_tag" />
     </metadata>
 </dataset>

@@ -16,6 +16,7 @@
 #
 
 name: time_zone
+type: TABLE
 columns:
   time_zone_id:
     caseSensitive: false
@@ -28,7 +29,7 @@ columns:
     visible: true
   use_leap_seconds:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: Use_leap_seconds
     nullable: false
@@ -38,4 +39,6 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - Time_zone_id

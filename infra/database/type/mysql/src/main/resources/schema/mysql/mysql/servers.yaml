@@ -16,6 +16,7 @@
 #
 
 name: servers
+type: TABLE
 columns:
   server_name:
     caseSensitive: false
@@ -101,4 +102,6 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - Server_name
