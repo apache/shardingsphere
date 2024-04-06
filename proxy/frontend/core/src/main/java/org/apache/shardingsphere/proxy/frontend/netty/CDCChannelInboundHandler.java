@@ -28,7 +28,8 @@ import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCExceptionWrapper;
-import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCLoginException;
+import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCLoginFailedException;
+import org.apache.shardingsphere.data.pipeline.cdc.exception.EmptyCDCLoginRequestBodyException;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.handler.CDCBackendHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
@@ -136,9 +137,8 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     }
     
     private void processLogin(final ChannelHandlerContext ctx, final CDCRequest request) {
-        if (!request.hasLoginRequestBody() || !request.getLoginRequestBody().hasBasicBody()) {
-            throw new CDCExceptionWrapper(request.getRequestId(), new CDCLoginException("Login request body is empty"));
-        }
+        ShardingSpherePreconditions.checkState(request.hasLoginRequestBody() && request.getLoginRequestBody().hasBasicBody(),
+                () -> new CDCExceptionWrapper(request.getRequestId(), new EmptyCDCLoginRequestBodyException()));
         BasicBody body = request.getLoginRequestBody().getBasicBody();
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Optional<ShardingSphereUser> user = authorityRule.findUser(new Grantee(body.getUsername(), getHostAddress(ctx)));
@@ -146,7 +146,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             ctx.channel().attr(CONNECTION_CONTEXT_KEY).set(new CDCConnectionContext(user.get()));
             ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
         } else {
-            throw new CDCExceptionWrapper(request.getRequestId(), new CDCLoginException("Illegal username or password"));
+            throw new CDCExceptionWrapper(request.getRequestId(), new CDCLoginFailedException());
         }
     }
     

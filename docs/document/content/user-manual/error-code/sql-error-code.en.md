@@ -134,9 +134,10 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 18092       | 08000     | Get binlog position failed by job \`%s\`, reason is: %s                           |
 | 18095       | HY000     | Can not find consistency check job of \`%s\`.                                     |
 | 18096       | HY000     | Uncompleted consistency check job \`%s\` exists.                                  |
-| 18200       | HY000     | Not find stream data source table.                                                |
-| 18201       | HY000     | CDC server exception, reason is: %s.                                              |
-| 18202       | HY000     | CDC login failed, reason is: %s                                                   |
+| 18400       | 42S02     | Can not find stream data source table.                                            |
+| 18401       | 42S02     | Database '%s' does not exist.                                                     |
+| 18410       | 42S02     | CDC Login request body is empty.                                                  |
+| 18411       | 08004     | Illegal username or password.                                                     |
 
 ## Feature Exception
 

@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * CDC server exception.
+ * Missing required stream data source exception.
  */
-public final class CDCServerException extends PipelineSQLException {
+public final class MissingRequiredStreamDataSourceException extends PipelineCDCException {
     
-    private static final long serialVersionUID = -1064162731346147038L;
+    private static final long serialVersionUID = 4003436152767041454L;
     
-    public CDCServerException(final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 201, String.format("CDC server exception, reason is: %s.", reason));
+    public MissingRequiredStreamDataSourceException() {
+        super(XOpenSQLState.NOT_FOUND, 0, "Can not find stream data source table.");
     }
 }
