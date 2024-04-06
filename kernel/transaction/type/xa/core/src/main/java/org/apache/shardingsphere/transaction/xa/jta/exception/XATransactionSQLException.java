@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.c
 /**
  * XA transaction SQL exception.
  */
-public class XATransactionSQLException extends TransactionSQLException {
+public abstract class XATransactionSQLException extends TransactionSQLException {
     
     private static final long serialVersionUID = 7649367025303908263L;
     
-    private static final int XA_CODE = 1;
+    private static final int XA_CODE = 2;
     
     protected XATransactionSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, getErrorCode(errorCode), reason, messageArgs);

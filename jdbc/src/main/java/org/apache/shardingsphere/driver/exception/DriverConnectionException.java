@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.c
 /**
  * Driver connection exception.
  */
-public class DriverConnectionException extends ConnectionSQLException {
+public abstract class DriverConnectionException extends ConnectionSQLException {
     
     private static final long serialVersionUID = -4543547821709772632L;
     

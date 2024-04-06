@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.c
 /**
  * Connection URL exception.
  */
-public class ConnectionURLException extends ConnectionSQLException {
+public abstract class ConnectionURLException extends ConnectionSQLException {
     
     private static final long serialVersionUID = 6410735261100319966L;
     

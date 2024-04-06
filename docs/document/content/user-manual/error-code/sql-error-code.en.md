@@ -90,11 +90,11 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 14002       | 44000     | Max length of unique resource name '%s' exceeded, should be less than 45.                 |
 | 14003       | 25000     | Transaction timeout should more than 0.                                                   |
 | 14004       | 25000     | Close transaction manager failed.                                                         |
-| 14100       | 25000     | Failed to create '%s' XA data source.                                                     |
-| 14101       | 25000     | Can not start new XA transaction in a active transaction.                                 |
-| 14102       | 25000     | Check XA transaction privileges failed on data source, please grant '%s' to current user. |
-| 14301       | 25000     | ShardingSphere Seata-AT transaction has been disabled.                                    |
-| 14302       | 25000     | Please config application id within seata.conf file.                                      |
+| 14200       | 25000     | Failed to create '%s' XA data source.                                                     |
+| 14201       | 25000     | Can not start new XA transaction in a active transaction.                                 |
+| 14202       | 25000     | Check XA transaction privileges failed on data source, please grant '%s' to current user. |
+| 14400       | 44000     | No application id within 'seata.conf' file.                                               |
+| 14401       | 25000     | Seata-AT transaction has been disabled.                                                   |
 
 ### Cluster
 
