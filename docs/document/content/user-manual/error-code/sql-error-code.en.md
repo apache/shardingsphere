@@ -105,11 +105,10 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 17010       | HY000     | Cluster persist repository error, reason is: %s               |
 | 17020       | HY000     | The cluster status is %s, can not support SQL statement '%s'. |
 
-### Migration
+### Data Pipeline
 
 | Vendor Code | SQL State | Reason                                                                            |
 |-------------|-----------|-----------------------------------------------------------------------------------|
-| 18002       | 42S02     | There is no rule in database \`%s\`.                                              |
 | 18003       | 44000     | Mode configuration does not exist.                                                |
 | 18004       | 44000     | Target database \`%s\` isn't exist.                                               |
 | 18005       | 22023     | There is invalid parameter value: \`%s\`.                                         |
