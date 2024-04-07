@@ -65,10 +65,10 @@ class AlterShardingTableReferenceRuleExecutorTest {
     
     @Test
     void assertBuildToBeAlteredRuleConfiguration() {
-        ShardingRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(createSQLStatement("reference_0", "t_3,t_4"));
-        assertThat(actual.getBindingTableGroups().size(), is(1));
-        assertThat(actual.getBindingTableGroups().iterator().next().getName(), is("reference_0"));
-        assertThat(actual.getBindingTableGroups().iterator().next().getReference(), is("t_3,t_4"));
+        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(createSQLStatement("reference_0", "t_3,t_4"));
+        assertThat(toBeAlteredRuleConfig.getBindingTableGroups().size(), is(1));
+        assertThat(toBeAlteredRuleConfig.getBindingTableGroups().iterator().next().getName(), is("reference_0"));
+        assertThat(toBeAlteredRuleConfig.getBindingTableGroups().iterator().next().getReference(), is("t_3,t_4"));
     }
     
     private AlterShardingTableReferenceRuleStatement createSQLStatement(final String name, final String reference) {

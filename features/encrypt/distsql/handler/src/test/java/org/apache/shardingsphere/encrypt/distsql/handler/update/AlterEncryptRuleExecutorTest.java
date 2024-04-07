@@ -82,6 +82,9 @@ class AlterEncryptRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
         EncryptRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(createSQLStatement("MD5"));
+        assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
+        assertThat(toBeAlteredRuleConfig.getTables().iterator().next().getName(), is("t_encrypt"));
+        assertThat(toBeAlteredRuleConfig.getTables().iterator().next().getColumns().iterator().next().getName(), is("user_id"));
         assertThat(toBeAlteredRuleConfig.getEncryptors().size(), is(3));
     }
     
