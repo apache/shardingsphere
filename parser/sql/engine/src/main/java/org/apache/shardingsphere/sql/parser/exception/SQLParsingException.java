@@ -32,12 +32,12 @@ public final class SQLParsingException extends ParseSQLException {
     
     private final int line;
     
-    public SQLParsingException(final String sql) {
-        this(sql, "", 1);
+    public SQLParsingException(final String message) {
+        this(message, "", 1);
     }
     
-    public SQLParsingException(final String sql, final Object symbol, final int line) {
-        super(XOpenSQLState.SYNTAX_ERROR, 0, "You have an error in your SQL syntax: %s", sql);
+    public SQLParsingException(final String message, final Object symbol, final int line) {
+        super(XOpenSQLState.SYNTAX_ERROR, 0, "You have an error in your SQL syntax: %s", message);
         this.symbol = symbol;
         this.line = line;
     }
