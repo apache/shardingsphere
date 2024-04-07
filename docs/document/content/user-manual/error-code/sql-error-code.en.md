@@ -109,11 +109,9 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | Vendor Code | SQL State | Reason                                                                            |
 |-------------|-----------|-----------------------------------------------------------------------------------|
-| 18003       | 44000     | Mode configuration does not exist.                                                |
 | 18004       | 44000     | Target database \`%s\` isn't exist.                                               |
 | 18005       | 22023     | There is invalid parameter value: \`%s\`.                                         |
 | 18020       | HY000     | Failed to get DDL for table \`%s\`.                                               |
-| 18030       | 42S01     | Duplicate storage unit names \`%s\`.                                              |
 | 18031       | 42S02     | Storage units names \`%s\` do not exist.                                          |
 | 18050       | HY000     | Before data record is \`%s\`, after data record is \`%s\`.                        |
 | 18051       | 08000     | Data check table \`%s\` failed.                                                   |
