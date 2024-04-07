@@ -95,4 +95,5 @@
     <sql-case id="create_view_with_select_value" value="CREATE VIEW warehouse_view AS SELECT VALUE(p) AS warehouse_xml FROM xwarehouses p" db-types="Oracle" />
     <sql-case id="create_view_select_to_number_to_char" value="CREATE VIEW time_view AS SELECT time_id, TO_NUMBER(TO_CHAR(time_id, 'ddd')) AS day_in_year FROM times" db-types="Oracle" />
     <sql-case id="create_view_select_subquery_with_union_all" value="CREATE VIEW view_with_unionall AS (SELECT c.rowid crid, c.cust_id, 2 umarker FROM customers c WHERE c.cust_last_name = 'Smith' UNION ALL SELECT c.rowid crid, c.cust_id, 3 umarker FROM customers c WHERE c.cust_last_name = 'Jones')" db-types="Oracle" />
+    <sql-case id="create_view_select_sys_XMLGen" value="CREATE OR REPLACE VIEW employee_view OF XMLType WITH OBJECT ID (XMLCast(XMLQuery('/Emp/@empno' PASSING OBJECT_VALUE RETURNING CONTENT) AS BINARY_DOUBLE)) AS SELECT sys_XMLGen(emp_t(e.employee_id, e.first_name, e.last_name, e.hire_date),XMLFormat('EMP')) FROM employees e WHERE salary &gt; 15000;" db-types="Oracle" />
 </sql-cases>

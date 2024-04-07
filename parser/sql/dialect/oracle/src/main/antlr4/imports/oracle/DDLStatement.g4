@@ -269,7 +269,7 @@ xmlTypeVirtualColumnsClause
     ;
 
 xmlTypeViewClause
-    : OF XMLTYPE xmlSchemaSpec? WITH OBJECT (IDENTIFIER | ID) (DEFAULT | LP_ expr (COMMA_ expr)* RL_)
+    : OF XMLTYPE xmlSchemaSpec? WITH OBJECT (IDENTIFIER | ID) (DEFAULT | LP_ expr (COMMA_ expr)* RP_)
     ;
 
 xmlSchemaSpec

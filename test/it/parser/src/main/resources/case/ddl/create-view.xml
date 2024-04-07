@@ -2104,4 +2104,65 @@
             </combine>
         </select>
     </create-view>
+    
+    <create-view sql-case-id="create_view_select_sys_XMLGen" view-definition="SELECT sys_XMLGen(emp_t(e.employee_id, e.first_name, e.last_name, e.hire_date),XMLFormat('EMP')) FROM employees e WHERE salary > 15000">
+        <view name="employee_view" start-index="23" stop-index="35" />
+        <select>
+            <projections start-index="164" stop-index="252">
+                <expression-projection text="sys_XMLGen(emp_t(e.employee_id, e.first_name, e.last_name, e.hire_date),XMLFormat('EMP'))" start-index="164" stop-index="252">
+                    <expr>
+                        <function function-name="sys_XMLGen" text="sys_XMLGen(emp_t(e.employee_id, e.first_name, e.last_name, e.hire_date),XMLFormat('EMP'))" start-index="164" stop-index="252">
+                            <parameter>
+                                <function function-name="emp_t" text="emp_t(e.employee_id, e.first_name, e.last_name, e.hire_date)" start-index="175" stop-index="234">
+                                    <parameter>
+                                        <column name="employee_id" start-index="181" stop-index="193">
+                                            <owner name="e" start-index="181" stop-index="181" />
+                                        </column>
+                                    </parameter>
+                                    <parameter>
+                                        <column name="first_name" start-index="196" stop-index="207">
+                                            <owner name="e" start-index="196" stop-index="196"/>
+                                        </column>
+                                    </parameter>
+                                    <parameter>
+                                        <column name="last_name" start-index="210" stop-index="220">
+                                            <owner name="e" start-index="210" stop-index="210" />
+                                        </column>
+                                    </parameter>
+                                    <parameter>
+                                        <column name="hire_date" start-index="223" stop-index="233">
+                                            <owner name="e" start-index="223" stop-index="223" />
+                                        </column>
+                                    </parameter>
+                                </function>
+                            </parameter>
+                            <parameter>
+                                <function function-name="XMLFormat" text="XMLFormat('EMP')" start-index="236" stop-index="251">
+                                    <parameter>
+                                        <literal-expression value="EMP" start-index="246" stop-index="250" />
+                                    </parameter>
+                                </function>
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+           </projections>
+            <from>
+                <simple-table alias="e" name="employees" start-index="259" stop-index="269"/>
+            </from>
+            <where start-index="271" stop-index="290">
+                <expr>
+                    <binary-operation-expression start-index="277" stop-index="290">
+                        <left>
+                            <column name="salary" start-index="277" stop-index="282" />
+                        </left>
+                        <right>
+                            <literal-expression value="15000" start-index="286" stop-index="290" />
+                        </right>
+                        <operator>></operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-view>
 </sql-parser-test-cases>
