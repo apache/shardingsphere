@@ -23,8 +23,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
 import org.apache.curator.framework.api.ACLProvider;
-import org.apache.curator.framework.api.transaction.CuratorOp;
-import org.apache.curator.framework.api.transaction.TransactionOp;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
@@ -32,7 +30,6 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
-import org.apache.shardingsphere.mode.identifier.NodePathTransactionAware;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
@@ -40,7 +37,6 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
-import org.apache.shardingsphere.mode.identifier.NodePathTransactionOperation;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.ZookeeperExceptionHandler;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionListener;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
@@ -56,14 +52,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Registry repository of ZooKeeper.
  */
-public final class ZookeeperRepository implements ClusterPersistRepository, InstanceContextAware, NodePathTransactionAware {
+public final class ZookeeperRepository implements ClusterPersistRepository, InstanceContextAware {
     
     private final Map<String, CuratorCache> caches = new ConcurrentHashMap<>();
     
@@ -291,39 +286,6 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Inst
     @Override
     public void setInstanceContext(final InstanceContext instanceContext) {
         client.getConnectionStateListenable().addListener(new SessionConnectionListener(instanceContext, this));
-    }
-    
-    @Override
-    public void executeInTransaction(final List<NodePathTransactionOperation> nodePathTransactionOperations) {
-        try {
-            client.transaction().forOperations(buildCuratorOps(nodePathTransactionOperations));
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            ZookeeperExceptionHandler.handleException(ex);
-        }
-    }
-    
-    private List<CuratorOp> buildCuratorOps(final List<NodePathTransactionOperation> nodePathTransactionOperations) throws Exception {
-        List<CuratorOp> result = new ArrayList<>(nodePathTransactionOperations.size());
-        TransactionOp transactionOp = client.transactionOp();
-        for (NodePathTransactionOperation each : nodePathTransactionOperations) {
-            result.add(buildCuratorOp(each, transactionOp));
-        }
-        return result;
-    }
-    
-    private CuratorOp buildCuratorOp(final NodePathTransactionOperation each, final TransactionOp transactionOp) throws Exception {
-        switch (each.getType()) {
-            case ADD:
-                return transactionOp.create().forPath(each.getKey(), each.getValue().getBytes(StandardCharsets.UTF_8));
-            case UPDATE:
-                return transactionOp.setData().forPath(each.getKey(), each.getValue().getBytes(StandardCharsets.UTF_8));
-            case DELETE:
-                return transactionOp.delete().forPath(each.getKey());
-            default:
-                throw new UnsupportedOperationException(each.toString());
-        }
     }
     
     @Override

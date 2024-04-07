@@ -20,13 +20,9 @@ package org.apache.shardingsphere.metadata.persist.service.version;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
-import org.apache.shardingsphere.mode.identifier.NodePathTransactionAware;
-import org.apache.shardingsphere.mode.identifier.NodePathTransactionOperation;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Meta data version persist service.
@@ -42,33 +38,6 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
     
     @Override
     public void switchActiveVersion(final Collection<MetaDataVersion> metaDataVersions) {
-        if (repository instanceof NodePathTransactionAware) {
-            switchActiveVersionWithTransaction(metaDataVersions);
-        } else {
-            switchActiveVersionWithoutTransaction(metaDataVersions);
-        }
-    }
-    
-    private void switchActiveVersionWithTransaction(final Collection<MetaDataVersion> metaDataVersions) {
-        List<NodePathTransactionOperation> nodePathTransactionOperations = buildNodePathTransactionOperations(metaDataVersions);
-        if (!nodePathTransactionOperations.isEmpty()) {
-            ((NodePathTransactionAware) repository).executeInTransaction(nodePathTransactionOperations);
-        }
-    }
-    
-    private List<NodePathTransactionOperation> buildNodePathTransactionOperations(final Collection<MetaDataVersion> metaDataVersions) {
-        List<NodePathTransactionOperation> result = new ArrayList<>();
-        for (MetaDataVersion each : metaDataVersions) {
-            if (each.getNextActiveVersion().equals(each.getCurrentActiveVersion())) {
-                continue;
-            }
-            result.add(NodePathTransactionOperation.update(each.getKey() + ACTIVE_VERSION, each.getNextActiveVersion()));
-            result.add(NodePathTransactionOperation.delete(each.getKey() + VERSIONS + each.getCurrentActiveVersion()));
-        }
-        return result;
-    }
-    
-    private void switchActiveVersionWithoutTransaction(final Collection<MetaDataVersion> metaDataVersions) {
         for (MetaDataVersion each : metaDataVersions) {
             if (each.getNextActiveVersion().equals(each.getCurrentActiveVersion())) {
                 continue;
