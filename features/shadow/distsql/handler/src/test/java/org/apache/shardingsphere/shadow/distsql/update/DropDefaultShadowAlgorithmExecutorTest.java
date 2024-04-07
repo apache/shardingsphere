@@ -32,7 +32,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -77,7 +76,7 @@ class DropDefaultShadowAlgorithmExecutorTest {
         DropDefaultShadowAlgorithmStatement sqlStatement = new DropDefaultShadowAlgorithmStatement(false);
         assertTrue(executor.hasAnyOneToBeDropped(sqlStatement));
         ShadowRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
-        assertFalse(toBeDroppedRuleConfig.getDefaultShadowAlgorithmName().isEmpty());
+        assertThat(toBeDroppedRuleConfig.getDefaultShadowAlgorithmName(), is("default"));
         assertThat(toBeDroppedRuleConfig.getShadowAlgorithms().size(), is(1));
     }
 }

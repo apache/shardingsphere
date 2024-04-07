@@ -63,8 +63,8 @@ class DropMaskRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
         MaskRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement(false, "t_mask"));
-        assertTrue(toBeDroppedRuleConfig.getMaskAlgorithms().isEmpty());
         assertThat(toBeDroppedRuleConfig.getTables().size(), is(1));
+        assertTrue(toBeDroppedRuleConfig.getMaskAlgorithms().isEmpty());
     }
     
     @Test
