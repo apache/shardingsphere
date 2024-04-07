@@ -19,9 +19,9 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.RuleDefinitionException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InUsedRuleException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.RuleDefinitionException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
@@ -98,6 +98,7 @@ class DropReadwriteSplittingRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
         ReadwriteSplittingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement());
+        assertThat(actual.getDataSources().size(), is(1));
         assertThat(actual.getLoadBalancers().size(), is(1));
     }
     
@@ -108,6 +109,7 @@ class DropReadwriteSplittingRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
         ReadwriteSplittingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement());
+        assertThat(actual.getDataSources().size(), is(1));
         assertThat(actual.getLoadBalancers().size(), is(0));
     }
     
@@ -118,6 +120,7 @@ class DropReadwriteSplittingRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
         ReadwriteSplittingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement());
+        assertThat(actual.getDataSources().size(), is(1));
         assertThat(actual.getLoadBalancers().size(), is(1));
     }
     

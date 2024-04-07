@@ -62,7 +62,7 @@ class DropBroadcastTableRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(config);
         executor.setRule(rule);
         DropBroadcastTableRuleStatement sqlStatement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        BroadcastRuleConfiguration toBeDroppedConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
-        assertTrue(toBeDroppedConfig.getTables().isEmpty());
+        BroadcastRuleConfiguration toBeAlteredConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
+        assertTrue(toBeAlteredConfig.getTables().isEmpty());
     }
 }

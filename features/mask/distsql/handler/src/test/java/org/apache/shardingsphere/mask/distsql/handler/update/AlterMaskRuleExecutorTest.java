@@ -90,6 +90,9 @@ class AlterMaskRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         MaskRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
+        assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
+        assertThat(toBeAlteredRuleConfig.getTables().iterator().next().getName(), is("t_order"));
+        assertThat(toBeAlteredRuleConfig.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("order_id"));
         assertThat(toBeAlteredRuleConfig.getMaskAlgorithms().size(), is(1));
         assertTrue(toBeAlteredRuleConfig.getMaskAlgorithms().containsKey("t_order_order_id_md5"));
     }

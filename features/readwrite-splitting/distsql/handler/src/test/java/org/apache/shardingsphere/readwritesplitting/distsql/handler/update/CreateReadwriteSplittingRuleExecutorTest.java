@@ -157,6 +157,7 @@ class CreateReadwriteSplittingRuleExecutorTest {
         executor.setRule(mock(ReadwriteSplittingRule.class));
         ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         assertThat(toBeCreatedRuleConfig.getDataSources().size(), is(1));
+        assertThat(toBeCreatedRuleConfig.getLoadBalancers().size(), is(1));
     }
     
     private CreateReadwriteSplittingRuleStatement createSQLStatement(final String loadBalancerName) {

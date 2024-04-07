@@ -83,9 +83,9 @@ class DropDefaultShardingStrategyExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
-        ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("Table"));
-        assertNull(actual.getDefaultTableShardingStrategy());
-        assertThat(actual.getShardingAlgorithms().size(), is(0));
+        ShardingRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("Table"));
+        assertNull(toBeDroppedRuleConfig.getDefaultTableShardingStrategy());
+        assertThat(toBeDroppedRuleConfig.getShardingAlgorithms().size(), is(0));
     }
     
     @Test
@@ -93,10 +93,10 @@ class DropDefaultShardingStrategyExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
-        ShardingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("Database"));
-        assertNull(actual.getDefaultTableShardingStrategy());
-        actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("Table"));
-        assertThat(actual.getShardingAlgorithms().size(), is(1));
+        ShardingRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("Database"));
+        assertNull(toBeDroppedRuleConfig.getDefaultTableShardingStrategy());
+        toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("Table"));
+        assertThat(toBeDroppedRuleConfig.getShardingAlgorithms().size(), is(1));
     }
     
     private DropDefaultShardingStrategyStatement createSQLStatement(final String defaultType) {
