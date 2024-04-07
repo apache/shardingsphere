@@ -108,11 +108,9 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | Vendor Code | SQL State | 错误信息                                                                              |
 |-------------|-----------|-----------------------------------------------------------------------------------|
-| 18003       | 44000     | Mode configuration does not exist.                                                |
 | 18004       | 44000     | Target database \`%s\` isn't exist.                                               |
 | 18005       | 22023     | There is invalid parameter value: \`%s\`.                                         |
 | 18020       | HY000     | Failed to get DDL for table \`%s\`.                                               |
-| 18030       | 42S01     | Duplicate storage unit names \`%s\`.                                              |
 | 18031       | 42S02     | Storage units names \`%s\` do not exist.                                          |
 | 18050       | HY000     | Before data record is \`%s\`, after data record is \`%s\`.                        |
 | 18051       | 08000     | Data check table \`%s\` failed.                                                   |
