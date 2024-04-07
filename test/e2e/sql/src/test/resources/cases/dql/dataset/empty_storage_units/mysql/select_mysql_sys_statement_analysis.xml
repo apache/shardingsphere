@@ -27,6 +27,7 @@
         <column name="max_latency"/>
         <column name="avg_latency"/>
         <column name="lock_latency"/>
+        <column name="cpu_latency"/>
         <column name="rows_sent"/>
         <column name="rows_sent_avg"/>
         <column name="rows_examined"/>
@@ -37,6 +38,8 @@
         <column name="tmp_disk_tables"/>
         <column name="rows_sorted"/>
         <column name="sort_merge_passes"/>
+        <column name="max_controlled_memory"/>
+        <column name="max_total_memory"/>
         <column name="digest"/>
         <column name="first_seen"/>
         <column name="last_seen"/>

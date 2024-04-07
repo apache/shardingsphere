@@ -16,6 +16,7 @@
 #
 
 name: INNODB_CMPMEM_RESET
+type: TABLE
 columns:
   page_size:
     caseSensitive: false
@@ -55,7 +56,7 @@ columns:
     visible: true
   relocation_ops:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: relocation_ops
     nullable: false

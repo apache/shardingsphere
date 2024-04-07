@@ -21,9 +21,25 @@
         <column name="worker_id" />
         <column name="thread_id" />
         <column name="service_state" />
-        <column name="last_seen_transaction" />
         <column name="last_error_number" />
         <column name="last_error_message" />
         <column name="last_error_timestamp" />
+        <column name="last_applied_transaction" />
+        <column name="last_applied_transaction_original_commit_timestamp" />
+        <column name="last_applied_transaction_immediate_commit_timestamp" />
+        <column name="last_applied_transaction_start_apply_timestamp" />
+        <column name="last_applied_transaction_end_apply_timestamp" />
+        <column name="applying_transaction" />
+        <column name="applying_transaction_original_commit_timestamp" />
+        <column name="applying_transaction_immediate_commit_timestamp" />
+        <column name="applying_transaction_start_apply_timestamp" />
+        <column name="last_applied_transaction_retries_count" />
+        <column name="last_applied_transaction_last_transient_error_number" />
+        <column name="last_applied_transaction_last_transient_error_message" />
+        <column name="last_applied_transaction_last_transient_error_timestamp" />
+        <column name="applying_transaction_retries_count" />
+        <column name="applying_transaction_last_transient_error_number" />
+        <column name="applying_transaction_last_transient_error_message" />
+        <column name="applying_transaction_last_transient_error_timestamp" />
     </metadata>
 </dataset>

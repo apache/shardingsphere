@@ -16,12 +16,14 @@
 #
 
 name: schema_table_lock_waits
+type: TABLE
 columns:
   object_schema:
     caseSensitive: false
     dataType: 12
     generated: false
     name: object_schema
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,22 +32,25 @@ columns:
     dataType: 12
     generated: false
     name: object_name
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   waiting_thread_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: waiting_thread_id
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   waiting_pid:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: waiting_pid
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
@@ -54,6 +59,7 @@ columns:
     dataType: -1
     generated: false
     name: waiting_account
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,6 +68,7 @@ columns:
     dataType: 12
     generated: false
     name: waiting_lock_type
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -70,6 +77,7 @@ columns:
     dataType: 12
     generated: false
     name: waiting_lock_duration
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -78,46 +86,52 @@ columns:
     dataType: -1
     generated: false
     name: waiting_query
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   waiting_query_secs:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: waiting_query_secs
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   waiting_query_rows_affected:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: waiting_query_rows_affected
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   waiting_query_rows_examined:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: waiting_query_rows_examined
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
   blocking_thread_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: blocking_thread_id
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   blocking_pid:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: blocking_pid
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
@@ -126,6 +140,7 @@ columns:
     dataType: -1
     generated: false
     name: blocking_account
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -134,6 +149,7 @@ columns:
     dataType: 12
     generated: false
     name: blocking_lock_type
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -142,6 +158,7 @@ columns:
     dataType: 12
     generated: false
     name: blocking_lock_duration
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -150,6 +167,7 @@ columns:
     dataType: 12
     generated: false
     name: sql_kill_blocking_query
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -158,6 +176,7 @@ columns:
     dataType: 12
     generated: false
     name: sql_kill_blocking_connection
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

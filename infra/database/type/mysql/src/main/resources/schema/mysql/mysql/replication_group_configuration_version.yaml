@@ -16,9 +16,10 @@
 #
 
 name: replication_group_configuration_version
+type: TABLE
 columns:
   name:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 1
     generated: false
     name: name
@@ -27,8 +28,8 @@ columns:
     unsigned: false
     visible: true
   version:
-    caseSensitive: true
-    dataType: 4
+    caseSensitive: false
+    dataType: -5
     generated: false
     name: version
     nullable: false
@@ -38,4 +39,6 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - name

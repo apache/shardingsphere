@@ -16,12 +16,14 @@
 #
 
 name: user_summary_by_file_io_type
+type: TABLE
 columns:
   user:
     caseSensitive: true
     dataType: 12
     generated: false
     name: user
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,30 +32,34 @@ columns:
     dataType: 12
     generated: false
     name: event_name
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   total:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: total
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   max_latency:
     caseSensitive: false
-    dataType: -1
+    dataType: 12
     generated: false
     name: max_latency
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true

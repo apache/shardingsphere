@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.core.checker;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
 
 import javax.sql.DataSource;
@@ -51,7 +51,7 @@ public final class DataSourceCheckEngine {
      * Check data source connections.
      *
      * @param dataSources data sources
-     * @throws PrepareJobWithInvalidConnectionException prepare job with invalid connection exception
+     * @throws SQLWrapperException SQL wrapper exception
      */
     public void checkConnection(final Collection<DataSource> dataSources) {
         try {
@@ -59,7 +59,7 @@ public final class DataSourceCheckEngine {
                 each.getConnection().close();
             }
         } catch (final SQLException ex) {
-            throw new PrepareJobWithInvalidConnectionException(ex);
+            throw new SQLWrapperException(ex);
         }
     }
     
@@ -96,7 +96,7 @@ public final class DataSourceCheckEngine {
                 }
             }
         } catch (final SQLException ex) {
-            throw new PrepareJobWithInvalidConnectionException(ex);
+            throw new SQLWrapperException(ex);
         }
     }
     

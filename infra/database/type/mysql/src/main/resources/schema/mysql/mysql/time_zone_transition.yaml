@@ -16,6 +16,7 @@
 #
 
 name: time_zone_transition
+type: TABLE
 columns:
   time_zone_id:
     caseSensitive: false
@@ -28,7 +29,7 @@ columns:
     visible: true
   transition_time:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: Transition_time
     nullable: false
@@ -47,4 +48,7 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - Time_zone_id
+      - Transition_time

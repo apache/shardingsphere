@@ -20,7 +20,7 @@ package org.apache.shardingsphere.transaction.core;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.transaction.exception.XAResourceNameLengthExceededException;
+import org.apache.shardingsphere.transaction.exception.ResourceNameLengthExceededException;
 
 import javax.sql.DataSource;
 
@@ -44,6 +44,6 @@ public final class ResourceDataSource {
         this.originalName = originalName;
         this.dataSource = dataSource;
         uniqueResourceName = ResourceIdGenerator.getInstance().nextId() + databaseAndDataSourceName[1];
-        ShardingSpherePreconditions.checkState(uniqueResourceName.getBytes().length <= MAX_RESOURCE_NAME_LENGTH, () -> new XAResourceNameLengthExceededException(uniqueResourceName));
+        ShardingSpherePreconditions.checkState(uniqueResourceName.getBytes().length <= MAX_RESOURCE_NAME_LENGTH, () -> new ResourceNameLengthExceededException(uniqueResourceName));
     }
 }

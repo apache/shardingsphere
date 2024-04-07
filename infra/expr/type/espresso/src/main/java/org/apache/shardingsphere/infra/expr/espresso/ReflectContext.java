@@ -33,8 +33,9 @@ public final class ReflectContext implements AutoCloseable {
      * This method is a simulation of the following operation.
      * // CHECKSTYLE:OFF
      * <pre class="code">
-     * private final Context context = Context.newBuilder()
+     * private final Context context = Context.newBuilder("java")
      *             .allowAllAccess(true)
+     *             .allowValueSharing(false)
      *             .option("java.Classpath", JAVA_CLASSPATH)
      *             .build();
      * </pre>
@@ -48,10 +49,13 @@ public final class ReflectContext implements AutoCloseable {
     public ReflectContext(final String javaClassPath) {
         Object builderInstance = Class.forName(CONTEXT_CLASS_NAME)
                 .getMethod("newBuilder", String[].class)
-                .invoke(null, (Object) new String[0]);
+                .invoke(null, (Object) new String[]{"java"});
         builderInstance = builderInstance.getClass()
                 .getMethod("allowAllAccess", boolean.class)
                 .invoke(builderInstance, true);
+        builderInstance = builderInstance.getClass()
+                .getMethod("allowValueSharing", boolean.class)
+                .invoke(builderInstance, false);
         builderInstance = builderInstance.getClass()
                 .getMethod("option", String.class, String.class)
                 .invoke(builderInstance, "java.Classpath", javaClassPath);

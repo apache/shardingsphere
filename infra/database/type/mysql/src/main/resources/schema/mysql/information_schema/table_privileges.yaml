@@ -16,6 +16,7 @@
 #
 
 name: TABLE_PRIVILEGES
+type: TABLE
 columns:
   grantee:
     caseSensitive: false

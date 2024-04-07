@@ -16,10 +16,11 @@
 #
 
 name: time_zone_leap_second
+type: TABLE
 columns:
   transition_time:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: Transition_time
     nullable: false
@@ -38,4 +39,6 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - Transition_time

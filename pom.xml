@@ -86,7 +86,7 @@
         <asm.version>9.3</asm.version>
         <groovy.version>4.0.19</groovy.version>
         <freemarker.version>2.3.31</freemarker.version>
-        <bytebuddy.version>1.14.8</bytebuddy.version>
+        <bytebuddy.version>1.14.13</bytebuddy.version>
         
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
         <glassfish-jaxb.version>2.3.9</glassfish-jaxb.version>
@@ -133,14 +133,14 @@
         <opentelemetry.version>1.31.0</opentelemetry.version>
         <kotlin-stdlib.version>1.9.10</kotlin-stdlib.version>
         
-        <junit.version>5.10.0</junit.version>
+        <junit.version>5.10.2</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
         <awaitility.version>4.2.0</awaitility.version>
         <testcontainers.version>1.19.3</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
-        <graal-sdk.version>23.1.2</graal-sdk.version>
+        <graal-sdk.version>24.0.0</graal-sdk.version>
         
         <!-- 3rd party library plugin versions -->
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>

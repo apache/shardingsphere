@@ -16,35 +16,47 @@
 #
 
 name: sys_config
+type: TABLE
 columns:
   variable:
     caseSensitive: false
     dataType: 12
     generated: false
     name: variable
+    nullable: false
     primaryKey: true
+    unsigned: false
     visible: true
   value:
     caseSensitive: false
     dataType: 12
     generated: false
     name: value
+    nullable: true
     primaryKey: false
+    unsigned: false
     visible: true
   set_time:
     caseSensitive: false
     dataType: 93
     generated: false
     name: set_time
+    nullable: true
     primaryKey: false
+    unsigned: false
     visible: true
   set_by:
     caseSensitive: false
     dataType: 12
     generated: false
     name: set_by
+    nullable: true
     primaryKey: false
+    unsigned: false
     visible: true
 indexes:
   primary:
     name: PRIMARY
+    unique: true
+    columns:
+      - variable

@@ -16,9 +16,10 @@
 #
 
 name: component
+type: TABLE
 columns:
   component_id:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 4
     generated: true
     name: component_id
@@ -27,7 +28,7 @@ columns:
     unsigned: true
     visible: true
   component_group_id:
-    caseSensitive: true
+    caseSensitive: false
     dataType: 4
     generated: false
     name: component_group_id
@@ -36,7 +37,7 @@ columns:
     unsigned: true
     visible: true
   component_urn:
-    caseSensitive: true
+    caseSensitive: false
     dataType: -1
     generated: false
     name: component_urn
@@ -47,4 +48,6 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - component_id

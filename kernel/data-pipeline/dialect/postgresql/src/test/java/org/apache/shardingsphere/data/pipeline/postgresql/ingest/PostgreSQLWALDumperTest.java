@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonCo
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.ActualAndLogicTableNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAndSchemaNameMapper;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.PostgreSQLLogicalReplication;
@@ -100,7 +101,7 @@ class PostgreSQLWALDumperTest {
                 Statement statement = connection.createStatement()) {
             statement.execute(sql);
         } catch (final SQLException ex) {
-            throw new RuntimeException("Init table failed.", ex);
+            throw new SQLWrapperException(ex);
         }
     }
     

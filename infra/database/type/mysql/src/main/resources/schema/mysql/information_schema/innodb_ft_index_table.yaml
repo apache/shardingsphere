@@ -16,6 +16,7 @@
 #
 
 name: INNODB_FT_INDEX_TABLE
+type: TABLE
 columns:
   word:
     caseSensitive: false
@@ -28,7 +29,7 @@ columns:
     visible: true
   first_doc_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: FIRST_DOC_ID
     nullable: false
@@ -37,7 +38,7 @@ columns:
     visible: true
   last_doc_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: LAST_DOC_ID
     nullable: false
@@ -46,7 +47,7 @@ columns:
     visible: true
   doc_count:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: DOC_COUNT
     nullable: false
@@ -55,7 +56,7 @@ columns:
     visible: true
   doc_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: DOC_ID
     nullable: false
@@ -64,7 +65,7 @@ columns:
     visible: true
   position:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: POSITION
     nullable: false

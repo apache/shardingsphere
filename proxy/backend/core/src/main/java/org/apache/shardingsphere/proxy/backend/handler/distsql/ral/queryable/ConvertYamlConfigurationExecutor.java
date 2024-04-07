@@ -39,7 +39,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
+import org.apache.shardingsphere.infra.exception.generic.FileIOException;
 
 import java.io.File;
 import java.io.IOException;

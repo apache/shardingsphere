@@ -26,5 +26,11 @@
         <column name="number_of_workers" />
         <column name="id" />
         <column name="channel_name" />
+        <column name="privilege_checks_username" />
+        <column name="privilege_checks_hostname" />
+        <column name="require_row_format" />
+        <column name="require_table_primary_key_check" />
+        <column name="assign_gtids_to_anonymous_transactions_type" />
+        <column name="assign_gtids_to_anonymous_transactions_value" />
     </metadata>
 </dataset>

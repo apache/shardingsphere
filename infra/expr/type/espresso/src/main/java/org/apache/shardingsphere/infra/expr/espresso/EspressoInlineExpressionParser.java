@@ -43,7 +43,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     private String inlineExpression;
     
     static {
-        URL groovyJarUrl = ClassLoader.getSystemResource("build/libs/groovy.jar");
+        URL groovyJarUrl = EspressoInlineExpressionParser.class.getClassLoader().getResource("build/libs/groovy.jar");
         ShardingSpherePreconditions.checkNotNull(groovyJarUrl, NullPointerException::new);
         JAVA_CLASSPATH = groovyJarUrl.getPath();
     }

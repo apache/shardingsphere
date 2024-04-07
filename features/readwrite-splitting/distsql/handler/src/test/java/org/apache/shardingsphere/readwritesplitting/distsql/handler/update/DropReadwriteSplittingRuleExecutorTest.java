@@ -19,9 +19,9 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.metadata.rule.RuleDefinitionException;
-import org.apache.shardingsphere.infra.exception.metadata.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.exception.metadata.rule.InUsedRuleException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.RuleDefinitionException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InUsedRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;

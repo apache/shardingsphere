@@ -26,6 +26,7 @@
         <column name="owner_object_type" />
         <column name="owner_object_schema" />
         <column name="owner_object_name" />
+        <column name="execution_engine" />
         <column name="timer_prepare" />
         <column name="count_reprepare" />
         <column name="count_execute" />
@@ -52,5 +53,9 @@
         <column name="sum_sort_scan" />
         <column name="sum_no_index_used" />
         <column name="sum_no_good_index_used" />
+        <column name="sum_cpu_time" />
+        <column name="max_controlled_memory" />
+        <column name="max_total_memory" />
+        <column name="count_secondary" />
     </metadata>
 </dataset>

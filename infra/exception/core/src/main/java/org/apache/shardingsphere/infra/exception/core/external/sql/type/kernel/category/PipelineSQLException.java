@@ -29,11 +29,7 @@ public abstract class PipelineSQLException extends KernelSQLException {
     
     private static final int KERNEL_CODE = 8;
     
-    protected PipelineSQLException(final SQLState sqlState, final int errorCode, final String reason) {
-        super(sqlState, KERNEL_CODE, errorCode, reason);
-    }
-    
-    protected PipelineSQLException(final SQLState sqlState, final int errorCode, final String reason, final Exception cause) {
-        super(sqlState, KERNEL_CODE, errorCode, reason, cause);
+    protected PipelineSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
     }
 }

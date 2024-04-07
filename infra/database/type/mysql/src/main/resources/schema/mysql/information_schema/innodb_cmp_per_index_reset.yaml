@@ -16,6 +16,7 @@
 #
 
 name: INNODB_CMP_PER_INDEX_RESET
+type: TABLE
 columns:
   database_name:
     caseSensitive: false

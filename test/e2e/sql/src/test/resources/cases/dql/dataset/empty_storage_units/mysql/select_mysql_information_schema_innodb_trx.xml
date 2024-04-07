@@ -41,5 +41,6 @@
         <column name="trx_adaptive_hash_timeout" />
         <column name="trx_is_read_only" />
         <column name="trx_autocommit_non_locking" />
+        <column name="trx_schedule_weight" />
     </metadata>
 </dataset>

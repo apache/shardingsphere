@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStateme
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.hint.SQLHintDataSourceNotExistsException;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.hint.DataSourceHintNotExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -95,7 +95,7 @@ class PartialSQLRouteExecutorTest {
     void assertRouteBySQLCommentHintWithException() {
         when(hintValueContext.findHintDataSourceName()).thenReturn(Optional.of("ds_3"));
         QueryContext queryContext = new QueryContext(commonSQLStatementContext, "", Collections.emptyList(), hintValueContext);
-        assertThrows(SQLHintDataSourceNotExistsException.class, () -> partialSQLRouteExecutor.route(connectionContext, queryContext, mock(RuleMetaData.class), database));
+        assertThrows(DataSourceHintNotExistsException.class, () -> partialSQLRouteExecutor.route(connectionContext, queryContext, mock(RuleMetaData.class), database));
     }
     
     @Test
@@ -103,7 +103,7 @@ class PartialSQLRouteExecutorTest {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.setDataSourceName("ds-3");
             QueryContext logicSQL = new QueryContext(commonSQLStatementContext, "", Collections.emptyList(), new HintValueContext());
-            assertThrows(SQLHintDataSourceNotExistsException.class, () -> partialSQLRouteExecutor.route(connectionContext, logicSQL, mock(RuleMetaData.class), database));
+            assertThrows(DataSourceHintNotExistsException.class, () -> partialSQLRouteExecutor.route(connectionContext, logicSQL, mock(RuleMetaData.class), database));
         }
     }
 }

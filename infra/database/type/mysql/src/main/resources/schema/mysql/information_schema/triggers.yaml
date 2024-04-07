@@ -16,9 +16,10 @@
 #
 
 name: TRIGGERS
+type: TABLE
 columns:
   trigger_catalog:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: TRIGGER_CATALOG
@@ -27,7 +28,7 @@ columns:
     unsigned: false
     visible: true
   trigger_schema:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: TRIGGER_SCHEMA
@@ -45,8 +46,8 @@ columns:
     unsigned: false
     visible: true
   event_manipulation:
-    caseSensitive: false
-    dataType: 12
+    caseSensitive: true
+    dataType: 1
     generated: false
     name: EVENT_MANIPULATION
     nullable: false
@@ -54,7 +55,7 @@ columns:
     unsigned: false
     visible: true
   event_object_catalog:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: EVENT_OBJECT_CATALOG
@@ -63,7 +64,7 @@ columns:
     unsigned: false
     visible: true
   event_object_schema:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: EVENT_OBJECT_SCHEMA
@@ -72,7 +73,7 @@ columns:
     unsigned: false
     visible: true
   event_object_table:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: EVENT_OBJECT_TABLE
@@ -87,19 +88,19 @@ columns:
     name: ACTION_ORDER
     nullable: false
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true
   action_condition:
     caseSensitive: false
-    dataType: -1
+    dataType: -2
     generated: false
     name: ACTION_CONDITION
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   action_statement:
-    caseSensitive: false
+    caseSensitive: true
     dataType: -1
     generated: false
     name: ACTION_STATEMENT
@@ -117,8 +118,8 @@ columns:
     unsigned: false
     visible: true
   action_timing:
-    caseSensitive: false
-    dataType: 12
+    caseSensitive: true
+    dataType: 1
     generated: false
     name: ACTION_TIMING
     nullable: false
@@ -127,19 +128,19 @@ columns:
     visible: true
   action_reference_old_table:
     caseSensitive: false
-    dataType: 12
+    dataType: -2
     generated: false
     name: ACTION_REFERENCE_OLD_TABLE
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   action_reference_new_table:
     caseSensitive: false
-    dataType: 12
+    dataType: -2
     generated: false
     name: ACTION_REFERENCE_NEW_TABLE
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -171,16 +172,16 @@ columns:
     unsigned: false
     visible: true
   sql_mode:
-    caseSensitive: false
-    dataType: 12
+    caseSensitive: true
+    dataType: 1
     generated: false
     name: SQL_MODE
     nullable: false
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true
   definer:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 12
     generated: false
     name: DEFINER

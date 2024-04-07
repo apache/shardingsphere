@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.single.route.validator.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.exception.metadata.SchemaNotFoundException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.single.exception.metadata.DropNotEmptySchemaException;
+import org.apache.shardingsphere.single.exception.DropNotEmptySchemaException;
 import org.apache.shardingsphere.single.route.validator.SingleMetaDataValidator;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;

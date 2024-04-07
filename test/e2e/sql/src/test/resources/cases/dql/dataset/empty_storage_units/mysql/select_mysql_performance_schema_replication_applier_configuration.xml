@@ -19,5 +19,10 @@
     <metadata>
         <column name="channel_name" />
         <column name="desired_delay" />
+        <column name="privilege_checks_user" />
+        <column name="require_row_format" />
+        <column name="require_table_primary_key_check" />
+        <column name="assign_gtids_to_anonymous_transactions_type" />
+        <column name="assign_gtids_to_anonymous_transactions_value" />
     </metadata>
 </dataset>

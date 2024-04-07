@@ -16,10 +16,11 @@
 #
 
 name: INNODB_FT_BEING_DELETED
+type: TABLE
 columns:
   doc_id:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: DOC_ID
     nullable: false

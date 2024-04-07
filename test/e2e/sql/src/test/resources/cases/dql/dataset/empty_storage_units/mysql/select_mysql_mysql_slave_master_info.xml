@@ -42,5 +42,13 @@
         <column name="enabled_auto_position" />
         <column name="channel_name" />
         <column name="tls_version" />
+        <column name="public_key_path" />
+        <column name="get_public_key" />
+        <column name="network_namespace" />
+        <column name="master_compression_algorithm" />
+        <column name="master_zstd_compression_level" />
+        <column name="tls_ciphersuites" />
+        <column name="source_connection_auto_failover" />
+        <column name="gtid_only" />
     </metadata>
 </dataset>

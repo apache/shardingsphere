@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.transaction.base.seata.at.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.TransactionSQLException;
 
 /**
  * Seata AT disabled exception.
  */
-public final class SeataATDisabledException extends TransactionSQLException {
+public final class SeataATDisabledException extends SeataATTransactionSQLException {
     
     private static final long serialVersionUID = 3742525073470768226L;
     
     public SeataATDisabledException() {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 301, "ShardingSphere Seata-AT transaction has been disabled");
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 1, "Seata-AT transaction has been disabled.");
     }
 }

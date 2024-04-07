@@ -16,6 +16,7 @@
 #
 
 name: role_edges
+type: TABLE
 columns:
   from_host:
     caseSensitive: false
@@ -27,7 +28,7 @@ columns:
     unsigned: false
     visible: true
   from_user:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 1
     generated: false
     name: FROM_USER
@@ -45,7 +46,7 @@ columns:
     unsigned: false
     visible: true
   to_user:
-    caseSensitive: false
+    caseSensitive: true
     dataType: 1
     generated: false
     name: TO_USER
@@ -55,7 +56,7 @@ columns:
     visible: true
   with_admin_option:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: WITH_ADMIN_OPTION
     nullable: false
@@ -65,4 +66,9 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - FROM_HOST
+      - FROM_USER
+      - TO_HOST
+      - TO_USER

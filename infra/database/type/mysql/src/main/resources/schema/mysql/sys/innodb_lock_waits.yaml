@@ -16,12 +16,14 @@
 #
 
 name: innodb_lock_waits
+type: TABLE
 columns:
   wait_started:
     caseSensitive: false
     dataType: 93
     generated: false
     name: wait_started
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -30,22 +32,61 @@ columns:
     dataType: 92
     generated: false
     name: wait_age
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   wait_age_secs:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: wait_age_secs
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   locked_table:
     caseSensitive: false
-    dataType: 12
+    dataType: -1
     generated: false
     name: locked_table
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  locked_table_schema:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: locked_table_schema
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  locked_table_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: locked_table_name
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  locked_table_partition:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: locked_table_partition
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  locked_table_subpartition:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: locked_table_subpartition
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -54,6 +95,7 @@ columns:
     dataType: 12
     generated: false
     name: locked_index
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -62,22 +104,25 @@ columns:
     dataType: 12
     generated: false
     name: locked_type
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   waiting_trx_id:
     caseSensitive: false
-    dataType: 12
+    dataType: -5
     generated: false
     name: waiting_trx_id
+    nullable: false
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true
   waiting_trx_started:
     caseSensitive: false
     dataType: 93
     generated: false
     name: waiting_trx_started
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -86,30 +131,34 @@ columns:
     dataType: 92
     generated: false
     name: waiting_trx_age
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   waiting_trx_rows_locked:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: waiting_trx_rows_locked
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   waiting_trx_rows_modified:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: waiting_trx_rows_modified
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   waiting_pid:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: waiting_pid
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -118,6 +167,7 @@ columns:
     dataType: -1
     generated: false
     name: waiting_query
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -126,6 +176,7 @@ columns:
     dataType: 12
     generated: false
     name: waiting_lock_id
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -134,22 +185,25 @@ columns:
     dataType: 12
     generated: false
     name: waiting_lock_mode
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
   blocking_trx_id:
     caseSensitive: false
-    dataType: 12
+    dataType: -5
     generated: false
     name: blocking_trx_id
+    nullable: false
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true
   blocking_pid:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: blocking_pid
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -158,6 +212,7 @@ columns:
     dataType: -1
     generated: false
     name: blocking_query
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
@@ -166,6 +221,7 @@ columns:
     dataType: 12
     generated: false
     name: blocking_lock_id
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -174,6 +230,7 @@ columns:
     dataType: 12
     generated: false
     name: blocking_lock_mode
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -182,6 +239,7 @@ columns:
     dataType: 93
     generated: false
     name: blocking_trx_started
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -190,22 +248,25 @@ columns:
     dataType: 92
     generated: false
     name: blocking_trx_age
+    nullable: true
     primaryKey: false
     unsigned: false
     visible: true
   blocking_trx_rows_locked:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: blocking_trx_rows_locked
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
   blocking_trx_rows_modified:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: blocking_trx_rows_modified
+    nullable: false
     primaryKey: false
     unsigned: true
     visible: true
@@ -214,6 +275,7 @@ columns:
     dataType: 12
     generated: false
     name: sql_kill_blocking_query
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true
@@ -222,6 +284,7 @@ columns:
     dataType: 12
     generated: false
     name: sql_kill_blocking_connection
+    nullable: false
     primaryKey: false
     unsigned: false
     visible: true

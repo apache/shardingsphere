@@ -16,6 +16,7 @@
 #
 
 name: help_category
+type: TABLE
 columns:
   help_category_id:
     caseSensitive: false
@@ -40,7 +41,7 @@ columns:
     dataType: 5
     generated: false
     name: parent_category_id
-    nullable: false
+    nullable: true
     primaryKey: false
     unsigned: true
     visible: true
@@ -56,7 +57,11 @@ columns:
 indexes:
   primary:
     name: PRIMARY
-    unique: false
+    unique: true
+    columns:
+      - help_category_id
   name:
     name: name
-    unique: false
+    unique: true
+    columns:
+      - name
