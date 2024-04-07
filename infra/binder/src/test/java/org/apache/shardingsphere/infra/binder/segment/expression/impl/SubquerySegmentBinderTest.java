@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
 import org.apache.shardingsphere.infra.binder.segment.from.SimpleTableSegmentBinderContext;
@@ -42,7 +59,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 public class SubquerySegmentBinderTest {
-
+    
     /**
      * Test common scenarios.
      */
@@ -65,7 +82,7 @@ public class SubquerySegmentBinderTest {
         sqlStatementBinderContext.getExternalTableBinderContexts().put("t_order_item", new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundedNameColumn))));
         Map<String, TableSegmentBinderContext> outerTableBinderContexts = new LinkedHashMap<>();
         SubquerySegment actual = SubquerySegmentBinder.bind(subquerySegment, sqlStatementBinderContext, outerTableBinderContexts);
-
+        
         assertNotNull(actual.getSelect());
         assertTrue(actual.getSelect().getFrom().isPresent());
         assertInstanceOf(SimpleTableSegment.class, actual.getSelect().getFrom().get());
@@ -92,7 +109,7 @@ public class SubquerySegmentBinderTest {
         assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
     }
-
+    
     /**
      * Test the 'With' clause scenario.
      */
@@ -107,8 +124,7 @@ public class SubquerySegmentBinderTest {
         ExpressionSegment whereExpressionSegment = new ColumnSegment(57, 62, new IdentifierValue("status"));
         oracleSubquerySelectStatement.setWhere(new WhereSegment(51, 73, whereExpressionSegment));
         CommonTableExpressionSegment commonTableExpressionSegment = new CommonTableExpressionSegment(0, 1, new IdentifierValue("submit_order"),
-                new SubquerySegment(22, 73, oracleSubquerySelectStatement, "SELECT order_id FROM t_order WHERE status = 'SUBMIT'")
-        );
+                new SubquerySegment(22, 73, oracleSubquerySelectStatement, "SELECT order_id FROM t_order WHERE status = 'SUBMIT'"));
         WithSegment withSegment = new WithSegment(0, 74, Collections.singleton(commonTableExpressionSegment));
         OracleSelectStatement oracleSelectStatement = new OracleSelectStatement();
         oracleSelectStatement.setWithSegment(withSegment);
@@ -118,7 +134,7 @@ public class SubquerySegmentBinderTest {
                 new SQLStatementBinderContext(createMetaData(), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
         Map<String, TableSegmentBinderContext> outerTableBinderContexts = new LinkedHashMap<>();
         SubquerySegment actual = SubquerySegmentBinder.bind(subquerySegment, sqlStatementBinderContext, outerTableBinderContexts);
-
+        
         assertNotNull(actual.getSelect());
         assertInstanceOf(OracleSelectStatement.class, actual.getSelect());
         assertTrue(((OracleSelectStatement) actual.getSelect()).getWithSegment().isPresent());
@@ -153,7 +169,7 @@ public class SubquerySegmentBinderTest {
         assertThat(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
     }
-
+    
     private ShardingSphereMetaData createMetaData() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
         when(schema.getTable("t_order").getColumnValues()).thenReturn(Arrays.asList(
