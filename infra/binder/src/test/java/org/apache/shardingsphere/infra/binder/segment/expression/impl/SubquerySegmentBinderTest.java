@@ -58,13 +58,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
-public class SubquerySegmentBinderTest {
+class SubquerySegmentBinderTest {
     
-    /**
-     * Test common scenarios.
-     */
     @Test
-    public void assertBind() {
+    void assertBind() {
         MySQLSelectStatement mySQLSelectStatement = new MySQLSelectStatement();
         ColumnSegment columnSegment = new ColumnSegment(58, 65, new IdentifierValue("order_id"));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(58, 65);
@@ -82,7 +79,6 @@ public class SubquerySegmentBinderTest {
         sqlStatementBinderContext.getExternalTableBinderContexts().put("t_order_item", new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundedNameColumn))));
         Map<String, TableSegmentBinderContext> outerTableBinderContexts = new LinkedHashMap<>();
         SubquerySegment actual = SubquerySegmentBinder.bind(subquerySegment, sqlStatementBinderContext, outerTableBinderContexts);
-        
         assertNotNull(actual.getSelect());
         assertTrue(actual.getSelect().getFrom().isPresent());
         assertInstanceOf(SimpleTableSegment.class, actual.getSelect().getFrom().get());
@@ -110,11 +106,8 @@ public class SubquerySegmentBinderTest {
         assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
     }
     
-    /**
-     * Test the 'With' clause scenario.
-     */
     @Test
-    public void assertBindUseWithClause() {
+    void assertBindUseWithClause() {
         ColumnSegment columnSegment = new ColumnSegment(29, 36, new IdentifierValue("order_id"));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(29, 36);
         projectionsSegment.getProjections().add(new ColumnProjectionSegment(columnSegment));
@@ -134,7 +127,6 @@ public class SubquerySegmentBinderTest {
                 new SQLStatementBinderContext(createMetaData(), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
         Map<String, TableSegmentBinderContext> outerTableBinderContexts = new LinkedHashMap<>();
         SubquerySegment actual = SubquerySegmentBinder.bind(subquerySegment, sqlStatementBinderContext, outerTableBinderContexts);
-        
         assertNotNull(actual.getSelect());
         assertInstanceOf(OracleSelectStatement.class, actual.getSelect());
         assertTrue(((OracleSelectStatement) actual.getSelect()).getWithSegment().isPresent());
