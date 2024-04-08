@@ -64,11 +64,8 @@ public final class ShardingSphereSQLParserEngine implements SQLParserEngine {
             } catch (final SQLParsingException ignored) {
                 Optional<DialectParsingExceptionMapper> dialectExceptionHandler = TypedSPILoader.findService(DialectParsingExceptionMapper.class, databaseType);
                 throw (RuntimeException) (originalEx instanceof SQLParsingException && dialectExceptionHandler.isPresent()
-                                        ? dialectExceptionHandler.get().toSQLDialectException((SQLParsingException) originalEx)
-                                        : originalEx);
-//                throw originalEx instanceof SQLParsingException && databaseType instanceof MySQLDatabaseType
-//                        ? new ParseErrorException(originalEx.getMessage(), ((SQLParsingException) originalEx).getSymbol(), ((SQLParsingException) originalEx).getLine())
-//                        : originalEx;
+                        ? dialectExceptionHandler.get().toSQLDialectException((SQLParsingException) originalEx)
+                        : originalEx);
             }
         }
     }
