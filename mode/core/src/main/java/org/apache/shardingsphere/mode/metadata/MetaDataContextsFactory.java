@@ -33,13 +33,11 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
-import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -165,15 +163,9 @@ public final class MetaDataContextsFactory {
     }
     
     private static void persistMetaData(final MetaDataContexts metaDataContexts) {
-        metaDataContexts.getMetaData().getDatabases().values().forEach(each -> persistMetaData(each.getName(), each.getSchemas(), metaDataContexts.getPersistService()));
+        metaDataContexts.getMetaData().getDatabases().values().forEach(each -> each.getSchemas()
+                .forEach((schemaName, schema) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persistByAlterConfiguration(each.getName(), schemaName, schema)));
         metaDataContexts.getStatistics().getDatabaseData().forEach((databaseName, databaseData) -> databaseData.getSchemaData().forEach((schemaName, schemaData) -> metaDataContexts
                 .getPersistService().getShardingSphereDataPersistService().persist(databaseName, schemaName, schemaData, metaDataContexts.getMetaData().getDatabases())));
-    }
-    
-    private static void persistMetaData(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final MetaDataBasedPersistService metaDataBasedPersistService) {
-        for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
-            metaDataBasedPersistService.getDatabaseMetaDataService().addSchema(databaseName, entry.getKey());
-            metaDataBasedPersistService.getDatabaseMetaDataService().persist(databaseName, entry.getKey(), entry.getValue());
-        }
     }
 }
