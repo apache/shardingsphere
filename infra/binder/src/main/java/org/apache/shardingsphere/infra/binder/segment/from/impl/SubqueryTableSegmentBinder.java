@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.segment.from.impl;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.util.ProjectionUtils;
 import org.apache.shardingsphere.infra.binder.segment.from.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.parameter.impl.ParameterMarkerExpressionSegmentBinder;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinde
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
@@ -35,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnPr
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.ColumnSegmentBoundedInfo;
@@ -129,10 +132,9 @@ public final class SubqueryTableSegmentBinder {
         return result;
     }
     
-    private static ColumnProjectionSegment createColumnProjection(final ExpressionProjectionSegment expressionProjectionSegment, final IdentifierValue subqueryTableName,
-                                                                  final DatabaseType databaseType) {
-        ColumnSegment newColumnSegment = new ColumnSegment(0, 0, expressionProjectionSegment.getAlias().orElseGet(() -> new IdentifierValue(expressionProjectionSegment.getText(),
-                new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter())));
+    private static ColumnProjectionSegment createColumnProjection(final ExpressionSegment expressionSegment, final IdentifierValue subqueryTableName, final DatabaseType databaseType) {
+        ColumnSegment newColumnSegment = new ColumnSegment(0, 0,
+                new IdentifierValue(getColumnNameFromExpression(expressionSegment, databaseType), new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter()));
         if (!Strings.isNullOrEmpty(subqueryTableName.getValue())) {
             newColumnSegment.setOwner(new OwnerSegment(0, 0, subqueryTableName));
         }
@@ -141,15 +143,13 @@ public final class SubqueryTableSegmentBinder {
         return result;
     }
     
-    private static ProjectionSegment createColumnProjection(final AggregationProjectionSegment aggregationProjectionSegment, final IdentifierValue subqueryTableName,
-                                                            final DatabaseType databaseType) {
-        ColumnSegment newColumnSegment = new ColumnSegment(0, 0, aggregationProjectionSegment.getAlias().orElseGet(() -> new IdentifierValue(aggregationProjectionSegment.getText(),
-                new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter())));
-        if (!Strings.isNullOrEmpty(subqueryTableName.getValue())) {
-            newColumnSegment.setOwner(new OwnerSegment(0, 0, subqueryTableName));
+    private static String getColumnNameFromExpression(final ExpressionSegment expressionSegment, final DatabaseType databaseType) {
+        String result;
+        if (expressionSegment instanceof AliasAvailable && ((AliasAvailable) expressionSegment).getAlias().isPresent()) {
+            result = ProjectionUtils.getColumnLabelFromAlias(((AliasAvailable) expressionSegment).getAlias().get(), databaseType);
+        } else {
+            result = ProjectionUtils.getColumnNameFromExpression(expressionSegment.getText(), databaseType);
         }
-        ColumnProjectionSegment result = new ColumnProjectionSegment(newColumnSegment);
-        result.setVisible(true);
         return result;
     }
 }
