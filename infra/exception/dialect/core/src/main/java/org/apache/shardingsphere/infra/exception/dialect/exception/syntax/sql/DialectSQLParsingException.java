@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
 
 /**
- * Parse error exception.
+ * Dialect SQL parsing exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ParseErrorException extends SQLDialectException {
+public final class DialectSQLParsingException extends SQLDialectException {
     
     private static final long serialVersionUID = -750654777434834288L;
     
