@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * TODO replace the old implementation after meta data refactor completed
  * Database meta data based registry service.
  */
 public interface DatabaseMetaDataBasedPersistService {
@@ -78,13 +77,22 @@ public interface DatabaseMetaDataBasedPersistService {
     void compareAndPersist(String databaseName, String schemaName, ShardingSphereSchema schema);
     
     /**
-     * Persist schema meta data.
+     * Persist schema meta data by alter configuration.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param schema schema meta data
      */
-    void persist(String databaseName, String schemaName, ShardingSphereSchema schema);
+    void persistByAlterConfiguration(String databaseName, String schemaName, ShardingSphereSchema schema);
+    
+    /**
+     * Persist schema meta data by drop configuration.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param schema schema meta data
+     */
+    void persistByDropConfiguration(String databaseName, String schemaName, ShardingSphereSchema schema);
     
     /**
      * Delete schema meta data.

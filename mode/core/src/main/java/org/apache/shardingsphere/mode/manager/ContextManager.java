@@ -137,7 +137,7 @@ public final class ContextManager implements AutoCloseable {
             MetaDataBasedPersistService persistService = metaDataContexts.get().getPersistService();
             if (force) {
                 metaDataContexts.set(reloadedMetaDataContexts);
-                database.getSchemas().forEach((schemaName, schema) -> persistService.getDatabaseMetaDataService().persist(database.getName(), schemaName, schema));
+                database.getSchemas().forEach((schemaName, schema) -> persistService.getDatabaseMetaDataService().persistByAlterConfiguration(database.getName(), schemaName, schema));
             } else {
                 deletedSchemaNames(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
                 metaDataContexts.set(reloadedMetaDataContexts);

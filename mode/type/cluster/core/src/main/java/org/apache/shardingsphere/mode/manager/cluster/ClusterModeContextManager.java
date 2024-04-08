@@ -69,7 +69,7 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
         String schemaName = alterSchemaPOJO.getSchemaName();
         ShardingSphereSchema schema = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getSchema(schemaName);
         DatabaseMetaDataBasedPersistService databaseMetaDataService = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService();
-        databaseMetaDataService.persist(databaseName, alterSchemaPOJO.getRenameSchemaName(), schema);
+        databaseMetaDataService.persistByAlterConfiguration(databaseName, alterSchemaPOJO.getRenameSchemaName(), schema);
         databaseMetaDataService.getViewMetaDataPersistService().persist(databaseName, alterSchemaPOJO.getRenameSchemaName(), schema.getViews());
         databaseMetaDataService.dropSchema(databaseName, schemaName);
     }
