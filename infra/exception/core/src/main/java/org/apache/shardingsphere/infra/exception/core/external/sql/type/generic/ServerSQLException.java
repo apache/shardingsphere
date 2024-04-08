@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.generic;
+package org.apache.shardingsphere.infra.exception.core.external.sql.type.generic;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.GenericSQLException;
 
 /**
- * Database protocol SQL exception.
+ * Server SQL exception.
  */
-public final class DatabaseProtocolSQLException extends GenericSQLException {
+public final class ServerSQLException extends GenericSQLException {
     
-    private static final long serialVersionUID = -6035033415978907492L;
+    private static final long serialVersionUID = -4072647406344887711L;
     
-    public DatabaseProtocolSQLException(final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 2, "Database protocol exception: %s", reason);
+    public ServerSQLException(final Exception cause) {
+        super("Server exception.", XOpenSQLState.GENERAL_ERROR, 4, cause);
     }
 }

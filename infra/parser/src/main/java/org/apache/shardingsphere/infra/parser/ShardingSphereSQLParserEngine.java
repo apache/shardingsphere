@@ -20,14 +20,16 @@ package org.apache.shardingsphere.infra.parser;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.exception.mysql.exception.ParseErrorException;
+import org.apache.shardingsphere.infra.parser.exception.DialectParsingExceptionMapper;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactory;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
+
+import java.util.Optional;
 
 /**
  * ShardingSphere SQL parser engine.
@@ -60,9 +62,13 @@ public final class ShardingSphereSQLParserEngine implements SQLParserEngine {
                 String trimSQL = SQLUtils.trimComment(sql);
                 return distSQLStatementParserEngine.parse(trimSQL);
             } catch (final SQLParsingException ignored) {
-                throw originalEx instanceof SQLParsingException && databaseType instanceof MySQLDatabaseType
-                        ? new ParseErrorException(originalEx.getMessage(), ((SQLParsingException) originalEx).getSymbol(), ((SQLParsingException) originalEx).getLine())
-                        : originalEx;
+                Optional<DialectParsingExceptionMapper> dialectExceptionHandler = TypedSPILoader.findService(DialectParsingExceptionMapper.class, databaseType);
+                throw (RuntimeException) (originalEx instanceof SQLParsingException && dialectExceptionHandler.isPresent()
+                                        ? dialectExceptionHandler.get().toSQLDialectException((SQLParsingException) originalEx)
+                                        : originalEx);
+//                throw originalEx instanceof SQLParsingException && databaseType instanceof MySQLDatabaseType
+//                        ? new ParseErrorException(originalEx.getMessage(), ((SQLParsingException) originalEx).getSymbol(), ((SQLParsingException) originalEx).getLine())
+//                        : originalEx;
             }
         }
     }

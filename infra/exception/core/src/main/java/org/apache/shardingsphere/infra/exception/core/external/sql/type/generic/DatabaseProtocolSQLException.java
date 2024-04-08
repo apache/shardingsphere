@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.generic;
+package org.apache.shardingsphere.infra.exception.core.external.sql.type.generic;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.GenericSQLException;
 
 /**
- * Unsupported SQL operation exception.
+ * Database protocol SQL exception.
  */
-public final class UnsupportedSQLOperationException extends GenericSQLException {
+public final class DatabaseProtocolSQLException extends GenericSQLException {
     
-    private static final long serialVersionUID = -4387122733989386705L;
+    private static final long serialVersionUID = -6035033415978907492L;
     
-    public UnsupportedSQLOperationException(final String reason) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 1, "Unsupported SQL operation: %s.", reason);
+    public DatabaseProtocolSQLException(final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 2, "Database protocol exception: %s", reason);
     }
 }

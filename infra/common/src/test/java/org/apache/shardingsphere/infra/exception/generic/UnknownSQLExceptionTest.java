@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.exception.generic;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;

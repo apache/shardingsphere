@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.generic;
+package org.apache.shardingsphere.infra.exception.core.external.sql.type.generic;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.GenericSQLException;
 
 /**
- * Server SQL exception.
+ * Unknown SQL exception.
  */
-public final class ServerSQLException extends GenericSQLException {
+public final class UnknownSQLException extends GenericSQLException {
     
-    private static final long serialVersionUID = -4072647406344887711L;
+    private static final long serialVersionUID = -7357918573504734977L;
     
-    public ServerSQLException(final Exception cause) {
-        super("Server exception.", XOpenSQLState.GENERAL_ERROR, 4, cause);
+    public UnknownSQLException(final Exception cause) {
+        super("Unknown exception.", XOpenSQLState.GENERAL_ERROR, 0, cause);
     }
 }

@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.generic;
+package org.apache.shardingsphere.infra.exception.core.external.sql.type.generic;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.GenericSQLException;
-
-import java.io.File;
 
 /**
- * File IO exception.
+ * Plugin not found exception.
  */
-public final class FileIOException extends GenericSQLException {
+public final class PluginNotFoundException extends GenericSQLException {
     
-    private static final long serialVersionUID = 1104839422339487793L;
+    private static final long serialVersionUID = -2938352776606947755L;
     
-    public FileIOException(final File file) {
-        super(XOpenSQLState.GENERAL_ERROR, 20, "File access failed, file is: %s", file.getAbsolutePath());
+    public PluginNotFoundException(final String pluginClass) {
+        super(XOpenSQLState.GENERAL_ERROR, 10, "Can not find plugin class '%s'.", pluginClass);
     }
 }

@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.generic;
+package org.apache.shardingsphere.infra.parser.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.GenericSQLException;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 /**
- * Plugin not found exception.
+ * Dialect parsing exception mapper.
  */
-public final class PluginNotFoundException extends GenericSQLException {
+@SingletonSPI
+public interface DialectParsingExceptionMapper extends DatabaseTypedSPI {
     
-    private static final long serialVersionUID = -2938352776606947755L;
-    
-    public PluginNotFoundException(final String pluginClass) {
-        super(XOpenSQLState.GENERAL_ERROR, 10, "Can not find plugin class '%s'.", pluginClass);
-    }
+    /**
+     * Convert to SQL dialect exception.
+     * 
+     * @param exception SQL parsing exception
+     * @return SQL dialect exception
+     */
+    SQLDialectException toSQLDialectException(SQLParsingException exception);
 }

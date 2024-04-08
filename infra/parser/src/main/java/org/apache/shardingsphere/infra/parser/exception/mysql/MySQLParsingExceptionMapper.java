@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.state.lock;
+package org.apache.shardingsphere.infra.parser.exception.mysql;
 
-import org.apache.shardingsphere.driver.state.DriverState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-
-import java.sql.Connection;
+import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.ParseErrorException;
+import org.apache.shardingsphere.infra.parser.exception.DialectParsingExceptionMapper;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 /**
- * Lock driver state.
+ * Dialect parsing exception mapper.
  */
-public final class LockDriverState implements DriverState {
+public final class MySQLParsingExceptionMapper implements DialectParsingExceptionMapper {
     
     @Override
-    public Connection getConnection(final String databaseName, final ContextManager contextManager) {
-        // TODO
-        throw new UnsupportedSQLOperationException("LockDriverState");
+    public SQLDialectException toSQLDialectException(final SQLParsingException exception) {
+        return new ParseErrorException(exception.getMessage(), exception.getSymbol(), exception.getLine());
     }
     
     @Override
-    public String getType() {
-        return "LOCK";
+    public String getDatabaseType() {
+        return "MySQL";
     }
 }

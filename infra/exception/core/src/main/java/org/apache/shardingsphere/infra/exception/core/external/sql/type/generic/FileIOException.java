@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.state.impl;
+package org.apache.shardingsphere.infra.exception.core.external.sql.type.generic;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.io.File;
 
-class LockProxyStateTest {
+/**
+ * File IO exception.
+ */
+public final class FileIOException extends GenericSQLException {
     
-    @Test
-    void assertExecute() {
-        assertThrows(UnsupportedSQLOperationException.class, () -> new LockProxyState().execute(null, null, null, null));
+    private static final long serialVersionUID = 1104839422339487793L;
+    
+    public FileIOException(final File file) {
+        super(XOpenSQLState.GENERAL_ERROR, 20, "File access failed, file is: %s", file.getAbsolutePath());
     }
 }
