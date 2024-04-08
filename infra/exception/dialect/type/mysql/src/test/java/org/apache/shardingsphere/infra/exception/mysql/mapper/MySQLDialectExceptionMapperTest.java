@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorGlobalVari
 import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorLocalVariableException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.HandshakeException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.IncorrectGlobalLocalVariableException;
-import org.apache.shardingsphere.infra.exception.mysql.exception.ParseErrorException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.sql.ParseErrorException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownSystemVariableException;

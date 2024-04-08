@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.mysql.exception;
+package org.apache.shardingsphere.infra.exception.dialect.exception.syntax.sql;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
