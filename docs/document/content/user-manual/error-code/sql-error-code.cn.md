@@ -115,7 +115,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 18051       | 08000     | Data check table \`%s\` failed.                                                   |
 | 18052       | 0A000     | Unsupported pipeline database type \`%s\`.                                        |
 | 18053       | 0A000     | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\`. |
-| 18054       | 0A000     | Unsupported mode type \`%s\`.                                                     |
 | 18080       | HY000     | Can not find pipeline job \`%s\`.                                                 |
 | 18082       | HY000     | Sharding count of job \`%s\` is 0.                                                |
 | 18083       | HY000     | Can not split by range for table \`%s\`, reason is: %s                            |
