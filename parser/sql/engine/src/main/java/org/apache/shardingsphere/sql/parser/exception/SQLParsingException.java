@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 /**
  * SQL parsing exception.
  */
-// TODO refactor to ShardingSphereInternalException
 @Getter
 public final class SQLParsingException extends ParseSQLException {
     
