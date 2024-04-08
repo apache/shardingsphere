@@ -244,7 +244,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
                 .putAll(contextManager.getConfigurationContextManager().renewDatabase(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName), switchingResource));
         MetaDataContexts reloadMetaDataContexts = contextManager.getConfigurationContextManager().createMetaDataContexts(databaseName, false, switchingResource, null);
         contextManager.getConfigurationContextManager().alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
-                contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
+                contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName), true);
         contextManager.deletedSchemaNames(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         contextManager.renewMetaDataContexts(reloadMetaDataContexts);
         switchingResource.closeStaleDataSources();
