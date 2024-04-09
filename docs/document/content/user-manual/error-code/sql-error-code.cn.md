@@ -181,6 +181,13 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 20088       | 44000     | Cannot found routing table factor, data source: %s, actual table: %s.                                                            |
 | 20090       | 42000     | Not allow DML operation without sharding conditions.                                                                             |
 
+### 联邦查询
+
+| Vendor Code | SQL State | 错误信息                                                    |
+|-------------|-----------|---------------------------------------------------------|
+| 20100       | 42000     | Unsupported SQL node conversion for SQL statement '%s'. |
+| 20101       | 42000     | SQL federation does not support SQL '%s'.               |
+
 ### 读写分离
 
 | Vendor Code | SQL State | 错误信息                                                               |
@@ -234,13 +241,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 20820       | HY004     | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type.                                |
 | 20840       | 42000     | Insert value of index \`%s\` can not support for shadow.                                          |
 | 20881       | 44000     | Default shadow algorithm class should be implement HintShadowAlgorithm.                           |
-
-### 联邦查询
-
-| Vendor Code | SQL State | 错误信息                                                      |
-|-------------|-----------|-----------------------------------------------------------|
-| 22040       | 42000     | Unsupported SQL node conversion for SQL statement \`%s\`. |
-| 22041       | 42000     | SQL federation doesn't support SQL \`%s\` execution.      |
 
 ## 其他异常
 

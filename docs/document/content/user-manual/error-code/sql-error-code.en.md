@@ -182,6 +182,13 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 20088       | 44000     | Cannot found routing table factor, data source: %s, actual table: %s.                                                            |
 | 20090       | 42000     | Not allow DML operation without sharding conditions.                                                                             |
 
+### SQL Federation
+
+| Vendor Code | SQL State | Reason                                                  |
+|-------------|-----------|---------------------------------------------------------|
+| 20100       | 42000     | Unsupported SQL node conversion for SQL statement '%s'. |
+| 20101       | 42000     | SQL federation does not support SQL '%s'.               |
+
 ### Readwrite-splitting
 
 | Vendor Code | SQL State | Reason                                                             |
@@ -235,13 +242,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 20820       | HY004     | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type.                                |
 | 20840       | 42000     | Insert value of index \`%s\` can not support for shadow.                                          |
 | 20881       | 44000     | Default shadow algorithm class should be implement HintShadowAlgorithm.                           |
-
-### SQL Federation
-
-| Vendor Code | SQL State | Reason                                                    |
-|-------------|-----------|-----------------------------------------------------------|
-| 22040       | 42000     | Unsupported SQL node conversion for SQL statement \`%s\`. |
-| 22041       | 42000     | SQL federation doesn't support SQL \`%s\` execution.      |
 
 ## Other Exception
 
