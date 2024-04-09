@@ -147,25 +147,6 @@ public final class ConfigurationContextManager {
      * Alter rule configuration.
      *
      * @param databaseName database name
-     * @param ruleConfigs rule configurations
-     */
-    public synchronized void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
-        try {
-            // TODO consider rename this method to alterDatabaseRuleConfiguration
-            closeStaleRules(databaseName);
-            MetaDataContexts reloadMetaDataContexts = createMetaDataContextsWhenRuleChanged(databaseName, false, null, ruleConfigs);
-            alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName), false);
-            metaDataContexts.set(reloadMetaDataContexts);
-            metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas().putAll(newShardingSphereSchemas(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
-        } catch (final SQLException ex) {
-            log.error("Alter database: {} rule configurations failed", databaseName, ex);
-        }
-    }
-    
-    /**
-     * Alter rule configuration.
-     *
-     * @param databaseName database name
      * @param ruleConfig rule configurations
      */
     public synchronized void alterRuleConfiguration(final String databaseName, final RuleConfiguration ruleConfig) {
