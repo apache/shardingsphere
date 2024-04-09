@@ -81,16 +81,18 @@ public final class ConvertYamlConfigurationExecutor implements DistSQLQueryExecu
     private String convertYamlConfigToDistSQL(final YamlProxyDatabaseConfiguration yamlConfig) {
         StringBuilder result = new StringBuilder();
         result.append(convertDatabase(yamlConfig.getDatabaseName()));
-        if (!yamlConfig.getDataSources().isEmpty()) {
-            result.append(System.lineSeparator()).append(System.lineSeparator());
-            result.append(convertDataSources(yamlConfig.getDataSources()));
+        result.append(System.lineSeparator()).append(System.lineSeparator());
+        if (null == yamlConfig.getDataSources() || yamlConfig.getDataSources().isEmpty()) {
+            return result.toString();
         }
-        if (!yamlConfig.getRules().isEmpty()) {
+        result.append(convertDataSources(yamlConfig.getDataSources()));
+        result.append(System.lineSeparator()).append(System.lineSeparator());
+        if (null == yamlConfig.getRules() || yamlConfig.getRules().isEmpty()) {
+            return result.toString();
+        }
+        for (RuleConfiguration each : swapToRuleConfigs(yamlConfig).values()) {
+            result.append(TypedSPILoader.getService(RuleConfigurationToDistSQLConverter.class, each.getClass()).convert(each));
             result.append(System.lineSeparator()).append(System.lineSeparator());
-            for (RuleConfiguration each : swapToRuleConfigs(yamlConfig).values()) {
-                result.append(TypedSPILoader.getService(RuleConfigurationToDistSQLConverter.class, each.getClass()).convert(each));
-                result.append(System.lineSeparator()).append(System.lineSeparator());
-            }
         }
         return result.toString();
     }
