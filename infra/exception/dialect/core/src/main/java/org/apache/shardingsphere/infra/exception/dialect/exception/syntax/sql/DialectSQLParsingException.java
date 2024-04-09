@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.mysql.exception;
+package org.apache.shardingsphere.infra.exception.dialect.exception.syntax.sql;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
 
 /**
- * Parse error exception.
+ * Dialect SQL parsing exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ParseErrorException extends SQLDialectException {
+public final class DialectSQLParsingException extends SQLDialectException {
     
     private static final long serialVersionUID = -750654777434834288L;
     
