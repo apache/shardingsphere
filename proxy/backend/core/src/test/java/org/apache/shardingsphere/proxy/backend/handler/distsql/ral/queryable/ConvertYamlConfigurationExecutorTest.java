@@ -44,6 +44,11 @@ class ConvertYamlConfigurationExecutorTest {
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
     @Test
+    void assertExecuteWithEmptyDatabase() {
+        assertExecute("/conf/convert/database-empty.yaml", "/expected/convert-empty-database.yaml");
+    }
+    
+    @Test
     void assertExecuteWithSharding() {
         assertExecute("/conf/convert/database-sharding.yaml", "/expected/convert-sharding.yaml");
     }
