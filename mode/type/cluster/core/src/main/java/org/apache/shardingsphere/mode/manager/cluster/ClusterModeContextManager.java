@@ -122,7 +122,7 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
     }
     
     @Override
-    public void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
+    public void alterSingleRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
         ruleConfigs.removeIf(each -> !each.getClass().isAssignableFrom(SingleRuleConfiguration.class));
         contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService()
                 .switchActiveVersion(contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persistConfig(databaseName, ruleConfigs));

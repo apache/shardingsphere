@@ -45,6 +45,7 @@ import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.builder.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -252,10 +253,12 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     }
     
     @Override
-    public void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
-        contextManager.getConfigurationContextManager().alterRuleConfiguration(databaseName, ruleConfigs);
-        contextManager.getMetaDataContexts().getPersistService()
-                .getDatabaseRulePersistService().persist(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
+    public void alterSingleRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
+        ruleConfigs.removeIf(each -> !each.getClass().isAssignableFrom(SingleRuleConfiguration.class));
+        Collection<MetaDataVersion> metaDataVersions = contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService()
+                .persistConfig(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
+        contextManager.getConfigurationContextManager().alterRuleConfiguration(databaseName, ruleConfigs.iterator().next());
+        contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
         clearServiceCache();
     }
     

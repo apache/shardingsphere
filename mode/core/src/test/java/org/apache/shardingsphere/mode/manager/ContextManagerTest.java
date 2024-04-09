@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeAggregator;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -45,7 +44,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
-import org.apache.shardingsphere.mode.fixture.ModeRuleConfigurationFixture;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -54,16 +52,12 @@ import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -222,12 +216,6 @@ class ContextManagerTest {
         return new ShardingSphereSchema(Collections.singletonMap("foo_tbl", beforeChangedTable), Collections.singletonMap("foo_view", beforeChangedView));
     }
     
-    private void assertAlteredDataSource(final MockedDataSource actual) {
-        assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getPassword(), is("test"));
-        assertThat(actual.getUsername(), is("test"));
-    }
-    
     @Test
     void assertGetDatabaseWithNull() {
         assertThrows(NoDatabaseSelectedException.class, () -> contextManager.getDatabase(null));
@@ -246,54 +234,6 @@ class ContextManagerTest {
     @Test
     void assertGetDatabase() {
         assertNotNull(contextManager.getDatabase("foo_db"));
-    }
-    
-    @Test
-    void assertAlterRuleConfiguration() {
-        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", new MockedDataSource());
-        when(resourceMetaData.getDataSources()).thenReturn(StorageNodeAggregator.aggregateDataSources(dataSources));
-        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.emptyMap());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
-                TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), resourceMetaData, mock(RuleMetaData.class), Collections.emptyMap());
-        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
-        when(metaDataContexts.getPersistService()).thenReturn(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS));
-        contextManager.getConfigurationContextManager().alterRuleConfiguration("foo_db", Collections.singleton(new ModeRuleConfigurationFixture()));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData().getConfigurations().size(), is(1));
-    }
-    
-    private ResourceMetaData createOriginalResource() {
-        Map<String, DataSource> originalDataSources = new LinkedHashMap<>(2, 1F);
-        originalDataSources.put("ds_1", new MockedDataSource());
-        originalDataSources.put("ds_2", new MockedDataSource());
-        Map<StorageNode, DataSource> storageNodeDataSourceMap = StorageNodeAggregator.aggregateDataSources(originalDataSources);
-        Map<String, StorageNode> storageUnitNodeMap = originalDataSources.keySet().stream()
-                .collect(Collectors.toMap(each -> each, StorageNode::new, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(2, 1F);
-        for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
-            DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
-            when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/foo_db"));
-            storageUnits.put(entry.getKey(), new StorageUnit(storageUnitNodeMap.get(entry.getKey()), dataSourcePoolProps, storageNodeDataSourceMap.get(entry.getValue())));
-        }
-        ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getStorageUnits()).thenReturn(storageUnits);
-        when(result.getDataSources()).thenReturn(storageNodeDataSourceMap);
-        return result;
-    }
-    
-    private RuleMetaData createOriginalRuleMetaData() {
-        RuleMetaData result = mock(RuleMetaData.class);
-        when(result.getConfigurations()).thenReturn(Collections.singleton(mock(RuleConfiguration.class)));
-        return result;
-    }
-    
-    private Map<String, DataSourcePoolProperties> getToBeAlteredDataSourcePoolPropertiesMap() {
-        Map<String, DataSourcePoolProperties> result = new HashMap<>(3, 1F);
-        result.put("foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), createProperties("test", "test")));
-        result.put("ds_1", new DataSourcePoolProperties(MockedDataSource.class.getName(), createProperties("test", "test")));
-        result.put("ds_2", new DataSourcePoolProperties(MockedDataSource.class.getName(), createProperties("test", "test")));
-        return result;
     }
     
     @Test
@@ -330,14 +270,6 @@ class ContextManagerTest {
         ShardingSphereDatabase database = mockDatabase();
         contextManager.reloadTable(database, "foo_schema", "foo_table");
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnits().containsKey("foo_ds"));
-    }
-    
-    private Map<String, Object> createProperties(final String username, final String password) {
-        Map<String, Object> result = new HashMap<>(3, 1F);
-        result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
-        result.put("username", username);
-        result.put("password", password);
-        return result;
     }
     
     @Test

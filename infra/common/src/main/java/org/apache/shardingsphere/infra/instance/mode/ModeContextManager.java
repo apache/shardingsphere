@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -105,12 +104,12 @@ public interface ModeContextManager {
     void unregisterStorageUnits(String databaseName, Collection<String> toBeDroppedStorageUnitNames) throws SQLException;
     
     /**
-     * Alter rule configuration.
+     * Alter single rule configuration.
      *
      * @param databaseName database name
      * @param ruleConfigs rule configs
      */
-    void alterRuleConfiguration(String databaseName, Collection<RuleConfiguration> ruleConfigs);
+    void alterSingleRuleConfiguration(String databaseName, Collection<RuleConfiguration> ruleConfigs);
     
     /**
      * Alter rule configuration.
@@ -119,9 +118,7 @@ public interface ModeContextManager {
      * @param toBeAlteredRuleConfig to be altered rule config
      * @return meta data versions
      */
-    default Collection<MetaDataVersion> alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
-        return Collections.emptyList();
-    }
+    Collection<MetaDataVersion> alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig);
     
     /**
      * Remove rule configuration item.
@@ -129,8 +126,7 @@ public interface ModeContextManager {
      * @param databaseName database name
      * @param toBeRemovedRuleConfig to be removed rule config
      */
-    default void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
-    }
+    void removeRuleConfigurationItem(String databaseName, RuleConfiguration toBeRemovedRuleConfig);
     
     /**
      * Remove rule configuration.
@@ -138,8 +134,7 @@ public interface ModeContextManager {
      * @param databaseName database name
      * @param ruleName rule name
      */
-    default void removeRuleConfiguration(final String databaseName, final String ruleName) {
-    }
+    void removeRuleConfiguration(String databaseName, String ruleName);
     
     /**
      * Alter global rule configuration.
@@ -149,13 +144,11 @@ public interface ModeContextManager {
     void alterGlobalRuleConfiguration(Collection<RuleConfiguration> globalRuleConfigs);
     
     /**
-     * TODO Need to DistSQL handle call it
      * Alter global rule configuration.
      *
      * @param globalRuleConfig global rule config
      */
-    default void alterGlobalRuleConfiguration(final RuleConfiguration globalRuleConfig) {
-    }
+    void alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig);
     
     /**
      * Alter properties.
