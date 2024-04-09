@@ -607,7 +607,7 @@ dmlEventElement
     ;
 
 systemTrigger
-    : (BEFORE | AFTER | INSTEAD OF) (ddlEvent (OR ddlEvent)* | databaseEvent (OR databaseEvent)*) ON ((PLUGGABLE? DATABASE) | (schemaName DOT_)? SCHEMA) triggerBody
+    : (BEFORE | AFTER | INSTEAD OF) (ddlEvent (OR ddlEvent)* | databaseEvent (OR databaseEvent)* | dmlEvent) ON ((PLUGGABLE? DATABASE) | (schemaName DOT_)? SCHEMA?) tableName? triggerBody
     ;
 
 ddlEvent
@@ -648,6 +648,10 @@ databaseEvent
     | AFTER CLONE
     | BEFORE UNPLUG
     | (BEFORE | AFTER) SET CONTAINER
+    ;
+
+dmlEvent
+    : INSERT
     ;
 
 triggerBody
