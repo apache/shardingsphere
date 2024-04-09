@@ -38,18 +38,18 @@ class ShadowRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     @Override
     protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
         assertDataSourceMap(actual);
-        Optional<YamlShadowRuleConfiguration> shadowRuleConfiguration = actual.getRules().stream()
+        Optional<YamlShadowRuleConfiguration> shadowRuleConfig = actual.getRules().stream()
                 .filter(each -> each instanceof YamlShadowRuleConfiguration).findFirst().map(optional -> (YamlShadowRuleConfiguration) optional);
-        assertTrue(shadowRuleConfiguration.isPresent());
-        assertThat(shadowRuleConfiguration.get().getTables().size(), is(3));
-        assertTOrder(shadowRuleConfiguration.get());
-        assertTOrderItem(shadowRuleConfiguration.get());
-        assertTAddress(shadowRuleConfiguration.get());
-        assertThat(shadowRuleConfiguration.get().getShadowAlgorithms().size(), is(4));
-        assertUserIdInsertMatchAlgorithm(shadowRuleConfiguration.get());
-        assertUserIdUpdateMatchAlgorithm(shadowRuleConfiguration.get());
-        assertUserIdSelectMatchAlgorithm(shadowRuleConfiguration.get());
-        assertSqlHintAlgorithm(shadowRuleConfiguration.get());
+        assertTrue(shadowRuleConfig.isPresent());
+        assertThat(shadowRuleConfig.get().getTables().size(), is(3));
+        assertTOrder(shadowRuleConfig.get());
+        assertTOrderItem(shadowRuleConfig.get());
+        assertTAddress(shadowRuleConfig.get());
+        assertThat(shadowRuleConfig.get().getShadowAlgorithms().size(), is(4));
+        assertUserIdInsertMatchAlgorithm(shadowRuleConfig.get());
+        assertUserIdUpdateMatchAlgorithm(shadowRuleConfig.get());
+        assertUserIdSelectMatchAlgorithm(shadowRuleConfig.get());
+        assertSqlHintAlgorithm(shadowRuleConfig.get());
     }
     
     private void assertDataSourceMap(final YamlRootConfiguration actual) {

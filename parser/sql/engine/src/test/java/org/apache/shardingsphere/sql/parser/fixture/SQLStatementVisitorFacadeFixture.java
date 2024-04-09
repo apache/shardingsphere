@@ -58,7 +58,7 @@ public final class SQLStatementVisitorFacadeFixture implements SQLStatementVisit
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "FIXTURE";
     }
 }

@@ -19,8 +19,9 @@ package org.apache.shardingsphere.transaction;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -86,7 +87,9 @@ public final class ConnectionSavepointManager {
     public void releaseSavepoint(final Connection connection, final String savepointName) throws SQLException {
         Optional<Savepoint> result = lookupSavepoint(connection, savepointName);
         if (result.isPresent()) {
-            if (DatabaseTypeEngine.getDatabaseType(connection.getMetaData().getURL()) instanceof MySQLDatabaseType) {
+            DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
+            databaseType = databaseType.getTrunkDatabaseType().orElse(databaseType);
+            if (databaseType instanceof MySQLDatabaseType) {
                 try (Statement statement = connection.createStatement()) {
                     statement.execute(String.format("RELEASE SAVEPOINT %s", savepointName));
                 }

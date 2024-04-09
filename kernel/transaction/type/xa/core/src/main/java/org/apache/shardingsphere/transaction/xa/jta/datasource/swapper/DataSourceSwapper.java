@@ -20,7 +20,8 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 import com.google.common.base.CaseFormat;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XADataSourceInitializeException;
 
@@ -38,8 +39,6 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public final class DataSourceSwapper {
-    
-    private static final String GETTER_PREFIX = "get";
     
     private static final String SETTER_PREFIX = "set";
     
@@ -79,15 +78,12 @@ public final class DataSourceSwapper {
     
     private Map<String, Object> getDatabaseAccessConfiguration(final DataSource dataSource) {
         Map<String, Object> result = new HashMap<>(3, 1F);
-        DataSourcePropertyProvider provider = TypedSPILoader.getService(DataSourcePropertyProvider.class, dataSource.getClass().getName());
-        try {
-            result.put("url", findGetterMethod(dataSource, provider.getURLPropertyName()).invoke(dataSource));
-            result.put("user", findGetterMethod(dataSource, provider.getUsernamePropertyName()).invoke(dataSource));
-            result.put("password", findGetterMethod(dataSource, provider.getPasswordPropertyName()).invoke(dataSource));
-            return result;
-        } catch (final ReflectiveOperationException ignored) {
-            throw new XADataSourceInitializeException(xaDataSourceDefinition);
-        }
+        Map<String, Object> standardProps = DataSourcePoolPropertiesCreator.create(
+                dataSource instanceof CatalogSwitchableDataSource ? ((CatalogSwitchableDataSource) dataSource).getDataSource() : dataSource).getAllStandardProperties();
+        result.put("url", dataSource instanceof CatalogSwitchableDataSource ? ((CatalogSwitchableDataSource) dataSource).getUrl() : standardProps.get("url"));
+        result.put("user", standardProps.get("username"));
+        result.put("password", standardProps.get("password"));
+        return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -100,17 +96,8 @@ public final class DataSourceSwapper {
         }
     }
     
-    private Method findGetterMethod(final DataSource dataSource, final String propertyName) throws NoSuchMethodException {
-        String getterMethodName = GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, propertyName);
-        Method result = dataSource.getClass().getMethod(getterMethodName);
-        result.setAccessible(true);
-        return result;
-    }
-    
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {
         String setterMethodName = SETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property);
-        return Arrays.stream(methods)
-                .filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length)
-                .findFirst();
+        return Arrays.stream(methods).filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length).findFirst();
     }
 }

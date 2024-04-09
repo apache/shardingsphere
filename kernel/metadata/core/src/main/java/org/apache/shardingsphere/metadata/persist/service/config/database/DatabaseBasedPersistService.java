@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.metadata.persist.service.config.database;
 
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Database based persist service.
@@ -37,15 +37,6 @@ public interface DatabaseBasedPersistService<T> {
     void persist(String databaseName, T configs);
     
     /**
-     * Delete configurations.
-     *
-     * @param databaseName database name
-     * @param configs configurations
-     */
-    default void delete(String databaseName, T configs) {
-    }
-    
-    /**
      * Load configurations.
      *
      * @param databaseName database name
@@ -54,21 +45,39 @@ public interface DatabaseBasedPersistService<T> {
     T load(String databaseName);
     
     /**
-     * Load configurations based version.
-     * 
-     * @param databaseName database name
-     * @param version version
-     * @return configurations
-     */
-    T load(String databaseName, String version);
-    
-    /**
-     * TODO remove this after meta data refactor completed
-     * Append data source properties map.
+     * Load configurations.
      *
      * @param databaseName database name
-     * @param toBeAppendedDataSourcePropsMap data source properties map to be appended
+     * @param name name
+     * @return configurations
      */
-    default void append(final String databaseName, final Map<String, DataSourceProperties> toBeAppendedDataSourcePropsMap) {
+    default T load(String databaseName, String name) {
+        return null;
     }
+    
+    /**
+     * Delete configurations.
+     *
+     * @param databaseName database name
+     * @param name name
+     */
+    void delete(String databaseName, String name);
+    
+    /**
+     * Delete configurations.
+     *
+     * @param databaseName database name
+     * @param configs configurations
+     * @return meta data versions
+     */
+    Collection<MetaDataVersion> deleteConfig(String databaseName, T configs);
+    
+    /**
+     * Persist configurations.
+     *
+     * @param databaseName database name
+     * @param configs configurations
+     * @return meta data versions
+     */
+    Collection<MetaDataVersion> persistConfig(String databaseName, T configs);
 }

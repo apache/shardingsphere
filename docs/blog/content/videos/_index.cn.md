@@ -6,7 +6,7 @@ chapter = true
 
 欢迎观看 Apache ShardingSphere 的精选视频，也欢迎您的投稿！
 
-1. [ShardingSphere 与 openGauss 的化学反应](/cn/videos/openGauss/)
+1. [ShardingSphere 与 openGauss 的化学反应](/cn/videos/opengauss/)
 
 2. [【开源总动员】零基础入门 Apache ShardingSphere 开源之道](/cn/videos/opensource/)
 
@@ -18,4 +18,4 @@ chapter = true
 
 6. [海量数据下的 NewSQL 数据库生态构建](/cn/videos/ecosystem/)  
 
-7. [Apache ShardingSphere 5.x 的新功能](/cn/videos/Newfeature/)
+7. [Apache ShardingSphere 5.x 的新功能](/cn/videos/newfeature/)

@@ -53,7 +53,7 @@ databaseName
     : IDENTIFIER_
     ;
 
-groupName
+ruleName
     : IDENTIFIER_
     ;
 

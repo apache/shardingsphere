@@ -65,4 +65,24 @@
             </from>
         </select>
     </alter-view>
+    
+    <alter-view sql-case-id="alter_view_add_constraint_primary_key1">
+        <view name="time_view" start-index="11" stop-index="19" />
+        <constraint-definition constraint-name="time_view_pk" start-index="26" stop-index="89">
+            <primary-key-column name="time_id" start-index="63" stop-index="69" />
+        </constraint-definition>
+    </alter-view>
+    
+    <alter-view sql-case-id="alter_view_add_constraint_primary_key2">
+        <view name="time_view" start-index="11" stop-index="19" />
+        <constraint-definition constraint-name="time_view_pk" start-index="26" stop-index="95">
+            <primary-key-column name="time_id" start-index="63" stop-index="69" />
+            <primary-key-column name="name" start-index="72" stop-index="75" />
+        </constraint-definition>
+    </alter-view>
+    
+    <alter-view sql-case-id="alter_view_modify_constraint_rely">
+        <view name="time_view" start-index="11" stop-index="19" />
+        <constraint-definition constraint-name="time_view_pk" start-index="0" stop-index="55" />
+    </alter-view>
 </sql-parser-test-cases>

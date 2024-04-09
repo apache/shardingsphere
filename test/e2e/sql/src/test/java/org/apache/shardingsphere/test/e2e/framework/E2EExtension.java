@@ -23,6 +23,7 @@ import org.junit.jupiter.api.extension.TestWatcher;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.Optional;
 
 /**
  * E2E extension.
@@ -32,7 +33,7 @@ public final class E2EExtension implements TestWatcher {
     
     @Override
     public void testFailed(final ExtensionContext context, final Throwable cause) {
-        log.error("Error case: {}, message: {}", context.getRequiredTestMethod().getName(), getStackTrace(cause));
+        log.error("Error case: {}, message: {}", context.getDisplayName(), getStackTrace(cause));
     }
     
     private String getStackTrace(final Throwable cause) {
@@ -50,5 +51,20 @@ public final class E2EExtension implements TestWatcher {
             // CHECKSTYLE:ON
             return "";
         }
+    }
+    
+    @Override
+    public void testDisabled(final ExtensionContext context, final Optional<String> reason) {
+        log.info("Disable case: {}, reason: {}", context.getDisplayName(), reason.orElse(""));
+    }
+    
+    @Override
+    public void testSuccessful(final ExtensionContext context) {
+        log.info("Success case: {}", context.getDisplayName());
+    }
+    
+    @Override
+    public void testAborted(final ExtensionContext context, final Throwable cause) {
+        log.info("Abort case: {}, message: {}", context.getDisplayName(), getStackTrace(cause));
     }
 }

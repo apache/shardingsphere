@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.test.e2e.transaction.cases.readonly;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -34,8 +32,8 @@ import java.sql.SQLException;
 @Slf4j
 public final class PostgreSQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     
-    public PostgreSQLSetReadOnlyTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
-        super(baseTransactionITCase, dataSource);
+    public PostgreSQLSetReadOnlyTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override
@@ -52,7 +50,7 @@ public final class PostgreSQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
             connection2.setReadOnly(true);
             assertQueryBalance(connection2);
             executeWithLog(connection2, "update account set balance = 100 where id = 2;");
-            log.info("Using the driver of postgresql:42.4.1 expect to update successfully.");
+            log.info("Using the driver of postgresql:42.4.3 expect to update successfully.");
         }
     }
 }

@@ -21,12 +21,13 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 /**
  * Function assignment token for encrypt.
  */
 public final class EncryptFunctionAssignmentToken extends EncryptAssignmentToken {
+    
+    private final StringBuilder builder = new StringBuilder();
     
     private final Collection<FunctionAssignment> assignments = new LinkedList<>();
     
@@ -41,20 +42,23 @@ public final class EncryptFunctionAssignmentToken extends EncryptAssignmentToken
      * @param value assignment value
      */
     public void addAssignment(final String columnName, final Object value) {
-        assignments.add(new FunctionAssignment(columnName, value));
+        FunctionAssignment functionAssignment = new FunctionAssignment(columnName, value);
+        assignments.add(functionAssignment);
+        builder.append(functionAssignment).append(", ");
     }
     
     /**
-     * Get assignments.
-     * @return FunctionAssignment collection
+     * Judge whether assignments is empty or not.
+     * 
+     * @return whether assignments is empty or not
      */
-    public Collection<FunctionAssignment> getAssignment() {
-        return assignments;
+    public boolean isAssignmentsEmpty() {
+        return assignments.isEmpty();
     }
     
     @Override
     public String toString() {
-        return assignments.stream().map(FunctionAssignment::toString).collect(Collectors.joining(", "));
+        return builder.substring(0, builder.length() - 2);
     }
     
     @RequiredArgsConstructor

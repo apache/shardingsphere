@@ -13,12 +13,12 @@ The `DROP ENCRYPT RULE` syntax is used to drop an existing encryption rule.
 {{% tab name="Grammar" %}}
 ```sql
 DropEncryptRule ::=
-  'DROP' 'ENCRYPT' 'RULE' ifExists? encryptRuleName (',' encryptRuleName)*
+  'DROP' 'ENCRYPT' 'RULE' ifExists? ruleName (',' ruleName)*
 
 ifExists ::=
   'IF' 'EXISTS'
 
-encryptRuleName ::=
+ruleName ::=
   identifier
 ```
 {{% /tab %}}

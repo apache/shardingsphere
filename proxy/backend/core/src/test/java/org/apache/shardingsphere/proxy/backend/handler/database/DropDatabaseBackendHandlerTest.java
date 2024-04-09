@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.handler.database;
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseDropNotExistsException;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseDropNotExistsException;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -77,7 +78,6 @@ class DropDatabaseBackendHandlerTest {
     private ContextManager mockContextManager() {
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1F);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         databases.put("foo_db", database);
         databases.put("bar_db", database);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
@@ -85,7 +85,7 @@ class DropDatabaseBackendHandlerTest {
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getDatabase("bar_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getDatabase("test_not_exist_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mock(AuthorityRule.class))));
+        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(AuthorityRule.class))));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
@@ -113,8 +113,9 @@ class DropDatabaseBackendHandlerTest {
     }
     
     @Test
-    void assertExecuteDropCurrentDatabase() {
+    void assertExecuteDropCurrentDatabaseWithMySQL() {
         when(connectionSession.getDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         ResponseHeader responseHeader = handler.execute();
         verify(connectionSession).setCurrentDatabase(null);
@@ -122,9 +123,9 @@ class DropDatabaseBackendHandlerTest {
     }
     
     @Test
-    void assertExecuteDropCurrentDatabaseWithPG() {
+    void assertExecuteDropCurrentDatabaseWithPostgreSQL() {
         when(connectionSession.getDatabaseName()).thenReturn("foo_db");
-        when(connectionSession.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         assertThrows(UnsupportedOperationException.class, () -> handler.execute());
     }

@@ -338,8 +338,6 @@ rules:
           encryptorName: aes_encryptor
           likeQueryColumn: phone_like
           likeQueryEncryptorName: like_encryptor
-  queryWithCipherColumn: true
-
 
 props:
   sql-show: true

@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="set_user_variable" value="SET @drop = IF(@have_ndb = 0, @drop_cmd, 'SET @dummy = 0')" db-types="MySQL" />
     <sql-case id="set_parameter_equal" value="SET configuration_parameter = 'value'" db-types="PostgreSQL,openGauss, MySQL" />
     <sql-case id="set_parameter_equal_number" value="SET extra_float_digits = 3" db-types="PostgreSQL,openGauss, MySQL" />
     <sql-case id="set_parameter_equal_session_mysql" value="SET SESSION configuration_parameter = 'value'" db-types="MySQL" />
@@ -43,4 +44,5 @@
     <sql-case id="set_charset_mysql" value="SET NAMES 'utf8'" db-types="MySQL" />
     <sql-case id="set_charset_postgresql" value="SET NAMES 'UTF8'" db-types="PostgreSQL" />
     <sql-case id="set_client_encoding" value="SET CLIENT_ENCODING TO 'UTF8'" db-types="PostgreSQL" />
+    <sql-case id="set_session_authorization" value="SET SESSION AUTHORIZATION user1 PASSWORD 'password'" db-types="openGauss" />
 </sql-cases>

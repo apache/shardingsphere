@@ -19,7 +19,9 @@ package org.apache.shardingsphere.infra.config.props;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.props.TypedPropertyKey;
+import org.slf4j.event.Level;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,7 +37,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * The system log level.
      */
-    SYSTEM_LOG_LEVEL("system-log-level", LoggerLevel.INFO.name(), LoggerLevel.class, false),
+    SYSTEM_LOG_LEVEL("system-log-level", Level.INFO.toString(), Level.class, false),
     
     /**
      * Whether show SQL in log.
@@ -63,9 +65,9 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     CHECK_TABLE_METADATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
-     * Frontend database protocol type for ShardingSphere-Proxy.
+     * Frontend database protocol for ShardingSphere-Proxy.
      */
-    PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE("proxy-frontend-database-protocol-type", "", String.class, false),
+    PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE("proxy-frontend-database-protocol-type", null, DatabaseType.class, false),
     
     /**
      * Flush threshold for every record from databases for ShardingSphere-Proxy.

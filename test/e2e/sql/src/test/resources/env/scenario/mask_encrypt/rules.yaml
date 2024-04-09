@@ -68,3 +68,7 @@ rules:
           cipher:
             name: telephone_cipher
             encryptorName: aes_encryptor
+            
+props:
+  sql-show: true
+

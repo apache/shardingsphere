@@ -22,11 +22,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.proxy.backend.config.checker.YamlProxyConfigurationChecker;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 
@@ -50,9 +51,27 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyConfigurationLoader {
     
-    private static final String SERVER_CONFIG_FILE = "server.yaml";
+    private static final String GLOBAL_CONFIG_FILE = "global.yaml";
     
-    private static final Pattern SCHEMA_CONFIG_FILE_PATTERN = Pattern.compile("config-.+\\.yaml");
+    private static final Pattern DATABASE_CONFIG_FILE_PATTERN = Pattern.compile("database-.+\\.yaml");
+    
+    // TODO remove COMPATIBLE_GLOBAL_CONFIG_FILE in next major version
+    /**
+     * to be removed.
+     * 
+     * @deprecated to be removed
+     */
+    @Deprecated
+    private static final String COMPATIBLE_GLOBAL_CONFIG_FILE = "server.yaml";
+    
+    // TODO remove COMPATIBLE_DATABASE_CONFIG_FILE_PATTERN in next major version
+    /**
+     * to be removed.
+     *
+     * @deprecated to be removed
+     */
+    @Deprecated
+    private static final Pattern COMPATIBLE_DATABASE_CONFIG_FILE_PATTERN = Pattern.compile("config-.+\\.yaml");
     
     /**
      * Load configuration of ShardingSphere-Proxy.
@@ -62,11 +81,17 @@ public final class ProxyConfigurationLoader {
      * @throws IOException IO exception
      */
     public static YamlProxyConfiguration load(final String path) throws IOException {
-        YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(String.join("/", path, SERVER_CONFIG_FILE)));
+        YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getGlobalConfigFile(path));
         File configPath = getResourceFile(path);
         Collection<YamlProxyDatabaseConfiguration> databaseConfigs = loadDatabaseConfigurations(configPath);
+        YamlProxyConfigurationChecker.checkDataSources(serverConfig.getDataSources(), databaseConfigs);
         return new YamlProxyConfiguration(serverConfig, databaseConfigs.stream().collect(Collectors.toMap(
                 YamlProxyDatabaseConfiguration::getDatabaseName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+    }
+    
+    private static File getGlobalConfigFile(final String path) {
+        File result = getResourceFile(String.join("/", path, GLOBAL_CONFIG_FILE));
+        return result.exists() ? result : getResourceFile(String.join("/", path, COMPATIBLE_GLOBAL_CONFIG_FILE));
     }
     
     @SneakyThrows(URISyntaxException.class)
@@ -77,36 +102,36 @@ public final class ProxyConfigurationLoader {
     
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
-        return null == result ? new YamlProxyServerConfiguration() : rebuildGlobalRuleConfiguration(result);
+        return rebuildGlobalRuleConfiguration(result);
     }
     
-    private static YamlProxyServerConfiguration rebuildGlobalRuleConfiguration(final YamlProxyServerConfiguration serverConfiguration) {
-        serverConfiguration.getRules().removeIf(YamlGlobalRuleConfiguration.class::isInstance);
-        if (null != serverConfiguration.getAuthority()) {
-            serverConfiguration.getRules().add(serverConfiguration.getAuthority());
+    private static YamlProxyServerConfiguration rebuildGlobalRuleConfiguration(final YamlProxyServerConfiguration serverConfig) {
+        serverConfig.getRules().removeIf(YamlGlobalRuleConfiguration.class::isInstance);
+        if (null != serverConfig.getAuthority()) {
+            serverConfig.getRules().add(serverConfig.getAuthority());
         }
-        if (null != serverConfiguration.getTransaction()) {
-            serverConfiguration.getRules().add(serverConfiguration.getTransaction());
+        if (null != serverConfig.getTransaction()) {
+            serverConfig.getRules().add(serverConfig.getTransaction());
         }
-        if (null != serverConfiguration.getGlobalClock()) {
-            serverConfiguration.getRules().add(serverConfiguration.getGlobalClock());
+        if (null != serverConfig.getGlobalClock()) {
+            serverConfig.getRules().add(serverConfig.getGlobalClock());
         }
-        if (null != serverConfiguration.getSqlParser()) {
-            serverConfiguration.getRules().add(serverConfiguration.getSqlParser());
+        if (null != serverConfig.getSqlParser()) {
+            serverConfig.getRules().add(serverConfig.getSqlParser());
         }
-        if (null != serverConfiguration.getSqlTranslator()) {
-            serverConfiguration.getRules().add(serverConfiguration.getSqlTranslator());
+        if (null != serverConfig.getSqlTranslator()) {
+            serverConfig.getRules().add(serverConfig.getSqlTranslator());
         }
-        if (null != serverConfiguration.getTraffic()) {
-            serverConfiguration.getRules().add(serverConfiguration.getTraffic());
+        if (null != serverConfig.getTraffic()) {
+            serverConfig.getRules().add(serverConfig.getTraffic());
         }
-        if (null != serverConfiguration.getLogging()) {
-            serverConfiguration.getRules().add(serverConfiguration.getLogging());
+        if (null != serverConfig.getLogging()) {
+            serverConfig.getRules().add(serverConfig.getLogging());
         }
-        if (null != serverConfiguration.getSqlFederation()) {
-            serverConfiguration.getRules().add(serverConfiguration.getSqlFederation());
+        if (null != serverConfig.getSqlFederation()) {
+            serverConfig.getRules().add(serverConfig.getSqlFederation());
         }
-        return serverConfiguration;
+        return serverConfig;
     }
     
     private static Collection<YamlProxyDatabaseConfiguration> loadDatabaseConfigurations(final File configPath) throws IOException {
@@ -123,11 +148,8 @@ public final class ProxyConfigurationLoader {
     
     private static Optional<YamlProxyDatabaseConfiguration> loadDatabaseConfiguration(final File yamlFile) throws IOException {
         YamlProxyDatabaseConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyDatabaseConfiguration.class);
-        if (null == result) {
+        if (result.isEmpty()) {
             return Optional.empty();
-        }
-        if (null == result.getDatabaseName()) {
-            result.setDatabaseName(result.getSchemaName());
         }
         Preconditions.checkNotNull(result.getDatabaseName(), "Property `databaseName` in file `%s` is required.", yamlFile.getName());
         checkDuplicateRule(result.getRules(), yamlFile);
@@ -154,6 +176,6 @@ public final class ProxyConfigurationLoader {
     }
     
     private static File[] findRuleConfigurationFiles(final File path) {
-        return path.listFiles(each -> SCHEMA_CONFIG_FILE_PATTERN.matcher(each.getName()).matches());
+        return path.listFiles(each -> DATABASE_CONFIG_FILE_PATTERN.matcher(each.getName()).matches() || COMPATIBLE_DATABASE_CONFIG_FILE_PATTERN.matcher(each.getName()).matches());
     }
 }

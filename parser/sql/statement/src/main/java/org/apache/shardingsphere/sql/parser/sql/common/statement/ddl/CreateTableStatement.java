@@ -23,9 +23,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Create table statement.
@@ -36,7 +38,18 @@ public abstract class CreateTableStatement extends AbstractSQLStatement implemen
     
     private SimpleTableSegment table;
     
+    private SelectStatement selectStatement;
+    
     private final Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
     
     private final Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
+    
+    /**
+     * Get select statement.
+     *
+     * @return select statement
+     */
+    public Optional<SelectStatement> getSelectStatement() {
+        return Optional.ofNullable(selectStatement);
+    }
 }

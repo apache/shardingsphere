@@ -39,4 +39,9 @@ public final class SubqueryExpressionSegment implements SimpleExpressionSegment 
     public int getStopIndex() {
         return subquery.getStopIndex();
     }
+    
+    @Override
+    public String getText() {
+        return subquery.getText();
+    }
 }

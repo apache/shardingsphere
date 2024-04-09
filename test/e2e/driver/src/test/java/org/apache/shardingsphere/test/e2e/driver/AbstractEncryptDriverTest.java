@@ -44,7 +44,7 @@ public abstract class AbstractEncryptDriverTest extends AbstractDriverTest {
     
     private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Collections.singletonList("encrypt");
     
-    private static final String CONFIG_FILE_WITH_QUERY_WITH_CIPHER = "config/config-encrypt-query-with-cipher.yaml";
+    private static final String CONFIG_FILE_WITH_QUERY_WITH_CIPHER = "config/database-encrypt-query-with-cipher.yaml";
     
     @BeforeAll
     static void initEncryptDataSource() throws SQLException, IOException {

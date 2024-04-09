@@ -28,6 +28,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,7 +42,8 @@ class YamlProcessListSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        ExecutionGroupReportContext reportContext = new ExecutionGroupReportContext("foo_db", new Grantee("root", "localhost"));
+        String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
+        ExecutionGroupReportContext reportContext = new ExecutionGroupReportContext(processId, "foo_db", new Grantee("root", "localhost"));
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
         Process process = new Process("SELECT 1", executionGroupContext);
         YamlProcessList actual = new YamlProcessListSwapper().swapToYamlConfiguration(Collections.singleton(process));

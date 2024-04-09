@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.cache.route;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -50,7 +50,7 @@ public final class CachedShardingSQLRouter {
      * @param connectionContext connection context
      * @return route context
      */
-    public Optional<RouteContext> loadRouteContext(final OriginSQLRouter originSQLRouter, final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData,
+    public Optional<RouteContext> loadRouteContext(final OriginSQLRouter originSQLRouter, final QueryContext queryContext, final RuleMetaData globalRuleMetaData,
                                                    final ShardingSphereDatabase database, final ShardingCache shardingCache, final ConfigurationProperties props,
                                                    final ConnectionContext connectionContext) {
         if (queryContext.getSql().length() > shardingCache.getConfiguration().getAllowedMaxSqlLength()) {
@@ -96,7 +96,7 @@ public final class CachedShardingSQLRouter {
          * @param connectionContext connection context
          * @return route context
          */
-        RouteContext createRouteContext(QueryContext queryContext, ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, ShardingRule rule,
+        RouteContext createRouteContext(QueryContext queryContext, RuleMetaData globalRuleMetaData, ShardingSphereDatabase database, ShardingRule rule,
                                         ConfigurationProperties props, ConnectionContext connectionContext);
     }
 }

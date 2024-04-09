@@ -4,7 +4,7 @@ weight = 1
 chapter = true
 +++
 
-When using or contributing to ShardingSphere, if you encounter any problem, or you have any suggestions or new ideas, you can use the Apache mailing-list to participate in the community building, or join the ShardingSphere [Slack channel](https://app.slack.com/client/T026JKU2DPF/C026MLH7F34) to connect with other community members.
+When using or contributing to ShardingSphere, if you encounter any problem, or you have any suggestions or new ideas, you can use the Apache mailing-list to participate in the community building, or join the ShardingSphere [Slack channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg) to connect with other community members.
 
 To join the mailing list: 
 
@@ -17,4 +17,4 @@ After Step 1, you will receive a confirmation e-mail from [dev-help@shardingsphe
 3. Receive the welcome e-mail.
 After finishing the two steps above, an e-mail with the subject of `WELCOME to dev@shardingsphere.apache.org` will be sent to your e-mail address. You'll have then succeeded in subscribing to the Apache ShardingSphere mailing-list.
 
-4. You now can interact with community by your subscribed email or track email conversations by [Archived email list](https://lists.apache.org/list.html?dev@shardingsphere.apache.org) or [Slack](https://app.slack.com/client/T026JKU2DPF/C026MLH7F34).
+4. You now can interact with community by your subscribed email or track email conversations by [Archived email list](https://lists.apache.org/list.html?dev@shardingsphere.apache.org) or [Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg).

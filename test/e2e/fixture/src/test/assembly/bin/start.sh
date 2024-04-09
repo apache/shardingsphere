@@ -27,7 +27,6 @@ if [ ! -d ${LOGS_DIR} ]; then
     mkdir ${LOGS_DIR}
 fi
 
-STDOUT_FILE=${LOGS_DIR}/stdout.log
 EXT_LIB=${DEPLOY_DIR}/ext-lib
 
 CLASS_PATH=.:${DEPLOY_DIR}/lib/*:${EXT_LIB}/*
@@ -38,10 +37,17 @@ JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:+DisableExplicitGC -XX:+
 
 MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
 
+unset -v PORT
+unset -v ADDRESSES
+unset -v CONF_PATH
+unset -v FORCE
+unset -v SOCKET_FILE
+
 print_usage() {
     echo "usage: start.sh [port] [config_dir]"
     echo "  port: proxy listen port, default is 3307"
     echo "  config_dir: proxy config directory, default is conf"
+    echo "-f  Force start ShardingSphere-Proxy"
     exit 0
 }
 
@@ -55,21 +61,66 @@ if [ $# == 0 ]; then
     CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
 fi
 
-if [ $# == 1 ]; then
-    MAIN_CLASS=${MAIN_CLASS}" "$1
+if [[ $1 == -a ]] || [[ $1 == -p ]] || [[ $1 == -c ]] || [[ $1 == -f ]] || [[ $1 == -s ]]; then
+    while getopts ":a:p:c:fs:" opt
+        do
+            case $opt in
+            a)
+              echo "The address is $OPTARG"
+              ADDRESSES=$OPTARG;;
+            p)
+              echo "The port is $OPTARG"
+              PORT=$OPTARG;;
+            c)
+              echo "The configuration path is $OPTARG"
+              CONF_PATH=$OPTARG;;
+            f)
+              echo "The force param is true"
+              FORCE=true;;
+            s)
+              echo "The socket file is $OPTARG"
+              SOCKET_FILE=$OPTARG;;
+            ?)
+              print_usage;;
+            esac
+        done
+
+elif [ $# == 1 ]; then
+    PORT=$1
     echo "The port is $1"
-    CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
 fi
 
 if [ $# == 2 ]; then
-    MAIN_CLASS=${MAIN_CLASS}" "$1" "$2
+    PORT=$1
+    CONF_PATH=$2
     echo "The port is $1"
     echo "The configuration path is $DEPLOY_DIR/$2"
-    CLASS_PATH=${DEPLOY_DIR}/$2:${CLASS_PATH}
 fi
 
-echo "The classpath is ${CLASS_PATH}"
+if [ -z "$CONF_PATH" ]; then
+    CONF_PATH=${DEPLOY_DIR}/conf
+fi
 
-nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
-sleep 1
-echo "Please check the STDOUT file: $STDOUT_FILE"
+if [ -z "$PORT" ]; then
+    PORT=-1
+fi
+
+if [ -z "$ADDRESSES" ]; then
+    ADDRESSES="0.0.0.0"
+fi
+
+if [ -z "$FORCE" ]; then
+    FORCE=false
+fi
+
+if [ "$SOCKET_FILE" ]; then
+    ADDRESSES="${ADDRESSES},${SOCKET_FILE}"
+fi
+
+CLASS_PATH=${CONF_PATH}:${CLASS_PATH}
+MAIN_CLASS="${MAIN_CLASS} ${PORT} ${CONF_PATH} ${ADDRESSES} ${FORCE}"
+
+echo "The classpath is ${CLASS_PATH}"
+echo "main class ${MAIN_CLASS}"
+
+exec java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS}

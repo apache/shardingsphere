@@ -1,0 +1,163 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: gs_wlm_user_resource_history
+columns:
+  username:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: username
+    primaryKey: false
+    unsigned: false
+    visible: true
+  timestamp:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: timestamp
+    primaryKey: false
+    unsigned: false
+    visible: true
+  used_memory:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: used_memory
+    primaryKey: false
+    unsigned: false
+    visible: true
+  total_memory:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: total_memory
+    primaryKey: false
+    unsigned: false
+    visible: true
+  used_cpu:
+    caseSensitive: true
+    dataType: 7
+    generated: false
+    name: used_cpu
+    primaryKey: false
+    unsigned: false
+    visible: true
+  total_cpu:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: total_cpu
+    primaryKey: false
+    unsigned: false
+    visible: true
+  used_space:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: used_space
+    primaryKey: false
+    unsigned: false
+    visible: true
+  total_space:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: total_space
+    primaryKey: false
+    unsigned: false
+    visible: true
+  used_temp_space:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: used_temp_space
+    primaryKey: false
+    unsigned: false
+    visible: true
+  total_temp_space:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: total_temp_space
+    primaryKey: false
+    unsigned: false
+    visible: true
+  used_spill_space:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: used_spill_space
+    primaryKey: false
+    unsigned: false
+    visible: true
+  total_spill_space:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: total_spill_space
+    primaryKey: false
+    unsigned: false
+    visible: true
+  read_kbytes:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: read_kbytes
+    primaryKey: false
+    unsigned: false
+    visible: true
+  write_kbytes:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: write_kbytes
+    primaryKey: false
+    unsigned: false
+    visible: true
+  read_counts:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: read_counts
+    primaryKey: false
+    unsigned: false
+    visible: true
+  write_counts:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: write_counts
+    primaryKey: false
+    unsigned: false
+    visible: true
+  read_speed:
+    caseSensitive: true
+    dataType: 7
+    generated: false
+    name: read_speed
+    primaryKey: false
+    unsigned: false
+    visible: true
+  write_speed:
+    caseSensitive: true
+    dataType: 7
+    generated: false
+    name: write_speed
+    primaryKey: false
+    unsigned: false
+    visible: true

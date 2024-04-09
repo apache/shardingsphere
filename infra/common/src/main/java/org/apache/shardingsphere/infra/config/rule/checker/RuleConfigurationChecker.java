@@ -19,11 +19,12 @@ package org.apache.shardingsphere.infra.config.rule.checker;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -38,9 +39,29 @@ public interface RuleConfigurationChecker<T extends RuleConfiguration> extends O
      * Check rule configuration.
      * 
      * @param databaseName database name to be checked
-     * @param config rule configuration to be checked
+     * @param ruleConfig rule configuration to be checked
      * @param dataSourceMap data sources to be checked
      * @param builtRules built rules
      */
-    void check(String databaseName, T config, Map<String, DataSource> dataSourceMap, Collection<ShardingSphereRule> builtRules);
+    void check(String databaseName, T ruleConfig, Map<String, DataSource> dataSourceMap, Collection<ShardingSphereRule> builtRules);
+    
+    /**
+     * Get required data source names.
+     *
+     * @param ruleConfig rule configuration
+     * @return required data source names
+     */
+    default Collection<String> getRequiredDataSourceNames(final T ruleConfig) {
+        return Collections.emptyList();
+    }
+    
+    /**
+     * Get table names.
+     * 
+     * @param ruleConfig rule configuration
+     * @return table names
+     */
+    default Collection<String> getTableNames(final T ruleConfig) {
+        return Collections.emptyList();
+    }
 }

@@ -1,0 +1,195 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_stat_activity
+columns:
+  datid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: datid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  datname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: datname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pid:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: pid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  leader_pid:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: leader_pid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  usesysid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: usesysid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  usename:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: usename
+    primaryKey: false
+    unsigned: false
+    visible: true
+  application_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: application_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  client_addr:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: client_addr
+    primaryKey: false
+    unsigned: false
+    visible: true
+  client_hostname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: client_hostname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  client_port:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: client_port
+    primaryKey: false
+    unsigned: false
+    visible: true
+  backend_start:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: backend_start
+    primaryKey: false
+    unsigned: false
+    visible: true
+  xact_start:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: xact_start
+    primaryKey: false
+    unsigned: false
+    visible: true
+  query_start:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: query_start
+    primaryKey: false
+    unsigned: false
+    visible: true
+  state_change:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: state_change
+    primaryKey: false
+    unsigned: false
+    visible: true
+  wait_event_type:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: wait_event_type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  wait_event:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: wait_event
+    primaryKey: false
+    unsigned: false
+    visible: true
+  state:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: state
+    primaryKey: false
+    unsigned: false
+    visible: true
+  backend_xid:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: backend_xid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  backend_xmin:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: backend_xmin
+    primaryKey: false
+    unsigned: false
+    visible: true
+  query_id:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: query_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  query:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: query
+    primaryKey: false
+    unsigned: false
+    visible: true
+  backend_type:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: backend_type
+    primaryKey: false
+    unsigned: false
+    visible: true

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.timeservice.spi;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.sql.Timestamp;
 

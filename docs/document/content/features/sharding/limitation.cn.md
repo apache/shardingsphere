@@ -48,7 +48,7 @@ tbl_name [AS] alias] [index_hint_list]
 SELECT * FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 1;
 ```
 
-用于[分页](https://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/pagination)的子查询，由内核提供稳定支持。
+用于分页的子查询，由内核提供稳定支持。
 
 例如：
 

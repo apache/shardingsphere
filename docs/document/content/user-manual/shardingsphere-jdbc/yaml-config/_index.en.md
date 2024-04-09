@@ -21,7 +21,7 @@ YAML configuration is the most common configuration mode, which can omit the com
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-core</artifactId>
+    <artifactId>shardingsphere-jdbc</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -52,11 +52,11 @@ props:
   key_2: value_2
 ```
 
-Please refer to [Mode Confiugration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode) for more mode details.
+Please refer to [Mode Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode) for more mode details.
 
-Please refer to [Data Source Confiugration](/en/user-manual/shardingsphere-jdbc/yaml-config/data-source) for more data source details.
+Please refer to [Data Source Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/data-source) for more data source details.
 
-Please refer to [Rules Confiugration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules) for more rule details.
+Please refer to [Rules Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules) for more rule details.
 
 ### Create Data Source
 

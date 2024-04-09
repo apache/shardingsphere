@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.base.seata.at;
 
 import io.seata.core.context.RootContext;
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +38,7 @@ class SeataTransactionalSQLExecutionHookTest {
     private final SeataTransactionalSQLExecutionHook executionHook = new SeataTransactionalSQLExecutionHook();
     
     @Mock
-    private DataSourceMetaData dataSourceMetaData;
+    private ConnectionProperties connectionProps;
     
     @AfterEach
     void tearDown() {
@@ -48,7 +48,7 @@ class SeataTransactionalSQLExecutionHookTest {
     @Test
     void assertTrunkThreadExecute() {
         RootContext.bind("xid");
-        executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, true);
+        executionHook.start("ds", "SELECT 1", Collections.emptyList(), connectionProps, true);
         assertThat(SeataXIDContext.get(), is(RootContext.getXID()));
         executionHook.finishSuccess();
         assertTrue(RootContext.inGlobalTransaction());
@@ -56,7 +56,7 @@ class SeataTransactionalSQLExecutionHookTest {
     
     @Test
     void assertChildThreadExecute() {
-        executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, false);
+        executionHook.start("ds", "SELECT 1", Collections.emptyList(), connectionProps, false);
         assertTrue(RootContext.inGlobalTransaction());
         executionHook.finishSuccess();
         assertFalse(RootContext.inGlobalTransaction());
@@ -64,7 +64,7 @@ class SeataTransactionalSQLExecutionHookTest {
     
     @Test
     void assertChildThreadExecuteFailed() {
-        executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, false);
+        executionHook.start("ds", "SELECT 1", Collections.emptyList(), connectionProps, false);
         assertTrue(RootContext.inGlobalTransaction());
         executionHook.finishFailure(new RuntimeException(""));
         assertFalse(RootContext.inGlobalTransaction());

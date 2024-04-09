@@ -6,7 +6,7 @@ chapter = true
 
 Welcome to pick up some of video selections to watch. Moreover look forward to your contribution!
 
-1. [The Cooperation Between ShardingSphere and openGauss](/en/videos/openGauss/)
+1. [The Cooperation Between ShardingSphere and openGauss](/en/videos/opengauss/)
 
 2. [Getting started with Apache ShardingSphere](/en/videos/opensource/)
 
@@ -18,4 +18,4 @@ Welcome to pick up some of video selections to watch. Moreover look forward to y
 
 6. [How to build database ecosystem with newSQL in a big-data environment](/en/videos/ecosystem/)  
 
-7. [New feature of Apache ShardingSphere 5.x](/en/videos/Newfeature/)
+7. [New feature of Apache ShardingSphere 5.x](/en/videos/newfeature/)

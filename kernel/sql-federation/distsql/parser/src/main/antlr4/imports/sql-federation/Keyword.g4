@@ -43,6 +43,10 @@ SQL_FEDERATION_ENABLED
     : S Q L UL_ F E D E R A T I O N UL_ E N A B L E D
     ;
 
+ALL_QUERY_USE_SQL_FEDERATION
+    : A L L UL_ Q U E R Y UL_ U S E UL_ S Q L UL_ F E D E R A T I O N
+    ;
+
 EXECUTION_PLAN_CACHE
     : E X E C U T I O N UL_ P L A N UL_ C A C H E
     ;

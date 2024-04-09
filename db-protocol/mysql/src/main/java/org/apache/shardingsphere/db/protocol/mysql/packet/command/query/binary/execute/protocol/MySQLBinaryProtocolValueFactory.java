@@ -36,6 +36,7 @@ public final class MySQLBinaryProtocolValueFactory {
     
     static {
         setStringLenencBinaryProtocolValue();
+        setByteLenencBinaryProtocolValue();
         setInt8BinaryProtocolValue();
         setInt4BinaryProtocolValue();
         setInt2BinaryProtocolValue();
@@ -49,19 +50,23 @@ public final class MySQLBinaryProtocolValueFactory {
     
     private static void setStringLenencBinaryProtocolValue() {
         MySQLStringLenencBinaryProtocolValue binaryProtocolValue = new MySQLStringLenencBinaryProtocolValue();
-        BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.STRING, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.VARCHAR, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.VAR_STRING, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.ENUM, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.SET, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.LONG_BLOB, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MEDIUM_BLOB, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.BLOB, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.TINY_BLOB, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.GEOMETRY, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.BIT, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.DECIMAL, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.NEWDECIMAL, binaryProtocolValue);
+    }
+    
+    private static void setByteLenencBinaryProtocolValue() {
+        MySQLByteLenencBinaryProtocolValue binaryProtocolValue = new MySQLByteLenencBinaryProtocolValue();
+        BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.STRING, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.LONG_BLOB, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MEDIUM_BLOB, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.BLOB, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLBinaryColumnType.TINY_BLOB, binaryProtocolValue);
     }
     
     private static void setInt8BinaryProtocolValue() {

@@ -37,7 +37,7 @@ public abstract class AbstractShadowDriverTest extends AbstractDriverTest {
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final String CONFIG_FILE = "config/config-shadow.yaml";
+    private static final String CONFIG_FILE = "config/database-shadow.yaml";
     
     private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("shadow_jdbc_0", "shadow_jdbc_1");
     

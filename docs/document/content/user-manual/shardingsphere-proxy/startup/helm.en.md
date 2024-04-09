@@ -216,8 +216,8 @@ compute:
   ## @section Compute-Node ShardingSphere-Proxy ServerConfiguration parameters
   ## NOTE: If you use the sub-charts to deploy Zookeeper, the server-lists field must be "{{ printf \"%s-zookeeper.%s:2181\" .Release.Name .Release.Namespace }}",
   ## otherwise please fill in the correct zookeeper address
-  ## The server.yaml is auto-generated based on this parameter.
-  ## If it is empty, the server.yaml is also empty.
+  ## The global.yaml is auto-generated based on this parameter.
+  ## If it is empty, the global.yaml is also empty.
   ## ref: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/yaml-config/mode/
   ## ref: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/metadata-repository/
   ##

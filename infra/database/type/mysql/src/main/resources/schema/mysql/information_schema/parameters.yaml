@@ -1,0 +1,164 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: PARAMETERS
+type: TABLE
+columns:
+  specific_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: SPECIFIC_CATALOG
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  specific_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: SPECIFIC_SCHEMA
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  specific_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SPECIFIC_NAME
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ordinal_position:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: ORDINAL_POSITION
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  parameter_mode:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: PARAMETER_MODE
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  parameter_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PARAMETER_NAME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  data_type:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: DATA_TYPE
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  character_maximum_length:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: CHARACTER_MAXIMUM_LENGTH
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  character_octet_length:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: CHARACTER_OCTET_LENGTH
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  numeric_precision:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: NUMERIC_PRECISION
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  numeric_scale:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: NUMERIC_SCALE
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  datetime_precision:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: DATETIME_PRECISION
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  character_set_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: CHARACTER_SET_NAME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collation_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COLLATION_NAME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  dtd_identifier:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: DTD_IDENTIFIER
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  routine_type:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: ROUTINE_TYPE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true

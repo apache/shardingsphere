@@ -1,0 +1,104 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_collation
+columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: true
+    unsigned: false
+    visible: true
+  collname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: collname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collnamespace:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: collnamespace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collowner:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: collowner
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collprovider:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: collprovider
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collisdeterministic:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: collisdeterministic
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collencoding:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: collencoding
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collcollate:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: collcollate
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collctype:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: collctype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collversion:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: collversion
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_collation_name_enc_nsp_index:
+    name: pg_collation_name_enc_nsp_index
+  pg_collation_oid_index:
+    name: pg_collation_oid_index

@@ -50,13 +50,31 @@ SELECT i.* FROM t_order_1 o JOIN t_order_item_1 i ON o.order_id=i.order_id WHERE
 
 The t_order table will be used by ShardingSphere as the master table for the entire binding table since it specifies the sharding condition. All routing calculations will use only the policy of the primary table, then the sharding calculations for the `t_order_item` table will use the `t_order` condition.
 
+Note: multiple sharding rules in the binding table need to be configured according to the combination of logical table prefix and sharding suffix, for example:
+
+```yaml
+rules:
+- !SHARDING
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+```
+
 ### Broadcast data frame
 
-Refers to tables that exist in all sharded data sources. The table structure and its data are identical in each database. Suitable for scenarios where the data volume is small and queries are required to be associated with tables of massive data, e.g., dictionary tables.
+Refers to tables that exist in all data sources. The table structure and its data are identical in each database. Suitable for scenarios where the data volume is small and queries are required to be associated with tables of massive data, e.g., dictionary tables.
 
 ### Single Table
 
 Refers to the only table that exists in all sharded data sources. Suitable for tables with a small amount of data and do not need to be sharded.
+
+Note: Single tables that meet the following conditions will be automatically loaded:
+- A single table showing the configuration in rules such as encrypt and mask
+- A single table created by users executing DDL statements through ShardingSphere
+
+For other single tables that do not meet the above conditions, ShardingSphere will not automatically load them, and users can configure single table rules as needed for management.
 
 ## Data Nodes
 
@@ -140,6 +158,15 @@ For the scenario where the sharded field is not determined by SQL but by other e
 Row expressions are designed to address the two main issues of configuration simplification and integration. In the cumbersome configuration rules of data sharding, the large number of repetitive configurations makes the configuration itself difficult to maintain as the number of data nodes increases. The data node configuration workload can be effectively simplified by row expressions.
 
 For the common sharding algorithm, using Java code implementation does not help to manage the configuration uniformly. But by writing the sharding algorithm through line expressions, the rule configuration can be effectively stored together, which is easier to browse and store.
+
+A Row Value Expressions consists of two parts as a string, the Type Name part of the corresponding SPI implementation at the beginning of the string and the expression part.
+
+Take `<GROOVY>t_order_${1..3}` as sample, the `GROOVY` substring in the part of the `<GROOVY>` string is the Type Name used by the corresponding SPI implementation for this Row Value Expressions, which is identified by the `<>` symbol.
+And the `t_order_${1..3}` string is the expression part of this Row Value Expressions. When a Row Value Expressions does
+not specify a Type Name, such as `t_order_${1..3}`, the Row Value Expressions defaults to parse expressions by `GROOVY` implementation for `InlineExpressionParser` SPI.
+
+The following sections describe the syntax rules for the `GROOVY` implementation.
+
 
 Row expressions are very intuitive, just use `${ expression }` or `$->{ expression }` in the configuration to identify the row expressions. Data nodes and sharding algorithms are currently supported. The content of row expressions uses Groovy syntax, and all operations supported by Groovy are supported by row expressions. For example:
 

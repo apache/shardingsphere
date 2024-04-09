@@ -19,6 +19,9 @@ package org.apache.shardingsphere.infra.parser;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.exception.mysql.exception.ParseErrorException;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -31,13 +34,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
  */
 public final class ShardingSphereSQLParserEngine implements SQLParserEngine {
     
+    private final DatabaseType databaseType;
+    
     private final SQLStatementParserEngine sqlStatementParserEngine;
     
     private final DistSQLStatementParserEngine distSQLStatementParserEngine;
     
-    public ShardingSphereSQLParserEngine(final String databaseType, final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
-        sqlStatementParserEngine = SQLStatementParserEngineFactory.getSQLStatementParserEngine(
-                databaseType, sqlStatementCacheOption, parseTreeCacheOption, isParseComment);
+    public ShardingSphereSQLParserEngine(final DatabaseType databaseType, final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption) {
+        this.databaseType = databaseType;
+        sqlStatementParserEngine = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, sqlStatementCacheOption, parseTreeCacheOption);
         distSQLStatementParserEngine = new DistSQLStatementParserEngine();
     }
     
@@ -55,7 +60,9 @@ public final class ShardingSphereSQLParserEngine implements SQLParserEngine {
                 String trimSQL = SQLUtils.trimComment(sql);
                 return distSQLStatementParserEngine.parse(trimSQL);
             } catch (final SQLParsingException ignored) {
-                throw originalEx;
+                throw originalEx instanceof SQLParsingException && databaseType instanceof MySQLDatabaseType
+                        ? new ParseErrorException(originalEx.getMessage(), ((SQLParsingException) originalEx).getSymbol(), ((SQLParsingException) originalEx).getLine())
+                        : originalEx;
             }
         }
     }

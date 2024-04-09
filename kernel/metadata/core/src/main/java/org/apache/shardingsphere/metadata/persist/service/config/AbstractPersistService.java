@@ -23,12 +23,20 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.LinkedList;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 public abstract class AbstractPersistService {
+    
+    private static final String ACTIVE_VERSION_PATTERN = "/active_version$";
+    
+    private static final String ACTIVE_VERSION_PATH = "active_version";
+    
+    private static final String VERSIONS_PATH = "versions";
     
     private final PersistRepository repository;
     
@@ -41,7 +49,12 @@ public abstract class AbstractPersistService {
     public Collection<YamlDataNode> getDataNodes(final String rootPath) {
         Collection<YamlDataNode> result = new LinkedList<>();
         for (String each : getNodes(rootPath)) {
-            result.add(new YamlDataNode(each, repository.getDirectly(each)));
+            Pattern pattern = Pattern.compile(ACTIVE_VERSION_PATTERN, Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(each);
+            if (matcher.find()) {
+                String activeRuleKey = each.replace(ACTIVE_VERSION_PATH, VERSIONS_PATH) + "/" + getActiveVersion(each);
+                result.add(new YamlDataNode(activeRuleKey, repository.getDirectly(activeRuleKey)));
+            }
         }
         return result;
     }
@@ -67,6 +80,10 @@ public abstract class AbstractPersistService {
     }
     
     private String getPath(final String path, final String childKey) {
-        return String.join("/", "", path, childKey);
+        return String.join("/", path, childKey);
+    }
+    
+    protected String getActiveVersion(final String key) {
+        return repository.getDirectly(key);
     }
 }

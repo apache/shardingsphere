@@ -229,7 +229,7 @@ export GPG_TTY=$(tty)
 ```
 
 ```shell
-mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
+./mvnw release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
 ```
 
 -Prelease：选择 release 的 profile，这个 profile 会打包所有源码、jar 文件以及 ShardingSphere-Proxy 的可执行二进制包。
@@ -243,11 +243,11 @@ mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=tru
 首先清理发布预校验本地信息。
 
 ```shell
-mvn release:clean
+./mvnw release:clean
 ```
 
 ```shell
-mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github 用户名}
+./mvnw release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github 用户名}
 ```
 
 和上一步演练的命令基本相同，去掉了 -DdryRun=true 参数。
@@ -266,7 +266,7 @@ git push origin ${RELEASE.VERSION}
 使用稳定的网络环境，本过程可能持续`1`个小时以上。
 
 ```shell
-mvn release:perform -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DlocalCheckout=true -Dusername=${Github 用户名}
+./mvnw release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DlocalCheckout=true -Dusername=${Github 用户名}
 ```
 
 -DlocalCheckout=true：从本地 checkout 代替从远程仓库拉取代码。
@@ -525,7 +525,7 @@ I will process to publish the release and send ANNOUNCE.
 
 ### 1. 将源码、二进制包以及 KEYS 从 svn 的 dev 目录移动到 release 目录
 
-需要 PMC 帮忙操作。
+> 注意：该步骤需要 PMC 帮忙操作。
 
 将发布内容移动到发布区：
 ```shell
@@ -583,6 +583,8 @@ docker logout
 
 ### 5. 从发布区移除上一版本内容
 
+> 注意：该步骤需要 PMC 帮忙操作。
+
 [**发布区**](https://dist.apache.org/repos/dist/release/shardingsphere/) 中仅保留一个最新的版本。
 确认 [Archive repository](https://archive.apache.org/dist/shardingsphere/) 中存在上一版本后，从 [**发布区**](https://dist.apache.org/repos/dist/release/shardingsphere/) 删除上一版本：
 
@@ -597,8 +599,8 @@ svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.o
 参考：[Release Download Pages for Projects](https://infra.apache.org/release-download-pages.html)。
 
 ### 6. 官网首页增加发布版本文档入口
-
-参考 commit：https://github.com/apache/shardingsphere-doc/commit/9fdf438d1170129d2690b5dee316403984579430
+更新 `shardingsphere-doc` 仓库下 index.html、index_zh.html、learning.html、legacy.html、legacy_zh.html 几处文件中的版本号为当前版本。[参考提交](https://github.com/apache/shardingsphere-doc/commit/9fdf438d1170129d2690b5dee316403984579430)
+更新 `shardingsphere` 仓库下的 language.html(docs/document/themes/hugo-theme-learn/layouts/partials/language.html)，增加当前版本号用于页面导航。[参考提交](https://github.com/apache/shardingsphere/pull/29017/files)
 
 ### 7. 更新示例版本
 

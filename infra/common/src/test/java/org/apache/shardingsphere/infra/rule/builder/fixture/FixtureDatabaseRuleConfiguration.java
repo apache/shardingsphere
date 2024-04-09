@@ -20,4 +20,9 @@ package org.apache.shardingsphere.infra.rule.builder.fixture;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 
 public final class FixtureDatabaseRuleConfiguration implements DatabaseRuleConfiguration {
+    
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
 }

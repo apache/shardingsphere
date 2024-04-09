@@ -40,7 +40,7 @@ Build and install all modules, it'll install modules into Maven local repository
 
 ```shell
 cd shardingsphere
-mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
+./mvnw clean install -DskipITs -DskipTests -Prelease
 ```
 
 When you pull the latest code from ShardingSphere and create new branch later, you might get similar compile error of parser again, then you could run this command again.

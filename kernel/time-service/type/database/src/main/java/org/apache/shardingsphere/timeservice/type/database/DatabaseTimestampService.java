@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.timeservice.type.database;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.timeservice.spi.TimestampService;
 import org.apache.shardingsphere.timeservice.type.database.exception.DatetimeLoadingException;
@@ -32,7 +32,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -48,15 +47,15 @@ public final class DatabaseTimestampService implements TimestampService {
     
     @Override
     public void init(final Properties props) {
-        dataSource = DataSourcePoolCreator.create(new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(
-                props.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue, (key, value) -> value))));
-        storageType = DatabaseTypeEngine.getStorageType(Collections.singleton(dataSource));
+        dataSource = DataSourcePoolCreator.create(new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(
+                props.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue))));
+        storageType = DatabaseTypeEngine.getStorageType(dataSource);
     }
     
     @Override
     public Timestamp getTimestamp() {
         try {
-            return loadDatetime(dataSource, TypedSPILoader.getService(TimestampLoadingSQLProvider.class, DatabaseTypeEngine.getTrunkDatabaseTypeName(storageType)).getTimestampLoadingSQL());
+            return loadDatetime(dataSource, DatabaseTypedSPILoader.getService(TimestampLoadingSQLProvider.class, storageType).getTimestampLoadingSQL());
         } catch (final SQLException ex) {
             throw new DatetimeLoadingException(ex);
         }

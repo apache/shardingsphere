@@ -20,8 +20,11 @@ package org.apache.shardingsphere.infra.util.yaml.datanode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@Getter
+/**
+ * YAML data node.
+ */
 @RequiredArgsConstructor
+@Getter
 public final class YamlDataNode {
     
     private final String key;

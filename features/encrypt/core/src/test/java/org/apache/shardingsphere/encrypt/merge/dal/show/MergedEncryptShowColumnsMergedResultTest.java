@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.merge.dal.show;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -98,8 +98,8 @@ class MergedEncryptShowColumnsMergedResultTest {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
-        when(encryptTable.getAssistedQueryColumns()).thenReturn(Collections.singleton("user_id_assisted"));
-        when(encryptTable.getLikeQueryColumns()).thenReturn(Collections.singleton("user_id_like"));
+        when(encryptTable.isAssistedQueryColumn("user_id_assisted")).thenReturn(true);
+        when(encryptTable.isLikeQueryColumn("user_id_like")).thenReturn(true);
         when(encryptTable.isCipherColumn("user_id_cipher")).thenReturn(true);
         when(encryptTable.getLogicColumnByCipherColumn("user_id_cipher")).thenReturn("user_id");
         return result;
@@ -135,7 +135,7 @@ class MergedEncryptShowColumnsMergedResultTest {
     
     private MergedEncryptShowColumnsMergedResult createMergedEncryptColumnsMergedResult(final QueryResult queryResult, final EncryptRule encryptRule) {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
-        when(sqlStatementContext.getAllTables()).thenReturn(Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))));
+        when(sqlStatementContext.getAllTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))));
         return new MergedEncryptShowColumnsMergedResult(queryResult, sqlStatementContext, encryptRule);
     }
 }

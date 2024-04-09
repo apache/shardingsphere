@@ -23,7 +23,7 @@ REGISTER STORAGE UNIT ds_0 (
 CREATE ENCRYPT RULE t_encrypt (
     COLUMNS(
         (NAME=user_id,CIPHER=user_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),
-        (NAME=order_id,CIPHER =order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='RC4',PROPERTIES('rc4-key-value'='123456abc'))))
+        (NAME=order_id,CIPHER =order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))))
 ));
 ```
 

@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.infra.instance.mode;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -80,19 +82,19 @@ public interface ModeContextManager {
      * Register storage units.
      *
      * @param databaseName database name
-     * @param toBeRegisterStorageUnitProps to be register storage unit props
+     * @param toBeRegisteredProps to be registered storage unit properties
      * @throws SQLException SQL exception
      */
-    void registerStorageUnits(String databaseName, Map<String, DataSourceProperties> toBeRegisterStorageUnitProps) throws SQLException;
+    void registerStorageUnits(String databaseName, Map<String, DataSourcePoolProperties> toBeRegisteredProps) throws SQLException;
     
     /**
      * Alter storage units.
      *
      * @param databaseName database name
-     * @param toBeUpdatedStorageUnitProps to be updated storage unit props
+     * @param toBeUpdatedProps to be updated storage unit properties
      * @throws SQLException SQL exception
      */
-    void alterStorageUnits(String databaseName, Map<String, DataSourceProperties> toBeUpdatedStorageUnitProps) throws SQLException;
+    void alterStorageUnits(String databaseName, Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException;
     
     /**
      * Unregister storage units.
@@ -115,26 +117,28 @@ public interface ModeContextManager {
      *
      * @param databaseName database name
      * @param toBeAlteredRuleConfig to be altered rule config
+     * @return meta data versions
      */
-    default void alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) {
+    default Collection<MetaDataVersion> alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
+        return Collections.emptyList();
+    }
+    
+    /**
+     * Remove rule configuration item.
+     *
+     * @param databaseName database name
+     * @param toBeRemovedRuleConfig to be removed rule config
+     */
+    default void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
     }
     
     /**
      * Remove rule configuration.
      *
      * @param databaseName database name
-     * @param toBeRemovedRuleConfig to be removed rule config
+     * @param ruleName rule name
      */
-    default void removeRuleConfiguration(String databaseName, RuleConfiguration toBeRemovedRuleConfig) {
-    }
-    
-    /**
-     * Remove rule configuration.
-     *
-     * @param databaseName database name
-     * @param toBeRemovedRuleConfig to be removed rule config
-     */
-    default void removeAllRuleConfiguration(String databaseName, RuleConfiguration toBeRemovedRuleConfig) {
+    default void removeRuleConfiguration(final String databaseName, final String ruleName) {
     }
     
     /**
@@ -145,19 +149,18 @@ public interface ModeContextManager {
     void alterGlobalRuleConfiguration(Collection<RuleConfiguration> globalRuleConfigs);
     
     /**
+     * TODO Need to DistSQL handle call it
+     * Alter global rule configuration.
+     *
+     * @param globalRuleConfig global rule config
+     */
+    default void alterGlobalRuleConfiguration(final RuleConfiguration globalRuleConfig) {
+    }
+    
+    /**
      * Alter properties.
      *
      * @param props pros
      */
     void alterProperties(Properties props);
-    
-    /**
-     * Get active version by key.
-     *
-     * @param key key
-     * @return active version
-     */
-    default int getActiveVersionByKey(String key) {
-        return 0;
-    }
 }

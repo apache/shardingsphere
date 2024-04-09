@@ -35,4 +35,3 @@ GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON pipeline_it_1.* TO 
 GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON pipeline_it_2.* TO `test_user`@`%`;
 GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON pipeline_it_3.* TO `test_user`@`%`;
 GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON pipeline_it_4.* TO `test_user`@`%`;
-ALTER USER `test_user`@`%` IDENTIFIED WITH mysql_native_password by 'Test@123';

@@ -21,6 +21,9 @@ ifNotExists ::=
 referenceRelationshipDefinition ::=
    ruleName '(' tableName (',' tableName)* ')'
 
+ruleName ::=
+  identifier
+
 tableName ::=
   identifier
 ```
@@ -68,4 +71,4 @@ CREATE SHARDING TABLE REFERENCE RULE IF NOT EXISTS ref_0 (t_order,t_order_item);
 ### Related links
 
 - [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
-- [CREATE SHARDING TABLE RULE](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/create-sharding-table-rule/)
+- [CREATE SHARDING TABLE RULE](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/create-sharding-table-rule/)

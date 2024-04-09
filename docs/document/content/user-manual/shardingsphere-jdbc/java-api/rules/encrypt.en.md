@@ -1,6 +1,6 @@
 +++
 title = "Encryption"
-weight = 4
+weight = 5
 +++
 
 ## Background
@@ -101,4 +101,4 @@ public final class EncryptDatabasesConfiguration {
 ## Related References
 
 - [The feature description of Data Encryption](/en/features/encrypt/ )
-- [Dev Guide of Data Encryption](/en/dev-manual/encryption/)
+- [Dev Guide of Data Encryption](/en/dev-manual/encrypt/)

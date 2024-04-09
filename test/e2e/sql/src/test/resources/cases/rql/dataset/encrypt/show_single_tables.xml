@@ -21,6 +21,8 @@
         <column name="storage_unit_name" />
     </metadata>
     <row values="t_merchant| encrypt" />
+    <row values="t_order| encrypt" />
+    <row values="t_order_item| encrypt" />
     <row values="t_single_table| encrypt" />
     <row values="t_user| encrypt" />
     <row values="t_user_item| encrypt" />

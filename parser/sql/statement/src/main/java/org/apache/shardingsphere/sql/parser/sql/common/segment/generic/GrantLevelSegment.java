@@ -32,7 +32,7 @@ public final class GrantLevelSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final String dbName;
+    private final String databaseName;
     
     private final String tableName;
 }

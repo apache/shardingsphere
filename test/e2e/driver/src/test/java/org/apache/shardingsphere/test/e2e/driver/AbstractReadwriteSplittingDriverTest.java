@@ -37,7 +37,7 @@ public abstract class AbstractReadwriteSplittingDriverTest extends AbstractDrive
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final String CONFIG_FILE = "config/config-readwrite-splitting.yaml";
+    private static final String CONFIG_FILE = "config/database-readwrite-splitting.yaml";
     
     private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("test_primary_ds", "test_replica_ds");
     

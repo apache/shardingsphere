@@ -26,13 +26,13 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.tab
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.RevokeStatementTestCase;
 
 /**
- * SQLServer Revoke statement assert.
+ * SQLServer revoke statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLServerRevokeStatementAssert {
     
     /**
-     * Assert SQLServer Revoke statement is correct with expected parser result.
+     * Assert SQLServer revoke statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual actual SQLServer revoke statement

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <alter-tablespace sql-case-id="alter_tablespace_rename">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+        <rename start-index="31" stop-index="33" name="ts2" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_read_only">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_read_write">
+        <tablespace start-index="17" stop-index="23" name="sales_1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_add_datafile">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_add_datafile_autoextend_next_maxsize_unlimited">
+        <tablespace start-index="17" stop-index="26" name="undotbs_01" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_add_datafile_size_autoextend_next_maxsize">
+        <tablespace start-index="17" stop-index="22" name="tbs_03" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_add_datafile_size_reuse">
+        <tablespace start-index="17" stop-index="22" name="stocks" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_add_tempfile_size_autoextend">
+        <tablespace start-index="17" stop-index="25" name="temp_demo" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_shrink_tempfile">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_shrink_space">
+        <tablespace start-index="17" stop-index="25" name="temp_demo" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_shrink_space_keep">
+        <tablespace start-index="17" stop-index="23" name="lmtemp1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_drop_tempfile">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_drop_datafile">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_group_newname">
+        <tablespace start-index="17" stop-index="23" name="lmtemp2" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_group_empty">
+        <tablespace start-index="17" stop-index="23" name="lmtemp3" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_begin_backup">
+        <tablespace start-index="17" stop-index="22" name="tbs_01" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_end_backup">
+        <tablespace start-index="17" stop-index="21" name="users" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_online">
+        <tablespace start-index="17" stop-index="22" name="tbs_02" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_offline">
+        <tablespace start-index="17" stop-index="21" name="tbs_4" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_offline_normal">
+        <tablespace start-index="17" stop-index="21" name="users" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_offline_immediate">
+        <tablespace start-index="17" stop-index="21" name="users" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_offline_temporary">
+        <tablespace start-index="17" stop-index="21" name="users" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_flashback_off">
+        <tablespace start-index="17" stop-index="21" name="tbs_3" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_flashback_on">
+        <tablespace start-index="17" stop-index="21" name="tbs_3" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_retention_guarantee">
+        <tablespace start-index="17" stop-index="23" name="undots1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_retention_noguarantee">
+        <tablespace start-index="17" stop-index="23" name="undots1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_rename_datafile">
+        <tablespace start-index="17" stop-index="22" name="tbs_02" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_rename_datafile_single">
+        <tablespace start-index="17" stop-index="21" name="users" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_rename_datafile_multiple">
+        <tablespace start-index="17" stop-index="21" name="users" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_autoextend_on_next_g">
+        <tablespace start-index="17" stop-index="22" name="bigtbs" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_add_datafile_size_m">
+        <tablespace start-index="17" stop-index="22" name="lmtbsb" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_nologging">
+        <tablespace start-index="17" stop-index="22" name="tbs_03" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_add_tempfile_size_m_reuse">
+        <tablespace start-index="17" stop-index="22" name="lmtemp" />
+    </alter-tablespace>
+</sql-parser-test-cases>

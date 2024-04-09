@@ -723,7 +723,7 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
     @Override
     public String visitTemporalLiterals(final TemporalLiteralsContext ctx) {
         visit(ctx.getChild(0));
-        formatPrint(ctx.SINGLE_QUOTED_TEXT().getText());
+        formatPrint(ctx.textString().getText());
         return formattedSQL.toString();
     }
     
@@ -849,7 +849,7 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

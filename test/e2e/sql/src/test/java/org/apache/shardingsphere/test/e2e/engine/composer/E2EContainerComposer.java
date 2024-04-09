@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.engine.composer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposerRegistry;
 import org.apache.shardingsphere.test.e2e.engine.TotalSuitesCountCalculator;
@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * E2E container composer.
  */
 @Getter
-public abstract class E2EContainerComposer implements AutoCloseable {
+public abstract class E2EContainerComposer {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
@@ -95,13 +95,6 @@ public abstract class E2EContainerComposer implements AutoCloseable {
                 Connection connection = dataSource.getConnection();
                 FileReader reader = new FileReader(logicDatabaseInitSQLFile)) {
             RunScript.execute(connection, reader);
-        }
-    }
-    
-    @Override
-    public void close() {
-        if (COMPLETED_SUITES_COUNT.incrementAndGet() == TOTAL_SUITES_COUNT) {
-            CONTAINER_COMPOSER_REGISTRY.close();
         }
     }
 }

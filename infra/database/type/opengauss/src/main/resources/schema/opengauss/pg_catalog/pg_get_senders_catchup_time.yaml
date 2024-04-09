@@ -1,0 +1,83 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_get_senders_catchup_time
+columns:
+  pid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: pid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lwpid:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: lwpid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  local_role:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: local_role
+    primaryKey: false
+    unsigned: false
+    visible: true
+  peer_role:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: peer_role
+    primaryKey: false
+    unsigned: false
+    visible: true
+  state:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: state
+    primaryKey: false
+    unsigned: false
+    visible: true
+  type:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  catchup_start:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: catchup_start
+    primaryKey: false
+    unsigned: false
+    visible: true
+  catchup_end:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: catchup_end
+    primaryKey: false
+    unsigned: false
+    visible: true

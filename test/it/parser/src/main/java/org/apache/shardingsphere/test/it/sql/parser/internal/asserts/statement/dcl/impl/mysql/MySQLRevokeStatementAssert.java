@@ -30,13 +30,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * MySQL Revoke statement assert.
+ * MySQL revoke statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLRevokeStatementAssert {
     
     /**
-     * Assert MySQL Revoke statement is correct with expected parser result.
+     * Assert MySQL revoke statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual actual MySQL revoke statement

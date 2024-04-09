@@ -54,7 +54,7 @@ public final class AdviceExecutorFactory {
      * @return found advice executor
      */
     public Optional<AdviceExecutor> findMatchedAdviceExecutor(final InDefinedShape methodDescription) {
-        Map<String, Collection<AgentAdvice>> advices = new HashMap<>();
+        Map<String, Collection<AgentAdvice>> advices = new HashMap<>(advisorConfig.getAdvisors().size(), 1F);
         for (MethodAdvisorConfiguration each : advisorConfig.getAdvisors()) {
             if (each.getPointcut().matches(methodDescription)) {
                 advices.computeIfAbsent(each.getPluginType(), key -> new LinkedList<>());

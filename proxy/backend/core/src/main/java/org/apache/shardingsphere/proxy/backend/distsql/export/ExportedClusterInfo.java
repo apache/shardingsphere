@@ -20,13 +20,14 @@ package org.apache.shardingsphere.proxy.backend.distsql.export;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.json.JsonConfiguration;
 
 /**
  * Exported cluster info.
  */
 @Getter
 @Setter
-public class ExportedClusterInfo {
+public final class ExportedClusterInfo implements JsonConfiguration {
     
     @JsonProperty("meta_data")
     private ExportedMetaData metaData;

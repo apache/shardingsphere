@@ -108,14 +108,58 @@ AUTOCOMMIT
     : A U T O C O M M I T
     ;
 
-INNODB
-    : 'INNODB'
-    ;
-
 REDO_LOG
     : 'REDO_LOG'
     ;
     
 DELIMITER
     : D E L I M I T E R
+    ;
+
+ARCHIVE
+    : A R C H I V E
+    ;
+
+BLACKHOLE
+    : B L A C K H O L E
+    ;
+
+CSV
+    : C S V
+    ;
+
+FEDERATED
+    : F E D E R A T E D
+    ;
+
+INNODB
+    : I N N O D B
+    ;
+
+MEMORY
+    : M E M O R Y
+    ;
+
+MRG_MYISAM
+    : M R G UL_ M Y I S A M
+    ;
+
+MYISAM
+    : M Y I S A M
+    ;
+
+NDB
+    : N D B
+    ;
+
+NDBCLUSTER
+    : N D B C L U S T E R
+    ;
+
+PERFORMANCE_SCHEMA
+    : P E R F O R M A N C E UL_ S C H E M A
+    ;
+
+TOKUDB
+    : T O K U D B
     ;

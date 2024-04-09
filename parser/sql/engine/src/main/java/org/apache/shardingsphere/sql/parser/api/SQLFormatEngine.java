@@ -19,8 +19,9 @@ package org.apache.shardingsphere.sql.parser.api;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.visitor.format.SQLFormatVisitor;
 
 import java.util.Properties;
@@ -31,21 +32,24 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public final class SQLFormatEngine {
     
-    private final String databaseType;
+    private final DatabaseType databaseType;
     
     private final CacheOption cacheOption;
+    
+    public SQLFormatEngine(final String databaseType, final CacheOption cacheOption) {
+        this(TypedSPILoader.getService(DatabaseType.class, databaseType), cacheOption);
+    }
     
     /**
      * Format SQL.
      * 
      * @param sql SQL to be formatted
-     * @param useCache whether use cache
+     * @param useCache whether to use cache
      * @param props properties
      * @return formatted SQL
      */
-    @SuppressWarnings("unchecked")
     public String format(final String sql, final boolean useCache, final Properties props) {
         ParseTree parseTree = new SQLParserEngine(databaseType, cacheOption).parse(sql, useCache).getRootNode();
-        return ((ParseTreeVisitor<String>) TypedSPILoader.getService(SQLFormatVisitor.class, databaseType, props)).visit(parseTree);
+        return DatabaseTypedSPILoader.getService(SQLFormatVisitor.class, databaseType, props).visit(parseTree);
     }
 }

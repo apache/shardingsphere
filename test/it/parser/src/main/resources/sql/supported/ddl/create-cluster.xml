@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_cluster_default" value="CREATE CLUSTER test_cluster (col1 NUMBER)" db-types="Oracle" />
+    <sql-case id="create_cluster_schema" value="CREATE CLUSTER test_schema.test_cluster (col1 NUMBER)" db-types="Oracle" />
+    <sql-case id="create_cluster_schema_multi_col" value="CREATE CLUSTER test_schema.test_cluster (col1 NUMBER, col2 BOOL)" db-types="Oracle" />
+    <sql-case id="create_cluster_schema_multi_col_sort" value="CREATE CLUSTER test_schema.test_cluster (col1 NUMBER SORT, col2 BOOL)" db-types="Oracle" />
+    <sql-case id="create_cluster_parallel" value="CREATE CLUSTER test_cluster (col1 NUMBER) PARALLEL" db-types="Oracle" />
+    <sql-case id="create_cluster_parallel_number" value="CREATE CLUSTER test_cluster (col1 NUMBER) PARALLEL 2" db-types="Oracle" />
+    <sql-case id="create_cluster_noparallel" value="CREATE CLUSTER test_cluster (col1 NUMBER) NOPARALLEL" db-types="Oracle" />
+    <sql-case id="create_cluster_no_row_depend" value="CREATE CLUSTER test_cluster (col1 NUMBER) NOROWDEPENDENCIES" db-types="Oracle" />
+    <sql-case id="create_cluster_row_depend" value="CREATE CLUSTER test_cluster (col1 NUMBER) ROWDEPENDENCIES" db-types="Oracle" />
+    <sql-case id="create_cluster_no_cache" value="CREATE CLUSTER test_cluster (col1 NUMBER) NOCACHE" db-types="Oracle" />
+    <sql-case id="create_cluster_cache" value="CREATE CLUSTER test_cluster (col1 NUMBER) CACHE" db-types="Oracle" />
+    <sql-case id="create_cluster_pctfree" value="CREATE CLUSTER test_cluster (col1 NUMBER) PCTFREE 2" db-types="Oracle" />
+    <sql-case id="create_cluster_pctused" value="CREATE CLUSTER test_cluster (col1 NUMBER) PCTUSED 4" db-types="Oracle" />
+    <sql-case id="create_cluster_initrans" value="CREATE CLUSTER test_cluster (col1 NUMBER) INITRANS 5" db-types="Oracle" />
+    <sql-case id="create_cluster_set_size" value="CREATE CLUSTER test_cluster (col1 NUMBER) SIZE 10M" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_init" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (INITIAL 109G)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_next" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (NEXT 109G)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_minextents" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (MINEXTENTS 109)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_maxextents" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (MAXEXTENTS 10)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_pctincrease" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (PCTINCREASE 109)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_freelists" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (FREELISTS 109)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_freelist_groups" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (FREELIST GROUPS 80)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_optimal" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (OPTIMAL 109G)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_buffer_pool" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (BUFFER_POOL KEEP)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_flash_cache" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (FLASH_CACHE KEEP)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_call_flash_cache" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (CELL_FLASH_CACHE KEEP)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_encrypt" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (ENCRYPT)" db-types="Oracle" />
+    <sql-case id="create_cluster_tablespace" value="CREATE CLUSTER test_cluster (col1 NUMBER) TABLESPACE tablespace_test" db-types="Oracle" />
+    <sql-case id="create_cluster_index" value="CREATE CLUSTER test_cluster (col1 NUMBER) INDEX" db-types="Oracle" />
+    <sql-case id="create_cluster_hashkeys" value="CREATE CLUSTER test_cluster (col1 NUMBER) HASHKEYS 5" db-types="Oracle" />
+    <sql-case id="create_cluster_single_table" value="CREATE CLUSTER test_cluster (col1 NUMBER) SINGLE TABLE HASHKEYS 5" db-types="Oracle" />
+    <sql-case id="create_cluster_single_table_hash" value="CREATE CLUSTER test_cluster (col1 NUMBER) SINGLE TABLE HASHKEYS 5 HASH IS MOD(arg1, arg2)" db-types="Oracle" />
+    <sql-case id="create_cluster_size_initial_next" value="CREATE CLUSTER language (cust_language VARCHAR2(3)) SIZE 512 HASHKEYS 10 STORAGE (INITIAL 100k next 50k)" db-types="Oracle" />
+    <sql-case id="create_cluster_hash_is_mod" value="CREATE CLUSTER address (postal_code NUMBER, country_id CHAR(2)) HASHKEYS 20 HASH IS MOD(postal_code + country_id, 101)" db-types="Oracle" />
+    <sql-case id="create_cluster_number_size" value="CREATE CLUSTER employees_departments_cluster (department_id NUMBER(4)) SIZE 512" db-types="Oracle" />
+    <sql-case id="create_cluster_number_size_hashkeys" value="CREATE CLUSTER employees_departments_cluster (department_id NUMBER(4)) SIZE 8192 HASHKEYS 100" db-types="Oracle" />
+</sql-cases>

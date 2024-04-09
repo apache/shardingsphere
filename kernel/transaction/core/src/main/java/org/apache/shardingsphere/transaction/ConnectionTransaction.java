@@ -36,20 +36,17 @@ public final class ConnectionTransaction {
     @Getter
     private final TransactionType transactionType;
     
-    private final String databaseName;
-    
     @Setter
     @Getter
     private volatile boolean rollbackOnly;
     
     private final ShardingSphereTransactionManager transactionManager;
     
-    public ConnectionTransaction(final String databaseName, final TransactionRule rule) {
-        this(databaseName, rule.getDefaultType(), rule);
+    public ConnectionTransaction(final TransactionRule rule) {
+        this(rule.getDefaultType(), rule);
     }
     
-    public ConnectionTransaction(final String databaseName, final TransactionType transactionType, final TransactionRule rule) {
-        this.databaseName = databaseName;
+    public ConnectionTransaction(final TransactionType transactionType, final TransactionRule rule) {
         this.transactionType = transactionType;
         transactionManager = rule.getResource().getTransactionManager(transactionType);
     }
@@ -94,14 +91,15 @@ public final class ConnectionTransaction {
     
     /**
      * Get connection in transaction.
-     * 
+     *
+     * @param databaseName database name
      * @param dataSourceName data source name
      * @param transactionConnectionContext transaction connection context
      * @return connection in transaction
      * @throws SQLException SQL exception
      */
-    public Optional<Connection> getConnection(final String dataSourceName, final TransactionConnectionContext transactionConnectionContext) throws SQLException {
-        return isInTransaction(transactionConnectionContext) ? Optional.of(transactionManager.getConnection(this.databaseName, dataSourceName)) : Optional.empty();
+    public Optional<Connection> getConnection(final String databaseName, final String dataSourceName, final TransactionConnectionContext transactionConnectionContext) throws SQLException {
+        return isInTransaction(transactionConnectionContext) ? Optional.of(transactionManager.getConnection(databaseName, dataSourceName)) : Optional.empty();
     }
     
     /**

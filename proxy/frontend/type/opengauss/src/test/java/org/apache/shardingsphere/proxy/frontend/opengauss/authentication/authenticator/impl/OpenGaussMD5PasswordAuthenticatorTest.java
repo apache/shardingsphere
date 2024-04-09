@@ -37,7 +37,7 @@ class OpenGaussMD5PasswordAuthenticatorTest {
     
     @Test
     void assertAuthenticationMethodName() {
-        assertThat(new OpenGaussMD5PasswordAuthenticator().getAuthenticationMethod().getMethodName(), is("md5"));
+        assertThat(new OpenGaussMD5PasswordAuthenticator().getAuthenticationMethodName(), is("md5"));
     }
     
     @Test

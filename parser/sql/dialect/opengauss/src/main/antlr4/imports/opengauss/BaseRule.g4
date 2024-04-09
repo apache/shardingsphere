@@ -143,6 +143,7 @@ unreservedWord
     | BEFORE
     | BEGIN
     | BY
+    | BYTEA
     | BOX
     | CACHE
     | CALL
@@ -437,6 +438,19 @@ unreservedWord
     | YES
     | ZONE
     | JSON
+    | POSITION
+    | INET
+    | INT1
+    | INT2
+    | INT4
+    | INT16
+    | FLOAT4
+    | ELEM_CONTAINED_BY_RANGE
+    | INT8RANGE
+    | INT4RANGE
+    | NUMRANGE
+    | DATERANGE
+    | TSQUERY
     ;
 
 typeFuncNameKeyword
@@ -493,6 +507,10 @@ name
     : identifier
     ;
 
+modelName
+    : identifier
+    ;
+
 tableNames
     : LP_? tableName (COMMA_ tableName)* RP_?
     ;
@@ -533,6 +551,10 @@ comparisonOperator
     : EQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_
     ;
 
+inetOperator
+    : SIGNED_LEFT_SHIFT_ | SIGNED_LEFT_SHIFT_E_ | SIGNED_RIGHT_SHIFT_ | SIGNED_RIGHT_SHIFT_E_
+    ;
+
 patternMatchingOperator
     : LIKE
     | TILDE_TILDE_
@@ -568,11 +590,17 @@ aExpr
     | aExpr MOD_ aExpr
     | aExpr CARET_ aExpr
     | aExpr AMPERSAND_ aExpr
+    | DN_ aExpr
+    | aExpr NOT_
+    | aExpr POUND_ aExpr
+    | TILDE_ aExpr
+    | CUBE_ROOT_ aExpr
     | aExpr VERTICAL_BAR_ aExpr
     | aExpr qualOp aExpr
     | qualOp aExpr
     | aExpr qualOp
     | aExpr comparisonOperator aExpr
+    | aExpr inetOperator aExpr
     | NOT aExpr
     | aExpr patternMatchingOperator aExpr ESCAPE aExpr
     | aExpr patternMatchingOperator aExpr
@@ -1072,6 +1100,14 @@ functionExprCommonSubexpr
     | XMLPI LP_ NAME identifier COMMA_ aExpr RP_
     | XMLROOT LP_ aExpr COMMA_ xmlRootVersion xmlRootStandalone? RP_
     | XMLSERIALIZE LP_ documentOrContent aExpr AS simpleTypeName RP_
+    | PREDICT BY modelName LP_ FEATURES name (COMMA_ name)* RP_
+    | TS_REWRITE LP_ aExpr (TYPE_CAST_ TSQUERY)? (COMMA_ aExpr (TYPE_CAST_ TSQUERY)?)* RP_
+    | ELEM_CONTAINED_BY_RANGE LP_ aExpr COMMA_ dataType RP_
+    | (LOWER_INF | UPPER_INF) LP_ aExpr TYPE_CAST_ identifier RP_
+    | ABBREV LP_ (INET | CIDR) STRING_ RP_
+    | SET_MASKLEN LP_ STRING_ (TYPE_CAST_ CIDR)? COMMA_ numberLiterals RP_
+    | TEXT LP_ INET STRING_ RP_
+    | TRUNC LP_ MACADDR STRING_ RP_
     ;
 
 typeName

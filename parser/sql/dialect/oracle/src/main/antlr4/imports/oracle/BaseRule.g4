@@ -31,10 +31,30 @@ literals
     | bitValueLiterals
     | booleanLiterals
     | nullValueLiterals
+    | intervalLiterals
+    | bindLiterals
+    ;
+
+intervalLiterals
+    : INTERVAL stringLiterals intervalUnit (intervalPrecision)? (TO intervalUnit (intervalPrecision)?)?
+    ;
+
+bindLiterals
+    : COLON_ identifier
+    ;
+
+intervalPrecision
+    : LP_ INTEGER_ RP_
+    ;
+
+intervalUnit
+    : SECOND | MINUTE | HOUR | DAY | MONTH | YEAR
     ;
 
 stringLiterals
     : STRING_
+    | NCHAR_TEXT
+    | UCHAR_TEXT
     ;
 
 numberLiterals
@@ -63,14 +83,17 @@ nullValueLiterals
     ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord
+    : IDENTIFIER_ | unreservedWord | DOUBLE_QUOTED_TEXT
     ;
 
 unreservedWord
+    : unreservedWord1 | unreservedWord2 | unreservedWord3 | capacityUnit | timeUnit
+    ;
+
+unreservedWord1
     : TRUNCATE | FUNCTION | PROCEDURE | CASE | WHEN | CAST | TRIM | SUBSTRING
-    | NATURAL | JOIN | FULL | INNER | OUTER | LEFT | RIGHT
-    | CROSS | USING | IF | TRUE | FALSE | LIMIT | OFFSET
-    | BEGIN | COMMIT | ROLLBACK | SAVEPOINT | BOOLEAN | DOUBLE | CHARACTER
+    | USING | IF | TRUE | FALSE | LIMIT | OFFSET
+    | COMMIT | ROLLBACK | SAVEPOINT
     | ARRAY | INTERVAL | TIME | TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | YEAR
     | QUARTER | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND
     | MICROSECOND | MAX | MIN | SUM | COUNT | AVG | ENABLE
@@ -80,7 +103,7 @@ unreservedWord
     | FLASHBACK | ARCHIVE | REFRESH | QUERY | REWRITE | KEEP | SEQUENCE
     | INHERIT | TRANSLATE | SQL | MERGE | AT | BITMAP | CACHE | CHECKPOINT
     | CONSTRAINTS | CYCLE | DBTIMEZONE | ENCRYPT | DECRYPT | DEFERRABLE
-    | DEFERRED | EDITION | ELEMENT | END | EXCEPTIONS | FORCE | GLOBAL
+    | DEFERRED | EDITION | ELEMENT | EXCEPTIONS | FORCE | GLOBAL
     | IDENTITY | INITIALLY | INVALIDATE | JAVA | LEVELS | LOCAL | MAXVALUE
     | MINVALUE | NOMAXVALUE | NOMINVALUE | MINING | MODEL | NATIONAL | NEW
     | NOCACHE | NOCYCLE | NOORDER | NORELY | NOVALIDATE | ONLY | PRESERVE
@@ -96,12 +119,12 @@ unreservedWord
     | BECOME | CHANGE | NOTIFICATION | PRIVILEGE | PURGE | RESUMABLE
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
-    | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | INTERVAL | MINUTE | ANY 
-    | LENGTH | SINGLE_C | capacityUnit | TARGET | PUBLIC | ID | STATE | PRIORITY
-    | CONSTRAINT | PRIMARY | FOREIGN | KEY | POSITION | PRECISION | FUNCTION | PROCEDURE | SPECIFICATION | CASE
-    | WHEN | CAST | TRIM | SUBSTRING | FULL | INNER | OUTER | LEFT | RIGHT | CROSS
+    | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | MINUTE | ANY 
+    | LENGTH | SINGLE_C | TIME_UNIT | TARGET | PUBLIC | ID | STATE | PRIORITY
+    | PRIMARY | FOREIGN | KEY | POSITION | PRECISION | FUNCTION | PROCEDURE | SPECIFICATION | CASE
+    | WHEN | CAST | TRIM | SUBSTRING | JOIN
     | USING | FALSE | SAVEPOINT | BODY | CHARACTER | ARRAY | TIME | TIMEOUT | TIMESTAMP | LOCALTIME
-    | DAY | ENABLE | DISABLE | CALL | INSTANCE | CLOSE | NEXT | NAME | INT | NUMERIC
+    | DAY | ENABLE | DISABLE | CALL | INSTANCE | CLOSE | NEXT | NAME | NUMERIC
     | TRIGGERS | GLOBAL_NAME | BINARY | MOD | XOR | UNKNOWN | ALWAYS | CASCADE | GENERATED | PRIVILEGES
     | READ | WRITE | ROLE | VISIBLE | INVISIBLE | EXECUTE | USE | DEBUG | UNDER | FLASHBACK
     | ARCHIVE | REFRESH | QUERY | REWRITE | CHECKPOINT | ENCRYPT | DIRECTORY | CREDENTIALS | EXCEPT | NOFORCE
@@ -163,7 +186,155 @@ unreservedWord
     | HOST | PORT | EVERY | MINUTES | HOURS | NORELOCATE | SAVE | DISCARD | APPLICATION | INSTALL
     | MINIMUM | VERSION | UNINSTALL | COMPATIBILITY | MATERIALIZE | SUBTYPE | RECORD | CONSTANT | CURSOR
     | OTHERS | EXCEPTION | CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA | PERCENT_RANK | ROWID
-    | LPAD | ZONE | SESSIONTIMEZONE | TO_CHAR | XMLELEMENT | COLUMN_VALUE | EVALNAME
+    | LPAD | ZONE | SESSIONTIMEZONE | TO_CHAR | XMLELEMENT | COLUMN_VALUE | EVALNAME | LEVEL | CONTENT | ON | LOOP | EXIT | ELSIF
+    ;
+
+unreservedWord2
+    : ABS | ACCESS | ACCOUNT | ACOS | ACTIVE_COMPONENT | ACTIVE_FUNCTION | ACTIVE_TAG | ADD
+    | ADD_COLUMN | ADD_GROUP | ADD_MONTHS | ADJ_DATE | ADMIN | ADMINISTRATOR | ALL_ROWS | AND_EQUAL | ANTIJOIN | APPEND
+    | APPENDCHILDXML | APPEND_VALUES | ASCII | ASCIISTR | ASIN | ASSEMBLY | ASYNC | ATAN | ATAN2 | AUDIT | AUTHENTICATION
+    | AUTHORIZATION | BEGIN_OUTLINE_DATA | BEHALF | BFILENAME | BINARY_DOUBLE_INFINITY | BINARY_DOUBLE_NAN
+    | BINARY_FLOAT_INFINITY | BINARY_FLOAT_NAN | BIND_AWARE | BIN_TO_NUM | BITAND | BITMAPS | BITMAP_TREE | BITS | BLOCKS
+    | BLOCK_RANGE | BOUND | BRANCH | BROADCAST | BUFFER | BULK | BYPASS_RECURSIVE_CHECK | BYPASS_UJVC | BYTE | CACHE_CB
+    | CACHE_INSTANCES | CACHE_TEMP_TABLE | CARDINALITY | CEIL | CERTIFICATE | CFILE | CHANGE_DUPKEY_ERROR_INDEX | CHARTOROWID
+    | CHAR_CS | CHECK_ACL_REWRITE | CHOOSE | CHR | CLOSE_CACHED_OPEN_CURSORS | CLUSTERING_FACTOR | CLUSTER_ID
+    | CLUSTER_PROBABILITY | CLUSTER_SET | COALESCE_SQ | COLD | COLLECT | COLUMN | COLUMNAR | COLUMN_AUTH_INDICATOR
+    | COLUMN_STATS | COMMENT | COMPLIANCE | COMPOSE | COMPOSITE | COMPOSITE_LIMIT | COMPOUND | CONCAT | CONFORMING
+    | CONNECT_BY_CB_WHR_ONLY | CONNECT_BY_COMBINE_SW | CONNECT_BY_COST_BASED | CONNECT_BY_ELIM_DUPS | CONNECT_BY_FILTERING
+    | CONNECT_BY_ISCYCLE | CONNECT_BY_ISLEAF | CONNECT_BY_ROOT | CONST | CORR | CORRUPT_XID | CORRUPT_XID_ALL | CORR_K | CORR_S
+    | COS | COSH | COST_XML_QUERY_REWRITE | COVAR_POP | COVAR_SAMP | CO_AUTH_IND | CPU_COSTING | CPU_PER_CALL | CRASH
+    | CREATE_STORED_OUTLINES | CROSSEDITION | CSCONVERT | CUBE_GB | CUME_DIST | CUME_DISTM | CURRENT | CURRENTV | CURRENT_DATE
+    | CURRENT_SCHEMA | CURRENT_TIME | CURRENT_TIMESTAMP | CURSOR_SHARING_EXACT | CURSOR_SPECIFIC_SEGMENT | CV
+    | DATABASE_DEFAULT | DATAOBJNO | DATAOBJ_TO_PARTITION | DATE_MODE | DBA | DBMS_STATS | DBMS_LOB | DB_ROLE_CHANGE | DB_VERSION
+    | DEBUGGER | DECLARE | DECOMPOSE | DECR | DEFAULT | DEFAULTS | DEFINED | DEGREE | DELAY | DELETEXML | DENSE_RANKM | DEQUEUE | DEREF
+    | DEREF_NO_REWRITE | DETACHED | DIRECT_LOAD | DISABLE_PRESET | DISABLE_RPKE | DISTINGUISHED | DML_UPDATE | DOCFIDELITY
+    | DOCUMENT | DOMAIN_INDEX_FILTER | DOMAIN_INDEX_NO_SORT | DOMAIN_INDEX_SORT | DRIVING_SITE | DROP_COLUMN | DROP_GROUP
+    | DST_UPGRADE_INSERT_CONV | DUMP | DYNAMIC | DYNAMIC_SAMPLING | DYNAMIC_SAMPLING_EST_CDN | EACH | EDITIONING | EDITIONS
+    | ELIMINATE_JOIN | ELIMINATE_OBY | ELIMINATE_OUTER_JOIN | EMPTY_BLOB | EMPTY_CLOB | ENABLE_PRESET | ENCODING
+    | END_OUTLINE_DATA | ENFORCE | ENQUEUE | ENTERPRISE | ENTITYESCAPING | ENTRY | ERROR_ARGUMENT | ERROR_ON_OVERLAP_TIME
+    | ESTIMATE | EVALUATION | EVENTS | EXISTSNODE | EXP | EXPAND_GSET_TO_UNION | EXPAND_TABLE | EXPIRE | EXPLAIN | EXPLOSION
+    | EXPORT | EXPR_CORR_CHECK | EXTENDS | EXTENTS | EXTRA | EXTRACT | EXTRACTVALUE | FACILITY | FACTORIZE_JOIN
+    | FAILED_LOGIN_ATTEMPTS | FBTSCAN | FEATURE_ID | FEATURE_SET | FEATURE_VALUE | FILE | FIRSTM | FIRST_ROWS | FIRST_VALUE
+    | FLAGGER | FLOB | FLOOR | FOLLOWS | FORCE_XML_QUERY_REWRITE | FOREVER | FORWARD | FROM_TZ | GATHER_PLAN_STATISTICS
+    | GBY_CONC_ROLLUP | GBY_PUSHDOWN | GREATEST | GROUPING_ID | GROUP_BY | GROUP_ID | GUARANTEED | HASHKEYS | HASH_AJ | HASH_SJ
+    | HEADER | HELP | HEXTORAW | HEXTOREF | HIDE | HINTSET_BEGIN | HINTSET_END | HOT | HWM_BROKERED | HYBRID
+    | IDGENERATORS | IDLE_TIME | IGNORE_OPTIM_EMBEDDED_HINTS | IGNORE_ROW_ON_DUPKEY_INDEX | IGNORE_WHERE_CLAUSE | IMMEDIATE
+    | IMPACT | IMPORT | INCLUDE_VERSION | INCR | INCREMENT | INCREMENTAL | INDENT | INDEXED | INDEX_ASC | INDEX_COMBINE
+    | INDEX_DESC | INDEX_FFS | INDEX_FILTER | INDEX_JOIN | INDEX_ROWS | INDEX_RRS | INDEX_RS | INDEX_RS_ASC | INDEX_RS_DESC
+    | INDEX_SCAN | INDEX_SKIP_SCAN | INDEX_SS | INDEX_SS_ASC | INDEX_SS_DESC | INDEX_STATS | INFORMATIONAL | INITCAP | INITIAL
+    | INLINE | INLINE_XMLTYPE_NT | INSERTCHILDXML | INSERTCHILDXMLAFTER | INSERTCHILDXMLBEFORE | INSERTXMLAFTER
+    | INSERTXMLBEFORE | INSTANTIABLE | INSTANTLY | INSTEAD | INSTR | INSTR2 | INSTR4 | INSTRB | INSTRC | INTERMEDIATE
+    | INTERNAL_CONVERT | INTERNAL_USE | INTERPRETED | IN_MEMORY_METADATA | IN_XQUERY | ISOLATION_LEVEL | ITERATION_NUMBER
+    | KERBEROS | KEYSIZE | KEY_LENGTH | LAST_DAY | LAST_VALUE | LAYER | LDAP_REGISTRATION | LDAP_REGISTRATION_ENABLED
+    | LDAP_REG_SYNC_INTERVAL | LEADING | LEAST | LENGTH2 | LENGTH4 | LENGTHB | LENGTHC | LIFE | LIFETIME | LIKE_EXPAND
+    | LISTAGG | LN | LNNVL | LOBNVL | LOCAL_INDEXES | LOGICAL_READS_PER_CALL | LOGOFF | LOGON | LOWER | LTRIM | MAKE_REF
+    | MAXARCHLOGS | MAXEXTENTS | MAXTRANS | MEDIAN | MERGE_AJ | MERGE_CONST_ON | MERGE_SJ | METHOD | MINIMIZE | MINUS_NULL
+    | MIRRORCOLD | MIRRORHOT | MLSLABEL | MODEL_COMPILE_SUBQUERY | MODEL_DONTVERIFY_UNIQUENESS | MODEL_DYNAMIC_SUBQUERY
+    | MODEL_MIN_ANALYSIS | MODEL_NO_ANALYSIS | MODEL_PBY | MODEL_PUSH_REF | MODIFY | MONITOR | MONTHS_BETWEEN | MOUNTPATH
+    | MULTISET | MV_MERGE | NAMED | NANVL | NATIVE | NATIVE_FULL_OUTER_JOIN | NCHAR_CS | NCHR | NEEDED
+    | NESTED_TABLE_FAST_INSERT | NESTED_TABLE_GET_REFS | NESTED_TABLE_ID | NESTED_TABLE_SET_REFS | NESTED_TABLE_SET_SETID
+    | NETWORK | NEVER | NEW_TIME | NEXT_DAY | NLJ_BATCHING | NLJ_INDEX_FILTER | NLJ_INDEX_SCAN | NLJ_PREFETCH | NLSSORT
+    | NLS_CALENDAR | NLS_CHARACTERSET | NLS_CHARSET_DECL_LEN | NLS_CHARSET_ID | NLS_CHARSET_NAME | NLS_COMP | NLS_CURRENCY
+    | NLS_DATE_FORMAT | NLS_DATE_LANGUAGE | NLS_INITCAP | NLS_ISO_CURRENCY | NLS_LANG | NLS_LANGUAGE | NLS_LENGTH_SEMANTICS
+    | NLS_LOWER | NLS_NCHAR_CONV_EXCP | NLS_NUMERIC_CHARACTERS | NLS_SORT | NLS_SPECIAL_CHARS | NLS_TERRITORY | NLS_UPPER
+    | NL_AJ | NL_SJ | NOAPPEND | NOAUDIT | NOCPU_COSTING | NOENTITYESCAPING | NOGUARANTEE | NOLOCAL | NOMINIMIZE | NOOVERRIDE
+    | NOPARALLEL_INDEX | NOREPAIR | NOREVERSE | NOREWRITE | NOSCHEMACHECK | NOSEGMENT | NOSTRICT | NO_ACCESS
+    | NO_BASETABLE_MULTIMV_REWRITE | NO_BIND_AWARE | NO_BUFFER | NO_CARTESIAN | NO_CHECK_ACL_REWRITE | NO_COALESCE_SQ
+    | NO_CONNECT_BY_CB_WHR_ONLY | NO_CONNECT_BY_COMBINE_SW | NO_CONNECT_BY_COST_BASED | NO_CONNECT_BY_ELIM_DUPS
+    | NO_CONNECT_BY_FILTERING | NO_COST_XML_QUERY_REWRITE | NO_CPU_COSTING | NO_DOMAIN_INDEX_FILTER
+    | NO_DST_UPGRADE_INSERT_CONV | NO_ELIMINATE_JOIN | NO_ELIMINATE_OBY | NO_ELIMINATE_OUTER_JOIN | NO_EXPAND
+    | NO_EXPAND_GSET_TO_UNION | NO_EXPAND_TABLE | NO_FACT | NO_FACTORIZE_JOIN | NO_FILTERING | NO_GBY_PUSHDOWN | NO_INDEX
+    | NO_INDEX_FFS | NO_INDEX_SS | NO_LOAD | NO_MERGE | NO_MODEL_PUSH_REF | NO_MONITOR | NO_MONITORING | NO_MULTIMV_REWRITE
+    | NO_NATIVE_FULL_OUTER_JOIN | NO_NLJ_BATCHING | NO_NLJ_PREFETCH | NO_ORDER_ROLLUPS | NO_OUTER_JOIN_TO_INNER | NO_PARALLEL
+    | NO_PARALLEL_INDEX | NO_PARTIAL_COMMIT | NO_PLACE_DISTINCT | NO_PLACE_GROUP_BY | NO_PQ_MAP | NO_PRUNE_GSETS | NO_PULL_PRED
+    | NO_PUSH_PRED | NO_PUSH_SUBQ | NO_PX_JOIN_FILTER | NO_QKN_BUFF | NO_QUERY_TRANSFORMATION | NO_REF_CASCADE
+    | NO_RESULT_CACHE | NO_REWRITE | NO_SEMIJOIN | NO_SET_TO_JOIN | NO_SQL_TUNE | NO_STAR_TRANSFORMATION | NO_STATEMENT_QUEUING
+    | NO_STATS_GSETS | NO_SUBQUERY_PRUNING | NO_SUBSTRB_PAD | NO_SWAP_JOIN_INPUTS | NO_TEMP_TABLE | NO_TRANSFORM_DISTINCT_AGG
+    | NO_UNNEST | NO_USE_HASH | NO_USE_HASH_AGGREGATION | NO_USE_INVISIBLE_INDEXES | NO_USE_MERGE | NO_USE_NL
+    | NO_XMLINDEX_REWRITE | NO_XMLINDEX_REWRITE_IN_SELECT | NO_XML_DML_REWRITE | NO_XML_QUERY_REWRITE | NTH_VALUE | NTILE
+    | NULLIF | NUMTODSINTERVAL | NUMTOYMINTERVAL | NUM_INDEX_KEYS | NVL | NVL2 | OBJECTTOXML | OBJNO | OBJNO_REUSE | OCCURENCES
+    | OFFLINE | OID | OLAP | OLD | OLD_PUSH_PRED | OLTP | ONLINE | OPAQUE | OPAQUE_TRANSFORM | OPAQUE_XCANONICAL | OPCODE
+    | OPERATIONS | OPTIMIZER_FEATURES_ENABLE | OPTIMIZER_GOAL | OPT_ESTIMATE | OPT_PARAM | ORADEBUG | ORA_BRANCH | ORA_CHECKACL
+    | ORA_DST_AFFECTED | ORA_DST_CONVERT | ORA_DST_ERROR | ORA_GET_ACLIDS | ORA_GET_PRIVILEGES | ORA_HASH | ORA_ROWSCN
+    | ORA_ROWSCN_RAW | ORA_ROWVERSION | ORA_TABVERSION | ORDERED | ORDERED_PREDICATES | ORDINALITY | OR_EXPAND | OR_PREDICATES
+    | OTHER | OUTER_JOIN_TO_INNER | OUTLINE_LEAF | OUT_OF_LINE | OVERFLOW_NOMOVE | OVERLAPS | OWN | OWNER | OWNERSHIP
+    | PARALLEL_INDEX | PARAM | PARITY | PARTIALLY | PARTITION_HASH | PARTITION_LIST | PARTITION_RANGE | PASSWORD
+    | PASSWORD_GRACE_TIME | PASSWORD_LIFE_TIME | PASSWORD_LOCK_TIME | PASSWORD_REUSE_MAX | PASSWORD_REUSE_TIME
+    | PASSWORD_VERIFY_FUNCTION | PATH | PATHS | PBL_HS_BEGIN | PBL_HS_END | PENDING | PERCENTILE_CONT | PERCENTILE_DISC
+    | PERCENT_RANKM | PERMANENT | PERMISSION | PIKEY | PIV_GB | PIV_SSF | PLACE_DISTINCT | PLACE_GROUP_BY | PLAN
+    | PLSCOPE_SETTINGS | PLSQL_CCFLAGS | PLSQL_CODE_TYPE | PLSQL_DEBUG | PLSQL_OPTIMIZE_LEVEL | PLSQL_WARNINGS | POWER
+    | POWERMULTISET | POWERMULTISET_BY_CARDINALITY | PQ_DISTRIBUTE | PQ_MAP | PQ_NOMAP | PREBUILT | PRECEDES
+    ;
+
+unreservedWord3
+    : PRECOMPUTE_SUBQUERY | PREDICATE_REORDERS | PREDICTION | PREDICTION_BOUNDS | PREDICTION_COST | PREDICTION_DETAILS
+    | PREDICTION_PROBABILITY | PREDICTION_SET | PRESENTNNV | PRESENTV | PRESERVE_OID | PREVIOUS | PROJECT | PROPAGATE
+    | PROTECTED | PULL_PRED | PUSH_PRED | PUSH_SUBQ | PX_GRANULE | PX_JOIN_FILTER | QB_NAME | QUERY_BLOCK | QUEUE | QUEUE_CURR
+    | QUEUE_ROWP | RANDOM | RANDOM_LOCAL | RANKM | RAPIDLY | RATIO_TO_REPORT | RAWTOHEX | RAWTONHEX | RBA | RBO_OUTLINE | RDBA
+    | RECORDS_PER_BLOCK | RECOVERABLE | REDUCED | REFERENCED | REFERENCING | REFTOHEX | REF_CASCADE_CURSOR | REGEXP_COUNT
+    | REGEXP_INSTR | REGEXP_REPLACE | REGEXP_SUBSTR | REGR_AVGX | REGR_AVGY | REGR_COUNT | REGR_INTERCEPT | REGR_R2
+    | REGR_SLOPE | REGR_SXX | REGR_SXY | REGR_SYY | REMAINDER | REMOTE_MAPPED | REPAIR | REQUIRED | RESPECT
+    | RESTORE_AS_INTERVALS | RESTRICT_ALL_REF_CONS | RETRY_ON_ROW_CHANGE | REWRITE_OR_ERROR | ROUND | ROW | ROWIDTOCHAR
+    | ROWIDTONCHAR | ROWNUM | ROWS | ROW_LENGTH | RPAD | RTRIM | RULE | SAVE_AS_INTERVALS | SB4 | SCALE_ROWS | SCAN_INSTANCES
+    | SCHEMACHECK | SCN_ASCENDING | SD_ALL | SD_INHIBIT | SD_SHOW | SECUREFILE_DBA | SECURITY | SEG_BLOCK | SEG_FILE | SEMIJOIN
+    | SEMIJOIN_DRIVER | SEQUENCED | SERVERERROR | SESSION | SESSIONS_PER_USER | SESSIONTZNAME | SESSION_CACHED_CURSORS
+    | SET_TO_JOIN | SEVERE | SHOW | SIGN | SIGNAL_COMPONENT | SIGNAL_FUNCTION | SIMPLE | SIN | SINGLETASK | SINH
+    | SKIP_EXT_OPTIMIZER | SKIP_UNQ_UNUSABLE_IDX | SKIP_UNUSABLE_INDEXES | SOUNDEX | SPLIT | SPREADSHEET | SQLLDR | SQL_TRACE
+    | SQRT | STALE | STANDALONE | STANDBY_MAX_DATA_DELAY | STAR | STARTUP | STAR_TRANSFORMATION | STATEMENTS | STATEMENT_ID
+    | STATEMENT_QUEUING | STATIC | STATS_BINOMIAL_TEST | STATS_CROSSTAB | STATS_F_TEST | STATS_KS_TEST | STATS_MODE
+    | STATS_MW_TEST | STATS_ONE_WAY_ANOVA | STATS_T_TEST_INDEP | STATS_T_TEST_INDEPU | STATS_T_TEST_ONE | STATS_T_TEST_PAIRED
+    | STATS_WSR_TEST | STDDEV | STDDEV_POP | STDDEV_SAMP | STREAMS | STRING | STRIP | STRIPE_COLUMNS | STRIPE_WIDTH
+    | SUBPARTITION_REL | SUBQUERIES | SUBQUERY_PRUNING | SUBSTR | SUBSTR2 | SUBSTR4 | SUBSTRB | SUBSTRC | SUCCESSFUL | SUMMARY
+    | SWAP_JOIN_INPUTS | SYSASM | SYSDATE | SYSTEM_DEFINED | SYS_AUDIT | SYS_CHECKACL | SYS_CONNECT_BY_PATH | SYS_CONTEXT
+    | SYS_DBURIGEN | SYS_DL_CURSOR | SYS_DM_RXFORM_CHR | SYS_DM_RXFORM_NUM | SYS_DOM_COMPARE | SYS_DST_PRIM2SEC
+    | SYS_DST_SEC2PRIM | SYS_ET_BFILE_TO_RAW | SYS_ET_BLOB_TO_IMAGE | SYS_ET_IMAGE_TO_BLOB | SYS_ET_RAW_TO_BFILE | SYS_EXTPDTXT
+    | SYS_EXTRACT_UTC | SYS_FBT_INSDEL | SYS_FILTER_ACLS | SYS_GETTOKENID | SYS_GET_ACLIDS | SYS_GET_PRIVILEGES | SYS_GUID
+    | SYS_MAKEXML | SYS_MAKE_XMLNODEID | SYS_MKXMLATTR | SYS_OPTLOBPRBSC | SYS_OPTXICMP | SYS_OPTXQCASTASNQ | SYS_OP_ADT2BIN
+    | SYS_OP_ADTCONS | SYS_OP_ALSCRVAL | SYS_OP_ATG | SYS_OP_BIN2ADT | SYS_OP_BITVEC | SYS_OP_BL2R | SYS_OP_BLOOM_FILTER
+    | SYS_OP_BLOOM_FILTER_LIST | SYS_OP_C2C | SYS_OP_CAST | SYS_OP_CEG | SYS_OP_CL2C | SYS_OP_COMBINED_HASH | SYS_OP_COMP
+    | SYS_OP_CONVERT | SYS_OP_COUNTCHG | SYS_OP_CSCONV | SYS_OP_CSCONVTEST | SYS_OP_CSR | SYS_OP_CSX_PATCH | SYS_OP_DECOMP
+    | SYS_OP_DESCEND | SYS_OP_DISTINCT | SYS_OP_DRA | SYS_OP_DUMP | SYS_OP_EXTRACT | SYS_OP_GROUPING | SYS_OP_GUID | SYS_OP_IIX
+    | SYS_OP_ITR | SYS_OP_LBID | SYS_OP_LOBLOC2BLOB | SYS_OP_LOBLOC2CLOB | SYS_OP_LOBLOC2ID | SYS_OP_LOBLOC2NCLOB
+    | SYS_OP_LOBLOC2TYP | SYS_OP_LSVI | SYS_OP_LVL | SYS_OP_MAKEOID | SYS_OP_MAP_NONNULL | SYS_OP_MSR | SYS_OP_NICOMBINE
+    | SYS_OP_NIEXTRACT | SYS_OP_NII | SYS_OP_NIX | SYS_OP_NOEXPAND | SYS_OP_NUMTORAW | SYS_OP_OIDVALUE | SYS_OP_OPNSIZE
+    | SYS_OP_PAR | SYS_OP_PARGID | SYS_OP_PARGID_1 | SYS_OP_PAR_1 | SYS_OP_PIVOT | SYS_OP_R2O | SYS_OP_RAWTONUM | SYS_OP_RDTM
+    | SYS_OP_REF | SYS_OP_RMTD | SYS_OP_ROWIDTOOBJ | SYS_OP_RPB | SYS_OP_TOSETID | SYS_OP_TPR | SYS_OP_TRTB | SYS_OP_UNDESCEND
+    | SYS_OP_VECAND | SYS_OP_VECBIT | SYS_OP_VECOR | SYS_OP_VECXOR | SYS_OP_VERSION | SYS_OP_VREF | SYS_OP_VVD | SYS_OP_XPTHATG
+    | SYS_OP_XPTHIDX | SYS_OP_XPTHOP | SYS_OP_XTXT2SQLT | SYS_ORDERKEY_DEPTH | SYS_ORDERKEY_MAXCHILD | SYS_ORDERKEY_PARENT
+    | SYS_PARALLEL_TXN | SYS_PATHID_IS_ATTR | SYS_PATHID_IS_NMSPC | SYS_PATHID_LASTNAME | SYS_PATHID_LASTNMSPC
+    | SYS_PATH_REVERSE | SYS_PXQEXTRACT | SYS_RID_ORDER | SYS_ROW_DELTA | SYS_SC_2_XMLT | SYS_SYNRCIREDO | SYS_TYPEID
+    | SYS_UMAKEXML | SYS_XMLANALYZE | SYS_XMLCONTAINS | SYS_XMLCONV | SYS_XMLEXNSURI | SYS_XMLGEN | SYS_XMLI_LOC_ISNODE
+    | SYS_XMLI_LOC_ISTEXT | SYS_XMLLOCATOR_GETSVAL | SYS_XMLNODEID | SYS_XMLNODEID_GETCID | SYS_XMLNODEID_GETLOCATOR
+    | SYS_XMLNODEID_GETOKEY | SYS_XMLNODEID_GETPATHID | SYS_XMLNODEID_GETPTRID | SYS_XMLNODEID_GETRID | SYS_XMLNODEID_GETSVAL
+    | SYS_XMLNODEID_GETTID | SYS_XMLTRANSLATE | SYS_XMLTYPE2SQL | SYS_XMLT_2_SC | SYS_XQBASEURI | SYS_XQCASTABLEERRH
+    | SYS_XQCODEP2STR | SYS_XQCODEPEQ | SYS_XQCON2SEQ | SYS_XQCONCAT | SYS_XQDELETE | SYS_XQDFLTCOLATION | SYS_XQDOC
+    | SYS_XQDOCURI | SYS_XQED4URI | SYS_XQENDSWITH | SYS_XQERR | SYS_XQERRH | SYS_XQESHTMLURI | SYS_XQEXLOBVAL | SYS_XQEXSTWRP
+    | SYS_XQEXTRACT | SYS_XQEXTRREF | SYS_XQEXVAL | SYS_XQFB2STR | SYS_XQFNBOOL | SYS_XQFNCMP | SYS_XQFNDATIM | SYS_XQFNLNAME
+    | SYS_XQFNNM | SYS_XQFNNSURI | SYS_XQFNPREDTRUTH | SYS_XQFNQNM | SYS_XQFNROOT | SYS_XQFORMATNUM | SYS_XQFTCONTAIN
+    | SYS_XQFUNCR | SYS_XQGETCONTENT | SYS_XQINDXOF | SYS_XQINSERT | SYS_XQINSPFX | SYS_XQIRI2URI | SYS_XQLANG
+    | SYS_XQLLNMFRMQNM | SYS_XQMKNODEREF | SYS_XQNILLED | SYS_XQNODENAME | SYS_XQNORMSPACE | SYS_XQNORMUCODE | SYS_XQNSP4PFX
+    | SYS_XQNSPFRMQNM | SYS_XQPFXFRMQNM | SYS_XQPOLYABS | SYS_XQPOLYADD | SYS_XQPOLYCEL | SYS_XQPOLYCST | SYS_XQPOLYCSTBL
+    | SYS_XQPOLYDIV | SYS_XQPOLYFLR | SYS_XQPOLYMOD | SYS_XQPOLYMUL | SYS_XQPOLYRND | SYS_XQPOLYSQRT | SYS_XQPOLYSUB
+    | SYS_XQPOLYUMUS | SYS_XQPOLYUPLS | SYS_XQPOLYVEQ | SYS_XQPOLYVGE | SYS_XQPOLYVGT | SYS_XQPOLYVLE | SYS_XQPOLYVLT
+    | SYS_XQPOLYVNE | SYS_XQREF2VAL | SYS_XQRENAME | SYS_XQREPLACE | SYS_XQRESVURI | SYS_XQRNDHALF2EVN | SYS_XQRSLVQNM
+    | SYS_XQRYENVPGET | SYS_XQRYVARGET | SYS_XQRYWRP | SYS_XQSEQ2CON | SYS_XQSEQ2CON4XC | SYS_XQSEQDEEPEQ | SYS_XQSEQINSB
+    | SYS_XQSEQRM | SYS_XQSEQRVS | SYS_XQSEQSUB | SYS_XQSEQTYPMATCH | SYS_XQSTARTSWITH | SYS_XQSTATBURI | SYS_XQSTR2CODEP
+    | SYS_XQSTRJOIN | SYS_XQSUBSTRAFT | SYS_XQSUBSTRBEF | SYS_XQTOKENIZE | SYS_XQTREATAS | SYS_XQXFORM | SYS_XQ_ASQLCNV
+    | SYS_XQ_ATOMCNVCHK | SYS_XQ_NRNG | SYS_XQ_PKSQL2XML | SYS_XQ_UPKXML2SQL | TABLESPACE_NO | TABLE_STATS | TABNO | TAN | TANH
+    | TEMP_TABLE | THE | THROUGH | TIMES | TIMEZONE_ABBR | TIMEZONE_HOUR | TIMEZONE_MINUTE | TIMEZONE_OFFSET | TIMEZONE_REGION
+    | TIV_GB | TIV_SSF | TOPLEVEL | TO_BINARY_DOUBLE | TO_BINARY_FLOAT | TO_BLOB | TO_CLOB | TO_DATE | TO_DSINTERVAL | TO_LOB
+    | TO_MULTI_BYTE | TO_NCHAR | TO_NCLOB | TO_NUMBER | TO_SINGLE_BYTE | TO_TIME | TO_TIMESTAMP | TO_TIMESTAMP_TZ | TO_TIME_TZ
+    | TO_YMINTERVAL | TRACING | TRAILING | TRANSFORM_DISTINCT_AGG | TRANSITION | TRANSITIONAL | TRUNC | TX | TZ_OFFSET | UB2
+    | UBA | UID | UNBOUND | UNISTR | UNLOCK | UNNEST | UNPACKED | UNRESTRICTED | UPDATABLE | UPDATEXML | UPD_INDEXES
+    | UPD_JOININDEX | UPPER | USER | USERENV | USERGROUP | USER_DEFINED | USER_RECYCLEBIN | USE_ANTI | USE_CONCAT | USE_HASH
+    | USE_HASH_AGGREGATION | USE_INVISIBLE_INDEXES | USE_MERGE | USE_MERGE_CARTESIAN | USE_NL | USE_NL_WITH_INDEX
+    | USE_PRIVATE_OUTLINES | USE_SEMI | USE_TTT_FOR_GSETS | USE_WEAK_NAME_RESL | VALIDATE | VALIDATION | VARIANCE | VAR_POP
+    | VAR_SAMP | VECTOR_READ | VECTOR_READ_TRACE | VERSIONING | VERSIONS_ENDSCN | VERSIONS_ENDTIME | VERSIONS_OPERATION
+    | VERSIONS_STARTSCN | VERSIONS_STARTTIME | VERSIONS_XID | VOLUME | VSIZE | WELLFORMED | WHENEVER | WHITESPACE
+    | WIDTH_BUCKET | WRAPPED | XID | XMLAGG | XMLATTRIBUTES | XMLCAST | XMLCDATA | XMLCOLATTVAL | XMLCOMMENT | XMLCONCAT | XMLDIFF
+    | XMLEXISTS | XMLEXISTS2 | XMLFOREST | XMLINDEX_REWRITE | XMLINDEX_REWRITE_IN_SELECT | XMLINDEX_SEL_IDX_TBL | XMLISNODE
+    | XMLISVALID | XMLNAMESPACES | XMLPARSE | XMLPATCH | XMLPI | XMLQUERY | XMLROOT | XMLSERIALIZE | XMLTABLE | XMLTOOBJECT
+    | XMLTRANSFORM | XMLTRANSFORMBLOB | XML_DML_RWT_STMT | XPATHTABLE | XS_SYS_CONTEXT | X_DYN_PRUNE | RESULT | TABLE | NUMBER | CHAR | SQLCODE
     ;
 
 schemaName
@@ -187,7 +358,7 @@ materializedViewName
     ;
 
 columnName
-    : (owner DOT_)? name
+    : (owner? DOT_)? name (DOT_ nestedItem)*
     ;
 
 objectName
@@ -212,6 +383,14 @@ function
 
 packageName
     : (owner DOT_)? name
+    ;
+
+profileName
+    : identifier
+    ;
+
+rollbackSegmentName
+    : identifier
     ;
 
 typeName
@@ -242,6 +421,10 @@ constraintName
     : identifier
     ;
 
+contextName
+    : identifier
+    ;
+
 savepointName
     : identifier
     ;
@@ -262,6 +445,18 @@ tablespaceName
     : identifier
     ;
 
+newTablespaceName
+    : identifier
+    ;
+
+subprogramName
+    : identifier
+    ;
+
+methodName
+    : identifier
+    ;
+
 tablespaceSetName
     : identifier
     ;
@@ -278,8 +473,20 @@ policyName
     : identifier
     ;
 
+connectionQualifier
+    : identifier
+    ;
+
 functionName
     : identifier
+    ;
+
+cursorName
+    : identifier
+    ;
+
+featureId
+    : numberLiterals
     ;
 
 dbLink
@@ -354,6 +561,10 @@ containerName
     : identifier
     ;
 
+newName
+    : identifier
+    ;
+
 partitionName
     : identifier
     ;
@@ -363,11 +574,19 @@ partitionSetName
     ;
 
 partitionKeyValue
-    : INTEGER_ | dateTimeLiterals
+    : INTEGER_ | dateTimeLiterals | toDateFunction
     ;
 
 subpartitionKeyValue
     : INTEGER_ | dateTimeLiterals
+    ;
+
+encryptAlgorithmName
+    : STRING_
+    ;
+
+integrityAlgorithm
+    : STRING_
     ;
 
 zonemapName
@@ -383,11 +602,11 @@ roleName
     ;
 
 username
-    : identifier
+    : identifier | STRING_
     ;
 
 password
-    : identifier
+    : identifier | STRING_
     ;
 
 logGroupName
@@ -419,11 +638,11 @@ alias
     ;
 
 dataTypeLength
-    : LP_ (INTEGER_ (COMMA_ INTEGER_)? (CHAR | BYTE)?)? RP_
+    : LP_ (INTEGER_ (COMMA_ (MINUS_)? INTEGER_)? (CHAR | BYTE)?)? RP_
     ;
 
 primaryKey
-    : PRIMARY? KEY
+    : PRIMARY KEY
     ;
 
 exprs
@@ -439,12 +658,16 @@ expr
     : expr andOperator expr
     | expr orOperator expr
     | notOperator expr
-    | PRIOR expr
     | LP_ expr RP_
     | booleanPrimary
-    | aggregationFunction
-    | analyticFunction
     | expr datetimeExpr
+    | multisetExpr
+    | builtinFunctionsExpr
+    | dataManipulationLanguageExpr
+    ;
+
+dataManipulationLanguageExpr
+    : UPDATING | INSERTING | DELETING
     ;
 
 andOperator
@@ -461,9 +684,11 @@ notOperator
 
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
+    | (PRIOR | DISTINCT) predicate
+    | CONNECT_BY_ROOT predicate
     | booleanPrimary SAFE_EQ_ predicate
-    | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
+    | booleanPrimary comparisonOperator predicate
     | predicate
     ;
 
@@ -473,6 +698,7 @@ comparisonOperator
 
 predicate
     : bitExpr NOT? IN subquery
+    | PRIOR predicate
     | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_
     | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_ AND predicate
     | bitExpr NOT? BETWEEN bitExpr AND predicate
@@ -486,12 +712,14 @@ bitExpr
     | bitExpr SIGNED_LEFT_SHIFT_ bitExpr
     | bitExpr SIGNED_RIGHT_SHIFT_ bitExpr
     | bitExpr PLUS_ bitExpr
+    | simpleExpr
     | bitExpr MINUS_ bitExpr
     | bitExpr ASTERISK_ bitExpr
     | bitExpr SLASH_ bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
-    | simpleExpr
+    | bitExpr DOT_ bitExpr
+    | bitExpr ARROW_ bitExpr
     ;
 
 simpleExpr
@@ -504,8 +732,9 @@ simpleExpr
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | caseExpression
-    | columnName
+    | columnName joinOperator?
     | privateExprOfDb
+    | PRIOR identifier
     ;
 
 functionCall
@@ -513,12 +742,20 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? (OVER LP_ analyticClause RP_)? (OVER LP_ analyticClause RP_)?
+    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? orderByClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? keepClause? overClause? overClause?
+    ;
+
+keepClause
+    : KEEP LP_ DENSE_RANK (FIRST | LAST) orderByClause RP_ overClause?
     ;
 
 aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG | GROUPING | LISTAGG | PERCENT_RANK | PERCENTILE_CONT | PERCENTILE_DISC | CUME_DIST | RANK
     | REGR_SLOPE | REGR_INTERCEPT | REGR_COUNT | REGR_R2 | REGR_AVGX | REGR_AVGY | REGR_SXX | REGR_SYY | REGR_SXY
+    | COLLECT | CORR | CORR_S | CORR_K | COVAR_POP | COVAR_SAMP | DENSE_RANK | FIRST 
+    | GROUP_ID | GROUPING_ID | LAST | MEDIAN | STATS_BINOMIAL_TEST | STATS_CROSSTAB | STATS_F_TEST | STATS_KS_TEST 
+    | STATS_MODE | STATS_MW_TEST | STATS_ONE_WAY_ANOVA | STATS_T_TEST_ONE | STATS_T_TEST_PAIRED | STATS_T_TEST_INDEP 
+    | STATS_T_TEST_INDEPU | STATS_WSR_TEST | STDDEV | STDDEV_POP | STDDEV_SAMP | VAR_POP | VAR_SAMP | VARIANCE
     ;
 
 listaggOverflowClause
@@ -539,19 +776,112 @@ windowingClause
     ;
 
 analyticFunction
-    : analyticFunctionName LP_ dataType* RP_ OVER LP_ analyticClause RP_
+    : specifiedAnalyticFunctionName = (LEAD | LAG) ((LP_ expr leadLagInfo? RP_ respectOrIgnoreNulls?) | (LP_ expr respectOrIgnoreNulls? leadLagInfo? RP_)) overClause
+    | specifiedAnalyticFunctionName = (NTILE | MEDIAN | RATIO_TO_REPORT) LP_ expr RP_ overClause?
+    | specifiedAnalyticFunctionName = NTH_VALUE LP_ expr COMMA_ expr RP_ fromFirstOrLast? respectOrIgnoreNulls? overClause
+    | specifiedAnalyticFunctionName = (PERCENTILE_CONT | PERCENTILE_DISC | LISTAGG) LP_ expr (COMMA_ expr)* RP_ WITHIN GROUP LP_ orderByClause RP_ overClause?
+    | specifiedAnalyticFunctionName = (CORR | COVAR_POP | COVAR_SAMP) LP_ expr COMMA_ expr RP_ overClause?
+    | specifiedAnalyticFunctionName = (PERCENT_RANK | RANK | ROW_NUMBER) LP_ RP_ overClause
+    | analyticFunctionName LP_ dataType* RP_ overClause
+    ;
+
+fromFirstOrLast
+    : FROM FIRST | FROM LAST
+    ;
+
+leadLagInfo
+    : COMMA_ expr (COMMA_ expr)?
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction
+    : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
+    | setFunction | translateFunction | cursorFunction | toDateFunction | approxRank | wmConcatFunction
+    ;
+
+wmConcatFunction
+    : (owner DOT_)? WM_CONCAT LP_ expr RP_ overClause?
+    ;
+
+approxRank
+    : APPROX_RANK LP_ queryPartitionClause? orderByClause RP_
+    ;
+
+toDateFunction
+    : TO_DATE LP_ char=STRING_ (DEFAULT returnValue=STRING_ ON CONVERSION ERROR)? (COMMA_ fmt=STRING_ (COMMA_ STRING_)?)? RP_
+    ;
+
+cursorFunction
+    : CURSOR subquery
+    ;
+
+translateFunction
+    : TRANSLATE LP_ expr USING (CHAR_CS | NCHAR_CS) RP_
+    ;
+
+setFunction
+    : SET LP_ expr RP_
+    ;
+
+featureFunction
+    : featureFunctionName LP_ (schemaName DOT_)? modelName (COMMA_ featureId)? (COMMA_ numberLiterals (COMMA_ numberLiterals)?)?
+    (DESC | ASC | ABS)? cost_matrix_clause? miningAttributeClause (AND miningAttributeClause)? RP_
+    ;
+
+featureFunctionName
+    : FEATURE_COMPARE | FEATURE_DETAILS | FEATURE_SET | FEATURE_ID | FEATURE_VALUE | CLUSTER_DETAILS | CLUSTER_DISTANCE | CLUSTER_ID | CLUSTER_PROBABILITY | CLUSTER_SET
+    | PREDICTION_PROBABILITY | PREDICTION_SET | PREDICTION_BOUNDS | PREDICTION | PREDICTION_DETAILS
+    ;
+
+cost_matrix_clause
+    : COST (MODEL (AUTO)?)? | LP_ literals RP_ (COMMA_ LP_ literals RP_)* VALUES LP_ LP_ literals (COMMA_ literals)* RP_ (COMMA_ LP_ literals (COMMA_ literals)* RP_) RP_
+    ;
+
+miningAttributeClause
+    : USING (ASTERISK_ | ((schemaName DOT_)? tableName DOT_ ASTERISK_ | expr (AS? alias)?) (COMMA_ ((schemaName DOT_)? tableName DOT_ ASTERISK_ | expr (AS? alias)?))*)
+    ;
+
+trimFunction
+    : TRIM LP_ trimOperands? expr RP_
+    ;
+
+trimOperands
+    : (trimType expr? FROM) | (expr FROM)
+    ;
+
+trimType
+    : LEADING
+    | TRAILING
+    | BOTH
+    ;
+
+firstOrLastValueFunction
+    : (FIRST_VALUE | LAST_VALUE)  (LP_ expr respectOrIgnoreNulls? RP_ | LP_ expr RP_ respectOrIgnoreNulls?) overClause
+    ;
+
+respectOrIgnoreNulls
+    : (RESPECT | IGNORE) NULLS
+    ;
+
+overClause
+    : OVER LP_ analyticClause RP_
+    ;
+
+formatFunction
+    : (owner DOT_)* name DOT_ FORMAT LP_ expr (COMMA_ expr)* RP_
     ;
 
 castFunction
-    : (CAST | XMLCAST) LP_ expr AS dataType RP_
+    : CAST LP_ ((MULTISET subquery) | expr) AS dataType RP_
+    | XMLCAST LP_ expr AS dataType RP_
     ;
 
 charFunction
-    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier)? RP_
+    : (CHR | CHAR) LP_ expr (COMMA_ expr)* (USING charSet)? RP_
+    ;
+
+charSet
+    : NCHAR_CS
+    | ignoredIdentifier
     ;
     
 extractFunction
@@ -559,11 +889,15 @@ extractFunction
     ;
 
 regularFunction
-    : regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : (owner DOT_)? regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
 regularFunctionName
     : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL | DECODE
+    ;
+
+joinOperator
+    : LP_ PLUS_ RP_
     ;
 
 caseExpression
@@ -590,6 +924,10 @@ orderByItem
     : (columnName | numberLiterals | expr) (ASC | DESC)? (NULLS FIRST | NULLS LAST)?
     ;
 
+attribute
+    : (owner DOT_)? identifier
+    ;
+
 attributeName
     : oracleId
     ;
@@ -611,23 +949,31 @@ lobItemList
     ;
 
 dataType
-    : dataTypeName dataTypeLength? | specialDatatype | dataTypeName dataTypeLength? datetimeTypeSuffix
+    : dataTypeName dataTypeLength? | specialDatatype | dataTypeName dataTypeLength? datetimeTypeSuffix | customDataType | typeAttribute
+    ;
+
+customDataType
+    : dataTypeName DOT_ identifier
     ;
 
 specialDatatype
-    : dataTypeName (LP_ NUMBER_ CHAR RP_) | NATIONAL dataTypeName VARYING? LP_ NUMBER_ RP_ | dataTypeName LP_? columnName RP_?
+    : dataTypeName (LP_ NUMBER_ CHAR RP_) | NATIONAL? dataTypeName VARYING? LP_ (INTEGER_ | NUMBER_) RP_ | (SYS DOT_)? dataTypeName
     ;
 
 dataTypeName
-    : CHAR | NCHAR | RAW | VARCHAR | VARCHAR2 | NVARCHAR2 | LONG | LONG RAW | BLOB | CLOB | NCLOB | BINARY_FLOAT | BINARY_DOUBLE
+    : CHARACTER | CHAR | NCHAR | RAW | VARCHAR | VARCHAR2 | NVARCHAR2 | LONG | LONG RAW | BLOB | CLOB | NCLOB | BINARY_FLOAT | BINARY_DOUBLE
     | BOOLEAN | PLS_INTEGER | BINARY_INTEGER | INTEGER | NUMBER | NATURAL | NATURALN | POSITIVE | POSITIVEN | SIGNTYPE
     | SIMPLE_INTEGER | BFILE | MLSLABEL | UROWID | DATE | TIMESTAMP | TIMESTAMP WITH TIME ZONE | TIMESTAMP WITH LOCAL TIME ZONE
     | INTERVAL DAY TO SECOND | INTERVAL YEAR TO MONTH | JSON | FLOAT | REAL | DOUBLE PRECISION | INT | SMALLINT
-    | DECIMAL | NUMERIC | DEC | IDENTIFIER_ | XMLTYPE | ROWID
+    | DECIMAL | NUMERIC | DEC | IDENTIFIER_ | XMLTYPE | ROWID | ANYDATA | ANYTYPE | ANYDATASET
     ;
 
 datetimeTypeSuffix
     : (WITH LOCAL? TIME ZONE)? | TO MONTH | TO SECOND (LP_ NUMBER_ RP_)?
+    ;
+    
+typeAttribute
+    : (variableName | objectName) MOD_ TYPE
     ;
 
 treatFunction
@@ -655,7 +1001,23 @@ elseClause
     ;
 
 intervalExpression
-    : LP_ expr MINUS_ expr RP_ (DAY (LP_ NUMBER_ RP_)? TO SECOND (LP_ NUMBER_ RP_)? | YEAR (LP_ NUMBER_ RP_)? TO MONTH)
+    : LP_ expr MINUS_ expr RP_ (intervalDayToSecondExpression | intervalYearToMonthExpression)
+    ;
+
+intervalDayToSecondExpression
+    : DAY (LP_ leadingFieldPrecision RP_)? TO SECOND (LP_ fractionalSecondPrecision RP_)?
+    ;
+
+intervalYearToMonthExpression
+    : YEAR (LP_ leadingFieldPrecision RP_)? TO MONTH
+    ;
+
+leadingFieldPrecision
+    : INTEGER_
+    ;
+
+fractionalSecondPrecision
+    : INTEGER_
     ;
 
 objectAccessExpression
@@ -678,12 +1040,8 @@ matchNone
     : 'Default does not match anything'
     ;
 
-hashSubpartitionQuantity
-    : NUMBER
-    ;
-
 odciParameters
-    : identifier
+    : STRING_
     ;
 
 databaseName
@@ -695,7 +1053,7 @@ locationName
     ;
 
 fileName
-    : STRING_
+    : identifier | STRING_
     ;
 
 asmFileName
@@ -807,7 +1165,7 @@ logminerSessionName
     ;
 
 tablespaceGroupName
-    : identifier
+    : identifier | STRING_
     ;
 
 copyName
@@ -851,7 +1209,7 @@ dateValue
     ;
 
 sessionId
-    : numberLiterals
+    : STRING_
     ;
 
 serialNumber
@@ -1020,6 +1378,7 @@ namespace
 
 restorePoint
     : identifier
+    | stringLiterals
     ;
 
 scnValue
@@ -1393,6 +1752,10 @@ filenamePattern
     : STRING_
     ;
 
+replacementFilenamePattern
+    : STRING_
+    ;
+
 connectString
     : STRING_
     ;
@@ -1424,9 +1787,13 @@ libName
 externalDatatype
     : dataType
     ;
-    
+
 capacityUnit
-    : ('K' | 'M' | 'G' | 'T' | 'P' | 'E')
+    : ('K' | 'M' | 'G' | 'T' | 'P' | 'E' | 'k' | 'm' | 'g' | 't' | 'p' | 'e')
+    ;
+
+timeUnit
+    : 'M' | 'H' | 'm' | 'h'
     ;
 
 attributeDimensionName
@@ -1466,11 +1833,7 @@ searchString
     ;
 
 attributeValue
-    : identifier
-    ;
-
-profileName
-    : identifier
+    : STRING_
     ;
 
 joinGroupName
@@ -1486,11 +1849,11 @@ libraryName
     ;
 
 matchString
-    : IDENTIFIER_ | ASTERISK_
+    : identifier | ASTERISK_
     ;
 
 parameterType
-    : identifier
+    : (owner DOT_)? identifier
     ;
 
 returnType
@@ -1619,7 +1982,9 @@ datetimeExpr
     ;
 
 xmlFunction
-    : xmlAggFunction
+    : xmlElementFunction
+    | xmlCdataFunction
+    | xmlAggFunction
     | xmlColattvalFunction
     | xmlExistsFunction
     | xmlForestFunction
@@ -1629,6 +1994,28 @@ xmlFunction
     | xmlRootFunction
     | xmlSerializeFunction
     | xmlTableFunction
+    | xmlIsSchemaValidFunction
+    | specifiedFunctionName = (SYS_XMLGEN | SYS_XMLAGG | APPENDCHILDXML | DELETEXML | EXISTSNODE | EXTRACT | EXTRACTVALUE 
+        | INSERTCHILDXML | INSERTCHILDXMLAFTER | INSERTCHILDXMLBEFORE | INSERTXMLAFTER | INSERTXMLBEFORE
+        | SYS_DBURIGEN | UPDATEXML | XMLCONCAT | XMLDIFF | XMLEXISTS | XMLISVALID | XMLPATCH | XMLSEQUENCE | XMLTRANSFORM) exprList
+    | specifiedFunctionName = (DEPTH | PATH) LP_ correlationInteger RP_
+    | specifiedFunctionName = XMLCOMMENT LP_ stringLiterals RP_
+    ;
+
+xmlElementFunction
+    : XMLELEMENT LP_ identifier (COMMA_ xmlAttributes)? (COMMA_ exprWithAlias)* RP_
+    ;
+
+exprWithAlias
+    : expr (AS alias)?
+    ;
+
+xmlAttributes
+    : XMLATTRIBUTES LP_ exprWithAlias (COMMA_ exprWithAlias)* RP_
+    ;
+
+xmlCdataFunction
+    : XMLCDATA LP_ stringLiterals RP_
     ;
 
 xmlAggFunction
@@ -1636,7 +2023,11 @@ xmlAggFunction
     ;
 
 xmlColattvalFunction
-    : XMLCOLATTVAL LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+    : XMLCOLATTVAL LP_ expr (xmlAsAliasOrEvalnameExpr)? (COMMA_ expr (xmlAsAliasOrEvalnameExpr)?)* RP_
+    ;
+
+xmlAsAliasOrEvalnameExpr
+    :AS (alias | EVALNAME expr)
     ;
 
 xmlExistsFunction
@@ -1644,7 +2035,7 @@ xmlExistsFunction
     ;
 
 xmlForestFunction
-   : XMLFOREST LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+   : XMLFOREST LP_ expr (xmlAsAliasOrEvalnameExpr)? (COMMA_ expr (xmlAsAliasOrEvalnameExpr)?)* RP_
    ;
 
 xmlParseFunction
@@ -1672,14 +2063,18 @@ xmlSerializeFunction
     ;
 
 xmlTableFunction
-    : XMLTABLE LP_ (xmlNameSpacesClause COMMA_)? STRING_ xmlTableOptions RP_
+    : XMLTABLE LP_ (xmlNamespacesClause COMMA_)? STRING_ xmlTableOptions RP_
     ;
 
-xmlNameSpacesClause
-    : XMLNAMESPACES LP_ (defaultString COMMA_)? (xmlNameSpaceStringAsIdentifier | defaultString) (COMMA_ (xmlNameSpaceStringAsIdentifier | defaultString))* RP_
+xmlIsSchemaValidFunction
+    : (owner DOT_)* name DOT_ ISSCHEMAVALID LP_ expr (COMMA_ expr)* RP_ 
     ;
 
-xmlNameSpaceStringAsIdentifier
+xmlNamespacesClause
+    : XMLNAMESPACES LP_ (defaultString COMMA_)? (xmlNamespaceStringAsIdentifier | defaultString) (COMMA_ (xmlNamespaceStringAsIdentifier | defaultString))* RP_
+    ;
+
+xmlNamespaceStringAsIdentifier
     : STRING_ AS identifier
     ;
 
@@ -1694,3 +2089,116 @@ xmlTableOptions
 xmlTableColumn
     : columnName (FOR ORDINALITY | (dataType | XMLTYPE (LP_ SEQUENCE RP_ BY REF)?) (PATH STRING_)? (DEFAULT expr)?)
     ;
+
+multisetExpr
+    : columnName MULTISET multisetOperator (ALL | DISTINCT)? columnName
+    ;
+
+multisetOperator
+    : EXCEPT
+    | INTERSECT
+    | UNION
+    ;
+
+builtinFunctionsExpr
+    : (packageIdentifier DOT_ builtinFunction) AT_ dbLink LP_ expr RP_
+    ;
+
+packageIdentifier
+    : identifier
+    ;
+
+builtinFunction
+   : GETLENGTH
+   ;
+
+superview
+    : identifier
+    ;
+
+primaryName
+    : identifier
+    ;
+
+directoryObjectName
+    : identifier
+    ;
+
+serverFileName
+    : identifier
+    ;
+
+keyForBlob
+    : identifier
+    ;
+
+sourceText
+    : .*? RBE_
+    ;
+
+fullPathName
+    : STRING_
+    ;
+
+directoryObject
+    : identifier
+    ;
+
+credentialName
+    : identifier
+    ;
+
+agentDblink
+    : STRING_
+    ;
+
+xPathsList
+    : STRING_
+    ;
+
+sizeClause
+    : INTEGER_ capacityUnit?
+    ;
+
+maxsizeClause
+    : MAXSIZE (UNLIMITED | sizeClause)
+    ;
+
+editionType
+    : VIEW | SYNONYM | PROCEDURE | FUNCTION | PACKAGE | PACKAGE BODY | TRIGGER | TYPE | TYPE BODY | LIBRARY
+    ;
+
+containerDataClause
+    : (SET CONTAINER_DATA EQ_ (ALL | DEFAULT | containerName (COMMA_ containerName)*)
+    | (ADD | REMOVE) CONTAINER_DATA containerName (COMMA_ containerName)*)
+    (FOR (schemaName DOT_)? name)?
+    ;
+
+proxyClause
+    : GRANT CONNECT THROUGH (ENTERPRISE USERS | dbUserProxy dbUserProxyClauses)
+    | REVOKE CONNECT THROUGH (ENTERPRISE USERS | username)
+    ;
+
+dbUserProxy
+    : identifier
+    ;
+
+dbUserProxyClauses
+    : (WITH ((ROLE (ALL EXCEPT)? roleName (COMMA_ roleName)*) | NO ROLES))? (AUTHENTICATION REQUIRED | AUTHENTICATED USING PASSWORD)?
+    ;
+
+delimSpec
+     : terminatedBySpec? optionallyEnclosedBySpec? lrtrimSpec?
+     ;
+
+terminatedBySpec
+     : TERMINATED BY (STRING_ | WHITESPACE)
+     ;
+
+optionallyEnclosedBySpec
+     : OPTIONALLY? ENCLOSED BY STRING_ AND STRING_
+     ;
+
+lrtrimSpec
+     : LRTRIM
+     ;

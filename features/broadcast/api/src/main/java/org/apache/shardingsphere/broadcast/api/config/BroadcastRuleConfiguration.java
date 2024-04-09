@@ -32,4 +32,9 @@ import java.util.Collection;
 public final class BroadcastRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
     private final Collection<String> tables;
+    
+    @Override
+    public boolean isEmpty() {
+        return tables.isEmpty();
+    }
 }

@@ -63,7 +63,7 @@ public final class CommentAssert {
         assertTrue(actual instanceof AbstractSQLStatement, assertContext.getText("Comment should exist."));
         assertThat(assertContext.getText("Comments size assertion error: "), ((AbstractSQLStatement) actual).getCommentSegments().size(), is(expected.getComments().size()));
         Iterator<CommentSegment> actualIterator = ((AbstractSQLStatement) actual).getCommentSegments().iterator();
-        for (final ExpectedComment each : expected.getComments()) {
+        for (ExpectedComment each : expected.getComments()) {
             assertThat(assertContext.getText("Comments assertion error: "), actualIterator.next().getText(), is(each.getText()));
         }
     }

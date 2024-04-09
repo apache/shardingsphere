@@ -37,7 +37,8 @@
         REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
         URL="${ds0}",
         USER="${user}",
-        PASSWORD="${password}"
+        PASSWORD="${password}",
+        PROPERTIES("maximumPoolSize"="50","idleTimeout"="30000")
         );
     </register-migration-source-storage-unit-template>
     
@@ -45,15 +46,18 @@
         REGISTER STORAGE UNIT ds_2 (
         URL="${ds2}",
         USER="${user}",
-        PASSWORD="${password}"
+        PASSWORD="${password}",
+        PROPERTIES("maximumPoolSize"="50","idleTimeout"="30000")
         ),ds_3 (
         URL="${ds3}",
         USER="${user}",
-        PASSWORD="${password}"
+        PASSWORD="${password}",
+        PROPERTIES("maximumPoolSize"="50","idleTimeout"="30000")
         ),ds_4 (
         URL="${ds4}",
         USER="${user}",
-        PASSWORD="${password}"
+        PASSWORD="${password}",
+        PROPERTIES("maximumPoolSize"="50","idleTimeout"="30000")
         )
     </register-migration-target-storage-unit-template>
     

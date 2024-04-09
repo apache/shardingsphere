@@ -61,10 +61,6 @@
         <Bug code="DP" />
     </Match>
     <Match>
-        <Class name="org.apache.shardingsphere.transaction.xa.bitronix.manager.BitronixRecoveryResource" />
-        <Bug code="Se" />
-    </Match>
-    <Match>
         <Class name="org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl.OpenGaussStatementSQLVisitor" />
         <Bug code="BC" />
     </Match>
@@ -101,10 +97,5 @@
     <Match>
         <Class name="org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient" />
         <Bug code="IS" />
-    </Match>
-    <!-- TODO chuxin fix the ignored bug -->
-    <Match>
-        <Class name="org.apache.shardingsphere.data.pipeline.core.execute.ShardingSphereDataJobWorker" />
-        <Bug code="JLM" />
     </Match>
 </FindBugsFilter>

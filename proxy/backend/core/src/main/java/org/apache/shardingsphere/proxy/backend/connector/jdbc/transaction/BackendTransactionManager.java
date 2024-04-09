@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -64,7 +64,7 @@ public final class BackendTransactionManager implements TransactionManager {
     public void begin() {
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             connection.getConnectionSession().getTransactionStatus().setInTransaction(true);
-            getTransactionContext().setInTransaction(true);
+            getTransactionContext().beginTransaction(String.valueOf(transactionType));
             connection.closeHandlers(true);
             connection.closeConnections(false);
         }
@@ -91,16 +91,16 @@ public final class BackendTransactionManager implements TransactionManager {
                 if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
                     localTransactionManager.commit();
                 } else {
-                    shardingSphereTransactionManager.commit(connection.getConnectionSession().getTransactionStatus().isRollbackOnly());
+                    shardingSphereTransactionManager.commit(connection.getConnectionSession().getTransactionStatus().isExceptionOccur());
                 }
             } finally {
                 for (TransactionHook each : transactionHooks) {
                     each.afterCommit(connection.getCachedConnections().values(), getTransactionContext(), ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext());
                 }
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
-                connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
-                connection.getConnectionSession().getConnectionContext().clearTransactionConnectionContext();
-                connection.getConnectionSession().getConnectionContext().clearCursorConnectionContext();
+                connection.getConnectionSession().getTransactionStatus().setExceptionOccur(false);
+                connection.getConnectionSession().getConnectionContext().clearTransactionContext();
+                connection.getConnectionSession().getConnectionContext().clearCursorContext();
             }
         }
     }
@@ -122,9 +122,9 @@ public final class BackendTransactionManager implements TransactionManager {
                     each.afterRollback(connection.getCachedConnections().values(), getTransactionContext());
                 }
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
-                connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
-                connection.getConnectionSession().getConnectionContext().clearTransactionConnectionContext();
-                connection.getConnectionSession().getConnectionContext().clearCursorConnectionContext();
+                connection.getConnectionSession().getTransactionStatus().setExceptionOccur(false);
+                connection.getConnectionSession().getConnectionContext().clearTransactionContext();
+                connection.getConnectionSession().getConnectionContext().clearCursorContext();
             }
         }
     }
@@ -151,8 +151,8 @@ public final class BackendTransactionManager implements TransactionManager {
                 result.add(ex);
             }
         }
-        if (result.isEmpty() && connection.getConnectionSession().getTransactionStatus().isRollbackOnly()) {
-            connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
+        if (result.isEmpty() && connection.getConnectionSession().getTransactionStatus().isExceptionOccur()) {
+            connection.getConnectionSession().getTransactionStatus().setExceptionOccur(false);
         }
         throwSQLExceptionIfNecessary(result);
     }

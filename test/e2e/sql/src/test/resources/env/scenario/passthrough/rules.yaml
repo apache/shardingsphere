@@ -19,3 +19,7 @@ rules:
 - !SINGLE
   tables:
     - "*.*"
+    
+props:
+  sql-show: true
+

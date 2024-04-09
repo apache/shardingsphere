@@ -19,9 +19,9 @@ ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
 
 shadowAlgorithm ::=
-  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' propertiesDefiinition ')'
+  'TYPE' '(' 'NAME' '=' algorithmType ',' propertiesDefiinition ')'
     
-shadowAlgorithmType ::=
+algorithmType ::=
   string
 
 propertiesDefinition ::=
@@ -41,7 +41,7 @@ value ::=
 
 ### Supplement
 
-- `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SQL_HINT`;
+- `algorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SQL_HINT`;
 - `ifNotExists` clause is used for avoid `Duplicate default shadow algorithm` error.
 
 ### Example

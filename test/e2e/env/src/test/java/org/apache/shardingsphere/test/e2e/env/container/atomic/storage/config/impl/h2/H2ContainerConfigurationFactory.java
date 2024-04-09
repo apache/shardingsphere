@@ -19,9 +19,16 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.i
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * H2 container configuration factory.
@@ -35,6 +42,25 @@ public final class H2ContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration("", Collections.emptyMap(), Collections.emptyMap());
+        Map<String, String> mountedResources = new HashMap<>(1, 1F);
+        mountedResources.put("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
+        return new StorageContainerConfiguration("", Collections.emptyMap(), mountedResources, Collections.emptyMap(), Collections.emptyMap());
+    }
+    
+    /**
+     * Create new instance of h2 container configuration.
+     *
+     * @param scenario scenario
+     * @return created instance
+     */
+    public static StorageContainerConfiguration newInstance(final String scenario) {
+        Map<String, String> mountedResources = new HashMap<>(2, 1F);
+        mountedResources.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, TypedSPILoader.getService(DatabaseType.class, "H2")) + "/01-actual-init.sql",
+                "/docker-entrypoint-initdb.d/01-actual-init.sql");
+        mountedResources.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, TypedSPILoader.getService(DatabaseType.class, "H2")) + "/01-expected-init.sql",
+                "/docker-entrypoint-initdb.d/01-expected-init.sql");
+        return new StorageContainerConfiguration(scenario, "", Collections.emptyMap(), mountedResources,
+                DatabaseEnvironmentManager.getDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "H2")),
+                DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "H2")));
     }
 }

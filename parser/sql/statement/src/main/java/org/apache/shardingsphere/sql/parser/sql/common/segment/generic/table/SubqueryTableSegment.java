@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.PivotSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -37,14 +39,26 @@ public final class SubqueryTableSegment implements TableSegment {
     @Setter
     private AliasSegment alias;
     
+    @Setter
+    private PivotSegment pivot;
+    
     @Override
     public Optional<String> getAliasName() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
     
     @Override
-    public Optional<AliasSegment> getAlias() {
-        return Optional.ofNullable(alias);
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
+    }
+    
+    /**
+     * Get pivot segment.
+     * 
+     * @return pivot segment
+     */
+    public Optional<PivotSegment> getPivot() {
+        return Optional.ofNullable(pivot);
     }
     
     @Override
@@ -55,5 +69,14 @@ public final class SubqueryTableSegment implements TableSegment {
     @Override
     public int getStopIndex() {
         return subquery.getStopIndex();
+    }
+    
+    /**
+     * Get alias segment.
+     *
+     * @return alias segment
+     */
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.ofNullable(alias);
     }
 }

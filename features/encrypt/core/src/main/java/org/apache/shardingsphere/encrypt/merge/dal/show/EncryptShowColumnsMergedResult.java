@@ -20,10 +20,10 @@ package org.apache.shardingsphere.encrypt.merge.dal.show;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -61,7 +61,7 @@ public abstract class EncryptShowColumnsMergedResult implements MergedResult {
             return false;
         }
         String columnName = getOriginalValue(COLUMN_FIELD_INDEX, String.class).toString();
-        while (encryptTable.get().getAssistedQueryColumns().contains(columnName) || encryptTable.get().getLikeQueryColumns().contains(columnName)) {
+        while (isDerivedColumn(encryptTable.get(), columnName)) {
             hasNext = nextValue();
             if (!hasNext) {
                 return false;
@@ -69,6 +69,10 @@ public abstract class EncryptShowColumnsMergedResult implements MergedResult {
             columnName = getOriginalValue(COLUMN_FIELD_INDEX, String.class).toString();
         }
         return true;
+    }
+    
+    private boolean isDerivedColumn(final EncryptTable encryptTable, final String columnName) {
+        return encryptTable.isAssistedQueryColumn(columnName) || encryptTable.isLikeQueryColumn(columnName);
     }
     
     @Override

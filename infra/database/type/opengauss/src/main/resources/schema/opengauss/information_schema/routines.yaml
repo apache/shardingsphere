@@ -1,0 +1,675 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: routines
+columns:
+  specific_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: specific_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  specific_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: specific_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  specific_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: specific_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  routine_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: routine_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  routine_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: routine_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  routine_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: routine_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  routine_type:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: routine_type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  module_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: module_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  module_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: module_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  module_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: module_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  udt_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: udt_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  udt_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: udt_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  udt_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: udt_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  data_type:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: data_type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  character_maximum_length:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: character_maximum_length
+    primaryKey: false
+    unsigned: false
+    visible: true
+  character_octet_length:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: character_octet_length
+    primaryKey: false
+    unsigned: false
+    visible: true
+  character_set_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: character_set_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  character_set_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: character_set_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  character_set_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: character_set_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collation_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: collation_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collation_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: collation_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collation_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: collation_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  numeric_precision:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: numeric_precision
+    primaryKey: false
+    unsigned: false
+    visible: true
+  numeric_precision_radix:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: numeric_precision_radix
+    primaryKey: false
+    unsigned: false
+    visible: true
+  numeric_scale:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: numeric_scale
+    primaryKey: false
+    unsigned: false
+    visible: true
+  datetime_precision:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: datetime_precision
+    primaryKey: false
+    unsigned: false
+    visible: true
+  interval_type:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: interval_type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  interval_precision:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: interval_precision
+    primaryKey: false
+    unsigned: false
+    visible: true
+  type_udt_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: type_udt_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  type_udt_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: type_udt_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  type_udt_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: type_udt_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  scope_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: scope_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  scope_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: scope_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  scope_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: scope_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  maximum_cardinality:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: maximum_cardinality
+    primaryKey: false
+    unsigned: false
+    visible: true
+  dtd_identifier:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: dtd_identifier
+    primaryKey: false
+    unsigned: false
+    visible: true
+  routine_body:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: routine_body
+    primaryKey: false
+    unsigned: false
+    visible: true
+  routine_definition:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: routine_definition
+    primaryKey: false
+    unsigned: false
+    visible: true
+  external_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: external_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  external_language:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: external_language
+    primaryKey: false
+    unsigned: false
+    visible: true
+  parameter_style:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: parameter_style
+    primaryKey: false
+    unsigned: false
+    visible: true
+  is_deterministic:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: is_deterministic
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sql_data_access:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: sql_data_access
+    primaryKey: false
+    unsigned: false
+    visible: true
+  is_null_call:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: is_null_call
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sql_path:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: sql_path
+    primaryKey: false
+    unsigned: false
+    visible: true
+  schema_level_routine:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: schema_level_routine
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max_dynamic_result_sets:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: max_dynamic_result_sets
+    primaryKey: false
+    unsigned: false
+    visible: true
+  is_user_defined_cast:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: is_user_defined_cast
+    primaryKey: false
+    unsigned: false
+    visible: true
+  is_implicitly_invocable:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: is_implicitly_invocable
+    primaryKey: false
+    unsigned: false
+    visible: true
+  security_type:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: security_type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  to_sql_specific_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: to_sql_specific_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  to_sql_specific_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: to_sql_specific_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  to_sql_specific_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: to_sql_specific_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  as_locator:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: as_locator
+    primaryKey: false
+    unsigned: false
+    visible: true
+  created:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: created
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_altered:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: last_altered
+    primaryKey: false
+    unsigned: false
+    visible: true
+  new_savepoint_level:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: new_savepoint_level
+    primaryKey: false
+    unsigned: false
+    visible: true
+  is_udt_dependent:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: is_udt_dependent
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_from_data_type:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_from_data_type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_as_locator:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_as_locator
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_char_max_length:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: result_cast_char_max_length
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_char_octet_length:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: result_cast_char_octet_length
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_char_set_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_char_set_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_char_set_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_char_set_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_character_set_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_character_set_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_collation_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_collation_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_collation_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_collation_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_collation_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_collation_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_numeric_precision:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: result_cast_numeric_precision
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_numeric_precision_radix:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: result_cast_numeric_precision_radix
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_numeric_scale:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: result_cast_numeric_scale
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_datetime_precision:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: result_cast_datetime_precision
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_interval_type:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_interval_type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_interval_precision:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: result_cast_interval_precision
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_type_udt_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_type_udt_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_type_udt_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_type_udt_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_type_udt_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_type_udt_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_scope_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_scope_catalog
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_scope_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_scope_schema
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_scope_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_scope_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_maximum_cardinality:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: result_cast_maximum_cardinality
+    primaryKey: false
+    unsigned: false
+    visible: true
+  result_cast_dtd_identifier:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: result_cast_dtd_identifier
+    primaryKey: false
+    unsigned: false
+    visible: true

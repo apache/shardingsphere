@@ -33,14 +33,16 @@ class YamlEncryptColumnRuleConfigurationSwapperTest {
     void assertSwapToYamlConfiguration() {
         YamlEncryptColumnRuleConfigurationSwapper swapper = new YamlEncryptColumnRuleConfigurationSwapper();
         EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("logicColumn", new EncryptColumnItemRuleConfiguration("cipherColumn", "encryptorName"));
-        encryptColumnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assistedQueryColumn"));
-        encryptColumnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("likeQueryColumn"));
+        encryptColumnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assistedQueryColumn", "foo_assist_query_encryptor"));
+        encryptColumnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("likeQueryColumn", "foo_like_encryptor"));
         YamlEncryptColumnRuleConfiguration actual = swapper.swapToYamlConfiguration(encryptColumnRuleConfig);
         assertThat(actual.getName(), is("logicColumn"));
         assertThat(actual.getCipher().getName(), is("cipherColumn"));
         assertThat(actual.getCipher().getEncryptorName(), is("encryptorName"));
         assertThat(actual.getAssistedQuery().getName(), is("assistedQueryColumn"));
+        assertThat(actual.getAssistedQuery().getEncryptorName(), is("foo_assist_query_encryptor"));
         assertThat(actual.getLikeQuery().getName(), is("likeQueryColumn"));
+        assertThat(actual.getLikeQuery().getEncryptorName(), is("foo_like_encryptor"));
     }
     
     @Test

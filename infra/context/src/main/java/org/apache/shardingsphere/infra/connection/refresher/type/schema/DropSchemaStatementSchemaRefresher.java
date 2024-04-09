@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.connection.refresher.type.schema;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
@@ -34,7 +35,7 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) {
+                        final String schemaName, final DatabaseType databaseType, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) {
         modeContextManager.dropSchema(database.getName(), getSchemaNames(sqlStatement));
     }
     
@@ -47,7 +48,7 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
     }
     
     @Override
-    public String getType() {
-        return DropSchemaStatement.class.getName();
+    public Class<DropSchemaStatement> getType() {
+        return DropSchemaStatement.class;
     }
 }

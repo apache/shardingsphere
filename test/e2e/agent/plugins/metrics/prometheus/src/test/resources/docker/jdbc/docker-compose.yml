@@ -47,7 +47,6 @@ services:
     image: apache/shardingsphere-jdbc-agent-metrics-test
     container_name: shardingsphere-jdbc-agent-metrics
     ports:
-      - "18080:80"
       - "19099:19099"
     links:
       - "mysql:mysql.agent.jdbc.metrics.host"

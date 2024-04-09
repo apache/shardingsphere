@@ -21,4 +21,8 @@
     <sql-case id="no_audit_policy_by_users" value="NOAUDIT POLICY dml_pol BY hr, sh WHENEVER NOT SUCCESSFUL" db-types="Oracle" />
     <sql-case id="no_audit_policy_by_users_with_roles" value="NOAUDIT POLICY read_dir_pol BY USERS WITH GRANTED ROLES hr_role" db-types="Oracle" />
     <sql-case id="no_audit_context" value="NOAUDIT CONTEXT NAMESPACE userenv ATTRIBUTES current_user, db_name BY hr;" db-types="Oracle" />
+    <sql-case id="no_audit_traditional_all_privileges" value="NOAUDIT ALL PRIVILEGES;" db-types="Oracle" />
+    <sql-case id="no_audit_traditional_all_statements" value="NOAUDIT ALL STATEMENTS;" db-types="Oracle" />
+    <sql-case id="no_audit_traditional_delete" value="NOAUDIT DELETE ANY TABLE;" db-types="Oracle" />
+    <sql-case id="no_audit_traditional_select" value="NOAUDIT SELECT ON hr.employees WHENEVER SUCCESSFUL;" db-types="Oracle" />
 </sql-cases>

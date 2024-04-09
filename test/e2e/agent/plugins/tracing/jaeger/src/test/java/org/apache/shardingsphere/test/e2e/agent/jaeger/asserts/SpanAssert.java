@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.test.e2e.agent.jaeger.asserts;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.SpanTestCase;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.TagAssertion;
@@ -43,7 +41,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Span assert.
  */
-@Slf4j
 public final class SpanAssert {
     
     /**
@@ -73,7 +70,7 @@ public final class SpanAssert {
     
     private static void assertTagValue(final String baseUrl, final SpanTestCase expected, final TagAssertion expectedTagCase) {
         String urlWithParameter = String.format("%s/api/traces?service=%s&operation=%s&tags=%s&limit=%s", baseUrl, getEncodeValue(expected.getServiceName()),
-                getEncodeValue(expected.getSpanName()), getEncodeValue(new Gson().toJson(ImmutableMap.of(expectedTagCase.getTagKey(), expectedTagCase.getTagValue()))), 1000);
+                getEncodeValue(expected.getSpanName()), getEncodeValue(JsonUtils.toJsonString(ImmutableMap.of(expectedTagCase.getTagKey(), expectedTagCase.getTagValue()))), 1000);
         Collection<TraceResult> traceResults = getTraceResults(urlWithParameter);
         assertFalse(traceResults.isEmpty(), String.format("The tag `%s`=`%s` does not exist in `%s` span", expectedTagCase.getTagKey(), expectedTagCase.getTagValue(), expected.getSpanName()));
     }
@@ -85,8 +82,7 @@ public final class SpanAssert {
     
     @SneakyThrows(IOException.class)
     private static Collection<TraceResult> getTraceResults(final String url) {
-        TraceResults result = new Gson().fromJson(OkHttpUtils.getInstance().get(url), new TypeToken<TraceResults>() {
-        }.getType());
+        TraceResults result = JsonUtils.fromJsonString(OkHttpUtils.getInstance().get(url), TraceResults.class);
         assertNotNull(result);
         return result.getData();
     }

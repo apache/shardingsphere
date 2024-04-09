@@ -1,0 +1,86 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_sequence
+columns:
+  seqrelid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: seqrelid
+    primaryKey: true
+    unsigned: false
+    visible: true
+  seqtypid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: seqtypid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  seqstart:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: seqstart
+    primaryKey: false
+    unsigned: false
+    visible: true
+  seqincrement:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: seqincrement
+    primaryKey: false
+    unsigned: false
+    visible: true
+  seqmax:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: seqmax
+    primaryKey: false
+    unsigned: false
+    visible: true
+  seqmin:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: seqmin
+    primaryKey: false
+    unsigned: false
+    visible: true
+  seqcache:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: seqcache
+    primaryKey: false
+    unsigned: false
+    visible: true
+  seqcycle:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: seqcycle
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_sequence_seqrelid_index:
+    name: pg_sequence_seqrelid_index

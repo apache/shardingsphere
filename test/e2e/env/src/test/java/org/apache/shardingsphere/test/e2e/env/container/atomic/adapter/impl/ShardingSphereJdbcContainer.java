@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
@@ -34,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -45,11 +47,14 @@ public final class ShardingSphereJdbcContainer implements EmbeddedITContainer, A
     
     private final ScenarioCommonPath scenarioCommonPath;
     
+    private final DatabaseType databaseType;
+    
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
-    public ShardingSphereJdbcContainer(final StorageContainer storageContainer, final String scenario) {
+    public ShardingSphereJdbcContainer(final StorageContainer storageContainer, final String scenario, final DatabaseType databaseType) {
         this.storageContainer = storageContainer;
         scenarioCommonPath = new ScenarioCommonPath(scenario);
+        this.databaseType = databaseType;
     }
     
     @Override
@@ -63,7 +68,7 @@ public final class ShardingSphereJdbcContainer implements EmbeddedITContainer, A
             if (Strings.isNullOrEmpty(serverLists)) {
                 try {
                     targetDataSourceProvider.set(
-                            YamlShardingSphereDataSourceFactory.createDataSource(storageContainer.getActualDataSourceMap(), new File(scenarioCommonPath.getRuleConfigurationFile())));
+                            YamlShardingSphereDataSourceFactory.createDataSource(storageContainer.getActualDataSourceMap(), new File(scenarioCommonPath.getRuleConfigurationFile(databaseType))));
                 } catch (final SQLException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -76,9 +81,9 @@ public final class ShardingSphereJdbcContainer implements EmbeddedITContainer, A
     
     @SneakyThrows({SQLException.class, IOException.class})
     private DataSource createGovernanceClientDataSource(final String serverLists) {
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(scenarioCommonPath.getRuleConfigurationFile()), YamlRootConfiguration.class);
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(scenarioCommonPath.getRuleConfigurationFile(databaseType)), YamlRootConfiguration.class);
         rootConfig.setMode(createYamlModeConfiguration(serverLists));
-        return YamlShardingSphereDataSourceFactory.createDataSource(storageContainer.getActualDataSourceMap(), YamlEngine.marshal(rootConfig).getBytes(StandardCharsets.UTF_8));
+        return YamlShardingSphereDataSourceFactory.createDataSource(Collections.emptyMap(), YamlEngine.marshal(rootConfig).getBytes(StandardCharsets.UTF_8));
     }
     
     private YamlModeConfiguration createYamlModeConfiguration(final String serverLists) {

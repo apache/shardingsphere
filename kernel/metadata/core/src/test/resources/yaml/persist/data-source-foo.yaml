@@ -17,6 +17,7 @@
 
 foo_ds:
   password: root
+  closed: false
   dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
   connectionInitSqls:
 # No spaces after conversion

@@ -68,7 +68,7 @@ public final class MariaDBXAConnectionWrapper implements XAConnectionWrapper {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MariaDB";
     }
 }

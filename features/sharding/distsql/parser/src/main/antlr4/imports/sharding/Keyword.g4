@@ -215,10 +215,6 @@ MOD
     : M O D
     ;
 
-COSID_MOD
-    : C O S I D UL_ M O D
-    ;
-
 HASH_MOD
     : H A S H UL_ M O D
     ;
@@ -243,14 +239,6 @@ INTERVAL
     : I N T E R V A L
     ;
 
-COSID_INTERVAL
-    : C O S I D UL_ I N T E R V A L
-    ;
-
-COSID_INTERVAL_SNOWFLAKE
-    : C O S I D UL_ I N T E R V A L UL_ S N O W F L A K E
-    ;
-
 COMPLEX_INLINE
     : C O M P L E X UL_ I N L I N E
     ;
@@ -267,20 +255,8 @@ SNOWFLAKE
     : S N O W F L A K E
     ;
 
-NANOID
-    : N A N O I D
-    ;
-
 UUID
     : U U I D
-    ;
-
-COSID
-    : C O S I D
-    ;
-
-COSID_SNOWFLAKE
-    : C O S I D UL_ S N O W F L A K E
     ;
 
 STANDARD
@@ -301,4 +277,8 @@ NOT
 
 NONE
     : N O N E
+    ;
+
+PLUGINS
+    : P L U G I N S
     ;

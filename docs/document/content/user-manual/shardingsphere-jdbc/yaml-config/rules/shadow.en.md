@@ -1,6 +1,6 @@
 +++
 title = "Shadow DB"
-weight = 6
+weight = 7
 +++
 
 ## Background

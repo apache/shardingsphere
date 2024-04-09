@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
@@ -44,7 +45,13 @@ public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
     
     private final boolean primaryKey;
     
+    @Setter
+    private boolean autoIncrement;
+    
     private final boolean notNull;
     
     private final Collection<SimpleTableSegment> referencedTables = new LinkedList<>();
+    
+    @Setter
+    private boolean isRef;
 }

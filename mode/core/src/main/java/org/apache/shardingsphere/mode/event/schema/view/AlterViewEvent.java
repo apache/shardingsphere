@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.event.schema.view;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
@@ -33,9 +32,9 @@ public final class AlterViewEvent implements GovernanceEvent {
     
     private final String schemaName;
     
-    private final ShardingSphereView view;
+    private final String viewName;
     
-    private final int version;
+    private final String activeVersionKey;
     
-    private final String versionKey;
+    private final String activeVersion;
 }

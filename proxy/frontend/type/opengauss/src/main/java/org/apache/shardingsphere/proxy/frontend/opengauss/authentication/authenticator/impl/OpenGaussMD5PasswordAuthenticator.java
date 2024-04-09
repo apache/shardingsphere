@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.impl;
 
-import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussAuthenticator;
@@ -34,7 +33,7 @@ public final class OpenGaussMD5PasswordAuthenticator implements OpenGaussAuthent
     }
     
     @Override
-    public AuthenticationMethod getAuthenticationMethod() {
-        return PostgreSQLAuthenticationMethod.MD5;
+    public String getAuthenticationMethodName() {
+        return PostgreSQLAuthenticationMethod.MD5.getMethodName();
     }
 }

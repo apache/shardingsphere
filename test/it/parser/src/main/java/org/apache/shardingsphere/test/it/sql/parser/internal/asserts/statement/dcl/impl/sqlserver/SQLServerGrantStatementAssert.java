@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.tab
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.GrantStatementTestCase;
 
 /**
- * SQLServer Grant statement assert.
+ * SQLServer grant statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLServerGrantStatementAssert {

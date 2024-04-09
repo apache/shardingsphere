@@ -17,19 +17,28 @@
 
 package org.apache.shardingsphere.sql.parser.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * SQL parsing exception.
  */
-public final class SQLParsingException extends KernelSQLException {
+@Getter
+public final class SQLParsingException extends ParseSQLException {
     
     private static final long serialVersionUID = -6408790652103666096L;
     
-    private static final int KERNEL_CODE = 2;
+    private final Object symbol;
     
-    public SQLParsingException(final String sql) {
-        super(XOpenSQLState.SYNTAX_ERROR, KERNEL_CODE, 0, "You have an error in your SQL syntax: %s", sql);
+    private final int line;
+    
+    public SQLParsingException(final String message) {
+        this(message, "", 1);
+    }
+    
+    public SQLParsingException(final String message, final Object symbol, final int line) {
+        super(XOpenSQLState.SYNTAX_ERROR, 0, "You have an error in your SQL syntax: %s", message);
+        this.symbol = symbol;
+        this.line = line;
     }
 }

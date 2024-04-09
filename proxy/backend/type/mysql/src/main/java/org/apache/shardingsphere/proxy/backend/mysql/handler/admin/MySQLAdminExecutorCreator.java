@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.KillProcessExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLSetVariableAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLSystemVariableQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.NoResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowConnectionIdExecutor;
@@ -62,7 +63,11 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     
     private static final String INFORMATION_SCHEMA = "information_schema";
     
+    private static final String MYSQL_SCHEMA = "mysql";
+    
     private static final String PERFORMANCE_SCHEMA = "performance_schema";
+    
+    private static final String SYS_SCHEMA = "sys";
     
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext) {
@@ -89,7 +94,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             return Optional.of(new ShowDatabasesExecutor((MySQLShowDatabasesStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowProcessListStatement) {
-            return Optional.of(new ShowProcessListExecutor());
+            return Optional.of(new ShowProcessListExecutor(((MySQLShowProcessListStatement) sqlStatement).isFull()));
         }
         if (sqlStatement instanceof MySQLKillStatement) {
             return Optional.of(new KillProcessExecutor((MySQLKillStatement) sqlStatement));
@@ -101,17 +106,26 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             return Optional.of(new MySQLSetVariableAdminExecutor((SetStatement) sqlStatement));
         }
         if (sqlStatement instanceof SelectStatement) {
-            SelectStatement selectStatement = (SelectStatement) sqlStatement;
-            if (null == selectStatement.getFrom()) {
-                return findAdminExecutorForSelectWithoutFrom(sql, databaseName, selectStatement);
-            }
-            if (isQueryInformationSchema(databaseName)) {
-                return MySQLInformationSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
-            }
-            if (isQueryPerformanceSchema(databaseName)) {
-                // TODO
-                return Optional.empty();
-            }
+            return create((SelectStatement) sqlStatement, sql, databaseName, parameters);
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<DatabaseAdminExecutor> create(final SelectStatement selectStatement, final String sql, final String databaseName, final List<Object> parameters) {
+        if (!selectStatement.getFrom().isPresent()) {
+            return findAdminExecutorForSelectWithoutFrom(sql, databaseName, selectStatement);
+        }
+        if (isQueryInformationSchema(databaseName)) {
+            return MySQLInformationSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
+        }
+        if (isQueryPerformanceSchema(databaseName)) {
+            return MySQLPerformanceSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
+        }
+        if (isQueryMySQLSchema(databaseName)) {
+            return MySQLMySQLSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
+        }
+        if (isQuerySysSchema(databaseName)) {
+            return MySQLSysSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
         }
         return Optional.empty();
     }
@@ -147,18 +161,26 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     
     private boolean isQueryInformationSchema(final String databaseName) {
         // TODO remove DefaultDatabaseMetaDataExecutor when sql federation can support all system table query
-        return INFORMATION_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getDatabase(databaseName).isComplete();
+        return INFORMATION_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete();
     }
     
     private boolean isQueryPerformanceSchema(final String databaseName) {
         return PERFORMANCE_SCHEMA.equalsIgnoreCase(databaseName);
     }
     
+    private boolean isQueryMySQLSchema(final String databaseName) {
+        return MYSQL_SCHEMA.equalsIgnoreCase(databaseName);
+    }
+    
+    private boolean isQuerySysSchema(final String databaseName) {
+        return SYS_SCHEMA.equalsIgnoreCase(databaseName);
+    }
+    
     private Optional<DatabaseAdminExecutor> mockExecutor(final String databaseName, final SelectStatement sqlStatement, final String sql) {
         if (hasNoResource()) {
             return Optional.of(new NoResourceShowExecutor(sqlStatement));
         }
-        boolean isNotUseSchema = null == databaseName && null == sqlStatement.getFrom();
+        boolean isNotUseSchema = null == databaseName && !sqlStatement.getFrom().isPresent();
         return isNotUseSchema ? Optional.of(new UnicastResourceShowExecutor(sqlStatement, sql)) : Optional.empty();
     }
     
@@ -168,7 +190,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             return true;
         }
         for (String each : databaseNames) {
-            if (ProxyContext.getInstance().getDatabase(each).containsDataSource()) {
+            if (ProxyContext.getInstance().getContextManager().getDatabase(each).containsDataSource()) {
                 return false;
             }
         }
@@ -176,7 +198,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

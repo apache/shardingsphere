@@ -19,14 +19,12 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableInsertIntoSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
@@ -157,38 +155,19 @@ class InsertStatementHandlerTest {
     @Test
     void assertGetInsertMultiTableElementSegmentForOracle() {
         OracleInsertStatement insertStatement = new OracleInsertStatement();
-        insertStatement.setInsertMultiTableElementSegment(new InsertMultiTableElementSegment(0, 0));
-        Optional<InsertMultiTableElementSegment> insertMultiTableElementSegment = InsertStatementHandler.getInsertMultiTableElementSegment(insertStatement);
+        insertStatement.setMultiTableInsertIntoSegment(new MultiTableInsertIntoSegment(0, 0));
+        Optional<MultiTableInsertIntoSegment> insertMultiTableElementSegment = InsertStatementHandler.getMultiTableInsertIntoSegment(insertStatement);
         assertTrue(insertMultiTableElementSegment.isPresent());
-        assertThat(insertMultiTableElementSegment.get(), is(insertStatement.getInsertMultiTableElementSegment().get()));
-        assertFalse(InsertStatementHandler.getInsertMultiTableElementSegment(new SQLServerInsertStatement()).isPresent());
+        assertThat(insertMultiTableElementSegment.get(), is(insertStatement.getMultiTableInsertIntoSegment().get()));
+        assertFalse(InsertStatementHandler.getMultiTableInsertIntoSegment(new SQLServerInsertStatement()).isPresent());
     }
     
     @Test
     void assertGetInsertMultiTableElementSegmentForOtherDatabases() {
-        assertFalse(InsertStatementHandler.getInsertMultiTableElementSegment(new MySQLInsertStatement()).isPresent());
-        assertFalse(InsertStatementHandler.getInsertMultiTableElementSegment(new OpenGaussInsertStatement()).isPresent());
-        assertFalse(InsertStatementHandler.getInsertMultiTableElementSegment(new PostgreSQLInsertStatement()).isPresent());
-        assertFalse(InsertStatementHandler.getInsertMultiTableElementSegment(new SQL92InsertStatement()).isPresent());
-        assertFalse(InsertStatementHandler.getInsertMultiTableElementSegment(new SQLServerInsertStatement()).isPresent());
-    }
-    
-    @Test
-    void assertGetSelectSubqueryForOracle() {
-        OracleInsertStatement insertStatement = new OracleInsertStatement();
-        insertStatement.setSelectSubquery(new SubquerySegment(0, 0, new OracleSelectStatement()));
-        Optional<SubquerySegment> subquerySegment = InsertStatementHandler.getSelectSubquery(insertStatement);
-        assertTrue(subquerySegment.isPresent());
-        assertThat(subquerySegment.get(), is(insertStatement.getSelectSubquery().get()));
-        assertFalse(InsertStatementHandler.getSelectSubquery(new OracleInsertStatement()).isPresent());
-    }
-    
-    @Test
-    void assertGetSelectSubqueryForOtherDatabases() {
-        assertFalse(InsertStatementHandler.getSelectSubquery(new MySQLInsertStatement()).isPresent());
-        assertFalse(InsertStatementHandler.getSelectSubquery(new OpenGaussInsertStatement()).isPresent());
-        assertFalse(InsertStatementHandler.getSelectSubquery(new PostgreSQLInsertStatement()).isPresent());
-        assertFalse(InsertStatementHandler.getSelectSubquery(new SQL92InsertStatement()).isPresent());
-        assertFalse(InsertStatementHandler.getSelectSubquery(new SQLServerInsertStatement()).isPresent());
+        assertFalse(InsertStatementHandler.getMultiTableInsertIntoSegment(new MySQLInsertStatement()).isPresent());
+        assertFalse(InsertStatementHandler.getMultiTableInsertIntoSegment(new OpenGaussInsertStatement()).isPresent());
+        assertFalse(InsertStatementHandler.getMultiTableInsertIntoSegment(new PostgreSQLInsertStatement()).isPresent());
+        assertFalse(InsertStatementHandler.getMultiTableInsertIntoSegment(new SQL92InsertStatement()).isPresent());
+        assertFalse(InsertStatementHandler.getMultiTableInsertIntoSegment(new SQLServerInsertStatement()).isPresent());
     }
 }

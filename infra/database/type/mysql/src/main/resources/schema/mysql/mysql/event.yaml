@@ -1,0 +1,221 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: event
+columns:
+  db:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: db
+    nullable: false
+    primaryKey: true
+    unsigned: false
+    visible: true
+  name:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: name
+    nullable: false
+    primaryKey: true
+    unsigned: false
+    visible: true
+  body:
+    caseSensitive: false
+    dataType: -4
+    generated: false
+    name: body
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  definer:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: definer
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  execute_at:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: execute_at
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  interval_value:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: interval_value
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  interval_field:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: interval_field
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  created:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: created
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  modified:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: modified
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_executed:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: last_executed
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  starts:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: starts
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ends:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: ends
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  status:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: status
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  on_completion:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: on_completion
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sql_mode:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: sql_mode
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  comment:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: comment
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  originator:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: originator
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  time_zone:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: time_zone
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  character_set_client:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: character_set_client
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collation_connection:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: collation_connection
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  db_collation:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: db_collation
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  body_utf8:
+    caseSensitive: false
+    dataType: -4
+    generated: false
+    name: body_utf8
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: false

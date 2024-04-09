@@ -17,89 +17,117 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.PostgreSQLColumnPropertiesAppender;
+import org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.PostgreSQLConstraintsPropertiesAppender;
+import org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.PostgreSQLIndexSQLGenerator;
+import org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.PostgreSQLTablePropertiesLoader;
+import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * PostgreSQL pipeline SQL builder.
  */
-public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
-    
-    private static final Set<String> RESERVED_KEYWORDS = new HashSet<>(Arrays.asList(
-            "ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHORIZATION", "BETWEEN", "BIGINT", "BINARY",
-            "BIT", "BOOLEAN", "BOTH", "CASE", "CAST", "CHAR", "CHARACTER", "CHECK", "COALESCE", "COLLATE", "COLLATION", "COLUMN", "CONCURRENTLY", "CONSTRAINT", "CREATE", "CROSS", "CURRENT_CATALOG",
-            "CURRENT_DATE", "CURRENT_ROLE", "CURRENT_SCHEMA", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "DEC", "DECIMAL", "DEFAULT", "DEFERRABLE", "DESC", "DISTINCT", "DO", "ELSE", "END",
-            "EXCEPT", "EXISTS", "EXTRACT", "FALSE", "FETCH", "FLOAT", "FOR", "FOREIGN", "FREEZE", "FROM", "FULL", "GRANT", "GREATEST", "GROUP", "GROUPING", "HAVING", "ILIKE", "IN", "INITIALLY",
-            "INNER", "INOUT", "INT", "INTEGER", "INTERSECT", "INTERVAL", "INTO", "IS", "ISNULL", "JOIN", "LATERAL", "LEADING", "LEAST", "LEFT", "LIKE", "LIMIT", "LOCALTIME", "LOCALTIMESTAMP",
-            "NATIONAL", "NATURAL", "NCHAR", "NONE", "NORMALIZE", "NOT", "NOTNULL", "NULL", "NULLIF", "NUMERIC", "OFFSET", "ON", "ONLY", "OR", "ORDER", "OUT", "OUTER", "OVERLAPS", "OVERLAY", "PLACING",
-            "POSITION", "PRECISION", "PRIMARY", "REAL", "REFERENCES", "RETURNING", "RIGHT", "ROW", "SELECT", "SESSION_USER", "SETOF", "SIMILAR", "SMALLINT", "SOME", "SUBSTRING", "SYMMETRIC", "TABLE",
-            "TABLESAMPLE", "THEN", "TIME", "TIMESTAMP", "TO", "TRAILING", "TREAT", "TRIM", "TRUE", "UNION", "UNIQUE", "USER", "USING", "VALUES", "VARCHAR", "VARIADIC", "VERBOSE", "WHEN", "WHERE",
-            "WINDOW", "WITH", "XMLATTRIBUTES", "XMLCONCAT", "XMLELEMENT", "XMLEXISTS", "XMLFOREST", "XMLNAMESPACES", "XMLPARSE", "XMLPI", "XMLROOT", "XMLSERIALIZE", "XMLTABLE"));
-    
-    @Override
-    protected boolean isKeyword(final String item) {
-        return RESERVED_KEYWORDS.contains(item.toUpperCase());
-    }
-    
-    @Override
-    protected String getLeftIdentifierQuoteString() {
-        return "\"";
-    }
-    
-    @Override
-    protected String getRightIdentifierQuoteString() {
-        return "\"";
-    }
+public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
     public Optional<String> buildCreateSchemaSQL(final String schemaName) {
-        return Optional.of(String.format("CREATE SCHEMA IF NOT EXISTS %s", quote(schemaName)));
+        return Optional.of(String.format("CREATE SCHEMA IF NOT EXISTS %s", schemaName));
     }
     
     @Override
-    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
-        String result = super.buildInsertSQL(schemaName, dataRecord);
+    public Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord) {
         // TODO without unique key, job has been interrupted, which may lead to data duplication
         if (dataRecord.getUniqueKeyValue().isEmpty()) {
-            return result;
+            return Optional.empty();
         }
-        return result + buildConflictSQL(dataRecord);
-    }
-    
-    // Refer to https://www.postgresql.org/docs/current/sql-insert.html
-    private String buildConflictSQL(final DataRecord dataRecord) {
-        StringBuilder result = new StringBuilder(" ON CONFLICT (");
-        for (Column each : RecordUtils.extractPrimaryColumns(dataRecord)) {
-            result.append(each.getName()).append(',');
-        }
-        result.setLength(result.length() - 1);
+        StringBuilder result = new StringBuilder("ON CONFLICT (");
+        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
+        result.append(dataRecord.getColumns().stream().filter(Column::isUniqueKey).map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName())).collect(Collectors.joining(",")));
         result.append(") DO UPDATE SET ");
-        for (int i = 0; i < dataRecord.getColumnCount(); i++) {
-            Column column = dataRecord.getColumn(i);
-            if (column.isUniqueKey()) {
-                continue;
-            }
-            result.append(quote(column.getName())).append("=EXCLUDED.").append(quote(column.getName())).append(',');
-        }
-        result.setLength(result.length() - 1);
-        return result.toString();
+        result.append(dataRecord.getColumns().stream()
+                .filter(each -> !each.isUniqueKey()).map(each -> sqlSegmentBuilder.getEscapedIdentifier(each.getName()) + "=EXCLUDED." + sqlSegmentBuilder.getEscapedIdentifier(each.getName()))
+                .collect(Collectors.joining(",")));
+        return Optional.of(result.toString());
     }
     
     @Override
-    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
+    public String buildCheckEmptyTableSQL(final String qualifiedTableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", qualifiedTableName);
+    }
+    
+    @Override
+    public Optional<String> buildEstimatedCountSQL(final String qualifiedTableName) {
         return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;", qualifiedTableName));
     }
     
+    // TODO support partitions etc.
     @Override
-    public String getType() {
+    public Collection<String> buildCreateTableSQLs(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
+            int minorVersion = connection.getMetaData().getDatabaseMinorVersion();
+            Map<String, Object> materials = loadMaterials(tableName, schemaName, connection, majorVersion, minorVersion);
+            String tableSQL = generateCreateTableSQL(majorVersion, minorVersion, materials);
+            String indexSQL = generateCreateIndexSQL(connection, majorVersion, minorVersion, materials);
+            // TODO use ";" to split is not always correct
+            return Arrays.asList((tableSQL + System.lineSeparator() + indexSQL).trim().split(";"));
+        }
+    }
+    
+    private Map<String, Object> loadMaterials(final String tableName, final String schemaName, final Connection connection, final int majorVersion, final int minorVersion) throws SQLException {
+        Map<String, Object> result = new PostgreSQLTablePropertiesLoader(connection, tableName, schemaName, majorVersion, minorVersion).load();
+        new PostgreSQLColumnPropertiesAppender(connection, majorVersion, minorVersion).append(result);
+        new PostgreSQLConstraintsPropertiesAppender(connection, majorVersion, minorVersion).append(result);
+        formatColumns(result);
+        return result;
+    }
+    
+    private String generateCreateTableSQL(final int majorVersion, final int minorVersion, final Map<String, Object> materials) {
+        return PostgreSQLPipelineFreemarkerManager.getSQLByVersion(materials, "component/table/%s/create.ftl", majorVersion, minorVersion).trim();
+    }
+    
+    private String generateCreateIndexSQL(final Connection connection, final int majorVersion, final int minorVersion, final Map<String, Object> materials) throws SQLException {
+        return new PostgreSQLIndexSQLGenerator(connection, majorVersion, minorVersion).generate(materials);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void formatColumns(final Map<String, Object> context) {
+        Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) context.get("columns");
+        for (Map<String, Object> each : columns) {
+            if (each.containsKey("cltype")) {
+                typeFormatter(each, (String) each.get("cltype"));
+            }
+        }
+    }
+    
+    private void typeFormatter(final Map<String, Object> column, final String columnType) {
+        if (columnType.contains("[]")) {
+            column.put("cltype", columnType.substring(0, columnType.length() - 2));
+            column.put("hasSqrBracket", true);
+        } else {
+            column.put("hasSqrBracket", false);
+        }
+    }
+    
+    @Override
+    public Optional<String> buildQueryCurrentPositionSQL() {
+        return Optional.of("SELECT * FROM pg_current_wal_lsn()");
+    }
+    
+    @Override
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

@@ -1,0 +1,238 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: gs_asp
+columns:
+  sampleid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: sampleid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sample_time:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: sample_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  need_flush_sample:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: need_flush_sample
+    primaryKey: false
+    unsigned: false
+    visible: true
+  databaseid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: databaseid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  thread_id:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: thread_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sessionid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: sessionid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  start_time:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: start_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: event
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lwtid:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: lwtid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  psessionid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: psessionid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tlevel:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: tlevel
+    primaryKey: false
+    unsigned: false
+    visible: true
+  smpid:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: smpid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  userid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: userid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  application_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: application_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  client_addr:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: client_addr
+    primaryKey: false
+    unsigned: false
+    visible: true
+  client_hostname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: client_hostname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  client_port:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: client_port
+    primaryKey: false
+    unsigned: false
+    visible: true
+  query_id:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: query_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  unique_query_id:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: unique_query_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  user_id:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: user_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  cn_id:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: cn_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  unique_query:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: unique_query
+    primaryKey: false
+    unsigned: false
+    visible: true
+  locktag:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: locktag
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lockmode:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: lockmode
+    primaryKey: false
+    unsigned: false
+    visible: true
+  block_sessionid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: block_sessionid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  wait_status:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: wait_status
+    primaryKey: false
+    unsigned: false
+    visible: true
+  global_sessionid:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: global_sessionid
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  gs_asp_sampletime_index:
+    name: gs_asp_sampletime_index

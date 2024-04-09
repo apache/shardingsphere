@@ -1,0 +1,38 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="userid"/>
+        <column name="used_memory"/>
+        <column name="total_memory"/>
+        <column name="used_cpu"/>
+        <column name="total_cpu"/>
+        <column name="used_space"/>
+        <column name="total_space"/>
+        <column name="used_temp_space"/>
+        <column name="total_temp_space"/>
+        <column name="used_spill_space"/>
+        <column name="total_spill_space"/>
+        <column name="read_kbytes"/>
+        <column name="write_kbytes"/>
+        <column name="read_counts"/>
+        <column name="write_counts"/>
+        <column name="read_speed"/>
+        <column name="write_speed"/>
+    </metadata>
+</dataset>

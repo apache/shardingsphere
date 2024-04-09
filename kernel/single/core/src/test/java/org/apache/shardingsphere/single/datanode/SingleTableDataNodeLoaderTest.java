@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.single.datanode;
 
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,6 +60,8 @@ class SingleTableDataNodeLoaderTest {
     
     private static final String TABLE_NAME = "TABLE_NAME";
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     private Map<String, DataSource> dataSourceMap;
     
     private Collection<String> configuredSingleTables;
@@ -75,6 +79,7 @@ class SingleTableDataNodeLoaderTest {
         when(connection.getCatalog()).thenReturn(dataSourceName);
         ResultSet resultSet = mockResultSet(tableNames);
         when(connection.getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE})).thenReturn(resultSet);
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         return new MockedDataSource(connection);
     }
     
@@ -91,8 +96,11 @@ class SingleTableDataNodeLoaderTest {
     
     @Test
     void assertLoad() {
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
-                dataSourceMap, getBuiltRulesWithExcludedTables(), configuredSingleTables);
+        ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
+        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
+        when(ruleAttribute.getDistributedTableNames()).thenReturn(Arrays.asList("salary", "employee", "student"));
+        when(builtRule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, databaseType, dataSourceMap, Collections.singleton(builtRule), configuredSingleTables);
         assertFalse(actual.containsKey("employee"));
         assertFalse(actual.containsKey("salary"));
         assertFalse(actual.containsKey("student"));
@@ -104,17 +112,9 @@ class SingleTableDataNodeLoaderTest {
         assertThat(actual.get("class").iterator().next().getDataSourceName(), is("ds1"));
     }
     
-    private Collection<ShardingSphereRule> getBuiltRulesWithExcludedTables() {
-        Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
-        TableContainedRule tableContainedRule = mock(TableContainedRule.class, RETURNS_DEEP_STUBS);
-        when(tableContainedRule.getDistributedTableMapper().getTableNames()).thenReturn(excludedTables);
-        return Collections.singletonList(tableContainedRule);
-    }
-    
     @Test
     void assertLoadWithConflictTables() {
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
-                dataSourceMap, Collections.emptyList(), configuredSingleTables);
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, databaseType, dataSourceMap, Collections.emptyList(), configuredSingleTables);
         assertTrue(actual.containsKey("employee"));
         assertTrue(actual.containsKey("salary"));
         assertTrue(actual.containsKey("student"));

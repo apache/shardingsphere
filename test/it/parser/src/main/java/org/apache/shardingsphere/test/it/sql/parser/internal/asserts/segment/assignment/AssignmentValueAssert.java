@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.as
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
@@ -44,23 +46,44 @@ public final class AssignmentValueAssert {
      * @param assertContext assert context
      * @param actual actual expression segment
      * @param expected expected assignment value
+     * @throws UnsupportedOperationException unsupported assertion segment exception               
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedAssignmentValue expected) {
         if (actual instanceof ParameterMarkerExpressionSegment) {
             ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual, expected.getParameterMarkerExpression());
-        } else if (actual instanceof LiteralExpressionSegment) {
+            return;
+        }
+        if (actual instanceof LiteralExpressionSegment) {
             ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual, expected.getLiteralExpression());
             // FIXME should be CommonExpressionProjection, not ExpressionProjectionSegment
-        } else if (actual instanceof ExpressionProjectionSegment) {
+            return;
+        }
+        if (actual instanceof ExpressionProjectionSegment) {
             ExpressionAssert.assertCommonExpression(assertContext, (ExpressionProjectionSegment) actual, expected.getCommonExpression());
-        } else if (actual instanceof ColumnSegment) {
+            return;
+        }
+        if (actual instanceof ColumnSegment) {
             ColumnAssert.assertIs(assertContext, (ColumnSegment) actual, expected.getColumn());
-        } else if (actual instanceof SubqueryExpressionSegment) {
+            return;
+        }
+        if (actual instanceof SubqueryExpressionSegment) {
             ExpressionAssert.assertSubqueryExpression(assertContext, (SubqueryExpressionSegment) actual, expected.getSubquery());
-        } else if (actual instanceof FunctionSegment) {
+            return;
+        }
+        if (actual instanceof FunctionSegment) {
             ExpressionAssert.assertFunction(assertContext, (FunctionSegment) actual, expected.getFunction());
-        } else if (actual instanceof CommonExpressionSegment) {
+            return;
+        }
+        if (actual instanceof CommonExpressionSegment) {
             ExpressionAssert.assertCommonExpression(assertContext, (CommonExpressionSegment) actual, expected.getCommonExpression());
+            return;
+        }
+        if (actual instanceof CaseWhenExpression) {
+            ExpressionAssert.assertCaseWhenExpression(assertContext, (CaseWhenExpression) actual, expected.getCaseWhenExpression());
+            return;
+        }
+        if (actual instanceof BinaryOperationExpression) {
+            ExpressionAssert.assertBinaryOperationExpression(assertContext, (BinaryOperationExpression) actual, expected.getBinaryOperationExpression());
         }
     }
 }

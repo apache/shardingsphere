@@ -115,7 +115,6 @@ rules: #Verification Info
    defaultType: XA
    providerType: Atomikos
  - !SQL_PARSER
-   sqlCommentParseEnabled: true
    sqlStatementCache:
      initialCapacity: 2000
      maximumSize: 65535

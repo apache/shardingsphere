@@ -41,7 +41,7 @@ public final class HBaseInsertUpdater implements HBaseUpdater {
     }
     
     @Override
-    public String getType() {
-        return MySQLInsertStatement.class.getCanonicalName();
+    public Class<MySQLInsertStatement> getType() {
+        return MySQLInsertStatement.class;
     }
 }

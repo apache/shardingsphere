@@ -19,12 +19,12 @@ package org.apache.shardingsphere.test.e2e.transaction.framework.container.confi
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.h2.H2ContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.transaction.framework.container.config.mysql.MySQLContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.transaction.framework.container.config.opengauss.OpenGaussContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.transaction.framework.container.config.postgresql.PostgreSQLContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.h2.H2ContainerConfigurationFactory;
 
 /**
  * Storage container configuration factory.
@@ -34,21 +34,22 @@ public final class StorageContainerConfigurationFactory {
     
     /**
      * Create new instance of storage container configuration.
-     * 
+     *
      * @param databaseType database type
+     * @param scenario scenario
      * @return created instance
      * @throws RuntimeException runtime exception
      */
-    public static StorageContainerConfiguration newInstance(final DatabaseType databaseType) {
+    public static StorageContainerConfiguration newInstance(final DatabaseType databaseType, final String scenario) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return MySQLContainerConfigurationFactory.newInstance();
+                return MySQLContainerConfigurationFactory.newInstance(scenario);
             case "PostgreSQL":
-                return PostgreSQLContainerConfigurationFactory.newInstance();
+                return PostgreSQLContainerConfigurationFactory.newInstance(scenario);
             case "openGauss":
-                return OpenGaussContainerConfigurationFactory.newInstance();
+                return OpenGaussContainerConfigurationFactory.newInstance(scenario);
             case "H2":
-                return H2ContainerConfigurationFactory.newInstance();
+                return H2ContainerConfigurationFactory.newInstance(scenario);
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }

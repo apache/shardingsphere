@@ -30,7 +30,7 @@ public final class PostgreSQLProtocolDefaultVersionProvider implements DatabaseP
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

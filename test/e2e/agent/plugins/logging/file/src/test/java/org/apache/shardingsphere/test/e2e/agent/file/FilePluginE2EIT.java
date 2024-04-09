@@ -37,7 +37,8 @@ class FilePluginE2EIT {
     void assertWithAgent() {
         assertTrue(new File(LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy())).exists(),
                 String.format("The file `%s` does not exist", LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy())));
-        Collection<String> actualLogLines = LogLoader.getLogLines(E2ETestEnvironment.getInstance().isAdaptedProxy());
+        Collection<String> actualLogLines = LogLoader.getLogLines(LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy()),
+                E2ETestEnvironment.getInstance().isAdaptedProxy());
         assertFalse(actualLogLines.isEmpty(), "Actual log is empty");
         if (E2ETestEnvironment.getInstance().isAdaptedProxy()) {
             assertProxyWithAgent(actualLogLines);

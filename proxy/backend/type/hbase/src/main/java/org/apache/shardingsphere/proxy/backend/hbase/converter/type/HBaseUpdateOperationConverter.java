@@ -21,13 +21,13 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverter;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseRowKeyExtractor;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseUpdateOperation;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -76,7 +76,7 @@ public final class HBaseUpdateOperationConverter implements HBaseOperationConver
     }
     
     private void addPutColumn(final UpdateStatementContext updateStatementContext, final Put put) {
-        for (AssignmentSegment each : updateStatementContext.getSqlStatement().getSetAssignment().getAssignments()) {
+        for (ColumnAssignmentSegment each : updateStatementContext.getSqlStatement().getSetAssignment().getAssignments()) {
             String columnName = each.getColumns().iterator().next().getIdentifier().getValue();
             String value = String.valueOf(((LiteralExpressionSegment) each.getValue()).getLiterals());
             put.addColumn(Bytes.toBytes("i"), Bytes.toBytes(columnName), Bytes.toBytes(value));

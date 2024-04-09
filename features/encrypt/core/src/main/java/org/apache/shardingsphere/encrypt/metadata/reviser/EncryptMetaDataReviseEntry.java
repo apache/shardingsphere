@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.metadata.reviser;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.metadata.reviser.column.EncryptColumnExistedReviser;
 import org.apache.shardingsphere.encrypt.metadata.reviser.column.EncryptColumnNameReviser;
+import org.apache.shardingsphere.encrypt.metadata.reviser.index.EncryptIndexReviser;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 
@@ -38,6 +39,11 @@ public final class EncryptMetaDataReviseEntry implements MetaDataReviseEntry<Enc
     @Override
     public Optional<EncryptColumnNameReviser> getColumnNameReviser(final EncryptRule rule, final String tableName) {
         return rule.findEncryptTable(tableName).map(EncryptColumnNameReviser::new);
+    }
+    
+    @Override
+    public Optional<EncryptIndexReviser> getIndexReviser(final EncryptRule rule, final String tableName) {
+        return rule.findEncryptTable(tableName).map(EncryptIndexReviser::new);
     }
     
     @Override

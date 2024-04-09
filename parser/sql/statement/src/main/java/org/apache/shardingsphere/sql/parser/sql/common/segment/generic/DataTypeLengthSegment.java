@@ -36,8 +36,9 @@ public final class DataTypeLengthSegment implements SQLSegment {
     private int scale;
     
     /**
-     * get secondNumber.
-     * @return Optional.
+     * Get scale.
+     * 
+     * @return scale
      */
     public Optional<Integer> getScale() {
         return Optional.of(scale);

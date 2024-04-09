@@ -38,4 +38,12 @@
     <alter-system sql-case-id="alter_system_switch_logfile" />
     <alter-system sql-case-id="alter_system_enable_distributed_recovery" />
     <alter-system sql-case-id="alter_system_flush_passwordfile_metada_cache" />
+    <alter-system sql-case-id="alter_system_disconnect_session_post_transaction" />
+    <alter-system sql-case-id="alter_system_kill_session1" />
+    <alter-system sql-case-id="alter_system_kill_session2" />
+    <alter-system sql-case-id="alter_system_reset_open_cursors_scope_sid" />
+    <alter-system sql-case-id="alter_system_set_db_recovery_file_dest_size_g" />
+    <alter-system sql-case-id="alter_system_set_parameter_recyclebin_scope" />
+    <alter-system sql-case-id="alter_system_set_events1" />
+    <alter-system sql-case-id="alter_system_set_events2" />
 </sql-parser-test-cases>

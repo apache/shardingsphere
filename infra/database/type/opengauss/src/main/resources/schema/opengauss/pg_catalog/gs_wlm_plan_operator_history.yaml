@@ -1,0 +1,155 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: gs_wlm_plan_operator_history
+columns:
+  datname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: datname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  queryid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: queryid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  plan_node_id:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: plan_node_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  startup_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: startup_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  total_time:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: total_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  actual_rows:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: actual_rows
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max_peak_memory:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: max_peak_memory
+    primaryKey: false
+    unsigned: false
+    visible: true
+  query_dop:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: query_dop
+    primaryKey: false
+    unsigned: false
+    visible: true
+  parent_node_id:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: parent_node_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  left_child_id:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: left_child_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  right_child_id:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: right_child_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  operation:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: operation
+    primaryKey: false
+    unsigned: false
+    visible: true
+  orientation:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: orientation
+    primaryKey: false
+    unsigned: false
+    visible: true
+  strategy:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: strategy
+    primaryKey: false
+    unsigned: false
+    visible: true
+  options:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: options
+    primaryKey: false
+    unsigned: false
+    visible: true
+  condition:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: condition
+    primaryKey: false
+    unsigned: false
+    visible: true
+  projection:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: projection
+    primaryKey: false
+    unsigned: false
+    visible: true

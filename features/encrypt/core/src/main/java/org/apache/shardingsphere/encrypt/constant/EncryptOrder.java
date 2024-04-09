@@ -30,9 +30,4 @@ public final class EncryptOrder {
      * Encrypt order.
      */
     public static final int ORDER = 10;
-    
-    /**
-     * Compatible encrypt order.
-     */
-    public static final int COMPATIBLE_ORDER = ORDER + 1;
 }

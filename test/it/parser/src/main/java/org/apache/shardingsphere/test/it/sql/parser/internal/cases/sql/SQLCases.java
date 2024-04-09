@@ -80,7 +80,7 @@ public final class SQLCases {
     }
     
     private boolean containsSQLCaseType(final SQLCase sqlCase, final SQLCaseType caseType) {
-        return null == sqlCase.getCaseTypes() || Splitter.on(',').trimResults().splitToList(sqlCase.getCaseTypes()).contains(caseType.name());
+        return null == sqlCase.getCaseTypes() || Splitter.on(',').trimResults().splitToList(sqlCase.getCaseTypes().toUpperCase()).contains(caseType.name());
     }
     
     /**

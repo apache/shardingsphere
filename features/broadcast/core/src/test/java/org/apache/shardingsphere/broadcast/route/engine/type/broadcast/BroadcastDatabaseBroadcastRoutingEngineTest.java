@@ -35,7 +35,7 @@ class BroadcastDatabaseBroadcastRoutingEngineTest {
     @Test
     void assertRoute() {
         BroadcastRule broadcastRule = mock(BroadcastRule.class);
-        when(broadcastRule.getAvailableDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(broadcastRule.getDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         BroadcastDatabaseBroadcastRoutingEngine engine = new BroadcastDatabaseBroadcastRoutingEngine();
         RouteContext routeContext = engine.route(new RouteContext(), broadcastRule);
         assertThat(routeContext.getRouteUnits().size(), is(2));

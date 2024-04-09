@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.check.datasource;
 
-import org.apache.shardingsphere.data.pipeline.core.check.datasource.AbstractDataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithCheckPrivilegeFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidSourceDataSourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.data.pipeline.core.checker.DialectDataSourceChecker;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -29,7 +29,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,11 +37,12 @@ import java.util.stream.Collectors;
 /**
  * Data source checker for MySQL.
  */
-public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
+public final class MySQLDataSourceChecker implements DialectDataSourceChecker {
     
     private static final String SHOW_GRANTS_SQL = "SHOW GRANTS";
     
-    private static final String[][] REQUIRED_PRIVILEGES = {{"ALL PRIVILEGES", "ON *.*"}, {"REPLICATION SLAVE", "REPLICATION CLIENT", "ON *.*"}};
+    // BINLOG MONITOR is a synonym for REPLICATION CLIENT for MariaDB
+    private static final String[][] REQUIRED_PRIVILEGES = {{"ALL PRIVILEGES", "ON *.*"}, {"REPLICATION SLAVE", "REPLICATION CLIENT", "ON *.*"}, {"REPLICATION SLAVE", "BINLOG MONITOR", "ON *.*"}};
     
     private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(3, 1F);
     
@@ -57,13 +57,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     }
     
     @Override
-    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-        for (DataSource each : dataSources) {
-            checkPrivilege(each);
-        }
-    }
-    
-    private void checkPrivilege(final DataSource dataSource) {
+    public void checkPrivilege(final DataSource dataSource) {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(SHOW_GRANTS_SQL);
@@ -85,13 +79,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     }
     
     @Override
-    public void checkVariable(final Collection<? extends DataSource> dataSources) {
-        for (DataSource each : dataSources) {
-            checkVariable(each);
-        }
-    }
-    
-    private void checkVariable(final DataSource dataSource) {
+    public void checkVariable(final DataSource dataSource) {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(SHOW_VARIABLES_SQL)) {
@@ -114,7 +102,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     }
     
     @Override
-    protected String getDatabaseType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

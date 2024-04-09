@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.execute;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 
@@ -42,6 +41,8 @@ public final class ExecuteEngine {
     private static final String THREAD_PREFIX = "pipeline-";
     
     private static final String THREAD_SUFFIX = "-%d";
+    
+    private static final ExecutorService CALLBACK_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build(THREAD_PREFIX + "callback" + THREAD_SUFFIX));
     
     private final ExecutorService executorService;
     
@@ -71,29 +72,29 @@ public final class ExecuteEngine {
     /**
      * Submit a {@code LifecycleExecutor} with callback {@code ExecuteCallback} to execute.
      *
-     * @param lifecycleExecutor lifecycle executor
+     * @param pipelineLifecycleRunnable lifecycle executor
      * @param executeCallback execute callback
      * @return execute future
      */
-    public CompletableFuture<?> submit(final LifecycleExecutor lifecycleExecutor, final ExecuteCallback executeCallback) {
-        return CompletableFuture.runAsync(lifecycleExecutor, executorService).whenCompleteAsync((unused, throwable) -> {
+    public CompletableFuture<?> submit(final PipelineLifecycleRunnable pipelineLifecycleRunnable, final ExecuteCallback executeCallback) {
+        return CompletableFuture.runAsync(pipelineLifecycleRunnable, executorService).whenCompleteAsync((unused, throwable) -> {
             if (null == throwable) {
                 executeCallback.onSuccess();
             } else {
                 Throwable cause = throwable.getCause();
                 executeCallback.onFailure(null != cause ? cause : throwable);
             }
-        }, executorService);
+        }, CALLBACK_EXECUTOR);
     }
     
     /**
      * Submit a {@code LifecycleExecutor} to execute.
      *
-     * @param lifecycleExecutor lifecycle executor
+     * @param pipelineLifecycleRunnable lifecycle executor
      * @return execute future
      */
-    public CompletableFuture<?> submit(final LifecycleExecutor lifecycleExecutor) {
-        return CompletableFuture.runAsync(lifecycleExecutor, executorService);
+    public CompletableFuture<?> submit(final PipelineLifecycleRunnable pipelineLifecycleRunnable) {
+        return CompletableFuture.runAsync(pipelineLifecycleRunnable, executorService);
     }
     
     /**
@@ -118,14 +119,14 @@ public final class ExecuteEngine {
     public static void trigger(final Collection<CompletableFuture<?>> futures, final ExecuteCallback executeCallback) {
         BlockingQueue<CompletableFuture<?>> futureQueue = new LinkedBlockingQueue<>();
         for (CompletableFuture<?> each : futures) {
-            each.whenComplete(new BiConsumer<Object, Throwable>() {
+            each.whenCompleteAsync(new BiConsumer<Object, Throwable>() {
                 
                 @SneakyThrows(InterruptedException.class)
                 @Override
                 public void accept(final Object unused, final Throwable throwable) {
                     futureQueue.put(each);
                 }
-            });
+            }, CALLBACK_EXECUTOR);
         }
         for (int i = 1, count = futures.size(); i <= count; i++) {
             CompletableFuture<?> future = futureQueue.take();

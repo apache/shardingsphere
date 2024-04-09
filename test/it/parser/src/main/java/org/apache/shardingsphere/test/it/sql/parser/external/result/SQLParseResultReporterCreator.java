@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.external.result;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
  * SQL parse result reporter creator.
  */
+@SingletonSPI
 public interface SQLParseResultReporterCreator extends TypedSPI {
     
     /**

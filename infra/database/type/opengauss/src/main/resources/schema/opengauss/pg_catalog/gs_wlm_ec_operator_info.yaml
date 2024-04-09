@@ -1,0 +1,131 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: gs_wlm_ec_operator_info
+columns:
+  queryid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: queryid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  plan_node_id:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: plan_node_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  start_time:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: start_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  duration:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: duration
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tuple_processed:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tuple_processed
+    primaryKey: false
+    unsigned: false
+    visible: true
+  min_peak_memory:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: min_peak_memory
+    primaryKey: false
+    unsigned: false
+    visible: true
+  max_peak_memory:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: max_peak_memory
+    primaryKey: false
+    unsigned: false
+    visible: true
+  average_peak_memory:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: average_peak_memory
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ec_status:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: ec_status
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ec_execute_datanode:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: ec_execute_datanode
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ec_dsn:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: ec_dsn
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ec_username:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: ec_username
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ec_query:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: ec_query
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ec_libodbc_type:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: ec_libodbc_type
+    primaryKey: false
+    unsigned: false
+    visible: true

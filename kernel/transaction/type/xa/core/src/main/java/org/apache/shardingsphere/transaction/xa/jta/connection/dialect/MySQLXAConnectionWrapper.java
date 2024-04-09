@@ -84,7 +84,7 @@ public final class MySQLXAConnectionWrapper implements XAConnectionWrapper {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

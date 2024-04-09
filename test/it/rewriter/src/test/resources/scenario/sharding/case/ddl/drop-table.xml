@@ -70,11 +70,11 @@
     
     <rewrite-assertion id="drop_sharding_table_with_data_source_name_and_skip_sql_rewrite_sql_hint" db-types="MySQL">
         <input sql="/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */ DROP TABLE IF EXISTS t_order" />
-        <output sql="/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */ DROP TABLE IF EXISTS t_order" />
+        <output sql="DROP TABLE IF EXISTS t_order" />
     </rewrite-assertion>
 
     <rewrite-assertion id="drop_sharding_table_without_data_source_name_and_skip_sql_rewrite_sql_hint" db-types="MySQL">
         <input sql="/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=false */ DROP TABLE IF EXISTS t_order" />
-        <output sql="/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=false */ DROP TABLE IF EXISTS t_order_0" />
+        <output sql="DROP TABLE IF EXISTS t_order_0" />
     </rewrite-assertion>
 </rewrite-assertions>

@@ -33,7 +33,7 @@ public final class OracleXADataSourceDefinition implements XADataSourceDefinitio
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "Oracle";
     }
 }

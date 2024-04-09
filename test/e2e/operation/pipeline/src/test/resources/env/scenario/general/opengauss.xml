@@ -29,6 +29,7 @@
         c_char character(32),
         c_text text,
         c_bytea bytea,
+        c_raw bytea,
         c_date date,
         c_time time without time zone,
         c_smalldatetime smalldatetime,
@@ -41,8 +42,11 @@
         c_uuid uuid,
         c_hash32 hash32,
         c_tsvector tsvector,
+        c_tsquery tsquery,
         c_bit bit(4),
         c_int4range int4range,
+        c_daterange daterange,
+        c_tsrange tsrange,
         c_reltime reltime,
         c_abstime abstime,
         c_point point,
@@ -54,16 +58,17 @@
         c_inet inet,
         c_macaddr macaddr,
         c_hll hll(14,10,12,0),
+        c_money money,
         PRIMARY KEY ( order_id )
         );
     </create-table-order>
 
     <full-insert-order>
         INSERT INTO test.t_order (
-        order_id, user_id, status, c_int, c_smallint, c_float, c_double, c_numeric, c_boolean, c_char, c_text, c_bytea, c_date, c_time,
-        c_smalldatetime, c_timestamp, c_timestamptz, c_interval, c_array, c_json, c_jsonb, c_uuid, c_hash32, c_tsvector, c_bit,
-        c_int4range, c_reltime, c_abstime, c_point, c_lseg, c_box, c_circle, c_bitvarying, c_cidr, c_inet, c_macaddr, c_hll
-        ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        order_id, user_id, status, c_int, c_smallint, c_float, c_double, c_numeric, c_boolean, c_char, c_text, c_bytea, c_raw, c_date, c_time,
+        c_smalldatetime, c_timestamp, c_timestamptz, c_interval, c_array, c_json, c_jsonb, c_uuid, c_hash32, c_tsvector, c_tsquery, c_bit,
+        c_int4range, c_daterange, c_tsrange, c_reltime, c_abstime, c_point, c_lseg, c_box, c_circle, c_bitvarying, c_cidr, c_inet, c_macaddr, c_hll, c_money
+        ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     </full-insert-order>
 
     <create-table-order-item>

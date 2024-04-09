@@ -26,26 +26,26 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
  */
 public final class YamlEncryptColumnRuleConfigurationSwapper implements YamlConfigurationSwapper<YamlEncryptColumnRuleConfiguration, EncryptColumnRuleConfiguration> {
     
-    private final YamlEncryptColumnItemRuleConfigurationSwapper columnItemSwapper = new YamlEncryptColumnItemRuleConfigurationSwapper();
+    private final YamlEncryptColumnItemRuleConfigurationSwapper encryptColumnItemSwapper = new YamlEncryptColumnItemRuleConfigurationSwapper();
     
     @Override
     public YamlEncryptColumnRuleConfiguration swapToYamlConfiguration(final EncryptColumnRuleConfiguration data) {
         YamlEncryptColumnRuleConfiguration result = new YamlEncryptColumnRuleConfiguration();
         result.setName(data.getName());
-        result.setCipher(columnItemSwapper.swapToYamlConfiguration(data.getCipher()));
-        data.getLikeQuery().ifPresent(optional -> result.setLikeQuery(columnItemSwapper.swapToYamlConfiguration(optional)));
-        data.getAssistedQuery().ifPresent(optional -> result.setAssistedQuery(columnItemSwapper.swapToYamlConfiguration(optional)));
+        result.setCipher(encryptColumnItemSwapper.swapToYamlConfiguration(data.getCipher()));
+        data.getLikeQuery().ifPresent(optional -> result.setLikeQuery(encryptColumnItemSwapper.swapToYamlConfiguration(optional)));
+        data.getAssistedQuery().ifPresent(optional -> result.setAssistedQuery(encryptColumnItemSwapper.swapToYamlConfiguration(optional)));
         return result;
     }
     
     @Override
     public EncryptColumnRuleConfiguration swapToObject(final YamlEncryptColumnRuleConfiguration yamlConfig) {
-        EncryptColumnRuleConfiguration result = new EncryptColumnRuleConfiguration(yamlConfig.getName(), columnItemSwapper.swapToObject(yamlConfig.getCipher()));
+        EncryptColumnRuleConfiguration result = new EncryptColumnRuleConfiguration(yamlConfig.getName(), encryptColumnItemSwapper.swapToObject(yamlConfig.getCipher()));
         if (null != yamlConfig.getAssistedQuery()) {
-            result.setAssistedQuery(columnItemSwapper.swapToObject(yamlConfig.getAssistedQuery()));
+            result.setAssistedQuery(encryptColumnItemSwapper.swapToObject(yamlConfig.getAssistedQuery()));
         }
         if (null != yamlConfig.getLikeQuery()) {
-            result.setLikeQuery(columnItemSwapper.swapToObject(yamlConfig.getLikeQuery()));
+            result.setLikeQuery(encryptColumnItemSwapper.swapToObject(yamlConfig.getLikeQuery()));
         }
         return result;
     }

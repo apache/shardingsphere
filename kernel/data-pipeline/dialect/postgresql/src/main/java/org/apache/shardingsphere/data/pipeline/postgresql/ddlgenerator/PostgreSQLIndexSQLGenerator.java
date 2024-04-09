@@ -80,8 +80,8 @@ public final class PostgreSQLIndexSQLGenerator extends AbstractPostgreSQLDDLAdap
     }
     
     private Map<String, Object> getIndexData(final Map<String, Object> context, final Map<String, Object> indexNode) {
-        Collection<Map<String, Object>> indexProperties = fetchIndexProperties(context, indexNode);
-        Map<String, Object> result = indexProperties.iterator().next();
+        Collection<Map<String, Object>> indexProps = fetchIndexProperties(context, indexNode);
+        Map<String, Object> result = indexProps.iterator().next();
         result.put("schema", context.get("schema"));
         result.put("table", context.get("name"));
         return result;

@@ -17,10 +17,20 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.sequence.ExpectedSequenceNameClause;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Create sequence statement test case.
  */
+@Getter
+@Setter
 public final class CreateSequenceStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "sequence-name")
+    private ExpectedSequenceNameClause sequenceName;
 }

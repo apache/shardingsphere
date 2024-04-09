@@ -6,7 +6,7 @@ chapter = true
 
 [Yogiyo](https://www.yogiyo.co.kr/mobile/#/) is South Korea’s leading mobile and online food delivery platform that seeks to offer customers powerful and convenient food ordering services. Formerly a subsidiary of [Delivery Hero](https://www.deliveryhero.com/), Yogiyo was acquired by [GS Retail](http://www.gsretail.com/gsretail/ko/company), one of Korea’s top ten listed companies, for $684 million at the end of 2021.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md1.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md1.jpg)
 
 Hello! My name is [Byungchul Kim](https://twitter.com/edwardjyoon), and I work as a backend developer at Yogiyo R&D Centre on Orderyo, an ordering service. In this post, I want to share our experience implementing [Apache ShardingSphere](https://shardingsphere.apache.org/) for Yogiyo’s order service and explain how it helped us to solve technical debt and meet new requirements.
 
@@ -14,17 +14,17 @@ Hello! My name is [Byungchul Kim](https://twitter.com/edwardjyoon), and I work a
 
 Let me start by showing you the structure of Yogiyo’s order service. When order creation, cancellation, or update traffic occurs, the Orderyo application code distributes the write load to four shard clusters based on the `customer_id`. This way, the application only needs the `customer_id` to find the shard cluster it needs to access and perform the operation.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md2.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md2.jpg)
 
 Introducing sharding to the order service has improved the overall response time of `customer_id-based` order functions, eliminated many bottlenecks at the database end by distributing the DB load, and allowed us to scale the DB appropriately for future traffic growth. However, we also realized a technical debt during the past year of implementing and running database sharding for Yogiyo’s order service. The structure of the DB did not reflect the integrated lookup requirements.
 
 Most of the traffic from the order service functions has a `customer_id`, so we use a shard DB. In addition, we have the source data of the order, so there is a requirement for an integrated query without sharding key in the operation-oriented and boss-oriented functions. To support operational queries, we collected data by replicating from shard DBs to a single DB, which we called the Integration DB.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md3.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md3.jpg)
 
 In this structure, as the throughput of the shards increases, the load is placed on the single Integration DB, making it a bottleneck. This means that horizontal DB scaling, one of the advantages of sharding, is not available.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md4.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md4.jpg)
 
 In our tests, the threshold for horizontal scaling was well above our current traffic, but with new requirements, this became an issue that needed to be addressed.
 
@@ -188,7 +188,7 @@ After confirming the functional replacement in our local and staging environment
 
 To achieve this, we enlisted our internal infrastructure and automation teams to conduct performance tests in the same environment as production. These tests involved comparing our existing Integration DB with the limitations imposed by the ShardingSphere-Proxy structure, and we utilized the testing tool locust to facilitate the process.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md5.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md5.jpg)
 
 The performance tests revealed significant differences between the two structures within the same user pool.
 
@@ -205,7 +205,7 @@ After careful consideration, we decided to implement Apache ShardingSphere, an o
 
 I hope this article helps those facing challenges with implementing an efficient sharding structure due to specific requirements. If I have the opportunity, I will write another article on the issues and performance enhancements related to using ShardingSphere.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md6.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md6.jpg)
 
 To conclude, I would like to express my gratitude to my team, as well as the infrastructure and performance testing teams, for their invaluable support during the implementation of ShardingSphere.
 

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
-import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DataNodeTest {
@@ -37,26 +37,27 @@ class DataNodeTest {
     
     @Test
     void assertNewInValidDataNodeWithoutDelimiter() {
-        assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode("ds_0tbl_0"));
+        assertThrows(InvalidDataNodeFormatException.class, () -> new DataNode("ds_0tbl_0"));
     }
     
     @Test
     void assertNewInValidDataNodeWithTwoDelimiters() {
-        assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode("ds_0.db_0.tbl_0.tbl_1"));
+        assertThrows(InvalidDataNodeFormatException.class, () -> new DataNode("ds_0.db_0.tbl_0.tbl_1"));
     }
     
     @Test
     void assertNewValidDataNodeWithInvalidDelimiter() {
-        assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode("ds_0,tbl_0"));
+        assertThrows(InvalidDataNodeFormatException.class, () -> new DataNode("ds_0,tbl_0"));
     }
     
+    @SuppressWarnings({"SimplifiableAssertion", "ConstantValue"})
     @Test
     void assertEquals() {
         DataNode dataNode = new DataNode("ds_0.tbl_0");
         assertThat(dataNode, is(new DataNode("ds_0.tbl_0")));
         assertThat(dataNode, is(dataNode));
         assertThat(dataNode, not(new DataNode("ds_0.tbl_1")));
-        assertNotEquals(null, dataNode);
+        assertFalse(dataNode.equals(null));
     }
     
     @Test
@@ -71,12 +72,12 @@ class DataNodeTest {
     
     @Test
     void assertEmptyDataSourceDataNode() {
-        assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode(".tbl_0"));
+        assertThrows(InvalidDataNodeFormatException.class, () -> new DataNode(".tbl_0"));
     }
     
     @Test
     void assertEmptyTableDataNode() {
-        assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode("ds_0."));
+        assertThrows(InvalidDataNodeFormatException.class, () -> new DataNode("ds_0."));
     }
     
     @Test

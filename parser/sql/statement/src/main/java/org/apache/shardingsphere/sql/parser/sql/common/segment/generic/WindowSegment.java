@@ -20,10 +20,9 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Window segment.
@@ -36,14 +35,5 @@ public final class WindowSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private IdentifierValue identifierValue;
-    
-    private Collection<ExpressionSegment> partitionListSegments;
-    
-    public WindowSegment(final int startIndex, final int stopIndex, final IdentifierValue identifierValue, final Collection<ExpressionSegment> partitionListSegments) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        this.identifierValue = identifierValue;
-        this.partitionListSegments = partitionListSegments;
-    }
+    private final Collection<WindowItemSegment> itemSegments = new LinkedList<>();
 }

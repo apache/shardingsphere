@@ -92,7 +92,7 @@ public final class H2XAConnectionWrapper implements XAConnectionWrapper {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "H2";
     }
 }

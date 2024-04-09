@@ -84,11 +84,11 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 public final class DCLStatementAssert {
     
     /**
-     * Assert DAL statement is correct with expected parser result.
+     * Assert DCL statement is correct with expected parser result.
      * 
      * @param assertContext assert context
-     * @param actual actual DAL statement
-     * @param expected expected DAL statement test case
+     * @param actual actual DCL statement
+     * @param expected expected DCL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DCLStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof GrantStatement) {

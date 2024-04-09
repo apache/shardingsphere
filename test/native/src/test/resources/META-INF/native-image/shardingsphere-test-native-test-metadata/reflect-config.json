@@ -1,0 +1,12 @@
+[
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.algorithm.sharding.classbased.ClassBasedShardingAlgorithmFactory"},
+  "name":"org.apache.shardingsphere.test.natived.jdbc.commons.algorithm.ClassBasedInlineShardingAlgorithmFixture",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.EncryptTest"},
+  "name":"org.apache.shardingsphere.test.natived.jdbc.commons.algorithm.TestQueryAssistedShardingEncryptAlgorithm",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+}
+]

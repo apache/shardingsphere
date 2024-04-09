@@ -52,6 +52,15 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
     private CombineSegment combine;
     
     /**
+     * Get from.
+     *
+     * @return from table segment
+     */
+    public Optional<TableSegment> getFrom() {
+        return Optional.ofNullable(from);
+    }
+    
+    /**
      * Get where.
      *
      * @return where segment

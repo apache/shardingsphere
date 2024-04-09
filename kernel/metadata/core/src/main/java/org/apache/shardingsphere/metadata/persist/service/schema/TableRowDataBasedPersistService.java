@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.metadata.persist.service.schema;
 
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 

@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConf
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.constant.SQLTranslatorOrder;
 
+import java.util.Properties;
+
 /**
  * Default SQL translator rule configuration builder.
  */
@@ -28,7 +30,7 @@ public final class DefaultSQLTranslatorRuleConfigurationBuilder implements Defau
     
     @Override
     public SQLTranslatorRuleConfiguration build() {
-        return new SQLTranslatorRuleConfiguration();
+        return new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true);
     }
     
     @Override

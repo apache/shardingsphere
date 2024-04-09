@@ -8,7 +8,7 @@ chapter = true
 First off, thank you for your interest in Apache ShardingSphere.
 We are a very open and active community, where dedicated contributors of all levels are welcome to join in the pursuit of the `Apache Way`.
 
-You may participate in the community through the [Mailing-list Subscription](/en/involved/subscribe/), or simply by interacting with other members in the [ShardingSphere Slack channel](https://app.slack.com/client/T026JKU2DPF/C026MLH7F34)
+You may participate in the community through the [Mailing-list Subscription](/en/involved/subscribe/), or simply by interacting with other members in the [ShardingSphere Slack channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
 Please read the [Contribute Guide](/en/involved/contribute/) if you interested to contribute Apache ShardingSphere.
 

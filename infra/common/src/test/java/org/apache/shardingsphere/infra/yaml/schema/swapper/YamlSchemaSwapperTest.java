@@ -65,6 +65,7 @@ class YamlSchemaSwapperTest {
         assertFalse(idColumn.isGenerated());
         assertTrue(idColumn.isPrimaryKey());
         assertFalse(idColumn.isUnsigned());
+        assertFalse(idColumn.isNullable());
         assertTrue(idColumn.isVisible());
         YamlShardingSphereColumn nameColumn = columns.get("name");
         assertThat(nameColumn.getName(), is("name"));
@@ -73,6 +74,7 @@ class YamlSchemaSwapperTest {
         assertTrue(nameColumn.isGenerated());
         assertFalse(nameColumn.isPrimaryKey());
         assertTrue(nameColumn.isUnsigned());
+        assertFalse(nameColumn.isNullable());
         assertFalse(nameColumn.isVisible());
     }
     
@@ -83,17 +85,17 @@ class YamlSchemaSwapperTest {
         assertThat(actualSchema.getAllTableNames(), is(Collections.singleton("t_order")));
         ShardingSphereTable actualTable = actualSchema.getTable("t_order");
         assertColumn(actualTable);
-        assertThat(actualTable.getIndexes().size(), is(1));
-        assertThat(actualTable.getIndexes().iterator().next().getName(), is("PRIMARY"));
+        assertThat(actualTable.getIndexValues().size(), is(1));
+        assertThat(actualTable.getIndexValues().iterator().next().getName(), is("PRIMARY"));
         assertThat(actualSchema.getAllColumnNames("t_order").size(), is(2));
         assertTrue(actualSchema.containsColumn("t_order", "id"));
         assertTrue(actualSchema.containsColumn("t_order", "name"));
     }
     
     private void assertColumn(final ShardingSphereTable table) {
-        assertThat(table.getColumns().size(), is(2));
-        assertThat(table.getColumn("id"), is(new ShardingSphereColumn("id", 0, true, false, false, true, false)));
-        assertThat(table.getColumn("name"), is(new ShardingSphereColumn("name", 10, false, true, true, false, true)));
+        assertThat(table.getColumnValues().size(), is(2));
+        assertThat(table.getColumn("id"), is(new ShardingSphereColumn("id", 0, true, false, false, true, false, false)));
+        assertThat(table.getColumn("name"), is(new ShardingSphereColumn("name", 10, false, true, true, false, true, false)));
     }
     
     @Test

@@ -78,5 +78,7 @@ execute
     | explain
     | setUser
     | revert
-    ) SEMI_?
+    | updateStatistics
+    | merge
+    ) SEMI_? EOF
     ;

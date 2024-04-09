@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.route.standard;
 
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.readwritesplitting.route.standard.filter.ReadDataSourcesFilter;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 
@@ -35,7 +35,7 @@ public final class StandardReadwriteSplittingDataSourceRouter {
      * @return routed data source name
      */
     public String route(final ReadwriteSplittingDataSourceRule rule) {
-        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), getFilteredReadDataSources(rule));
+        return rule.getLoadBalancer().getTargetName(rule.getName(), getFilteredReadDataSources(rule));
     }
     
     private List<String> getFilteredReadDataSources(final ReadwriteSplittingDataSourceRule rule) {

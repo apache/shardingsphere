@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.hook;
 
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 
 import java.util.List;
 
@@ -32,10 +32,10 @@ public interface SQLExecutionHook {
      * @param dataSourceName data source name
      * @param sql SQL
      * @param params SQL parameters
-     * @param dataSourceMetaData data source meta data
+     * @param connectionProps connection properties
      * @param isTrunkThread is execution in trunk thread
      */
-    void start(String dataSourceName, String sql, List<Object> params, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread);
+    void start(String dataSourceName, String sql, List<Object> params, ConnectionProperties connectionProps, boolean isTrunkThread);
     
     /**
      * Handle when SQL execution finished success.

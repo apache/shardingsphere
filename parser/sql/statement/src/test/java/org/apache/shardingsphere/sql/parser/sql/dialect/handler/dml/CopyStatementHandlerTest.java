@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.prepare.PrepareStatementQuerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -36,33 +37,34 @@ class CopyStatementHandlerTest {
     
     @Test
     void assertGetPrepareStatementQuerySegmentWithSegmentForPostgreSQL() {
-        PostgreSQLCopyStatement postgreSQLCopyStatement = new PostgreSQLCopyStatement();
-        postgreSQLCopyStatement.setPrepareStatementQuerySegment(new PrepareStatementQuerySegment(0, 2));
-        Optional<PrepareStatementQuerySegment> actual = CopyStatementHandler.getPrepareStatementQuerySegment(postgreSQLCopyStatement);
+        PostgreSQLCopyStatement copyStatement = new PostgreSQLCopyStatement();
+        copyStatement.setPrepareStatementQuerySegment(new PrepareStatementQuerySegment(0, 2));
+        Optional<PrepareStatementQuerySegment> actual = CopyStatementHandler.getPrepareStatementQuerySegment(copyStatement);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(postgreSQLCopyStatement.getPrepareStatementQuerySegment().get()));
+        Preconditions.checkState(copyStatement.getPrepareStatementQuerySegment().isPresent());
+        assertThat(actual.get(), is(copyStatement.getPrepareStatementQuerySegment().get()));
     }
     
     @Test
     void assertGetPrepareStatementQuerySegmentWithoutSegmentForPostgreSQL() {
-        PostgreSQLCopyStatement postgreSQLCopyStatement = new PostgreSQLCopyStatement();
-        Optional<PrepareStatementQuerySegment> actual = CopyStatementHandler.getPrepareStatementQuerySegment(postgreSQLCopyStatement);
+        PostgreSQLCopyStatement copyStatement = new PostgreSQLCopyStatement();
+        Optional<PrepareStatementQuerySegment> actual = CopyStatementHandler.getPrepareStatementQuerySegment(copyStatement);
         assertFalse(actual.isPresent());
     }
     
     @Test
     void assertGetColumnsWithSegmentForPostgreSQL() {
-        PostgreSQLCopyStatement postgreSQLCopyStatement = new PostgreSQLCopyStatement();
-        postgreSQLCopyStatement.getColumns().add(new ColumnSegment(0, 2, new IdentifierValue("identifier")));
-        Collection<ColumnSegment> actual = CopyStatementHandler.getColumns(postgreSQLCopyStatement);
+        PostgreSQLCopyStatement copyStatement = new PostgreSQLCopyStatement();
+        copyStatement.getColumns().add(new ColumnSegment(0, 2, new IdentifierValue("identifier")));
+        Collection<ColumnSegment> actual = CopyStatementHandler.getColumns(copyStatement);
         assertFalse(actual.isEmpty());
-        assertThat(actual, is(postgreSQLCopyStatement.getColumns()));
+        assertThat(actual, is(copyStatement.getColumns()));
     }
     
     @Test
     void assertGetColumnsWithoutSegmentForPostgreSQL() {
-        PostgreSQLCopyStatement postgreSQLCopyStatement = new PostgreSQLCopyStatement();
-        Collection<ColumnSegment> actual = CopyStatementHandler.getColumns(postgreSQLCopyStatement);
+        PostgreSQLCopyStatement copyStatement = new PostgreSQLCopyStatement();
+        Collection<ColumnSegment> actual = CopyStatementHandler.getColumns(copyStatement);
         assertTrue(actual.isEmpty());
     }
     

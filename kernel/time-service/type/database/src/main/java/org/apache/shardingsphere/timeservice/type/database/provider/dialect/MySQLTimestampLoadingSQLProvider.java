@@ -30,7 +30,7 @@ public final class MySQLTimestampLoadingSQLProvider implements TimestampLoadingS
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

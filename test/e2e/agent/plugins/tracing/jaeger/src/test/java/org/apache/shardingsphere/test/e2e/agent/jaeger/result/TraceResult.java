@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jaeger.result;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,7 +27,7 @@ import java.util.Collection;
 @Setter
 public final class TraceResult {
     
-    @SerializedName("traceID")
+    @JsonProperty("traceID")
     private String traceId;
     
     private Collection<SpanResult> spans;

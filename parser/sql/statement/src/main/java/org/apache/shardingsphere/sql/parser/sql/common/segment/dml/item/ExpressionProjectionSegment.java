@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -59,17 +60,36 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     }
     
     @Override
+    public String getColumnLabel() {
+        return getAliasName().orElse(text);
+    }
+    
+    @Override
     public Optional<String> getAliasName() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
     
     @Override
-    public Optional<AliasSegment> getAlias() {
-        return Optional.ofNullable(alias);
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
+    }
+    
+    /**
+     * Get alias segment.
+     *
+     * @return alias segment
+     */
+    public AliasSegment getAliasSegment() {
+        return alias;
+    }
+    
+    @Override
+    public int getStartIndex() {
+        return null != alias && alias.getStartIndex() < startIndex ? alias.getStartIndex() : startIndex;
     }
     
     @Override
     public int getStopIndex() {
-        return null != alias ? alias.getStopIndex() : stopIndex;
+        return null != alias && alias.getStopIndex() > stopIndex ? alias.getStopIndex() : stopIndex;
     }
 }

@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ConnectionContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +36,7 @@ import java.util.Map;
  */
 public final class SQLTokenGenerators {
     
-    private final Map<Class<?>, SQLTokenGenerator> generators = new LinkedHashMap<>();
+    private final Collection<SQLTokenGenerator> generators = new LinkedList<>();
     
     /**
      * Add all SQL token generators.
@@ -45,9 +44,7 @@ public final class SQLTokenGenerators {
      * @param sqlTokenGenerators SQL token generators
      */
     public void addAll(final Collection<SQLTokenGenerator> sqlTokenGenerators) {
-        for (SQLTokenGenerator each : sqlTokenGenerators) {
-            generators.putIfAbsent(each.getClass(), each);
-        }
+        generators.addAll(sqlTokenGenerators);
     }
     
     /**
@@ -64,7 +61,7 @@ public final class SQLTokenGenerators {
     public List<SQLToken> generateSQLTokens(final String databaseName, final Map<String, ShardingSphereSchema> schemas,
                                             final SQLStatementContext sqlStatementContext, final List<Object> params, final ConnectionContext connectionContext) {
         List<SQLToken> result = new LinkedList<>();
-        for (SQLTokenGenerator each : generators.values()) {
+        for (SQLTokenGenerator each : generators) {
             setUpSQLTokenGenerator(each, params, databaseName, schemas, result, connectionContext);
             if (each instanceof OptionalSQLTokenGenerator) {
                 SQLToken sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatementContext);

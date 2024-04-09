@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="create_event_trigger_drop_database" value="CREATE EVENT e1 ON SCHEDULE EVERY 1 SECOND DO DROP DATABASE BUG52792" db-types="MySQL" />
     <sql-case id="create_event_trigger" value="CREATE EVENT TRIGGER has_volatile_rewrite ON table_rewrite EXECUTE PROCEDURE log_rewrite();" db-types="PostgreSQL" />
     <sql-case id="create_event_trigger_with_when" value="CREATE EVENT TRIGGER end_rls_command ON ddl_command_end WHEN tag IN (&apos;CREATE POLICY&apos;, &apos;ALTER POLICY&apos;, &apos;DROP POLICY&apos;) EXECUTE PROCEDURE end_command();" db-types="PostgreSQL" />
     <sql-case id="create_event_trigger_with_when_and" value="CREATE EVENT TRIGGER regress_event_trigger2 ON ddl_command_start WHEN tag IN (&apos;create table&apos;) AND tag IN (&apos;CREATE FUNCTION&apos;) EXECUTE PROCEDURE test_event_trigger();" db-types="PostgreSQL" />

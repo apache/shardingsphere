@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.cases.savepoint;
 
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -35,13 +33,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL)
 public final class MySQLSavePointTestCase extends BaseSavePointTestCase {
     
-    public MySQLSavePointTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
-        super(baseTransactionITCase, dataSource);
+    public MySQLSavePointTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override
     public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
-        assertRollback2Savepoint();
+        assertRollbackToSavepoint();
         assertReleaseSavepoint();
         assertReleaseSavepointFailure();
     }

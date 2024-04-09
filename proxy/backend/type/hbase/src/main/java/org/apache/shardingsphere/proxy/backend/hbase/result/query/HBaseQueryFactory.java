@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.result.query;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.hbase.handler.HBaseBackendQueryHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -38,7 +38,7 @@ public final class HBaseQueryFactory {
      * @return instance of database backend handler
      */
     public static ProxyBackendHandler newInstance(final SQLStatement sqlStatement) {
-        HBaseQueryResultSet resultSet = TypedSPILoader.getService(HBaseQueryResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        HBaseQueryResultSet resultSet = TypedSPILoader.getService(HBaseQueryResultSet.class, sqlStatement.getClass(), new Properties());
         return new HBaseBackendQueryHandler(sqlStatement, resultSet);
     }
 }

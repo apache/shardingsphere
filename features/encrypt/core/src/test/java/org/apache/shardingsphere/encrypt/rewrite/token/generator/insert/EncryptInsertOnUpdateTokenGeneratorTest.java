@@ -20,10 +20,10 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
@@ -62,17 +62,25 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
     
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
+        EncryptColumn encryptColumn = mockEncryptColumn();
         EncryptTable encryptTable = mockEncryptTable();
+        when(encryptTable.getEncryptColumn("mobile")).thenReturn(encryptColumn);
         when(result.getEncryptTable("t_user")).thenReturn(encryptTable);
-        when(result.encrypt(null, "db_test", "t_user", "mobile", Collections.singletonList(0))).thenReturn(Collections.singletonList("encryptValue"));
+        return result;
+    }
+    
+    private EncryptColumn mockEncryptColumn() {
+        EncryptColumn result = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
+        when(result.getCipher().getName()).thenReturn("cipher_mobile");
+        when(result.getCipher().encrypt(null, "db_test", "t_user", "mobile", Collections.singletonList(0))).thenReturn(Collections.singletonList("encryptValue"));
         return result;
     }
     
     private static EncryptTable mockEncryptTable() {
-        EncryptTable result = mock(EncryptTable.class);
+        EncryptTable result = mock(EncryptTable.class, RETURNS_DEEP_STUBS);
         when(result.getTable()).thenReturn("t_user");
         when(result.isEncryptColumn("mobile")).thenReturn(true);
-        when(result.getCipherColumn("mobile")).thenReturn("cipher_mobile");
+        when(result.getEncryptColumn("mobile").getCipher().getName()).thenReturn("cipher_mobile");
         return result;
     }
     
@@ -113,14 +121,14 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
         assertFalse(actual.hasNext());
     }
     
-    private Collection<AssignmentSegment> buildAssignmentSegment() {
+    private Collection<ColumnAssignmentSegment> buildAssignmentSegment() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("mobile"));
         List<ColumnSegment> columnSegments = Collections.singletonList(columnSegment);
-        AssignmentSegment assignmentSegment1 = new ColumnAssignmentSegment(0, 0, columnSegments, new ParameterMarkerExpressionSegment(0, 0, 0));
+        ColumnAssignmentSegment assignmentSegment1 = new ColumnAssignmentSegment(0, 0, columnSegments, new ParameterMarkerExpressionSegment(0, 0, 0));
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "VALUES", "VALUES (0)");
         functionSegment.getParameters().add(columnSegment);
-        AssignmentSegment assignmentSegment2 = new ColumnAssignmentSegment(0, 0, columnSegments, functionSegment);
-        AssignmentSegment assignmentSegment3 = new ColumnAssignmentSegment(0, 0, columnSegments, new LiteralExpressionSegment(0, 0, 0));
+        ColumnAssignmentSegment assignmentSegment2 = new ColumnAssignmentSegment(0, 0, columnSegments, functionSegment);
+        ColumnAssignmentSegment assignmentSegment3 = new ColumnAssignmentSegment(0, 0, columnSegments, new LiteralExpressionSegment(0, 0, 0));
         return Arrays.asList(assignmentSegment1, assignmentSegment2, assignmentSegment3);
     }
     

@@ -20,4 +20,5 @@
     <sql-case id="drop_function" value="DROP FUNCTION sqrt(integer)" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_functions" value="DROP FUNCTION sqrt(integer), sqrt(bigint)" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_function_without_argument_list" value="DROP FUNCTION update_employee_salaries" db-types="PostgreSQL,openGauss, SQLServer" />
+    <sql-case id="drop_function_with_schema" value="DROP FUNCTION oe.SecondMax" db-types="Oracle" />
 </sql-cases>

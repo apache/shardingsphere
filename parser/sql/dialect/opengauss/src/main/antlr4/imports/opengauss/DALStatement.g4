@@ -33,7 +33,7 @@ set
     | SCHEMA STRING_
     | NAMES encoding?
     | ROLE nonReservedWordOrSconst
-    | SESSION AUTHORIZATION nonReservedWordOrSconst
+    | SESSION AUTHORIZATION IDENTIFIER_ PASSWORD STRING_
     | SESSION AUTHORIZATION DEFAULT
     | XML OPTION documentOrContent)
     ;

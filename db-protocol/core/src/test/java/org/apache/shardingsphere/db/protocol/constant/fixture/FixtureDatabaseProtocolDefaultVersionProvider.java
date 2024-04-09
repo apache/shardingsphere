@@ -27,7 +27,7 @@ public final class FixtureDatabaseProtocolDefaultVersionProvider implements Data
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "FIXTURE";
     }
 }

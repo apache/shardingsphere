@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mask.yaml.swapper;
 
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
@@ -46,7 +46,7 @@ class YamlMaskRuleConfigurationSwapperTest {
     }
     
     private MaskRuleConfiguration createMaskRuleConfiguration() {
-        Collection<MaskTableRuleConfiguration> tables = Collections.singletonList(new MaskTableRuleConfiguration("tbl", Collections.emptyList()));
+        Collection<MaskTableRuleConfiguration> tables = Collections.singleton(new MaskTableRuleConfiguration("tbl", Collections.emptyList()));
         Map<String, AlgorithmConfiguration> encryptors = Collections.singletonMap("myMaskAlgorithm", new AlgorithmConfiguration("MD5", new Properties()));
         return new MaskRuleConfiguration(tables, encryptors);
     }

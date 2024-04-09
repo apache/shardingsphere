@@ -17,53 +17,58 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedAuditorStatement;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesUsedAuditorStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
  * Show sharding table rules used auditor executor.
  */
-public final class ShowShardingTableRulesUsedAuditorExecutor implements RQLExecutor<ShowShardingTableRulesUsedAuditorStatement> {
+@Setter
+public final class ShowShardingTableRulesUsedAuditorExecutor implements DistSQLQueryExecutor<ShowShardingTableRulesUsedAuditorStatement>, DistSQLExecutorRuleAware<ShardingRule> {
+    
+    private ShardingRule rule;
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableRulesUsedAuditorStatement sqlStatement) {
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        database.getRuleMetaData().findSingleRule(ShardingRule.class).ifPresent(optional -> requireResult(sqlStatement, result, optional));
-        return result;
-    }
-    
-    private void requireResult(final ShowShardingTableRulesUsedAuditorStatement statement, final Collection<LocalDataQueryResultRow> result, final ShardingRule rule) {
-        if (!statement.getAuditorName().isPresent()) {
-            return;
-        }
-        ShardingRuleConfiguration config = (ShardingRuleConfiguration) rule.getConfiguration();
-        config.getTables().forEach(each -> {
-            if (null != each.getAuditStrategy() && each.getAuditStrategy().getAuditorNames().contains(statement.getAuditorName().get())) {
-                result.add(new LocalDataQueryResultRow("table", each.getLogicTable()));
-            }
-        });
-        config.getAutoTables().forEach(each -> {
-            if (null != each.getAuditStrategy() && each.getAuditStrategy().getAuditorNames().contains(statement.getAuditorName().get())) {
-                result.add(new LocalDataQueryResultRow("auto_table", each.getLogicTable()));
-            }
-        });
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowShardingTableRulesUsedAuditorStatement sqlStatement) {
         return Arrays.asList("type", "name");
     }
     
     @Override
-    public String getType() {
-        return ShowShardingTableRulesUsedAuditorStatement.class.getName();
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableRulesUsedAuditorStatement sqlStatement, final ContextManager contextManager) {
+        if (!sqlStatement.getAuditorName().isPresent()) {
+            return Collections.emptyList();
+        }
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        rule.getConfiguration().getTables().forEach(each -> {
+            if (null != each.getAuditStrategy() && each.getAuditStrategy().getAuditorNames().contains(sqlStatement.getAuditorName().get())) {
+                result.add(new LocalDataQueryResultRow("table", each.getLogicTable()));
+            }
+        });
+        rule.getConfiguration().getAutoTables().forEach(each -> {
+            if (null != each.getAuditStrategy() && each.getAuditStrategy().getAuditorNames().contains(sqlStatement.getAuditorName().get())) {
+                result.add(new LocalDataQueryResultRow("auto_table", each.getLogicTable()));
+            }
+        });
+        return result;
+    }
+    
+    @Override
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
+    }
+    
+    @Override
+    public Class<ShowShardingTableRulesUsedAuditorStatement> getType() {
+        return ShowShardingTableRulesUsedAuditorStatement.class;
     }
 }

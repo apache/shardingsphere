@@ -30,7 +30,7 @@ public final class SQLServerTimestampLoadingSQLProvider implements TimestampLoad
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "SQLServer";
     }
 }

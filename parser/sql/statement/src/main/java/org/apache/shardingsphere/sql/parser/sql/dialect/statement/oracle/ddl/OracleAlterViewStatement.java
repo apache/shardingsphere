@@ -17,11 +17,29 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+
+import java.util.Optional;
 
 /**
  * Oracle alter view statement.
  */
+@Getter
+@Setter
 public final class OracleAlterViewStatement extends AlterViewStatement implements OracleStatement {
+    
+    private ConstraintDefinitionSegment constraintDefinitionSegment;
+    
+    /**
+     * Get constraint definition segment.
+     *
+     * @return constraint definition
+     */
+    public Optional<ConstraintDefinitionSegment> getConstraintDefinitionSegment() {
+        return Optional.ofNullable(constraintDefinitionSegment);
+    }
 }

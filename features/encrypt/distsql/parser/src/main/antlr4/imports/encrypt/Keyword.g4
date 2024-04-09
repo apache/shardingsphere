@@ -143,22 +143,14 @@ AES
     : A E S
     ;
 
-RC4
-    : R C [4]
-    ;
-
-SM3
-    : S M [3]
-    ;
-
-SM4
-    : S M [4]
-    ;
-
-CHAR_DIGEST_LIKE
-    : C H A R UL_ D I G E S T UL_ L I K E
-    ;
-
 NOT
     : N O T
+    ;
+
+ALGORITHM
+    : A L G O R I T H M 
+    ;
+
+PLUGINS
+    : P L U G I N S
     ;

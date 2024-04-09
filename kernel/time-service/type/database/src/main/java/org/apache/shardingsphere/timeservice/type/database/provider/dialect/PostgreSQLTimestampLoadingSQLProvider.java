@@ -30,7 +30,7 @@ public final class PostgreSQLTimestampLoadingSQLProvider implements TimestampLoa
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

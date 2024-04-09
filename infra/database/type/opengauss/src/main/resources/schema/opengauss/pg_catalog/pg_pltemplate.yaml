@@ -1,0 +1,86 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_pltemplate
+columns:
+  tmplname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: tmplname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tmpltrusted:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: tmpltrusted
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tmpldbacreate:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: tmpldbacreate
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tmplhandler:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: tmplhandler
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tmplinline:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: tmplinline
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tmplvalidator:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: tmplvalidator
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tmpllibrary:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: tmpllibrary
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tmplacl:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: tmplacl
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_pltemplate_name_index:
+    name: pg_pltemplate_name_index

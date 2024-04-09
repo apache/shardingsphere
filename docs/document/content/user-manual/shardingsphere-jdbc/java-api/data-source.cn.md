@@ -17,7 +17,7 @@ ShardingSphere-JDBC 支持所有的数据库 JDBC 驱动和连接池。
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-core</artifactId>
+    <artifactId>shardingsphere-jdbc</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
 ```

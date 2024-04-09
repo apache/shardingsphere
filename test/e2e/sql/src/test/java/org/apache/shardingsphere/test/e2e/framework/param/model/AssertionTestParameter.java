@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.framework.param.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
@@ -50,6 +50,8 @@ public final class AssertionTestParameter implements E2ETestParameter {
     
     @Override
     public String toString() {
-        return String.format("%s: %s -> %s -> %s -> %s", adapter, scenario, databaseType.getType(), sqlExecuteType, testCaseContext.getTestCase().getSql());
+        String sql = null == testCaseContext ? null : testCaseContext.getTestCase().getSql();
+        String type = null == databaseType ? null : databaseType.getType();
+        return String.format("%s: %s -> %s -> %s -> %s", adapter, scenario, type, sqlExecuteType, sql);
     }
 }

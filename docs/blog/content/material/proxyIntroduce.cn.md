@@ -121,7 +121,6 @@ rules: # 认证信息
    defaultType: XA
    providerType: Atomikos
  - !SQL_PARSER
-   sqlCommentParseEnabled: true
    sqlStatementCache:
      initialCapacity: 2000
      maximumSize: 65535

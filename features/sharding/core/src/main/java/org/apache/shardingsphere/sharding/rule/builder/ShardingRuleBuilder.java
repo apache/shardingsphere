@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sharding.rule.builder;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
@@ -36,10 +37,10 @@ import java.util.Map;
 public final class ShardingRuleBuilder implements DatabaseRuleBuilder<ShardingRuleConfiguration> {
     
     @Override
-    public ShardingRule build(final ShardingRuleConfiguration config, final String databaseName,
+    public ShardingRule build(final ShardingRuleConfiguration config, final String databaseName, final DatabaseType protocolType,
                               final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
         ShardingSpherePreconditions.checkState(null != dataSources && !dataSources.isEmpty(), () -> new MissingRequiredShardingConfigurationException("Data source", databaseName));
-        return new ShardingRule(config, dataSources.keySet(), instanceContext);
+        return new ShardingRule(config, dataSources, instanceContext);
     }
     
     @Override

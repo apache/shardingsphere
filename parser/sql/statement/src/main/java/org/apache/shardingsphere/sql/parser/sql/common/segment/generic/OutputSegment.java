@@ -22,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -40,9 +40,10 @@ public final class OutputSegment implements SQLSegment {
     private final int stopIndex;
     
     @Setter
-    private TableNameSegment tableName;
+    private SimpleTableSegment table;
     
-    private final Collection<ColumnProjectionSegment> outputColumns = new LinkedList<>();
+    @Setter
+    private ProjectionsSegment outputColumns;
     
     private final Collection<ColumnSegment> tableColumns = new LinkedList<>();
 }

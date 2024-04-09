@@ -28,7 +28,7 @@ alterStorageUnit
     ;
 
 unregisterStorageUnit
-    : UNREGISTER STORAGE UNIT ifExists? storageUnitName (COMMA_ storageUnitName)* ignoreSingleTables?
+    : UNREGISTER STORAGE UNIT ifExists? storageUnitName (COMMA_ storageUnitName)* ignoreTables?
     ;
 
 storageUnitDefinition
@@ -67,8 +67,10 @@ password
     : STRING_
     ;
 
-ignoreSingleTables
-    : IGNORE SINGLE TABLES
+ignoreTables
+    : IGNORE (SINGLE COMMA_ BROADCAST | BROADCAST COMMA_ SINGLE) TABLES # ignoreSingleAndBroadcastTables
+    | IGNORE SINGLE TABLES # ignoreSingleTables
+    | IGNORE BROADCAST TABLES # ignoreBroadcastTables
     ;
 
 ifExists

@@ -13,12 +13,12 @@ The `DROP SHADOW RULE` syntax is used to drop shadow rule for specified database
 {{% tab name="Grammar" %}}
 ```sql
 DropShadowRule ::=
-  'DROP' 'SHADOW' 'TABLE' 'RULE' ifExists? shadowRuleName ('FROM' databaseName)?
+  'DROP' 'SHADOW' 'RULE' ifExists? ruleName ('FROM' databaseName)?
 
 ifExists ::=
   'IF' 'EXISTS'
 
-shadowRuleName ::=
+ruleName ::=
   identifier
 
 databaseName ::=

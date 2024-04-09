@@ -1,6 +1,6 @@
 +++
 title = "SET DEFAULT SINGLE TABLE STORAGE UNIT"
-weight = 1
+weight = 3
 +++
 
 ## 描述

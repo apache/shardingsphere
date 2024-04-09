@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticator;
@@ -35,7 +34,7 @@ public final class PostgreSQLPasswordAuthenticator implements PostgreSQLAuthenti
     }
     
     @Override
-    public AuthenticationMethod getAuthenticationMethod() {
-        return PostgreSQLAuthenticationMethod.PASSWORD;
+    public String getAuthenticationMethodName() {
+        return PostgreSQLAuthenticationMethod.PASSWORD.getMethodName();
     }
 }

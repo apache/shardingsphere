@@ -19,4 +19,6 @@
 <sql-parser-test-cases>
     <drop-database sql-case-id="drop_database_if_exist" />
     <drop-database sql-case-id="drop_database" />
+    <drop-database sql-case-id="drop_database_without_database_name" />
+    <drop-database sql-case-id="drop_database_including_backups_noprompt" />
 </sql-parser-test-cases>

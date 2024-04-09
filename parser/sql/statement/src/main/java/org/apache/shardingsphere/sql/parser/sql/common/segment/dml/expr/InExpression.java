@@ -24,6 +24,9 @@ import lombok.Setter;
 import java.util.Collection;
 import java.util.LinkedList;
 
+/**
+ * In expression.
+ */
 @RequiredArgsConstructor
 @Getter
 @Setter
@@ -52,5 +55,10 @@ public final class InExpression implements ExpressionSegment {
             result.add(this);
         }
         return result;
+    }
+    
+    @Override
+    public String getText() {
+        return left.getText() + right.getText();
     }
 }

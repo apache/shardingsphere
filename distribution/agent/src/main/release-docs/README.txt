@@ -1,7 +1,7 @@
 Welcome to Apache ShardingSphere Agent
 ===============================================================================
 
-Apache ShardingSphere Agent is used to collect relevant monitoring data generated when Apache ShardingSphere is running, including Loggin, Metrics, and Tracing.
+Apache ShardingSphere Agent is used to collect relevant monitoring data generated when Apache ShardingSphere is running, including Logging, Metrics, and Tracing.
 
 - `Logging` The log can be easily expanded through the agent to provide more information for analyzing the system running status.
 - `Metrics` System statistical indicators are collected through probes for display by third-party applications.

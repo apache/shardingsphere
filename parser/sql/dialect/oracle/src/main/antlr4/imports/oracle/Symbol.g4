@@ -58,3 +58,7 @@ QUESTION_:           '?';
 AT_:                 '@';
 SEMI_:               ';';
 DOLLAR_:             '$';
+ASSIGNMENT_OPERATOR_:':=';
+ARROW_:              '=>';
+EXPONENT_:           '**';
+RANGE_OPERATOR_:     '..';

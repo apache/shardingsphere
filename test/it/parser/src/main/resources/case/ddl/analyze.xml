@@ -58,4 +58,16 @@
     <analyze sql-case-id="analyze_table_update_histogram_using_data" >
         <table name="tbl_datetime" start-index="14" stop-index="24" />
     </analyze>
+    
+    <analyze sql-case-id="analyze_table_validate_structure_cascade1">
+        <table name="emp" start-index="14" stop-index="16" />
+    </analyze>
+    
+    <analyze sql-case-id="analyze_table_validate_structure_cascade2">
+        <table name="emp" start-index="14" stop-index="16" />
+    </analyze>
+    
+    <analyze sql-case-id="analyze_table_validate_structure_cascade3">
+        <table name="employees" start-index="14" stop-index="22" />
+    </analyze>
 </sql-parser-test-cases>

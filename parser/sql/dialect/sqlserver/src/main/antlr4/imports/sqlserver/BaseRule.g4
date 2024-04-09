@@ -35,6 +35,7 @@ literals
 
 stringLiterals
     : STRING_
+    | NCHAR_TEXT
     ;
 
 numberLiterals
@@ -53,7 +54,7 @@ hexadecimalLiterals
 bitValueLiterals
     : BIT_NUM_
     ;
-    
+
 booleanLiterals
     : TRUE | FALSE
     ;
@@ -119,6 +120,8 @@ unreservedWord
     | DATA_RETENTION | TEMPORAL_HISTORY_RETENTION | EDITION | MIXED_PAGE_ALLOCATION | DISABLED | ALLOWED | HADR | MULTI_USER | RESTRICTED_USER | SINGLE_USER | OFFLINE | EMERGENCY | SUSPEND | DATE_CORRELATION_OPTIMIZATION
     | ELASTIC_POOL | SERVICE_OBJECTIVE | DATABASE_NAME | ALLOW_CONNECTIONS | GEO | NAMED | DATEFIRST | BACKUP_STORAGE_REDUNDANCY | FORCE_FAILOVER_ALLOW_DATA_LOSS | SECONDARY | FAILOVER | DEFAULT_FULLTEXT_LANGUAGE
     | DEFAULT_LANGUAGE | INLINE | NESTED_TRIGGERS | TRANSFORM_NOISE_WORDS | TWO_DIGIT_YEAR_CUTOFF | PERSISTENT_LOG_BUFFER | DIRECTORY_NAME | DATEFORMAT | DELAYED_DURABILITY | TRANSFER | SCHEMA | PASSWORD | AUTHORIZATION
+    | MEMBER | SEARCH | TEXT | SECOND | PRECISION | VIEWS | PROVIDER | COLUMNS | SUBSTRING | RETURNS | SIZE | CONTAINS | MONTH | INPUT | YEAR
+    | TIMESTAMP | TRIM | USER | RIGHT | JSON | SID | OPENQUERY | ACTION | TARGET | HOUR | MINUTE | TABLE
     ;
 
 databaseName
@@ -150,7 +153,7 @@ sequenceName
     ;
 
 tableName
-    : (owner DOT_)? name
+    : ((databaseName DOT_)? (owner? DOT_))? name
     ;
 
 queueName
@@ -166,7 +169,11 @@ serviceName
     ;
 
 columnName
-    : (owner DOT_)? name
+    : ((databaseName DOT_)? (owner DOT_))? (name | scriptVariableName)
+    ;
+
+scriptVariableName
+    : DOLLAR_ LP_ name RP_
     ;
 
 owner
@@ -202,7 +209,7 @@ collationName
     ;
 
 alias
-    : identifier | STRING_
+    : identifier | STRING_ | NCHAR_TEXT
     ;
 
 dataTypeLength
@@ -215,11 +222,12 @@ primaryKey
 
 // TODO comb expr
 expr
-    : expr andOperator expr
+    : booleanPrimary
+    | expr andOperator expr
     | expr orOperator expr
+    | expr distinctFrom expr
     | notOperator expr
     | LP_ expr RP_
-    | booleanPrimary
     ;
 
 andOperator
@@ -228,6 +236,10 @@ andOperator
 
 orOperator
     : OR | OR_
+    ;
+
+distinctFrom
+    : IS NOT? DISTINCT FROM
     ;
 
 notOperator
@@ -275,16 +287,19 @@ simpleExpr
     | columnName
     | variableName
     | simpleExpr OR_ simpleExpr
-    | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
+    | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY | DOLLAR_) simpleExpr
+    | CURRENT OF GLOBAL? expr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
-    | LBE_ identifier expr RBE_
+    | LBT_ expr RBT_
+    | LBE_ expr (DOT_ expr)* (COMMA_ expr)* RBE_ (ON (COLUMNS | ROWS))?
     | caseExpression
     | privateExprOfDb
+    | matchExpression
     ;
 
 functionCall
-    : aggregationFunction | specialFunction | regularFunction 
+    : aggregationFunction | specialFunction | regularFunction
     ;
 
 aggregationFunction
@@ -300,15 +315,102 @@ distinct
     ;
 
 specialFunction
-    : castFunction  | charFunction
+    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction 
+    | windowFunction | approxFunction | openDatasourceFunction | rowNumberFunction | graphFunction 
+    | trimFunction
+    ;
+
+trimFunction
+    : TRIM LP_ ((LEADING | BOTH | TRAILING) expr? FROM)? expr RP_
+    | TRIM LP_ (expr FROM)? expr RP_
+    ;
+
+graphFunction
+    : graphAggFunction
+    ;
+
+graphAggFunction
+    : graphAggFunctionName LP_ expr (COMMA_ expr)? RP_ WITHIN GROUP LP_ GRAPH PATH RP_
+    ;
+
+graphAggFunctionName
+    : STRING_AGG
+    | LAST_VALUE
+    | aggregationFunctionName
+    ;
+
+rowNumberFunction
+    : ROW_NUMBER LP_ RP_ overClause
+    ;
+
+openDatasourceFunction
+    : (OPENDATASOURCE LP_ expr COMMA_ expr RP_) (DOT_ tableName)?
+    ;
+
+approxFunction
+    : funcName = (APPROX_PERCENTILE_CONT | APPROX_PERCENTILE_DISC) LP_ expr RP_ WITHIN GROUP LP_ ORDER BY expr (ASC | DESC)? RP_
+    ;
+
+conversionFunction
+    : castFunction
+    | convertFunction
     ;
 
 castFunction
-    : CAST LP_ expr AS dataType RP_
+    : (CAST | TRY_CAST) LP_ expr AS dataType RP_
+    ;
+
+convertFunction
+    : (CONVERT | TRY_CONVERT) LP_ dataType COMMA_ expr (COMMA_ NUMBER_)? RP_
+    ;
+
+jsonFunction
+    : jsonObjectFunction | jsonArrayFunction
+    ;
+
+jsonObjectFunction
+    : JSON_OBJECT LP_ (jsonKeyValue (COMMA_ jsonKeyValue)* jsonNullClause?)?  RP_
+    ;
+
+jsonArrayFunction
+    : JSON_ARRAY LP_ expr (COMMA_ expr)* jsonNullClause? RP_
+    ;
+
+jsonKeyValue
+    :  expr COLON_ expr
+    ;
+
+jsonNullClause
+    : NULL ON NULL | ABSENT ON NULL
     ;
 
 charFunction
     : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier)? RP_
+    ;
+
+openJsonFunction
+    : OPENJSON LP_ expr (COMMA_ expr)? RP_ openJsonWithclause?
+    ;
+
+openJsonWithclause
+    : WITH LP_  jsonColumnDefinition (COMMA_ jsonColumnDefinition)* RP_
+    ;
+
+jsonColumnDefinition
+    : columnName dataType expr? (AS JSON)?
+    ;
+
+openRowSetFunction
+    : OPENROWSET LP_ expr COMMA_ ((expr SEMI_ expr SEMI_ expr) | expr) COMMA_ (tableName | expr) RP_
+    | OPENROWSET LP_ BULK expr (COMMA_ expr)* RP_
+    ;
+
+openQueryFunction
+    : OPENQUERY LP_ expr COMMA_ expr RP_
+    ;
+
+rowSetFunction
+    : openRowSetFunction | openQueryFunction
     ;
 
 regularFunction
@@ -332,7 +434,7 @@ caseElse
     ;
 
 privateExprOfDb
-    : windowedFunction | atTimeZoneExpr | castExpr | convertExpr
+    : windowFunction | atTimeZoneExpr | castExpr | convertExpr
     ;
 
 orderByClause
@@ -367,8 +469,12 @@ convertExpr
     : CONVERT (dataType (LP_ NUMBER_ RP_)? COMMA_ expr (COMMA_ NUMBER_)?)
     ;
 
-windowedFunction
-    : functionCall overClause
+windowFunction
+    : funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ nullTreatment? overClause
+    ;
+
+nullTreatment
+    : (RESPECT | IGNORE) NULLS
     ;
 
 overClause
@@ -379,7 +485,7 @@ partitionByClause
     : PARTITION BY expr (COMMA_ expr)*
     ;
 
-rowRangeClause 
+rowRangeClause
     : (ROWS | RANGE) windowFrameExtent
     ;
 
@@ -513,4 +619,88 @@ entityType
 
 ifExists
     : IF EXISTS
+    ;
+
+tableHintLimited
+    : KEEPIDENTITY
+    | KEEPDEFAULTS
+    | HOLDLOCK
+    | IGNORE_CONSTRAINTS
+    | IGNORE_TRIGGERS
+    | NOLOCK
+    | NOWAIT
+    | PAGLOCK
+    | READCOMMITTED
+    | READCOMMITTEDLOCK
+    | READPAST
+    | REPEATABLEREAD
+    | ROWLOCK
+    | SERIALIZABLE
+    | SNAPSHOT
+    | TABLOCK
+    | TABLOCKX
+    | UPDLOCK
+    | XLOCK
+    ;
+
+matchExpression
+    : MATCH LP_ (arbitratyLengthMatch | simpleMatch) RP_
+    ;
+
+simpleMatch
+    : simpleMatchClause* (AND simpleMatch)*
+    ;
+
+simpleMatchClause
+    : lastNode
+    | nodeAlias
+    | inEdgePath
+    | outEdgePath
+    ;
+
+lastNode
+    : LAST_NODE LP_ nodeAlias RP_
+    ;
+
+arbitratyLengthMatch
+    : SHORTEST_PATH LP_ arbitraryLength RP_ (AND arbitraryLength)*
+    ;
+
+arbitraryLength
+    : arbitraryLengthClause (AND? arbitraryLengthClause)*
+    ;
+
+arbitraryLengthClause
+    : (lastNode | tableName)  LP_? edgeNodeAl+ RP_? alPatternQuantifier?
+    | LP_ edgeNodeAl+ RP_ alPatternQuantifier (lastNode | tableName)
+    ;
+
+edgeNodeAl
+    : nodeAlias edgeAliasPath
+    | edgeAliasPath nodeAlias
+    ;
+
+edgeAliasPath
+    : (LT_ MINUS_ LP_ edgeAlias RP_ MINUS_) | (MINUS_ LP_ edgeAlias RP_ MINUS_ GT_)
+    ;
+
+outEdgePath
+    : MINUS_ LP_ edgeAlias RP_ MINUS_ GT_
+    ;
+
+inEdgePath
+    : LT_ MINUS_ LP_ edgeAlias RP_ MINUS_
+    ;
+
+alPatternQuantifier
+    : PLUS_
+    | LBE_ NUMBER_ COMMA_ NUMBER_ RBE_
+    ;
+
+nodeAlias
+    : tableName
+    ;
+
+edgeAlias
+    : tableName
     ;

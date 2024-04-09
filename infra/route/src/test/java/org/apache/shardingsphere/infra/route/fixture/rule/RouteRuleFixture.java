@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.route.fixture.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 
 import static org.mockito.Mockito.mock;
 
@@ -30,7 +31,7 @@ public final class RouteRuleFixture implements ShardingSphereRule {
     }
     
     @Override
-    public String getType() {
-        return RouteRuleFixture.class.getSimpleName();
+    public RuleAttributes getAttributes() {
+        return new RuleAttributes();
     }
 }

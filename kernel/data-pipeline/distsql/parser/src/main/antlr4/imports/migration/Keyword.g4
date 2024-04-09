@@ -194,3 +194,19 @@ UNIT
 UNITS
     : U N I T S
     ;
+
+ALTER
+    : A L T E R
+    ;
+
+RULE
+    : R U L E
+    ;
+
+READ
+    : R E A D
+    ;
+
+WRITE
+    : W R I T E
+    ;

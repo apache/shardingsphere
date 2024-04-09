@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.7. </b>"
+pre = "<b>5.3. </b>"
 title = "数据分片"
-weight = 7
+weight = 3
 chapter = true
 +++
 
@@ -29,29 +29,6 @@ chapter = true
 | INLINE                   | N        | 基于行表达式的分片算法               | [`org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/sharding/inline/InlineShardingAlgorithm.java)                                                         |
 | COMPLEX_INLINE           | N        | 基于行表达式的复合分片算法             | [`org.apache.shardingsphere.sharding.algorithm.sharding.complex.ComplexInlineShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/sharding/inline/ComplexInlineShardingAlgorithm.java)                                          |
 | HINT_INLINE              | N        | 基于行表达式的 Hint 分片算法         | [`org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/sharding/hint/HintInlineShardingAlgorithm.java)                                                     |
-| COSID_MOD                | N        | 基于 CosId 的取模分片算法          | [`org.apache.shardingsphere.sharding.cosid.algorithm.sharding.mod.CosIdModShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/plugin/cosid/src/main/java/org/apache/shardingsphere/sharding/cosid/algorithm/sharding/mod/CosIdModShardingAlgorithm.java)                                       |
-| COSID_INTERVAL           | N        | 基于 CosId 的固定时间范围的分片算法     | [`org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.CosIdIntervalShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/plugin/cosid/src/main/java/org/apache/shardingsphere/sharding/cosid/algorithm/sharding/interval/CosIdIntervalShardingAlgorithm.java)                   |
-| COSID_INTERVAL_SNOWFLAKE | N        | 基于 CosId 的雪花ID固定时间范围的分片算法 | [`org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.CosIdSnowflakeIntervalShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/plugin/cosid/src/main/java/org/apache/shardingsphere/sharding/cosid/algorithm/sharding/interval/CosIdSnowflakeIntervalShardingAlgorithm.java) |
-
-## KeyGenerateAlgorithm
-
-### 全限定类名
-
-[`org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/api/src/main/java/org/apache/shardingsphere/sharding/spi/KeyGenerateAlgorithm.java)
-
-### 定义
-
-分布式主键生成算法
-
-### 已知实现
-
-| *配置标识*          | *详细说明*                  | *全限定类名*                                                                                                                                                                                                                                                                                               |
-|-----------------|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| SNOWFLAKE       | 基于雪花算法的分布式主键生成算法        | [`org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/keygen/SnowflakeKeyGenerateAlgorithm.java)                               |
-| UUID            | 基于 UUID 的分布式主键生成算法      | [`org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/keygen/UUIDKeyGenerateAlgorithm.java)                                         |
-| NANOID          | 基于 NanoId 的分布式主键生成算法    | [`org.apache.shardingsphere.sharding.nanoid.algorithm.keygen.NanoIdKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/plugin/nanoid/src/main/java/org/apache/shardingsphere/sharding/nanoid/algorithm/keygen/NanoIdKeyGenerateAlgorithm.java)              |
-| COSID           | 基于 CosId 的分布式主键生成算法     | [`org.apache.shardingsphere.sharding.cosid.algorithm.keygen.CosIdKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/plugin/cosid/src/main/java/org/apache/shardingsphere/sharding/cosid/algorithm/keygen/CosIdKeyGenerateAlgorithm.java)                   |
-| COSID_SNOWFLAKE | 基于 CosId 的雪花算法分布式主键生成算法 | [`org.apache.shardingsphere.sharding.cosid.algorithm.keygen.CosIdSnowflakeKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/plugin/cosid/src/main/java/org/apache/shardingsphere/sharding/cosid/algorithm/keygen/CosIdSnowflakeKeyGenerateAlgorithm.java) |
 
 ## ShardingAuditAlgorithm
 
@@ -73,7 +50,7 @@ chapter = true
 
 ### 全限定类名
 
-[`org.apache.shardingsphere.infra.datetime.DatetimeService`](https://github.com/apache/shardingsphere/blob/master/infra/datetime/spi/src/main/java/org/apache/shardingsphere/infra/datetime/DatetimeService.java)
+[`org.apache.shardingsphere.timeservice.spi.TimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/api/src/main/java/org/apache/shardingsphere/timeservice/spi/TimestampService.java)
 
 ### 定义
 
@@ -81,7 +58,26 @@ chapter = true
 
 ### 已知实现
 
-| *配置标识*                  | *详细说明*             | *全限定类名*                                                                                                                                                                                                                                           |
-|-------------------------|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DatabaseDatetimeService | 从数据库中获取当前时间进行路由    | [`org.apache.shardingsphere.datetime.database.DatabaseDatetimeService`](https://github.com/apache/shardingsphere/blob/master/infra/datetime/type/database/src/main/java/org/apache/shardingsphere/datetime/database/DatabaseDatetimeService.java) |
-| SystemDatetime          | 从应用系统时间中获取当前时间进行路由 | [`org.apache.shardingsphere.datetime.system.SystemDatetimeService`](https://github.com/apache/shardingsphere/blob/master/infra/datetime/type/system/src/main/java/org/apache/shardingsphere/datetime/system/SystemDatetimeService.java)           |
+| *配置标识*                   | *详细说明*             | *全限定类名*                                                                                                                                                                                                                                                                  |
+|--------------------------|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DatabaseTimestampService | 从数据库中获取当前时间进行路由    | [`org.apache.shardingsphere.timeservice.type.database.DatabaseTimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/type/database/src/main/java/org/apache/shardingsphere/timeservice/type/database/DatabaseTimestampService.java) |
+| SystemTimestampService   | 从应用系统时间中获取当前时间进行路由 | [`org.apache.shardingsphere.timeservice.type.system.SystemTimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/type/system/src/main/java/org/apache/shardingsphere/timeservice/type/system/SystemTimestampService.java)           |
+
+## InlineExpressionParser
+
+### 全限定类名
+
+`org.apache.shardingsphere.infra.expr.core.InlineExpressionParser`
+
+### 定义
+
+解析行表达式
+
+### 已知实现
+
+| *配置标识*   | *详细说明*                                             | *全限定类名*                                                                        |
+|----------|----------------------------------------------------|--------------------------------------------------------------------------------|
+| GROOVY   | 使用 Groovy 语法的行表达式                                  | `org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser`     |
+| LITERAL  | 使用标准列表的行表达式                                        | `org.apache.shardingsphere.infra.expr.literal.LiteralInlineExpressionParser`   |
+| INTERVAL | 基于固定时间范围的 Key-Value 语法的行表达式                        | `org.apache.shardingsphere.infra.expr.interval.IntervalInlineExpressionParser` |
+| ESPRESSO | 基于 GraalVM Truffle 的 Espresso 实现的使用 Groovy 语法的行表达式 | `org.apache.shardingsphere.infra.expr.espresso.EspressoInlineExpressionParser` |

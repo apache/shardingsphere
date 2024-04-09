@@ -20,13 +20,31 @@ package org.apache.shardingsphere.sql.parser.sql.common.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.LogicalOperator;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ValuesExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.IntervalExpressionProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.mysql.match.MatchAgainstExpression;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.datetime.DatetimeExpression;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.join.OuterJoinExpression;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.multiset.MultisetExpression;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -107,18 +125,122 @@ public final class ExpressionExtractUtils {
             }
             // TODO support more expression type if necessary
             if (each instanceof BinaryOperationExpression) {
-                extractParameterMarkerExpressions(result, Collections.singletonList(((BinaryOperationExpression) each).getLeft()));
-                extractParameterMarkerExpressions(result, Collections.singletonList(((BinaryOperationExpression) each).getRight()));
+                extractParameterMarkerExpressions(result, Collections.singleton(((BinaryOperationExpression) each).getLeft()));
+                extractParameterMarkerExpressions(result, Collections.singleton(((BinaryOperationExpression) each).getRight()));
             }
             if (each instanceof FunctionSegment) {
                 extractParameterMarkerExpressions(result, ((FunctionSegment) each).getParameters());
             }
             if (each instanceof TypeCastExpression) {
-                extractParameterMarkerExpressions(result, Collections.singletonList(((TypeCastExpression) each).getExpression()));
+                extractParameterMarkerExpressions(result, Collections.singleton(((TypeCastExpression) each).getExpression()));
             }
             if (each instanceof InExpression) {
                 extractParameterMarkerExpressions(result, ((InExpression) each).getExpressionList());
             }
         }
+    }
+    
+    /**
+     * Extract join conditions.
+     * 
+     * @param joinConditions join conditions
+     * @param whereSegments where segments
+     */
+    public static void extractJoinConditions(final Collection<BinaryOperationExpression> joinConditions, final Collection<WhereSegment> whereSegments) {
+        for (WhereSegment each : whereSegments) {
+            if (each.getExpr() instanceof BinaryOperationExpression && ((BinaryOperationExpression) each.getExpr()).getLeft() instanceof ColumnSegment
+                    && ((BinaryOperationExpression) each.getExpr()).getRight() instanceof ColumnSegment) {
+                joinConditions.add((BinaryOperationExpression) each.getExpr());
+            }
+        }
+    }
+    
+    /**
+     * Extract columns.
+     *
+     * @param expression expression
+     * @param containsSubQuery contains sub query or not
+     * @return columns
+     */
+    public static Collection<ColumnSegment> extractColumns(final ExpressionSegment expression, final boolean containsSubQuery) {
+        if (expression instanceof ColumnSegment) {
+            return Collections.singletonList((ColumnSegment) expression);
+        }
+        Collection<ColumnSegment> result = new LinkedList<>();
+        if (expression instanceof AggregationProjectionSegment) {
+            for (ExpressionSegment each : ((AggregationProjectionSegment) expression).getParameters()) {
+                result.addAll(extractColumns(each, containsSubQuery));
+            }
+        }
+        if (expression instanceof BetweenExpression) {
+            result.addAll(extractColumns(((BetweenExpression) expression).getLeft(), containsSubQuery));
+            result.addAll(extractColumns(((BetweenExpression) expression).getBetweenExpr(), containsSubQuery));
+            result.addAll(extractColumns(((BetweenExpression) expression).getAndExpr(), containsSubQuery));
+        }
+        if (expression instanceof BinaryOperationExpression) {
+            result.addAll(extractColumns(((BinaryOperationExpression) expression).getLeft(), containsSubQuery));
+            result.addAll(extractColumns(((BinaryOperationExpression) expression).getRight(), containsSubQuery));
+        }
+        if (expression instanceof CaseWhenExpression) {
+            result.addAll(extractColumns(((CaseWhenExpression) expression).getCaseExpr(), containsSubQuery));
+            result.addAll(extractColumns(((CaseWhenExpression) expression).getElseExpr(), containsSubQuery));
+            ((CaseWhenExpression) expression).getWhenExprs().forEach(each -> result.addAll(extractColumns(each, containsSubQuery)));
+            ((CaseWhenExpression) expression).getThenExprs().forEach(each -> result.addAll(extractColumns(each, containsSubQuery)));
+        }
+        if (expression instanceof OuterJoinExpression) {
+            result.add(((OuterJoinExpression) expression).getColumnName());
+        }
+        if (expression instanceof CommonTableExpressionSegment) {
+            result.addAll(((CommonTableExpressionSegment) expression).getColumns());
+        }
+        if (expression instanceof DatetimeExpression) {
+            result.addAll(extractColumns(((DatetimeExpression) expression).getLeft(), containsSubQuery));
+            result.addAll(extractColumns(((DatetimeExpression) expression).getRight(), containsSubQuery));
+        }
+        if (expression instanceof ExpressionProjectionSegment) {
+            result.addAll(extractColumns(((ExpressionProjectionSegment) expression).getExpr(), containsSubQuery));
+        }
+        if (expression instanceof FunctionSegment) {
+            for (ExpressionSegment each : ((FunctionSegment) expression).getParameters()) {
+                result.addAll(extractColumns(each, containsSubQuery));
+            }
+        }
+        if (expression instanceof InExpression) {
+            result.addAll(extractColumns(((InExpression) expression).getLeft(), containsSubQuery));
+            result.addAll(extractColumns(((InExpression) expression).getRight(), containsSubQuery));
+        }
+        if (expression instanceof IntervalExpressionProjection) {
+            result.addAll(extractColumns(((IntervalExpressionProjection) expression).getLeft(), containsSubQuery));
+            result.addAll(extractColumns(((IntervalExpressionProjection) expression).getRight(), containsSubQuery));
+            result.addAll(extractColumns(((IntervalExpressionProjection) expression).getMinus(), containsSubQuery));
+        }
+        if (expression instanceof ListExpression) {
+            for (ExpressionSegment each : ((ListExpression) expression).getItems()) {
+                result.addAll(extractColumns(each, containsSubQuery));
+            }
+        }
+        if (expression instanceof MatchAgainstExpression) {
+            result.add(((MatchAgainstExpression) expression).getColumnName());
+            result.addAll(extractColumns(((MatchAgainstExpression) expression).getExpr(), containsSubQuery));
+        }
+        if (expression instanceof MultisetExpression) {
+            result.addAll(extractColumns(((MultisetExpression) expression).getLeft(), containsSubQuery));
+            result.addAll(extractColumns(((MultisetExpression) expression).getRight(), containsSubQuery));
+        }
+        if (expression instanceof NotExpression) {
+            result.addAll(extractColumns(((NotExpression) expression).getExpression(), containsSubQuery));
+        }
+        if (expression instanceof ValuesExpression) {
+            for (InsertValuesSegment each : ((ValuesExpression) expression).getRowConstructorList()) {
+                each.getValues().forEach(value -> result.addAll(extractColumns(value, containsSubQuery)));
+            }
+        }
+        if (expression instanceof SubquerySegment && containsSubQuery) {
+            ColumnExtractor.extractFromSelectStatement(result, ((SubquerySegment) expression).getSelect(), true);
+        }
+        if (expression instanceof SubqueryExpressionSegment && containsSubQuery) {
+            ColumnExtractor.extractFromSelectStatement(result, ((SubqueryExpressionSegment) expression).getSubquery().getSelect(), true);
+        }
+        return result;
     }
 }

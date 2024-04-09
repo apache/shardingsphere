@@ -83,9 +83,6 @@ DROP TABLE IF EXISTS t_user;
 DROP TABLE IF EXISTS t_product;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_single_table;
-DROP TABLE IF EXISTS t_broadcast_table;
-DROP TABLE IF EXISTS t_order_federate;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -111,9 +108,6 @@ CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name VARCHAR(50) NOT NULL, pa
 CREATE TABLE t_product (product_id INT PRIMARY KEY, product_name VARCHAR(50) NOT NULL, category_id INT NOT NULL, price DECIMAL NOT NULL, status VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -151,12 +145,6 @@ DROP TABLE IF EXISTS t_merchant;
 DROP TABLE IF EXISTS t_product_detail;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
-DROP TABLE IF EXISTS t_order_item_federate;
-DROP TABLE IF EXISTS t_order_item_federate_sharding_0;
-DROP TABLE IF EXISTS t_order_item_federate_sharding_1;
-DROP TABLE IF EXISTS t_order_federate_sharding_0;
-DROP TABLE IF EXISTS t_order_federate_sharding_1;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -182,12 +170,6 @@ CREATE TABLE t_merchant (merchant_id INT PRIMARY KEY, country_id INT NOT NULL, m
 CREATE TABLE t_product_detail (detail_id INT PRIMARY KEY, product_id INT NOT NULL, description VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE t_order_item_federate_sharding_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE t_order_item_federate_sharding_1 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE t_order_federate_sharding_0 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
-CREATE TABLE t_order_federate_sharding_1 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -223,7 +205,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -247,7 +228,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -283,7 +263,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -307,7 +286,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -343,7 +321,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -367,7 +344,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -403,7 +379,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -427,7 +402,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -463,7 +437,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -487,7 +460,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -523,7 +495,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -547,7 +518,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -583,7 +553,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -607,7 +576,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -643,7 +611,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -667,7 +634,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -705,9 +671,6 @@ DROP TABLE IF EXISTS t_user;
 DROP TABLE IF EXISTS t_product;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
-DROP TABLE IF EXISTS t_single_table;
-DROP TABLE IF EXISTS t_order_federate;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -733,9 +696,6 @@ CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name VARCHAR(50) NOT NULL, pa
 CREATE TABLE t_product (product_id INT PRIMARY KEY, product_name VARCHAR(50) NOT NULL, category_id INT NOT NULL, price DECIMAL NOT NULL, status VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -773,12 +733,6 @@ DROP TABLE IF EXISTS t_merchant;
 DROP TABLE IF EXISTS t_product_detail;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
-DROP TABLE IF EXISTS t_order_item_federate;
-DROP TABLE IF EXISTS t_order_item_federate_sharding_0;
-DROP TABLE IF EXISTS t_order_item_federate_sharding_1;
-DROP TABLE IF EXISTS t_order_federate_sharding_0;
-DROP TABLE IF EXISTS t_order_federate_sharding_1;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -804,12 +758,6 @@ CREATE TABLE t_merchant (merchant_id INT PRIMARY KEY, country_id INT NOT NULL, m
 CREATE TABLE t_product_detail (detail_id INT PRIMARY KEY, product_id INT NOT NULL, description VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE t_order_item_federate_sharding_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE t_order_item_federate_sharding_1 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE t_order_federate_sharding_0 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
-CREATE TABLE t_order_federate_sharding_1 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -845,7 +793,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -869,7 +816,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -905,7 +851,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -929,7 +874,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -965,7 +909,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -989,7 +932,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -1025,7 +967,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -1049,7 +990,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -1085,7 +1025,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -1109,7 +1048,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -1145,7 +1083,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -1169,7 +1106,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -1205,7 +1141,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -1229,7 +1164,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);
@@ -1265,7 +1199,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_product_category;
 DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -1289,7 +1222,6 @@ CREATE TABLE t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status V
 CREATE TABLE t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON t_order_2 (order_id);

@@ -33,7 +33,7 @@ public final class AuthorityRuleBuilder implements GlobalRuleBuilder<AuthorityRu
     
     @Override
     public AuthorityRule build(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
-        return new AuthorityRule(ruleConfig, databases);
+        return new AuthorityRule(ruleConfig);
     }
     
     @Override

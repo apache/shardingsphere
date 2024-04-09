@@ -54,37 +54,9 @@ Attributes:
 | timeToLiveSeconds | long   | Seconds of ephemeral data live | 30              |
 | connectionTimeout | long   | Seconds of connection timeout  | 30              |
 
-### Nacos Repository
-
-Type: Nacos
-
-Mode: Cluster
-
-Attributes:
-
-| *Name*                    | *Type* | *Description*                                     | *Default Value* |
-|---------------------------|--------|---------------------------------------------------|-----------------|
-| clusterIp                 | String | Unique identifier in cluster                      | Host IP         |
-| retryIntervalMilliseconds | long   | Milliseconds of retry interval                    | 500             |
-| maxRetries                | int    | Max retries for client to check data availability | 3               |
-| timeToLiveSeconds         | int    | Seconds of ephemeral instance live                | 30              |
-
-### Consul Repository
-
-Type: Consul
-
-Mode: Cluster
-
-Attributes:
-
-| *Name*                  | *Type* | *Description*                      | *Default Value* |
-|-------------------------|--------|------------------------------------|-----------------|
-| timeToLiveSeconds       | String | Seconds of ephemeral instance live | 30s             |
-| blockQueryTimeToSeconds | long   | Seconds of query timeout           | 60              |
-
 ## Procedure
 
-1. Configure running mode in server.yaml.
+1. Configure running mode in global.yaml.
 1. Configure metadata persistence warehouse type.
 
 ## Sample

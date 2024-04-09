@@ -415,7 +415,11 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
             segment.getPartitions().addAll(((CollectionValue<PartitionSegment>) visit(ctx.partitionList())).getValue());
             result.setPartitionDefinition(segment);
         }
-        result.setName((IdentifierValue) visit(ctx.identifier()));
+        if (null != ctx.DEFAULT()) {
+            result.setName(new IdentifierValue(ctx.DEFAULT().getText()));
+        } else {
+            result.setName((IdentifierValue) visit(ctx.identifier()));
+        }
         return result;
     }
     
@@ -889,7 +893,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowProcesslist(final ShowProcesslistContext ctx) {
-        return new MySQLShowProcessListStatement();
+        return new MySQLShowProcessListStatement(null != ctx.FULL());
     }
     
     @Override
@@ -969,8 +973,8 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitSetCharacter(final SetCharacterContext ctx) {
         VariableAssignSegment characterSet = new VariableAssignSegment();
-        int startIndex = null != ctx.CHARSET() ? ctx.CHARSET().getSymbol().getStartIndex() : ctx.CHARACTER().getSymbol().getStartIndex();
-        int stopIndex = null != ctx.CHARSET() ? ctx.CHARSET().getSymbol().getStopIndex() : ctx.SET(1).getSymbol().getStopIndex();
+        int startIndex = null == ctx.CHARSET() ? ctx.CHARACTER().getSymbol().getStartIndex() : ctx.CHARSET().getSymbol().getStartIndex();
+        int stopIndex = null == ctx.CHARSET() ? ctx.SET(1).getSymbol().getStopIndex() : ctx.CHARSET().getSymbol().getStopIndex();
         // TODO Consider setting all three system variables: character_set_client, character_set_results, character_set_connection
         String variableName = (null != ctx.CHARSET()) ? ctx.CHARSET().getText() : "character_set_client";
         VariableSegment variable = new VariableSegment(startIndex, stopIndex, variableName);

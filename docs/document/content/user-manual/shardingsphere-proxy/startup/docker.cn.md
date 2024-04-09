@@ -25,9 +25,9 @@ docker pull apache/shardingsphere-proxy
 * 方式三：自行构建镜像
 ```bash
 git clone https://github.com/apache/shardingsphere
-mvn clean install
+./mvnw clean install
 cd shardingsphere-distribution/shardingsphere-proxy-distribution
-mvn clean package -Prelease,docker
+./mvnw clean package -Prelease,docker
 ```
 
 如果遇到以下问题，请确保 Docker daemon 进程已经运行。
@@ -35,7 +35,7 @@ mvn clean package -Prelease,docker
 I/O exception (java.io.IOException) caught when processing request to {}->unix://localhost:80: Connection refused？
 ```
 
-2. 配置 `conf/server.yaml` 和 `conf/config-*.yaml`
+2. 配置 `conf/global.yaml` 和 `conf/database-*.yaml`
 
 可以从 Docker 容器中获取配置文件模板，拷贝到宿主机任意目录中：
 ```bash
@@ -44,7 +44,7 @@ docker cp tmp:/opt/shardingsphere-proxy/conf /host/path/to/conf
 docker rm tmp
 ```
 
-由于容器内的网络环境可能与宿主机的网络环境有差异，如果启动时报无法连接到数据库错误等错误，请确保 `conf/config-*.yaml` 配置文件中指定的数据库的 IP 可以被 Docker 容器内部访问到。
+由于容器内的网络环境可能与宿主机的网络环境有差异，如果启动时报无法连接到数据库错误等错误，请确保 `conf/database-*.yaml` 配置文件中指定的数据库的 IP 可以被 Docker 容器内部访问到。
 
 具体配置请参考 [ShardingSphere-Proxy 启动手册 - 使用二进制发布包](/cn/user-manual/shardingsphere-proxy/startup/bin/)。
 
@@ -83,8 +83,3 @@ ShardingSphere-Proxy 默认端口 `3307`，可以通过环境变量 `-e PORT` �
 5. 使用客户端连接 ShardingSphere-Proxy
 
 请参考 [ShardingSphere-Proxy 启动手册 - 使用二进制发布包](/cn/user-manual/shardingsphere-proxy/startup/bin/)。
-
-## 配置示例
-
-完整配置请参考 ShardingSphere 仓库中的示例：
-<https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-proxy-example>

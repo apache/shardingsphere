@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.runtime.scenario.path;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.net.URL;
 
@@ -48,10 +49,12 @@ public final class ScenarioCommonPath {
     /**
      * Get rule configuration file.
      *
+     * @param databaseType database type
      * @return rule configuration file
      */
-    public String getRuleConfigurationFile() {
-        return getFile(RULE_CONFIG_FILE);
+    public String getRuleConfigurationFile(final DatabaseType databaseType) {
+        String databaseFileName = String.join("/", String.format("env/scenario/%s/jdbc/conf", scenario), databaseType.getType().toLowerCase(), RULE_CONFIG_FILE);
+        return exists(databaseFileName) ? getFile(databaseFileName) : getFile(String.join("/", ROOT_PATH, scenario, RULE_CONFIG_FILE));
     }
     
     /**
@@ -64,9 +67,13 @@ public final class ScenarioCommonPath {
     }
     
     private String getFile(final String fileName) {
-        String path = String.join("/", ROOT_PATH, scenario, fileName);
-        URL url = Thread.currentThread().getContextClassLoader().getResource(path);
-        assertNotNull(url, String.format("File `%s` must exist.", path));
+        URL url = Thread.currentThread().getContextClassLoader().getResource(fileName);
+        assertNotNull(url, String.format("File `%s` must exist.", fileName));
         return url.getFile();
+    }
+    
+    private boolean exists(final String fileName) {
+        URL url = Thread.currentThread().getContextClassLoader().getResource(fileName);
+        return null != url;
     }
 }

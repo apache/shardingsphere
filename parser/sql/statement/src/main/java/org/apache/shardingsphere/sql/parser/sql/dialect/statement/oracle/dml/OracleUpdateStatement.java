@@ -17,11 +17,18 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle update statement.
  */
+@Getter
+@Setter
 public final class OracleUpdateStatement extends UpdateStatement implements OracleStatement {
+    
+    private WhereSegment deleteWhere;
 }

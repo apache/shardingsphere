@@ -1,0 +1,184 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_job
+columns:
+  job_id:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: job_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  current_postgres_pid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: current_postgres_pid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  log_user:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: log_user
+    primaryKey: false
+    unsigned: false
+    visible: true
+  priv_user:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: priv_user
+    primaryKey: false
+    unsigned: false
+    visible: true
+  dbname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: dbname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  node_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: node_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  job_status:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: job_status
+    primaryKey: false
+    unsigned: false
+    visible: true
+  start_date:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: start_date
+    primaryKey: false
+    unsigned: false
+    visible: true
+  next_run_date:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: next_run_date
+    primaryKey: false
+    unsigned: false
+    visible: true
+  failure_count:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: failure_count
+    primaryKey: false
+    unsigned: false
+    visible: true
+  interval:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: interval
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_start_date:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: last_start_date
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_end_date:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: last_end_date
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_suc_date:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: last_suc_date
+    primaryKey: false
+    unsigned: false
+    visible: true
+  this_run_date:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: this_run_date
+    primaryKey: false
+    unsigned: false
+    visible: true
+  nspname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: nspname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  job_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: job_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  end_date:
+    caseSensitive: true
+    dataType: 93
+    generated: false
+    name: end_date
+    primaryKey: false
+    unsigned: false
+    visible: true
+  enable:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: enable
+    primaryKey: false
+    unsigned: false
+    visible: true
+  failure_msg:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: failure_msg
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_job_oid_index:
+    name: pg_job_oid_index
+  pg_job_id_index:
+    name: pg_job_id_index

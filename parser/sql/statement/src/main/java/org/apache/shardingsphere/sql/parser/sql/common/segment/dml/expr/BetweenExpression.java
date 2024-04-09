@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Between expression.
+ */
 @RequiredArgsConstructor
 @Getter
 @Setter
@@ -37,4 +40,9 @@ public final class BetweenExpression implements ExpressionSegment {
     private final ExpressionSegment andExpr;
     
     private final boolean not;
+    
+    @Override
+    public String getText() {
+        return betweenExpr.getText();
+    }
 }

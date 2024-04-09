@@ -17,9 +17,22 @@
   -->
 
 <sql-parser-test-cases>
-    <create-sequence sql-case-id="create_sequence" />
-    <create-sequence sql-case-id="create_sequence_with_option" />
-    <create-sequence sql-case-id="create_sequence_complex" />
-    <create-sequence sql-case-id="create_sequence_with_all_arguments" />
-    <create-sequence sql-case-id="create_sequence_with_customers" />
+    <create-sequence sql-case-id="create_sequence">
+        <sequence-name name="seq_id" />
+    </create-sequence>
+    <create-sequence sql-case-id="create_sequence_with_option">
+        <sequence-name name="seq_option" />
+    </create-sequence>
+    <create-sequence sql-case-id="create_sequence_complex">
+        <sequence-name name="seq_complex" />
+    </create-sequence>
+    <create-sequence sql-case-id="create_sequence_with_all_arguments">
+        <sequence-name name="DecSeq" />
+    </create-sequence>
+    <create-sequence sql-case-id="create_sequence_with_customers">
+        <sequence-name name="customers_seq" />
+    </create-sequence>
+    <create-sequence sql-case-id="create_sequence_lab_samples_seq">
+        <sequence-name name="LAB_SAMPLES_SEQ" />
+    </create-sequence>
 </sql-parser-test-cases>

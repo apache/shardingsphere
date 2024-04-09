@@ -30,7 +30,7 @@ public final class MySQLProtocolDefaultVersionProvider implements DatabaseProtoc
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

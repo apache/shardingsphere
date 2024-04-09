@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.config.yaml;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
@@ -36,9 +37,12 @@ public final class YamlProxyDatabaseConfiguration implements YamlConfiguration {
     
     private String databaseName;
     
-    private String schemaName;
-    
     private Map<String, YamlProxyDataSourceConfiguration> dataSources = new HashMap<>();
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
+    
+    @Override
+    public boolean isEmpty() {
+        return Strings.isNullOrEmpty(databaseName) && dataSources.isEmpty() && rules.isEmpty();
+    }
 }

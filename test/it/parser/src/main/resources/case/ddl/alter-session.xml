@@ -24,4 +24,6 @@
     <alter-session sql-case-id="alter_session_change_parameter" />
     <alter-session sql-case-id="alter_session_set_container" />
     <alter-session sql-case-id="alter_session_set_container_service" />
+    <alter-session sql-case-id="alter_session_set_events" />
+    <alter-session sql-case-id="alter_session_set_parameter_recyclebin" />
 </sql-parser-test-cases>

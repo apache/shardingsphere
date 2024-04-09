@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.12 </b>"
+pre = "<b>5.7 </b>"
 title = "数据脱敏"
-weight = 12
+weight = 7
 chapter = true
 +++
 
@@ -26,9 +26,4 @@ chapter = true
 | MASK_FROM_X_TO_Y                        | 遮盖自 x 至 y 数据脱敏算法 | [`org.apache.shardingsphere.mask.algorithm.cover.MaskFromXToYMaskAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/cover/MaskFromXToYMaskAlgorithm.java)                                           |
 | MASK_BEFORE_SPECIAL_CHARS               | 特殊字符前遮盖数据脱敏算法    | [`org.apache.shardingsphere.mask.algorithm.cover.MaskBeforeSpecialCharsAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/cover/MaskBeforeSpecialCharsAlgorithm.java)                               |
 | MASK_AFTER_SPECIAL_CHARS                | 特殊字符后遮盖数据脱敏算法    | [`org.apache.shardingsphere.mask.algorithm.cover.MaskAfterSpecialCharsAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/cover/MaskAfterSpecialCharsAlgorithm.java)                                 |
-| PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE | 身份证号随机替换数据脱敏算法   | [`org.apache.shardingsphere.mask.algorithm.replace.PersonalIdentityNumberRandomReplaceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/replace/PersonalIdentityNumberRandomReplaceAlgorithm.java) |
-| MILITARY_IDENTITY_NUMBER_RANDOM_REPLACE | 军官证随机替换数据脱敏算法    | [`org.apache.shardingsphere.mask.algorithm.replace.MilitaryIdentityNumberRandomReplaceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/replace/MilitaryIdentityNumberRandomReplaceAlgorithm.java) |
-| TELEPHONE_RANDOM_REPLACE                | ⼿机号随机替换数据脱敏算法    | [`org.apache.shardingsphere.mask.algorithm.replace.TelephoneRandomReplaceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/replace/TelephoneRandomReplaceAlgorithm.java)                           |
-| LANDLINE_NUMBER_RANDOM_REPLACE          | 座机号码随机替换         | [`org.apache.shardingsphere.mask.algorithm.replace.LandlineNumberRandomAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/replace/LandlineNumberRandomAlgorithm.java)                               |
 | GENERIC_TABLE_RANDOM_REPLACE            | 通⽤表格随机替换         | [`org.apache.shardingsphere.mask.algorithm.replace.GenericTableRandomReplaceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/replace/GenericTableRandomReplaceAlgorithm.java)                     |
-| UNIFIED_CREDIT_CODE_RANDOM_REPLACE      | 统⼀信⽤码随机替换        | [`org.apache.shardingsphere.mask.algorithm.replace.UnifiedCreditCodeRandomReplaceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/replace/UnifiedCreditCodeRandomReplaceAlgorithm.java)           |

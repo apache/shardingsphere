@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="prepare_with_drop" value="PREPARE drop_stmt FROM @drop" db-types="MySQL" />
     <sql-case id="prepare_with_statement" value="PREPARE ps1 FROM &apos;SHOW TABLES FROM no_such_schema&apos;" db-types="MySQL" />
     <sql-case id="prepare_with_var" value="PREPARE ps1 FROM @create" db-types="MySQL" />
     <sql-case id="execute_with_statement" value="EXECUTE stmt" db-types="MySQL" />

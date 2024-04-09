@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.single.exception;
 
-import org.apache.shardingsphere.infra.exception.MetaDataSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 import java.sql.SQLException;
 
 /**
  * Single tables loading exception.
  */
-public final class SingleTablesLoadingException extends MetaDataSQLException {
+public final class SingleTablesLoadingException extends SingleDefinitionException {
     
     private static final long serialVersionUID = 698261896187918188L;
     
     public SingleTablesLoadingException(final String databaseName, final String dataSourceName, final SQLException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 22, "Can not load table with database name `%s` and data source name `%s`, reason is: %s", databaseName, dataSourceName, cause.getMessage());
+        super(XOpenSQLState.GENERAL_ERROR, 2, String.format("Can not load table with database name '%s' and data source name '%s'.", databaseName, dataSourceName), cause);
     }
 }

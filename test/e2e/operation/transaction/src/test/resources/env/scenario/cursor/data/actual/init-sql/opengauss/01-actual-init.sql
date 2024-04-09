@@ -26,19 +26,19 @@
 -- limitations under the License.
 --
 
-DROP DATABASE IF EXISTS transaction_it_0;
-DROP DATABASE IF EXISTS transaction_it_1;
-DROP DATABASE IF EXISTS transaction_it_2;
+DROP DATABASE IF EXISTS ds_0;
+DROP DATABASE IF EXISTS ds_1;
+DROP DATABASE IF EXISTS ds_2;
 
-CREATE DATABASE transaction_it_0;
-CREATE DATABASE transaction_it_1;
-CREATE DATABASE transaction_it_2;
+CREATE DATABASE ds_0;
+CREATE DATABASE ds_1;
+CREATE DATABASE ds_2;
 
-GRANT ALL PRIVILEGES ON DATABASE transaction_it_0 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE transaction_it_1 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE transaction_it_2 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE ds_0 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE ds_1 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE ds_2 TO test_user;
 
-\c transaction_it_0;
+\c ds_0;
 
 CREATE TABLE "t_product" ("id" INT PRIMARY KEY, "product_id" INT NOT NULL, "address_id" INT, "product_name" varchar, "category_id" INT NOT NULL, "price" numeric NOT NULL, "status" varchar, "creation_date" date);
 CREATE TABLE "t_order_0" ("id" INT PRIMARY KEY, "order_id" INT, "address_id" INT, "user_id" INT NOT NULL, "status" VARCHAR(45) NULL);
@@ -78,7 +78,7 @@ INSERT INTO "t_product" ("id", "product_id", "address_id", "product_name", "cate
 INSERT INTO "t_product" ("id", "product_id", "address_id", "product_name", "category_id", "price", "status", "creation_date") VALUES (4, 4, 4, 'product4', 4, 4, 'OK', '2022-11-02');
 
 \c
-\c transaction_it_1;
+\c ds_1;
 
 CREATE TABLE "t_order_0" ("id" INT PRIMARY KEY, "order_id" INT, "address_id" INT, "user_id" INT NOT NULL, "status" VARCHAR(45) NULL);
 CREATE TABLE "t_order_1" ("id" INT PRIMARY KEY, "order_id" INT, "address_id" INT, "user_id" INT NOT NULL, "status" VARCHAR(45) NULL);

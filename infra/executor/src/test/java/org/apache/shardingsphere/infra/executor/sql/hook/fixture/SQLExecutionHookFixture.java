@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.hook.fixture;
 
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 
 import java.util.Collection;
@@ -29,7 +29,7 @@ public final class SQLExecutionHookFixture implements SQLExecutionHook {
     private static final Collection<String> ACTIONS = new LinkedList<>();
     
     @Override
-    public void start(final String dataSourceName, final String sql, final List<Object> params, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread) {
+    public void start(final String dataSourceName, final String sql, final List<Object> params, final ConnectionProperties connectionProps, final boolean isTrunkThread) {
         ACTIONS.add("start");
     }
     

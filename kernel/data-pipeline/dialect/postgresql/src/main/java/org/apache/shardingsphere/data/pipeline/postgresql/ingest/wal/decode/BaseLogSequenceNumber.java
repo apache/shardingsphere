@@ -23,11 +23,11 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 public interface BaseLogSequenceNumber {
     
     /**
-     * Convert log sequence number to long.
+     * Convert log sequence number to String.
      *
-     * @return Long the sequence number of long value
+     * @return Long the sequence number of String value
      */
-    long asLong();
+    String asString();
     
     /**
      * Get the binded object.

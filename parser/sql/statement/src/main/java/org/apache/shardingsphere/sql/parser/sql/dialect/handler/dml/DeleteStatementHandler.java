@@ -89,4 +89,52 @@ public final class DeleteStatementHandler implements SQLStatementHandler {
         }
         return Optional.empty();
     }
+    
+    /**
+     * Set order by segment.
+     *
+     * @param deleteStatement delete statement
+     * @param orderBySegment order by segment
+     */
+    public static void setOrderBySegment(final DeleteStatement deleteStatement, final OrderBySegment orderBySegment) {
+        if (deleteStatement instanceof MySQLStatement) {
+            ((MySQLDeleteStatement) deleteStatement).setOrderBy(orderBySegment);
+        }
+    }
+    
+    /**
+     * Set limit segment.
+     *
+     * @param deleteStatement delete statement
+     * @param limitSegment limit segment
+     */
+    public static void setLimitSegment(final DeleteStatement deleteStatement, final LimitSegment limitSegment) {
+        if (deleteStatement instanceof MySQLStatement) {
+            ((MySQLDeleteStatement) deleteStatement).setLimit(limitSegment);
+        }
+    }
+    
+    /**
+     * Set output segment.
+     *
+     * @param deleteStatement delete statement
+     * @param outputSegment output segment
+     */
+    public static void setOutputSegment(final DeleteStatement deleteStatement, final OutputSegment outputSegment) {
+        if (deleteStatement instanceof SQLServerStatement) {
+            ((SQLServerDeleteStatement) deleteStatement).setOutputSegment(outputSegment);
+        }
+    }
+    
+    /**
+     * Set with segment.
+     *
+     * @param deleteStatement delete statement
+     * @param withSegment with segment
+     */
+    public static void setWithSegment(final DeleteStatement deleteStatement, final WithSegment withSegment) {
+        if (deleteStatement instanceof SQLServerStatement) {
+            ((SQLServerDeleteStatement) deleteStatement).setWithSegment(withSegment);
+        }
+    }
 }

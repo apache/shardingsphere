@@ -86,4 +86,26 @@ class ConditionValueGeneratorFactoryTest {
         assertThat(actual.get().getColumnName(), is(expected.get().getColumnName()));
         assertThat(actual.get().getTableName(), is(expected.get().getTableName()));
     }
+    
+    @Test
+    void assertGenerateBinaryOperationIsExpression() {
+        ConditionValueCompareOperatorGenerator conditionValueCompareOperatorGenerator = new ConditionValueCompareOperatorGenerator();
+        BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, "null"), "IS", null);
+        Optional<ShardingConditionValue> actual = conditionValueCompareOperatorGenerator.generate(rightValue, column, new LinkedList<>(), mock(TimestampServiceRule.class));
+        Optional<ShardingConditionValue> expected = ConditionValueGeneratorFactory.generate(rightValue, column, new LinkedList<>(), mock(TimestampServiceRule.class));
+        assertTrue(actual.isPresent() && expected.isPresent());
+        assertThat(actual.get().getTableName(), is(expected.get().getTableName()));
+        assertThat(actual.get().getColumnName(), is(expected.get().getColumnName()));
+    }
+    
+    @Test
+    void assertGenerateBinaryOperationIsLowerCaseExpression() {
+        ConditionValueCompareOperatorGenerator conditionValueCompareOperatorGenerator = new ConditionValueCompareOperatorGenerator();
+        BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, "null"), "is", null);
+        Optional<ShardingConditionValue> actual = conditionValueCompareOperatorGenerator.generate(rightValue, column, new LinkedList<>(), mock(TimestampServiceRule.class));
+        Optional<ShardingConditionValue> expected = ConditionValueGeneratorFactory.generate(rightValue, column, new LinkedList<>(), mock(TimestampServiceRule.class));
+        assertTrue(actual.isPresent() && expected.isPresent());
+        assertThat(actual.get().getTableName(), is(expected.get().getTableName()));
+        assertThat(actual.get().getColumnName(), is(expected.get().getColumnName()));
+    }
 }

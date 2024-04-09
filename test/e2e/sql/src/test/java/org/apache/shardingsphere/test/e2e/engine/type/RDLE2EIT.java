@@ -59,11 +59,10 @@ class RDLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            init(containerComposer);
-            assertExecute(testParam, containerComposer);
-            tearDown(containerComposer);
-        }
+        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
+        init(containerComposer);
+        assertExecute(testParam, containerComposer);
+        tearDown(containerComposer);
     }
     
     private void assertExecute(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException {
@@ -100,7 +99,7 @@ class RDLE2EIT {
         if (null == containerComposer.getAssertion().getInitialSQL() || null == containerComposer.getAssertion().getInitialSQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getInitialSQL().getSql())) {
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(containerComposer.getAssertion().getInitialSQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
                 Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
@@ -112,7 +111,7 @@ class RDLE2EIT {
         if (null == containerComposer.getAssertion().getDestroySQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getDestroySQL().getSql())) {
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(containerComposer.getAssertion().getDestroySQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
                 Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);

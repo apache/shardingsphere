@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -44,9 +44,9 @@ public final class TokenUtils {
      */
     public static Map<String, String> getLogicAndActualTableMap(final RouteUnit routeUnit, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        Map<String, String> result = new HashMap<>(tableNames.size(), 1F);
+        Map<String, String> result = new CaseInsensitiveMap<>(tableNames.size(), 1F);
         for (RouteMapper each : routeUnit.getTableMappers()) {
-            result.put(each.getLogicName().toLowerCase(), each.getActualName());
+            result.put(each.getLogicName(), each.getActualName());
             result.putAll(shardingRule.getLogicAndActualTablesFromBindingTable(routeUnit.getDataSourceMapper().getLogicName(), each.getLogicName(), each.getActualName(), tableNames));
         }
         return result;

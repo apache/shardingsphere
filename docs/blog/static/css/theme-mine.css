@@ -23,4 +23,7 @@
     text-align: left;
     display: inherit;
 }
- 
+
+.post p{
+    text-indent: 0em;
+}

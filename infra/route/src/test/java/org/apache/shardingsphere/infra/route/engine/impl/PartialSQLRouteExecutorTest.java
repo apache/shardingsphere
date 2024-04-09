@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.infra.route.engine.impl;
 
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintManager;
-import org.apache.shardingsphere.infra.hint.SQLHintDataSourceNotExistsException;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.hint.DataSourceHintNotExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -33,7 +35,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,21 +58,24 @@ class PartialSQLRouteExecutorTest {
     @Mock
     private CommonSQLStatementContext commonSQLStatementContext;
     
+    @Mock
+    private HintValueContext hintValueContext;
+    
     private final ConnectionContext connectionContext = new ConnectionContext();
     
     @BeforeEach
     void setup() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds_0", null);
-        dataSourceMap.put("ds_1", null);
-        when(database.getResourceMetaData().getDataSources()).thenReturn(dataSourceMap);
+        Map<String, StorageUnit> storageUnits = new HashMap<>();
+        storageUnits.put("ds_0", null);
+        storageUnits.put("ds_1", null);
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
     }
     
     @Test
     void assertRouteBySQLCommentHint() {
-        when(commonSQLStatementContext.findHintDataSourceName()).thenReturn(Optional.of("ds_1"));
-        QueryContext queryContext = new QueryContext(commonSQLStatementContext, "", Collections.emptyList());
-        RouteContext routeContext = partialSQLRouteExecutor.route(connectionContext, queryContext, mock(ShardingSphereRuleMetaData.class), database);
+        when(hintValueContext.findHintDataSourceName()).thenReturn(Optional.of("ds_1"));
+        QueryContext queryContext = new QueryContext(commonSQLStatementContext, "", Collections.emptyList(), hintValueContext);
+        RouteContext routeContext = partialSQLRouteExecutor.route(connectionContext, queryContext, mock(RuleMetaData.class), database);
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_1"));
     }
@@ -80,8 +84,8 @@ class PartialSQLRouteExecutorTest {
     void assertRouteByHintManagerHint() {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.setDataSourceName("ds_1");
-            QueryContext queryContext = new QueryContext(commonSQLStatementContext, "", Collections.emptyList());
-            RouteContext routeContext = partialSQLRouteExecutor.route(connectionContext, queryContext, mock(ShardingSphereRuleMetaData.class), database);
+            QueryContext queryContext = new QueryContext(commonSQLStatementContext, "", Collections.emptyList(), new HintValueContext());
+            RouteContext routeContext = partialSQLRouteExecutor.route(connectionContext, queryContext, mock(RuleMetaData.class), database);
             assertThat(routeContext.getRouteUnits().size(), is(1));
             assertThat(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_1"));
         }
@@ -89,17 +93,17 @@ class PartialSQLRouteExecutorTest {
     
     @Test
     void assertRouteBySQLCommentHintWithException() {
-        when(commonSQLStatementContext.findHintDataSourceName()).thenReturn(Optional.of("ds_3"));
-        QueryContext queryContext = new QueryContext(commonSQLStatementContext, "", Collections.emptyList());
-        assertThrows(SQLHintDataSourceNotExistsException.class, () -> partialSQLRouteExecutor.route(connectionContext, queryContext, mock(ShardingSphereRuleMetaData.class), database));
+        when(hintValueContext.findHintDataSourceName()).thenReturn(Optional.of("ds_3"));
+        QueryContext queryContext = new QueryContext(commonSQLStatementContext, "", Collections.emptyList(), hintValueContext);
+        assertThrows(DataSourceHintNotExistsException.class, () -> partialSQLRouteExecutor.route(connectionContext, queryContext, mock(RuleMetaData.class), database));
     }
     
     @Test
     void assertRouteByHintManagerHintWithException() {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.setDataSourceName("ds-3");
-            QueryContext logicSQL = new QueryContext(commonSQLStatementContext, "", Collections.emptyList());
-            assertThrows(SQLHintDataSourceNotExistsException.class, () -> partialSQLRouteExecutor.route(connectionContext, logicSQL, mock(ShardingSphereRuleMetaData.class), database));
+            QueryContext logicSQL = new QueryContext(commonSQLStatementContext, "", Collections.emptyList(), new HintValueContext());
+            assertThrows(DataSourceHintNotExistsException.class, () -> partialSQLRouteExecutor.route(connectionContext, logicSQL, mock(RuleMetaData.class), database));
         }
     }
 }

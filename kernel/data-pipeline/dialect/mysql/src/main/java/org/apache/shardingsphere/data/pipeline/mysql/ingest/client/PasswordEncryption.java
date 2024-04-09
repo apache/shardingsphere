@@ -87,7 +87,7 @@ public final class PasswordEncryption {
      */
     @SneakyThrows(GeneralSecurityException.class)
     public static byte[] encryptWithRSAPublicKey(final String password, final byte[] seed, final String transformation, final String publicKey) {
-        byte[] formattedPassword = password != null ? Bytes.concat(password.getBytes(), new byte[]{0}) : new byte[]{0};
+        byte[] formattedPassword = null == password ? new byte[]{0} : Bytes.concat(password.getBytes(), new byte[]{0});
         return encryptWithRSAPublicKey(xor(formattedPassword, seed, formattedPassword.length), parseRSAPublicKey(publicKey), transformation);
     }
     

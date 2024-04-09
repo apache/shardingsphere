@@ -22,7 +22,7 @@ Apache ShardingSphere 通过对用户查询的 SQL 进行解析，并依据用�
 
 **数据源配置**：指数据源配置。
 
-**脱敏算法配置**：指使用什么脱敏算法。目前 ShardingSphere 内置了多种脱敏算法：MD5、KEEP_FIRST_N_LAST_M、KEEP_FROM_X_TO_Y 、MASK_FIRST_N_LAST_M、MASK_FROM_X_TO_Y、MASK_BEFORE_SPECIAL_CHARS、MASK_AFTER_SPECIAL_CHARS、PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE、MILITARY_IDENTITY_NUMBER_RANDOM_REPLACE 和 TELEPHONE_RANDOM_REPLACE。用户还可以通过实现 ShardingSphere 提供的接口，自行实现一套脱敏算法。
+**脱敏算法配置**：指使用什么脱敏算法。目前 ShardingSphere 内置了多种脱敏算法：MD5、KEEP_FIRST_N_LAST_M、KEEP_FROM_X_TO_Y 、MASK_FIRST_N_LAST_M、MASK_FROM_X_TO_Y、MASK_BEFORE_SPECIAL_CHARS、MASK_AFTER_SPECIAL_CHARS 和 GENERIC_TABLE_RANDOM_REPLACE。用户还可以通过实现 ShardingSphere 提供的接口，自行实现一套脱敏算法。
 
 **脱敏表配置**：用于告诉 ShardingSphere 数据表里哪个列用于数据脱敏、使用什么算法脱敏。
 

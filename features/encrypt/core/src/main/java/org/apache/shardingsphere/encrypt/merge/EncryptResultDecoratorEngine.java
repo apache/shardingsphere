@@ -19,11 +19,10 @@ package org.apache.shardingsphere.encrypt.merge;
 
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.merge.dal.EncryptDALResultDecorator;
-import org.apache.shardingsphere.encrypt.merge.dql.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptDQLResultDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecoratorEngine;
@@ -41,7 +40,7 @@ public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine
     public Optional<ResultDecorator<EncryptRule>> newInstance(final ShardingSphereDatabase database,
                                                               final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            return Optional.of(new EncryptDQLResultDecorator(new EncryptAlgorithmMetaData(database, encryptRule, (SelectStatementContext) sqlStatementContext)));
+            return Optional.of(new EncryptDQLResultDecorator(database, encryptRule, (SelectStatementContext) sqlStatementContext));
         }
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             return Optional.of(new EncryptDALResultDecorator());

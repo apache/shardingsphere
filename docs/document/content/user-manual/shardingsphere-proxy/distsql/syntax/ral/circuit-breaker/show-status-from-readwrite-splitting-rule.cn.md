@@ -35,7 +35,7 @@ databaseName ::=
 
 | 列              | 说明     |
 |----------------|--------|
-| resource       | 存储单元名称 |
+| storage_unit   | 存储单元名称 |
 | status         | 存储单元状态 |
 
 ### 示例
@@ -48,15 +48,12 @@ SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
-+----------+---------+
-| resource | status  |
-+----------+---------+
-| ds_0     | enabled |
-| ds_1     | enabled |
-| ds_2     | enabled |
-| ds_3     | enabled |
-+----------+---------+
-4 rows in set (0.01 sec)
++--------------+----------+
+| storage_unit | status   |
++--------------+----------+
+| ds_0         | disabled |
++--------------+----------+
+1 rows in set (0.01 sec)
 ```
 
 - 查询指定逻辑库中所有读写分离存储单元状态
@@ -67,15 +64,12 @@ SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
-+----------+---------+
-| resource | status  |
-+----------+---------+
-| ds_0     | enabled |
-| ds_1     | enabled |
-| ds_2     | enabled |
-| ds_3     | enabled |
-+----------+---------+
-4 rows in set (0.00 sec)
++--------------+----------+
+| storage_unit | status   |
++--------------+----------+
+| ds_0         | disabled |
++--------------+----------+
+1 rows in set (0.00 sec)
 ```
 
 - 查询当前逻辑库中指定读写分离规则中读写分离存储单元状态
@@ -86,15 +80,12 @@ SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
-+----------+---------+
-| resource | status  |
-+----------+---------+
-| ds_0     | enabled |
-| ds_1     | enabled |
-| ds_2     | enabled |
-| ds_3     | enabled |
-+----------+---------+
-4 rows in set (0.01 sec)
++--------------+----------+
+| storage_unit | status   |
++--------------+----------+
+| ds_0         | disabled |
++--------------+----------+
+1 rows in set (0.01 sec)
 ```
 
 - 查询当前逻辑库中所有读写分离存储单元状态
@@ -105,15 +96,12 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
-+----------+---------+
-| resource | status  |
-+----------+---------+
-| ds_0     | enabled |
-| ds_1     | enabled |
-| ds_2     | enabled |
-| ds_3     | enabled |
-+----------+---------+
-4 rows in set (0.01 sec)
++--------------+----------+
+| storage_unit | status   |
++--------------+----------+
+| ds_0         | disabled |
++--------------+----------+
+1 rows in set (0.01 sec)
 ```
 
 ### 保留字

@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -30,9 +29,6 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ExpectedSQLParserRule extends AbstractExpectedIdentifierSQLSegment {
-    
-    @XmlAttribute(name = "sql-comment-parse-enabled")
-    private boolean sqlCommentParseEnabled;
     
     @XmlElement(name = "parse-tree-cache")
     private ExpectedCacheOption parseTreeCache;

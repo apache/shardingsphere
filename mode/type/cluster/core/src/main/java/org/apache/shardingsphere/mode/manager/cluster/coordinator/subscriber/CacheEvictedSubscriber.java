@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.cache.OrderedServicesCache;
+import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
@@ -36,7 +36,7 @@ public final class CacheEvictedSubscriber {
      *
      * @param ignored unused
      */
-    @SuppressWarnings({"UnstableApiUsage", "unused"})
+    @SuppressWarnings("unused")
     @Subscribe
     public void onGovernanceEvent(final GovernanceEvent ignored) {
         OrderedServicesCache.clearCache();

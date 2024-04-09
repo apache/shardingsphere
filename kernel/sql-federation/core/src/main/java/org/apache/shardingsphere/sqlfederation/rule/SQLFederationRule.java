@@ -18,46 +18,45 @@
 package org.apache.shardingsphere.sqlfederation.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContextFactory;
-import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContextFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * SQL federation rule.
  */
 @Getter
-public final class SQLFederationRule implements GlobalRule, MetaDataHeldRule {
+public final class SQLFederationRule implements GlobalRule {
     
     private final SQLFederationRuleConfiguration configuration;
     
-    private final OptimizerContext optimizerContext;
+    private final AtomicReference<OptimizerContext> optimizerContext;
     
-    public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
+    private final RuleAttributes attributes;
+    
+    public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
-        optimizerContext = OptimizerContextFactory.create(databases, props);
+        optimizerContext = new AtomicReference<>(OptimizerContextFactory.create(databases));
+        attributes = new RuleAttributes();
     }
     
     @Override
-    public void alterDatabase(final ShardingSphereDatabase database) {
-        OptimizerPlannerContext plannerContext = OptimizerPlannerContextFactory.create(database, optimizerContext.getParserContext(database.getName()), optimizerContext.getSqlParserRule());
-        optimizerContext.putPlannerContext(database.getName(), plannerContext);
+    public void refresh(final Map<String, ShardingSphereDatabase> databases, final GlobalRuleChangedType changedType) {
+        optimizerContext.set(OptimizerContextFactory.create(databases));
     }
     
-    @Override
-    public void dropDatabase(final String databaseName) {
-        optimizerContext.removePlannerContext(databaseName);
-    }
-    
-    @Override
-    public String getType() {
-        return SQLFederationRule.class.getSimpleName();
+    /**
+     * Get optimizer context.
+     * 
+     * @return optimizer context
+     */
+    public OptimizerContext getOptimizerContext() {
+        return optimizerContext.get();
     }
 }

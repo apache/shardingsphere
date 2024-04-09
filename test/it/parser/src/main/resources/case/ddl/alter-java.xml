@@ -18,4 +18,5 @@
 
 <sql-parser-test-cases>
     <alter-java sql-case-id="alter_java" />
+    <alter-java sql-case-id="alter_java_source_compile" />
 </sql-parser-test-cases>

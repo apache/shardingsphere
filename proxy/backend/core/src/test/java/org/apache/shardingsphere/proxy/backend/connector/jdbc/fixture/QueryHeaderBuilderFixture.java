@@ -32,4 +32,9 @@ public final class QueryHeaderBuilderFixture implements QueryHeaderBuilder {
                              final ShardingSphereDatabase database, final String columnName, final String columnLabel, final int columnIndex) throws SQLException {
         return new QueryHeader(null, null, null, null, Types.INTEGER, null, 0, 0, false, false, false, false);
     }
+    
+    @Override
+    public String getDatabaseType() {
+        return "FIXTURE";
+    }
 }

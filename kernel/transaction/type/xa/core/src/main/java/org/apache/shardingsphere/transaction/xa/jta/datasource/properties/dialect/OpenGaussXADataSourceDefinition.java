@@ -33,7 +33,7 @@ public final class OpenGaussXADataSourceDefinition implements XADataSourceDefini
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "openGauss";
     }
 }

@@ -21,4 +21,7 @@
     <sql-case id="create_operator_with_procedure" value="CREATE OPERATOR !== (PROCEDURE = int8ne, LEFTARG = bigint, RIGHTARG = bigint, NEGATOR = ===, COMMUTATOR = !== )" db-types="PostgreSQL" />
     <sql-case id="create_operator_with_function" value="CREATE OPERATOR ## (LEFTARG = path, RIGHTARG = path, FUNCTION = path_inter, COMMUTATOR = ## )" db-types="PostgreSQL" />
     <sql-case id="create_operator_with_schema_qualified_name" value="CREATE OPERATOR alter1.= (PROCEDURE = alter1.same, LEFTARG  = alter1.ctype, RIGHTARG = alter1.ctype)" db-types="PostgreSQL" />
+    <sql-case id="create_operator_with_binding" value="CREATE OPERATOR Contains BINDING (VARCHAR2, VARCHAR2) RETURN NUMBER USING TextContains;" db-types="Oracle" />
+    <sql-case id="create_operator_with_binding_custom_datatype" value="CREATE OPERATOR Contains BINDING (VARCHAR2, VARCHAR2) RETURN NUMBER USING text.contains, (Spatial.Geo, Spatial.Geo) RETURN NUMBER USING Spatial.contains;" db-types="Oracle" />
+    <sql-case id="create_operator_with_compute_ancillary_data" value="CREATE OPERATOR Contains BINDING (VARCHAR2, VARCHAR2) RETURN NUMBER WITH INDEX CONTEXT, SCAN CONTEXT TextIndexMethods COMPUTE ANCILLARY DATA USING TextContains;" db-types="Oracle" />
 </sql-cases>

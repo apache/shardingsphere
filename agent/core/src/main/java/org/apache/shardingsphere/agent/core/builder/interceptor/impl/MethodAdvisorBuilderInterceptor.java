@@ -25,17 +25,17 @@ import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
 import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutorFactory;
 import org.apache.shardingsphere.agent.core.builder.interceptor.AgentBuilderInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.classloader.ClassLoaderContext;
-import org.apache.shardingsphere.agent.core.log.AgentLogger;
-import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
 
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Method advisor builder interceptor.
  */
 public final class MethodAdvisorBuilderInterceptor implements AgentBuilderInterceptor {
     
-    private static final AgentLogger LOGGER = AgentLoggerFactory.getAgentLogger(MethodAdvisorBuilderInterceptor.class);
+    private static final Logger LOGGER = Logger.getLogger(MethodAdvisorBuilderInterceptor.class.getName());
     
     private final TypeDescription typePointcut;
     
@@ -59,7 +59,7 @@ public final class MethodAdvisorBuilderInterceptor implements AgentBuilderInterc
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                LOGGER.error("Failed to load advice class: {}.", typePointcut.getTypeName(), ex);
+                LOGGER.log(Level.SEVERE, "Failed to load advice class: {0}, {1}", new String[]{typePointcut.getTypeName(), ex.getMessage()});
             }
         }
         return result;

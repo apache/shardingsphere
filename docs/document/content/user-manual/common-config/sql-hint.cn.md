@@ -18,7 +18,7 @@ ShardingSphere 的 SQL Hint 语法格式如下：
 /* SHARDINGSPHERE_HINT: {key} = {value}, {key} = {value} */ SELECT * FROM t_order;
 ```
 
-使用 SQL Hint 功能，需要将 ShardingSphere SQL Parser 规则中的 `sqlCommentParseEnabled` 设置为 true，开启 SQL 注释解析功能。此外，如果使用 MySQL 客户端连接，需要添加 `-c` 选项保留注释，客户端默认是 `--skip-comments` 过滤注释。
+如果使用 MySQL 客户端连接，需要添加 `-c` 选项保留注释，客户端默认是 `--skip-comments` 过滤注释。
 
 ## 参数解释
 

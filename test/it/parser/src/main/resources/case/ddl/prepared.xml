@@ -17,6 +17,7 @@
   -->
 
 <sql-parser-test-cases>
+    <prepared sql-case-id="prepare_with_drop" />
     <prepared sql-case-id="prepare_with_statement" />
     <prepared sql-case-id="prepare_with_var" />
     <prepared sql-case-id="execute_with_statement" />

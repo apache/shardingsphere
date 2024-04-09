@@ -28,7 +28,7 @@ transactionalReadQueryStrategyDefinition ::=
     'TRANSACTIONAL_READ_QUERY_STRATEGY' '=' transactionalReadQueryStrategyType
 
 loadBalancerDefinition ::=
-    'TYPE' '(' 'NAME' '=' loadBalancerType (',' propertiesDefinition)? ')'
+    'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 ruleName ::=
   identifier
@@ -42,7 +42,7 @@ storageUnitName ::=
 transactionalReadQueryStrategyType ::=
   string
 
-loadBalancerType ::=
+algorithmType ::=
   string
 
 propertiesDefinition ::=
@@ -63,7 +63,7 @@ value ::=
 ### 补充说明
 
 - `transactionalReadQueryStrategyType` 指定事务内读请求路由策略，请参考[YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting/)；
-- `loadBalancerType` 指定负载均衡算法类型，请参考[负载均衡算法](/cn/user-manual/common-config/builtin-algorithm/load-balance/)；
+- `algorithmType` 指定负载均衡算法类型，请参考[负载均衡算法](/cn/user-manual/common-config/builtin-algorithm/load-balance/)；
 - 重复的 `ruleName` 将无法被创建；
 - `ifNotExists` 子句用于避免出现 `Duplicate readwrite_splitting rule` 错误。
 

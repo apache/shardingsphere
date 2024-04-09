@@ -1,0 +1,107 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_stat_xact_all_tables
+columns:
+  relid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: relid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  schemaname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: schemaname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: relname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  seq_scan:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: seq_scan
+    primaryKey: false
+    unsigned: false
+    visible: true
+  seq_tup_read:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: seq_tup_read
+    primaryKey: false
+    unsigned: false
+    visible: true
+  idx_scan:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: idx_scan
+    primaryKey: false
+    unsigned: false
+    visible: true
+  idx_tup_fetch:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: idx_tup_fetch
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_tup_ins:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: n_tup_ins
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_tup_upd:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: n_tup_upd
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_tup_del:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: n_tup_del
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_tup_hot_upd:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: n_tup_hot_upd
+    primaryKey: false
+    unsigned: false
+    visible: true

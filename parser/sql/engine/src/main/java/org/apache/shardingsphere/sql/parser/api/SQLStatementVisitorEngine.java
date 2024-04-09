@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sql.parser.api;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.Token;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory;
@@ -33,9 +35,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 @RequiredArgsConstructor
 public final class SQLStatementVisitorEngine {
     
-    private final String databaseType;
+    private final DatabaseType databaseType;
     
-    private final boolean isParseComment;
+    public SQLStatementVisitorEngine(final String databaseType) {
+        this(TypedSPILoader.getService(DatabaseType.class, databaseType));
+    }
     
     /**
      * Visit parse context.
@@ -46,9 +50,7 @@ public final class SQLStatementVisitorEngine {
     public SQLStatement visit(final ParseASTNode parseASTNode) {
         SQLStatementVisitor visitor = SQLStatementVisitorFactory.newInstance(databaseType, SQLVisitorRule.valueOf(parseASTNode.getRootNode().getClass()));
         ASTNode result = parseASTNode.getRootNode().accept(visitor);
-        if (isParseComment) {
-            appendSQLComments(parseASTNode, result);
-        }
+        appendSQLComments(parseASTNode, result);
         return (SQLStatement) result;
     }
     

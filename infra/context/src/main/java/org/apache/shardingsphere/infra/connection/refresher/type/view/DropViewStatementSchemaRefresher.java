@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.connection.refresher.type.view;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
@@ -33,7 +34,7 @@ public final class DropViewStatementSchemaRefresher implements MetaDataRefresher
     
     @Override
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final DropViewStatement sqlStatement, final ConfigurationProperties props) {
+                        final String schemaName, final DatabaseType databaseType, final DropViewStatement sqlStatement, final ConfigurationProperties props) {
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
         sqlStatement.getViews().forEach(each -> {
             String viewName = each.getTableName().getIdentifier().getValue();
@@ -44,7 +45,7 @@ public final class DropViewStatementSchemaRefresher implements MetaDataRefresher
     }
     
     @Override
-    public String getType() {
-        return DropViewStatement.class.getName();
+    public Class<DropViewStatement> getType() {
+        return DropViewStatement.class;
     }
 }

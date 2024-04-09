@@ -31,14 +31,14 @@ import java.sql.SQLException;
 @Getter
 public final class DatabaseServerInfo {
     
-    private final String databaseName;
+    private final String databaseType;
     
     private final String databaseVersion;
     
     public DatabaseServerInfo(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            databaseName = databaseMetaData.getDatabaseProductName();
+            databaseType = databaseMetaData.getDatabaseProductName();
             databaseVersion = databaseMetaData.getDatabaseProductVersion();
         } catch (final SQLException ex) {
             throw new DatabaseServerLoadingServerException(ex);
@@ -47,6 +47,6 @@ public final class DatabaseServerInfo {
     
     @Override
     public String toString() {
-        return String.format("Database name is `%s`, version is `%s`", databaseName, databaseVersion);
+        return String.format("Database type is `%s`, version is `%s`", databaseType, databaseVersion);
     }
 }

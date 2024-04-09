@@ -15,5 +15,3 @@ By configuration, application developers can flexibly use data sharding, readwri
 
 Rule configuration keeps consist with YAML configuration of ShardingSphere-JDBC.
 DistSQL and YAML can be replaced each other.
-
-Please refer to [Example](https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-proxy-example) for more details.

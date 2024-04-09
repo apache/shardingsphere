@@ -33,7 +33,7 @@ public final class SQLServerXADataSourceDefinition implements XADataSourceDefini
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "SQLServer";
     }
 }

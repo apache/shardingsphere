@@ -1,6 +1,6 @@
 +++
 title = "IMPORT DATABASE CONFIGURATION"
-weight = 12
+weight = 13
 +++
 
 ### 描述
@@ -13,10 +13,7 @@ weight = 12
 {{% tab name="语法" %}}
 ```sql
 ExportDatabaseConfiguration ::=
-  'IMPORT' 'DATABASE' 'CONFIGURATION' 'FROM' 'FILE' filePath ('TO' databaseName)?
-
-databaseName ::=
-  identifier
+  'IMPORT' 'DATABASE' 'CONFIGURATION' 'FROM' 'FILE' filePath
 
 filePath ::=
   string
@@ -38,7 +35,7 @@ filePath ::=
 - 将 `YAML` 中的配置导入到指定逻辑库中
 
 ```sql
-IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_sharding_db.yaml" TO sharding_db;
+IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_sharding_db.yaml";
 ```
 
 - 将 `YAML` 中的配置导入到当前逻辑库中
@@ -49,7 +46,7 @@ IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_sharding_db.yaml";
 
 ### 保留字
 
-`IMPORT`、`DATABASE`、`CONFIGURATION`、`FROM`、`FILE`、`TO`
+`IMPORT`、`DATABASE`、`CONFIGURATION`、`FROM`、`FILE`
 
 ### 相关链接
 

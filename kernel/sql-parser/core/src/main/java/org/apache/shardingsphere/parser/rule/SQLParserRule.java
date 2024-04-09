@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.parser.rule;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.parser.SimpleSQLParserEngine;
-import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
@@ -33,8 +35,6 @@ public final class SQLParserRule implements GlobalRule {
     
     private final SQLParserRuleConfiguration configuration;
     
-    private final boolean sqlCommentParseEnabled;
-    
     private final CacheOption sqlStatementCache;
     
     private final CacheOption parseTreeCache;
@@ -43,7 +43,6 @@ public final class SQLParserRule implements GlobalRule {
     
     public SQLParserRule(final SQLParserRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        sqlCommentParseEnabled = ruleConfig.isSqlCommentParseEnabled();
         sqlStatementCache = ruleConfig.getSqlStatementCache();
         parseTreeCache = ruleConfig.getParseTreeCache();
         engineType = "Standard";
@@ -55,14 +54,14 @@ public final class SQLParserRule implements GlobalRule {
      * @param databaseType database type
      * @return SQL parser engine
      */
-    public SQLParserEngine getSQLParserEngine(final String databaseType) {
+    public SQLParserEngine getSQLParserEngine(final DatabaseType databaseType) {
         return "Standard".equals(engineType)
-                ? new ShardingSphereSQLParserEngine(databaseType, sqlStatementCache, parseTreeCache, sqlCommentParseEnabled)
+                ? new ShardingSphereSQLParserEngine(databaseType.getTrunkDatabaseType().orElse(databaseType), sqlStatementCache, parseTreeCache)
                 : new SimpleSQLParserEngine();
     }
     
     @Override
-    public String getType() {
-        return SQLParserRule.class.getSimpleName();
+    public RuleAttributes getAttributes() {
+        return new RuleAttributes();
     }
 }

@@ -40,7 +40,7 @@ class EncryptPredicateInRightValueTokenTest {
     
     @Test
     void assertToStringWithPlaceholderWithoutTableOwnerWithIn() {
-        EncryptPredicateInRightValueToken actual = new EncryptPredicateInRightValueToken(0, 0, Collections.emptyMap(), Collections.singletonList(0));
+        EncryptPredicateInRightValueToken actual = new EncryptPredicateInRightValueToken(0, 0, Collections.emptyMap(), Collections.singleton(0));
         assertThat(actual.toString(), is("(?)"));
     }
 }

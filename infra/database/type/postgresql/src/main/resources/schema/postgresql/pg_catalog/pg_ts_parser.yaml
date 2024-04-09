@@ -1,0 +1,88 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_ts_parser
+columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: true
+    unsigned: false
+    visible: true
+  prsname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: prsname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  prsnamespace:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: prsnamespace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  prsstart:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: prsstart
+    primaryKey: false
+    unsigned: false
+    visible: true
+  prstoken:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: prstoken
+    primaryKey: false
+    unsigned: false
+    visible: true
+  prsend:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: prsend
+    primaryKey: false
+    unsigned: false
+    visible: true
+  prsheadline:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: prsheadline
+    primaryKey: false
+    unsigned: false
+    visible: true
+  prslextype:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: prslextype
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_ts_parser_prsname_index:
+    name: pg_ts_parser_prsname_index
+  pg_ts_parser_oid_index:
+    name: pg_ts_parser_oid_index

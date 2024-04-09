@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml;
 
+import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableConditionalIntoSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableInsertIntoSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableInsertType;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 import java.util.Optional;
@@ -28,28 +31,51 @@ import java.util.Optional;
 /**
  * Oracle insert statement.
  */
+@Getter
 @Setter
 public final class OracleInsertStatement extends InsertStatement implements OracleStatement {
     
-    private SubquerySegment selectSubquery;
+    private MultiTableInsertType multiTableInsertType;
     
-    private InsertMultiTableElementSegment insertMultiTableElementSegment;
+    private MultiTableInsertIntoSegment multiTableInsertIntoSegment;
+    
+    private MultiTableConditionalIntoSegment multiTableConditionalIntoSegment;
+    
+    private WhereSegment where;
     
     /**
-     * Get insert select segment.
+     * Get multi table insert type.
      *
-     * @return insert select segment
+     * @return multi table insert type
      */
-    public Optional<SubquerySegment> getSelectSubquery() {
-        return Optional.ofNullable(selectSubquery);
+    public Optional<MultiTableInsertType> getMultiTableInsertType() {
+        return Optional.ofNullable(multiTableInsertType);
     }
     
     /**
-     * Get insert multi table element segment.
+     * Get multi table insert into segment.
      *
-     * @return insert select segment
+     * @return multi table insert into segment
      */
-    public Optional<InsertMultiTableElementSegment> getInsertMultiTableElementSegment() {
-        return Optional.ofNullable(insertMultiTableElementSegment);
+    public Optional<MultiTableInsertIntoSegment> getMultiTableInsertIntoSegment() {
+        return Optional.ofNullable(multiTableInsertIntoSegment);
+    }
+    
+    /**
+     * Get multi table conditional into segment.
+     *
+     * @return multi table conditional into segment
+     */
+    public Optional<MultiTableConditionalIntoSegment> getMultiTableConditionalIntoSegment() {
+        return Optional.ofNullable(multiTableConditionalIntoSegment);
+    }
+    
+    /**
+     * Get where segment.
+     *
+     * @return where segment
+     */
+    public Optional<WhereSegment> getWhere() {
+        return Optional.ofNullable(where);
     }
 }

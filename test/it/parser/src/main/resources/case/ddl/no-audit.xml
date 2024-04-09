@@ -21,4 +21,8 @@
     <no-audit sql-case-id="no_audit_policy_by_users" />
     <no-audit sql-case-id="no_audit_policy_by_users_with_roles" />
     <no-audit sql-case-id="no_audit_context" />
+    <no-audit sql-case-id="no_audit_traditional_all_privileges" />
+    <no-audit sql-case-id="no_audit_traditional_all_statements" />
+    <no-audit sql-case-id="no_audit_traditional_delete" />
+    <no-audit sql-case-id="no_audit_traditional_select" />
 </sql-parser-test-cases>

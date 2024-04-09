@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 
 /**
  * ShardingSphere rule.
@@ -32,9 +33,9 @@ public interface ShardingSphereRule {
     RuleConfiguration getConfiguration();
     
     /**
-     * Get type.
-     *
-     * @return rule type
+     * Get rule attributes.
+     * 
+     * @return rule attributes
      */
-    String getType();
+    RuleAttributes getAttributes();
 }

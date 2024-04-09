@@ -1,0 +1,72 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_ts_dict
+columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: true
+    unsigned: false
+    visible: true
+  dictname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: dictname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  dictnamespace:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: dictnamespace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  dictowner:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: dictowner
+    primaryKey: false
+    unsigned: false
+    visible: true
+  dicttemplate:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: dicttemplate
+    primaryKey: false
+    unsigned: false
+    visible: true
+  dictinitoption:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: dictinitoption
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_ts_dict_dictname_index:
+    name: pg_ts_dict_dictname_index
+  pg_ts_dict_oid_index:
+    name: pg_ts_dict_oid_index

@@ -54,16 +54,16 @@ class RQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
-            assertExecute(containerComposer);
-        }
+        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
+        assertExecute(containerComposer);
     }
     
     private void assertExecute(final SingleE2EContainerComposer containerComposer) throws SQLException {
-        try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
-            try (
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(containerComposer.getSQL())) {
+        try (
+                Connection connection = containerComposer.getTargetDataSource().getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(containerComposer.getSQL());
+            try (ResultSet resultSet = statement.getResultSet()) {
                 assertResultSet(containerComposer, resultSet);
             }
         }

@@ -17,11 +17,10 @@
 
 FROM eclipse-temurin:11-jdk
 
-ARG APP_NAME
-ENV WAIT_VERSION=2.7.2 JAR_FILE_NAME=${APP_NAME}.jar
+ENV WAIT_VERSION=2.7.2
 
 COPY shardingsphere-jdbc-app /opt/shardingsphere-jdbc-app
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
 RUN chmod +x /wait && chmod +x /opt/shardingsphere-jdbc-app/start.sh
 WORKDIR /opt/shardingsphere-jdbc-app
-ENTRYPOINT /wait && ./start.sh $JAR_FILE_NAME --agent && tail -f ./logs/stdout.log
+ENTRYPOINT /wait && ./start.sh --agent && tail -f ./logs/stdout.log

@@ -144,6 +144,7 @@ unreservedWord
     | BEFORE
     | BEGIN
     | BY
+    | BYTEA
     | BOX
     | CACHE
     | CALL

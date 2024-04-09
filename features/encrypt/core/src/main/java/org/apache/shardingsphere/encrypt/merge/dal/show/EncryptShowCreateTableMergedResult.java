@@ -21,20 +21,20 @@ import com.google.common.base.Splitter;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.io.InputStream;
 import java.io.Reader;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Encrypt show create table merged result.
@@ -45,6 +45,8 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
     
     private static final int CREATE_TABLE_DEFINITION_INDEX = 2;
     
+    private final DialectDatabaseMetaData dialectDatabaseMetaData;
+    
     private final String tableName;
     
     private final EncryptRule encryptRule;
@@ -52,6 +54,7 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
     protected EncryptShowCreateTableMergedResult(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
         ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getAllTables().size(),
                 () -> new UnsupportedEncryptSQLException("SHOW CREATE TABLE FOR MULTI TABLE"));
+        dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData();
         tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         this.encryptRule = encryptRule;
     }
@@ -66,7 +69,7 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
         if (CREATE_TABLE_DEFINITION_INDEX == columnIndex) {
             String result = getOriginalValue(CREATE_TABLE_DEFINITION_INDEX, type).toString();
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent()) {
+            if (!encryptTable.isPresent() || !result.contains("(")) {
                 return result;
             }
             StringBuilder builder = new StringBuilder(result.substring(0, result.indexOf('(') + 1));
@@ -81,19 +84,18 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
     }
     
     private Optional<String> findLogicColumnDefinition(final String columnDefinition, final EncryptTable encryptTable) {
-        Collection<String> cipherColumns = encryptTable.getLogicColumns().stream().map(encryptTable::getCipherColumn).collect(Collectors.toList());
-        for (String each : cipherColumns) {
-            if (columnDefinition.contains(each)) {
-                return Optional.of(columnDefinition.replace(each, encryptTable.getLogicColumnByCipherColumn(each)));
-            }
+        String columnName = dialectDatabaseMetaData.getQuoteCharacter().unwrap(columnDefinition.trim().split("\\s+")[0]);
+        if (encryptTable.isCipherColumn(columnName)) {
+            return Optional.of(columnDefinition.replace(columnName, encryptTable.getLogicColumnByCipherColumn(columnName)));
         }
-        if (encryptTable.getAssistedQueryColumns().stream().anyMatch(columnDefinition::contains)) {
-            return Optional.empty();
-        }
-        if (encryptTable.getLikeQueryColumns().stream().anyMatch(columnDefinition::contains)) {
+        if (isDerivedColumn(encryptTable, columnName)) {
             return Optional.empty();
         }
         return Optional.of(columnDefinition);
+    }
+    
+    private boolean isDerivedColumn(final EncryptTable encryptTable, final String columnName) {
+        return encryptTable.isAssistedQueryColumn(columnName) || encryptTable.isLikeQueryColumn(columnName);
     }
     
     @Override

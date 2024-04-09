@@ -1,0 +1,23 @@
+{
+  "resources":{
+  "includes":[{
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader"},
+    "pattern":".*META-INF/services/org\\.apache\\.shardingsphere\\..+"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
+    "pattern":".*schema/.+\\.yaml$"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
+    "pattern":".*sql/.+\\.xml$"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader"},
+    "pattern":"\\Qschema\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
+    "pattern":"\\Qsql\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
+    "pattern":"\\Qtransactions.properties\\E"
+  }]},
+  "bundles":[]
+}

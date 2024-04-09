@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.CreateTableOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -97,6 +98,19 @@ public final class CreateTableStatementHandler implements SQLStatementHandler {
     public static Optional<SimpleTableSegment> getLikeTable(final CreateTableStatement createTableStatement) {
         if (createTableStatement instanceof MySQLCreateTableStatement) {
             return ((MySQLCreateTableStatement) createTableStatement).getLikeTable();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Get create table option.
+     *
+     * @param createTableStatement create table statement
+     * @return create table option
+     */
+    public static Optional<CreateTableOptionSegment> getCreateTableOption(final CreateTableStatement createTableStatement) {
+        if (createTableStatement instanceof MySQLCreateTableStatement) {
+            return ((MySQLCreateTableStatement) createTableStatement).getCreateTableOptionSegment();
         }
         return Optional.empty();
     }

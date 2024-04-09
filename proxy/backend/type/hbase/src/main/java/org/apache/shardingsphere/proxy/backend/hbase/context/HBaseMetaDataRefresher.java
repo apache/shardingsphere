@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.hbase.context;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 
 /**
  * HBase meta data refresher.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class HBaseMetaDataRefresher implements Runnable {
     
     private final HBaseContext context;

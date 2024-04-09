@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.readwritesplitting.api;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -32,13 +30,16 @@ import java.util.Map;
 /**
  * Readwrite-splitting rule configuration.
  */
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class ReadwriteSplittingRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
-    private Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources;
+    private final Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources;
     
-    private Map<String, AlgorithmConfiguration> loadBalancers;
+    private final Map<String, AlgorithmConfiguration> loadBalancers;
+    
+    @Override
+    public boolean isEmpty() {
+        return dataSources.isEmpty();
+    }
 }

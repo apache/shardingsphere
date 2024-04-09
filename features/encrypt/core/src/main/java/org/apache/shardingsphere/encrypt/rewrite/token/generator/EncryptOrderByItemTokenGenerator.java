@@ -18,24 +18,22 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -64,7 +62,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedHashSet<>();
-        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName);
+        String defaultSchema = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName);
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> schemas.get(defaultSchema));
         for (OrderByItem each : getOrderByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
@@ -78,19 +76,11 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
     
     private Collection<SubstitutableColumnNameToken> generateSQLTokensWithColumnSegments(final Collection<ColumnSegment> columnSegments, final Map<String, String> columnTableNames) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
-        for (ColumnSegment column : columnSegments) {
-            String tableName = columnTableNames.getOrDefault(column.getExpression(), "");
+        for (ColumnSegment each : columnSegments) {
+            String tableName = columnTableNames.getOrDefault(each.getExpression(), "");
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(column.getIdentifier().getValue()).isPresent()) {
-                continue;
-            }
-            int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
-            int stopIndex = column.getStopIndex();
-            Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(column.getIdentifier().getValue());
-            SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex,
-                    createColumnProjections(optional, column.getIdentifier().getQuoteCharacter()))).orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex,
-                            createColumnProjections(encryptTable.get().getCipherColumn(column.getIdentifier().getValue()), column.getIdentifier().getQuoteCharacter())));
-            result.add(encryptColumnNameToken);
+            String columnName = each.getIdentifier().getValue();
+            ShardingSpherePreconditions.checkState(!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName), () -> new UnsupportedEncryptSQLException("ORDER BY"));
         }
         return result;
     }
@@ -101,8 +91,9 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
         }
         Collection<OrderByItem> result = new LinkedList<>();
         SelectStatementContext statementContext = (SelectStatementContext) sqlStatementContext;
-        result.addAll(statementContext.getOrderByContext().getItems());
-        result.addAll(statementContext.getGroupByContext().getItems());
+        if (!statementContext.getOrderByContext().isGenerated()) {
+            result.addAll(statementContext.getOrderByContext().getItems());
+        }
         for (SelectStatementContext each : statementContext.getSubqueryContexts().values()) {
             result.addAll(getOrderByItems(each));
         }
@@ -114,7 +105,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
             return false;
         }
         SelectStatementContext statementContext = (SelectStatementContext) sqlStatementContext;
-        if (!statementContext.getOrderByContext().getItems().isEmpty() || !statementContext.getGroupByContext().getItems().isEmpty()) {
+        if (!statementContext.getOrderByContext().getItems().isEmpty() && !statementContext.getOrderByContext().isGenerated()) {
             return true;
         }
         for (SelectStatementContext each : statementContext.getSubqueryContexts().values()) {
@@ -123,9 +114,5 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
             }
         }
         return false;
-    }
-    
-    private Collection<Projection> createColumnProjections(final String columnName, final QuoteCharacter quoteCharacter) {
-        return Collections.singleton(new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null));
     }
 }

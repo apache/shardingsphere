@@ -21,13 +21,13 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/jdbc_test_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    jdbcUrl: jdbc:mysql://localhost:3306/jdbc_test_0?useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password: 123456
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/jdbc_test_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    jdbcUrl: jdbc:mysql://localhost:3306/jdbc_test_1?useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password: 123456
 
@@ -39,12 +39,12 @@ rules:
         databaseStrategy:
           standard:
             shardingColumn: user_id
-            shardingAlgorithmName: database-inline
+            shardingAlgorithmName: database_inline
         keyGenerateStrategy:
           column: id
           keyGeneratorName: snowflake
     shardingAlgorithms:
-      database-inline:
+      database_inline:
         type: INLINE
         props:
           algorithm-expression: ds_$->{user_id % 2}

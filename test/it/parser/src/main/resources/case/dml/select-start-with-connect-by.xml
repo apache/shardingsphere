@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <select sql-case-id="select_start_with_connect_by">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <subquery-table alias="temp">
+                <subquery>
+                    <select>
+                        <projections start-index="22" stop-index="31">
+                            <column-projection name="level" start-index="22" stop-index="26" />
+                            <shorthand-projection start-index="29" stop-index="31">
+                                <owner name="o" start-index="29" stop-index="29" />
+                            </shorthand-projection>
+                        </projections>
+                        <from>
+                            <simple-table start-index="38" stop-index="46" name="t_order" alias="o" />
+                        </from>
+                        <where start-index="48" stop-index="67">
+                            <expr>
+                                <binary-operation-expression start-index="54" stop-index="67">
+                                    <left>
+                                        <column name="order_id" start-index="54" stop-index="63">
+                                            <owner name="o" start-index="54" stop-index="54" />
+                                        </column>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1" start-index="67" stop-index="67" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                        <order-by>
+                            <column-item name="level" start-index="138" stop-index="142" />
+                        </order-by>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+        <where start-index="150" stop-index="165">
+            <expr>
+                <binary-operation-expression start-index="156" stop-index="165">
+                    <left>
+                        <column name="ROWNUM" start-index="156" stop-index="161" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="165" stop-index="165" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+</sql-parser-test-cases>

@@ -1,0 +1,147 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pgxc_thread_wait_status
+columns:
+  node_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: node_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  db_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: db_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  thread_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: thread_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  query_id:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: query_id
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sessionid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: sessionid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lwtid:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: lwtid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  psessionid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: psessionid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tlevel:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: tlevel
+    primaryKey: false
+    unsigned: false
+    visible: true
+  smpid:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: smpid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  wait_status:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: wait_status
+    primaryKey: false
+    unsigned: false
+    visible: true
+  wait_event:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: wait_event
+    primaryKey: false
+    unsigned: false
+    visible: true
+  locktag:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: locktag
+    primaryKey: false
+    unsigned: false
+    visible: true
+  lockmode:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: lockmode
+    primaryKey: false
+    unsigned: false
+    visible: true
+  block_sessionid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: block_sessionid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  global_sessionid:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: global_sessionid
+    primaryKey: false
+    unsigned: false
+    visible: true

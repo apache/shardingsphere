@@ -18,8 +18,13 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -33,7 +38,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class EncryptMergedResult implements MergedResult {
     
-    private final EncryptAlgorithmMetaData metaData;
+    private final ShardingSphereDatabase database;
+    
+    private final EncryptRule encryptRule;
+    
+    private final SelectStatementContext selectStatementContext;
     
     private final MergedResult mergedResult;
     
@@ -44,16 +53,20 @@ public final class EncryptMergedResult implements MergedResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        Optional<EncryptContext> encryptContext = metaData.findEncryptContext(columnIndex);
-        if (!encryptContext.isPresent()) {
+        Optional<ColumnProjection> columnProjection = selectStatementContext.findColumnProjection(columnIndex);
+        if (!columnProjection.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }
-        if (metaData.getEncryptRule().findEncryptTable(encryptContext.get().getTableName()).map(optional -> optional.isEncryptColumn(encryptContext.get().getColumnName())).orElse(false)) {
-            Object cipherValue = mergedResult.getValue(columnIndex, Object.class);
-            return metaData.getEncryptRule().decrypt(
-                    encryptContext.get().getDatabaseName(), encryptContext.get().getSchemaName(), encryptContext.get().getTableName(), encryptContext.get().getColumnName(), cipherValue);
+        String originalTableName = columnProjection.get().getOriginalTable().getValue();
+        String originalColumnName = columnProjection.get().getOriginalColumn().getValue();
+        if (!encryptRule.findEncryptTable(originalTableName).map(optional -> optional.isEncryptColumn(originalColumnName)).orElse(false)) {
+            return mergedResult.getValue(columnIndex, type);
         }
-        return mergedResult.getValue(columnIndex, type);
+        Object cipherValue = mergedResult.getValue(columnIndex, Object.class);
+        EncryptColumn encryptColumn = encryptRule.getEncryptTable(originalTableName).getEncryptColumn(originalColumnName);
+        String schemaName =
+                selectStatementContext.getTablesContext().getSchemaName().orElseGet(() -> new DatabaseTypeRegistry(selectStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
+        return encryptColumn.getCipher().decrypt(database.getName(), schemaName, originalTableName, originalColumnName, cipherValue);
     }
     
     @Override

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.context;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
@@ -27,7 +26,7 @@ import java.util.Objects;
 /**
  * Pipeline context key.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Getter
 public final class PipelineContextKey {
     
@@ -35,34 +34,8 @@ public final class PipelineContextKey {
     
     private final InstanceType instanceType;
     
-    /**
-     * Build context key.
-     *
-     * @param databaseName database name
-     * @param instanceType instance type
-     * @return context key
-     */
-    public static PipelineContextKey build(final String databaseName, final InstanceType instanceType) {
-        return new PipelineContextKey(databaseName, instanceType);
-    }
-    
-    /**
-     * Build context key for proxy.
-     *
-     * @return context key
-     */
-    public static PipelineContextKey buildForProxy() {
-        return new PipelineContextKey("", InstanceType.PROXY);
-    }
-    
-    /**
-     * Build context key for proxy.
-     *
-     * @param databaseName database name
-     * @return context key
-     */
-    public static PipelineContextKey buildForProxy(final String databaseName) {
-        return new PipelineContextKey(databaseName, InstanceType.PROXY);
+    public PipelineContextKey(final InstanceType instanceType) {
+        this("", instanceType);
     }
     
     @Override
@@ -70,7 +43,7 @@ public final class PipelineContextKey {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (null == o || getClass() != o.getClass()) {
             return false;
         }
         final PipelineContextKey that = (PipelineContextKey) o;
@@ -78,7 +51,7 @@ public final class PipelineContextKey {
     }
     
     private String filterDatabaseName(final PipelineContextKey contextKey) {
-        return contextKey.getInstanceType() == InstanceType.PROXY ? "" : contextKey.getDatabaseName();
+        return InstanceType.PROXY == contextKey.getInstanceType() ? "" : contextKey.getDatabaseName();
     }
     
     @Override

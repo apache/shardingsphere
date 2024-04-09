@@ -114,6 +114,7 @@
             <simple-table name="t_order" start-index="33" stop-index="39" />
         </table>
         <index name="idx_upper_status" start-index="13" stop-index="28" />
+        <column name="status" start-index="48" stop-index="53" literal-start-index="48" literal-stop-index="53" />
     </create-index>
     
     <create-index sql-case-id="create_index_with_double_quota">
@@ -221,6 +222,8 @@
         <table>
             <simple-table name="t_order" start-index="25" stop-index="31" />
         </table>
+        <column name="location" start-index="51" stop-index="58" literal-start-index="51" literal-stop-index="58" />
+        <column name="location" start-index="60" stop-index="67" literal-start-index="60" literal-stop-index="67" />
     </create-index>
 
     <create-index sql-case-id="create_index_with_concurrently">
@@ -249,5 +252,21 @@
             <simple-table name="t_order" start-index="52" stop-index="58" />
         </table>
         <column start-index="60" stop-index="67" name="order_id" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_on_local_parallel_nologging">
+        <index name="from_number_ix" start-index="13" stop-index="26" />
+        <table>
+            <simple-table name="call_detail_records" start-index="31" stop-index="49" />
+        </table>
+        <column start-index="51" stop-index="61" name="from_number" />
+    </create-index>
+
+    <create-index sql-case-id="create_bitmap_index_on_local_parallel_nologging">
+        <index name="is_active_bix" start-index="20" stop-index="32" />
+        <table>
+            <simple-table name="credit_card_accounts" start-index="37" stop-index="56" />
+        </table>
+        <column start-index="58" stop-index="66" name="is_active" />
     </create-index>
 </sql-parser-test-cases>

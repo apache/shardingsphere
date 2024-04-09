@@ -1,6 +1,6 @@
 +++
 title = "IMPORT DATABASE CONFIGURATION"
-weight = 12
+weight = 13
 +++
 
 ### Description
@@ -13,10 +13,7 @@ The `IMPORT DATABASE CONFIGURATION` syntax is used to import `YAML` configuratio
 {{% tab name="Grammar" %}}
 ```sql
 ExportDatabaseConfiguration ::=
-  'IMPORT' 'DATABASE' 'CONFIGURATION' 'FROM' 'FILE' filePath ('TO' databaseName)?
-
-databaseName ::=
-  identifier
+  'IMPORT' 'DATABASE' 'CONFIGURATION' 'FROM' 'FILE' filePath
 
 filePath ::=
   string
@@ -38,7 +35,7 @@ filePath ::=
 - Import the configuration in `YAML` into the specified database
 
 ```sql
-IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_sharding_db.yaml" TO sharding_db;
+IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_sharding_db.yaml";
 ```
 
 - Import the configuration in `YAML` into the current database
@@ -49,7 +46,7 @@ IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_sharding_db.yaml";
 
 ### Reserved word
 
-`IMPORT`, `DATABASE`, `CONFIGURATION`, `FROM`, `FILE`, `TO`
+`IMPORT`, `DATABASE`, `CONFIGURATION`, `FROM`, `FILE`
 
 ### Related links
 

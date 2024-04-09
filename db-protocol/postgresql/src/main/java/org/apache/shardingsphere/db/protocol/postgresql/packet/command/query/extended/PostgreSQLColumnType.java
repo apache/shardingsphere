@@ -222,6 +222,9 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
         if (isBool(jdbcType, columnTypeName)) {
             return BOOL;
         }
+        if (isUUID(jdbcType, columnTypeName)) {
+            return UUID;
+        }
         return valueOfJDBCType(jdbcType);
     }
     
@@ -245,6 +248,17 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
      */
     public static boolean isBool(final int jdbcType, final String columnTypeName) {
         return Types.BIT == jdbcType && "bool".equalsIgnoreCase(columnTypeName);
+    }
+    
+    /**
+     * Check if PostgreSQL is UUID type.
+     *
+     * @param jdbcType JDBC type
+     * @param columnTypeName column type name
+     * @return whether it is PostgreSQL UUID
+     */
+    public static boolean isUUID(final int jdbcType, final String columnTypeName) {
+        return Types.OTHER == jdbcType && "uuid".equalsIgnoreCase(columnTypeName);
     }
     
     /**

@@ -1,0 +1,73 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="db_name"/>
+        <column name="schema_name"/>
+        <column name="origin_node"/>
+        <column name="user_name"/>
+        <column name="application_name"/>
+        <column name="client_addr"/>
+        <column name="client_port"/>
+        <column name="unique_query_id"/>
+        <column name="debug_query_id"/>
+        <column name="query"/>
+        <column name="start_time"/>
+        <column name="finish_time"/>
+        <column name="slow_sql_threshold"/>
+        <column name="transaction_id"/>
+        <column name="thread_id"/>
+        <column name="session_id"/>
+        <column name="n_soft_parse"/>
+        <column name="n_hard_parse"/>
+        <column name="query_plan"/>
+        <column name="n_returned_rows"/>
+        <column name="n_tuples_fetched"/>
+        <column name="n_tuples_returned"/>
+        <column name="n_tuples_inserted"/>
+        <column name="n_tuples_updated"/>
+        <column name="n_tuples_deleted"/>
+        <column name="n_blocks_fetched"/>
+        <column name="n_blocks_hit"/>
+        <column name="db_time"/>
+        <column name="cpu_time"/>
+        <column name="execution_time"/>
+        <column name="parse_time"/>
+        <column name="plan_time"/>
+        <column name="rewrite_time"/>
+        <column name="pl_execution_time"/>
+        <column name="pl_compilation_time"/>
+        <column name="data_io_time"/>
+        <column name="net_send_info"/>
+        <column name="net_recv_info"/>
+        <column name="net_stream_send_info"/>
+        <column name="net_stream_recv_info"/>
+        <column name="lock_count"/>
+        <column name="lock_time"/>
+        <column name="lock_wait_count"/>
+        <column name="lock_wait_time"/>
+        <column name="lock_max_count"/>
+        <column name="lwlock_count"/>
+        <column name="lwlock_wait_count"/>
+        <column name="lwlock_time"/>
+        <column name="lwlock_wait_time"/>
+        <column name="details"/>
+        <column name="is_slow_sql"/>
+        <column name="trace_id"/>
+    </metadata>
+</dataset>

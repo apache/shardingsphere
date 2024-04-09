@@ -20,9 +20,7 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
@@ -57,10 +55,7 @@ public class InsertValue {
             Object literals = ((LiteralExpressionSegment) expressionSegment).getLiterals();
             return getLiteralValue((LiteralExpressionSegment) expressionSegment, literals);
         }
-        if (expressionSegment instanceof BinaryOperationExpression) {
-            return ((BinaryOperationExpression) expressionSegment).getText();
-        }
-        return ((ComplexExpressionSegment) expressionSegment).getText();
+        return expressionSegment.getText();
     }
     
     private String getLiteralValue(final LiteralExpressionSegment expressionSegment, final Object literals) {

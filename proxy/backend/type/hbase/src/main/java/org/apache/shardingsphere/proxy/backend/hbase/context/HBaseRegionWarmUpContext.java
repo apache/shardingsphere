@@ -84,13 +84,13 @@ public final class HBaseRegionWarmUpContext {
     public void loadRegionInfo(final String tableName, final Connection connection) {
         HBaseRegionWarmUpContext.getInstance().addExecuteCount();
         try {
-            if (connection == null) {
+            if (null == connection) {
                 return;
             }
             RegionLocator regionLocator = connection.getRegionLocator(TableName.valueOf(tableName));
             regionLocator.getAllRegionLocations();
-        } catch (IOException e) {
-            throw new HBaseOperationException(String.format("table: %s warm up error, getRegionLocator execute error reason is  %s", tableName, e));
+        } catch (final IOException ex) {
+            throw new HBaseOperationException(String.format("table: %s warm up error, getRegionLocator execute error reason is  %s", tableName, ex));
         }
     }
     

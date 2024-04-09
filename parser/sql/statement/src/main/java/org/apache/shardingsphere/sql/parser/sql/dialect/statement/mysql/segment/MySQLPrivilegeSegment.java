@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.PrivilegeTypeEnum;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,7 +35,7 @@ public final class MySQLPrivilegeSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final PrivilegeTypeEnum type;
+    private final String privilegeType;
     
     private final Collection<String> columns = new LinkedList<>();
 }

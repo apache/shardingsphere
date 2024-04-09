@@ -36,14 +36,15 @@ public final class LogLoader {
     /**
      * Get log lines.
      *
+     * @param logFilePath log file path
      * @param isAdaptedProxy is adapted proxy
      * @return log lines
      */
     @SneakyThrows(IOException.class)
-    public static Collection<String> getLogLines(final boolean isAdaptedProxy) {
+    public static Collection<String> getLogLines(final String logFilePath, final boolean isAdaptedProxy) {
         Collection<String> result = new LinkedList<>();
-        Collection<String> lines = Files.readAllLines(Paths.get(getLogFilePath(isAdaptedProxy)));
-        Pattern pattern = Pattern.compile("^\\[");
+        Collection<String> lines = Files.readAllLines(Paths.get(logFilePath));
+        Pattern pattern = isAdaptedProxy ? Pattern.compile("^\\[") : Pattern.compile("^\\d{2}:");
         StringBuilder builder = new StringBuilder();
         boolean hasFind = false;
         for (String each : lines) {

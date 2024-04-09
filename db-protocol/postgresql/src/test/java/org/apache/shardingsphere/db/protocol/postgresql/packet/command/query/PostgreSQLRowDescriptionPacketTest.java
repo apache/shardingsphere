@@ -41,7 +41,7 @@ class PostgreSQLRowDescriptionPacketTest {
     @Test
     void assertWrite() {
         PostgreSQLColumnDescription description = new PostgreSQLColumnDescription("name", 1, Types.VARCHAR, 4, null);
-        PostgreSQLRowDescriptionPacket packet = new PostgreSQLRowDescriptionPacket(Collections.singletonList(description));
+        PostgreSQLRowDescriptionPacket packet = new PostgreSQLRowDescriptionPacket(Collections.singleton(description));
         packet.write(payload);
         verify(payload, times(2)).writeInt2(1);
         verify(payload).writeStringNul("name");

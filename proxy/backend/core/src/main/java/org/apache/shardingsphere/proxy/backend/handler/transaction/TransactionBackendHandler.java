@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.transaction;
 
-import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.dialect.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.proxy.backend.connector.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -124,12 +124,12 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
     }
     
     private boolean isSchemaSupportedDatabaseType() {
-        return connectionSession.getProtocolType() instanceof SchemaSupportedDatabaseType;
+        return new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDialectDatabaseMetaData().getDefaultSchema().isPresent();
     }
     
     private SQLStatement getSQLStatementByCommit() {
         SQLStatement result = tclStatement;
-        if (connectionSession.getTransactionStatus().isRollbackOnly()) {
+        if (connectionSession.getTransactionStatus().isExceptionOccur()) {
             if (tclStatement instanceof OpenGaussCommitStatement) {
                 result = new OpenGaussRollbackStatement();
             } else if (tclStatement instanceof PostgreSQLCommitStatement) {

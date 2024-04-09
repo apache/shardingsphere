@@ -353,7 +353,7 @@ createTablespaceInnodb
       ADD DATAFILE string_
       (FILE_BLOCK_SIZE EQ_ fileSizeLiteral)?
       (ENCRYPTION EQ_ y_or_n=string_)?
-      (ENGINE EQ_? identifier)?
+      (ENGINE EQ_? engineRef)?
       (COMMENT EQ_? string_)?
     ;
 
@@ -368,7 +368,7 @@ createTablespaceNdb
       (NODEGROUP EQ_? identifier)?
       WAIT?
       (COMMENT EQ_? string_)?
-      (ENGINE EQ_? identifier)?
+      (ENGINE EQ_? engineRef)?
     ;
 
 alterTablespace
@@ -376,17 +376,18 @@ alterTablespace
     ;
 
 alterTablespaceNdb
-    : ALTER UNDO? TABLESPACE identifier
+    : ALTER UNDO? TABLESPACE tablespace=identifier
       (ADD | DROP) DATAFILE string_
       (INITIAL_SIZE EQ_ fileSizeLiteral)?
-      WAIT? (RENAME TO identifier)?
+      WAIT? (RENAME TO renameTableSpace=identifier)?
       (ENGINE EQ_? identifier)?
     ;
 
 alterTablespaceInnodb
-    : ALTER UNDO? TABLESPACE identifier
-      (SET (ACTIVE | INACTIVE))? (ENCRYPTION EQ_? y_or_n=string_)
-      (RENAME TO identifier)?
+    : ALTER UNDO? TABLESPACE tablespace=identifier
+      (SET (ACTIVE | INACTIVE))?
+      (ENCRYPTION EQ_? y_or_n=string_)?
+      (RENAME TO renameTablespace=identifier)?
       (ENGINE EQ_? identifier)?
     ;
 
@@ -458,7 +459,7 @@ columnAttribute
     | value = SRID NUMBER_
     | constraintClause? checkConstraint
     | constraintEnforcement
-    | visibility 
+    | visibility
     ;
 
 checkConstraint
@@ -673,7 +674,7 @@ compoundStatement
     ;
 
 validStatement
-    : (createTable | alterTable | dropTable | truncateTable 
+    : (createTable | alterTable | dropTable | dropDatabase | truncateTable
     | insert | replace | update | delete | select | call
     | createView | prepare | executeStmt | commit | deallocate
     | setVariable | beginStatement | declareStatement | flowControlStatement | cursorStatement | conditionHandlingStatement) SEMI_?

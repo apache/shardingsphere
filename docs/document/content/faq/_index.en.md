@@ -114,7 +114,8 @@ Answer:
 
 Answer:
 
-`${...}` or `$->{...}` can be used in inline expression identifiers, but the former one clashes with place holders in Spring property files, so `$->{...}` is recommended to be used in Spring as inline expression identifiers.
+`${...}` or `$->{...}` can be used in inline expression identifiers using the default implementation of the 
+`InlineExpressionParser` SPI, but the former one clashes with place holders in Spring property files, so `$->{...}` is recommended to be used in Spring as inline expression identifiers.
 
 ### [Sharding] Why does float number appear in the return result of inline expression?
 
@@ -127,7 +128,7 @@ To obtain integer division result, A/B needs to be modified as A.intdiv(B).
 
 Answer:
 
-No, ShardingSphere will recognize it automatically.
+A table that does not use sharding is called single table in ShardingSphere, and you can use [LOAD statements](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/single-table/load-single-table/) or [SINGLE rule](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/yaml-config/rules/single/) to configure the single table that needs to be loaded.
 
 ### [Sharding] When generic Long type `SingleKeyTableShardingAlgorithm` is used, why does the `ClassCastException: Integer can not cast to Long` exception appear?
 
@@ -164,7 +165,7 @@ Answer:
 
 [Service Provider Interface (SPI)](https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html) is a kind of API for the third party to implement or expand. Except implementing interface, you also need to create a corresponding file in `META-INF/services` to make the JVM load these SPI implementations.
 More detail for SPI usage, please search by yourself.
-Other ShardingSphere [functionality implementation](/en/concepts/pluggable/) will take effect in the same way.
+Other ShardingSphere functionality implementation will take effect in the same way.
 
 ### [Sharding] In addition to internal distributed primary key, does ShardingSphere support other native auto-increment keys?
 
@@ -173,6 +174,51 @@ Answer:
 Yes. But there is restriction to the use of native auto-increment keys, which means they cannot be used as sharding keys at the same time.
 Since ShardingSphere does not have the database table structure and native auto-increment key is not included in original SQL, it cannot parse that field to the sharding field. If the auto-increment key is not sharding key, it can be returned normally and is needless to be cared. But if the auto-increment key is also used as sharding key, ShardingSphere cannot parse its sharding value, which will make SQL routed to multiple tables and influence the rightness of the application.
 The premise for returning native auto-increment key is that INSERT SQL is eventually routed to one table. Therefore, auto-increment key will return zero when INSERT SQL returns multiple tables.
+
+## Single table
+
+### [Single table] Table or view `%s` does not exist. How to solve the exception?
+
+Answer:
+
+In versions before ShardingSphere 5.4.0, single tables used automatic loading. This way has many problems in actual use:
+
+1. After a large number of data sources are registered in the logical database, too many automatically loaded single tables will cause ShardingSphere-Proxy/JDBC to start slowly;
+2. When users use DistSQL, they will operate in the order of: **Register storage unit -> Create sharding, encryption, read-write separation and other rules -> Create table**. Due to the existence of the single-table automatic loading mechanism, the database will be accessed multiple times for loading during the operation, and when multiple rules are mixed and used, the single-table metadata will be confused;
+3. Automatically load single tables from all data sources. Users cannot exclude single tables or abandoned tables that they do not want to be managed by ShardingSphere.
+
+In order to solve the above problems, starting from ShardingSphere 5.4.0 version, the loading method of single tables has been adjusted. Users need to manually load a single table in the database through YAML configuration or DistSQL.
+It should be noted that when using the DistSQL LOAD statement to load a single table, you need to ensure that all data sources are registered. Therefore, after the rules are created, the single table LOAD operation is performed based on the logical data source (if there is no logical data source, use the physical data source).
+
+* YAML loading single table example:
+
+```yaml
+rules:
+   - !SINGLE
+     tables:
+       - "*.*"
+   - !READWRITE_SPLITTING
+     dataSources:
+       readwrite_ds:
+         writeDataSourceName: write_ds
+         readDataSourceNames:
+           - read_ds_0
+           - read_ds_1
+         loadBalancerName: random
+     loadBalancers:
+       random:
+         type: RANDOM
+```
+
+For more YAML configuration of loading single table, please refer to [Single](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/single/).
+
+* DistSQL loading single table example:
+
+```sql
+LOAD SINGLE TABLE *.*;
+```
+
+For more LOAD single table DistSQL, please refer to [Load Single Table](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/single-table/load-single-table/).
 
 ## DistSQL
 
@@ -219,7 +265,7 @@ Answer:
 ShardingSphere uses lombok to enable minimal coding. For more details about using and installment, please refer to the official website of [lombok](https://projectlombok.org/download.html).
 The codes under the package `org.apache.shardingsphere.sql.parser.autogen` are generated by ANTLR. You may execute the following command to generate codes:
 ```bash
-./mvnw -Dcheckstyle.skip=true -Dspotbugs.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests install -T1C 
+./mvnw -DskipITs -DskipTests install -T1C
 ```
 The generated codes such as `org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser` may be too large to be indexed by the IDEA.
 You may configure the IDEA's property `idea.max.intellisense.filesize=10000`.
@@ -305,7 +351,7 @@ https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-
 
 Answer:
 
-In Apache ShardingSphere, many functionality implementation are uploaded through [SPI](/en/concepts/pluggable/), such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`, so the `type` must be specified in the configuration file.
+In Apache ShardingSphere, many functionality implementation are uploaded through SPI, such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`, so the `type` must be specified in the configuration file.
 
 ### [Other] How to speed up the metadata loading when service starts up?
 

@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.config.database;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -29,16 +31,23 @@ import java.util.Map;
 public interface DatabaseConfiguration {
     
     /**
-     * Get data sources.
-     * 
-     * @return data sources
-     */
-    Map<String, DataSource> getDataSources();
-    
-    /**
      * Get rule configurations.
      * 
      * @return rule configurations
      */
     Collection<RuleConfiguration> getRuleConfigurations();
+    
+    /**
+     * Get storage units.
+     * 
+     * @return storage units
+     */
+    Map<String, StorageUnit> getStorageUnits();
+    
+    /**
+     * Get data sources.
+     * 
+     * @return data sources
+     */
+    Map<StorageNode, DataSource> getDataSources();
 }

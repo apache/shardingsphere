@@ -39,8 +39,6 @@ services:
   shardingsphere-jdbc-agent-tracing:
     image: apache/shardingsphere-jdbc-agent-tracing-zipkin-test
     container_name: shardingsphere-jdbc-agent-tracing-zipkin-test
-    ports:
-      - "18080:80"
     links:
       - "mysql:mysql.agent.jdbc.zipkin.host"
       - "zipkin:zipkin.host"

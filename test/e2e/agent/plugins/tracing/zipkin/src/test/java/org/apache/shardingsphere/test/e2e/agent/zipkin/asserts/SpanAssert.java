@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.agent.zipkin.asserts;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.SpanTestCase;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.TagAssertion;
@@ -77,8 +77,8 @@ public final class SpanAssert {
     
     @SneakyThrows(IOException.class)
     private static Collection<SpanResult> getSpanResults(final SpanTestCase expected, final String url) {
-        List<List<SpanResult>> result = new Gson().fromJson(OkHttpUtils.getInstance().get(url), new TypeToken<List<List<SpanResult>>>() {
-        }.getType());
+        List<List<SpanResult>> result = JsonUtils.fromJsonString(OkHttpUtils.getInstance().get(url), new TypeReference<List<List<SpanResult>>>() {
+        });
         assertNotNull(result);
         return result.stream().findFirst().orElse(Collections.emptyList()).stream()
                 .filter(each -> expected.getSpanName().equalsIgnoreCase(each.getName())).collect(Collectors.toList());

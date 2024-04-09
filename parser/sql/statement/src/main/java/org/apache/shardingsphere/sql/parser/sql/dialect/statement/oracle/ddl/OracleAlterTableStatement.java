@@ -17,11 +17,29 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyCollectionRetrievalSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+
+import java.util.Optional;
 
 /**
  * Oracle alter table statement.
  */
+@Getter
+@Setter
 public final class OracleAlterTableStatement extends AlterTableStatement implements OracleStatement {
+    
+    private ModifyCollectionRetrievalSegment modifyCollectionRetrieval;
+    
+    /**
+     * Get modify collection retrieval segment.
+     * 
+     * @return modify collection retrieval
+     */
+    public Optional<ModifyCollectionRetrievalSegment> getModifyCollectionRetrieval() {
+        return Optional.ofNullable(modifyCollectionRetrieval);
+    }
 }

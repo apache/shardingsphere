@@ -22,12 +22,12 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.common.collect.Range;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
@@ -40,7 +40,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShard
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -158,13 +158,13 @@ public final class ShardingRouteCacheableChecker {
     
     private boolean containsNonCacheableShardingAlgorithm(final Collection<String> logicTables) {
         for (String each : logicTables) {
-            TableRule tableRule = shardingRule.getTableRule(each);
-            String databaseShardingAlgorithmName = shardingRule.getDatabaseShardingStrategyConfiguration(tableRule).getShardingAlgorithmName();
+            ShardingTable shardingTable = shardingRule.getShardingTable(each);
+            String databaseShardingAlgorithmName = shardingRule.getDatabaseShardingStrategyConfiguration(shardingTable).getShardingAlgorithmName();
             ShardingAlgorithm databaseShardingAlgorithm = shardingRule.getShardingAlgorithms().get(databaseShardingAlgorithmName);
             if (null != databaseShardingAlgorithm && !CacheableShardingAlgorithmChecker.isCacheableShardingAlgorithm(databaseShardingAlgorithm)) {
                 return true;
             }
-            String tableShardingAlgorithmName = shardingRule.getTableShardingStrategyConfiguration(tableRule).getShardingAlgorithmName();
+            String tableShardingAlgorithmName = shardingRule.getTableShardingStrategyConfiguration(shardingTable).getShardingAlgorithmName();
             ShardingAlgorithm tableShardingAlgorithm = shardingRule.getShardingAlgorithms().get(tableShardingAlgorithmName);
             if (null != tableShardingAlgorithm && !CacheableShardingAlgorithmChecker.isCacheableShardingAlgorithm(tableShardingAlgorithm)) {
                 return true;

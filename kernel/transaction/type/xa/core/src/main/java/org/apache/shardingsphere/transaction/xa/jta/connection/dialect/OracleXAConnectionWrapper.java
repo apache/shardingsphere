@@ -68,7 +68,7 @@ public final class OracleXAConnectionWrapper implements XAConnectionWrapper {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "Oracle";
     }
 }

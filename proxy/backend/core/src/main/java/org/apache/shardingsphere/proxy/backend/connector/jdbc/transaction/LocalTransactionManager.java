@@ -49,7 +49,7 @@ public final class LocalTransactionManager {
      */
     public void commit() throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
-        if (databaseConnectionManager.getConnectionSession().getTransactionStatus().isRollbackOnly()) {
+        if (databaseConnectionManager.getConnectionSession().getTransactionStatus().isExceptionOccur()) {
             exceptions.addAll(rollbackConnections());
         } else {
             exceptions.addAll(commitConnections());

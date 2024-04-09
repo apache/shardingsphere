@@ -13,12 +13,12 @@ The `DROP SHARDING ALGORITHM` syntax is used to drop sharding algorithm for spec
 {{% tab name="Grammar" %}}
 ```sql
 DropShardingAlgorithm ::=
-  'DROP' 'SHARDING' 'ALGORITHM' shardingAlgorithmName ifExists? ('FROM' databaseName)?
+  'DROP' 'SHARDING' 'ALGORITHM' algorithmName ifExists? ('FROM' databaseName)?
 
 ifExists ::=
   'IF' 'EXISTS'
 
-shardingAlgorithmName ::=
+algorithmName ::=
   identifier
 
 databaseName ::=

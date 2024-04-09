@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.complex;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -57,6 +57,19 @@ class ShardingComplexRoutingEngineTest {
     void assertRoutingForShardingTableJoinBroadcastTable() {
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(ShardingRoutingEngineFixtureBuilder.createShardingConditions("t_order"),
                 mock(SQLStatementContext.class), new HintValueContext(), new ConfigurationProperties(new Properties()), Arrays.asList("t_order", "t_config"));
+        RouteContext routeContext = complexRoutingEngine.route(ShardingRoutingEngineFixtureBuilder.createBroadcastShardingRule());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
+    }
+    
+    @Test
+    void assertRoutingForShardingTableJoinWithUpperCase() {
+        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(ShardingRoutingEngineFixtureBuilder.createShardingConditions("T_ORDER"),
+                mock(SQLStatementContext.class), new HintValueContext(), new ConfigurationProperties(new Properties()), Arrays.asList("T_ORDER", "T_CONFIG"));
         RouteContext routeContext = complexRoutingEngine.route(ShardingRoutingEngineFixtureBuilder.createBroadcastShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));

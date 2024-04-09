@@ -52,7 +52,7 @@ public final class HBaseSupportedSQLStatement {
      * @return SQL statement
      */
     public static SQLStatement parseSQLStatement(final String sql) {
-        return new SQLStatementVisitorEngine("MySQL", false).visit(new SQLParserEngine("MySQL", new CacheOption(128, 4)).parse(sql, false));
+        return new SQLStatementVisitorEngine("MySQL").visit(new SQLParserEngine("MySQL", new CacheOption(128, 4)).parse(sql, false));
     }
     
     /**

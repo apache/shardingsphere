@@ -19,9 +19,10 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.H2Container;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MariaDBContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.PostgreSQLContainer;
@@ -37,22 +38,23 @@ public final class StorageContainerFactory {
      *
      * @param databaseType database type
      * @param storageContainerImage storage container image
-     * @param scenario scenario
-     * @param storageContainerConfiguration storage container configuration
+     * @param storageContainerConfig storage container configuration
      * @return created instance
      * @throws RuntimeException runtime exception
      */
-    public static StorageContainer newInstance(final DatabaseType databaseType, final String storageContainerImage, final String scenario,
-                                               final StorageContainerConfiguration storageContainerConfiguration) {
+    public static StorageContainer newInstance(final DatabaseType databaseType, final String storageContainerImage,
+                                               final StorageContainerConfiguration storageContainerConfig) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return new MySQLContainer(storageContainerImage, scenario, storageContainerConfiguration);
+                return new MySQLContainer(storageContainerImage, storageContainerConfig);
             case "PostgreSQL":
-                return new PostgreSQLContainer(storageContainerImage, scenario, storageContainerConfiguration);
+                return new PostgreSQLContainer(storageContainerImage, storageContainerConfig);
             case "openGauss":
-                return new OpenGaussContainer(storageContainerImage, scenario, storageContainerConfiguration);
+                return new OpenGaussContainer(storageContainerImage, storageContainerConfig);
             case "H2":
-                return new H2Container(scenario);
+                return new H2Container(storageContainerConfig);
+            case "MariaDB":
+                return new MariaDBContainer(storageContainerImage, storageContainerConfig);
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }

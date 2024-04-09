@@ -108,6 +108,7 @@ execute
     | checkTable
     | checksumTable
     | clone
+    | changeReplicationSourceTo
     | startSlave
     | stopSlave
     | analyzeTable
@@ -125,6 +126,7 @@ execute
     | alterTablespace
     | dropTablespace
     | delimiter
+    // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

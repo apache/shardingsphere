@@ -14,3 +14,7 @@ weight = 3
 - INSERT INTO tbl_name (col1, col2, …) SELECT * FROM tbl_name WHERE col3 = ?（SELECT 子句不支持 * 和内置分布式主键生成器）
 - REPLACE INTO tbl_name (col1, col2, …) SELECT * FROM tbl_name WHERE col3 = ?（SELECT 子句不支持 * 和内置分布式主键生成器）
 - SELECT MAX(tbl_name.col1) FROM tbl_name（查询列是函数表达式时，查询列前不能使用表名，可以使用表别名）
+
+其他：
+
+- 分片规则中配置的真实表、分片列和分布式序列需要和数据库中的列保持大小写一致。

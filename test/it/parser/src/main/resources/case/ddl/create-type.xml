@@ -18,4 +18,8 @@
 
 <sql-parser-test-cases>
     <create-type sql-case-id="create_type" />
+    <create-type sql-case-id="create_type_as_table" />
+    <create-type sql-case-id="create_type_as_varray" />
+    <create-type sql-case-id="create_type_as_object" />
+    <create-type sql-case-id="create_sub_type" />
 </sql-parser-test-cases>

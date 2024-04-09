@@ -20,19 +20,22 @@ package org.apache.shardingsphere.broadcast.route;
 import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.broadcast.route.engine.BroadcastRouteEngineFactory;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContext;
-import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
@@ -52,18 +55,19 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
+import java.util.LinkedHashSet;
 
 /**
  * Broadcast SQL router.
  */
+@HighFrequencyInvocation
 public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
     
     @Override
-    public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,
+    public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,
                                            final BroadcastRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
         RouteContext result = new RouteContext();
-        BroadcastRouteEngineFactory.newInstance(rule, database, queryContext, props, connectionContext, globalRuleMetaData).route(result, rule);
+        BroadcastRouteEngineFactory.newInstance(rule, database, queryContext, connectionContext).route(result, rule);
         return result;
     }
     
@@ -94,6 +98,9 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
             }
             return;
         }
+        if (sqlStatementContext instanceof IndexAvailable && !routeContext.getRouteUnits().isEmpty()) {
+            putAllBroadcastTables(routeContext, broadcastRule, sqlStatementContext);
+        }
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         boolean functionStatement = sqlStatement instanceof CreateFunctionStatement || sqlStatement instanceof AlterFunctionStatement || sqlStatement instanceof DropFunctionStatement;
         boolean procedureStatement = sqlStatement instanceof CreateProcedureStatement || sqlStatement instanceof AlterProcedureStatement || sqlStatement instanceof DropProcedureStatement;
@@ -107,20 +114,35 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
             }
             return;
         }
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
-                : sqlStatementContext.getTablesContext().getTableNames();
+        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? getTableNames((TableAvailable) sqlStatementContext) : sqlStatementContext.getTablesContext().getTableNames();
         if (broadcastRule.isAllBroadcastTables(tableNames)) {
             routeToAllDatabaseInstance(routeContext, database, broadcastRule);
         }
     }
     
-    private static boolean isResourceGroupStatement(final SQLStatement sqlStatement) {
+    private Collection<String> getTableNames(final TableAvailable sqlStatementContext) {
+        Collection<String> result = new LinkedHashSet<>();
+        for (SimpleTableSegment each : sqlStatementContext.getAllTables()) {
+            result.add(each.getTableName().getIdentifier().getValue());
+        }
+        return result;
+    }
+    
+    private void putAllBroadcastTables(final RouteContext routeContext, final BroadcastRule broadcastRule, final SQLStatementContext sqlStatementContext) {
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        for (String each : broadcastRule.getBroadcastRuleTableNames(tableNames)) {
+            for (RouteUnit routeUnit : routeContext.getRouteUnits()) {
+                routeUnit.getTableMappers().add(new RouteMapper(each, each));
+            }
+        }
+    }
+    
+    private boolean isResourceGroupStatement(final SQLStatement sqlStatement) {
         // TODO add dropResourceGroupStatement, alterResourceGroupStatement
         return sqlStatement instanceof MySQLCreateResourceGroupStatement || sqlStatement instanceof MySQLSetResourceGroupStatement;
     }
     
-    private static boolean isDCLForSingleTable(final SQLStatementContext sqlStatementContext) {
+    private boolean isDCLForSingleTable(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof TableAvailable) {
             TableAvailable tableSegmentsAvailable = (TableAvailable) sqlStatementContext;
             return 1 == tableSegmentsAvailable.getAllTables().size() && !"*".equals(tableSegmentsAvailable.getAllTables().iterator().next().getTableName().getIdentifier().getValue());
@@ -130,7 +152,7 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
     
     private void routeToAllDatabaseInstance(final RouteContext routeContext, final ShardingSphereDatabase database, final BroadcastRule broadcastRule) {
         routeContext.getRouteUnits().clear();
-        for (String each : broadcastRule.getAvailableDataSourceNames()) {
+        for (String each : broadcastRule.getDataSourceNames()) {
             if (database.getResourceMetaData().getAllInstanceDataSourceNames().contains(each)) {
                 routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
             }
@@ -139,7 +161,7 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
     
     private void routeToAllDatabase(final RouteContext routeContext, final BroadcastRule broadcastRule) {
         routeContext.getRouteUnits().clear();
-        for (String each : broadcastRule.getAvailableDataSourceNames()) {
+        for (String each : broadcastRule.getDataSourceNames()) {
             routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
         }
     }

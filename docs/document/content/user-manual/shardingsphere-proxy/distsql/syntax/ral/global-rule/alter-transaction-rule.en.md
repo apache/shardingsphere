@@ -40,7 +40,7 @@ value ::=
 
 - `defaultTransactionType` support `LOCAL`, `XA`, `BASE`
 
-- `transactionManager` support  `Atomikos`, `Narayana` and `Bitronix`
+- `transactionManager` support  `Atomikos` and `Narayana`
 
 ### Example
 

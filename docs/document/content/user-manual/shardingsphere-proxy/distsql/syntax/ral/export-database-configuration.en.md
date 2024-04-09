@@ -1,6 +1,6 @@
 +++
 title = "EXPORT DATABASE CONFIGURATION"
-weight = 11
+weight = 12
 +++
 
 ### Description

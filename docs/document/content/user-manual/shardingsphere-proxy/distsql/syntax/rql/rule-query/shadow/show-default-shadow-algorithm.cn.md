@@ -13,7 +13,7 @@ weight = 4
 {{% tab name="语法" %}}
 ```sql
 ShowEncryptAlgorithm::=
-  'SHOW' 'DEFAULT' 'SHADOW' 'ALGORITHMS' ('FROM' databaseName)?
+  'SHOW' 'DEFAULT' 'SHADOW' 'ALGORITHM' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
@@ -41,11 +41,11 @@ databaseName ::=
 - 查询指定逻辑库中的默认影子算法
 
 ```sql
-SHOW DEFAULT SHADOW ALGORITHMS FROM shadow_db;
+SHOW DEFAULT SHADOW ALGORITHM FROM shadow_db;
 ```
 
 ```sql
-mysql> SHOW DEFAULT SHADOW ALGORITHMS FROM shadow_db;
+mysql> SHOW DEFAULT SHADOW ALGORITHM FROM shadow_db;
 +-------------------------+-------------+-----------------------------------------+
 | shadow_algorithm_name   | type        | props                                   |
 +-------------------------+-------------+-----------------------------------------+
@@ -57,11 +57,11 @@ mysql> SHOW DEFAULT SHADOW ALGORITHMS FROM shadow_db;
 - 查询当前逻辑库中的默认影子算法
 
 ```sql
-SHOW DEFAULT SHADOW ALGORITHMS;
+SHOW DEFAULT SHADOW ALGORITHM;
 ```
 
 ```sql
-mysql> SHOW DEFAULT SHADOW ALGORITHMS;
+mysql> SHOW DEFAULT SHADOW ALGORITHM;
 +-------------------------+-------------+-----------------------------------------+
 | shadow_algorithm_name   | type        | props                                   |
 +-------------------------+-------------+-----------------------------------------+
@@ -73,7 +73,7 @@ mysql> SHOW DEFAULT SHADOW ALGORITHMS;
 
 ### 保留字
 
-`SHOW`、`DEFAULT`、`SHADOW`、`ALGORITHMS`、`FROM`
+`SHOW`、`DEFAULT`、`SHADOW`、`ALGORITHM`、`FROM`
 
 ### 相关链接
 

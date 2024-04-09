@@ -48,4 +48,9 @@ public final class VariableSegment implements ExpressionSegment {
     public Optional<String> getScope() {
         return Optional.ofNullable(scope);
     }
+    
+    @Override
+    public String getText() {
+        return variable;
+    }
 }
