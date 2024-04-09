@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.exception.convert;
+package org.apache.shardingsphere.sqlfederation.optimizer.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.optimizer.exception.SQLFederationSQLException;
 
 /**
  * Optimization SQL node convert exception.
@@ -29,6 +28,6 @@ public final class OptimizationSQLNodeConvertException extends SQLFederationSQLE
     private static final long serialVersionUID = 7115939407266382363L;
     
     public OptimizationSQLNodeConvertException(final SQLStatement statement) {
-        super(XOpenSQLState.SYNTAX_ERROR, 40, "Unsupported SQL node conversion for SQL statement `%s`.", statement.toString());
+        super(XOpenSQLState.SYNTAX_ERROR, 0, "Unsupported SQL node conversion for SQL statement '%s'.", statement);
     }
 }
