@@ -20,13 +20,13 @@ package org.apache.shardingsphere.data.pipeline.core.exception.job;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Pipeline job not found exception.
+ * Create table SQL generate exception.
  */
-public final class PipelineJobNotFoundException extends PipelineJobException {
+public final class CreateTableSQLGenerateException extends PipelineJobException {
     
-    private static final long serialVersionUID = -903289953649758722L;
+    private static final long serialVersionUID = -219467568498936298L;
     
-    public PipelineJobNotFoundException(final String jobId) {
-        super(XOpenSQLState.NOT_FOUND, 1, "Can not find pipeline job '%s'.", jobId);
+    public CreateTableSQLGenerateException(final String tableName) {
+        super(XOpenSQLState.GENERAL_ERROR, 14, "Failed to get DDL for table '%s'.", tableName);
     }
 }

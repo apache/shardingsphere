@@ -17,21 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Pipeline importer job write exception.
  */
-public final class PipelineImporterJobWriteException extends PipelineSQLException {
+public final class PipelineImporterJobWriteException extends PipelineJobException {
     
     private static final long serialVersionUID = -7924663094479253130L;
     
     public PipelineImporterJobWriteException(final Exception cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 91, "Importer job write data failed.", cause);
-    }
-    
-    public PipelineImporterJobWriteException(final String reason, final Exception cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 91, reason, cause);
+        super(XOpenSQLState.GENERAL_ERROR, 10, "Importer job write data failed.", cause);
     }
 }

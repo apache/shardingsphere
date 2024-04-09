@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.syntax;
+package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Create table SQL generate exception.
+ * Table not found when split pipeline job by range exception.
  */
-public final class CreateTableSQLGenerateException extends PipelineSQLException {
+public final class TableNotFoundWhenSplitPipelineJobByRangeException extends PipelineJobException {
     
-    private static final long serialVersionUID = -219467568498936298L;
+    private static final long serialVersionUID = -8509592086832334026L;
     
-    public CreateTableSQLGenerateException(final String tableName) {
-        super(XOpenSQLState.GENERAL_ERROR, 20, String.format("Failed to get DDL for table `%s`.", tableName));
+    public TableNotFoundWhenSplitPipelineJobByRangeException(final String tableName) {
+        super(XOpenSQLState.NOT_FOUND, 3, "Can not get meta data for table '%s' when split by range.", tableName);
     }
 }

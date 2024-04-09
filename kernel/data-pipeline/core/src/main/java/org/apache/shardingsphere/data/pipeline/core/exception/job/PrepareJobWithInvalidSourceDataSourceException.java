@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Prepare job with invalid source data source exception.
  */
-public final class PrepareJobWithInvalidSourceDataSourceException extends PipelineSQLException {
+public final class PrepareJobWithInvalidSourceDataSourceException extends PipelineJobException {
     
     private static final long serialVersionUID = -7710035889344958565L;
     
     public PrepareJobWithInvalidSourceDataSourceException(final String dataSourceKey, final String toBeCheckedValue, final String actualValue) {
-        super(XOpenSQLState.GENERAL_ERROR, 87, String.format("Source data source required `%s = %s`, now is `%s`.", dataSourceKey, toBeCheckedValue, actualValue));
+        super(XOpenSQLState.GENERAL_ERROR, 7, "Source data source required '%s = %s', now is '%s'.", dataSourceKey, toBeCheckedValue, actualValue);
     }
 }
