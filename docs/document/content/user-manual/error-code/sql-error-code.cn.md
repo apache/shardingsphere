@@ -106,32 +106,32 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 数据管道
 
-| Vendor Code | SQL State | 错误信息                                                                              |
-|-------------|-----------|-----------------------------------------------------------------------------------|
-| 18004       | 44000     | Target database \`%s\` isn't exist.                                               |
-| 18005       | 22023     | There is invalid parameter value: \`%s\`.                                         |
-| 18020       | HY000     | Failed to get DDL for table \`%s\`.                                               |
-| 18050       | HY000     | Before data record is \`%s\`, after data record is \`%s\`.                        |
-| 18051       | 08000     | Data check table \`%s\` failed.                                                   |
-| 18052       | 0A000     | Unsupported pipeline database type \`%s\`.                                        |
-| 18053       | 0A000     | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\`. |
-| 18080       | HY000     | Can not find pipeline job \`%s\`.                                                 |
-| 18082       | HY000     | Sharding count of job \`%s\` is 0.                                                |
-| 18083       | HY000     | Can not split by range for table \`%s\`, reason is: %s                            |
-| 18084       | HY000     | Can not split by unique key \`%s\` for table \`%s\`, reason is: %s                |
-| 18085       | HY000     | Target table \`%s\` is not empty.                                                 |
-| 18086       | 01007     | Source data source lacks %s privilege(s).                                         |
-| 18087       | HY000     | Source data source required \`%s = %s\`, now is \`%s\`.                           |
-| 18088       | HY000     | User \`%s\` does exist.                                                           |
-| 18089       | 08000     | Check privileges failed on source data source, reason is: %s                      |
-| 18091       | HY000     | Importer job write data failed.                                                   |
-| 18092       | 08000     | Get binlog position failed by job \`%s\`, reason is: %s                           |
-| 18095       | HY000     | Can not find consistency check job of \`%s\`.                                     |
-| 18096       | HY000     | Uncompleted consistency check job \`%s\` exists.                                  |
-| 18400       | 42S02     | Can not find stream data source table.                                            |
-| 18401       | 42S02     | Database '%s' does not exist.                                                     |
-| 18410       | 42S02     | CDC Login request body is empty.                                                  |
-| 18411       | 08004     | Illegal username or password.                                                     |
+| Vendor Code | SQL State | 错误信息                                                                            |
+|-------------|-----------|---------------------------------------------------------------------------------|
+| 18000       | 22023     | There is invalid parameter value '%s'.                                          |
+| 18100       | 42S02     | Target database '%s' does not exist.                                            |
+| 18101       | 42S02     | Can not find pipeline job '%s'.                                                 |
+| 18102       | 44000     | Sharding count of job '%s' is 0.                                                |
+| 18103       | 42S02     | Can not get meta data for table '%s' when split by range.                       |
+| 18104       | HY000     | Can not split by unique key '%s' for table '%s'.                                |
+| 18105       | HY000     | Target table '%s' is not empty.                                                 |
+| 18106       | 01007     | Source data source lacks '%s' privilege(s).                                     |
+| 18107       | HY000     | Source data source required '%s = %s', now is '%s'.                             |
+| 18108       | HY000     | User '%s' does exist.                                                           |
+| 18109       | 08000     | Check privileges failed on source data source.                                  |
+| 18110       | HY000     | Importer job write data failed.                                                 |
+| 18111       | 08000     | Get binlog position failed by job '%s'.                                         |
+| 18112       | HY000     | Can not find consistency check job of '%s'.                                     |
+| 18113       | HY000     | Uncompleted consistency check job '%s' exists, progress '%s'.                   |
+| 18014       | HY000     | Failed to get DDL for table '%s'.                                               |
+| 18200       | HY000     | Before data record is '%s', after data record is '%s'.                          |
+| 18201       | 08000     | Data check table '%s' failed.                                                   |
+| 18202       | 0A000     | Unsupported pipeline database type '%s'.                                        |
+| 18203       | 0A000     | Unsupported CRC32 data consistency calculate algorithm with database type '%s'. |
+| 18400       | 42S02     | Can not find stream data source table.                                          |
+| 18401       | 42S02     | Database '%s' does not exist.                                                   |
+| 18410       | 42S02     | CDC Login request body is empty.                                                |
+| 18411       | 08004     | Illegal username or password.                                                   |
 
 ## 功能异常
 

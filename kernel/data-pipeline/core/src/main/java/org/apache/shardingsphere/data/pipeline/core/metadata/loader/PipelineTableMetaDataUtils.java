@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByRangeException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.TableNotFoundWhenSplitPipelineJobByRangeException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.util.Collection;
@@ -46,7 +46,7 @@ public final class PipelineTableMetaDataUtils {
      */
     public static List<PipelineColumnMetaData> getUniqueKeyColumns(final String schemaName, final String tableName, final PipelineTableMetaDataLoader metaDataLoader) {
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaName, tableName);
-        ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new SplitPipelineJobByRangeException(tableName, "Can not get table meta data"));
+        ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new TableNotFoundWhenSplitPipelineJobByRangeException(tableName));
         List<String> primaryKeys = tableMetaData.getPrimaryKeyColumns();
         if (!primaryKeys.isEmpty()) {
             return primaryKeys.stream().map(tableMetaData::getColumnMetaData).collect(Collectors.toList());

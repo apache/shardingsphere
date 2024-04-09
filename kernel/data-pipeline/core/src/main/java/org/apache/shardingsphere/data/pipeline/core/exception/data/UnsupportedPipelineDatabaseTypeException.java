@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.data;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported pipeline database type exception.
  */
-public final class UnsupportedPipelineDatabaseTypeException extends PipelineSQLException {
+public final class UnsupportedPipelineDatabaseTypeException extends PipelineDataException {
     
     private static final long serialVersionUID = -4100671584682823997L;
     
     public UnsupportedPipelineDatabaseTypeException(final DatabaseType databaseType) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 52, String.format("Unsupported pipeline database type `%s`.", databaseType.getType()));
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 2, "Unsupported pipeline database type '%s'.", databaseType.getType());
     }
 }

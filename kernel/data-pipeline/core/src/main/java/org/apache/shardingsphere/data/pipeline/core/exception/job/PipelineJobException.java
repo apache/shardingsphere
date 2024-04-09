@@ -17,17 +17,29 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Split pipeline job by range exception.
+ * Pipeline job exception.
  */
-public final class SplitPipelineJobByRangeException extends PipelineSQLException {
+public abstract class PipelineJobException extends PipelineSQLException {
     
-    private static final long serialVersionUID = -8509592086832334026L;
+    private static final long serialVersionUID = -5622432104488993484L;
     
-    public SplitPipelineJobByRangeException(final String tableName, final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 83, String.format("Can not split by range for table `%s`, reason is: %s", tableName, reason));
+    private static final int JOB_CODE = 1;
+    
+    protected PipelineJobException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    }
+    
+    protected PipelineJobException(final SQLState sqlState, final int errorCode, final String reason, final Exception cause) {
+        super(sqlState, getErrorCode(errorCode), reason, cause);
+    }
+    
+    private static int getErrorCode(final int errorCode) {
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
+        return JOB_CODE * 100 + errorCode;
     }
 }
