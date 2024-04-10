@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.shadow.exception.ShadowSQLException;
 
 /**
- * Missing required shadow configuration exception.
+ * Missing required shadow data source exception.
  */
-public final class MissingRequiredShadowConfigurationException extends ShadowSQLException {
+public final class MissingRequiredShadowDataSourceException extends ShadowSQLException {
     
-    private static final long serialVersionUID = -7332539169369259453L;
+    private static final long serialVersionUID = 8988782456703216805L;
     
-    public MissingRequiredShadowConfigurationException(final String configKey, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "`%s` configuration does not exist in database `%s`.", configKey, databaseName);
+    public MissingRequiredShadowDataSourceException(final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 1, "Shadow data source configuration does not exist in database '%s'.", databaseName);
     }
 }
