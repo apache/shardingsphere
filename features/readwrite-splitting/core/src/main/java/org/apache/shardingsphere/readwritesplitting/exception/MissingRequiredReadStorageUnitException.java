@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.exception.checker;
+package org.apache.shardingsphere.readwritesplitting.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
- * Data source name not existed exception.
+ * Missing required read storage unit exception.
  */
-public final class DataSourceNameNotExistedException extends ReadwriteSplittingSQLException {
+public final class MissingRequiredReadStorageUnitException extends ReadwriteSplittingSQLException {
     
-    private static final long serialVersionUID = 1284608200400804784L;
+    private static final long serialVersionUID = -4252553422332603648L;
     
-    public DataSourceNameNotExistedException(final String reason) {
-        super(XOpenSQLState.NOT_FOUND, 94, reason);
+    public MissingRequiredReadStorageUnitException(final String ruleName, final String storageUnitName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 96, "Read storage unit '%s' does not exist in rule '%s'.", storageUnitName, ruleName);
     }
 }

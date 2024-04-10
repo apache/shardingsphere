@@ -30,11 +30,11 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.DataSourceNameNotExistedException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.DuplicateDataSourceException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredDataSourceNameException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredReadDataSourceNamesException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredWriteDataSourceNameException;
+import org.apache.shardingsphere.readwritesplitting.exception.DataSourceNameNotExistedException;
+import org.apache.shardingsphere.readwritesplitting.exception.DuplicateDataSourceException;
+import org.apache.shardingsphere.readwritesplitting.exception.MissingRequiredDataSourceNameException;
+import org.apache.shardingsphere.readwritesplitting.exception.MissingRequiredReadDataSourceNamesException;
+import org.apache.shardingsphere.readwritesplitting.exception.MissingRequiredWriteDataSourceNameException;
 
 import javax.sql.DataSource;
 import java.util.Collection;

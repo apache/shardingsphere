@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.exception.checker;
+package org.apache.shardingsphere.readwritesplitting.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
- * Missing required write data source name exception.
+ * Invalid inline expression data sources exception.
  */
-public final class MissingRequiredWriteDataSourceNameException extends ReadwriteSplittingSQLException {
+public final class InvalidInlineExpressionDataSourcesException extends ReadwriteSplittingSQLException {
     
-    private static final long serialVersionUID = -3310589272704868388L;
+    private static final long serialVersionUID = 87659916563551964L;
     
-    public MissingRequiredWriteDataSourceNameException(final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 91, "Write data source name is required in database `%s`.", databaseName);
+    public InvalidInlineExpressionDataSourcesException(final String dataSourceType) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 70, "%s data source names size error on inline expression.", dataSourceType);
     }
 }

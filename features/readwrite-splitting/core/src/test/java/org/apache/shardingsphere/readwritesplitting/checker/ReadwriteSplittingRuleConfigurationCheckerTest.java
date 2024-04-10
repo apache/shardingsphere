@@ -26,9 +26,9 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMappe
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.DataSourceNameNotExistedException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.DuplicateDataSourceException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredWriteDataSourceNameException;
+import org.apache.shardingsphere.readwritesplitting.exception.DataSourceNameNotExistedException;
+import org.apache.shardingsphere.readwritesplitting.exception.DuplicateDataSourceException;
+import org.apache.shardingsphere.readwritesplitting.exception.MissingRequiredWriteDataSourceNameException;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
