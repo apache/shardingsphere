@@ -38,7 +38,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 10402       | 42S02     | '%s' algorithm '%s' on %s is unregistered.                                          |
 | 10403       | 44000     | %s algorithms '%s' in database '%s' are still in used.                              |
 | 10404       | 44000     | Invalid %s algorithm configuration '%s'.                                            |
-| 10450       | HY000     | Algorithm '%s.%s' execute failed, reason is: %s.                                    |
+| 10410       | 0A000     | Unsupported %s.%s with database type '%s'.                                          |
+| 10440       | HY000     | Algorithm '%s.%s' execute failed, reason is: %s.                                    |
 | 10500       | 44000     | Invalid single rule configuration, reason is: %s.                                   |
 | 10501       | 42S02     | Single table '%s' does not exist.                                                   |
 | 10502       | HY000     | Can not load table with database name '%s' and data source name '%s', reason is: %s |
@@ -128,7 +129,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 18200       | HY000     | Before data record is '%s', after data record is '%s'.                         |
 | 18201       | 08000     | Data check table '%s' failed.                                                  |
 | 18202       | 0A000     | Unsupported pipeline database type '%s'.                                       |
-| 18210       | 0A000     | Unsupported '%s' data consistency calculate algorithm with database type '%s'. |
 | 18400       | 42S02     | Can not find stream data source table.                                         |
 | 18401       | 42S02     | Database '%s' does not exist.                                                  |
 | 18410       | 42S02     | CDC Login request body is empty.                                               |
@@ -202,12 +202,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 20294       | 42S02     | %s data source name \`%s\` not in database \`%s\.`                 |
 | 20295       | 44000     | Auto aware data source name is required in database \`%s\.`        |
 | 20296       | 44000     | Read storage unit '%s' does not exist in rule '%s'.                |
-
-### SQL Dialect Translator
-
-| Vendor Code | SQL State | Reason                                            |
-|-------------|-----------|---------------------------------------------------|
-| 20400       | 0A000     | Can not support database '%s' in SQL translation. |
 
 ### Traffic Management
 
