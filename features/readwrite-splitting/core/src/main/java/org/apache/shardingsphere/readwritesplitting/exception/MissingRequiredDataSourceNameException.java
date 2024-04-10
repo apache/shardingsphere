@@ -27,6 +27,6 @@ public final class MissingRequiredDataSourceNameException extends ReadwriteSplit
     private static final long serialVersionUID = 8006957930250488016L;
     
     public MissingRequiredDataSourceNameException(final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 90, "Data source name is required in database `%s`.", databaseName);
+        super(XOpenSQLState.NOT_FOUND, 0, "Data source name is required in database '%s'.", databaseName);
     }
 }

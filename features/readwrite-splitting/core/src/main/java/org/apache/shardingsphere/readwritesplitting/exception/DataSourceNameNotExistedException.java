@@ -26,7 +26,7 @@ public final class DataSourceNameNotExistedException extends ReadwriteSplittingS
     
     private static final long serialVersionUID = 1284608200400804784L;
     
-    public DataSourceNameNotExistedException(final String reason) {
-        super(XOpenSQLState.NOT_FOUND, 94, reason);
+    public DataSourceNameNotExistedException(final String dataSourceType, final String dataSourceName, final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 4, "%s data source name '%s' not in database '%s'.", dataSourceType, dataSourceName, databaseName);
     }
 }

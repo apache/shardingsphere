@@ -190,15 +190,15 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 读写分离
 
-| Vendor Code | SQL State | 错误信息                                                               |
-|-------------|-----------|--------------------------------------------------------------------|
-| 20270       | 44000     | %s data source names size error on inline expression.              |
-| 20290       | 44000     | Data source name is required in database \`%s\.`                   |
-| 20291       | 44000     | Write data source name is required in database `\`%s\.`            |
-| 20292       | 44000     | Read data source names is required in database `\`%s\.`            |
-| 20293       | 44000     | Can not config duplicate %s data source \`%s\` in database \`%s\.` |
-| 20294       | 42S02     | %s data source name \`%s\` not in database \`%s\.`                 |
-| 20296       | 44000     | Read storage unit '%s' does not exist in rule '%s'.                |
+| Vendor Code | SQL State | 错误信息                                                  |
+|-------------|-----------|-------------------------------------------------------|
+| 20200       | 42S02     | Data source name is required in database '%s'.        |
+| 20201       | 42S02     | Write data source name is required in database '%s'.  |
+| 20202       | 42S02     | Read data source names is required in database '%s'.  |
+| 20203       | 44000     | Duplicated %s data source '%s' in database '%s'.      |
+| 20204       | 42S02     | %s data source name '%s' not in database '%s'.        |
+| 20205       | 44000     | %s data source names size error on inline expression. |
+| 20210       | 42S02     | Read storage unit '%s' does not exist in rule '%s'.   |
 
 ### SQL 方言转换
 

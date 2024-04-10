@@ -26,7 +26,7 @@ public final class DuplicateDataSourceException extends ReadwriteSplittingSQLExc
     
     private static final long serialVersionUID = -58671655670347084L;
     
-    public DuplicateDataSourceException(final String reason) {
-        super(XOpenSQLState.DUPLICATE, 93, reason);
+    public DuplicateDataSourceException(final String dataSourceType, final String dataSourceName, final String databaseName) {
+        super(XOpenSQLState.DUPLICATE, 3, "Duplicated %s data source '%s' in database '%s'.", dataSourceType, dataSourceName, databaseName);
     }
 }

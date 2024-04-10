@@ -27,6 +27,6 @@ public final class InvalidInlineExpressionDataSourcesException extends Readwrite
     private static final long serialVersionUID = 87659916563551964L;
     
     public InvalidInlineExpressionDataSourcesException(final String dataSourceType) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 70, "%s data source names size error on inline expression.", dataSourceType);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 5, "%s data source names size error on inline expression.", dataSourceType);
     }
 }

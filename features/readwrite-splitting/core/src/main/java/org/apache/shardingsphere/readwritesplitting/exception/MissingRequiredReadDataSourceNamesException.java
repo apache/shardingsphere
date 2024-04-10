@@ -27,6 +27,6 @@ public final class MissingRequiredReadDataSourceNamesException extends Readwrite
     private static final long serialVersionUID = 3795576963060485964L;
     
     public MissingRequiredReadDataSourceNamesException(final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 92, "Read data source names is required in database `%s`.", databaseName);
+        super(XOpenSQLState.NOT_FOUND, 2, "Read data source names is required in database '%s'.", databaseName);
     }
 }
