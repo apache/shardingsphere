@@ -204,10 +204,9 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### SQL 方言转换
 
-| Vendor Code | SQL State | 错误信息                                                |
-|-------------|-----------|-----------------------------------------------------|
-| 20440       | 42000     | Can not support database \`%s\` in SQL translation. |
-| 20441       | 42000     | Translation error, SQL is: %s                       |
+| Vendor Code | SQL State | 错误信息                                              |
+|-------------|-----------|---------------------------------------------------|
+| 20400       | 0A000     | Can not support database '%s' in SQL translation. |
 
 ### 流量治理
 

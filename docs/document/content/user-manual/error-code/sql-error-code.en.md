@@ -205,10 +205,9 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### SQL Dialect Translator
 
-| Vendor Code | SQL State | Reason                                              |
-|-------------|-----------|-----------------------------------------------------|
-| 20440       | 42000     | Can not support database \`%s\` in SQL translation. |
-| 20441       | 42000     | Translation error, SQL is: %s                       |
+| Vendor Code | SQL State | Reason                                            |
+|-------------|-----------|---------------------------------------------------|
+| 20400       | 0A000     | Can not support database '%s' in SQL translation. |
 
 ### Traffic Management
 
