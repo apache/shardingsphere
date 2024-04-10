@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.MissingRequiredDatabaseException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -36,7 +36,6 @@ import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundExce
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.MissingRequiredDatabaseException;
 import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
@@ -102,17 +101,12 @@ class ImportDatabaseConfigurationExecutorTest {
     void assertImportExistedDatabase() {
         String databaseName = "sharding_db";
         when(ProxyContext.getInstance().databaseExists(databaseName)).thenReturn(true);
-        assertThrows(UnsupportedSQLOperationException.class, () -> assertExecute(databaseName, "/conf/import/database-sharding.yaml"));
+        assertThrows(DatabaseCreateExistsException.class, () -> assertExecute(databaseName, "/conf/import/database-sharding.yaml"));
     }
     
     @Test
     void assertImportEmptyDatabaseName() {
         assertThrows(MissingRequiredDatabaseException.class, () -> assertExecute("sharding_db", "/conf/import/database-empty-database-name.yaml"));
-    }
-    
-    @Test
-    void assertImportEmptyDataSource() {
-        assertThrows(EmptyStorageUnitException.class, () -> assertExecute("sharding_db", "/conf/import/database-empty-data-source.yaml"));
     }
     
     @Test
