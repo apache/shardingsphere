@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.Invali
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -58,9 +59,9 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     
     @Override
     public void checkBeforeUpdate(final LoadSingleTableStatement sqlStatement) {
+        checkStorageUnits(sqlStatement);
         String defaultSchemaName = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
         checkDuplicatedTables(sqlStatement, defaultSchemaName);
-        checkStorageUnits(sqlStatement);
         checkActualTableExist(sqlStatement, defaultSchemaName);
     }
     
@@ -92,6 +93,7 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     }
     
     private void checkStorageUnits(final LoadSingleTableStatement sqlStatement) {
+        ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getStorageUnits().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
         Collection<String> requiredDataSources = getRequiredDataSources(sqlStatement);
         if (requiredDataSources.isEmpty()) {
             return;

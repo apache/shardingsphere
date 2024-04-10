@@ -19,6 +19,7 @@ package org.apache.shardingsphere.single.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -70,6 +71,15 @@ class LoadSingleTableExecutorTest {
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
         executor.setDatabase(database);
         assertThrows(TableExistsException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+    }
+    
+    @Test
+    void assertCheckWithEmptyStorageUnits() {
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getResourceMetaData().getStorageUnits().isEmpty()).thenReturn(true);
+        executor.setDatabase(database);
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("*", null, "*")));
+        assertThrows(EmptyStorageUnitException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test
