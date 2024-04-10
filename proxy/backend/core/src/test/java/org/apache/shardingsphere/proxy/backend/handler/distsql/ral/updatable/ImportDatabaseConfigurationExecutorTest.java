@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.MissingRequiredDatabaseException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -108,11 +107,6 @@ class ImportDatabaseConfigurationExecutorTest {
     @Test
     void assertImportEmptyDatabaseName() {
         assertThrows(MissingRequiredDatabaseException.class, () -> assertExecute("sharding_db", "/conf/import/database-empty-database-name.yaml"));
-    }
-    
-    @Test
-    void assertImportEmptyDataSource() {
-        assertThrows(EmptyStorageUnitException.class, () -> assertExecute("sharding_db", "/conf/import/database-empty-data-source.yaml"));
     }
     
     @Test

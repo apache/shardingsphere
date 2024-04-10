@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.MissingRequiredDatabaseException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -79,11 +78,13 @@ public final class YamlDatabaseConfigurationImportExecutor {
     public void importDatabaseConfiguration(final YamlProxyDatabaseConfiguration yamlConfig) {
         String databaseName = yamlConfig.getDatabaseName();
         checkDatabase(databaseName);
-        checkDataSources(databaseName, yamlConfig.getDataSources());
         addDatabase(databaseName);
-        addDataSources(databaseName, yamlConfig.getDataSources());
+        if (null == yamlConfig.getDataSources() || yamlConfig.getDataSources().isEmpty()) {
+            return;
+        }
+        importDataSources(databaseName, yamlConfig.getDataSources());
         try {
-            addRules(databaseName, yamlConfig.getRules());
+            importRules(databaseName, yamlConfig.getRules());
         } catch (final ShardingSphereSQLException ex) {
             dropDatabase(databaseName);
             throw ex;
@@ -95,10 +96,6 @@ public final class YamlDatabaseConfigurationImportExecutor {
         ShardingSpherePreconditions.checkState(!ProxyContext.getInstance().databaseExists(databaseName), () -> new DatabaseCreateExistsException(databaseName));
     }
     
-    private void checkDataSources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> dataSources) {
-        ShardingSpherePreconditions.checkState(null != dataSources && !dataSources.isEmpty(), () -> new EmptyStorageUnitException(databaseName));
-    }
-    
     private void addDatabase(final String databaseName) {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         contextManager.getInstanceContext().getModeContextManager().createDatabase(databaseName);
@@ -106,7 +103,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         contextManager.getMetaDataContexts().getMetaData().addDatabase(databaseName, protocolType, contextManager.getMetaDataContexts().getMetaData().getProps());
     }
     
-    private void addDataSources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) {
+    private void importDataSources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) {
         Map<String, DataSourcePoolProperties> propsMap = new LinkedHashMap<>(yamlDataSourceMap.size(), 1F);
         for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlDataSourceMap.entrySet()) {
             DataSourceConfiguration dataSourceConfig = dataSourceConfigSwapper.swap(entry.getValue());
@@ -126,7 +123,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         }
     }
     
-    private void addRules(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
+    private void importRules(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         if (null == yamlRuleConfigs || yamlRuleConfigs.isEmpty()) {
             return;
         }

@@ -28,7 +28,7 @@ filePath ::=
 
 - When a database with the same name already exists in the metadata, it cannot be imported;
 - When `databaseName` in YAML is empty, it cannot be imported;
-- When `dataSources` in YAML is empty, it cannot be imported.
+- When `dataSources` in YAML is empty, only empty database will be imported.
 
 ### Example
 

@@ -28,7 +28,7 @@ filePath ::=
 
 - 当元数据中已存在同名逻辑库时，无法导入；
 - 当 YAML 中 `databaseName` 为空时，无法导入；
-- 当 YAML 中 `dataSources` 为空时，无法导入。
+- 当 YAML 中 `dataSources` 为空时，只导入空的逻辑库。
 
 ### 示例
 
