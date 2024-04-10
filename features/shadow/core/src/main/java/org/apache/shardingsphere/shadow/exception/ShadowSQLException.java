@@ -27,7 +27,7 @@ public abstract class ShadowSQLException extends FeatureSQLException {
     
     private static final long serialVersionUID = 2516457164731028332L;
     
-    private static final int FEATURE_CODE = 8;
+    private static final int FEATURE_CODE = 20;
     
     protected ShadowSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, FEATURE_CODE, errorCode, reason, messageArgs);
