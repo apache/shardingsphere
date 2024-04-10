@@ -17,15 +17,6 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Collections;
-import java.util.Optional;
-
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -37,60 +28,74 @@ import org.apache.shardingsphere.sharding.metadata.reviser.schema.ShardingSchema
 import org.apache.shardingsphere.sharding.metadata.reviser.table.ShardingTableNameReviser;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class ShardingMetaDataReviseEntryTest {
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+class ShardingMetaDataReviseEntryTest {
     
-    private final ShardingMetaDataReviseEntry reviseEntry = new ShardingMetaDataReviseEntry();
+    private ShardingMetaDataReviseEntry reviseEntry;
     
-    private final ShardingRule rule = createShardingRule();
+    private ShardingRule shardingRule;
+    
+    @BeforeEach
+    void setUp() {
+        reviseEntry = new ShardingMetaDataReviseEntry();
+        shardingRule = createShardingRule();
+    }
     
     @Test
     void assertGetIndexReviser() {
-        Optional<ShardingIndexReviser> indexReviser = reviseEntry.getIndexReviser(rule, "t_order0");
-        assertTrue(indexReviser.isPresent());
-        assertThat(indexReviser.get().getClass(), is(ShardingIndexReviser.class));
+        Optional<ShardingIndexReviser> actual = reviseEntry.getIndexReviser(shardingRule, "t_order0");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getClass(), is(ShardingIndexReviser.class));
     }
     
     @Test
     void assertGetColumnGeneratedReviser() {
-        Optional<ShardingColumnGeneratedReviser> columnGeneratedReviser = reviseEntry.getColumnGeneratedReviser(rule, "t_order0");
-        assertTrue(columnGeneratedReviser.isPresent());
-        assertThat(columnGeneratedReviser.get().getClass(), is(ShardingColumnGeneratedReviser.class));
+        Optional<ShardingColumnGeneratedReviser> actual = reviseEntry.getColumnGeneratedReviser(shardingRule, "t_order0");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getClass(), is(ShardingColumnGeneratedReviser.class));
     }
     
     @Test
     void assertGetConstraintReviser() {
-        Optional<ShardingConstraintReviser> constraintReviser = reviseEntry.getConstraintReviser(rule, "t_order1");
-        assertTrue(constraintReviser.isPresent());
-        assertThat(constraintReviser.get().getClass(), is(ShardingConstraintReviser.class));
+        Optional<ShardingConstraintReviser> actual = reviseEntry.getConstraintReviser(shardingRule, "t_order1");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getClass(), is(ShardingConstraintReviser.class));
     }
     
     @Test
     void assertGetTableNameReviser() {
-        Optional<ShardingTableNameReviser> tableNameReviser = reviseEntry.getTableNameReviser();
-        assertTrue(tableNameReviser.isPresent());
-        assertThat(tableNameReviser.get().getClass(), is(ShardingTableNameReviser.class));
+        Optional<ShardingTableNameReviser> actual = reviseEntry.getTableNameReviser();
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getClass(), is(ShardingTableNameReviser.class));
     }
     
     @Test
     void assertGetSchemaTableAggregationReviser() {
-        Optional<ShardingSchemaTableAggregationReviser> schemaTableAggregationReviser = reviseEntry.getSchemaTableAggregationReviser(new ConfigurationProperties(null));
-        assertTrue(schemaTableAggregationReviser.isPresent());
-        assertThat(schemaTableAggregationReviser.get().getClass(), is(ShardingSchemaTableAggregationReviser.class));
+        Optional<ShardingSchemaTableAggregationReviser> actual = reviseEntry.getSchemaTableAggregationReviser(new ConfigurationProperties(null));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getClass(), is(ShardingSchemaTableAggregationReviser.class));
     }
     
-    private static ShardingRule createShardingRule() {
-        ShardingRuleConfiguration ruleConfig = createShardingRuleConfiguration();
+    private ShardingRule createShardingRule() {
         InstanceContext instanceContext = mock(InstanceContext.class);
         when(instanceContext.getWorkerId()).thenReturn(0);
-        return new ShardingRule(ruleConfig, Collections.singletonMap("ds", new MockedDataSource()), instanceContext);
+        return new ShardingRule(createShardingRuleConfiguration(), Collections.singletonMap("ds", new MockedDataSource()), instanceContext);
     }
     
-    private static ShardingRuleConfiguration createShardingRuleConfiguration() {
+    private ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds.t_order${0..1}");
-        result.getTables().add(tableRuleConfig);
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order${0..1}"));
         return result;
     }
 }
