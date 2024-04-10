@@ -29,7 +29,8 @@ import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceCo
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.exception.algorithm.NotImplementHintShadowAlgorithmException;
-import org.apache.shardingsphere.shadow.exception.metadata.MissingRequiredShadowConfigurationException;
+import org.apache.shardingsphere.shadow.exception.metadata.MissingRequiredProductionDataSourceException;
+import org.apache.shardingsphere.shadow.exception.metadata.MissingRequiredShadowDataSourceException;
 import org.apache.shardingsphere.shadow.exception.metadata.ShadowDataSourceMappingNotFoundException;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
@@ -59,10 +60,8 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
     
     private void checkDataSources(final Collection<ShadowDataSourceConfiguration> shadowDataSources, final Map<String, DataSource> dataSourceMap, final String databaseName) {
         for (ShadowDataSourceConfiguration each : shadowDataSources) {
-            ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each.getProductionDataSourceName()),
-                    () -> new MissingRequiredShadowConfigurationException("ProductionDataSourceName", databaseName));
-            ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each.getShadowDataSourceName()),
-                    () -> new MissingRequiredShadowConfigurationException("ShadowDataSourceName", databaseName));
+            ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each.getProductionDataSourceName()), () -> new MissingRequiredProductionDataSourceException(databaseName));
+            ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each.getShadowDataSourceName()), () -> new MissingRequiredShadowDataSourceException(databaseName));
         }
     }
     
@@ -86,7 +85,7 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
         for (ShadowTableConfiguration each : shadowTables.values()) {
             ShardingSpherePreconditions.checkState(!each.getShadowAlgorithmNames().isEmpty(), () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier(databaseName)));
             each.getShadowAlgorithmNames().forEach(shadowAlgorithmName -> ShardingSpherePreconditions.checkState(shadowAlgorithms.containsKey(shadowAlgorithmName),
-                    () -> new MissingRequiredShadowConfigurationException("ShadowAlgorithmName", databaseName)));
+                    () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier(databaseName))));
         }
     }
     

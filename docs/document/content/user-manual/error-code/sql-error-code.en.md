@@ -235,7 +235,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | Vendor Code | SQL State | Reason                                                                                            |
 |-------------|-----------|---------------------------------------------------------------------------------------------------|
-| 22001       | 44000     | \`%s\` configuration does not exist in database \`%s\`.                                           |
+| 22000       | 44000     | Production data source configuration does not exist in database '%s'.                             |
+| 22001       | 44000     | Shadow data source configuration does not exist in database '%s'.                                 |
 | 22002       | 44000     | No available shadow data sources mappings in shadow table \`%s\`.                                 |
 | 22003       | 44000     | Column shadow algorithm \`%s\` operation only supports one column mapping in shadow table \`%s\`. |
 | 22020       | HY004     | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type.                                |
