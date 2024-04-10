@@ -202,6 +202,12 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 20295       | 44000     | Auto aware data source name is required in database \`%s\.`        |
 | 20296       | 44000     | Read storage unit '%s' does not exist in rule '%s'.                |
 
+### SQL 方言转换
+
+| Vendor Code | SQL State | 错误信息                                              |
+|-------------|-----------|---------------------------------------------------|
+| 20400       | 0A000     | Can not support database '%s' in SQL translation. |
+
 ### 流量治理
 
 | Vendor Code | SQL State | 错误信息                                |

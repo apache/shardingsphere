@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
+import org.apache.shardingsphere.sqltranslator.exception.UnsupportedTranslatedDatabaseException;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public final class FixtureSQLTranslator implements SQLTranslator {
     @Override
     public SQLTranslatorContext translate(final String sql, final List<Object> parameters, final QueryContext queryContext, final DatabaseType storageType, final ShardingSphereDatabase database,
                                           final RuleMetaData globalRuleMetaData) {
-        ShardingSpherePreconditions.checkState(!sql.startsWith("ERROR:"), () -> new UnsupportedOperationException(String.format("Unsupported translated database: %s", storageType)));
+        ShardingSpherePreconditions.checkState(!sql.startsWith("ERROR:"), () -> new UnsupportedTranslatedDatabaseException(storageType));
         return new SQLTranslatorContext(sql.toUpperCase(Locale.ROOT), parameters);
     }
     
