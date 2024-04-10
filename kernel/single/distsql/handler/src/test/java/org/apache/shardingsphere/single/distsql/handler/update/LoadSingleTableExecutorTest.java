@@ -67,7 +67,7 @@ class LoadSingleTableExecutorTest {
     void assertCheckWithDuplicatedTables() {
         when(database.getName()).thenReturn("foo_db");
         when(schema.containsTable("foo")).thenReturn(true);
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("ds_0", null, "foo")));
         executor.setDatabase(database);
         assertThrows(TableExistsException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }

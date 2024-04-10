@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.single.distsql.handler.update;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
@@ -49,6 +50,7 @@ import java.util.stream.Collectors;
 /**
  * Load single table statement executor.
  */
+@Slf4j
 @Setter
 public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor<LoadSingleTableStatement, SingleRule, SingleRuleConfiguration> {
     
@@ -93,12 +95,14 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     
     private void checkStorageUnits(final LoadSingleTableStatement sqlStatement) {
         Collection<String> requiredDataSources = getRequiredDataSources(sqlStatement);
+        log.error("=====requiredDataSources=====" + requiredDataSources);
         if (requiredDataSources.isEmpty()) {
             return;
         }
         Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
         Collection<String> logicDataSources = database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class).stream()
                 .flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toSet());
+        log.error("=====notExistedDataSources=====" + notExistedDataSources);
         notExistedDataSources.removeIf(logicDataSources::contains);
         ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
     }
