@@ -95,15 +95,12 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     
     private void checkStorageUnits(final LoadSingleTableStatement sqlStatement) {
         Collection<String> requiredDataSources = getRequiredDataSources(sqlStatement);
-        log.error("=====requiredDataSources=====" + requiredDataSources);
         if (requiredDataSources.isEmpty()) {
             return;
         }
         Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
-        log.error("=====notExistedDataSources=====" + notExistedDataSources);
         Collection<String> logicDataSources = database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class).stream()
                 .flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toSet());
-        log.error("=====logicDataSources=====" + logicDataSources);
         notExistedDataSources.removeIf(logicDataSources::contains);
         ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
     }

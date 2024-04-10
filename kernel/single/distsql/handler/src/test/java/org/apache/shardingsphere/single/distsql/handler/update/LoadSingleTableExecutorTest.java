@@ -29,7 +29,6 @@ import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
 import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -62,6 +61,7 @@ class LoadSingleTableExecutorTest {
     void setUp() {
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(database.getSchema("foo_db")).thenReturn(schema);
+        when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
     }
     
     @Test
@@ -73,7 +73,6 @@ class LoadSingleTableExecutorTest {
         assertThrows(TableExistsException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
-    @Disabled("FIXME")
     @Test
     void assertCheckWithInvalidStorageUnit() {
         when(database.getName()).thenReturn("foo_db");
@@ -83,7 +82,6 @@ class LoadSingleTableExecutorTest {
         assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
-    @Disabled("FIXME")
     @Test
     void assertBuild() {
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
@@ -94,7 +92,6 @@ class LoadSingleTableExecutorTest {
         assertThat(actual.getTables().iterator().next(), is("ds_0.foo"));
     }
     
-    @Disabled("FIXME")
     @Test
     void assertUpdate() {
         Collection<String> currentTables = new LinkedList<>(Collections.singletonList("ds_0.foo"));
