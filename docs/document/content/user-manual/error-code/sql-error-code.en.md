@@ -218,19 +218,19 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Data Encrypt
 
-| Vendor Code | SQL State | Reason                                                                                                |
-|-------------|-----------|-------------------------------------------------------------------------------------------------------|
-| 20700       | 44000     | Can not find logic encrypt column by \`%s\`.                                                          |
-| 20701       | 44000     | Fail to find encrypt column \`%s\` from table \`%s\`.                                                 |
-| 20702       | 44000     | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\`.    |
-| 20740       | 42000     | Insert value of index \`%s\` can not support for encrypt.                                             |
-| 20741       | 0A000     | The SQL clause \`%s\` is unsupported in encrypt rule.                                                 |
-| 20781       | HY004     | \`%s\` column's encryptor name \`%s\` does not match encrypt algorithm type \`%s\ in database \`%s\`. |
-| 20703       | 44000     | Cipher column of \`%s\` can not be null in database \`%s\`.                                           |
-| 20704       | 44000     | Can not find (STANDARD\|ASSIST_QUERY\|LIKE_QUERY) encryptor in table \`%s\` and column \`%s\`.        |
-| 20705       | 44000     | Assisted query column of \`%s\` can not be null in database \`%s\`.                                   |
-| 20707       | 44000     | Like query column of \`%s\` can not be null in database \`%s\`.                                       |
-| 20709       | 44000     | Can not find encrypt table: \`%s\`.                                                                   |
+| Vendor Code | SQL State | Reason                                                                                             |
+|-------------|-----------|----------------------------------------------------------------------------------------------------|
+| 21000       | 44000     | Can not find logic encrypt column by \`%s\`.                                                       |
+| 21001       | 44000     | Fail to find encrypt column \`%s\` from table \`%s\`.                                              |
+| 21002       | 44000     | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\`. |
+| 21040       | 42000     | Insert value of index \`%s\` can not support for encrypt.                                          |
+| 21041       | 0A000     | The SQL clause \`%s\` is unsupported in encrypt rule.                                              |
+| 21081       | HY004     | \`%s\` column's encryptor name \`%s\` does not match encrypt algorithm type \`%s\`.                |
+| 21003       | 44000     | Cipher column of \`%s\` can not be null in database \`%s\`.                                        |
+| 21004       | 44000     | Can not find (STANDARD\|ASSIST_QUERY\|LIKE_QUERY) encryptor in table \`%s\` and column \`%s\`.     |
+| 21005       | 44000     | Assisted query column of \`%s\` can not be null in database \`%s\`.                                |
+| 21007       | 44000     | Like query column of \`%s\` can not be null in database \`%s\`.                                    |
+| 21009       | 44000     | Can not find encrypt table: \`%s\`.                                                                |
 
 ### Shadow Database
 
