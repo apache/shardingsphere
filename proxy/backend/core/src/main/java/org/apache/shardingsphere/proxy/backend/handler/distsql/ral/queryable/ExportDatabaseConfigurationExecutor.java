@@ -50,7 +50,7 @@ public final class ExportDatabaseConfigurationExecutor implements DistSQLQueryEx
         }
         String filePath = sqlStatement.getFilePath().get();
         ExportUtils.exportToFile(filePath, exportedData);
-        return Collections.singleton(new LocalDataQueryResultRow(String.format("Successfully exported to：'%s'", filePath)));
+        return Collections.singleton(new LocalDataQueryResultRow(String.format("Successfully exported to: '%s'", filePath)));
     }
     
     @Override
