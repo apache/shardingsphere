@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.exception.rule;
+package org.apache.shardingsphere.readwritesplitting.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
  * Invalid inline expression data sources exception.
@@ -28,6 +27,6 @@ public final class InvalidInlineExpressionDataSourcesException extends Readwrite
     private static final long serialVersionUID = 87659916563551964L;
     
     public InvalidInlineExpressionDataSourcesException(final String dataSourceType) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 70, "%s data source names size error on inline expression.", dataSourceType);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 5, "%s data source names size error on inline expression.", dataSourceType);
     }
 }

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.exception.rule.InvalidInlineExpressionDataSourcesException;
+import org.apache.shardingsphere.readwritesplitting.exception.InvalidInlineExpressionDataSourcesException;
 import org.apache.shardingsphere.readwritesplitting.rule.attribute.ReadwriteSplittingDataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.readwritesplitting.rule.attribute.ReadwriteSplittingExportableRuleAttribute;
 import org.apache.shardingsphere.readwritesplitting.rule.attribute.ReadwriteSplittingStaticDataSourceRuleAttribute;
