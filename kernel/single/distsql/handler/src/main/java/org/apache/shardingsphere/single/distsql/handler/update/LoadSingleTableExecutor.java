@@ -100,9 +100,10 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
             return;
         }
         Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
+        log.error("=====notExistedDataSources=====" + notExistedDataSources);
         Collection<String> logicDataSources = database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class).stream()
                 .flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toSet());
-        log.error("=====notExistedDataSources=====" + notExistedDataSources);
+        log.error("=====logicDataSources=====" + logicDataSources);
         notExistedDataSources.removeIf(logicDataSources::contains);
         ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
     }
