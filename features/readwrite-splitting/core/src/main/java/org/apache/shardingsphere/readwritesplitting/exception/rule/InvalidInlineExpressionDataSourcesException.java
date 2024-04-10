@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
- * Invalid inline expression data source name exception.
+ * Invalid inline expression data sources exception.
  */
-public final class InvalidInlineExpressionDataSourceNameException extends ReadwriteSplittingSQLException {
+public final class InvalidInlineExpressionDataSourcesException extends ReadwriteSplittingSQLException {
     
     private static final long serialVersionUID = 87659916563551964L;
     
-    public InvalidInlineExpressionDataSourceNameException(final String reason) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 70, reason);
+    public InvalidInlineExpressionDataSourcesException(final String dataSourceType) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 70, "%s data source names size error on inline expression.", dataSourceType);
     }
 }

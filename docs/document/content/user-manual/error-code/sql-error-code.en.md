@@ -193,14 +193,12 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | Vendor Code | SQL State | Reason                                                             |
 |-------------|-----------|--------------------------------------------------------------------|
-| 20270       | 44000     | Inline expression %s names size error.                             |
-| 20280       | HY004     | Invalid read database weight \`%s\`.                               |
+| 20270       | 44000     | %s data source names size error on inline expression.              |
 | 20290       | 44000     | Data source name is required in database \`%s\.`                   |
 | 20291       | 44000     | Write data source name is required in database `\`%s\.`            |
 | 20292       | 44000     | Read data source names is required in database `\`%s\.`            |
 | 20293       | 44000     | Can not config duplicate %s data source \`%s\` in database \`%s\.` |
 | 20294       | 42S02     | %s data source name \`%s\` not in database \`%s\.`                 |
-| 20295       | 44000     | Auto aware data source name is required in database \`%s\.`        |
 | 20296       | 44000     | Read storage unit '%s' does not exist in rule '%s'.                |
 
 ### SQL Dialect Translator
