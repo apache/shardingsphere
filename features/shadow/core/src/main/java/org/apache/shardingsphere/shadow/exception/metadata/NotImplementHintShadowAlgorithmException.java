@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.exception.algorithm;
+package org.apache.shardingsphere.shadow.exception.metadata;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.shadow.exception.ShadowSQLException;
@@ -28,6 +28,6 @@ public final class NotImplementHintShadowAlgorithmException extends ShadowSQLExc
     private static final long serialVersionUID = -5012158924968675485L;
     
     public NotImplementHintShadowAlgorithmException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 81, "Default shadow algorithm class should be implement HintShadowAlgorithm.");
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Default shadow algorithm class should be implement HintShadowAlgorithm.");
     }
 }

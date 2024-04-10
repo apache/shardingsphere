@@ -238,9 +238,9 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 22000       | 42S02     | Production data source configuration does not exist in database '%s'.   |
 | 22001       | 42S02     | Shadow data source configuration does not exist in database '%s'.       |
 | 22002       | 42S02     | No available shadow data sources mappings in shadow table '%s'.         |
+| 22003       | 44000     | Default shadow algorithm class should be implement HintShadowAlgorithm. |
 | 22010       | HY004     | Shadow column '%s' of table '%s' does not support '%s' type.            |
 | 22020       | 42000     | Insert value of index '%d' can not support for shadow.                  |
-| 22081       | 44000     | Default shadow algorithm class should be implement HintShadowAlgorithm. |
 
 ## Other Exception
 
