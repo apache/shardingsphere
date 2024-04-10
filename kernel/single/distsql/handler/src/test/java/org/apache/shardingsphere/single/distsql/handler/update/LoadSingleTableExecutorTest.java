@@ -63,15 +63,15 @@ class LoadSingleTableExecutorTest {
     void setUp() {
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(database.getSchema("foo_db")).thenReturn(schema);
+        when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
     }
     
     @Test
     void assertCheckWithDuplicatedTables() {
         when(database.getName()).thenReturn("foo_db");
         when(schema.containsTable("foo")).thenReturn(true);
-        when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("ds_0", null, "foo")));
         executor.setDatabase(database);
         assertThrows(TableExistsException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
@@ -81,16 +81,15 @@ class LoadSingleTableExecutorTest {
         when(database.getName()).thenReturn("foo_db");
         when(database.getResourceMetaData().getStorageUnits().isEmpty()).thenReturn(true);
         executor.setDatabase(database);
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("*", null, "*")));
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("*", null, "*")));
         assertThrows(EmptyStorageUnitException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test
     void assertCheckWithInvalidStorageUnit() {
         when(database.getName()).thenReturn("foo_db");
-        when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         executor.setDatabase(database);
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("ds_0", null, "foo")));
         assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     

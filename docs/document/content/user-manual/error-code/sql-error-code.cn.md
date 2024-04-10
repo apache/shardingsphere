@@ -235,12 +235,12 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | Vendor Code | SQL State | 错误信息                                                                                              |
 |-------------|-----------|---------------------------------------------------------------------------------------------------|
-| 20801       | 44000     | \`%s\` configuration does not exist in database \`%s\`.                                           |
-| 20802       | 44000     | No available shadow data sources mappings in shadow table \`%s\`.                                 |
-| 20803       | 44000     | Column shadow algorithm \`%s\` operation only supports one column mapping in shadow table \`%s\`. |
-| 20820       | HY004     | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type.                                |
-| 20840       | 42000     | Insert value of index \`%s\` can not support for shadow.                                          |
-| 20881       | 44000     | Default shadow algorithm class should be implement HintShadowAlgorithm.                           |
+| 22001       | 44000     | \`%s\` configuration does not exist in database \`%s\`.                                           |
+| 22002       | 44000     | No available shadow data sources mappings in shadow table \`%s\`.                                 |
+| 22003       | 44000     | Column shadow algorithm \`%s\` operation only supports one column mapping in shadow table \`%s\`. |
+| 22020       | HY004     | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type.                                |
+| 22040       | 42000     | Insert value of index \`%s\` can not support for shadow.                                          |
+| 22081       | 44000     | Default shadow algorithm class should be implement HintShadowAlgorithm.                           |
 
 ## 其他异常
 

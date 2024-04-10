@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.single.distsql.handler.update;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
@@ -50,6 +51,7 @@ import java.util.stream.Collectors;
 /**
  * Load single table statement executor.
  */
+@Slf4j
 @Setter
 public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor<LoadSingleTableStatement, SingleRule, SingleRuleConfiguration> {
     
