@@ -220,8 +220,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 21001       | 42S02     | Can not find encrypt table '%s'.                                                             |
 | 21002       | 42S02     | Can not find logic encrypt column by '%s'.                                                   |
 | 21003       | 42S02     | Can not find encrypt column '%s' from table '%s'.                                            |
+| 21004       | HY004     | '%s' column's encrypt algorithm '%s' should support %s in database '%s'.                     |
 | 21010       | 44000     | Altered column '%s' must use same encrypt algorithm with previous column '%s' in table '%s'. |
-| 21015       | HY004     | '%s' column's encrypt algorithm '%s' should support %s in database '%s'.                     |
 | 21020       | 0A000     | The SQL clause '%s' is unsupported in encrypt feature.                                       |
 
 ### 影子库
