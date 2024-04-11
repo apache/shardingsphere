@@ -53,7 +53,6 @@ public final class JobConfigurationChangedProcessEngine {
             Collection<Integer> shardingItems = PipelineJobRegistry.getShardingItems(jobId);
             PipelineJobRegistry.stop(jobId);
             disableJob(jobId, shardingItems);
-            return;
         }
         switch (eventType) {
             case ADDED:
