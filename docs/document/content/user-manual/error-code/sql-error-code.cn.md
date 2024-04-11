@@ -158,16 +158,16 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 20022       | HY004     | Invalid %s, datetime pattern should be '%s', value is '%s'.                                                                         |
 | 20023       | 44000     | Sharding value %s subtract stop offset %d can not be less than start offset %d.                                                     |
 | 20024       | 44000     | %s value '%s' must implements Comparable.                                                                                           |
-| 20040       | 0A000     | Can not support operation \`%s\` with sharding table \`%s\`.                                                                        |
-| 20041       | 44000     | Can not update sharding value for table \`%s\`.                                                                                     |
-| 20042       | 0A000     | The CREATE VIEW statement contains unsupported query statement.                                                                     |
-| 20043       | 44000     | PREPARE statement can not support sharding tables route to same data sources.                                                       |
-| 20044       | 44000     | The table inserted and the table selected must be the same or bind tables.                                                          |
-| 20045       | 0A000     | Can not support DML operation with multiple tables \`%s\`.                                                                          |
-| 20046       | 42000     | %s ... LIMIT can not support route to multiple data nodes.                                                                          |
-| 20047       | 44000     | Can not find actual data source intersection for logic tables \`%s\`.                                                               |
-| 20048       | 42000     | INSERT INTO ... SELECT can not support applying key generator with absent generate key column.                                      |
-| 20049       | 0A000     | Alter view rename .. to .. statement should have same config for \`%s\` and \`%s\`.                                                 |
+| 20030       | 0A000     | Can not support operation '%s' with sharding table '%s'.                                                                            |
+| 20031       | 44000     | Can not update sharding value for table '%s'.                                                                                       |
+| 20032       | 0A000     | The CREATE VIEW statement contains unsupported query statement.                                                                     |
+| 20033       | 44000     | PREPARE statement can not support sharding tables route to same data sources.                                                       |
+| 20034       | 44000     | The table inserted and the table selected must be the same or bind tables.                                                          |
+| 20035       | 0A000     | Can not support DML operation with multiple tables '%s'.                                                                            |
+| 20036       | 42000     | %s ... LIMIT can not support route to multiple data nodes.                                                                          |
+| 20037       | 44000     | Can not find actual data source intersection for logic tables '%s'.                                                                 |
+| 20038       | 42000     | INSERT INTO ... SELECT can not support applying key generator with absent generate key column.                                      |
+| 20039       | 0A000     | Alter view rename .. to .. statement should have same config for '%s' and '%s'.                                                     |
 | 20060       | HY000     | \`%s %s\` can not route correctly for %s \`%s\`.                                                                                    |
 | 20061       | 42S02     | Can not get route result, please check your sharding rule configuration.                                                            |
 | 20062       | 34000     | Can not get cursor name from fetch statement.                                                                                       |
