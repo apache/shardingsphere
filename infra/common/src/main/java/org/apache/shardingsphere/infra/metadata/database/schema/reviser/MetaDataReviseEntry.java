@@ -79,7 +79,7 @@ public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends Order
     default Optional<? extends ColumnNameReviser> getColumnNameReviser(final T rule, final String tableName) {
         return Optional.empty();
     }
-        
+    
     /**
      * Get column generated reviser.
      *
