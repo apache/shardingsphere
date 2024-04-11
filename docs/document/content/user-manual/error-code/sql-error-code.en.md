@@ -224,7 +224,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 21005       | 44000     | Assisted query column of \`%s\` can not be null in database \`%s\`.                                |
 | 21007       | 44000     | Like query column of \`%s\` can not be null in database \`%s\`.                                    |
 | 21009       | 44000     | Can not find encrypt table: \`%s\`.                                                                |
-| 21041       | 0A000     | The SQL clause \`%s\` is unsupported in encrypt rule.                                              |
+| 21020       | 0A000     | The SQL clause '%s' is unsupported in encrypt feature.                                             |
 | 21081       | HY004     | \`%s\` column's encryptor name \`%s\` does not match encrypt algorithm type \`%s\`.                |
 
 ### Shadow Database
