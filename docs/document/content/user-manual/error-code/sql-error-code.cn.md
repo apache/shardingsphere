@@ -179,6 +179,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 20055       | 44000     | Some routed data sources do not belong to configured data sources. routed data sources '%s', configured data sources '%s'.          |
 | 20056       | 44000     | Please check your sharding conditions '%s' to avoid same record in table '%s' routing to multiple data nodes.                       |
 | 20057       | 44000     | Can not find routing table factor, data source '%s', actual table '%s'.                                                             |
+| 20060       | HY000     | Invalid %s strategy '%s', strategy does not match data nodes.                                                                       |
 | 20090       | 42000     | Not allow DML operation without sharding conditions.                                                                                |
 
 ### 联邦查询
