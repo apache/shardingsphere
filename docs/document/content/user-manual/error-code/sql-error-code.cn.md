@@ -168,9 +168,9 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 20037       | 44000     | Can not find actual data source intersection for logic tables '%s'.                                                                 |
 | 20038       | 42000     | INSERT INTO ... SELECT can not support applying key generator with absent generate key column.                                      |
 | 20039       | 0A000     | Alter view rename .. to .. statement should have same config for '%s' and '%s'.                                                     |
-| 20060       | HY000     | \`%s %s\` can not route correctly for %s \`%s\`.                                                                                    |
-| 20061       | 42S02     | Can not get route result, please check your sharding rule configuration.                                                            |
-| 20062       | 34000     | Can not get cursor name from fetch statement.                                                                                       |
+| 20040       | HY000     | '%s %s' can not route correctly for %s '%s'.                                                                                        |
+| 20041       | 42S02     | Can not get route result, please check your sharding rule configuration.                                                            |
+| 20042       | 34000     | Can not get cursor name from fetch statement.                                                                                       |
 | 20080       | HY000     | Sharding algorithm class \`%s\` should be implement \`%s\`.                                                                         |
 | 20081       | HY000     | Routed target \`%s\` does not exist, available targets are \`%s\`.                                                                  |
 | 20082       | 44000     | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match.                                               |
