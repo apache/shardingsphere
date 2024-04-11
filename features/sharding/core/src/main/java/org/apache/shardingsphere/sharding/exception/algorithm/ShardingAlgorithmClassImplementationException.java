@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.algorithm.sharding;
+package org.apache.shardingsphere.sharding.exception.algorithm;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
-import java.util.Collection;
-
 /**
- * Sharding route algorithm exception.
+ * Sharding algorithm class implementation exception.
  */
-public final class ShardingRouteAlgorithmException extends ShardingSQLException {
+public final class ShardingAlgorithmClassImplementationException extends ShardingSQLException {
     
-    private static final long serialVersionUID = -1935526748399934543L;
+    private static final long serialVersionUID = 3053033454701332815L;
     
-    public ShardingRouteAlgorithmException(final String routedTargetName, final Collection<String> availableTargetNames) {
-        super(XOpenSQLState.GENERAL_ERROR, 81, "Routed target `%s` does not exist, available targets are `%s`.", routedTargetName, availableTargetNames.toString());
+    public ShardingAlgorithmClassImplementationException(final String shardingAlgorithmClassName, final Class<?> superShardingAlgorithmClass) {
+        super(XOpenSQLState.GENERAL_ERROR, 50, "Sharding algorithm class '%s' should be implement '%s'.", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
     }
 }

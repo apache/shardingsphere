@@ -171,14 +171,14 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 20040       | HY000     | '%s %s' can not route correctly for %s '%s'.                                                                                        |
 | 20041       | 42S02     | Can not get route result, please check your sharding rule configuration.                                                            |
 | 20042       | 34000     | Can not get cursor name from fetch statement.                                                                                       |
-| 20080       | HY000     | Sharding algorithm class \`%s\` should be implement \`%s\`.                                                                         |
-| 20081       | HY000     | Routed target \`%s\` does not exist, available targets are \`%s\`.                                                                  |
-| 20082       | 44000     | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match.                                               |
-| 20084       | 44000     | Complex inline algorithm need %d sharing columns, but only found %d.                                                                |
-| 20085       | 44000     | No sharding database route info.                                                                                                    |
-| 20086       | 44000     | Some routed data sources do not belong to configured data sources. routed data sources: \`%s\`, configured data sources: \`%s\`.    |
-| 20087       | 44000     | Please check your sharding conditions \`%s\` to avoid same record in table \`%s\` routing to multiple data nodes.                   |
-| 20088       | 44000     | Cannot found routing table factor, data source: %s, actual table: %s.                                                               |
+| 20050       | HY000     | Sharding algorithm class '%s' should be implement '%s'.                                                                             |
+| 20051       | HY000     | Routed target '%s' does not exist, available targets are '%s'.                                                                      |
+| 20052       | 44000     | Inline sharding algorithms expression '%s' and sharding column '%s' do not match.                                                   |
+| 20053       | 44000     | Complex inline algorithm need %d sharing columns, but only found %d.                                                                |
+| 20054       | 44000     | No sharding database route info.                                                                                                    |
+| 20055       | 44000     | Some routed data sources do not belong to configured data sources. routed data sources '%s', configured data sources '%s'.          |
+| 20056       | 44000     | Please check your sharding conditions '%s' to avoid same record in table '%s' routing to multiple data nodes.                       |
+| 20057       | 44000     | Can not find routing table factor, data source '%s', actual table '%s'.                                                             |
 | 20090       | 42000     | Not allow DML operation without sharding conditions.                                                                                |
 
 ### 联邦查询

@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.algorithm.sharding;
+package org.apache.shardingsphere.sharding.exception.algorithm;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 
 /**
- * No database route info exception.
+ * Duplicate insert data record exception.
  */
-public final class NoShardingDatabaseRouteInfoException extends ShardingSQLException {
+public final class DuplicateInsertDataRecordException extends ShardingSQLException {
     
-    private static final long serialVersionUID = -3091336980350038243L;
+    private static final long serialVersionUID = -3448883456909841322L;
     
-    public NoShardingDatabaseRouteInfoException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 85, "No sharding database route info.");
+    public DuplicateInsertDataRecordException(final ShardingConditions shardingConditions, final String tableName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 56, "Please check your sharding conditions '%s' to avoid same record in table '%s' routing to multiple data nodes.", shardingConditions, tableName);
     }
 }

@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.algorithm.sharding;
+package org.apache.shardingsphere.sharding.exception.algorithm;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
-import java.util.Collection;
-
 /**
- * Mismatched sharding data source route info exception.
+ * Mismatched inline sharding algorithm's expression and column exception.
  */
-public final class MismatchedShardingDataSourceRouteInfoException extends ShardingSQLException {
+public final class MismatchedInlineShardingAlgorithmExpressionAndColumnException extends ShardingSQLException {
     
-    private static final long serialVersionUID = -345707079477626285L;
+    private static final long serialVersionUID = 1306301016127278233L;
     
-    public MismatchedShardingDataSourceRouteInfoException(final Collection<String> routeDataSourceNames, final Collection<String> actualDataSourceNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 86, "Some routed data sources do not belong to configured data sources. routed data sources: `%s`, configured data sources: `%s`.",
-                routeDataSourceNames, actualDataSourceNames);
+    public MismatchedInlineShardingAlgorithmExpressionAndColumnException(final String algorithmExpression, final String columnName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 52, "Inline sharding algorithms expression '%s' and sharding column '%s' do not match.", algorithmExpression, columnName);
     }
 }

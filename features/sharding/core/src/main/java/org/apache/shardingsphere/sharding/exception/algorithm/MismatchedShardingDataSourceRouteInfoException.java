@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.algorithm.sharding;
+package org.apache.shardingsphere.sharding.exception.algorithm;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
+import java.util.Collection;
+
 /**
- * Sharding algorithm class implementation exception.
+ * Mismatched sharding data source route info exception.
  */
-public final class ShardingAlgorithmClassImplementationException extends ShardingSQLException {
+public final class MismatchedShardingDataSourceRouteInfoException extends ShardingSQLException {
     
-    private static final long serialVersionUID = 3053033454701332815L;
+    private static final long serialVersionUID = -345707079477626285L;
     
-    public ShardingAlgorithmClassImplementationException(final String shardingAlgorithmClassName, final Class<?> superShardingAlgorithmClass) {
-        super(XOpenSQLState.GENERAL_ERROR, 80, "Sharding algorithm class `%s` should be implement `%s`.", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
+    public MismatchedShardingDataSourceRouteInfoException(final Collection<String> routeDataSourceNames, final Collection<String> actualDataSourceNames) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 55, "Some routed data sources do not belong to configured data sources. routed data sources '%s', configured data sources '%s'.",
+                routeDataSourceNames, actualDataSourceNames);
     }
 }
