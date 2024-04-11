@@ -18,6 +18,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 10001       | 42S02     | Schema '%s' does not exist.                                                         |
 | 10002       | 42S02     | Table or view '%s' does not exist.                                                  |
 | 10003       | 42S02     | Unknown column '%s' in '%s'.                                                        |
+| 10010       | HY000     | Rule and storage meta data mismatched, reason is: %s.                               |
 | 10100       | HY000     | Can not %s storage units '%s'.                                                      |
 | 10101       | 42S02     | There is no storage unit in database '%s'.                                          |
 | 10102       | 44000     | Storage units '%s' do not exist in database '%s'.                                   |
@@ -139,7 +140,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | Vendor Code | SQL State | 错误信息                                                                                                                                |
 |-------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------|
-| 20000       | 44000     | Can not get uniformed table structure for logic table '%s', it has different meta data of actual tables are as follows: %s          |
+| 20000       | 42S02     | %s configuration does not exist in database '%s'.                                                                                   |
 | 20001       | 42S02     | Can not find table rule with logic tables '%s'.                                                                                     |
 | 20002       | 42S02     | Can not find data source in sharding rule, invalid actual data node '%s'.                                                           |
 | 20003       | 42S02     | Data nodes is required for sharding table '%s'.                                                                                     |
@@ -149,10 +150,9 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 20007       | 42S01     | Index '%s' already exists.                                                                                                          |
 | 20008       | 42S02     | Index '%s' does not exist.                                                                                                          |
 | 20009       | 42S01     | View name has to bind to %s tables.                                                                                                 |
-| 20010       | 42S02     | %s configuration does not exist in database '%s'.                                                                                   |
-| 20011       | 44000     | Invalid binding table configuration.                                                                                                |
-| 20012       | 44000     | Only allowed 0 or 1 sharding strategy configuration.                                                                                |
-| 20013       | 42S01     | Same actual data node cannot be configured in multiple logic tables in same database, logical table '%s', actual data node '%s.%s'. |
+| 20010       | 44000     | Invalid binding table configuration.                                                                                                |
+| 20011       | 44000     | Only allowed 0 or 1 sharding strategy configuration.                                                                                |
+| 20012       | 42S01     | Same actual data node cannot be configured in multiple logic tables in same database, logical table '%s', actual data node '%s.%s'. |
 | 20020       | 44000     | Sharding value can not be null in SQL statement.                                                                                    |
 | 20021       | HY004     | Found different types for sharding value '%s'.                                                                                      |
 | 20022       | HY004     | Invalid %s, datetime pattern should be '%s', value is '%s'.                                                                         |

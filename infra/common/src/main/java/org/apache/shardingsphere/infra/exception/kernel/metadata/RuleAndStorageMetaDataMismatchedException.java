@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.metadata;
+package org.apache.shardingsphere.infra.exception.kernel.metadata;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Invalid binding tables exception.
+ * Rule and storage metadata mismatched exception.
  */
-public final class InvalidBindingTablesException extends ShardingSQLException {
+public final class RuleAndStorageMetaDataMismatchedException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = 6913516240331555395L;
+    private static final long serialVersionUID = -1931359961875820757L;
     
-    public InvalidBindingTablesException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 10, "Invalid binding table configuration.");
+    public RuleAndStorageMetaDataMismatchedException(final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 10, "Rule and storage meta data mismatched, reason is: %s.", reason);
     }
 }
