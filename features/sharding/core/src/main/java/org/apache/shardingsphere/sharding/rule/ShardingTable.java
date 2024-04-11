@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.exception.metadata.DataNodeGenerateException;
-import org.apache.shardingsphere.sharding.exception.metadata.DataNodesMissedWithShardingTableException;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredDataNodesException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -256,7 +256,7 @@ public final class ShardingTable {
     
     private void checkRule(final List<String> dataNodes) {
         ShardingSpherePreconditions.checkState(!isEmptyDataNodes(dataNodes) || null == tableShardingStrategyConfig || tableShardingStrategyConfig instanceof NoneShardingStrategyConfiguration,
-                () -> new DataNodesMissedWithShardingTableException(logicTable));
+                () -> new MissingRequiredDataNodesException(logicTable));
     }
     
     /**

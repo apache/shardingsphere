@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Duplicated index exception.
+ * Missing required data nodes exception.
  */
-public final class DuplicatedIndexException extends ShardingSQLException {
+public final class MissingRequiredDataNodesException extends ShardingSQLException {
     
-    private static final long serialVersionUID = 2884666477007627873L;
+    private static final long serialVersionUID = 1691113459377955727L;
     
-    public DuplicatedIndexException(final String indexName) {
-        super(XOpenSQLState.DUPLICATE, 7, "Index `%s` already exists.", indexName);
+    public MissingRequiredDataNodesException(final String tableName) {
+        super(XOpenSQLState.NOT_FOUND, 3, "Data nodes is required for sharding table '%s'.", tableName);
     }
 }
