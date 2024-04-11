@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.exception.algorithm;
+package org.apache.shardingsphere.encrypt.exception.metadata;
 
 import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Mismatched encrypt algorithm type exception.
+ * Missing required encrypt column Exception.
  */
-public final class MismatchedEncryptAlgorithmTypeException extends EncryptSQLException {
+public final class MissingRequiredEncryptColumnException extends EncryptSQLException {
     
-    private static final long serialVersionUID = 4258928279099223870L;
+    private static final long serialVersionUID = -6765795304282762539L;
     
-    public MismatchedEncryptAlgorithmTypeException(final String databaseName, final String columnType, final String encryptorName, final String algorithmFeature) {
-        super(XOpenSQLState.GENERAL_ERROR, 81, "`%s` column's encryptor `%s` should support `%s` in database `%s`.",
-                columnType, encryptorName, algorithmFeature, databaseName);
+    public MissingRequiredEncryptColumnException(final String columnType, final String logicColumnName, final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 0, "%s column '%s' is required in database '%s'.", columnType, logicColumnName, databaseName);
     }
 }

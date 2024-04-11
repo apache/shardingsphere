@@ -21,13 +21,13 @@ import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Encrypt assisted query column not found exception.
+ * Mismatched encrypt algorithm type exception.
  */
-public final class EncryptAssistedQueryColumnNotFoundException extends EncryptSQLException {
+public final class MismatchedEncryptAlgorithmTypeException extends EncryptSQLException {
     
-    private static final long serialVersionUID = -4958403725374225598L;
+    private static final long serialVersionUID = 4258928279099223870L;
     
-    public EncryptAssistedQueryColumnNotFoundException(final String logicColumnName, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 5, "Assisted query column of `%s` can not be null in database `%s`.", logicColumnName, databaseName);
+    public MismatchedEncryptAlgorithmTypeException(final String databaseName, final String columnType, final String encryptorName, final String algorithmFeature) {
+        super(XOpenSQLState.GENERAL_ERROR, 4, "'%s' column's encrypt algorithm '%s' should support %s in database '%s'.", columnType, encryptorName, algorithmFeature, databaseName);
     }
 }

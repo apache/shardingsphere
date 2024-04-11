@@ -215,17 +215,15 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Data Encrypt
 
-| Vendor Code | SQL State | Reason                                                                                             |
-|-------------|-----------|----------------------------------------------------------------------------------------------------|
-| 21000       | 44000     | Can not find logic encrypt column by \`%s\`.                                                       |
-| 21001       | 44000     | Fail to find encrypt column \`%s\` from table \`%s\`.                                              |
-| 21002       | 44000     | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\`. |
-| 21003       | 44000     | Cipher column of \`%s\` can not be null in database \`%s\`.                                        |
-| 21005       | 44000     | Assisted query column of \`%s\` can not be null in database \`%s\`.                                |
-| 21007       | 44000     | Like query column of \`%s\` can not be null in database \`%s\`.                                    |
-| 21009       | 44000     | Can not find encrypt table: \`%s\`.                                                                |
-| 21020       | 0A000     | The SQL clause '%s' is unsupported in encrypt feature.                                             |
-| 21081       | HY004     | \`%s\` column's encryptor name \`%s\` does not match encrypt algorithm type \`%s\`.                |
+| Vendor Code | SQL State | Reason                                                                                       |
+|-------------|-----------|----------------------------------------------------------------------------------------------|
+| 21000       | 42S02     | %s column '%s' is required in database '%s'.                                                 |
+| 21001       | 42S02     | Can not find encrypt table '%s'.                                                             |
+| 21002       | 42S02     | Can not find logic encrypt column by '%s'.                                                   |
+| 21003       | 42S02     | Can not find encrypt column '%s' from table '%s'.                                            |
+| 21004       | HY004     | '%s' column's encrypt algorithm '%s' should support %s in database '%s'.                     |
+| 21010       | 44000     | Altered column '%s' must use same encrypt algorithm with previous column '%s' in table '%s'. |
+| 21020       | 0A000     | The SQL clause '%s' is unsupported in encrypt feature.                                       |
 
 ### Shadow Database
 
