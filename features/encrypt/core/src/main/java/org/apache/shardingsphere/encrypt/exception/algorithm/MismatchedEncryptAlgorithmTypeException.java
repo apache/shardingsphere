@@ -28,7 +28,6 @@ public final class MismatchedEncryptAlgorithmTypeException extends EncryptSQLExc
     private static final long serialVersionUID = 4258928279099223870L;
     
     public MismatchedEncryptAlgorithmTypeException(final String databaseName, final String columnType, final String encryptorName, final String algorithmFeature) {
-        super(XOpenSQLState.GENERAL_ERROR, 81, "`%s` column's encryptor `%s` should support `%s` in database `%s`.",
-                columnType, encryptorName, algorithmFeature, databaseName);
+        super(XOpenSQLState.GENERAL_ERROR, 15, "'%s' column's encrypt algorithm '%s' should support %s in database '%s'.", columnType, encryptorName, algorithmFeature, databaseName);
     }
 }
