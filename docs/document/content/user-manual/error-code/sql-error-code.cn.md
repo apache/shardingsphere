@@ -153,11 +153,11 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 20011       | 44000     | Invalid binding table configuration.                                                                                                |
 | 20012       | 44000     | Only allowed 0 or 1 sharding strategy configuration.                                                                                |
 | 20013       | 42S01     | Same actual data node cannot be configured in multiple logic tables in same database, logical table '%s', actual data node '%s.%s'. |
-| 20020       | 44000     | Sharding value can't be null in sql statement.                                                                                      |
-| 20021       | HY004     | Found different types for sharding value \`%s\`.                                                                                    |
-| 20022       | HY004     | Invalid %s, datetime pattern should be \`%s\`, value is \`%s\`.                                                                     |
+| 20020       | 44000     | Sharding value can not be null in SQL statement.                                                                                    |
+| 20021       | HY004     | Found different types for sharding value '%s'.                                                                                      |
+| 20022       | HY004     | Invalid %s, datetime pattern should be '%s', value is '%s'.                                                                         |
 | 20023       | 44000     | Sharding value %s subtract stop offset %d can not be less than start offset %d.                                                     |
-| 20024       | 44000     | %s value \`%s\` must implements Comparable.                                                                                         |
+| 20024       | 44000     | %s value '%s' must implements Comparable.                                                                                           |
 | 20040       | 0A000     | Can not support operation \`%s\` with sharding table \`%s\`.                                                                        |
 | 20041       | 44000     | Can not update sharding value for table \`%s\`.                                                                                     |
 | 20042       | 0A000     | The CREATE VIEW statement contains unsupported query statement.                                                                     |
