@@ -144,6 +144,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
         try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
             cleanUpPipelineJobs(connection, jobType);
             cleanUpProxyDatabase(connection);
+            // Compatible with "drop database if exists sharding_db;" failed for now
+            cleanUpProxyDatabase(connection);
             createProxyDatabase(connection);
         }
         cleanUpDataSource();
@@ -243,7 +245,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
                 .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, true));
         proxyExecuteWithLog(registerStorageUnitTemplate, 0);
         int timeout = databaseType instanceof OpenGaussDatabaseType ? 60 : 10;
-        Awaitility.await().ignoreExceptions().atMost(timeout, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> showStorageUnitsName().contains(storageUnitName));
+        Awaitility.await().ignoreExceptions().atMost(timeout, TimeUnit.SECONDS).pollInterval(3, TimeUnit.SECONDS).until(() -> showStorageUnitsName().contains(storageUnitName));
     }
     
     /**
@@ -263,7 +265,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @return storage units names
      */
     public List<String> showStorageUnitsName() {
-        return queryForListWithLog(proxyDataSource, "SHOW STORAGE UNITS").stream().map(each -> String.valueOf(each.get("name"))).collect(Collectors.toList());
+        List<String> result = queryForListWithLog(proxyDataSource, "SHOW STORAGE UNITS").stream().map(each -> String.valueOf(each.get("name"))).collect(Collectors.toList());
+        log.info("Show storage units name: {}", result);
+        return result;
     }
     
     /**
@@ -531,9 +535,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
     public void assertOrderRecordExist(final DataSource dataSource, final String tableName, final Object orderId) {
         String sql;
         if (orderId instanceof String) {
-            sql = String.format("SELECT 1 FROM %s WHERE order_id = '%s'", tableName, orderId);
+            sql = String.format("SELECT 1 FROM %s WHERE order_id = '%s' AND user_id>0", tableName, orderId);
         } else {
-            sql = String.format("SELECT 1 FROM %s WHERE order_id = %s", tableName, orderId);
+            sql = String.format("SELECT 1 FROM %s WHERE order_id = %s AND user_id>0", tableName, orderId);
         }
         assertOrderRecordExist(dataSource, sql);
     }
