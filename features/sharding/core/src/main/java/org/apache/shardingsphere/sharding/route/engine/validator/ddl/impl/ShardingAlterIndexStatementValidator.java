@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.exception.metadata.DuplicatedIndexException;
+import org.apache.shardingsphere.sharding.exception.metadata.DuplicateIndexException;
 import org.apache.shardingsphere.sharding.exception.metadata.IndexNotExistedException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -53,7 +53,7 @@ public final class ShardingAlterIndexStatementValidator extends ShardingDDLState
         }
         Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(alterIndexStatement);
         if (renameIndex.isPresent() && isSchemaContainsIndex(schema, renameIndex.get())) {
-            throw new DuplicatedIndexException(renameIndex.get().getIndexName().getIdentifier().getValue());
+            throw new DuplicateIndexException(renameIndex.get().getIndexName().getIdentifier().getValue());
         }
     }
     

@@ -27,7 +27,7 @@ public final class InvalidShardingStrategyConfigurationException extends Shardin
     
     private static final long serialVersionUID = -5874317771225005670L;
     
-    public InvalidShardingStrategyConfigurationException(final String strategyLevel, final String strategyType, final String message) {
-        super(XOpenSQLState.GENERAL_ERROR, 99, String.format("Invalid %s strategy `%s`, %s.", strategyLevel, strategyType, message));
+    public InvalidShardingStrategyConfigurationException(final String strategyLevel, final String strategyType) {
+        super(XOpenSQLState.GENERAL_ERROR, 60, "Invalid %s strategy '%s', strategy does not match data nodes.", strategyLevel, strategyType);
     }
 }

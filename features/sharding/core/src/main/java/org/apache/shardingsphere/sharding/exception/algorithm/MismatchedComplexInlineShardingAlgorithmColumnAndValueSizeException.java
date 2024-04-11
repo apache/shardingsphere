@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.algorithm.sharding;
+package org.apache.shardingsphere.sharding.exception.algorithm;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * No database route info exception.
+ * Mismatched complex inline sharding algorithm's column and value exception.
  */
-public final class NoShardingDatabaseRouteInfoException extends ShardingSQLException {
+public final class MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException extends ShardingSQLException {
     
-    private static final long serialVersionUID = -3091336980350038243L;
+    private static final long serialVersionUID = -3667110081810167498L;
     
-    public NoShardingDatabaseRouteInfoException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 85, "No sharding database route info.");
+    public MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException(final int shardingColumnSize, final int shardingValueSize) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 53, "Complex inline algorithm need %d sharing columns, but only found %d.", shardingColumnSize, shardingValueSize);
     }
 }

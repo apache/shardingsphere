@@ -31,12 +31,12 @@ public final class InconsistentShardingTableMetaDataException extends ShardingSQ
     private static final long serialVersionUID = -5450346946223396192L;
     
     public InconsistentShardingTableMetaDataException(final String logicTableName, final Collection<TableMetaDataViolation> violations) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, createReason(violations), logicTableName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, createReason(violations), logicTableName);
     }
     
     private static String createReason(final Collection<TableMetaDataViolation> violations) {
         StringBuilder result = new StringBuilder(
-                "Can not get uniformed table structure for logic table `%s`, it has different meta data of actual tables are as follows: ").append(System.lineSeparator());
+                "Can not get uniformed table structure for logic table '%s', it has different meta data of actual tables are as follows: ").append(System.lineSeparator());
         for (TableMetaDataViolation each : violations) {
             result.append("actual table: ").append(each.getActualTableName()).append(", meta data: ").append(each.getTableMetaData()).append(System.lineSeparator());
         }

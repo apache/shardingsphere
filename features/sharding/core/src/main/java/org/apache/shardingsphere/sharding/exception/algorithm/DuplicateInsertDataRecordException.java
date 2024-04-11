@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.metadata;
+package org.apache.shardingsphere.sharding.exception.algorithm;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
-
-import java.util.Collection;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 
 /**
- * Drop in used tables exception.
+ * Duplicate insert data record exception.
  */
-public final class DropInUsedTablesException extends ShardingSQLException {
+public final class DuplicateInsertDataRecordException extends ShardingSQLException {
     
-    private static final long serialVersionUID = 8939233348292246498L;
+    private static final long serialVersionUID = -3448883456909841322L;
     
-    public DropInUsedTablesException(final Collection<String> inUsedTables) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 6, "Actual tables `%s` are in use.", inUsedTables.toString());
+    public DuplicateInsertDataRecordException(final ShardingConditions shardingConditions, final String tableName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 56, "Please check your sharding conditions '%s' to avoid same record in table '%s' routing to multiple data nodes.", shardingConditions, tableName);
     }
 }

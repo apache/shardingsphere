@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteException;
-import org.apache.shardingsphere.sharding.exception.metadata.DropInUsedTablesException;
+import org.apache.shardingsphere.sharding.exception.metadata.InUsedTablesException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -85,6 +85,6 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
         // TODO check actual tables not be used in multi rules, and remove this check logic
         Set<String> actualTables = routeContext.getRouteUnits().stream().flatMap(each -> each.getTableMappers().stream().map(RouteMapper::getActualName)).collect(Collectors.toSet());
         Collection<String> inUsedTables = actualTables.stream().filter(otherRuleActualTables::contains).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(inUsedTables.isEmpty(), () -> new DropInUsedTablesException(inUsedTables));
+        ShardingSpherePreconditions.checkState(inUsedTables.isEmpty(), () -> new InUsedTablesException(inUsedTables));
     }
 }

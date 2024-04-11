@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.algorithm.sharding;
+package org.apache.shardingsphere.sharding.exception.metadata;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
@@ -23,14 +23,13 @@ import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 import java.util.Collection;
 
 /**
- * Mismatched sharding data source route info exception.
+ * In used tables exception.
  */
-public final class MismatchedShardingDataSourceRouteInfoException extends ShardingSQLException {
+public final class InUsedTablesException extends ShardingSQLException {
     
-    private static final long serialVersionUID = -345707079477626285L;
+    private static final long serialVersionUID = 8939233348292246498L;
     
-    public MismatchedShardingDataSourceRouteInfoException(final Collection<String> routeDataSourceNames, final Collection<String> actualDataSourceNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 86, "Some routed data sources do not belong to configured data sources. routed data sources: `%s`, configured data sources: `%s`.",
-                routeDataSourceNames, actualDataSourceNames);
+    public InUsedTablesException(final Collection<String> inUsedTables) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 6, "Actual tables '%s' are in use.", inUsedTables);
     }
 }

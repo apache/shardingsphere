@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.metadata;
+package org.apache.shardingsphere.sharding.exception.algorithm;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Duplicated index exception.
+ * No database route info exception.
  */
-public final class DuplicatedIndexException extends ShardingSQLException {
+public final class NoShardingDatabaseRouteInfoException extends ShardingSQLException {
     
-    private static final long serialVersionUID = 2884666477007627873L;
+    private static final long serialVersionUID = -3091336980350038243L;
     
-    public DuplicatedIndexException(final String indexName) {
-        super(XOpenSQLState.DUPLICATE, 7, "Index `%s` already exists.", indexName);
+    public NoShardingDatabaseRouteInfoException() {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 54, "No sharding database route info.");
     }
 }

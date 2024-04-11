@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.algorithm.sharding;
+package org.apache.shardingsphere.sharding.exception.algorithm;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Sharding algorithm class implementation exception.
+ * No sharding table route factor exception.
  */
-public final class ShardingAlgorithmClassImplementationException extends ShardingSQLException {
+public final class NoShardingTableRouteFactorException extends ShardingSQLException {
     
-    private static final long serialVersionUID = 3053033454701332815L;
+    private static final long serialVersionUID = 4833188125634678065L;
     
-    public ShardingAlgorithmClassImplementationException(final String shardingAlgorithmClassName, final Class<?> superShardingAlgorithmClass) {
-        super(XOpenSQLState.GENERAL_ERROR, 80, "Sharding algorithm class `%s` should be implement `%s`.", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
+    public NoShardingTableRouteFactorException(final String dataSourceName, final String actualTable) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 57, "Can not find routing table factor, data source '%s', actual table '%s'.", dataSourceName, actualTable);
     }
 }

@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.algorithm.sharding;
+package org.apache.shardingsphere.sharding.exception.metadata;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 
 /**
- * Duplicate insert data record exception.
+ * Missing required data nodes exception.
  */
-public final class DuplicateInsertDataRecordException extends ShardingSQLException {
+public final class MissingRequiredDataNodesException extends ShardingSQLException {
     
-    private static final long serialVersionUID = -3448883456909841322L;
+    private static final long serialVersionUID = 1691113459377955727L;
     
-    public DuplicateInsertDataRecordException(final ShardingConditions shardingConditions, final String tableName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 87, "Please check your sharding conditions `%s` to avoid same record in table `%s` routing to multiple data nodes.", shardingConditions, tableName);
+    public MissingRequiredDataNodesException(final String tableName) {
+        super(XOpenSQLState.NOT_FOUND, 3, "Data nodes is required for sharding table '%s'.", tableName);
     }
 }

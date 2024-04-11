@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.algorithm.sharding;
+package org.apache.shardingsphere.sharding.exception.metadata;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Mismatched complex inline sharding algorithm's column and value exception.
+ * Duplicate index exception.
  */
-public final class MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException extends ShardingSQLException {
+public final class DuplicateIndexException extends ShardingSQLException {
     
-    private static final long serialVersionUID = -3667110081810167498L;
+    private static final long serialVersionUID = 2884666477007627873L;
     
-    public MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException(final int shardingColumnSize, final int shardingValueSize) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 84, "Complex inline algorithm need %d sharing columns, but only found %d.", shardingColumnSize, shardingValueSize);
+    public DuplicateIndexException(final String indexName) {
+        super(XOpenSQLState.DUPLICATE, 7, "Index '%s' already exists.", indexName);
     }
 }
