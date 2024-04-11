@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.exception.metadata;
 
 import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
@@ -27,7 +28,7 @@ public final class MissingRequiredEncryptColumnException extends EncryptSQLExcep
     
     private static final long serialVersionUID = -6765795304282762539L;
     
-    public MissingRequiredEncryptColumnException(final String columnType, final String logicColumnName, final String databaseName) {
-        super(XOpenSQLState.NOT_FOUND, 0, "%s column '%s' is required in database '%s'.", columnType, logicColumnName, databaseName);
+    public MissingRequiredEncryptColumnException(final String columnType, final SQLExceptionIdentifier sqlExceptionIdentifier) {
+        super(XOpenSQLState.NOT_FOUND, 0, "%s column is required in %s.", columnType, sqlExceptionIdentifier);
     }
 }

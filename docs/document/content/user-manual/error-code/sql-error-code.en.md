@@ -217,7 +217,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | Vendor Code | SQL State | Reason                                                                                       |
 |-------------|-----------|----------------------------------------------------------------------------------------------|
-| 21000       | 42S02     | %s column '%s' is required in database '%s'.                                                 |
+| 21000       | 42S02     | %s column is required in %s.                                                                 |
 | 21001       | 42S02     | Can not find encrypt table '%s'.                                                             |
 | 21002       | 42S02     | Can not find logic encrypt column by '%s'.                                                   |
 | 21003       | 42S02     | Can not find encrypt column '%s' from table '%s'.                                            |
