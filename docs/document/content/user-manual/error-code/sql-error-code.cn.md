@@ -216,7 +216,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | Vendor Code | SQL State | 错误信息                                                                                         |
 |-------------|-----------|----------------------------------------------------------------------------------------------|
-| 21000       | 42S02     | %s column '%s' is required in database '%s'.                                                 |
+| 21000       | 42S02     | %s column is required in %s.                                                                 |
 | 21001       | 42S02     | Can not find encrypt table '%s'.                                                             |
 | 21002       | 42S02     | Can not find logic encrypt column by '%s'.                                                   |
 | 21003       | 42S02     | Can not find encrypt column '%s' from table '%s'.                                            |
