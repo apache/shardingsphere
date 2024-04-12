@@ -125,7 +125,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 18111       | 08000     | Get binlog position failed by job '%s'.                                        |
 | 18112       | HY000     | Can not find consistency check job of '%s'.                                    |
 | 18113       | HY000     | Uncompleted consistency check job '%s' exists, progress '%s'.                  |
-| 18014       | HY000     | Failed to get DDL for table '%s'.                                              |
+| 18114       | HY000     | Failed to get DDL for table '%s'.                                              |
 | 18200       | HY000     | Before data record is '%s', after data record is '%s'.                         |
 | 18201       | 08000     | Data check table '%s' failed.                                                  |
 | 18202       | 0A000     | Unsupported pipeline database type '%s'.                                       |
