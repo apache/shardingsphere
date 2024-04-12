@@ -25,14 +25,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseCluster;
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseBackgroundExecutorManager;
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseExecutor;
-import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 import org.apache.shardingsphere.proxy.backend.hbase.props.HBaseProperties;
 import org.apache.shardingsphere.proxy.backend.hbase.props.HBasePropertyKey;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -158,10 +157,11 @@ public final class HBaseContext implements AutoCloseable {
      * 
      * @param clusterName cluster name
      * @return HBase connection
+     * @throws SQLException SQL exception
      */
-    public Connection getConnectionByClusterName(final String clusterName) {
+    public Connection getConnectionByClusterName(final String clusterName) throws SQLException {
         Optional<HBaseCluster> cluster = connections.stream().filter(each -> each.getClusterName().equalsIgnoreCase(clusterName)).findFirst();
-        ShardingSpherePreconditions.checkState(cluster.isPresent(), () -> new HBaseOperationException(String.format("Cluster `%s` is not exists", clusterName)));
+        ShardingSpherePreconditions.checkState(cluster.isPresent(), () -> new SQLException(String.format("Cluster `%s` is not exists", clusterName)));
         return cluster.get().getConnection();
     }
     
