@@ -73,7 +73,7 @@ public final class ImportMetaDataExecutor implements DistSQLUpdateExecutor<Impor
             return;
         }
         Collection<RuleConfiguration> rules = ruleConfigSwapperEngine.swapToRuleConfigurations(yamlServerConfig.getRules());
-        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(rules);
+        rules.forEach(each -> contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(each));
         contextManager.getInstanceContext().getModeContextManager().alterProperties(yamlServerConfig.getProps());
     }
     
