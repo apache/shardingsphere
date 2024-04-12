@@ -45,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -86,7 +87,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
      * @param sqlStatementContext SQL statement context
      */
     @Override
-    public void init(final SQLStatementContext sqlStatementContext) {
+    public void init(final SQLStatementContext sqlStatementContext) throws SQLException {
         statementContext = (SelectStatementContext) sqlStatementContext;
         initResultNum(sqlStatementContext);
         HBaseOperation operation = HBaseOperationConverterFactory.newInstance(sqlStatementContext).convert();
@@ -108,14 +109,14 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
         paginationSegment.ifPresent(optional -> maxLimitResultSize = Math.min(maxLimitResultSize, ((NumberLiteralLimitValueSegment) optional).getValue()));
     }
     
-    private void executeGetRequest(final HBaseOperation operation) {
+    private void executeGetRequest(final HBaseOperation operation) throws SQLException {
         Result result = HBaseExecutor.executeQuery(operation.getTableName(), table -> table.get((Get) operation.getOperation()));
         Collection<Result> rows = 0 == result.rawCells().length ? Collections.emptyList() : Collections.singleton(result);
         this.rows = rows.iterator();
         setColumnNames(this.rows);
     }
     
-    private void executeGetsRequest(final HBaseOperation operation) {
+    private void executeGetsRequest(final HBaseOperation operation) throws SQLException {
         List<Result> results = Arrays.asList(HBaseExecutor.executeQuery(operation.getTableName(), table -> table.get(((HBaseSelectOperation) operation.getOperation()).getGets())));
         results = results.stream().filter(result -> result.rawCells().length > 0).collect(Collectors.toList());
         if (statementContext.getOrderByContext().isGenerated()) {
@@ -129,7 +130,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
         return Bytes.toString(result1.getRow()).compareTo(Bytes.toString(result2.getRow()));
     }
     
-    private void executeScanRequest(final HBaseOperation hbaseOperation) {
+    private void executeScanRequest(final HBaseOperation hbaseOperation) throws SQLException {
         Scan scan = (Scan) hbaseOperation.getOperation();
         scan.setLimit((int) maxLimitResultSize);
         ResultScanner resultScanner = HBaseExecutor.executeQuery(hbaseOperation.getTableName(), table -> table.getScanner(scan));

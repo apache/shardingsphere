@@ -26,7 +26,7 @@ import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
-import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,13 +41,8 @@ public final class HBaseListResultSet implements HBaseQueryResultSet {
     
     private Iterator<Entry<String, String>> iterator;
     
-    /**
-     * Init data.
-     *
-     * @param sqlStatementContext SQL statement context
-     */
     @Override
-    public void init(final SQLStatementContext sqlStatementContext) throws IOException {
+    public void init(final SQLStatementContext sqlStatementContext) throws SQLException {
         ShowTablesStatementContext context = (ShowTablesStatementContext) sqlStatementContext;
         Map<String, String> result;
         if (context.getSqlStatement().getFromSchema().isPresent()) {
@@ -59,7 +54,7 @@ public final class HBaseListResultSet implements HBaseQueryResultSet {
         iterator = result.entrySet().iterator();
     }
     
-    private Map<String, String> listTablesInHBaseByFromSchema(final String clusterName) throws IOException {
+    private Map<String, String> listTablesInHBaseByFromSchema(final String clusterName) throws SQLException {
         HTableDescriptor[] tables = HBaseExecutor.executeAdmin(HBaseContext.getInstance().getConnectionByClusterName(clusterName), Admin::listTables);
         Map<String, String> result = new HashMap<>(tables.length);
         for (HTableDescriptor tableDescriptor : tables) {

@@ -24,7 +24,6 @@ import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
-import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseAdminCallback;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseQueryCallback;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseUpdateCallback;
@@ -55,11 +54,11 @@ public final class HBaseExecutor {
         }
     }
     
-    private static void executeUpdate(final Table table, final HBaseUpdateCallback operation) {
+    private static void executeUpdate(final Table table, final HBaseUpdateCallback operation) throws SQLException {
         try {
             operation.executeInHBase(table);
         } catch (final IOException ex) {
-            throw new HBaseOperationException(ex.getMessage());
+            throw new SQLException(ex);
         }
     }
     
@@ -70,22 +69,22 @@ public final class HBaseExecutor {
      * @param operation operation
      * @param <T> type of result
      * @return query result
-     * @throws HBaseOperationException HBase operation exception
+     * @throws SQLException SQL exception
      */
-    public static <T> T executeQuery(final String tableName, final HBaseQueryCallback<T> operation) {
+    public static <T> T executeQuery(final String tableName, final HBaseQueryCallback<T> operation) throws SQLException {
         TableName backendTableName = TableName.valueOf(tableName);
         try (Table table = HBaseContext.getInstance().getConnection(tableName).getTable(backendTableName)) {
             return executeQuery(table, operation);
         } catch (final IOException ex) {
-            throw new HBaseOperationException(ex.getMessage());
+            throw new SQLException(ex);
         }
     }
     
-    private static <T> T executeQuery(final Table table, final HBaseQueryCallback<T> operation) {
+    private static <T> T executeQuery(final Table table, final HBaseQueryCallback<T> operation) throws SQLException {
         try {
             return operation.executeInHBase(table);
         } catch (final IOException ex) {
-            throw new HBaseOperationException(ex.getMessage());
+            throw new SQLException(ex);
         }
     }
     
@@ -96,11 +95,13 @@ public final class HBaseExecutor {
      * @param operation operation
      * @param <T> type of result
      * @return admin result
-     * @throws IOException IO exception
+     * @throws SQLException SQL exception
      */
-    public static <T> T executeAdmin(final Connection connection, final HBaseAdminCallback<T> operation) throws IOException {
+    public static <T> T executeAdmin(final Connection connection, final HBaseAdminCallback<T> operation) throws SQLException {
         try (Admin admin = connection.getAdmin()) {
             return operation.executeInHBase(admin);
+        } catch (final IOException ex) {
+            throw new SQLException(ex);
         }
     }
 }
