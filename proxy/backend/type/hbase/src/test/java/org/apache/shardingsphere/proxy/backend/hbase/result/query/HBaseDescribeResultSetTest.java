@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.hbase.result.query;
 
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowCreateTableStatementContext;
-import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.junit.jupiter.api.Test;
 
@@ -67,6 +66,6 @@ class HBaseDescribeResultSetTest extends AbstractHBaseQueryResultSetTest {
         ShowCreateTableStatementContext context = mock(ShowCreateTableStatementContext.class);
         when(context.getTablesContext()).thenReturn(mock(TablesContext.class, RETURNS_DEEP_STUBS));
         when(context.getTablesContext().getTableNames().iterator().next()).thenReturn(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME);
-        assertThrows(HBaseOperationException.class, () -> new HBaseDescribeResultSet().init(context));
+        assertThrows(IOException.class, () -> new HBaseDescribeResultSet().init(context));
     }
 }
