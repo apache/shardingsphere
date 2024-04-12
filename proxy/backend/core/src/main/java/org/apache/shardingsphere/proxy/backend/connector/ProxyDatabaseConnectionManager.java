@@ -51,7 +51,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ProxyDatabaseConnectionManager extends OnlineDatabaseConnectionManager<Connection> {
+public final class ProxyDatabaseConnectionManager implements OnlineDatabaseConnectionManager<Connection> {
     
     private final ConnectionSession connectionSession;
     
