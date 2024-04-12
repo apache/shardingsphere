@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.context;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseCluster;
 
-import java.io.IOException;
+import java.sql.SQLException;
 
 /**
  * HBase meta data refresher.
@@ -35,7 +35,7 @@ public final class HBaseMetaDataRefresher implements Runnable {
         for (HBaseCluster hBaseCluster : context.getConnections()) {
             try {
                 context.loadTables(hBaseCluster);
-            } catch (final IOException ignored) {
+            } catch (final SQLException ignored) {
             }
         }
     }

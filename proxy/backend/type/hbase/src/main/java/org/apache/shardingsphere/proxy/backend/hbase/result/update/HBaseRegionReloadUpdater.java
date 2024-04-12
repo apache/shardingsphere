@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.hbase.result.update;
 
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseRegionWarmUpContext;
-import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
 
 import java.util.Arrays;
@@ -49,7 +49,7 @@ public final class HBaseRegionReloadUpdater implements HBaseUpdater {
     }
     
     private void checkTableExists(final String tableName) {
-        ShardingSpherePreconditions.checkState(HBaseContext.getInstance().isTableExists(tableName), () -> new HBaseOperationException(String.format("Table `%s` is not exists", tableName)));
+        ShardingSpherePreconditions.checkState(HBaseContext.getInstance().isTableExists(tableName), () -> new TableNotFoundException(tableName));
     }
     
     private boolean isNotNullTableName(final String tableName) {

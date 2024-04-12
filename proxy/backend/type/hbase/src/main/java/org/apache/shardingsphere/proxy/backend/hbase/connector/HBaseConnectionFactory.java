@@ -28,9 +28,9 @@ import org.apache.hadoop.hbase.security.User;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.shardingsphere.proxy.backend.hbase.config.YamlHBaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.hbase.config.YamlHBaseParameter;
-import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -46,8 +46,9 @@ public final class HBaseConnectionFactory {
      * 
      * @param yamlProxyHBaseConfig YAML HBase configuration
      * @return A connection for per HBase cluster
+     * @throws SQLException SQL exception
      */
-    public static Map<String, Connection> createHBaseConnections(final YamlHBaseConfiguration yamlProxyHBaseConfig) {
+    public static Map<String, Connection> createHBaseConnections(final YamlHBaseConfiguration yamlProxyHBaseConfig) throws SQLException {
         Map<String, Connection> result = new LinkedHashMap<>(yamlProxyHBaseConfig.getDataSources().size(), 1F);
         for (Entry<String, YamlHBaseParameter> entry : yamlProxyHBaseConfig.getDataSources().entrySet()) {
             result.put(entry.getKey(), createConnection(entry.getValue()));
@@ -55,14 +56,14 @@ public final class HBaseConnectionFactory {
         return result;
     }
     
-    private static Connection createConnection(final YamlHBaseParameter parameter) {
+    private static Connection createConnection(final YamlHBaseParameter parameter) throws SQLException {
         Configuration config = createConfiguration(parameter);
         try {
             return Strings.isNullOrEmpty(parameter.getAccessUser())
                     ? ConnectionFactory.createConnection(config)
                     : ConnectionFactory.createConnection(config, User.create(UserGroupInformation.createRemoteUser(parameter.getAccessUser())));
         } catch (final IOException ex) {
-            throw new HBaseOperationException(ex.getMessage());
+            throw new SQLException(ex);
         }
     }
     
