@@ -45,6 +45,6 @@ public final class MissingRequiredRuleException extends RuleDefinitionException 
     }
     
     public MissingRequiredRuleException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
-        super(XOpenSQLState.NOT_FOUND, 1, "%s rules '%s' do not exist in database '%s'.", ruleType, ruleNames, databaseName);
+        super(XOpenSQLState.NOT_FOUND, 2, "%s rules '%s' do not exist in database '%s'.", ruleType, ruleNames, databaseName);
     }
 }
