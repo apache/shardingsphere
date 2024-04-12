@@ -139,13 +139,6 @@ public interface ModeContextManager {
     /**
      * Alter global rule configuration.
      *
-     * @param globalRuleConfigs global rule configs
-     */
-    void alterGlobalRuleConfiguration(Collection<RuleConfiguration> globalRuleConfigs);
-    
-    /**
-     * Alter global rule configuration.
-     *
      * @param globalRuleConfig global rule config
      */
     void alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig);
