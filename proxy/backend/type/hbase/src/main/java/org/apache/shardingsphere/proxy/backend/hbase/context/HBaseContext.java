@@ -166,7 +166,7 @@ public final class HBaseContext implements AutoCloseable {
     }
     
     @Override
-    public void close() {
+    public void close() throws SQLException {
         connections.clear();
         tableConnectionMap.clear();
         executorManager.close();
@@ -174,8 +174,7 @@ public final class HBaseContext implements AutoCloseable {
             try {
                 connection.close();
             } catch (final IOException ex) {
-                // TODO define new exception, do not use RuntimeException
-                throw new RuntimeException(ex);
+                throw new SQLException(ex);
             }
         }
     }

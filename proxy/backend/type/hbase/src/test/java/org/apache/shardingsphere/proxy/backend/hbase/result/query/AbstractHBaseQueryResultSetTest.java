@@ -85,7 +85,7 @@ abstract class AbstractHBaseQueryResultSetTest {
     }
     
     @AfterEach
-    void tearDown() {
+    void tearDown() throws SQLException {
         HBaseContext.getInstance().close();
     }
 }

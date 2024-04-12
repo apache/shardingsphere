@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.hbase.handler;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.hbase.result.query.HBaseQueryResultSet;
@@ -28,7 +28,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
@@ -49,11 +48,7 @@ public final class HBaseBackendQueryHandler implements HBaseBackendHandler {
     @Override
     public ResponseHeader execute() throws SQLException {
         SQLStatementContext sqlStatementContext = new SQLBindEngine(null, "", new HintValueContext()).bind(sqlStatement, Collections.emptyList());
-        try {
-            resultSet.init(sqlStatementContext);
-        } catch (final IOException ex) {
-            throw new SQLException(ex);
-        }
+        resultSet.init(sqlStatementContext);
         List<QueryHeader> queryHeaders = resultSet.getColumnNames().stream().map(each -> new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false))
                 .collect(Collectors.toList());
         return new QueryResponseHeader(queryHeaders);
