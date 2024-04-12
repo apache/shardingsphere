@@ -34,7 +34,7 @@ import java.util.Properties;
 public final class MD5AssistedEncryptAlgorithm implements EncryptAlgorithm {
     
     @Getter
-    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false);
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false, new Properties());
     
     private MessageDigestAlgorithm digestAlgorithm;
     
