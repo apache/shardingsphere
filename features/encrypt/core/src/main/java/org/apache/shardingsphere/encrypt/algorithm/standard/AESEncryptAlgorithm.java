@@ -47,19 +47,27 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     private static final String DIGEST_ALGORITHM_NAME = "digest-algorithm-name";
     
     @Getter
-    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(true, true, false);
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(true, true, false, getDefaultProperties());
     
     private byte[] secretKey;
     
+    private Properties getDefaultProperties() {
+        Properties result = new Properties();
+        result.setProperty(DIGEST_ALGORITHM_NAME, MessageDigestAlgorithms.SHA_1);
+        return result;
+    }
+    
     @Override
     public void init(final Properties props) {
-        secretKey = getSecretKey(props);
+        Properties properties = new Properties(metaData.getDefaultProps());
+        properties.putAll(props);
+        secretKey = getSecretKey(properties);
     }
     
     private byte[] getSecretKey(final Properties props) {
         String aesKey = props.getProperty(AES_KEY);
         ShardingSpherePreconditions.checkNotEmpty(aesKey, () -> new AlgorithmInitializationException(this, "%s can not be null or empty", AES_KEY));
-        String digestAlgorithm = props.getProperty(DIGEST_ALGORITHM_NAME, MessageDigestAlgorithms.SHA_1);
+        String digestAlgorithm = props.getProperty(DIGEST_ALGORITHM_NAME);
         return Arrays.copyOf(DigestUtils.getDigest(digestAlgorithm.toUpperCase()).digest(aesKey.getBytes(StandardCharsets.UTF_8)), 16);
     }
     

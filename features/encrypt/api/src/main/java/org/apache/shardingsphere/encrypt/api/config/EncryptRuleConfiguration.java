@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.encrypt.api.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Map;
@@ -30,13 +32,21 @@ import java.util.Map;
 /**
  * Encrypt rule configuration.
  */
-@RequiredArgsConstructor
 @Getter
 public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
     
     private final Collection<EncryptTableRuleConfiguration> tables;
     
     private final Map<String, AlgorithmConfiguration> encryptors;
+    
+    public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> encryptors) {
+        this.tables = tables;
+        this.encryptors = encryptors;
+        for (AlgorithmConfiguration each : encryptors.values()) {
+            TypedSPILoader.findUninitedService(EncryptAlgorithm.class, each.getType()).map(EncryptAlgorithm::getMetaData).map(EncryptAlgorithmMetaData::getDefaultProps)
+                    .ifPresent(each.getProps()::putAll);
+        }
+    }
     
     @Override
     public boolean isEmpty() {

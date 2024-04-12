@@ -65,6 +65,26 @@ public final class TypedSPILoader {
         return Optional.empty();
     }
     
+    /**
+     * Find uninited service.
+     *
+     * @param serviceInterface typed SPI service interface
+     * @param type type
+     * @param <T> SPI class type
+     * @return found service
+     */
+    public static <T extends TypedSPI> Optional<T> findUninitedService(final Class<T> serviceInterface, final Object type) {
+        if (null == type) {
+            return findDefaultService(serviceInterface);
+        }
+        for (T each : ShardingSphereServiceLoader.getServiceInstances(serviceInterface)) {
+            if (matchesType(type, each)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
+    }
+    
     private static <T extends TypedSPI> Optional<T> findDefaultService(final Class<T> serviceInterface) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(serviceInterface)) {
             if (!each.isDefault()) {
