@@ -32,8 +32,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 10202       | 42S02     | %s rules '%s' do not exist in database '%s'.                                        |
 | 10203       | 44000     | %s rules '%s' in database '%s' are still in used.                                   |
 | 10204       | 42S01     | Duplicate %s rule names '%s' in database '%s'.                                      |
-| 13000       | HY004     | Invalid format for actual data node '%s'.                                           |
-| 13001       | HY000     | Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.          |
+| 10300       | HY004     | Invalid format for actual data node '%s'.                                           |
+| 10301       | HY000     | Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.          |
 | 10400       | 44000     | Algorithm '%s.'%s' initialization failed, reason is: %s.                            |
 | 10401       | 44000     | '%s' algorithm on %s is required.                                                   |
 | 10402       | 42S02     | '%s' algorithm '%s' on %s is unregistered.                                          |
