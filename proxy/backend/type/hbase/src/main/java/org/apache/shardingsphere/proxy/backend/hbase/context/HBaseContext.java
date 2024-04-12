@@ -108,7 +108,7 @@ public final class HBaseContext implements AutoCloseable {
     }
     
     /**
-     * Load tables.
+     * Load tables. 
      * 
      * @param hbaseCluster HBase cluster
      * @throws SQLException SQL exception
