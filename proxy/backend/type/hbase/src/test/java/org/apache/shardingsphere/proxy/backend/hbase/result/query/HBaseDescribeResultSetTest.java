@@ -67,6 +67,6 @@ class HBaseDescribeResultSetTest extends AbstractHBaseQueryResultSetTest {
         ShowCreateTableStatementContext context = mock(ShowCreateTableStatementContext.class);
         when(context.getTablesContext()).thenReturn(mock(TablesContext.class, RETURNS_DEEP_STUBS));
         when(context.getTablesContext().getTableNames().iterator().next()).thenReturn(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME);
-        assertThrows(IOException.class, () -> new HBaseDescribeResultSet().init(context));
+        assertThrows(SQLException.class, () -> new HBaseDescribeResultSet().init(context));
     }
 }
