@@ -53,11 +53,13 @@ public final class JobConfigurationChangedProcessEngine {
             Collection<Integer> shardingItems = PipelineJobRegistry.getShardingItems(jobId);
             PipelineJobRegistry.stop(jobId);
             disableJob(jobId, shardingItems);
-            return;
         }
         switch (eventType) {
             case ADDED:
             case UPDATED:
+                if (jobConfig.isDisabled()) {
+                    break;
+                }
                 if (PipelineJobRegistry.isExisting(jobId)) {
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
