@@ -57,6 +57,9 @@ public final class JobConfigurationChangedProcessEngine {
         switch (eventType) {
             case ADDED:
             case UPDATED:
+                if (jobConfig.isDisabled()) {
+                    break;
+                }
                 if (PipelineJobRegistry.isExisting(jobId)) {
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
