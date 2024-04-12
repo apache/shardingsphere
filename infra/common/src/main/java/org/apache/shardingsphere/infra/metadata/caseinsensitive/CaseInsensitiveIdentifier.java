@@ -35,9 +35,6 @@ public final class CaseInsensitiveIdentifier {
     
     @Override
     public String toString() {
-        if (null == original) {
-            return null;
-        }
-        return original.toString();
+        return null != original ? original.toString() : null;
     }
 }
