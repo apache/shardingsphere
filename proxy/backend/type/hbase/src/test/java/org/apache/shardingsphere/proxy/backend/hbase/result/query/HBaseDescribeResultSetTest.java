@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 class HBaseDescribeResultSetTest extends AbstractHBaseQueryResultSetTest {
     
     @Test
-    void assertGetRowData() {
+    void assertGetRowData() throws IOException {
         HBaseQueryResultSet resultSet = new HBaseDescribeResultSet();
         ShowCreateTableStatementContext context = mock(ShowCreateTableStatementContext.class);
         when(context.getTablesContext()).thenReturn(mock(TablesContext.class, RETURNS_DEEP_STUBS));
