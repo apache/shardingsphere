@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 
 /**
  * HBase operation exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class HBaseOperationException extends ShardingSphereExternalException {
     
     private static final long serialVersionUID = -2361593557266150170L;
     
-    private final String errorInfo;
+    public HBaseOperationException(final String errorInfo) {
+        super(errorInfo);
+    }
 }
