@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseQueryCallback;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseUpdateCallback;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 /**
  * HBase executor.
@@ -44,13 +45,13 @@ public final class HBaseExecutor {
      *
      * @param tableName table name
      * @param operation operation
-     * @throws HBaseOperationException HBase operation exception
+     * @throws SQLException SQL exception
      */
-    public static void executeUpdate(final String tableName, final HBaseUpdateCallback operation) {
+    public static void executeUpdate(final String tableName, final HBaseUpdateCallback operation) throws SQLException {
         try (Table table = HBaseContext.getInstance().getConnection(tableName).getTable(TableName.valueOf(tableName))) {
             executeUpdate(table, operation);
         } catch (final IOException ex) {
-            throw new HBaseOperationException(ex.getMessage());
+            throw new SQLException(ex);
         }
     }
     
@@ -95,21 +96,11 @@ public final class HBaseExecutor {
      * @param operation operation
      * @param <T> type of result
      * @return admin result
-     * @throws HBaseOperationException HBase operation exception
+     * @throws IOException IO exception
      */
-    public static <T> T executeAdmin(final Connection connection, final HBaseAdminCallback<T> operation) {
+    public static <T> T executeAdmin(final Connection connection, final HBaseAdminCallback<T> operation) throws IOException {
         try (Admin admin = connection.getAdmin()) {
-            return executeAdmin(admin, operation);
-        } catch (final IOException ex) {
-            throw new HBaseOperationException(ex.getMessage());
-        }
-    }
-    
-    private static <T> T executeAdmin(final Admin admin, final HBaseAdminCallback<T> operation) {
-        try {
             return operation.executeInHBase(admin);
-        } catch (final IOException ex) {
-            throw new HBaseOperationException(ex.getMessage());
         }
     }
 }

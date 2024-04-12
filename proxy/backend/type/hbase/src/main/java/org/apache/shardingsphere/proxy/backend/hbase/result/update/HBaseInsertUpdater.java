@@ -24,6 +24,7 @@ import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseIn
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +35,7 @@ import java.util.List;
 public final class HBaseInsertUpdater implements HBaseUpdater {
     
     @Override
-    public Collection<UpdateResult> executeUpdate(final HBaseOperation operation) {
+    public Collection<UpdateResult> executeUpdate(final HBaseOperation operation) throws SQLException {
         List<Put> puts = ((HBaseInsertOperation) operation.getOperation()).getPuts();
         HBaseExecutor.executeUpdate(operation.getTableName(), table -> table.put(puts));
         return Collections.singleton(new UpdateResult(puts.size(), 0));

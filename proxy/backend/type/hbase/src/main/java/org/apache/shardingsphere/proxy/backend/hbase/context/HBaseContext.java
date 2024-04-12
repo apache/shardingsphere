@@ -81,8 +81,9 @@ public final class HBaseContext implements AutoCloseable {
      * Initialize HBase context.
      * 
      * @param connections A connection for per HBase cluster
+     * @throws IOException IO exception
      */
-    public void init(final Map<String, Connection> connections) {
+    public void init(final Map<String, Connection> connections) throws IOException {
         this.connections = new ArrayList<>(connections.size());
         warmUpContext = HBaseRegionWarmUpContext.getInstance();
         warmUpContext.init(getWarmUpThreadSize());
@@ -109,8 +110,9 @@ public final class HBaseContext implements AutoCloseable {
      * Load tables.
      * 
      * @param hbaseCluster HBase cluster
+     * @throws IOException IO exception
      */
-    public synchronized void loadTables(final HBaseCluster hbaseCluster) {
+    public synchronized void loadTables(final HBaseCluster hbaseCluster) throws IOException {
         warmUpContext.initStatisticsInfo(System.currentTimeMillis());
         HTableDescriptor[] hTableDescriptor = HBaseExecutor.executeAdmin(hbaseCluster.getConnection(), Admin::listTables);
         for (String each : Arrays.stream(hTableDescriptor).map(HTableDescriptor::getNameAsString).collect(Collectors.toList())) {
