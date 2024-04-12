@@ -32,8 +32,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 10202       | 42S02     | %s rules '%s' do not exist in database '%s'.                                        |
 | 10203       | 44000     | %s rules '%s' in database '%s' are still in used.                                   |
 | 10204       | 42S01     | Duplicate %s rule names '%s' in database '%s'.                                      |
-| 13000       | HY004     | Invalid format for actual data node '%s'.                                           |
-| 13001       | HY000     | Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.          |
+| 10300       | HY004     | Invalid format for actual data node '%s'.                                           |
+| 10301       | HY000     | Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.          |
 | 10400       | 44000     | Algorithm '%s.'%s' initialization failed, reason is: %s.                            |
 | 10401       | 44000     | '%s' algorithm on %s is required.                                                   |
 | 10402       | 42S02     | '%s' algorithm '%s' on %s is unregistered.                                          |
@@ -125,7 +125,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 18111       | 08000     | Get binlog position failed by job '%s'.                                        |
 | 18112       | HY000     | Can not find consistency check job of '%s'.                                    |
 | 18113       | HY000     | Uncompleted consistency check job '%s' exists, progress '%s'.                  |
-| 18014       | HY000     | Failed to get DDL for table '%s'.                                              |
+| 18114       | HY000     | Failed to get DDL for table '%s'.                                              |
 | 18200       | HY000     | Before data record is '%s', after data record is '%s'.                         |
 | 18201       | 08000     | Data check table '%s' failed.                                                  |
 | 18202       | 0A000     | Unsupported pipeline database type '%s'.                                       |
