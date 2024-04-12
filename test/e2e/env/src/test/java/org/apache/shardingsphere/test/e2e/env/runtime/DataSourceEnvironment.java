@@ -65,7 +65,7 @@ public final class DataSourceEnvironment {
                 return String.format("jdbc:mysql://%s:%s?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false"
                         + "&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true", host, port);
             case "MariaDB":
-                return String.format("jdbc:mariadb://%s:%s?useSSL=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true",
+                return String.format("jdbc:mysql://%s:%s?useSSL=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true",
                         host, port);
             case "PostgreSQL":
                 return String.format("jdbc:postgresql://%s:%s/?ssl=on&sslmode=prefer", host, port);
@@ -96,7 +96,7 @@ public final class DataSourceEnvironment {
                                 + "&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true",
                         host, port, dataSourceName);
             case "MariaDB":
-                return String.format("jdbc:mariadb://%s:%s/%s?useSSL=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowMultiQueries=true"
+                return String.format("jdbc:mysql://%s:%s/%s?useSSL=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowMultiQueries=true"
                         + "&rewriteBatchedStatements=true", host, port, dataSourceName);
             case "PostgreSQL":
                 return String.format("jdbc:postgresql://%s:%s/%s?ssl=on&sslmode=prefer", host, port, dataSourceName);

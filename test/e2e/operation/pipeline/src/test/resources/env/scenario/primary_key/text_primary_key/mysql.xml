@@ -23,6 +23,6 @@
         `t_unsigned_int` int UNSIGNED NULL,
         PRIMARY KEY ( `order_id` ),
         INDEX ( `user_id` )
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     </create-table-order>
 </command>

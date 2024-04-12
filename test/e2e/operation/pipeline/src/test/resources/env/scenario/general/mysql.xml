@@ -49,7 +49,7 @@
         PRIMARY KEY ( `order_id` ),
         KEY `idx_user_id` (`user_id`),
         KEY `idx_mulit` (`t_mediumint`,`t_unsigned_mediumint`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     </create-table-order>
     
     <create-table-order-item>
@@ -59,7 +59,7 @@
         user_id int NOT NULL,
         status varchar(50) DEFAULT NULL,
         PRIMARY KEY (item_id)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     </create-table-order-item>
     
     <full-insert-order>
