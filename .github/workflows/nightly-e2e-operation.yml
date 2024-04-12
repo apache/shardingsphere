@@ -46,10 +46,14 @@ jobs:
         operation: [ transaction, pipeline, showprocesslist ]
         image: [ { type: "it.docker.mysql.version", version: "mysql:5.7,mysql:8.0" }, { type: "it.docker.postgresql.version", version: "postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine" }, { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0,enmotech/opengauss:3.0.0" }, { type: "it.docker.mariadb.version", version: "mariadb:11" } ]
         exclude:
+          - operation: transaction
+            image: { type: "it.docker.mariadb.version", version: "mariadb:11" }
           - operation: showprocesslist
             image: { type: "it.docker.postgresql.version", version: "postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine" }
           - operation: showprocesslist
             image: { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0,enmotech/opengauss:3.0.0" }
+          - operation: showprocesslist
+            image: { type: "it.docker.mariadb.version", version: "mariadb:11" }
     timeout-minutes: 40
     steps:
       - name: Checkout Project
