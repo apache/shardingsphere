@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,7 @@ import static org.mockito.Mockito.when;
 class HBaseListResultSetTest extends AbstractHBaseQueryResultSetTest {
     
     @Test
-    void assertGetRowData() {
+    void assertGetRowData() throws IOException {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getShowTablesStatement());
         HBaseQueryResultSet resultSet = new HBaseListResultSet();
         ShowTablesStatementContext context = mock(ShowTablesStatementContext.class);
@@ -51,7 +52,7 @@ class HBaseListResultSetTest extends AbstractHBaseQueryResultSetTest {
     }
     
     @Test
-    void assertGetRowDataFromRemoteHBaseCluster() {
+    void assertGetRowDataFromRemoteHBaseCluster() throws IOException {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("show /*+ hbase */ tables from cluster_lj");
         HBaseQueryResultSet resultSet = new HBaseListResultSet();
         ShowTablesStatementContext context = mock(ShowTablesStatementContext.class);
@@ -66,7 +67,7 @@ class HBaseListResultSetTest extends AbstractHBaseQueryResultSetTest {
     }
     
     @Test
-    void assertGetRowDataByLike() {
+    void assertGetRowDataByLike() throws IOException {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("show /*+ hbase */ tables  like 't_test' ");
         HBaseQueryResultSet resultSet = new HBaseListResultSet();
         ShowTablesStatementContext context = mock(ShowTablesStatementContext.class);
