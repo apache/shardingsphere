@@ -17,15 +17,6 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Collections;
-import java.util.Optional;
-
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -39,7 +30,16 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
-public class ShardingMetaDataReviseEntryTest {
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+class ShardingMetaDataReviseEntryTest {
     
     private final ShardingMetaDataReviseEntry reviseEntry = new ShardingMetaDataReviseEntry();
     
@@ -80,17 +80,16 @@ public class ShardingMetaDataReviseEntryTest {
         assertThat(schemaTableAggregationReviser.get().getClass(), is(ShardingSchemaTableAggregationReviser.class));
     }
     
-    private static ShardingRule createShardingRule() {
+    private ShardingRule createShardingRule() {
         ShardingRuleConfiguration ruleConfig = createShardingRuleConfiguration();
         InstanceContext instanceContext = mock(InstanceContext.class);
         when(instanceContext.getWorkerId()).thenReturn(0);
         return new ShardingRule(ruleConfig, Collections.singletonMap("ds", new MockedDataSource()), instanceContext);
     }
     
-    private static ShardingRuleConfiguration createShardingRuleConfiguration() {
+    private ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds.t_order${0..1}");
-        result.getTables().add(tableRuleConfig);
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order${0..1}"));
         return result;
     }
 }
