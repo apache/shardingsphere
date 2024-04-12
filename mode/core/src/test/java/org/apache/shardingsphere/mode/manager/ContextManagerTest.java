@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.manager;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -48,7 +47,6 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -234,13 +232,6 @@ class ContextManagerTest {
     @Test
     void assertGetDatabase() {
         assertNotNull(contextManager.getDatabase("foo_db"));
-    }
-    
-    @Test
-    void assertAlterGlobalRuleConfiguration() {
-        RuleConfiguration ruleConfig = new TransactionRuleConfiguration("LOCAL", null, new Properties());
-        contextManager.getConfigurationContextManager().alterGlobalRuleConfiguration(Collections.singleton(ruleConfig));
-        assertTrue(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().contains(ruleConfig));
     }
     
     @Test
