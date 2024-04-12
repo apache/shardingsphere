@@ -163,11 +163,11 @@ class RALE2EIT {
         int rowCount = 0;
         ResultSetMetaData actualMetaData = actual.getMetaData();
         while (actual.next()) {
-            assertTrue(rowCount < expected.size(), "Size of actual result set is different with size of expected dat set rows.");
+            assertTrue(rowCount < expected.size(), "Size of actual result set is different with size of expected data set rows.");
             assertRow(actual, notAssertionColumns, actualMetaData, expected.get(rowCount));
             rowCount++;
         }
-        assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
+        assertThat("Size of actual result set is different with size of expected data set rows.", rowCount, is(expected.size()));
     }
     
     private void assertRow(final ResultSet actual, final Collection<String> notAssertionColumns, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
