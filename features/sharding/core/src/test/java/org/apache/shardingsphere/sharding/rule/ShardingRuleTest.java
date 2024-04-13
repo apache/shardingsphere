@@ -245,7 +245,7 @@ class ShardingRuleTest {
     }
     
     @Test
-    void assertGetBindingTableRuleForNotConfig() {
+    void assertGetBindingTableRuleForNotConfiguration() {
         assertFalse(createMinimumShardingRule().findBindingTableRule("logic_Table").isPresent());
     }
     

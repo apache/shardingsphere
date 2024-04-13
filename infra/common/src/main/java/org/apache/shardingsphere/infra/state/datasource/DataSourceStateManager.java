@@ -96,7 +96,7 @@ public final class DataSourceStateManager {
      * Get enabled data sources.
      *
      * @param databaseName database name
-     * @param databaseConfig database config
+     * @param databaseConfig database configuration
      * @return enabled data sources
      */
     public Map<String, DataSource> getEnabledDataSources(final String databaseName, final DatabaseConfiguration databaseConfig) {
