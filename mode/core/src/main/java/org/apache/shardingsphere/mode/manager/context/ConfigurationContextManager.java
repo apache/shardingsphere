@@ -373,7 +373,7 @@ public final class ConfigurationContextManager {
     }
     
     // Optimize string comparison rule type.
-    @SuppressWarnings({"rawtypes"})
+    @SuppressWarnings("rawtypes")
     @SneakyThrows(Exception.class)
     private void closeStaleTransactionRule(final RuleConfiguration ruleConfig) {
         Map<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> yamlConfigs =
