@@ -26,6 +26,6 @@ class ServiceProviderNotFoundExceptionTest {
     
     @Test
     void assertGetMessageWithClassAndType() {
-        assertThat(new ServiceProviderNotFoundException(Object.class, "Foo").getMessage(), is("SPI-00001: No implementation class load from SPI `java.lang.Object` with type `Foo`."));
+        assertThat(new ServiceProviderNotFoundException(Object.class, "Foo").getMessage(), is("SPI-00001: No implementation class load from SPI 'java.lang.Object' with type 'Foo'."));
     }
 }

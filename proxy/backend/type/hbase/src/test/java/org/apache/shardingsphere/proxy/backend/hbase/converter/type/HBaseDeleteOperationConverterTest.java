@@ -37,6 +37,7 @@ import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLSta
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.Map;
@@ -51,7 +52,7 @@ import static org.mockito.Mockito.when;
 class HBaseDeleteOperationConverterTest {
     
     @Test
-    void assertConvert() {
+    void assertConvert() throws SQLException {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getDeleteStatement());
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(sqlStatement, Collections.emptyList());
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
@@ -61,7 +62,7 @@ class HBaseDeleteOperationConverterTest {
     }
     
     @Test
-    void assertConvertWithIn() {
+    void assertConvertWithIn() throws SQLException {
         String sql = " delete /*+ hbase */ from t_test_order where rowKey in ('2', '1')";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(sqlStatement, Collections.emptyList());

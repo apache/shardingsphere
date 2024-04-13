@@ -24,7 +24,7 @@ import java.sql.SQLException;
 /**
  * Database server loading exception.
  */
-public final class DatabaseServerLoadingServerException extends ShardingSphereServerException {
+public final class DatabaseServerLoadingException extends ShardingSphereServerException {
     
     private static final long serialVersionUID = -4016611838309960905L;
     
@@ -32,7 +32,7 @@ public final class DatabaseServerLoadingServerException extends ShardingSphereSe
     
     private static final int ERROR_CODE = 1;
     
-    public DatabaseServerLoadingServerException(final SQLException cause) {
+    public DatabaseServerLoadingException(final SQLException cause) {
         super(ERROR_CATEGORY, ERROR_CODE, "Load database server info failed.", cause);
     }
 }
