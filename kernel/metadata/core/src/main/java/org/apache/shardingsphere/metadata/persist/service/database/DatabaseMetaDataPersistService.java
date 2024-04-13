@@ -47,9 +47,9 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
     
     public DatabaseMetaDataPersistService(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
         this.repository = repository;
-        this.tableMetaDataPersistService = new TableMetaDataPersistService(repository);
-        this.viewMetaDataPersistService = new ViewMetaDataPersistService(repository);
         this.metaDataVersionPersistService = metaDataVersionPersistService;
+        this.tableMetaDataPersistService = new TableMetaDataPersistService(repository, metaDataVersionPersistService);
+        this.viewMetaDataPersistService = new ViewMetaDataPersistService(repository, metaDataVersionPersistService);
     }
     
     @Override
@@ -83,8 +83,7 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
             addSchema(databaseName, schemaName);
         }
         Map<String, ShardingSphereTable> currentTables = tableMetaDataPersistService.load(databaseName, schemaName);
-        metaDataVersionPersistService.switchActiveVersion(tableMetaDataPersistService
-                .persistSchemaMetaData(databaseName, schemaName, GenericSchemaManager.getToBeAddedTables(schema.getTables(), currentTables)));
+        tableMetaDataPersistService.persist(databaseName, schemaName, GenericSchemaManager.getToBeAddedTables(schema.getTables(), currentTables));
         GenericSchemaManager.getToBeDeletedTables(schema.getTables(), currentTables).forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
     }
     
@@ -93,12 +92,12 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
         if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
             addSchema(databaseName, schemaName);
         }
-        metaDataVersionPersistService.switchActiveVersion(tableMetaDataPersistService.persistSchemaMetaData(databaseName, schemaName, schema.getTables()));
+        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
     }
     
     @Override
     public void persistByDropConfiguration(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
-        metaDataVersionPersistService.switchActiveVersion(tableMetaDataPersistService.persistSchemaMetaData(databaseName, schemaName, schema.getTables()));
+        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
     }
     
     @Override
