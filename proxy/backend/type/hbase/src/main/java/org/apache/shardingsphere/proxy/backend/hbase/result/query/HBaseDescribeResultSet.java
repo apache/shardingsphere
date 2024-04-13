@@ -26,7 +26,7 @@ import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 
-import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,13 +40,8 @@ public final class HBaseDescribeResultSet implements HBaseQueryResultSet {
     
     private Iterator<HTableDescriptor> iterator;
     
-    /**
-     * Init data.
-     *
-     * @param sqlStatementContext SQL statement context
-     */
     @Override
-    public void init(final SQLStatementContext sqlStatementContext) throws IOException {
+    public void init(final SQLStatementContext sqlStatementContext) throws SQLException {
         ShowCreateTableStatementContext statementContext = (ShowCreateTableStatementContext) sqlStatementContext;
         String tableName = statementContext.getTablesContext().getTableNames().iterator().next();
         boolean isExists = HBaseExecutor.executeAdmin(HBaseContext.getInstance().getConnection(tableName), admin -> admin.tableExists(TableName.valueOf(tableName)));

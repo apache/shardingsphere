@@ -27,10 +27,11 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.type.HBaseDeleteOperationConverter;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.type.HBaseInsertOperationConverter;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.type.HBaseRegionReloadOperationConverter;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.type.HBaseSelectOperationConverter;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.type.HBaseUpdateOperationConverter;
-import org.apache.shardingsphere.proxy.backend.hbase.converter.type.HBaseRegionReloadOperationConverter;
-import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
+
+import java.sql.SQLException;
 
 /**
  * HBase operation converter factory.
@@ -43,9 +44,9 @@ public final class HBaseOperationConverterFactory {
      *
      * @param sqlStatementContext SQL statement context
      * @return instance of converter
-     * @throws HBaseOperationException HBase operation exception
+     * @throws SQLException SQL exception
      */
-    public static HBaseOperationConverter newInstance(final SQLStatementContext sqlStatementContext) {
+    public static HBaseOperationConverter newInstance(final SQLStatementContext sqlStatementContext) throws SQLException {
         if (sqlStatementContext instanceof SelectStatementContext) {
             return new HBaseSelectOperationConverter(sqlStatementContext);
         }
@@ -61,6 +62,6 @@ public final class HBaseOperationConverterFactory {
         if (sqlStatementContext instanceof FlushStatementContext) {
             return new HBaseRegionReloadOperationConverter(sqlStatementContext);
         }
-        throw new HBaseOperationException("Can not find HBase converter.");
+        throw new SQLException("Can not find HBase converter.");
     }
 }

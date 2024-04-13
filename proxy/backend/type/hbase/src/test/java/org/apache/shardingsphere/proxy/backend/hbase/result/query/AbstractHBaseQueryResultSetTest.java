@@ -38,6 +38,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -55,7 +56,7 @@ abstract class AbstractHBaseQueryResultSetTest {
     private Admin admin;
     
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() throws IOException, SQLException {
         Properties props = PropertiesBuilder.build(new Property(HBasePropertyKey.WARM_UP_THREAD_NUM.getKey(), String.valueOf(1)));
         HBaseContext.getInstance().setProps(new HBaseProperties(props));
         HTableDescriptor[] tableDescriptors = createHTableDescriptors();
@@ -84,7 +85,7 @@ abstract class AbstractHBaseQueryResultSetTest {
     }
     
     @AfterEach
-    void tearDown() {
+    void tearDown() throws SQLException {
         HBaseContext.getInstance().close();
     }
 }

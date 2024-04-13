@@ -37,6 +37,7 @@ import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLSta
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,7 +53,7 @@ import static org.mockito.Mockito.when;
 class HBaseUpdateOperationConverterTest {
     
     @Test
-    void assertConvert() {
+    void assertConvert() throws SQLException {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getUpdateStatement());
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(sqlStatement, Collections.emptyList());
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
@@ -62,7 +63,7 @@ class HBaseUpdateOperationConverterTest {
     }
     
     @Test
-    void assertConvertWithIn() {
+    void assertConvertWithIn() throws SQLException {
         String sql = " update /*+ hbase */ t_test_order set age = 10 where rowKey in (1, '2')";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(sqlStatement, Collections.emptyList());
