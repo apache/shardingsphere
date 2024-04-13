@@ -182,7 +182,7 @@ class ZookeeperRepositoryTest {
     }
     
     @Test
-    void assertBuildCuratorClientWithCustomConfig() {
+    void assertBuildCuratorClientWithCustomConfiguration() {
         Properties props = PropertiesBuilder.build(
                 new Property(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000"),
                 new Property(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1"),

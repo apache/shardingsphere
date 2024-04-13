@@ -62,7 +62,7 @@ public final class MigrationJob extends AbstractSeparablePipelineJob<MigrationJo
     @Override
     protected MigrationJobItemContext buildJobItemContext(final MigrationJobConfiguration jobConfig,
                                                           final int shardingItem, final TransmissionJobItemProgress jobItemProgress, final TransmissionProcessContext jobProcessContext) {
-        MigrationTaskConfiguration taskConfig = buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getProcessConfig());
+        MigrationTaskConfiguration taskConfig = buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getProcessConfiguration());
         return new MigrationJobItemContext(jobConfig, shardingItem, jobItemProgress, jobProcessContext, taskConfig, getJobRunnerManager().getDataSourceManager());
     }
     

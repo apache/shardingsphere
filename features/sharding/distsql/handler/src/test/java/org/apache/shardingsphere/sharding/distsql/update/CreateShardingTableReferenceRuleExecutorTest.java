@@ -66,7 +66,7 @@ class CreateShardingTableReferenceRuleExecutorTest {
     @Test
     void assertCheckSQLStatementWithDuplicateTables() {
         ShardingRule rule = mock(ShardingRule.class);
-        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfig());
+        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfiguration());
         executor.setRule(rule);
         assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "foo", "t_order,t_order_item")));
     }
@@ -74,7 +74,7 @@ class CreateShardingTableReferenceRuleExecutorTest {
     @Test
     void assertUpdateWithIfNotExists() {
         CreateShardingTableReferenceRuleStatement sqlStatement = createSQLStatement(true, "foo", "t_order,t_order_item");
-        ShardingRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
+        ShardingRuleConfiguration currentRuleConfig = getCurrentRuleConfiguration();
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
@@ -84,7 +84,7 @@ class CreateShardingTableReferenceRuleExecutorTest {
         assertThat(referenceRuleConfigs.size(), is(0));
     }
     
-    private ShardingRuleConfiguration getCurrentRuleConfig() {
+    private ShardingRuleConfiguration getCurrentRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..2}"));
         result.getTables().add(new ShardingTableRuleConfiguration("t_order_item", "ds.t_order_item_${0..2}"));

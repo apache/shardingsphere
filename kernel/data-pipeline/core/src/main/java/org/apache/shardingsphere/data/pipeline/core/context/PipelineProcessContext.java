@@ -29,5 +29,5 @@ public interface PipelineProcessContext extends AutoCloseable {
      *
      * @return pipeline process config
      */
-    PipelineProcessConfiguration getProcessConfig();
+    PipelineProcessConfiguration getProcessConfiguration();
 }

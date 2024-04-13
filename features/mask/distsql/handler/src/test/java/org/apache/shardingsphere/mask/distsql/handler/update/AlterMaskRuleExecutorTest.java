@@ -63,7 +63,7 @@ class AlterMaskRuleExecutorTest {
     @Test
     void assertCheckBeforeUpdateWithoutToBeAlteredAlgorithm() {
         MaskRule rule = mock(MaskRule.class);
-        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfig());
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
         assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("INVALID_TYPE")));
     }
@@ -74,14 +74,14 @@ class AlterMaskRuleExecutorTest {
         MaskRuleSegment ruleSegment = new MaskRuleSegment("t_mask", Collections.singleton(columnSegment));
         AlterMaskRuleStatement statement = new AlterMaskRuleStatement(Collections.singleton(ruleSegment));
         MaskRule rule = mock(MaskRule.class);
-        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfig());
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
         assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(statement));
     }
     
     @Test
     void assertUpdate() {
-        MaskRuleConfiguration currentRuleConfig = createCurrentRuleConfig();
+        MaskRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         MaskColumnSegment columnSegment = new MaskColumnSegment("order_id",
                 new AlgorithmSegment("MD5", new Properties()));
         MaskRuleSegment ruleSegment = new MaskRuleSegment("t_order", Collections.singleton(columnSegment));
@@ -104,7 +104,7 @@ class AlterMaskRuleExecutorTest {
         return new AlterMaskRuleStatement(Collections.singleton(ruleSegment));
     }
     
-    private MaskRuleConfiguration createCurrentRuleConfig() {
+    private MaskRuleConfiguration createCurrentRuleConfiguration() {
         Collection<MaskTableRuleConfiguration> tableRuleConfigs = new LinkedList<>();
         tableRuleConfigs.add(new MaskTableRuleConfiguration("t_order", Collections.emptyList()));
         return new MaskRuleConfiguration(tableRuleConfigs, new HashMap<>());
