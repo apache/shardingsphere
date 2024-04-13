@@ -21,12 +21,13 @@ import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderCon
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 class WhereSegmentBinderTest {
@@ -38,8 +39,8 @@ class WhereSegmentBinderTest {
         Map<String, TableSegmentBinderContext> tableBinderContexts = new HashMap<>();
         Map<String, TableSegmentBinderContext> outerTableBinderContexts = new HashMap<>();
         WhereSegment actualWhereSegment = WhereSegmentBinder.bind(expectedWhereSegment, sqlStatementBinderContext, tableBinderContexts, outerTableBinderContexts);
-        Assertions.assertEquals(expectedWhereSegment.getStopIndex(), actualWhereSegment.getStopIndex());
-        Assertions.assertEquals(expectedWhereSegment.getStartIndex(), actualWhereSegment.getStartIndex());
-        Assertions.assertEquals(expectedWhereSegment.getExpr(), actualWhereSegment.getExpr());
+        assertThat(actualWhereSegment.getStopIndex(), is(expectedWhereSegment.getStopIndex()));
+        assertThat(actualWhereSegment.getStartIndex(), is(expectedWhereSegment.getStartIndex()));
+        assertThat(actualWhereSegment.getExpr(), is(expectedWhereSegment.getExpr()));
     }
 }
