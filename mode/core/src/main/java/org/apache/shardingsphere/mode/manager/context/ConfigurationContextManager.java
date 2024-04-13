@@ -38,6 +38,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
@@ -371,16 +373,20 @@ public final class ConfigurationContextManager {
     }
     
     // Optimize string comparison rule type.
+    @SuppressWarnings({"rawtypes"})
     @SneakyThrows(Exception.class)
     private void closeStaleTransactionRule(final RuleConfiguration ruleConfig) {
-        if (!"transaction".equalsIgnoreCase(ruleConfig.getClass().getSimpleName())) {
-            return;
+        Map<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> yamlConfigs =
+                new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singletonList(ruleConfig));
+        for (Entry<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+            if ("transaction".equalsIgnoreCase(entry.getValue().getRuleTagName())) {
+                Optional<TransactionRule> transactionRule = metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
+                if (!transactionRule.isPresent()) {
+                    return;
+                }
+                ((AutoCloseable) transactionRule.get()).close();
+            }
         }
-        Optional<TransactionRule> transactionRule = metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-        if (!transactionRule.isPresent()) {
-            return;
-        }
-        ((AutoCloseable) transactionRule.get()).close();
     }
     
     /**
