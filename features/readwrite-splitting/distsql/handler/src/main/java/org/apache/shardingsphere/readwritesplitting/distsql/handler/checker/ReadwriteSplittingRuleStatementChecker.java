@@ -42,11 +42,9 @@ import org.apache.shardingsphere.readwritesplitting.exception.actual.DuplicateRe
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -160,30 +158,20 @@ public final class ReadwriteSplittingRuleStatementChecker {
     
     private static void checkDuplicatedDataSourceNames(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments,
                                                        final ReadwriteSplittingRuleConfiguration currentRuleConfig, final boolean isCreating) {
-        Map<String, Collection<String>> existedWriteDataSourceNames = new HashMap<>();
-        Map<String, Collection<String>> existedReadDataSourceNames = new HashMap<>();
+        Collection<String> existedWriteDataSourceNames = new HashSet<>();
+        Collection<String> existedReadDataSourceNames = new HashSet<>();
         if (null != currentRuleConfig) {
             Collection<String> toBeAlteredRuleNames = isCreating ? Collections.emptySet() : getToBeAlteredRuleNames(segments);
             for (ReadwriteSplittingDataSourceRuleConfiguration each : currentRuleConfig.getDataSources()) {
                 if (toBeAlteredRuleNames.contains(each.getName())) {
                     continue;
                 }
-                if (!existedWriteDataSourceNames.containsKey(each.getName())) {
-                    existedWriteDataSourceNames.put(each.getName(), new HashSet<>());
-                }
-                if (!existedReadDataSourceNames.containsKey(each.getName())) {
-                    existedReadDataSourceNames.put(each.getName(), new HashSet<>());
-                }
-                existedWriteDataSourceNames.get(each.getName()).add(each.getWriteDataSourceName());
-                existedReadDataSourceNames.get(each.getName()).addAll(each.getReadDataSourceNames());
+                existedWriteDataSourceNames.add(each.getWriteDataSourceName());
+                existedReadDataSourceNames.addAll(each.getReadDataSourceNames());
             }
         }
-        for (Entry<String, Collection<String>> entry : existedWriteDataSourceNames.entrySet()) {
-            checkDuplicateWriteDataSourceNames(segments, databaseName, entry.getKey(), entry.getValue());
-        }
-        for (Entry<String, Collection<String>> entry : existedReadDataSourceNames.entrySet()) {
-            checkDuplicateReadDataSourceNames(segments, databaseName, entry.getKey(), entry.getValue());
-        }
+        checkDuplicateWriteDataSourceNames(segments, databaseName, existedWriteDataSourceNames);
+        checkDuplicateReadDataSourceNames(segments, databaseName, existedReadDataSourceNames);
     }
     
     private static Collection<String> getToBeAlteredRuleNames(final Collection<ReadwriteSplittingRuleSegment> segments) {
@@ -191,31 +179,31 @@ public final class ReadwriteSplittingRuleStatementChecker {
     }
     
     private static void checkDuplicateWriteDataSourceNames(final Collection<ReadwriteSplittingRuleSegment> segments, final String databaseName,
-                                                           final String dataSourceRuleName, final Collection<String> writeDataSourceNames) {
+                                                           final Collection<String> writeDataSourceNames) {
         for (ReadwriteSplittingRuleSegment each : segments) {
             if (Strings.isNullOrEmpty(each.getWriteDataSource())) {
                 continue;
             }
             String writeDataSource = each.getWriteDataSource();
             ShardingSpherePreconditions.checkState(writeDataSourceNames.add(writeDataSource), () -> new DuplicateReadwriteSplittingActualDataSourceException(
-                    ReadwriteSplittingDataSourceType.WRITE, writeDataSource, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, dataSourceRuleName)));
+                    ReadwriteSplittingDataSourceType.WRITE, writeDataSource, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, "")));
         }
     }
     
     private static void checkDuplicateReadDataSourceNames(final Collection<ReadwriteSplittingRuleSegment> segments, final String databaseName,
-                                                          final String dataSourceRuleName, final Collection<String> readDataSourceNames) {
+                                                          final Collection<String> readDataSourceNames) {
         for (ReadwriteSplittingRuleSegment each : segments) {
             if (null != each.getReadDataSources()) {
-                checkDuplicateReadDataSourceNames(each, databaseName, dataSourceRuleName, readDataSourceNames);
+                checkDuplicateReadDataSourceNames(each, databaseName, readDataSourceNames);
             }
         }
     }
     
     private static void checkDuplicateReadDataSourceNames(final ReadwriteSplittingRuleSegment segment, final String databaseName,
-                                                          final String dataSourceRuleName, final Collection<String> readDataSourceNames) {
+                                                          final Collection<String> readDataSourceNames) {
         for (String each : segment.getReadDataSources()) {
             ShardingSpherePreconditions.checkState(readDataSourceNames.add(each), () -> new DuplicateReadwriteSplittingActualDataSourceException(
-                    ReadwriteSplittingDataSourceType.READ, each, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, dataSourceRuleName)));
+                    ReadwriteSplittingDataSourceType.READ, each, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, "")));
         }
     }
     
