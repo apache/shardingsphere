@@ -33,7 +33,7 @@ import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.exception.DataSourceNameNotExistedException;
 import org.apache.shardingsphere.readwritesplitting.exception.DuplicateDataSourceException;
-import org.apache.shardingsphere.readwritesplitting.exception.MissingRequiredDataSourceNameException;
+import org.apache.shardingsphere.readwritesplitting.exception.MissingRequiredReadwriteSplittingDataSourceRuleNameException;
 import org.apache.shardingsphere.readwritesplitting.exception.MissingRequiredReadDataSourceNamesException;
 import org.apache.shardingsphere.readwritesplitting.exception.MissingRequiredWriteDataSourceNameException;
 
@@ -61,7 +61,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
         Collection<String> writeDataSourceNames = new HashSet<>();
         Collection<String> readDataSourceNames = new HashSet<>();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : configs) {
-            ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(each.getName()), () -> new MissingRequiredDataSourceNameException(databaseName));
+            ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(each.getName()), () -> new MissingRequiredReadwriteSplittingDataSourceRuleNameException(databaseName));
             checkDataSources(databaseName, dataSourceMap, each, writeDataSourceNames, readDataSourceNames, builtRules);
         }
     }
