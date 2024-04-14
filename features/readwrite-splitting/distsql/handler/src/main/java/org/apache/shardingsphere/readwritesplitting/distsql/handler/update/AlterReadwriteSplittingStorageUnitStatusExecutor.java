@@ -21,16 +21,18 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.InvalidStorageUnitStatusException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.storage.service.StorageNodeStatusService;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.InvalidStorageUnitStatusException;
-import org.apache.shardingsphere.readwritesplitting.exception.MissingRequiredReadStorageUnitException;
+import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingStorageUnitStatusStatement;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
+import org.apache.shardingsphere.readwritesplitting.exception.actual.ReadwriteSplittingActualDataSourceNotFoundException;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
@@ -61,7 +63,8 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor
         Optional<ReadwriteSplittingDataSourceRule> dataSourceRule = rule.getDataSourceRules().values().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).findAny();
         ShardingSpherePreconditions.checkState(dataSourceRule.isPresent(), () -> new MissingRequiredRuleException("Readwrite-splitting", database.getName(), sqlStatement.getRuleName()));
         ShardingSpherePreconditions.checkState(dataSourceRule.get().getReadwriteSplittingGroup().getReadDataSources().contains(sqlStatement.getStorageUnitName()),
-                () -> new MissingRequiredReadStorageUnitException(dataSourceRule.get().getName(), sqlStatement.getStorageUnitName()));
+                () -> new ReadwriteSplittingActualDataSourceNotFoundException(
+                        ReadwriteSplittingDataSourceType.READ, sqlStatement.getStorageUnitName(), new ReadwriteSplittingRuleExceptionIdentifier(database.getName(), dataSourceRule.get().getName())));
         if (sqlStatement.isEnable()) {
             ShardingSpherePreconditions.checkState(dataSourceRule.get().getDisabledDataSourceNames().contains(sqlStatement.getStorageUnitName()),
                     () -> new InvalidStorageUnitStatusException("storage unit is not disabled"));

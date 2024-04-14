@@ -17,16 +17,20 @@
 
 package org.apache.shardingsphere.readwritesplitting.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Missing required data source name exception.
+ * Readwrite-splitting rule exception identifier.
  */
-public final class MissingRequiredDataSourceNameException extends ReadwriteSplittingSQLException {
+@RequiredArgsConstructor
+public final class ReadwriteSplittingRuleExceptionIdentifier {
     
-    private static final long serialVersionUID = 8006957930250488016L;
+    private final String database;
     
-    public MissingRequiredDataSourceNameException(final String databaseName) {
-        super(XOpenSQLState.NOT_FOUND, 0, "Data source name is required in database '%s'.", databaseName);
+    private final String dataSourceRule;
+    
+    @Override
+    public String toString() {
+        return String.format("database.data_source_rule: '%s'.'%s'", database, dataSourceRule);
     }
 }

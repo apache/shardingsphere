@@ -29,7 +29,7 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.CreateReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.readwritesplitting.exception.DuplicateDataSourceException;
+import org.apache.shardingsphere.readwritesplitting.exception.actual.DuplicateReadwriteSplittingActualDataSourceException;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -108,7 +108,7 @@ class CreateReadwriteSplittingRuleExecutorTest {
     
     @Test
     void assertCheckSQLStatementWithDuplicateWriteResourceNamesInStatement() {
-        assertThrows(DuplicateDataSourceException.class,
+        assertThrows(DuplicateReadwriteSplittingActualDataSourceException.class,
                 () -> executor.checkBeforeUpdate(createSQLStatementWithDuplicateWriteResourceNames("write_ds_0", "write_ds_1", "TEST")));
     }
     
@@ -117,13 +117,14 @@ class CreateReadwriteSplittingRuleExecutorTest {
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
-        assertThrows(DuplicateDataSourceException.class,
+        assertThrows(DuplicateReadwriteSplittingActualDataSourceException.class,
                 () -> executor.checkBeforeUpdate(createSQLStatement("readwrite_ds_1", "ds_write", Arrays.asList("read_ds_0", "read_ds_1"), "TEST")));
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateReadResourceNamesInStatement() {
-        assertThrows(DuplicateDataSourceException.class, () -> executor.checkBeforeUpdate(createSQLStatementWithDuplicateReadResourceNames("write_ds_0", "write_ds_1", "TEST")));
+        assertThrows(DuplicateReadwriteSplittingActualDataSourceException.class,
+                () -> executor.checkBeforeUpdate(createSQLStatementWithDuplicateReadResourceNames("write_ds_0", "write_ds_1", "TEST")));
     }
     
     @Test
@@ -131,7 +132,7 @@ class CreateReadwriteSplittingRuleExecutorTest {
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         executor.setRule(rule);
-        assertThrows(DuplicateDataSourceException.class,
+        assertThrows(DuplicateReadwriteSplittingActualDataSourceException.class,
                 () -> executor.checkBeforeUpdate(createSQLStatement("readwrite_ds_1", "write_ds_1", Arrays.asList("read_ds_0", "read_ds_1"), "TEST")));
     }
     

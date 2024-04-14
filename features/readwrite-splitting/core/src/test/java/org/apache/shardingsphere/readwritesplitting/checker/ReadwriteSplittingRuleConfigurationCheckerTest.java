@@ -26,9 +26,9 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMappe
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.exception.DataSourceNameNotExistedException;
-import org.apache.shardingsphere.readwritesplitting.exception.DuplicateDataSourceException;
-import org.apache.shardingsphere.readwritesplitting.exception.MissingRequiredWriteDataSourceNameException;
+import org.apache.shardingsphere.readwritesplitting.exception.actual.ReadwriteSplittingActualDataSourceNotFoundException;
+import org.apache.shardingsphere.readwritesplitting.exception.actual.DuplicateReadwriteSplittingActualDataSourceException;
+import org.apache.shardingsphere.readwritesplitting.exception.actual.MissingRequiredReadwriteSplittingActualDataSourceNameException;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -54,7 +54,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
     void assertInvalidCheck() {
         ReadwriteSplittingRuleConfiguration config = createInvalidConfiguration();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        assertThrows(MissingRequiredWriteDataSourceNameException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
+        assertThrows(MissingRequiredReadwriteSplittingActualDataSourceNameException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
     }
     
     private ReadwriteSplittingRuleConfiguration createInvalidConfiguration() {
@@ -73,7 +73,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
                 "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1")), createDataSourceRuleConfiguration("write_ds_2", Arrays.asList("read_ds_0", "read_ds_1")));
         when(config.getDataSources()).thenReturn(configs);
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        assertThrows(DataSourceNameNotExistedException.class, () -> checker.check("test", config, mockDataSources(), Collections.emptyList()));
+        assertThrows(ReadwriteSplittingActualDataSourceNotFoundException.class, () -> checker.check("test", config, mockDataSources(), Collections.emptyList()));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -84,7 +84,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
                 "write_ds_0", Arrays.asList("read_ds_0", "read_ds_0")), createDataSourceRuleConfiguration("write_ds_1", Arrays.asList("read_ds_0", "read_ds_0")));
         when(config.getDataSources()).thenReturn(configs);
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        assertThrows(DuplicateDataSourceException.class, () -> checker.check("test", config, mockDataSources(), Collections.emptyList()));
+        assertThrows(DuplicateReadwriteSplittingActualDataSourceException.class, () -> checker.check("test", config, mockDataSources(), Collections.emptyList()));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

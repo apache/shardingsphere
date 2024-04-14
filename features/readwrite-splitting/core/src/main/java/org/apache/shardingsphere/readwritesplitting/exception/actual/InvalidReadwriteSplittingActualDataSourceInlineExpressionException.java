@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.exception;
+package org.apache.shardingsphere.readwritesplitting.exception.actual;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
- * Duplicate write data source exception.
+ * Invalid readwrite-splitting actual data source inline expression exception.
  */
-public final class DuplicateDataSourceException extends ReadwriteSplittingSQLException {
+public final class InvalidReadwriteSplittingActualDataSourceInlineExpressionException extends ReadwriteSplittingSQLException {
     
-    private static final long serialVersionUID = -58671655670347084L;
+    private static final long serialVersionUID = 87659916563551964L;
     
-    public DuplicateDataSourceException(final ReadwriteSplittingDataSourceType dataSourceType, final String dataSourceName, final String databaseName) {
-        super(XOpenSQLState.DUPLICATE, 3, "Duplicated %s data source '%s' in database '%s'.", dataSourceType, dataSourceName, databaseName);
+    public InvalidReadwriteSplittingActualDataSourceInlineExpressionException(final ReadwriteSplittingDataSourceType dataSourceType,
+                                                                              final ReadwriteSplittingRuleExceptionIdentifier exceptionIdentifier) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Readwrite-splitting %s data source inline expression error in %s.", dataSourceType, exceptionIdentifier);
     }
 }

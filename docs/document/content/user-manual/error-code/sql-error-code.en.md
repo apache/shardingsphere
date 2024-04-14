@@ -193,15 +193,13 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Readwrite-splitting
 
-| Vendor Code | SQL State | Reason                                                |
-|-------------|-----------|-------------------------------------------------------|
-| 20200       | 42S02     | Data source name is required in database '%s'.        |
-| 20201       | 42S02     | Write data source name is required in database '%s'.  |
-| 20202       | 42S02     | Read data source names is required in database '%s'.  |
-| 20203       | 44000     | Duplicated %s data source '%s' in database '%s'.      |
-| 20204       | 42S02     | %s data source name '%s' not in database '%s'.        |
-| 20205       | 44000     | %s data source names size error on inline expression. |
-| 20210       | 42S02     | Read storage unit '%s' does not exist in rule '%s'.   |
+| Vendor Code | SQL State | Reason                                                                      |
+|-------------|-----------|-----------------------------------------------------------------------------|
+| 20200       | 42S02     | Readwrite-splitting data source rule name is required in database '%s'.     |
+| 20201       | 42S02     | Readwrite-splitting [READ/WRITE] data source name is required in %s.        |
+| 20202       | 42S02     | Can not find readwrite-splitting [READ/WRITE] data source '%s' in %s.       |
+| 20203       | 42S01     | Readwrite-splitting [READ/WRITE] data source '%s' is duplicated in %s.      |
+| 20204       | 44000     | Readwrite-splitting [READ/WRITE] data source inline expression error in %s. |
 
 ### SQL Dialect Translator
 
