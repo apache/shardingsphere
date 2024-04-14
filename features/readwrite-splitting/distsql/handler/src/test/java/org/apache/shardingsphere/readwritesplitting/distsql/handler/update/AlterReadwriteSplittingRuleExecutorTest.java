@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.exception.DuplicateDataSourceException;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -99,7 +99,7 @@ class AlterReadwriteSplittingRuleExecutorTest {
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfigurationWithMultipleRules());
         executor.setRule(rule);
-        assertThrows(InvalidRuleConfigurationException.class,
+        assertThrows(DuplicateDataSourceException.class,
                 () -> executor.checkBeforeUpdate(createSQLStatementWithDuplicateWriteResourceNames("readwrite_ds_0", "readwrite_ds_1", "TEST")));
     }
     
@@ -110,7 +110,7 @@ class AlterReadwriteSplittingRuleExecutorTest {
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfigurationWithMultipleRules());
         executor.setRule(rule);
-        assertThrows(InvalidRuleConfigurationException.class,
+        assertThrows(DuplicateDataSourceException.class,
                 () -> executor.checkBeforeUpdate(
                         createSQLStatement("readwrite_ds_0", "ds_write_1", Arrays.asList("read_ds_0", "read_ds_1"), "TEST")));
     }
@@ -122,7 +122,7 @@ class AlterReadwriteSplittingRuleExecutorTest {
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfigurationWithMultipleRules());
         executor.setRule(rule);
-        assertThrows(InvalidRuleConfigurationException.class,
+        assertThrows(DuplicateDataSourceException.class,
                 () -> executor.checkBeforeUpdate(createSQLStatementWithDuplicateReadResourceNames("readwrite_ds_0", "readwrite_ds_1", "TEST")));
     }
     
@@ -133,7 +133,7 @@ class AlterReadwriteSplittingRuleExecutorTest {
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfigurationWithMultipleRules());
         executor.setRule(rule);
-        assertThrows(InvalidRuleConfigurationException.class,
+        assertThrows(DuplicateDataSourceException.class,
                 () -> executor.checkBeforeUpdate(createSQLStatement("readwrite_ds_1", "write_ds_1", Arrays.asList("read_ds_0_0", "read_ds_0_1"), "TEST")));
     }
     
