@@ -22,17 +22,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import java.util.Collection;
 
 /**
- * Invalid rule configuration exception.
+ * Missing required strategy exception.
  */
-public final class InvalidRuleConfigurationException extends RuleDefinitionException {
+public final class MissingRequiredStrategyException extends RuleDefinitionException {
     
-    private static final long serialVersionUID = 6085010920008859376L;
+    private static final long serialVersionUID = 1206159066784894689L;
     
-    public InvalidRuleConfigurationException(final String ruleType, final Collection<String> rules, final Collection<String> errorMessages) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Invalid '%s' rules '%s', error messages are: %s", ruleType, rules, errorMessages);
-    }
-    
-    public InvalidRuleConfigurationException(final String ruleType, final String errorMessage) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Invalid '%s' rule, error message is: %s", ruleType, errorMessage);
+    public MissingRequiredStrategyException(final String strategyType, final Collection<String> ruleNames) {
+        super(XOpenSQLState.NOT_FOUND, 10, "%s strategies '%s' do not exist.", strategyType, ruleNames);
     }
 }
