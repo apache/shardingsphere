@@ -34,7 +34,7 @@ import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingO
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.ReadwriteSplittingActualDataSourceNotFoundException;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.DuplicateReadwriteSplittingActualDataSourceException;
-import org.apache.shardingsphere.readwritesplitting.exception.actual.MissingRequiredReadwriteSplittingActualDataSourceNameException;
+import org.apache.shardingsphere.readwritesplitting.exception.actual.MissingRequiredReadwriteSplittingActualDataSourceException;
 import org.apache.shardingsphere.readwritesplitting.exception.logic.MissingRequiredReadwriteSplittingDataSourceRuleNameException;
 
 import javax.sql.DataSource;
@@ -68,9 +68,9 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     
     private void checkDataSources(final String databaseName, final Map<String, DataSource> dataSourceMap, final ReadwriteSplittingDataSourceRuleConfiguration config,
                                   final Collection<String> writeDataSourceNames, final Collection<String> readDataSourceNames, final Collection<ShardingSphereRule> builtRules) {
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(config.getWriteDataSourceName()), () -> new MissingRequiredReadwriteSplittingActualDataSourceNameException(
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(config.getWriteDataSourceName()), () -> new MissingRequiredReadwriteSplittingActualDataSourceException(
                 ReadwriteSplittingDataSourceType.WRITE, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, config.getName())));
-        ShardingSpherePreconditions.checkState(!config.getReadDataSourceNames().isEmpty(), () -> new MissingRequiredReadwriteSplittingActualDataSourceNameException(
+        ShardingSpherePreconditions.checkState(!config.getReadDataSourceNames().isEmpty(), () -> new MissingRequiredReadwriteSplittingActualDataSourceException(
                 ReadwriteSplittingDataSourceType.READ, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, config.getName())));
         checkWriteDataSourceNames(databaseName, dataSourceMap, writeDataSourceNames, config, builtRules);
         for (String each : config.getReadDataSourceNames()) {

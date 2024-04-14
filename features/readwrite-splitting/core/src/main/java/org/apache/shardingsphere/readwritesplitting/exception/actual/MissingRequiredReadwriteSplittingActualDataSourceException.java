@@ -23,13 +23,13 @@ import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplitting
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
- * Missing readwrite-splitting required actual data source name exception.
+ * Missing readwrite-splitting required actual data source exception.
  */
-public final class MissingRequiredReadwriteSplittingActualDataSourceNameException extends ReadwriteSplittingSQLException {
+public final class MissingRequiredReadwriteSplittingActualDataSourceException extends ReadwriteSplittingSQLException {
     
     private static final long serialVersionUID = 3795576963060485964L;
     
-    public MissingRequiredReadwriteSplittingActualDataSourceNameException(final ReadwriteSplittingDataSourceType dataSourceType, final ReadwriteSplittingRuleExceptionIdentifier exceptionIdentifier) {
-        super(XOpenSQLState.NOT_FOUND, 1, "Readwrite-splitting %s data source name is required in %s.", dataSourceType, exceptionIdentifier);
+    public MissingRequiredReadwriteSplittingActualDataSourceException(final ReadwriteSplittingDataSourceType dataSourceType, final ReadwriteSplittingRuleExceptionIdentifier exceptionIdentifier) {
+        super(XOpenSQLState.NOT_FOUND, 1, "Readwrite-splitting %s data source is required in %s.", dataSourceType, exceptionIdentifier);
     }
 }
