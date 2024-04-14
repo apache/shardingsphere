@@ -200,7 +200,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 20203       | 44000     | Duplicated %s data source '%s' in database '%s'.                        |
 | 20204       | 42S02     | %s data source name '%s' not in database '%s'.                          |
 | 20205       | 44000     | %s data source names size error on inline expression.                   |
-| 20210       | 42S02     | Read storage unit '%s' does not exist in rule '%s'.                     |
 
 ### SQL 方言转换
 
