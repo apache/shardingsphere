@@ -19,16 +19,18 @@ package org.apache.shardingsphere.readwritesplitting.exception.actual;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
- * Invalid inline expression data sources exception.
+ * Invalid readwrite-splitting actual data source inline expression exception.
  */
-public final class InvalidInlineExpressionDataSourcesException extends ReadwriteSplittingSQLException {
+public final class InvalidReadwriteSplittingActualDataSourceInlineExpressionException extends ReadwriteSplittingSQLException {
     
     private static final long serialVersionUID = 87659916563551964L;
     
-    public InvalidInlineExpressionDataSourcesException(final ReadwriteSplittingDataSourceType dataSourceType) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 5, "%s data source names size error on inline expression.", dataSourceType);
+    public InvalidReadwriteSplittingActualDataSourceInlineExpressionException(final ReadwriteSplittingDataSourceType dataSourceType,
+                                                                              final ReadwriteSplittingRuleExceptionIdentifier exceptionIdentifier) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Readwrite-splitting %s data source inline expression error in %s.", dataSourceType, exceptionIdentifier);
     }
 }
