@@ -31,7 +31,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingStorageUnitStatusStatement;
-import org.apache.shardingsphere.readwritesplitting.exception.actual.DataSourceNameNotExistedException;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
+import org.apache.shardingsphere.readwritesplitting.exception.actual.ReadwriteSplittingActualDataSourceNameNotFoundException;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
@@ -62,7 +63,8 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor
         Optional<ReadwriteSplittingDataSourceRule> dataSourceRule = rule.getDataSourceRules().values().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).findAny();
         ShardingSpherePreconditions.checkState(dataSourceRule.isPresent(), () -> new MissingRequiredRuleException("Readwrite-splitting", database.getName(), sqlStatement.getRuleName()));
         ShardingSpherePreconditions.checkState(dataSourceRule.get().getReadwriteSplittingGroup().getReadDataSources().contains(sqlStatement.getStorageUnitName()),
-                () -> new DataSourceNameNotExistedException(ReadwriteSplittingDataSourceType.READ, sqlStatement.getStorageUnitName(), dataSourceRule.get().getName()));
+                () -> new ReadwriteSplittingActualDataSourceNameNotFoundException(
+                        ReadwriteSplittingDataSourceType.READ, sqlStatement.getStorageUnitName(), new ReadwriteSplittingRuleExceptionIdentifier(database.getName(), dataSourceRule.get().getName())));
         if (sqlStatement.isEnable()) {
             ShardingSpherePreconditions.checkState(dataSourceRule.get().getDisabledDataSourceNames().contains(sqlStatement.getStorageUnitName()),
                     () -> new InvalidStorageUnitStatusException("storage unit is not disabled"));
