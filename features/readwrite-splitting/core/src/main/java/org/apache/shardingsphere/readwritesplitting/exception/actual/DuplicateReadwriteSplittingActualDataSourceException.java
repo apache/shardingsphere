@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.exception.actual;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
@@ -29,8 +30,7 @@ public final class DuplicateReadwriteSplittingActualDataSourceException extends 
     private static final long serialVersionUID = -58671655670347084L;
     
     public DuplicateReadwriteSplittingActualDataSourceException(final ReadwriteSplittingDataSourceType dataSourceType,
-                                                                final String dataSourceName, final String databaseName, final String dataSourceRuleName) {
-        super(XOpenSQLState.DUPLICATE, 3,
-                "Readwrite-splitting %s data source '%s' is duplicated in database.data_source_rule '%s.%s'.", dataSourceName, dataSourceType, databaseName, dataSourceRuleName);
+                                                                final String dataSourceName, final ReadwriteSplittingRuleExceptionIdentifier exceptionIdentifier) {
+        super(XOpenSQLState.DUPLICATE, 3, "Readwrite-splitting %s data source '%s' is duplicated in %s.", dataSourceName, dataSourceType, exceptionIdentifier);
     }
 }

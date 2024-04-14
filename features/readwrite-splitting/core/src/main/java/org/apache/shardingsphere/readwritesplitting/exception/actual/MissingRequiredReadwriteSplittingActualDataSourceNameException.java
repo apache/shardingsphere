@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.exception.actual;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
@@ -28,7 +29,7 @@ public final class MissingRequiredReadwriteSplittingActualDataSourceNameExceptio
     
     private static final long serialVersionUID = 3795576963060485964L;
     
-    public MissingRequiredReadwriteSplittingActualDataSourceNameException(final ReadwriteSplittingDataSourceType dataSourceType, final String databaseName, final String dataSourceRuleName) {
-        super(XOpenSQLState.NOT_FOUND, 1, "Readwrite-splitting %s data source name is required in database.data_source_rule '%s.%s'.", dataSourceType, databaseName, dataSourceRuleName);
+    public MissingRequiredReadwriteSplittingActualDataSourceNameException(final ReadwriteSplittingDataSourceType dataSourceType, final ReadwriteSplittingRuleExceptionIdentifier exceptionIdentifier) {
+        super(XOpenSQLState.NOT_FOUND, 1, "Readwrite-splitting %s data source name is required in %s.", dataSourceType, exceptionIdentifier);
     }
 }

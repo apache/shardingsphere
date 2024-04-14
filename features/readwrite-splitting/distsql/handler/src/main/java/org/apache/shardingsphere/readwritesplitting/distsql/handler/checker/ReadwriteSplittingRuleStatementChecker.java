@@ -36,6 +36,7 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.DuplicateReadwriteSplittingActualDataSourceException;
 
 import java.util.Arrays;
@@ -196,8 +197,8 @@ public final class ReadwriteSplittingRuleStatementChecker {
                 continue;
             }
             String writeDataSource = each.getWriteDataSource();
-            ShardingSpherePreconditions.checkState(writeDataSourceNames.add(writeDataSource),
-                    () -> new DuplicateReadwriteSplittingActualDataSourceException(ReadwriteSplittingDataSourceType.WRITE, writeDataSource, databaseName, dataSourceRuleName));
+            ShardingSpherePreconditions.checkState(writeDataSourceNames.add(writeDataSource), () -> new DuplicateReadwriteSplittingActualDataSourceException(
+                    ReadwriteSplittingDataSourceType.WRITE, writeDataSource, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, dataSourceRuleName)));
         }
     }
     
@@ -213,8 +214,8 @@ public final class ReadwriteSplittingRuleStatementChecker {
     private static void checkDuplicateReadDataSourceNames(final ReadwriteSplittingRuleSegment segment, final String databaseName,
                                                           final String dataSourceRuleName, final Collection<String> readDataSourceNames) {
         for (String each : segment.getReadDataSources()) {
-            ShardingSpherePreconditions.checkState(readDataSourceNames.add(each),
-                    () -> new DuplicateReadwriteSplittingActualDataSourceException(ReadwriteSplittingDataSourceType.READ, each, databaseName, dataSourceRuleName));
+            ShardingSpherePreconditions.checkState(readDataSourceNames.add(each), () -> new DuplicateReadwriteSplittingActualDataSourceException(
+                    ReadwriteSplittingDataSourceType.READ, each, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, dataSourceRuleName)));
         }
     }
     

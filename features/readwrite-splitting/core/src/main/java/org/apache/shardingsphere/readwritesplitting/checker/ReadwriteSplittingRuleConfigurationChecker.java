@@ -31,6 +31,7 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.DataSourceNameNotExistedException;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.DuplicateReadwriteSplittingActualDataSourceException;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.MissingRequiredReadwriteSplittingActualDataSourceNameException;
@@ -67,10 +68,10 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     
     private void checkDataSources(final String databaseName, final Map<String, DataSource> dataSourceMap, final ReadwriteSplittingDataSourceRuleConfiguration config,
                                   final Collection<String> writeDataSourceNames, final Collection<String> readDataSourceNames, final Collection<ShardingSphereRule> builtRules) {
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(config.getWriteDataSourceName()),
-                () -> new MissingRequiredReadwriteSplittingActualDataSourceNameException(ReadwriteSplittingDataSourceType.WRITE, config.getName(), databaseName));
-        ShardingSpherePreconditions.checkState(!config.getReadDataSourceNames().isEmpty(),
-                () -> new MissingRequiredReadwriteSplittingActualDataSourceNameException(ReadwriteSplittingDataSourceType.READ, config.getName(), databaseName));
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(config.getWriteDataSourceName()), () -> new MissingRequiredReadwriteSplittingActualDataSourceNameException(
+                ReadwriteSplittingDataSourceType.WRITE, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, config.getName())));
+        ShardingSpherePreconditions.checkState(!config.getReadDataSourceNames().isEmpty(), () -> new MissingRequiredReadwriteSplittingActualDataSourceNameException(
+                ReadwriteSplittingDataSourceType.READ, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, config.getName())));
         checkWriteDataSourceNames(databaseName, dataSourceMap, writeDataSourceNames, config, builtRules);
         for (String each : config.getReadDataSourceNames()) {
             checkReadeDataSourceNames(databaseName, dataSourceMap, readDataSourceNames, each, config, builtRules);
@@ -82,8 +83,8 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
         for (String each : InlineExpressionParserFactory.newInstance(config.getWriteDataSourceName()).splitAndEvaluate()) {
             ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each) || containsInOtherRules(each, builtRules),
                     () -> new DataSourceNameNotExistedException(ReadwriteSplittingDataSourceType.WRITE, each, databaseName));
-            ShardingSpherePreconditions.checkState(writeDataSourceNames.add(each),
-                    () -> new DuplicateReadwriteSplittingActualDataSourceException(ReadwriteSplittingDataSourceType.WRITE, each, databaseName, config.getName()));
+            ShardingSpherePreconditions.checkState(writeDataSourceNames.add(each), () -> new DuplicateReadwriteSplittingActualDataSourceException(
+                    ReadwriteSplittingDataSourceType.WRITE, each, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, config.getName())));
         }
     }
     
@@ -97,8 +98,8 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
         for (String each : InlineExpressionParserFactory.newInstance(readDataSourceName).splitAndEvaluate()) {
             ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each) || containsInOtherRules(each, builtRules),
                     () -> new DataSourceNameNotExistedException(ReadwriteSplittingDataSourceType.READ, each, databaseName));
-            ShardingSpherePreconditions.checkState(readDataSourceNames.add(each),
-                    () -> new DuplicateReadwriteSplittingActualDataSourceException(ReadwriteSplittingDataSourceType.READ, each, databaseName, config.getName()));
+            ShardingSpherePreconditions.checkState(readDataSourceNames.add(each), () -> new DuplicateReadwriteSplittingActualDataSourceException(
+                    ReadwriteSplittingDataSourceType.READ, each, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, config.getName())));
         }
     }
     
