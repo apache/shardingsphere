@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import java.util.Collection;
 
 /**
- * Missing required rule exception.
+ * Missing required strategy exception.
  */
 public final class MissingRequiredStrategyException extends RuleDefinitionException {
     
