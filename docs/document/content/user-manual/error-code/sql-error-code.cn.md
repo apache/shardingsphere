@@ -70,17 +70,17 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 连接
 
-| Vendor Code | SQL State | 错误信息                                                                                                                                                                                                                        |
-|-------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 13000       | 08000     | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties. |
-| 13001       | 08000     | SQL execution has been interrupted.                                                                                                                                                                                         |
-| 13010       | 01000     | Circuit break open, the request has been ignored.                                                                                                                                                                           |
-| 13100       | 0A000     | Unsupported storage type of URL '%s'.                                                                                                                                                                                       |
-| 13101       | 08000     | The URL '%s' is not recognized, please refer to the pattern '%s'.                                                                                                                                                           |
-| 13200       | 08000     | Can not register driver.                                                                                                                                                                                                    |
-| 13201       | 08000     | Connection has been closed.                                                                                                                                                                                                 |
-| 13202       | 08000     | Result set has been closed.                                                                                                                                                                                                 |
-| 13400       | HY000     | Load datetime from database failed, reason: %s                                                                                                                                                                              |
+| Vendor Code | SQL State | 错误信息                                                                                                                                                                                                                    |
+|-------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 13000       | 08000     | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the 'maxPoolSize' of the data sources or decreasing the 'max-connections-size-per-query' in properties. |
+| 13001       | 08000     | SQL execution has been interrupted.                                                                                                                                                                                     |
+| 13010       | 01000     | Circuit break open, the request has been ignored.                                                                                                                                                                       |
+| 13100       | 0A000     | Unsupported storage type of URL '%s'.                                                                                                                                                                                   |
+| 13101       | 08000     | The URL '%s' is not recognized, please refer to the pattern '%s'.                                                                                                                                                       |
+| 13200       | 08000     | Can not register driver.                                                                                                                                                                                                |
+| 13201       | 08000     | Connection has been closed.                                                                                                                                                                                             |
+| 13202       | 08000     | Result set has been closed.                                                                                                                                                                                             |
+| 13400       | HY000     | Load datetime from database failed, reason: %s                                                                                                                                                                          |
 
 ### 事务
 
