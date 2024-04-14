@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.exception;
+package org.apache.shardingsphere.readwritesplitting.exception.actual;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
- * Duplicate write data source exception.
+ * Data source name not existed exception.
  */
-public final class DuplicateDataSourceException extends ReadwriteSplittingSQLException {
+public final class DataSourceNameNotExistedException extends ReadwriteSplittingSQLException {
     
-    private static final long serialVersionUID = -58671655670347084L;
+    private static final long serialVersionUID = 1284608200400804784L;
     
-    public DuplicateDataSourceException(final ReadwriteSplittingDataSourceType dataSourceType, final String dataSourceName, final String databaseName) {
-        super(XOpenSQLState.DUPLICATE, 3, "Duplicated %s data source '%s' in database '%s'.", dataSourceType, dataSourceName, databaseName);
+    public DataSourceNameNotExistedException(final ReadwriteSplittingDataSourceType dataSourceType, final String dataSourceName, final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 4, "%s data source name '%s' not in database '%s'.", dataSourceType, dataSourceName, databaseName);
     }
 }

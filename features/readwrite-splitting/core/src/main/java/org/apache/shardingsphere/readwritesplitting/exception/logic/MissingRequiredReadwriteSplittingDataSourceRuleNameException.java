@@ -28,6 +28,6 @@ public final class MissingRequiredReadwriteSplittingDataSourceRuleNameException 
     private static final long serialVersionUID = 8006957930250488016L;
     
     public MissingRequiredReadwriteSplittingDataSourceRuleNameException(final String databaseName) {
-        super(XOpenSQLState.NOT_FOUND, 0, "Readwrite-splitting data source rule name in database '%s' is required.", databaseName);
+        super(XOpenSQLState.NOT_FOUND, 0, "Readwrite-splitting data source rule name is required in database '%s'.", databaseName);
     }
 }
