@@ -41,9 +41,9 @@ proxy 已包含 PostgreSQL JDBC 和 openGauss JDBC 驱动。
 
 如果后端连接以下数据库，请下载相应 JDBC 驱动 jar 包，并将其放入 `${shardingsphere-proxy}/ext-lib` 目录。
 
-| 数据库   | JDBC 驱动                                                                                              |
-|-------|------------------------------------------------------------------------------------------------------|
-| MySQL | [mysql-connector-java-8.0.31.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.31/) |
+| 数据库   | JDBC 驱动                                                                                          |
+|-------|--------------------------------------------------------------------------------------------------|
+| MySQL | [mysql-connector-j-8.3.0.jar](https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.3.0/) |
 
 如果是异构迁移，源端支持范围更广的数据库。JDBC 驱动处理方式同上。
 
