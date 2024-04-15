@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
@@ -35,6 +36,7 @@ import java.util.Optional;
 /**
  * Merged result for encrypt.
  */
+@Slf4j
 @RequiredArgsConstructor
 public final class EncryptMergedResult implements MergedResult {
     
@@ -66,7 +68,14 @@ public final class EncryptMergedResult implements MergedResult {
         EncryptColumn encryptColumn = encryptRule.getEncryptTable(originalTableName).getEncryptColumn(originalColumnName);
         String schemaName =
                 selectStatementContext.getTablesContext().getSchemaName().orElseGet(() -> new DatabaseTypeRegistry(selectStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
-        return encryptColumn.getCipher().decrypt(database.getName(), schemaName, originalTableName, originalColumnName, cipherValue);
+        try {
+            return encryptColumn.getCipher().decrypt(database.getName(), schemaName, originalTableName, originalColumnName, cipherValue);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("Decrypt failed in {}.{}.{}, ciphertext: {}.", schemaName, originalTableName, originalColumnName, cipherValue, ex);
+            throw ex;
+        }
     }
     
     @Override
