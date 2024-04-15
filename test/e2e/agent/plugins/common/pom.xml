@@ -25,14 +25,14 @@
     </parent>
     <artifactId>shardingsphere-test-e2e-agent-plugins-common</artifactId>
     <name>${project.artifactId}</name>
-
+    
     <properties>
         <docker.proxy.context.directory>target/proxy</docker.proxy.context.directory>
         <docker.proxy.image.name>apache/shardingsphere-proxy-agent-test</docker.proxy.image.name>
         <docker.jdbc.context.directory>target/jdbc</docker.jdbc.context.directory>
         <docker.jdbc.image.name>apache/shardingsphere-jdbc-agent-test</docker.jdbc.image.name>
     </properties>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -45,7 +45,7 @@
             <artifactId>shardingsphere-infra-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
@@ -63,7 +63,7 @@
             <version>${kotlin-stdlib.version}</version>
         </dependency>
     </dependencies>
-
+    
     <build>
         <plugins>
             <plugin>
@@ -78,7 +78,7 @@
             </plugin>
         </plugins>
     </build>
-
+    
     <profiles>
         <profile>
             <id>it.env.proxy</id>
@@ -138,7 +138,7 @@
                 </plugins>
             </build>
         </profile>
-
+        
         <profile>
             <id>it.env.jdbc</id>
             <build>

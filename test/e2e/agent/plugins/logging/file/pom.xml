@@ -25,7 +25,7 @@
     </parent>
     <artifactId>shardingsphere-test-e2e-agent-plugins-logging-file</artifactId>
     <name>${project.artifactId}</name>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -33,7 +33,7 @@
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>
-
+        
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
