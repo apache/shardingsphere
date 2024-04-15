@@ -35,8 +35,10 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Integration test cases loader.
@@ -71,11 +73,18 @@ public final class IntegrationTestCasesLoader {
         }
         integrationTestCases = new LinkedList<>();
         URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(String.format("cases/%s", adapter)));
-        Collection<File> files = getFiles(url);
-        for (File each : files) {
-            integrationTestCases.addAll(unmarshal(each.getPath()).getTestCases());
+        for (File each : getFiles(url)) {
+            integrationTestCases.addAll(loadIntegrationTestCases(each));
         }
         return integrationTestCases;
+    }
+    
+    private Collection<SpanTestCase> loadIntegrationTestCases(final File file) throws IOException, JAXBException {
+        Collection<SpanTestCase> result = new LinkedList<>();
+        for (SpanTestCase each : unmarshal(file.getPath()).getTestCases()) {
+            result.addAll(each.getTagCases().stream().map(optional -> createSpanTestCase(each.getServiceName(), each.getSpanName(), optional)).collect(Collectors.toList()));
+        }
+        return result;
     }
     
     private Collection<File> getFiles(final URL url) throws IOException, URISyntaxException {
@@ -97,5 +106,13 @@ public final class IntegrationTestCasesLoader {
         try (FileReader reader = new FileReader(integrateCasesFile)) {
             return (IntegrationTestCases) JAXBContext.newInstance(IntegrationTestCases.class).createUnmarshaller().unmarshal(reader);
         }
+    }
+    
+    private SpanTestCase createSpanTestCase(final String serviceName, final String spanName, final TagAssertion assertion) {
+        SpanTestCase result = new SpanTestCase();
+        result.setServiceName(serviceName);
+        result.setSpanName(spanName);
+        result.setTagCases(Collections.singletonList(assertion));
+        return result;
     }
 }

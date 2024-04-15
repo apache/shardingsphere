@@ -53,4 +53,9 @@ do
   let PARAMETER_INDEX+=1
 done
 
+if [ -n "${IS_DOCKER}" ]; then
+  exec java -classpath ${CLASS_PATH} ${AGENT_PARAM} ${MAIN_CLASS}
+  exit 0
+fi
+
 nohup java -classpath ${CLASS_PATH} ${AGENT_PARAM} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &

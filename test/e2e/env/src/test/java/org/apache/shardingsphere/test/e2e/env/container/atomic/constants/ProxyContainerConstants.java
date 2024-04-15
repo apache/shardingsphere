@@ -32,7 +32,11 @@ public final class ProxyContainerConstants {
     
     public static final String AGENT_HOME_IN_CONTAINER = "/usr/local/shardingsphere-agent";
     
-    public static final String CONFIG_PATH_IN_CONTAINER = "/opt/shardingsphere-proxy/conf/";
+    public static final String PROXY_ROOT_PATH_IN_CONTAINER = "/opt/shardingsphere-proxy/";
+    
+    public static final String CONFIG_PATH_IN_CONTAINER = PROXY_ROOT_PATH_IN_CONTAINER + "conf/";
+    
+    public static final String AGENT_CONFIG_PATH_IN_CONTAINER = PROXY_ROOT_PATH_IN_CONTAINER + "agent/conf/";
     
     public static final String PROXY_CONTAINER_NAME_PREFIX = "ShardingSphere-Proxy";
     
