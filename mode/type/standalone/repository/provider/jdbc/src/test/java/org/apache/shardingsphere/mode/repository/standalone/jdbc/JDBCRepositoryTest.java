@@ -124,9 +124,10 @@ class JDBCRepositoryTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true, true, true, false);
         when(mockResultSet.getString("key")).thenReturn("parent1/test1", "parent1/test2", "");
-        List<String> childrenKeys = repository.getChildrenKeys("/testPath");
-        assertThat(childrenKeys.get(0), is("test1"));
-        assertThat(childrenKeys.get(1), is("test2"));
+        List<String> actual = repository.getChildrenKeys("/testPath");
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.contains("test1"));
+        assertTrue(actual.contains("test2"));
     }
     
     @Test
