@@ -239,7 +239,7 @@ public final class OrderItemRepository {
             connection.createStatement().executeUpdate("INSERT INTO t_order_item (order_id, user_id, phone, status) VALUES (2024, 2024, '13800000001', 'INSERT_TEST')");
             connection.createStatement().executeUpdate("INSERT INTO t_order_item_does_not_exist (test_id_does_not_exist) VALUES (2024)");
             connection.commit();
-        } catch (SQLException e) {
+        } catch (final SQLException ignored) {
             connection.rollback();
         } finally {
             connection.setAutoCommit(true);
