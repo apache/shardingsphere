@@ -38,9 +38,7 @@ import java.util.stream.Collectors;
 /**
  * YAML readwrite-splitting rule configuration swapper.
  */
-public final class YamlReadwriteSplittingRuleConfigurationSwapper
-        implements
-            YamlRuleConfigurationSwapper<YamlReadwriteSplittingRuleConfiguration, ReadwriteSplittingRuleConfiguration> {
+public final class YamlReadwriteSplittingRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<YamlReadwriteSplittingRuleConfiguration, ReadwriteSplittingRuleConfiguration> {
     
     private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     
