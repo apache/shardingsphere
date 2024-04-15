@@ -123,7 +123,7 @@ public final class E2ETestEnvironment {
         try {
             proxyRequestExecutor = new ProxyRequestExecutor(proxyContainer.getConnection());
             proxyRequestExecutor.start();
-        } catch (SQLException ignored) {
+        } catch (final SQLException ignored) {
         }
     }
     
