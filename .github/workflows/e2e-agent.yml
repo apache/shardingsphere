@@ -79,7 +79,7 @@ jobs:
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Build Project
-        run: ./mvnw clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -DskipTests -Dspotless.apply.skip=true -Prelease
+        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -DskipTests -Dspotless.apply.skip=true -Prelease
       - name: Build Proxy E2E Image
         run: ./mvnw clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -DskipTests -Dspotless.apply.skip=true -Pit.env.proxy -f test/e2e/agent/plugins/common/pom.xml
       - name: Save Proxy E2E Image
@@ -146,9 +146,6 @@ jobs:
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
-      - name: Build Project
-        run:
-          ./mvnw clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -DskipTests -Dspotless.apply.skip=true -Prelease
       - name: Download Proxy E2E Image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v4
