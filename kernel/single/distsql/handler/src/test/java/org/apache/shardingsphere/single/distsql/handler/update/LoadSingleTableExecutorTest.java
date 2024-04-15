@@ -19,6 +19,7 @@ package org.apache.shardingsphere.single.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -43,6 +44,7 @@ import java.util.LinkedList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,23 +63,33 @@ class LoadSingleTableExecutorTest {
     void setUp() {
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(database.getSchema("foo_db")).thenReturn(schema);
+        when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
     }
     
     @Test
     void assertCheckWithDuplicatedTables() {
         when(database.getName()).thenReturn("foo_db");
         when(schema.containsTable("foo")).thenReturn(true);
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
+        when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("ds_0", null, "foo")));
         executor.setDatabase(database);
         assertThrows(TableExistsException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test
+    void assertCheckWithEmptyStorageUnits() {
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getResourceMetaData().getStorageUnits().isEmpty()).thenReturn(true);
+        executor.setDatabase(database);
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("*", null, "*")));
+        assertThrows(EmptyStorageUnitException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+    }
+    
+    @Test
     void assertCheckWithInvalidStorageUnit() {
         when(database.getName()).thenReturn("foo_db");
-        when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         executor.setDatabase(database);
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("ds_0", null, "foo")));
         assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     

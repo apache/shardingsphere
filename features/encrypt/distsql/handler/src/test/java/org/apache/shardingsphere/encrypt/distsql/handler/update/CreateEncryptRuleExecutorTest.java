@@ -59,7 +59,7 @@ class CreateEncryptRuleExecutorTest {
     @Test
     void assertCheckSQLStatementWithDuplicateEncryptRule() {
         EncryptRule rule = mock(EncryptRule.class);
-        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfig());
+        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfiguration());
         executor.setRule(rule);
         assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "MD5")));
     }
@@ -72,7 +72,7 @@ class CreateEncryptRuleExecutorTest {
     @Test
     void assertCheckSQLStatementWithConflictColumnNames() {
         EncryptRule rule = mock(EncryptRule.class);
-        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfig());
+        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfiguration());
         executor.setRule(rule);
         assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(createConflictColumnNameSQLStatement()));
     }
@@ -122,7 +122,7 @@ class CreateEncryptRuleExecutorTest {
         return new CreateEncryptRuleStatement(false, Collections.singleton(ruleSegment));
     }
     
-    private EncryptRuleConfiguration getCurrentRuleConfig() {
+    private EncryptRuleConfiguration getCurrentRuleConfiguration() {
         Collection<EncryptTableRuleConfiguration> rules = new LinkedList<>();
         rules.add(new EncryptTableRuleConfiguration("t_user", Collections.emptyList()));
         rules.add(new EncryptTableRuleConfiguration("t_order", Collections.emptyList()));
@@ -133,7 +133,7 @@ class CreateEncryptRuleExecutorTest {
     void assertCreateAESEncryptRuleWithPropertiesNotExists() {
         CreateEncryptRuleStatement sqlStatement = createWrongAESEncryptorSQLStatement();
         EncryptRule rule = mock(EncryptRule.class);
-        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfig());
+        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfiguration());
         executor.setRule(rule);
         assertThrows(AlgorithmInitializationException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }

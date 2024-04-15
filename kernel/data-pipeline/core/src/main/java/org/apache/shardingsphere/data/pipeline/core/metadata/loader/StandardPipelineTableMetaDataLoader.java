@@ -68,7 +68,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
         }
         result = tableMetaDataMap.get(new CaseInsensitiveIdentifier(tableName));
         if (null == result) {
-            log.warn("getTableMetaData, can not load meta data for table '{}'", tableName);
+            log.warn("Can not load meta data for table '{}'", tableName);
         }
         return result;
     }

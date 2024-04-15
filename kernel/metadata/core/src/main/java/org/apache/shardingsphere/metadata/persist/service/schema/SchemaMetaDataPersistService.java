@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.metadata.persist.service.schema;
 
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-
-import java.util.Collection;
-
 /**
  * Schema meta data persist service.
  *
@@ -36,16 +32,6 @@ public interface SchemaMetaDataPersistService<T> {
      * @param schema schema meta data
      */
     void persist(String databaseName, String schemaName, T schema);
-    
-    /**
-     * Persist schema meta data.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param schema schema meta data
-     * @return meta data versions
-     */
-    Collection<MetaDataVersion> persistSchemaMetaData(String databaseName, String schemaName, T schema);
     
     /**
      * Load schema meta data.

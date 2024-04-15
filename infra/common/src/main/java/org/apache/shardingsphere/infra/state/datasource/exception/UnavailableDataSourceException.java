@@ -32,7 +32,7 @@ public final class UnavailableDataSourceException extends ShardingSphereServerEx
     
     private static final int ERROR_CODE = 1;
     
-    public UnavailableDataSourceException(final SQLException cause, final String dataSourceName) {
-        super(ERROR_CATEGORY, ERROR_CODE, String.format("Data source `%s` is unavailable.", dataSourceName), cause);
+    public UnavailableDataSourceException(final String dataSourceName, final SQLException cause) {
+        super(ERROR_CATEGORY, ERROR_CODE, String.format("Data source '%s' is unavailable.", dataSourceName), cause);
     }
 }

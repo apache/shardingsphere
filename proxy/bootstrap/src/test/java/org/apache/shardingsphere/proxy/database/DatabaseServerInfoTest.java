@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.database;
 
-import org.apache.shardingsphere.proxy.exception.DatabaseServerLoadingServerException;
+import org.apache.shardingsphere.proxy.exception.DatabaseServerLoadingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -43,7 +43,7 @@ class DatabaseServerInfoTest {
     @Test
     void assertNewInstanceFailure() throws SQLException {
         when(dataSource.getConnection()).thenThrow(SQLException.class);
-        assertThrows(DatabaseServerLoadingServerException.class, () -> new DatabaseServerInfo(dataSource));
+        assertThrows(DatabaseServerLoadingException.class, () -> new DatabaseServerInfo(dataSource));
     }
     
     @Test

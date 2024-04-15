@@ -35,6 +35,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -110,6 +111,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
                     int lastIndexOf = childrenKey.lastIndexOf(SEPARATOR);
                     resultChildren.add(childrenKey.substring(lastIndexOf + 1));
                 }
+                resultChildren.sort(Comparator.reverseOrder());
                 return new ArrayList<>(resultChildren);
             }
         } catch (final SQLException ex) {

@@ -23,10 +23,10 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.RegionLocator;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseCluster;
-import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseTaskExecutorManager;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -79,9 +79,9 @@ public final class HBaseRegionWarmUpContext {
      *
      * @param tableName table name
      * @param connection HBase connection
-     * @throws HBaseOperationException HBase operation exception
+     * @throws SQLException SQL exception
      */
-    public void loadRegionInfo(final String tableName, final Connection connection) {
+    public void loadRegionInfo(final String tableName, final Connection connection) throws SQLException {
         HBaseRegionWarmUpContext.getInstance().addExecuteCount();
         try {
             if (null == connection) {
@@ -90,7 +90,7 @@ public final class HBaseRegionWarmUpContext {
             RegionLocator regionLocator = connection.getRegionLocator(TableName.valueOf(tableName));
             regionLocator.getAllRegionLocations();
         } catch (final IOException ex) {
-            throw new HBaseOperationException(String.format("table: %s warm up error, getRegionLocator execute error reason is  %s", tableName, ex));
+            throw new SQLException(String.format("Table '%s' warm up error.", tableName), ex);
         }
     }
     

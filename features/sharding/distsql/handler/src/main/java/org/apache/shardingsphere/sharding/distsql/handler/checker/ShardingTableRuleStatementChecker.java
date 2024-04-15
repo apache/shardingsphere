@@ -54,7 +54,7 @@ import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingStrat
 import org.apache.shardingsphere.sharding.distsql.segment.table.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.table.TableRuleSegment;
-import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmClassImplementationException;
+import org.apache.shardingsphere.sharding.exception.algorithm.ShardingAlgorithmClassImplementationException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.sharding.rule.BindingTableCheckedConfiguration;
@@ -419,7 +419,7 @@ public final class ShardingTableRuleStatementChecker {
                 if ("none".equalsIgnoreCase(databaseStrategySegment.get().getType())) {
                     Collection<String> requiredDataSources = getRequiredDataSources(rules);
                     ShardingSpherePreconditions.checkState(1 == requiredDataSources.size(),
-                            () -> new InvalidShardingStrategyConfigurationException("database", databaseStrategySegment.get().getType(), "strategy does not match data nodes"));
+                            () -> new InvalidShardingStrategyConfigurationException("database", databaseStrategySegment.get().getType()));
                 } else {
                     AlgorithmSegment databaseShardingAlgorithm = databaseStrategySegment.get().getShardingAlgorithm();
                     checkDatabaseShardingAlgorithm(each, databaseShardingAlgorithm);
@@ -430,7 +430,7 @@ public final class ShardingTableRuleStatementChecker {
                 if ("none".equalsIgnoreCase(tableStrategySegment.get().getType())) {
                     Collection<String> requiredTables = getRequiredTables(rules);
                     ShardingSpherePreconditions.checkState(1 == requiredTables.size(),
-                            () -> new InvalidShardingStrategyConfigurationException("table", tableStrategySegment.get().getType(), "strategy does not match data nodes"));
+                            () -> new InvalidShardingStrategyConfigurationException("table", tableStrategySegment.get().getType()));
                 } else {
                     AlgorithmSegment tableShardingAlgorithm = tableStrategySegment.get().getShardingAlgorithm();
                     checkTableShardingAlgorithm(each, tableShardingAlgorithm);

@@ -21,6 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -28,8 +29,6 @@ import java.util.Collection;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EnumerableConstants {
-    
-    public static final Collection<String> SYSTEM_CATALOG_TABLES = new CaseInsensitiveSet<>(3, 1F);
     
     public static final String DAT_COMPATIBILITY = "PG";
     
@@ -39,9 +38,5 @@ public final class EnumerableConstants {
     
     public static final String PG_ROLES = "pg_roles";
     
-    static {
-        SYSTEM_CATALOG_TABLES.add(PG_DATABASE);
-        SYSTEM_CATALOG_TABLES.add(PG_TABLES);
-        SYSTEM_CATALOG_TABLES.add(PG_ROLES);
-    }
+    public static final Collection<String> SYSTEM_CATALOG_TABLES = new CaseInsensitiveSet<>(Arrays.asList(PG_DATABASE, PG_TABLES, PG_ROLES));
 }

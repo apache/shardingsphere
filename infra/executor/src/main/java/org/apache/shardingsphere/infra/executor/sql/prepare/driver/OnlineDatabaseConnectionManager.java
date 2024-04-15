@@ -22,5 +22,5 @@ package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
  *
  * @param <C> type of database connection
  */
-public abstract class OnlineDatabaseConnectionManager<C> implements DatabaseConnectionManager<C> {
+public interface OnlineDatabaseConnectionManager<C> extends DatabaseConnectionManager<C> {
 }

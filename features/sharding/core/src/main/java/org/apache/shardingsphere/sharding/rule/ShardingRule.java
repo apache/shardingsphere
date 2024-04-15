@@ -127,8 +127,8 @@ public final class ShardingRule implements DatabaseRule {
         shardingTables.putAll(createShardingAutoTables(ruleConfig.getAutoTables(), ruleConfig.getDefaultKeyGenerateStrategy()));
         validateUniqueActualDataNodesInTableRules();
         bindingTableRules.putAll(createBindingTableRules(ruleConfig.getBindingTableGroups()));
-        defaultDatabaseShardingStrategyConfig = createDefaultDatabaseShardingStrategyConfig(ruleConfig);
-        defaultTableShardingStrategyConfig = createDefaultTableShardingStrategyConfig(ruleConfig);
+        defaultDatabaseShardingStrategyConfig = createDefaultDatabaseShardingStrategyConfiguration(ruleConfig);
+        defaultTableShardingStrategyConfig = createDefaultTableShardingStrategyConfiguration(ruleConfig);
         defaultAuditStrategy = null == ruleConfig.getDefaultAuditStrategy() ? new ShardingAuditStrategyConfiguration(Collections.emptyList(), true) : ruleConfig.getDefaultAuditStrategy();
         defaultKeyGenerateAlgorithm = null == ruleConfig.getDefaultKeyGenerateStrategy()
                 ? TypedSPILoader.getService(KeyGenerateAlgorithm.class, null)
@@ -155,12 +155,12 @@ public final class ShardingRule implements DatabaseRule {
         });
     }
     
-    private ShardingStrategyConfiguration createDefaultDatabaseShardingStrategyConfig(final ShardingRuleConfiguration ruleConfig) {
+    private ShardingStrategyConfiguration createDefaultDatabaseShardingStrategyConfiguration(final ShardingRuleConfiguration ruleConfig) {
         Optional.ofNullable(ruleConfig.getDefaultDatabaseShardingStrategy()).ifPresent(optional -> checkManualShardingAlgorithm(optional.getShardingAlgorithmName(), "default"));
         return null == ruleConfig.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : ruleConfig.getDefaultDatabaseShardingStrategy();
     }
     
-    private ShardingStrategyConfiguration createDefaultTableShardingStrategyConfig(final ShardingRuleConfiguration ruleConfig) {
+    private ShardingStrategyConfiguration createDefaultTableShardingStrategyConfiguration(final ShardingRuleConfiguration ruleConfig) {
         Optional.ofNullable(ruleConfig.getDefaultTableShardingStrategy()).ifPresent(optional -> checkManualShardingAlgorithm(optional.getShardingAlgorithmName(), "default"));
         return null == ruleConfig.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : ruleConfig.getDefaultTableShardingStrategy();
     }

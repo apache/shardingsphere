@@ -31,6 +31,6 @@ public final class ServiceProviderNotFoundException extends ShardingSphereServer
     private static final int ERROR_CODE = 1;
     
     public ServiceProviderNotFoundException(final Class<?> clazz, final Object type) {
-        super(ERROR_CATEGORY, ERROR_CODE, String.format("No implementation class load from SPI `%s` with type `%s`.", clazz.getName(), type));
+        super(ERROR_CATEGORY, ERROR_CODE, String.format("No implementation class load from SPI '%s' with type '%s'.", clazz.getName(), type));
     }
 }

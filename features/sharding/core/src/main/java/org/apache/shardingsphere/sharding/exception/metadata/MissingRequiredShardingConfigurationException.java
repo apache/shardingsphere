@@ -28,10 +28,10 @@ public final class MissingRequiredShardingConfigurationException extends Shardin
     private static final long serialVersionUID = -7307832800220432407L;
     
     public MissingRequiredShardingConfigurationException(final String configKey) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 11, "`%s` configuration does not exist.", configKey);
+        super(XOpenSQLState.NOT_FOUND, 0, "%s configuration does not exist.", configKey);
     }
     
     public MissingRequiredShardingConfigurationException(final String configKey, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 11, "`%s` configuration does not exist in database `%s`.", configKey, databaseName);
+        super(XOpenSQLState.NOT_FOUND, 0, "%s configuration does not exist in database '%s'.", configKey, databaseName);
     }
 }

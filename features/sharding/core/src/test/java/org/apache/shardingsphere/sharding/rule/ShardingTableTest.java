@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.exception.metadata.DataNodesMissedWithShardingTableException;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredDataNodesException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -148,7 +148,7 @@ class ShardingTableTest {
     void assertActualDataNodesNotConfigured() {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "");
         shardingTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("shardingColumn", "INLINE"));
-        assertThrows(DataNodesMissedWithShardingTableException.class, () -> new ShardingTable(shardingTableRuleConfig, Arrays.asList("ds0", "ds1"), null));
+        assertThrows(MissingRequiredDataNodesException.class, () -> new ShardingTable(shardingTableRuleConfig, Arrays.asList("ds0", "ds1"), null));
     }
     
     @Test

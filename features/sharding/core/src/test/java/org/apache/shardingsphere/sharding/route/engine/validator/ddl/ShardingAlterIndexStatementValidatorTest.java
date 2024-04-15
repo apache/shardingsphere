@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterIndexSt
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.sharding.exception.metadata.DuplicatedIndexException;
+import org.apache.shardingsphere.sharding.exception.metadata.DuplicateIndexException;
 import org.apache.shardingsphere.sharding.exception.metadata.IndexNotExistedException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterIndexStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -89,7 +89,7 @@ class ShardingAlterIndexStatementValidatorTest {
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(true);
-        assertThrows(DuplicatedIndexException.class,
+        assertThrows(DuplicateIndexException.class,
                 () -> new ShardingAlterIndexStatementValidator().preValidate(
                         shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }

@@ -63,17 +63,17 @@ public final class ImportMetaDataExecutor implements DistSQLUpdateExecutor<Impor
         }
         ExportedClusterInfo exportedClusterInfo = JsonUtils.fromJsonString(jsonMetaDataConfig, ExportedClusterInfo.class);
         ExportedMetaData exportedMetaData = exportedClusterInfo.getMetaData();
-        importServerConfig(contextManager, exportedMetaData);
+        importServerConfiguration(contextManager, exportedMetaData);
         importDatabase(exportedMetaData);
     }
     
-    private void importServerConfig(final ContextManager contextManager, final ExportedMetaData exportedMetaData) {
+    private void importServerConfiguration(final ContextManager contextManager, final ExportedMetaData exportedMetaData) {
         YamlProxyServerConfiguration yamlServerConfig = YamlEngine.unmarshal(exportedMetaData.getRules() + System.lineSeparator() + exportedMetaData.getProps(), YamlProxyServerConfiguration.class);
         if (null == yamlServerConfig) {
             return;
         }
         Collection<RuleConfiguration> rules = ruleConfigSwapperEngine.swapToRuleConfigurations(yamlServerConfig.getRules());
-        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(rules);
+        rules.forEach(each -> contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(each));
         contextManager.getInstanceContext().getModeContextManager().alterProperties(yamlServerConfig.getProps());
     }
     

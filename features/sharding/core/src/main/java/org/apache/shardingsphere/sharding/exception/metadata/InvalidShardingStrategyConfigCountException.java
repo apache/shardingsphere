@@ -28,6 +28,6 @@ public final class InvalidShardingStrategyConfigCountException extends ShardingS
     private static final long serialVersionUID = 9006408233608414517L;
     
     public InvalidShardingStrategyConfigCountException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 12, "Only allowed 0 or 1 sharding strategy configuration.");
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 11, "Only allowed 0 or 1 sharding strategy configuration.");
     }
 }

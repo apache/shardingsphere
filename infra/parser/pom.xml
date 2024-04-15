@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-mysql-dialect-exception</artifactId>
+            <artifactId>shardingsphere-infra-exception-dialect-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         

@@ -59,7 +59,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationCompilerEn
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerMetaData;
-import org.apache.shardingsphere.sqlfederation.optimizer.exception.syntax.SQLFederationUnsupportedSQLException;
+import org.apache.shardingsphere.sqlfederation.optimizer.exception.SQLFederationUnsupportedSQLException;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationTable;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.cache.ExecutionPlanCacheKey;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationPlannerUtils;

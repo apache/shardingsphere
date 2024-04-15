@@ -67,13 +67,13 @@ ShardingSphere 的 SQL 解析器经历了 3 代产品的更新迭代。
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-sql-parser-engine</artifactId>
+    <artifactId>shardingsphere-parser-sql-engine</artifactId>
     <version>${project.version}</version>
 </dependency>
 <!-- 根据需要引入指定方言的解析模块（以 MySQL 为例），可以添加所有支持的方言，也可以只添加使用到的 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-sql-parser-mysql</artifactId>
+    <artifactId>shardingsphere-parser-sql-mysql</artifactId>
     <version>${project.version}</version>
 </dependency>
 ```
@@ -99,7 +99,8 @@ SQLStatement sqlStatement = sqlVisitorEngine.visit(parseASTNode);
 - SQL 格式化
 
 ```java
-new SQLFormatEngine(databaseType, cacheOption).format(sql, useCache, props);
+new SQLFormatEngine(TypedSPILoader.getService(DatabaseType.class, "Mysql"), cacheOption)
+        .format(sql, false, null);
 ```
 
 例子：

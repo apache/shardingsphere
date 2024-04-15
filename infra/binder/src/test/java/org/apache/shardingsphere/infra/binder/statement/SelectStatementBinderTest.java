@@ -133,11 +133,11 @@ class SelectStatementBinderTest {
     }
     
     @Test
-    void assertBindWithOracleWithClause() {
+    void assertBindOracleWithClause() {
         String sql = "WITH user_temp AS (SELECT t.id, t.user_id, t.user_sn, t.user_no FROM t_user t), "
                 + "product1_temp AS (SELECT * FROM (SELECT t.name, t.detail FROM t_order_product1 t, user_temp WHERE t.user_sn = user_temp.user_sn) WHERE ROWNUM = 1), "
                 + "product2_temp AS (SELECT * FROM (SELECT t.sub_product_url FROM t_order_product2 t, user_temp WHERE t.user_no = user_temp.user_no) WHERE ROWNUM = 1), "
-                + "item_temp AS (SELECT COUNT(item.id) n FROM t_order_item item, user_temp WHERE item.user_id = user_temp.user_id AND item.status IN (1,2)), "
+                + "item_temp AS (SELECT COUNT(item.id) n FROM t_order_item item, user_temp WHERE item.user_id = user_temp.user_id), "
                 + "item_ext_temp AS (SELECT * FROM (SELECT c.item_order_url FROM t_order_item_ext c, t_store r, user_temp WHERE c.item_no = r.item_no AND c.status = 1 "
                 + "OR ((SELECT * FROM item_temp) >= 1) AND r.user_rn = user_temp.id AND r.store_no = 's1234') WHERE ROWNUM = 1) "
                 + "SELECT product1_temp.name, product1_temp.detail, product2_temp.sub_product_url, item_ext_temp.item_order_url FROM product1_temp, product2_temp, item_ext_temp";
@@ -156,8 +156,52 @@ class SelectStatementBinderTest {
         assertThat(((OracleSelectStatement) actual).getWithSegment().get().getCommonTableExpressions().size(), is(5));
     }
     
+    @Test
+    void assertBindOracleWithClauseWhenSelectContainsUnionAll() {
+        String sql = "WITH cte AS \n"
+                + "    (SELECT * FROM t_order o LEFT JOIN t_order_item i ON o.order_id = i.order_id\n"
+                + "    WHERE o.order_id = ?\n"
+                + "    UNION ALL \n"
+                + "    SELECT * FROM \n"
+                + "        (SELECT *\n"
+                + "        FROM t_order o\n"
+                + "        INNER JOIN t_order_item i ON o.order_id = i.order_id\n"
+                + "        ) tt\n"
+                + "        WHERE ROWNUM = 1)\n"
+                + "SELECT * FROM cte\n"
+                + "UNION ALL SELECT * FROM cte\n"
+                + "UNION ALL SELECT * FROM cte WHERE cte.order_id = ?";
+        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.emptyMap());
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.emptyList());
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, databaseType, resourceMetaData, ruleMetaData, buildSchemas());
+        SQLStatementParserEngine parserEngine = new SQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
+        ShardingSphereMetaData metaData =
+                new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), resourceMetaData, ruleMetaData, new ConfigurationProperties(new Properties()));
+        SelectStatement selectStatement = (SelectStatement) parserEngine.parse(sql, false);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, metaData, DefaultDatabase.LOGIC_NAME);
+        assertThat(actual, not(selectStatement));
+        assertThat(actual, instanceOf(OracleSelectStatement.class));
+        assertTrue(((OracleSelectStatement) actual).getWithSegment().isPresent());
+        assertThat(((OracleSelectStatement) actual).getWithSegment().get().getCommonTableExpressions().size(), is(1));
+    }
+    
     private Map<String, ShardingSphereSchema> buildSchemas() {
         Map<String, ShardingSphereTable> tables = new HashMap<>(6, 1F);
+        tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("merchant_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("remark", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_order_item", new ShardingSphereTable("t_order_item", Arrays.asList(
+                new ShardingSphereColumn("item_id", Types.BIGINT, true, false, false, true, false, false),
+                new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("product_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("quantity", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_user", new ShardingSphereTable("t_user", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
@@ -170,11 +214,6 @@ class SelectStatementBinderTest {
         tables.put("t_order_product2", new ShardingSphereTable("t_order_product2", Arrays.asList(
                 new ShardingSphereColumn("user_no", Types.VARCHAR, true, false, false, true, false, false),
                 new ShardingSphereColumn("sub_product_url", Types.VARCHAR, true, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        tables.put("t_order_item", new ShardingSphereTable("t_order_item", Arrays.asList(
-                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("user_id", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("status", Types.INTEGER, true, false, false, true, false, false)),
-                Collections.emptyList(), Collections.emptyList()));
         tables.put("t_order_item_ext", new ShardingSphereTable("t_order_item_ext", Arrays.asList(
                 new ShardingSphereColumn("item_order_url", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("item_no", Types.VARCHAR, false, false, false, true, false, false),

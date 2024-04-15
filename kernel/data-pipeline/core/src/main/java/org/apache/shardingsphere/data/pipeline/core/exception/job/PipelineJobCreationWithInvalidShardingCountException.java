@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Pipeline job creation with invalid sharding count exception.
  */
-public final class PipelineJobCreationWithInvalidShardingCountException extends PipelineSQLException {
+public final class PipelineJobCreationWithInvalidShardingCountException extends PipelineJobException {
     
     private static final long serialVersionUID = 5829502315976905271L;
     
     public PipelineJobCreationWithInvalidShardingCountException(final String jobId) {
-        super(XOpenSQLState.GENERAL_ERROR, 82, String.format("Sharding count of job `%s` is 0.", jobId));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "Sharding count of job '%s' is 0.", jobId);
     }
 }

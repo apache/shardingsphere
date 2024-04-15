@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
 import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.mysql.exception.ParseErrorException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
@@ -93,6 +93,6 @@ class ParseDistSQLExecutorTest {
         String sql = "wrong sql";
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         DistSQLQueryBackendHandler handler = new DistSQLQueryBackendHandler(new ParseStatement(sql), connectionSession);
-        assertThrows(ParseErrorException.class, handler::execute);
+        assertThrows(DialectSQLParsingException.class, handler::execute);
     }
 }

@@ -161,7 +161,7 @@ public abstract class BaseDMLE2EIT {
             }
             rowCount++;
         }
-        assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
+        assertThat("Size of actual result set is different with size of expected data set rows.", rowCount, is(expected.size()));
     }
     
     private void assertValue(final ResultSet actual, final int columnIndex, final String expected, final DatabaseType databaseType) throws SQLException {

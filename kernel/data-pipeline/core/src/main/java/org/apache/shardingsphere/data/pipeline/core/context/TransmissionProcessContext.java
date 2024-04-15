@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 public final class TransmissionProcessContext implements PipelineProcessContext {
     
     @Getter
-    private final PipelineProcessConfiguration processConfig;
+    private final PipelineProcessConfiguration processConfiguration;
     
     @Getter
     private final JobRateLimitAlgorithm readRateLimitAlgorithm;
@@ -51,11 +51,11 @@ public final class TransmissionProcessContext implements PipelineProcessContext 
     private final PipelineLazyInitializer<ExecuteEngine> incrementalExecuteEngineLazyInitializer;
     
     public TransmissionProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
-        this.processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(originalProcessConfig);
-        PipelineReadConfiguration readConfig = processConfig.getRead();
+        processConfiguration = PipelineProcessConfigurationUtils.convertWithDefaultValue(originalProcessConfig);
+        PipelineReadConfiguration readConfig = processConfiguration.getRead();
         AlgorithmConfiguration readRateLimiter = readConfig.getRateLimiter();
         readRateLimitAlgorithm = null == readRateLimiter ? null : TypedSPILoader.getService(JobRateLimitAlgorithm.class, readRateLimiter.getType(), readRateLimiter.getProps());
-        PipelineWriteConfiguration writeConfig = processConfig.getWrite();
+        PipelineWriteConfiguration writeConfig = processConfiguration.getWrite();
         AlgorithmConfiguration writeRateLimiter = writeConfig.getRateLimiter();
         writeRateLimitAlgorithm = null == writeRateLimiter ? null : TypedSPILoader.getService(JobRateLimitAlgorithm.class, writeRateLimiter.getType(), writeRateLimiter.getProps());
         inventoryDumperExecuteEngineLazyInitializer = new PipelineLazyInitializer<ExecuteEngine>() {

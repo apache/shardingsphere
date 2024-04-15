@@ -63,7 +63,7 @@ import java.util.Random;
 /**
  * Database connection manager of ShardingSphere-JDBC.
  */
-public final class DriverDatabaseConnectionManager extends OnlineDatabaseConnectionManager<Connection> implements AutoCloseable {
+public final class DriverDatabaseConnectionManager implements OnlineDatabaseConnectionManager<Connection>, AutoCloseable {
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     

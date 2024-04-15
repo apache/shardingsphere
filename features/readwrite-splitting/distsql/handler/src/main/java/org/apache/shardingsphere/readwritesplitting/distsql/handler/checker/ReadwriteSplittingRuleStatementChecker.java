@@ -20,12 +20,13 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.checker;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredStrategyException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
@@ -33,7 +34,10 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
+import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
+import org.apache.shardingsphere.readwritesplitting.exception.actual.DuplicateReadwriteSplittingActualDataSourceException;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -158,44 +162,48 @@ public final class ReadwriteSplittingRuleStatementChecker {
         Collection<String> existedReadDataSourceNames = new HashSet<>();
         if (null != currentRuleConfig) {
             Collection<String> toBeAlteredRuleNames = isCreating ? Collections.emptySet() : getToBeAlteredRuleNames(segments);
-            currentRuleConfig.getDataSources().forEach(each -> {
-                if (!toBeAlteredRuleNames.contains(each.getName())) {
-                    existedWriteDataSourceNames.add(each.getWriteDataSourceName());
-                    existedReadDataSourceNames.addAll(each.getReadDataSourceNames());
+            for (ReadwriteSplittingDataSourceRuleConfiguration each : currentRuleConfig.getDataSources()) {
+                if (toBeAlteredRuleNames.contains(each.getName())) {
+                    continue;
                 }
-            });
+                existedWriteDataSourceNames.add(each.getWriteDataSourceName());
+                existedReadDataSourceNames.addAll(each.getReadDataSourceNames());
+            }
         }
-        checkDuplicateWriteDataSourceNames(databaseName, segments, existedWriteDataSourceNames);
-        checkDuplicateReadDataSourceNames(databaseName, segments, existedReadDataSourceNames);
+        checkDuplicateWriteDataSourceNames(segments, databaseName, existedWriteDataSourceNames);
+        checkDuplicateReadDataSourceNames(segments, databaseName, existedReadDataSourceNames);
     }
     
     private static Collection<String> getToBeAlteredRuleNames(final Collection<ReadwriteSplittingRuleSegment> segments) {
         return segments.stream().map(ReadwriteSplittingRuleSegment::getName).collect(Collectors.toSet());
     }
     
-    private static void checkDuplicateWriteDataSourceNames(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments, final Collection<String> writeDataSourceNames) {
-        segments.forEach(each -> {
-            if (!Strings.isNullOrEmpty(each.getWriteDataSource())) {
-                String writeDataSource = each.getWriteDataSource();
-                ShardingSpherePreconditions.checkState(writeDataSourceNames.add(writeDataSource), () -> new InvalidRuleConfigurationException("Readwrite-splitting", each.getName(),
-                        String.format("Can not config duplicate write storage unit `%s` in database `%s`", writeDataSource, databaseName)));
+    private static void checkDuplicateWriteDataSourceNames(final Collection<ReadwriteSplittingRuleSegment> segments, final String databaseName,
+                                                           final Collection<String> writeDataSourceNames) {
+        for (ReadwriteSplittingRuleSegment each : segments) {
+            if (Strings.isNullOrEmpty(each.getWriteDataSource())) {
+                continue;
             }
-        });
+            String writeDataSource = each.getWriteDataSource();
+            ShardingSpherePreconditions.checkState(writeDataSourceNames.add(writeDataSource), () -> new DuplicateReadwriteSplittingActualDataSourceException(
+                    ReadwriteSplittingDataSourceType.WRITE, writeDataSource, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, "")));
+        }
     }
     
-    private static void checkDuplicateReadDataSourceNames(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments, final Collection<String> readDataSourceNames) {
+    private static void checkDuplicateReadDataSourceNames(final Collection<ReadwriteSplittingRuleSegment> segments, final String databaseName,
+                                                          final Collection<String> readDataSourceNames) {
         for (ReadwriteSplittingRuleSegment each : segments) {
             if (null != each.getReadDataSources()) {
-                checkDuplicateReadDataSourceNames(databaseName, each, readDataSourceNames);
+                checkDuplicateReadDataSourceNames(each, databaseName, readDataSourceNames);
             }
         }
     }
     
-    private static void checkDuplicateReadDataSourceNames(final String databaseName, final ReadwriteSplittingRuleSegment segment, final Collection<String> readDataSourceNames) {
+    private static void checkDuplicateReadDataSourceNames(final ReadwriteSplittingRuleSegment segment, final String databaseName,
+                                                          final Collection<String> readDataSourceNames) {
         for (String each : segment.getReadDataSources()) {
-            ShardingSpherePreconditions.checkState(readDataSourceNames.add(each),
-                    () -> new InvalidRuleConfigurationException(
-                            "Readwrite-splitting", segment.getName(), String.format("Can not config duplicate read storage unit `%s` in database `%s`.", each, databaseName)));
+            ShardingSpherePreconditions.checkState(readDataSourceNames.add(each), () -> new DuplicateReadwriteSplittingActualDataSourceException(
+                    ReadwriteSplittingDataSourceType.READ, each, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, "")));
         }
     }
     
@@ -204,8 +212,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
         for (ReadwriteSplittingRuleSegment each : segments) {
             if (null != each.getTransactionalReadQueryStrategy()) {
                 ShardingSpherePreconditions.checkState(validStrategyNames.contains(each.getTransactionalReadQueryStrategy().toUpperCase()),
-                        () -> new InvalidRuleConfigurationException(
-                                "Readwrite-splitting", each.getName(), String.format("Invalid transactional read query strategy `%s`.", each.getTransactionalReadQueryStrategy())));
+                        () -> new MissingRequiredStrategyException("Transactional read query", Collections.singleton(each.getTransactionalReadQueryStrategy())));
             }
         }
     }

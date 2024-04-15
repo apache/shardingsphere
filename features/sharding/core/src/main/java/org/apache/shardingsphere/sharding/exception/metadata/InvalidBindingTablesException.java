@@ -28,6 +28,6 @@ public final class InvalidBindingTablesException extends ShardingSQLException {
     private static final long serialVersionUID = 6913516240331555395L;
     
     public InvalidBindingTablesException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 12, "Invalid binding table configuration in ShardingRuleConfiguration.");
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 10, "Invalid binding table configuration.");
     }
 }

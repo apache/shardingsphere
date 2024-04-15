@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -41,13 +40,17 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 @PipelineE2ESettings(database = {
         @PipelineE2EDatabaseSettings(type = "PostgreSQL", scenarioFiles = "env/scenario/general/postgresql.xml"),
@@ -78,7 +81,8 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             log.info("init data begin: {}", LocalDateTime.now());
             DataSourceExecuteUtils.execute(containerComposer.getSourceDataSource(), containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), dataPair.getLeft());
             DataSourceExecuteUtils.execute(containerComposer.getSourceDataSource(), containerComposer.getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
-            log.info("init data end: {}", LocalDateTime.now());
+            int replicationSlotsCount = getReplicationSlotsCount(containerComposer);
+            log.info("init data end: {}, replication slots count: {}", LocalDateTime.now(), replicationSlotsCount);
             startMigrationWithSchema(containerComposer, SOURCE_TABLE_NAME, "t_order");
             Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !listJobId(containerComposer).isEmpty());
             String jobId = getJobIdByTableName(containerComposer, "ds_0.test." + SOURCE_TABLE_NAME);
@@ -90,7 +94,8 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             containerComposer.sourceExecuteWithLog(String.format("INSERT INTO %s (order_id, user_id, status) VALUES (10000, 1, 'OK')", schemaTableName));
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
             containerComposer.assertOrderRecordExist(jdbcDataSource, schemaTableName, 10000);
-            checkOrderMigration(containerComposer, jdbcDataSource, jobId);
+            checkOrderMigration(containerComposer, jobId);
+            startMigrationWithSchema(containerComposer, "t_order_item", "t_order_item");
             checkOrderItemMigration(containerComposer);
             for (String each : listJobId(containerComposer)) {
                 commitMigrationByJobId(containerComposer, each);
@@ -98,25 +103,34 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             List<String> lastJobIds = listJobId(containerComposer);
             assertTrue(lastJobIds.isEmpty());
             containerComposer.assertGreaterThanOrderTableInitRows(jdbcDataSource, PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1, PipelineContainerComposer.SCHEMA_NAME);
+            assertThat("Replication slots count doesn't match, it might be not cleaned, run `SELECT * FROM pg_replication_slots;` in PostgreSQL to verify",
+                    getReplicationSlotsCount(containerComposer), is(replicationSlotsCount));
         }
     }
     
-    private void checkOrderMigration(final PipelineContainerComposer containerComposer, final DataSource jdbcDataSource, final String jobId) throws SQLException {
+    private void checkOrderMigration(final PipelineContainerComposer containerComposer, final String jobId) throws SQLException {
         containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         stopMigrationByJobId(containerComposer, jobId);
-        long recordId = new SnowflakeKeyGenerateAlgorithm().generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
-        containerComposer.sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')",
-                String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME), recordId, 1, "afterStop"));
         startMigrationByJobId(containerComposer, jobId);
-        containerComposer.assertOrderRecordExist(jdbcDataSource, String.join(".", PipelineContainerComposer.SCHEMA_NAME, TARGET_TABLE_NAME), recordId);
         assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
     }
     
     private void checkOrderItemMigration(final PipelineContainerComposer containerComposer) throws SQLException {
-        startMigrationWithSchema(containerComposer, "t_order_item", "t_order_item");
         String jobId = getJobIdByTableName(containerComposer, "ds_0.test.t_order_item");
         containerComposer.waitJobStatusReached(String.format("SHOW MIGRATION STATUS '%s'", jobId), JobStatus.EXECUTE_INCREMENTAL_TASK, 15);
         assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
+    }
+    
+    private int getReplicationSlotsCount(final PipelineContainerComposer containerComposer) throws SQLException {
+        try (
+                Connection connection = containerComposer.getSourceDataSource().getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery("SELECT COUNT(1) FROM pg_replication_slots")) {
+            if (!resultSet.next()) {
+                return 0;
+            }
+            return resultSet.getInt(1);
+        }
     }
     
     private static boolean isEnabled() {

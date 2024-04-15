@@ -57,12 +57,12 @@ class EncryptRuleConfigurationCheckerTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertCheckWhenConfigInvalidCipherColumn() {
-        EncryptRuleConfiguration config = createInvalidCipherColumnConfig();
+        EncryptRuleConfiguration config = createInvalidCipherColumnConfiguration();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
     }
     
-    private EncryptRuleConfiguration createInvalidCipherColumnConfig() {
+    private EncryptRuleConfiguration createInvalidCipherColumnConfiguration() {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.emptyMap());
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "aes_encryptor"));
@@ -74,12 +74,12 @@ class EncryptRuleConfigurationCheckerTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertCheckWhenConfigInvalidAssistColumn() {
-        EncryptRuleConfiguration config = createInvalidAssistColumnConfig();
+        EncryptRuleConfiguration config = createInvalidAssistColumnConfiguration();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
     }
     
-    private EncryptRuleConfiguration createInvalidAssistColumnConfig() {
+    private EncryptRuleConfiguration createInvalidAssistColumnConfiguration() {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.emptyMap());
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "aes_encryptor"));
@@ -92,12 +92,12 @@ class EncryptRuleConfigurationCheckerTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertCheckWhenConfigInvalidLikeColumn() {
-        EncryptRuleConfiguration config = createInvalidLikeColumnConfig();
+        EncryptRuleConfiguration config = createInvalidLikeColumnConfiguration();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
     }
     
-    private EncryptRuleConfiguration createInvalidLikeColumnConfig() {
+    private EncryptRuleConfiguration createInvalidLikeColumnConfiguration() {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.emptyMap());
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "aes_encryptor"));

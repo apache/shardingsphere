@@ -28,6 +28,6 @@ public final class ShadowDataSourceMappingNotFoundException extends ShadowSQLExc
     private static final long serialVersionUID = 4141501883104032467L;
     
     public ShadowDataSourceMappingNotFoundException(final String tableName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "No available shadow data sources mappings in shadow table `%s`.", tableName);
+        super(XOpenSQLState.NOT_FOUND, 2, "No available shadow data sources mappings in shadow table '%s'.", tableName);
     }
 }

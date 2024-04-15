@@ -30,6 +30,8 @@ import org.apache.shardingsphere.proxy.backend.hbase.converter.type.HBaseSelectO
 import org.apache.shardingsphere.proxy.backend.hbase.converter.type.HBaseUpdateOperationConverter;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -37,35 +39,35 @@ import static org.mockito.Mockito.mock;
 class HBaseOperationConverterFactoryTest {
     
     @Test
-    void assertExecuteSelectStatement() {
+    void assertExecuteSelectStatement() throws SQLException {
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         assertThat(converter, instanceOf(HBaseSelectOperationConverter.class));
     }
     
     @Test
-    void assertExecuteInsertStatement() {
+    void assertExecuteInsertStatement() throws SQLException {
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         assertThat(converter, instanceOf(HBaseInsertOperationConverter.class));
     }
     
     @Test
-    void assertExecuteUpdateStatement() {
+    void assertExecuteUpdateStatement() throws SQLException {
         SQLStatementContext sqlStatementContext = mock(UpdateStatementContext.class);
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         assertThat(converter, instanceOf(HBaseUpdateOperationConverter.class));
     }
     
     @Test
-    void assertExecuteDeleteStatement() {
+    void assertExecuteDeleteStatement() throws SQLException {
         SQLStatementContext sqlStatementContext = mock(DeleteStatementContext.class);
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         assertThat(converter, instanceOf(HBaseDeleteOperationConverter.class));
     }
     
     @Test
-    void assertExecuteFlushStatement() {
+    void assertExecuteFlushStatement() throws SQLException {
         SQLStatementContext sqlStatementContext = mock(FlushStatementContext.class);
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         assertThat(converter, instanceOf(HBaseRegionReloadOperationConverter.class));

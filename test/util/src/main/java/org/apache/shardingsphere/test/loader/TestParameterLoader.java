@@ -23,6 +23,7 @@ import com.google.common.io.Files;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.test.env.EnvironmentContext;
 import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
 import org.apache.shardingsphere.test.loader.summary.FileSummary;
@@ -65,11 +66,26 @@ public final class TestParameterLoader {
      */
     @SneakyThrows
     public Stream<ExternalSQLTestParameter> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
+        return load(sqlCaseURI, resultURI, databaseType, reportType, null);
+    }
+    
+    /**
+     * Load test parameters.
+     *
+     * @param sqlCaseURI SQL case URI
+     * @param resultURI result URI
+     * @param databaseType database type
+     * @param reportType report type
+     * @param caseRegex case regex
+     * @return loaded test parameters
+     */
+    @SneakyThrows
+    public Stream<ExternalSQLTestParameter> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType, final String caseRegex) {
         Collection<FileSummary> sqlCaseFileSummaries = loadStrategy.loadSQLCaseFileSummaries(sqlCaseURI);
         Collection<FileSummary> resultFileSummaries = loadStrategy.loadSQLCaseFileSummaries(resultURI);
         Map<String, FileSummary> resultFileSummaryMap =
                 resultFileSummaries.stream().collect(Collectors.toMap(fileSummary -> Files.getNameWithoutExtension(fileSummary.getFileName()), Function.identity()));
-        return sqlCaseFileSummaries.stream().flatMap(each -> {
+        return sqlCaseFileSummaries.stream().filter(each -> StringUtils.isEmpty(caseRegex) || each.getFileName().matches(caseRegex)).flatMap(each -> {
             List<String> sqlCaseFileContent = loadContent(URI.create(each.getAccessURI()));
             String fileName = Files.getNameWithoutExtension(each.getFileName());
             Optional<FileSummary> resultFileSummary = Optional.ofNullable(resultFileSummaryMap.get(fileName));

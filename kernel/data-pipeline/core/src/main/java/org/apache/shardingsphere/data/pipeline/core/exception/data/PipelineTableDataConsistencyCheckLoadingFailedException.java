@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.data;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 import javax.annotation.Nullable;
@@ -25,7 +24,7 @@ import javax.annotation.Nullable;
 /**
  * Pipeline table data consistency check loading failed exception.
  */
-public final class PipelineTableDataConsistencyCheckLoadingFailedException extends PipelineSQLException {
+public final class PipelineTableDataConsistencyCheckLoadingFailedException extends PipelineDataException {
     
     private static final long serialVersionUID = 8965231249677009738L;
     
@@ -34,6 +33,6 @@ public final class PipelineTableDataConsistencyCheckLoadingFailedException exten
     }
     
     public PipelineTableDataConsistencyCheckLoadingFailedException(@Nullable final String schemaName, final String tableName, final Exception cause) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 51, String.format("Data check table `%s` failed.", null != schemaName ? schemaName + "." + tableName : tableName), cause);
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 1, String.format("Data check table '%s' failed.", null != schemaName ? schemaName + "." + tableName : tableName), cause);
     }
 }

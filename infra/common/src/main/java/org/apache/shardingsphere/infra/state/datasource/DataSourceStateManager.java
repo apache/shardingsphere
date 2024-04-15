@@ -87,7 +87,7 @@ public final class DataSourceStateManager {
         try (Connection ignored = dataSource.getConnection()) {
             dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), DataSourceState.ENABLED);
         } catch (final SQLException ex) {
-            ShardingSpherePreconditions.checkState(forceStart, () -> new UnavailableDataSourceException(ex, actualDataSourceName));
+            ShardingSpherePreconditions.checkState(forceStart, () -> new UnavailableDataSourceException(actualDataSourceName, ex));
             log.error("Data source unavailable, ignored with the -f parameter.", ex);
         }
     }
@@ -96,7 +96,7 @@ public final class DataSourceStateManager {
      * Get enabled data sources.
      *
      * @param databaseName database name
-     * @param databaseConfig database config
+     * @param databaseConfig database configuration
      * @return enabled data sources
      */
     public Map<String, DataSource> getEnabledDataSources(final String databaseName, final DatabaseConfiguration databaseConfig) {

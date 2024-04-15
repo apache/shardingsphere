@@ -43,7 +43,7 @@ If the backend is connected to the following databases, download the correspondi
 
 | Database | JDBC Driver                                                                                          |
 |----------|------------------------------------------------------------------------------------------------------|
-| MySQL    | [mysql-connector-java-8.0.31.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.31/) |
+| MySQL    | [mysql-connector-j-8.3.0.jar](https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.3.0/) |
 
 If you are migrating to a heterogeneous database, then you could use more types of database. Introduce JDBC driver as above too.
 

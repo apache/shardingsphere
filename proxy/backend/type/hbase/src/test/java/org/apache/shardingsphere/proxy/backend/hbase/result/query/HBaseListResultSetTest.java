@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.hbase.result.query;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowTablesStatementContext;
-import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 class HBaseListResultSetTest extends AbstractHBaseQueryResultSetTest {
     
     @Test
-    void assertGetRowData() {
+    void assertGetRowData() throws SQLException {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getShowTablesStatement());
         HBaseQueryResultSet resultSet = new HBaseListResultSet();
         ShowTablesStatementContext context = mock(ShowTablesStatementContext.class);
@@ -51,7 +51,7 @@ class HBaseListResultSetTest extends AbstractHBaseQueryResultSetTest {
     }
     
     @Test
-    void assertGetRowDataFromRemoteHBaseCluster() {
+    void assertGetRowDataFromRemoteHBaseCluster() throws SQLException {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("show /*+ hbase */ tables from cluster_lj");
         HBaseQueryResultSet resultSet = new HBaseListResultSet();
         ShowTablesStatementContext context = mock(ShowTablesStatementContext.class);
@@ -66,7 +66,7 @@ class HBaseListResultSetTest extends AbstractHBaseQueryResultSetTest {
     }
     
     @Test
-    void assertGetRowDataByLike() {
+    void assertGetRowDataByLike() throws SQLException {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("show /*+ hbase */ tables  like 't_test' ");
         HBaseQueryResultSet resultSet = new HBaseListResultSet();
         ShowTablesStatementContext context = mock(ShowTablesStatementContext.class);
@@ -87,6 +87,6 @@ class HBaseListResultSetTest extends AbstractHBaseQueryResultSetTest {
         HBaseQueryResultSet resultSet = new HBaseListResultSet();
         ShowTablesStatementContext context = mock(ShowTablesStatementContext.class);
         when(context.getSqlStatement()).thenReturn((MySQLShowTablesStatement) sqlStatement);
-        assertThrows(HBaseOperationException.class, () -> resultSet.init(context));
+        assertThrows(SQLException.class, () -> resultSet.init(context));
     }
 }
