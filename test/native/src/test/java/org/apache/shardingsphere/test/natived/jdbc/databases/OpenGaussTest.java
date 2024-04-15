@@ -95,8 +95,8 @@ class OpenGaussTest {
             connection.createStatement().executeUpdate("CREATE DATABASE demo_ds_0;");
             connection.createStatement().executeUpdate("CREATE DATABASE demo_ds_1;");
             connection.createStatement().executeUpdate("CREATE DATABASE demo_ds_2;");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
         }
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
