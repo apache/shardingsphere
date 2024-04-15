@@ -131,7 +131,7 @@ public final class SQLHintUtils {
     private static Object convert(final String value) {
         try {
             return new BigInteger(value);
-        } catch (final NumberFormatException e) {
+        } catch (final NumberFormatException ignored) {
             return value;
         }
     }
