@@ -57,6 +57,8 @@ public final class E2ETestEnvironment {
     @Getter
     private final String plugin;
     
+    private final long collectDataWaitSeconds;
+    
     @Getter
     private String prometheusHttpUrl;
     
@@ -75,8 +77,6 @@ public final class E2ETestEnvironment {
     private ITContainers containers;
     
     private ProxyRequestExecutor proxyRequestExecutor;
-    
-    private long collectDataWaitSeconds;
     
     private E2ETestEnvironment() {
         Properties props = EnvironmentProperties.loadProperties("env/engine-env.properties");
