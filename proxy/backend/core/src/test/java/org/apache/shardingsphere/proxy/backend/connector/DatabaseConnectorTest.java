@@ -165,8 +165,8 @@ class DatabaseConnectorTest {
             Exception ex = null;
             try {
                 engine.getRowData();
-            } catch (final SQLException | IndexOutOfBoundsException e) {
-                ex = e;
+            } catch (final SQLException | IndexOutOfBoundsException exception) {
+                ex = exception;
             } finally {
                 assertFalse(ex instanceof IndexOutOfBoundsException);
             }
