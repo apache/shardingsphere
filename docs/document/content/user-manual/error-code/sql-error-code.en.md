@@ -33,10 +33,10 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 10203       | 44000     | %s rules '%s' in database '%s' are still in used.                                   |
 | 10204       | 42S01     | Duplicate %s rule names '%s' in database '%s'.                                      |
 | 10210       | 42S02     | %s strategies '%s' do not exist.                                                    |
-| 10300       | HY004     | Invalid format for actual data node '%s'.                                           |
-| 10301       | HY000     | Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.          |
+| 10300       | HY000     | Invalid format for actual data node '%s'.                                           |
+| 10301       | 0A000     | Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.          |
 | 10400       | 44000     | Algorithm '%s.'%s' initialization failed, reason is: %s.                            |
-| 10401       | 44000     | '%s' algorithm on %s is required.                                                   |
+| 10401       | 42S02     | '%s' algorithm on %s is required.                                                   |
 | 10402       | 42S02     | '%s' algorithm '%s' on %s is unregistered.                                          |
 | 10403       | 44000     | %s algorithms '%s' in database '%s' are still in used.                              |
 | 10404       | 44000     | Invalid %s algorithm configuration '%s'.                                            |
@@ -59,7 +59,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | Vendor Code | SQL State | Reason                                   |
 |-------------|-----------|------------------------------------------|
 | 12000       | 42000     | SQL String can not be NULL or empty.     |
-| 12010       | 42000     | Can not support variable '%s'.           |
+| 12010       | 44000     | Can not support variable '%s'.           |
 | 12011       | HY004     | Invalid variable value '%s'.             |
 | 12020       | HV008     | Column index '%d' is out of range.       |
 | 12021       | 42S02     | Can not find column label '%s'.          |
@@ -121,7 +121,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 18105       | HY000     | Target table '%s' is not empty.                                                |
 | 18106       | 01007     | Source data source lacks '%s' privilege(s).                                    |
 | 18107       | HY000     | Source data source required '%s = %s', now is '%s'.                            |
-| 18108       | HY000     | User '%s' does exist.                                                          |
+| 18108       | 42S02     | User '%s' does exist.                                                          |
 | 18109       | 08000     | Check privileges failed on source data source.                                 |
 | 18110       | HY000     | Importer job write data failed.                                                |
 | 18111       | 08000     | Get binlog position failed by job '%s'.                                        |
@@ -221,7 +221,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 21001       | 42S02     | Can not find encrypt table '%s'.                                                             |
 | 21002       | 42S02     | Can not find logic encrypt column by '%s'.                                                   |
 | 21003       | 42S02     | Can not find encrypt column '%s' from table '%s'.                                            |
-| 21004       | HY004     | '%s' column's encrypt algorithm '%s' should support %s in database '%s'.                     |
+| 21004       | HY000     | '%s' column's encrypt algorithm '%s' should support %s in database '%s'.                     |
 | 21010       | 44000     | Altered column '%s' must use same encrypt algorithm with previous column '%s' in table '%s'. |
 | 21020       | 0A000     | The SQL clause '%s' is unsupported in encrypt feature.                                       |
 
@@ -242,7 +242,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 |-------------|-----------|---------------------------------|
 | 30000       | HY000     | Unknown exception: %s           |
 | 30001       | 0A000     | Unsupported SQL operation: %s   |
-| 30002       | 0A000     | Database protocol exception: %s |
+| 30002       | HY000     | Database protocol exception: %s |
 | 30003       | 0A000     | Unsupported command: %s         |
 | 30004       | HY000     | Server exception: %s            |
 | 30010       | HY000     | Can not find plugin class '%s'. |
