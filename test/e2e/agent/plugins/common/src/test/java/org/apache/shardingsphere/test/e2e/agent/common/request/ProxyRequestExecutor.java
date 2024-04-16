@@ -51,7 +51,10 @@ public final class ProxyRequestExecutor implements Runnable {
      * Stop.
      */
     public void stop() {
-        executor.shutdown();
+        try {
+            executor.shutdownNow();
+        } catch (final SecurityException ignored) {
+        }
     }
     
     @Override
