@@ -40,25 +40,25 @@ class ShardingRuleConfigurationToDistSQLConverterTest {
     
     @Test
     void assertConvertWithEmptyTables() {
-        ShardingRuleConfiguration shardingRuleConfiguration = mock(ShardingRuleConfiguration.class);
-        when(shardingRuleConfiguration.getTables()).thenReturn(Collections.emptyList());
-        when(shardingRuleConfiguration.getAutoTables()).thenReturn(Collections.emptyList());
+        ShardingRuleConfiguration shardingRuleConfig = mock(ShardingRuleConfiguration.class);
+        when(shardingRuleConfig.getTables()).thenReturn(Collections.emptyList());
+        when(shardingRuleConfig.getAutoTables()).thenReturn(Collections.emptyList());
         ShardingRuleConfigurationToDistSQLConverter shardingRuleConfigurationToDistSQLConverter = new ShardingRuleConfigurationToDistSQLConverter();
-        assertThat(shardingRuleConfigurationToDistSQLConverter.convert(shardingRuleConfiguration), is(""));
+        assertThat(shardingRuleConfigurationToDistSQLConverter.convert(shardingRuleConfig), is(""));
     }
     
     @Test
     void assertConvert() {
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getTables().add(createShardingTableRuleConfiguration());
-        shardingRuleConfiguration.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "database_inline"));
-        shardingRuleConfiguration.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
-        shardingRuleConfiguration.getShardingAlgorithms().put("database_inline", createShardingInlineAlgorithmConfiguration("ds_${user_id % 2}"));
-        shardingRuleConfiguration.getShardingAlgorithms().put("t_order_inline", createShardingInlineAlgorithmConfiguration("t_order_${order_id % 2}"));
-        shardingRuleConfiguration.getKeyGenerators().put("snowflake", createKeyGeneratorConfiguration());
-        shardingRuleConfiguration.getAuditors().put("sharding_key_required_auditor", createAuditorConfiguration());
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(createShardingTableRuleConfiguration());
+        shardingRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "database_inline"));
+        shardingRuleConfig.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        shardingRuleConfig.getShardingAlgorithms().put("database_inline", createShardingInlineAlgorithmConfiguration("ds_${user_id % 2}"));
+        shardingRuleConfig.getShardingAlgorithms().put("t_order_inline", createShardingInlineAlgorithmConfiguration("t_order_${order_id % 2}"));
+        shardingRuleConfig.getKeyGenerators().put("snowflake", createKeyGeneratorConfiguration());
+        shardingRuleConfig.getAuditors().put("sharding_key_required_auditor", createAuditorConfiguration());
         ShardingRuleConfigurationToDistSQLConverter shardingRuleConfigurationToDistSQLConverter = new ShardingRuleConfigurationToDistSQLConverter();
-        assertThat(shardingRuleConfigurationToDistSQLConverter.convert(shardingRuleConfiguration),
+        assertThat(shardingRuleConfigurationToDistSQLConverter.convert(shardingRuleConfig),
                 is("CREATE SHARDING TABLE RULE t_order (" + System.lineSeparator() + "DATANODES('ds_${0..1}.t_order_${0..1}')," + System.lineSeparator()
                         + "TABLE_STRATEGY(TYPE='standard', SHARDING_COLUMN=order_id, SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))),"
                         + System.lineSeparator() + "KEY_GENERATE_STRATEGY(COLUMN=order_id, TYPE(NAME='snowflake'))," + System.lineSeparator()

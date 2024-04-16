@@ -38,17 +38,17 @@ class EncryptRuleConfigurationToDistSQLConverterTest {
     
     @Test
     void assertConvertWithEmptyTables() {
-        EncryptRuleConfiguration encryptRuleConfiguration = mock(EncryptRuleConfiguration.class);
-        when(encryptRuleConfiguration.getTables()).thenReturn(Collections.emptyList());
+        EncryptRuleConfiguration encryptRuleConfig = mock(EncryptRuleConfiguration.class);
+        when(encryptRuleConfig.getTables()).thenReturn(Collections.emptyList());
         EncryptRuleConfigurationToDistSQLConverter encryptRuleConfigurationToDistSQLConverter = new EncryptRuleConfigurationToDistSQLConverter();
-        assertThat(encryptRuleConfigurationToDistSQLConverter.convert(encryptRuleConfiguration), is(""));
+        assertThat(encryptRuleConfigurationToDistSQLConverter.convert(encryptRuleConfig), is(""));
     }
     
     @Test
     void assertConvert() {
-        EncryptRuleConfiguration encryptRuleConfiguration = getEncryptRuleConfiguration();
+        EncryptRuleConfiguration encryptRuleConfig = getEncryptRuleConfiguration();
         EncryptRuleConfigurationToDistSQLConverter encryptRuleConfigurationToDistSQLConverter = new EncryptRuleConfigurationToDistSQLConverter();
-        assertThat(encryptRuleConfigurationToDistSQLConverter.convert(encryptRuleConfiguration),
+        assertThat(encryptRuleConfigurationToDistSQLConverter.convert(encryptRuleConfig),
                 is("CREATE ENCRYPT RULE t_encrypt (" + System.lineSeparator() + "COLUMNS(" + System.lineSeparator()
                         + "(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, LIKE_QUERY_COLUMN=user_like, ENCRYPT_ALGORITHM(TYPE(NAME='md5')), "
                         + "ASSISTED_QUERY_ALGORITHM(), LIKE_QUERY_ALGORITHM())," + System.lineSeparator()
