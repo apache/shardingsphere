@@ -30,6 +30,6 @@ public final class MissingRequiredReadwriteSplittingActualDataSourceException ex
     private static final long serialVersionUID = 3795576963060485964L;
     
     public MissingRequiredReadwriteSplittingActualDataSourceException(final ReadwriteSplittingDataSourceType dataSourceType, final ReadwriteSplittingRuleExceptionIdentifier exceptionIdentifier) {
-        super(XOpenSQLState.NOT_FOUND, 1, "Readwrite-splitting %s data source is required in %s.", dataSourceType, exceptionIdentifier);
+        super(XOpenSQLState.NOT_FOUND, 2, "Readwrite-splitting %s data source is required in %s.", dataSourceType, exceptionIdentifier);
     }
 }

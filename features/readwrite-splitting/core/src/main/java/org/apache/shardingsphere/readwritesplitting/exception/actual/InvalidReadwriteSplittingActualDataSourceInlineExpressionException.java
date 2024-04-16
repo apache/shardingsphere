@@ -31,6 +31,6 @@ public final class InvalidReadwriteSplittingActualDataSourceInlineExpressionExce
     
     public InvalidReadwriteSplittingActualDataSourceInlineExpressionException(final ReadwriteSplittingDataSourceType dataSourceType,
                                                                               final ReadwriteSplittingRuleExceptionIdentifier exceptionIdentifier) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Readwrite-splitting %s data source inline expression error in %s.", dataSourceType, exceptionIdentifier);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 5, "Readwrite-splitting %s data source inline expression error in %s.", dataSourceType, exceptionIdentifier);
     }
 }
