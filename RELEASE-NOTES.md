@@ -1,4 +1,4 @@
-## Release 5.4.1
+## Release 5.5.0
 
 ### API Change
 1. Proxy: Remove the outdated schemaName configuration of the Proxy
