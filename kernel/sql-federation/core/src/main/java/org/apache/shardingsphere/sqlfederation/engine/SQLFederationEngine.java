@@ -225,7 +225,7 @@ public final class SQLFederationEngine implements AutoCloseable {
                         sqlStatementCompiler);
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
             ShardingSphereTable table = schema.getTable(each);
-            ShardingSpherePreconditions.checkState(null != table, () -> new NoSuchTableException(each));
+            ShardingSpherePreconditions.checkNotNull(table, () -> new NoSuchTableException(each));
             // TODO replace DEFAULT_METADATA_VERSION with actual version in ShardingSphereTable
             result.getTableMetaDataVersions().put(table.getName(), DEFAULT_METADATA_VERSION);
         }
