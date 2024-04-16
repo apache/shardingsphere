@@ -39,7 +39,7 @@ public final class MySQLContainer extends DockerITContainer {
     private static final String READY_USER_PASSWORD = "123456";
     
     public MySQLContainer() {
-        super("mysql", "mysql:5.7");
+        super("mysql", "mysql:8.0");
     }
     
     @Override
