@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAl
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -37,7 +37,6 @@ import org.apache.shardingsphere.readwritesplitting.rule.attribute.ReadwriteSpli
 import org.apache.shardingsphere.readwritesplitting.rule.attribute.ReadwriteSplittingStorageConnectorReusableRuleAttribute;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -69,7 +68,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule {
     }
     
     private Map<String, LoadBalanceAlgorithm> createLoadBalancers(final ReadwriteSplittingRuleConfiguration ruleConfig) {
-        Map<String, LoadBalanceAlgorithm> result = new LinkedHashMap<>(ruleConfig.getDataSources().size(), 1F);
+        Map<String, LoadBalanceAlgorithm> result = new HashMap<>(ruleConfig.getDataSources().size(), 1F);
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
             if (ruleConfig.getLoadBalancers().containsKey(each.getLoadBalancerName())) {
                 AlgorithmConfiguration algorithmConfig = ruleConfig.getLoadBalancers().get(each.getLoadBalancerName());
@@ -88,37 +87,36 @@ public final class ReadwriteSplittingRule implements DatabaseRule {
     }
     
     private Map<String, ReadwriteSplittingDataSourceRule> createDataSourceRules(final String databaseName, final ReadwriteSplittingDataSourceRuleConfiguration config) {
-        LoadBalanceAlgorithm loadBalanceAlgorithm = loadBalancers.getOrDefault(
-                config.getName() + "." + config.getLoadBalancerName(), TypedSPILoader.getService(LoadBalanceAlgorithm.class, null));
+        LoadBalanceAlgorithm loadBalanceAlgorithm = loadBalancers.getOrDefault(config.getName() + "." + config.getLoadBalancerName(), TypedSPILoader.getService(LoadBalanceAlgorithm.class, null));
         return createStaticDataSourceRules(databaseName, config, loadBalanceAlgorithm);
     }
     
     private Map<String, ReadwriteSplittingDataSourceRule> createStaticDataSourceRules(final String databaseName, final ReadwriteSplittingDataSourceRuleConfiguration config,
                                                                                       final LoadBalanceAlgorithm loadBalanceAlgorithm) {
-        List<String> inlineReadwriteDataSourceNames = InlineExpressionParserFactory.newInstance(config.getName()).splitAndEvaluate();
-        List<String> inlineWriteDatasourceNames = InlineExpressionParserFactory.newInstance(config.getWriteDataSourceName()).splitAndEvaluate();
-        List<List<String>> inlineReadDatasourceNames = config.getReadDataSourceNames().stream()
+        List<String> inlineLogicDataSourceNames = InlineExpressionParserFactory.newInstance(config.getName()).splitAndEvaluate();
+        List<String> inlineWriteDataSourceNames = InlineExpressionParserFactory.newInstance(config.getWriteDataSourceName()).splitAndEvaluate();
+        List<List<String>> inlineReadDataSourceNames = config.getReadDataSourceNames().stream()
                 .map(each -> InlineExpressionParserFactory.newInstance(each).splitAndEvaluate()).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(inlineWriteDatasourceNames.size() == inlineReadwriteDataSourceNames.size(),
+        ShardingSpherePreconditions.checkState(inlineWriteDataSourceNames.size() == inlineLogicDataSourceNames.size(),
                 () -> new InvalidReadwriteSplittingActualDataSourceInlineExpressionException(
                         ReadwriteSplittingDataSourceType.WRITE, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, config.getName())));
-        inlineReadDatasourceNames.forEach(each -> ShardingSpherePreconditions.checkState(each.size() == inlineReadwriteDataSourceNames.size(),
+        inlineReadDataSourceNames.forEach(each -> ShardingSpherePreconditions.checkState(each.size() == inlineLogicDataSourceNames.size(),
                 () -> new InvalidReadwriteSplittingActualDataSourceInlineExpressionException(
                         ReadwriteSplittingDataSourceType.READ, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, config.getName()))));
-        Map<String, ReadwriteSplittingDataSourceRule> result = new LinkedHashMap<>(inlineReadwriteDataSourceNames.size(), 1F);
-        for (int i = 0; i < inlineReadwriteDataSourceNames.size(); i++) {
+        Map<String, ReadwriteSplittingDataSourceRule> result = new HashMap<>(inlineLogicDataSourceNames.size(), 1F);
+        for (int i = 0; i < inlineLogicDataSourceNames.size(); i++) {
             ReadwriteSplittingDataSourceRuleConfiguration staticConfig = createStaticDataSourceRuleConfiguration(
-                    config, i, inlineReadwriteDataSourceNames, inlineWriteDatasourceNames, inlineReadDatasourceNames);
-            result.put(inlineReadwriteDataSourceNames.get(i), new ReadwriteSplittingDataSourceRule(staticConfig, config.getTransactionalReadQueryStrategy(), loadBalanceAlgorithm));
+                    config, i, inlineLogicDataSourceNames, inlineWriteDataSourceNames, inlineReadDataSourceNames);
+            result.put(inlineLogicDataSourceNames.get(i), new ReadwriteSplittingDataSourceRule(staticConfig, config.getTransactionalReadQueryStrategy(), loadBalanceAlgorithm));
         }
         return result;
     }
     
     private ReadwriteSplittingDataSourceRuleConfiguration createStaticDataSourceRuleConfiguration(final ReadwriteSplittingDataSourceRuleConfiguration config, final int index,
-                                                                                                  final List<String> readwriteDataSourceNames, final List<String> writeDatasourceNames,
+                                                                                                  final List<String> logicDataSourceNames, final List<String> writeDatasourceNames,
                                                                                                   final List<List<String>> readDatasourceNames) {
         List<String> readDataSourceNames = readDatasourceNames.stream().map(each -> each.get(index)).collect(Collectors.toList());
-        return new ReadwriteSplittingDataSourceRuleConfiguration(readwriteDataSourceNames.get(index), writeDatasourceNames.get(index), readDataSourceNames, config.getLoadBalancerName());
+        return new ReadwriteSplittingDataSourceRuleConfiguration(logicDataSourceNames.get(index), writeDatasourceNames.get(index), readDataSourceNames, config.getLoadBalancerName());
     }
     
     /**
