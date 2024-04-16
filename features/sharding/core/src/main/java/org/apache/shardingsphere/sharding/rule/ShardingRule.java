@@ -49,11 +49,10 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.cache.ShardingCache;
-import org.apache.shardingsphere.sharding.exception.metadata.DuplicateSharingActualDataNodeException;
-import org.apache.shardingsphere.sharding.exception.metadata.InvalidBindingTablesException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.rule.attribute.ShardingDataNodeRuleAttribute;
 import org.apache.shardingsphere.sharding.rule.attribute.ShardingTableNamesRuleAttribute;
+import org.apache.shardingsphere.sharding.rule.checker.ShardingRuleChecker;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -68,7 +67,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -76,7 +74,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -117,6 +114,8 @@ public final class ShardingRule implements DatabaseRule {
     
     private final RuleAttributes attributes;
     
+    private final ShardingRuleChecker shardingRuleChecker = new ShardingRuleChecker(this);
+    
     public ShardingRule(final ShardingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSources, final InstanceContext instanceContext) {
         configuration = ruleConfig;
         this.dataSourceNames = getDataSourceNames(ruleConfig.getTables(), ruleConfig.getAutoTables(), dataSources.keySet());
@@ -125,7 +124,6 @@ public final class ShardingRule implements DatabaseRule {
         ruleConfig.getAuditors().forEach((key, value) -> auditors.put(key, TypedSPILoader.getService(ShardingAuditAlgorithm.class, value.getType(), value.getProps())));
         shardingTables.putAll(createShardingTables(ruleConfig.getTables(), ruleConfig.getDefaultKeyGenerateStrategy()));
         shardingTables.putAll(createShardingAutoTables(ruleConfig.getAutoTables(), ruleConfig.getDefaultKeyGenerateStrategy()));
-        validateUniqueActualDataNodesInTableRules();
         bindingTableRules.putAll(createBindingTableRules(ruleConfig.getBindingTableGroups()));
         defaultDatabaseShardingStrategyConfig = createDefaultDatabaseShardingStrategyConfiguration(ruleConfig);
         defaultTableShardingStrategyConfig = createDefaultTableShardingStrategyConfiguration(ruleConfig);
@@ -134,25 +132,13 @@ public final class ShardingRule implements DatabaseRule {
                 ? TypedSPILoader.getService(KeyGenerateAlgorithm.class, null)
                 : keyGenerators.get(ruleConfig.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = ruleConfig.getDefaultShardingColumn();
-        ShardingSpherePreconditions.checkState(isValidBindingTableConfiguration(shardingTables, new BindingTableCheckedConfiguration(this.dataSourceNames, shardingAlgorithms,
-                ruleConfig.getBindingTableGroups(), defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, defaultShardingColumn)),
-                InvalidBindingTablesException::new);
         keyGenerators.values().stream().filter(InstanceContextAware.class::isInstance).forEach(each -> ((InstanceContextAware) each).setInstanceContext(instanceContext));
         if (defaultKeyGenerateAlgorithm instanceof InstanceContextAware && -1 == instanceContext.getWorkerId()) {
             ((InstanceContextAware) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
         }
         shardingCache = null == ruleConfig.getShardingCache() ? null : new ShardingCache(ruleConfig.getShardingCache(), this);
         attributes = new RuleAttributes(new ShardingDataNodeRuleAttribute(shardingTables), new ShardingTableNamesRuleAttribute(shardingTables.values()));
-    }
-    
-    private void validateUniqueActualDataNodesInTableRules() {
-        Set<DataNode> uniqueActualDataNodes = new HashSet<>(shardingTables.size(), 1L);
-        shardingTables.forEach((key, value) -> {
-            DataNode sampleActualDataNode = value.getActualDataNodes().iterator().next();
-            ShardingSpherePreconditions.checkState(!uniqueActualDataNodes.contains(sampleActualDataNode),
-                    () -> new DuplicateSharingActualDataNodeException(key, sampleActualDataNode.getDataSourceName(), sampleActualDataNode.getTableName()));
-            uniqueActualDataNodes.add(sampleActualDataNode);
-        });
+        shardingRuleChecker.check(ruleConfig);
     }
     
     private ShardingStrategyConfiguration createDefaultDatabaseShardingStrategyConfiguration(final ShardingRuleConfiguration ruleConfig) {
@@ -246,71 +232,6 @@ public final class ShardingRule implements DatabaseRule {
         BindingTableRule result = new BindingTableRule();
         result.getShardingTables().putAll(shardingTables);
         return result;
-    }
-    
-    private boolean isValidBindingTableConfiguration(final Map<String, ShardingTable> shardingTables, final BindingTableCheckedConfiguration checkedConfig) {
-        for (ShardingTableReferenceRuleConfiguration each : checkedConfig.getBindingTableGroups()) {
-            Collection<String> bindingTables = Splitter.on(",").trimResults().splitToList(each.getReference());
-            if (bindingTables.size() <= 1) {
-                continue;
-            }
-            Iterator<String> iterator = bindingTables.iterator();
-            ShardingTable sampleShardingTable = getShardingTable(iterator.next(), shardingTables);
-            while (iterator.hasNext()) {
-                ShardingTable shardingTable = getShardingTable(iterator.next(), shardingTables);
-                if (!isValidActualDataSourceName(sampleShardingTable, shardingTable) || !isValidActualTableName(sampleShardingTable, shardingTable)) {
-                    return false;
-                }
-                if (!isBindingShardingAlgorithm(sampleShardingTable, shardingTable, true, checkedConfig) || !isBindingShardingAlgorithm(sampleShardingTable, shardingTable, false, checkedConfig)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-    
-    private boolean isValidActualDataSourceName(final ShardingTable sampleShardingTable, final ShardingTable shardingTable) {
-        return sampleShardingTable.getActualDataSourceNames().equals(shardingTable.getActualDataSourceNames());
-    }
-    
-    private boolean isValidActualTableName(final ShardingTable sampleShardingTable, final ShardingTable shardingTable) {
-        for (String each : sampleShardingTable.getActualDataSourceNames()) {
-            Collection<String> sampleActualTableNames =
-                    sampleShardingTable.getActualTableNames(each).stream().map(actualTableName -> actualTableName.replace(sampleShardingTable.getTableDataNode().getPrefix(), ""))
-                            .collect(Collectors.toSet());
-            Collection<String> actualTableNames =
-                    shardingTable.getActualTableNames(each).stream().map(optional -> optional.replace(shardingTable.getTableDataNode().getPrefix(), "")).collect(Collectors.toSet());
-            if (!sampleActualTableNames.equals(actualTableNames)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private boolean isBindingShardingAlgorithm(final ShardingTable sampleShardingTable, final ShardingTable shardingTable, final boolean databaseAlgorithm,
-                                               final BindingTableCheckedConfiguration checkedConfig) {
-        return getAlgorithmExpression(sampleShardingTable, databaseAlgorithm, checkedConfig).equals(getAlgorithmExpression(shardingTable, databaseAlgorithm, checkedConfig));
-    }
-    
-    private Optional<String> getAlgorithmExpression(final ShardingTable shardingTable, final boolean databaseAlgorithm, final BindingTableCheckedConfiguration checkedConfig) {
-        ShardingStrategyConfiguration shardingStrategyConfig = databaseAlgorithm
-                ? getDatabaseShardingStrategyConfiguration(shardingTable, checkedConfig.getDefaultDatabaseShardingStrategyConfig())
-                : getTableShardingStrategyConfiguration(shardingTable, checkedConfig.getDefaultTableShardingStrategyConfig());
-        ShardingAlgorithm shardingAlgorithm = checkedConfig.getShardingAlgorithms().get(shardingStrategyConfig.getShardingAlgorithmName());
-        String dataNodePrefix = databaseAlgorithm ? shardingTable.getDataSourceDataNode().getPrefix() : shardingTable.getTableDataNode().getPrefix();
-        String shardingColumn = getShardingColumn(shardingStrategyConfig, checkedConfig.getDefaultShardingColumn());
-        return null == shardingAlgorithm ? Optional.empty() : shardingAlgorithm.getAlgorithmStructure(dataNodePrefix, shardingColumn);
-    }
-    
-    private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig, final String defaultShardingColumn) {
-        String shardingColumn = defaultShardingColumn;
-        if (shardingStrategyConfig instanceof ComplexShardingStrategyConfiguration) {
-            shardingColumn = ((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns();
-        }
-        if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration) {
-            shardingColumn = ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn();
-        }
-        return null == shardingColumn ? "" : shardingColumn;
     }
     
     /**
