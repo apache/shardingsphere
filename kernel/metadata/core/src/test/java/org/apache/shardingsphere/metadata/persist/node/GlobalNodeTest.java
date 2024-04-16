@@ -30,6 +30,11 @@ class GlobalNodeTest {
     }
     
     @Test
+    void assertGetGlobalRuleNode() {
+        assertThat(GlobalNode.getGlobalRuleNode("transaction"), is("/rules/transaction/versions/0"));
+    }
+    
+    @Test
     void assertGetPropsActiveVersionNode() {
         assertThat(GlobalNode.getPropsActiveVersionNode(), is("/props/active_version"));
     }
@@ -37,11 +42,6 @@ class GlobalNodeTest {
     @Test
     void assertGetPropsVersionNode() {
         assertThat(GlobalNode.getPropsVersionNode("0"), is("/props/versions/0"));
-    }
-
-    @Test
-    void assertGetGlobalRuleNode() {
-        assertThat(GlobalNode.getGlobalRuleNode("transaction"), is("/rules/transaction/versions/0"));
     }
 
     @Test
