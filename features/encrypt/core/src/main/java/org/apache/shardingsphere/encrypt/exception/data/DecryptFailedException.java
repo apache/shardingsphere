@@ -28,7 +28,7 @@ public final class DecryptFailedException extends EncryptSQLException {
     
     private static final long serialVersionUID = 1122241238288845667L;
     
-    public DecryptFailedException(final String ciphertext, final SQLExceptionIdentifier sqlExceptionIdentifier) {
-        super(XOpenSQLState.DATA_EXCEPTION, 30, "Failed to decrypt the ciphertext '%s' in '%s'.", ciphertext, sqlExceptionIdentifier);
+    public DecryptFailedException(final String ciphertext, final SQLExceptionIdentifier sqlExceptionIdentifier, final Exception cause) {
+        super(XOpenSQLState.DATA_EXCEPTION, 30, cause, "Failed to decrypt the ciphertext '%s' in '%s'.", ciphertext, sqlExceptionIdentifier);
     }
 }

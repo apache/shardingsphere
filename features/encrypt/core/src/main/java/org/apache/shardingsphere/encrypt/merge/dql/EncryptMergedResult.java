@@ -75,8 +75,7 @@ public final class EncryptMergedResult implements MergedResult {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("Failed to decrypt the ciphertext '{}' in the column '{}' of table '{}'.", cipherValue, originalColumnName, originalTableName, ex);
-            throw new DecryptFailedException(String.valueOf(cipherValue), new SQLExceptionIdentifier(database.getName(), originalTableName, originalColumnName));
+            throw new DecryptFailedException(String.valueOf(cipherValue), new SQLExceptionIdentifier(database.getName(), originalTableName, originalColumnName), ex);
         }
     }
     
