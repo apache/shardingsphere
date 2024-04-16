@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.index;
 
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
-
-import org.junit.jupiter.api.Assertions;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -37,17 +35,15 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.equalToObject;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class IndexReviseEngineTest<T extends ShardingSphereRule> {
-    
-    @Mock
-    private T rule;
     
     @Mock
     private MetaDataReviseEntry<T> metaDataReviseEntry;
@@ -65,7 +61,7 @@ class IndexReviseEngineTest<T extends ShardingSphereRule> {
         when(metaDataReviseEntry.getIndexReviser(any(), anyString())).thenReturn(Optional.empty());
         Collection<IndexMetaData> indexMetaDataCollection = Collections.singletonList(new IndexMetaData("index"));
         Collection<IndexMetaData> actual = indexReviseEngine.revise("tableName", indexMetaDataCollection);
-        Assertions.assertNotNull(actual);
+        assertNotNull(actual);
         assertThat(actual.size(), is(1));
         assertThat(actual, equalToObject(indexMetaDataCollection));
     }
@@ -81,5 +77,4 @@ class IndexReviseEngineTest<T extends ShardingSphereRule> {
         assertThat(actual.size(), equalTo(1));
         assertTrue(actual.contains(indexMetaData));
     }
-    
 }

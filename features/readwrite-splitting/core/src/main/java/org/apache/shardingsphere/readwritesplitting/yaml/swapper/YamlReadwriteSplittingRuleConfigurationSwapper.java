@@ -29,8 +29,8 @@ import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSpl
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -38,9 +38,7 @@ import java.util.stream.Collectors;
 /**
  * YAML readwrite-splitting rule configuration swapper.
  */
-public final class YamlReadwriteSplittingRuleConfigurationSwapper
-        implements
-            YamlRuleConfigurationSwapper<YamlReadwriteSplittingRuleConfiguration, ReadwriteSplittingRuleConfiguration> {
+public final class YamlReadwriteSplittingRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<YamlReadwriteSplittingRuleConfiguration, ReadwriteSplittingRuleConfiguration> {
     
     private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     
@@ -66,14 +64,11 @@ public final class YamlReadwriteSplittingRuleConfigurationSwapper
     
     @Override
     public ReadwriteSplittingRuleConfiguration swapToObject(final YamlReadwriteSplittingRuleConfiguration yamlConfig) {
-        Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
-        for (Entry<String, YamlReadwriteSplittingDataSourceRuleConfiguration> entry : yamlConfig.getDataSources().entrySet()) {
-            dataSources.add(swapToObject(entry.getKey(), entry.getValue()));
-        }
-        Map<String, AlgorithmConfiguration> loadBalancerMap = new LinkedHashMap<>(yamlConfig.getLoadBalancers().entrySet().size(), 1F);
-        if (null != yamlConfig.getLoadBalancers()) {
-            yamlConfig.getLoadBalancers().forEach((key, value) -> loadBalancerMap.put(key, algorithmSwapper.swapToObject(value)));
-        }
+        Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = yamlConfig.getDataSources().entrySet().stream()
+                .map(entry -> swapToObject(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+        Map<String, AlgorithmConfiguration> loadBalancerMap = null == yamlConfig.getLoadBalancers()
+                ? Collections.emptyMap()
+                : yamlConfig.getLoadBalancers().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> algorithmSwapper.swapToObject(entry.getValue())));
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancerMap);
     }
     
