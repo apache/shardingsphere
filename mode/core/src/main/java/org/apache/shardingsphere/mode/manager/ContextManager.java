@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -109,7 +108,7 @@ public final class ContextManager implements AutoCloseable {
      * @return got database
      */
     public ShardingSphereDatabase getDatabase(final String name) {
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(name), NoDatabaseSelectedException::new);
+        ShardingSpherePreconditions.checkNotEmpty(name, NoDatabaseSelectedException::new);
         ShardingSphereMetaData metaData = getMetaDataContexts().getMetaData();
         ShardingSpherePreconditions.checkState(metaData.containsDatabase(name), () -> new UnknownDatabaseException(name));
         return metaData.getDatabase(name);
