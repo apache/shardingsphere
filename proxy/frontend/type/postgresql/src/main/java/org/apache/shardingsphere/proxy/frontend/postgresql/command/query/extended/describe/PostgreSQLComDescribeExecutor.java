@@ -148,7 +148,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 }
                 String columnName = columnNamesOfInsert.get(columnIndex);
                 ShardingSphereColumn column = table.getColumn(columnName);
-                ShardingSpherePreconditions.checkState(null != column, () -> new ColumnNotFoundException(logicTableName, columnName));
+                ShardingSpherePreconditions.checkNotNull(column, () -> new ColumnNotFoundException(logicTableName, columnName));
                 preparedStatement.getParameterTypes().set(parameterMarkerIndex++, PostgreSQLColumnType.valueOfJDBCType(column.getDataType()));
             }
         }

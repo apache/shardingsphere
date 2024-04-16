@@ -54,7 +54,7 @@ public final class ResultSetUtils {
      * @throws SQLFeatureNotSupportedException SQL feature not supported exception
      */
     public static Object convertValue(final Object value, final Class<?> convertType) throws SQLFeatureNotSupportedException {
-        ShardingSpherePreconditions.checkState(null != convertType, () -> new SQLFeatureNotSupportedException("Type can not be null"));
+        ShardingSpherePreconditions.checkNotNull(convertType, () -> new SQLFeatureNotSupportedException("Type can not be null"));
         if (null == value) {
             return convertNullValue(convertType);
         }
