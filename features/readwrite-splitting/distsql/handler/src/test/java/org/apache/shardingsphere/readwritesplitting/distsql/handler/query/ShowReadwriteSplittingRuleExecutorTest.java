@@ -53,23 +53,6 @@ class ShowReadwriteSplittingRuleExecutorTest {
     
     private DistSQLQueryExecuteEngine engine;
     
-    private DistSQLQueryExecuteEngine setUp(final ShowReadwriteSplittingRulesStatement statement, final ReadwriteSplittingRuleConfiguration configuration) {
-        return new DistSQLQueryExecuteEngine(statement, "foo_db", mockContextManager(configuration), mock(DistSQLConnectionContext.class));
-    }
-    
-    private ContextManager mockContextManager(final ReadwriteSplittingRuleConfiguration ruleConfig) {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabase("foo_db")).thenReturn(database);
-        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
-        ReadwriteSplittingExportableRuleAttribute ruleAttribute = mock(ReadwriteSplittingExportableRuleAttribute.class);
-        when(ruleAttribute.getExportData()).thenReturn(createExportedData());
-        when(rule.getConfiguration()).thenReturn(ruleConfig);
-        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
-        when(database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class)).thenReturn(Optional.of(rule));
-        return result;
-    }
-    
     @Test
     void assertGetRowData() throws SQLException {
         engine = setUp(mock(ShowReadwriteSplittingRulesStatement.class), createRuleConfiguration());
@@ -100,6 +83,23 @@ class ShowReadwriteSplittingRuleExecutorTest {
         assertThat(row.getCell(4), is("DYNAMIC"));
         assertThat(row.getCell(5), is("random"));
         assertThat(row.getCell(6), is("{\"read_weight\":\"2:1\"}"));
+    }
+    
+    private DistSQLQueryExecuteEngine setUp(final ShowReadwriteSplittingRulesStatement statement, final ReadwriteSplittingRuleConfiguration ruleConfig) {
+        return new DistSQLQueryExecuteEngine(statement, "foo_db", mockContextManager(ruleConfig), mock(DistSQLConnectionContext.class));
+    }
+    
+    private ContextManager mockContextManager(final ReadwriteSplittingRuleConfiguration ruleConfig) {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
+        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
+        ReadwriteSplittingExportableRuleAttribute ruleAttribute = mock(ReadwriteSplittingExportableRuleAttribute.class);
+        when(ruleAttribute.getExportData()).thenReturn(createExportedData());
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        when(database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class)).thenReturn(Optional.of(rule));
+        return result;
     }
     
     private Map<String, Object> createExportedData() {

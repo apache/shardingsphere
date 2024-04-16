@@ -100,7 +100,7 @@ public final class SystemSchemaManager {
     public static boolean isSystemTable(final String databaseType, final String schema, final Collection<String> tableNames) {
         Collection<String> databaseTypeTables = Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(databaseType)).map(schemas -> schemas.get(schema)).orElse(Collections.emptyList());
         Collection<String> commonTables = Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(COMMON)).map(schemas -> schemas.get(schema)).orElse(Collections.emptyList());
-        for (final String each : tableNames) {
+        for (String each : tableNames) {
             if (!databaseTypeTables.contains(each) && !commonTables.contains(each)) {
                 return false;
             }

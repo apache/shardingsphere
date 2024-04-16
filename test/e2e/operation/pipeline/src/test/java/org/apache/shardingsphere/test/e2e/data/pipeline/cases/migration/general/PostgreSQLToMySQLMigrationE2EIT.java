@@ -60,14 +60,14 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertMySQLToPostgreSQLMigrationSuccess(final PipelineTestParameter testParam) throws SQLException {
-        PostgreSQLContainer<?> postgreSQLContainer = null;
+        PostgreSQLContainer<?> postgresqlContainer = null;
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
             if (PipelineEnvTypeEnum.DOCKER == PipelineE2EEnvironment.getInstance().getItEnvType()) {
-                postgreSQLContainer = new PostgreSQLContainer<>("postgres:13");
-                postgreSQLContainer.withNetwork(containerComposer.getContainerComposer().getContainers().getNetwork()).withNetworkAliases("postgresql.host")
+                postgresqlContainer = new PostgreSQLContainer<>("postgres:13");
+                postgresqlContainer.withNetwork(containerComposer.getContainerComposer().getContainers().getNetwork()).withNetworkAliases("postgresql.host")
                         .withDatabaseName("postgres").withUsername("postgres").withPassword("postgres").withCommand("-c wal_level=logical").start();
             }
-            String jdbcUrl = PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.DOCKER ? postgreSQLContainer.getJdbcUrl() : "jdbc:postgresql://localhost:5432/postgres";
+            String jdbcUrl = PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.DOCKER ? postgresqlContainer.getJdbcUrl() : "jdbc:postgresql://localhost:5432/postgres";
             initSourceTable(jdbcUrl);
             registerMigrationSourceStorageUnit(containerComposer);
             containerComposer.registerStorageUnit(PipelineContainerComposer.DS_0);
@@ -88,8 +88,8 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
             List<String> lastJobIds = listJobId(containerComposer);
             assertTrue(lastJobIds.isEmpty());
         } finally {
-            if (null != postgreSQLContainer) {
-                postgreSQLContainer.close();
+            if (null != postgresqlContainer) {
+                postgresqlContainer.close();
             }
         }
     }

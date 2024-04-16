@@ -36,21 +36,21 @@ class ShadowRuleConfigurationToDistSQLConverterTest {
     
     @Test
     void assertConvertWithoutDataSources() {
-        ShadowRuleConfiguration shadowRuleConfiguration = mock(ShadowRuleConfiguration.class);
-        when(shadowRuleConfiguration.getDataSources()).thenReturn(Collections.emptyList());
+        ShadowRuleConfiguration shadowRuleConfig = mock(ShadowRuleConfiguration.class);
+        when(shadowRuleConfig.getDataSources()).thenReturn(Collections.emptyList());
         ShadowRuleConfigurationToDistSQLConverter shadowRuleConfigurationToDistSQLConverter = new ShadowRuleConfigurationToDistSQLConverter();
-        assertThat(shadowRuleConfigurationToDistSQLConverter.convert(shadowRuleConfiguration), is(""));
+        assertThat(shadowRuleConfigurationToDistSQLConverter.convert(shadowRuleConfig), is(""));
     }
     
     @Test
     void assertConvert() {
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration();
-        shadowRuleConfiguration.getDataSources().add(new ShadowDataSourceConfiguration("shadow_rule", "source", "shadow"));
-        shadowRuleConfiguration.getShadowAlgorithms().put("user_id_select_match_algorithm", new AlgorithmConfiguration("REGEX_MATCH", new Properties()));
-        shadowRuleConfiguration.getTables().put("t_order", new ShadowTableConfiguration(Collections.singleton("shadow_rule"), Collections.singleton("user_id_select_match_algorithm")));
-        shadowRuleConfiguration.getTables().put("t_order_item", new ShadowTableConfiguration(Collections.singleton("shadow_rule"), Collections.singleton("user_id_select_match_algorithm")));
+        ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration();
+        shadowRuleConfig.getDataSources().add(new ShadowDataSourceConfiguration("shadow_rule", "source", "shadow"));
+        shadowRuleConfig.getShadowAlgorithms().put("user_id_select_match_algorithm", new AlgorithmConfiguration("REGEX_MATCH", new Properties()));
+        shadowRuleConfig.getTables().put("t_order", new ShadowTableConfiguration(Collections.singleton("shadow_rule"), Collections.singleton("user_id_select_match_algorithm")));
+        shadowRuleConfig.getTables().put("t_order_item", new ShadowTableConfiguration(Collections.singleton("shadow_rule"), Collections.singleton("user_id_select_match_algorithm")));
         ShadowRuleConfigurationToDistSQLConverter shadowRuleConfigurationToDistSQLConverter = new ShadowRuleConfigurationToDistSQLConverter();
-        assertThat(shadowRuleConfigurationToDistSQLConverter.convert(shadowRuleConfiguration),
+        assertThat(shadowRuleConfigurationToDistSQLConverter.convert(shadowRuleConfig),
                 is("CREATE SHADOW RULE shadow_rule(" + System.lineSeparator() + "SOURCE=source," + System.lineSeparator() + "SHADOW=shadow," + System.lineSeparator()
                         + "t_order(TYPE(NAME='regex_match'))," + System.lineSeparator() + "t_order_item(TYPE(NAME='regex_match'))" + System.lineSeparator() + ");"));
     }

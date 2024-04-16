@@ -96,10 +96,10 @@ class ShardingSphereDatabaseMetaDataTest {
         when(metaDataContexts.getMetaData().getDatabase(shardingSphereConnection.getDatabaseName())).thenReturn(database);
         ShardingRule shardingRule = mockShardingRule();
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
-        ConnectionProperties connectionProperties = mock(ConnectionProperties.class);
-        when(connectionProperties.getCatalog()).thenReturn("test");
-        when(connectionProperties.getSchema()).thenReturn("test");
-        when(database.getResourceMetaData().getStorageUnits().get(DATA_SOURCE_NAME).getConnectionProperties()).thenReturn(connectionProperties);
+        ConnectionProperties connectionProps = mock(ConnectionProperties.class);
+        when(connectionProps.getCatalog()).thenReturn("test");
+        when(connectionProps.getSchema()).thenReturn("test");
+        when(database.getResourceMetaData().getStorageUnits().get(DATA_SOURCE_NAME).getConnectionProperties()).thenReturn(connectionProps);
         shardingSphereDatabaseMetaData = new ShardingSphereDatabaseMetaData(shardingSphereConnection);
     }
     

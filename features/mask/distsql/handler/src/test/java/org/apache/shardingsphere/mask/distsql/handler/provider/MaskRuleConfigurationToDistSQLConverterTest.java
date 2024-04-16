@@ -35,17 +35,17 @@ class MaskRuleConfigurationToDistSQLConverterTest {
     
     @Test
     void assertConvertWithEmptyTables() {
-        MaskRuleConfiguration maskRuleConfiguration = mock(MaskRuleConfiguration.class);
-        when(maskRuleConfiguration.getTables()).thenReturn(Collections.emptyList());
+        MaskRuleConfiguration maskRuleConfig = mock(MaskRuleConfiguration.class);
+        when(maskRuleConfig.getTables()).thenReturn(Collections.emptyList());
         MaskRuleConfigurationToDistSQLConverter maskRuleConfigurationToDistSQLConverter = new MaskRuleConfigurationToDistSQLConverter();
-        assertThat(maskRuleConfigurationToDistSQLConverter.convert(maskRuleConfiguration), is(""));
+        assertThat(maskRuleConfigurationToDistSQLConverter.convert(maskRuleConfig), is(""));
     }
     
     @Test
     void assertConvert() {
-        MaskRuleConfiguration maskRuleConfiguration = getMaskRuleConfiguration();
+        MaskRuleConfiguration maskRuleConfig = getMaskRuleConfiguration();
         MaskRuleConfigurationToDistSQLConverter maskRuleConfigurationToDistSQLConverter = new MaskRuleConfigurationToDistSQLConverter();
-        assertThat(maskRuleConfigurationToDistSQLConverter.convert(maskRuleConfiguration),
+        assertThat(maskRuleConfigurationToDistSQLConverter.convert(maskRuleConfig),
                 is("CREATE MASK RULE t_mask (" + System.lineSeparator() + "COLUMNS(" + System.lineSeparator() + "(NAME=user_id, TYPE(NAME='md5'))" + System.lineSeparator() + "),;"));
     }
     
