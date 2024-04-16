@@ -88,13 +88,13 @@ We deeply appreciate [community contributors](https://shardingsphere.apache.org/
 
 <hr>
 
-:white_check_mark: Version 5.4.1: released :tada:
+:white_check_mark: Version 5.5.0: released :tada:
 
 🔗 For the release notes, follow this link to the relevant [GitHub page](https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md).
 
-:soon: Version 5.4.2
+:soon: Version 5.5.1
 
-We are currently working towards our 5.4.2 milestone.
+We are currently working towards our 5.5.1 milestone.
 Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo to stay up to date.
 
 [comment]: <> (##)
