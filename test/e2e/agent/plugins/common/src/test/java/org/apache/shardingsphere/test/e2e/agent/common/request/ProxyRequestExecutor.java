@@ -25,7 +25,7 @@ import org.testcontainers.shaded.org.awaitility.Awaitility;
 import java.sql.Connection;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -66,7 +66,7 @@ public final class ProxyRequestExecutor implements Runnable {
     }
     
     private void request() {
-        List<Long> results = new ArrayList<>(10);
+        Collection<Long> results = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
             OrderEntity orderEntity = new OrderEntity(i, i, "INSERT_TEST");
             JDBCAgentTestUtils.insertOrder(orderEntity, connection);
