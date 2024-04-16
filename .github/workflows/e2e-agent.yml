@@ -98,7 +98,7 @@ jobs:
           name: jdbc-e2e-image
           path: /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-jdbc-agent-test.tar
           retention-days: 10
-    
+  
   agent-mysql:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: E2E - Agent with MySQL

@@ -29,6 +29,8 @@ import org.apache.shardingsphere.test.e2e.agent.common.container.ZipkinContainer
 import org.apache.shardingsphere.test.e2e.agent.common.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.agent.common.enums.PluginType;
 import org.apache.shardingsphere.test.e2e.agent.common.request.ProxyRequestExecutor;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainerFactory;
 import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
@@ -37,6 +39,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -111,12 +114,18 @@ public final class E2ETestEnvironment {
     
     private void createProxyEnvironment() {
         containers = new ITContainers();
-        containers.registerContainer(new MySQLContainer());
-        containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"));
-        initPluginContainer(containers);
+        MySQLContainer storageContainer = new MySQLContainer();
+        GovernanceContainer governanceContainer = GovernanceContainerFactory.newInstance("ZooKeeper");
         ShardingSphereProxyContainer proxyContainer = PluginType.FILE.getValue().equalsIgnoreCase(plugin)
                 ? new ShardingSphereProxyContainer(plugin, this::collectLogs)
                 : new ShardingSphereProxyContainer(plugin);
+        proxyContainer.dependsOn(storageContainer);
+        proxyContainer.dependsOn(governanceContainer);
+        Optional<DockerITContainer> pluginContainer = getPluginContainer();
+        pluginContainer.ifPresent(proxyContainer::dependsOn);
+        pluginContainer.ifPresent(optional -> containers.registerContainer(optional));
+        containers.registerContainer(storageContainer);
+        containers.registerContainer(governanceContainer);
         containers.registerContainer(proxyContainer);
         containers.start();
         initHttpUrl();
@@ -129,27 +138,32 @@ public final class E2ETestEnvironment {
     
     private void createJDBCEnvironment() {
         containers = new ITContainers();
-        containers.registerContainer(new MySQLContainer());
-        initPluginContainer(containers);
+        Optional<DockerITContainer> pluginContainer = getPluginContainer();
+        MySQLContainer storageContainer = new MySQLContainer();
         ShardingSphereJdbcContainer jdbcContainer = PluginType.FILE.getValue().equalsIgnoreCase(plugin)
                 ? new ShardingSphereJdbcContainer(plugin, this::collectLogs)
                 : new ShardingSphereJdbcContainer(plugin);
+        jdbcContainer.dependsOn(storageContainer);
+        pluginContainer.ifPresent(jdbcContainer::dependsOn);
+        pluginContainer.ifPresent(optional -> containers.registerContainer(optional));
+        containers.registerContainer(storageContainer);
         containers.registerContainer(jdbcContainer);
         containers.start();
         initHttpUrl();
     }
     
-    private void initPluginContainer(final ITContainers containers) {
+    private Optional<DockerITContainer> getPluginContainer() {
         if (PluginType.PROMETHEUS.getValue().equalsIgnoreCase(plugin)) {
             prometheusContainer = new PrometheusContainer();
-            containers.registerContainer(prometheusContainer);
+            return Optional.of(prometheusContainer);
         } else if (PluginType.ZIPKIN.getValue().equalsIgnoreCase(plugin)) {
             zipkinContainer = new ZipkinContainer();
-            containers.registerContainer(zipkinContainer);
+            return Optional.of(zipkinContainer);
         } else if (PluginType.JAEGER.getValue().equalsIgnoreCase(plugin)) {
             jaegerContainer = new JaegerContainer();
-            containers.registerContainer(jaegerContainer);
+            return Optional.of(jaegerContainer);
         }
+        return Optional.empty();
     }
     
     private void collectLogs(final OutputFrame outputFrame) {
