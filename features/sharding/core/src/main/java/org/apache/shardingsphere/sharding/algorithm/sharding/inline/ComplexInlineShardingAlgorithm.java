@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
@@ -63,7 +62,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     
     private String getAlgorithmExpression(final Properties props) {
         String algorithmExpression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(algorithmExpression), () -> new AlgorithmInitializationException(this, "Inline sharding algorithm expression can not be null."));
+        ShardingSpherePreconditions.checkNotEmpty(algorithmExpression, () -> new AlgorithmInitializationException(this, "Inline sharding algorithm expression can not be null."));
         return InlineExpressionParserFactory.newInstance(algorithmExpression.trim()).handlePlaceHolder();
     }
     

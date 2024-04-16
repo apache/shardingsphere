@@ -44,4 +44,15 @@ class ShardingSpherePreconditionsTest {
     void assertCheckNotNullToNotThrowException() throws SQLException {
         ShardingSpherePreconditions.checkNotNull(new Object(), SQLException::new);
     }
+    
+    @Test
+    void assertCheckNotEmptyToThrowsException() {
+        assertThrows(SQLException.class, () -> ShardingSpherePreconditions.checkNotEmpty(null, SQLException::new));
+        assertThrows(SQLException.class, () -> ShardingSpherePreconditions.checkNotEmpty("", SQLException::new));
+    }
+    
+    @Test
+    void assertCheckNotEmptyToNotThrowException() throws SQLException {
+        ShardingSpherePreconditions.checkNotEmpty("foo", SQLException::new);
+    }
 }

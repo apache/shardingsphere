@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
@@ -120,8 +119,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     
     private DateTimeFormatter getTableSuffixPattern(final Properties props) {
         String suffix = props.getProperty(SHARDING_SUFFIX_FORMAT_KEY);
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(suffix),
-                () -> new AlgorithmInitializationException(this, String.format("%s can not be null or empty.", SHARDING_SUFFIX_FORMAT_KEY)));
+        ShardingSpherePreconditions.checkNotEmpty(suffix, () -> new AlgorithmInitializationException(this, String.format("%s can not be null or empty.", SHARDING_SUFFIX_FORMAT_KEY)));
         return DateTimeFormatter.ofPattern(suffix);
     }
     

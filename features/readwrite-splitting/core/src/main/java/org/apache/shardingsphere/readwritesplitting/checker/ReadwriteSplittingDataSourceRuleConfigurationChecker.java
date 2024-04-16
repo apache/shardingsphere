@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.checker;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -62,8 +61,8 @@ public final class ReadwriteSplittingDataSourceRuleConfigurationChecker {
      * @param builtRules built rules
      */
     public void check(final Collection<String> builtWriteDataSourceNames, final Collection<String> builtReadDataSourceNames, final Collection<ShardingSphereRule> builtRules) {
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(config.getName()), () -> new MissingRequiredReadwriteSplittingDataSourceRuleNameException(databaseName));
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(config.getWriteDataSourceName()),
+        ShardingSpherePreconditions.checkNotEmpty(config.getName(), () -> new MissingRequiredReadwriteSplittingDataSourceRuleNameException(databaseName));
+        ShardingSpherePreconditions.checkNotEmpty(config.getWriteDataSourceName(),
                 () -> new MissingRequiredReadwriteSplittingActualDataSourceException(ReadwriteSplittingDataSourceType.WRITE, exceptionIdentifier));
         ShardingSpherePreconditions.checkState(!config.getReadDataSourceNames().isEmpty(),
                 () -> new MissingRequiredReadwriteSplittingActualDataSourceException(ReadwriteSplittingDataSourceType.READ, exceptionIdentifier));

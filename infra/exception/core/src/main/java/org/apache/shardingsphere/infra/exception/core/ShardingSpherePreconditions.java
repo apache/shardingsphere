@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.exception.core;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -52,6 +53,20 @@ public final class ShardingSpherePreconditions {
      */
     public static <T extends Throwable> void checkNotNull(final Object reference, final Supplier<T> exceptionSupplierIfUnexpected) throws T {
         if (null == reference) {
+            throw exceptionSupplierIfUnexpected.get();
+        }
+    }
+    
+    /**
+     * Ensures that a string passed as a parameter to the calling method is not empty.
+     *
+     * @param <T> type of exception
+     * @param value string to be checked
+     * @param exceptionSupplierIfUnexpected exception from this supplier will be thrown if expression is unexpected
+     * @throws T exception to be thrown
+     */
+    public static <T extends Throwable> void checkNotEmpty(final String value, final Supplier<T> exceptionSupplierIfUnexpected) throws T {
+        if (Strings.isNullOrEmpty(value)) {
             throw exceptionSupplierIfUnexpected.get();
         }
     }
