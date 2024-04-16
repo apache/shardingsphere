@@ -31,6 +31,6 @@ public final class ReadwriteSplittingActualDataSourceNotFoundException extends R
     
     public ReadwriteSplittingActualDataSourceNotFoundException(final ReadwriteSplittingDataSourceType dataSourceType,
                                                                final String dataSourceName, final ReadwriteSplittingRuleExceptionIdentifier exceptionIdentifier) {
-        super(XOpenSQLState.NOT_FOUND, 2, "Can not find readwrite-splitting %s data source '%s' in %s.", dataSourceType, dataSourceName, exceptionIdentifier);
+        super(XOpenSQLState.NOT_FOUND, 3, "Can not find readwrite-splitting %s data source '%s' in %s.", dataSourceType, dataSourceName, exceptionIdentifier);
     }
 }

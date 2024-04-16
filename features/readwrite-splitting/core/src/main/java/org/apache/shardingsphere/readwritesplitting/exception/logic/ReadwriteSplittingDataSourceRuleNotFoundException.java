@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.exception.actual;
+package org.apache.shardingsphere.readwritesplitting.exception.logic;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
-import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
- * Duplicate readwrite-splitting actual data source exception.
+ * Readwrite-splitting data source rule not found exception.
  */
-public final class DuplicateReadwriteSplittingActualDataSourceException extends ReadwriteSplittingSQLException {
+public final class ReadwriteSplittingDataSourceRuleNotFoundException extends ReadwriteSplittingSQLException {
     
-    private static final long serialVersionUID = -58671655670347084L;
+    private static final long serialVersionUID = -6293739163056594102L;
     
-    public DuplicateReadwriteSplittingActualDataSourceException(final ReadwriteSplittingDataSourceType dataSourceType,
-                                                                final String dataSourceName, final ReadwriteSplittingRuleExceptionIdentifier exceptionIdentifier) {
-        super(XOpenSQLState.DUPLICATE, 4, "Readwrite-splitting %s data source '%s' is duplicated in %s.", dataSourceName, dataSourceType, exceptionIdentifier);
+    public ReadwriteSplittingDataSourceRuleNotFoundException(final String dataSourceRuleName, final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 1, "Can not find readwrite-splitting data source rule '%s' in database '%s'.", dataSourceRuleName, databaseName);
     }
 }
