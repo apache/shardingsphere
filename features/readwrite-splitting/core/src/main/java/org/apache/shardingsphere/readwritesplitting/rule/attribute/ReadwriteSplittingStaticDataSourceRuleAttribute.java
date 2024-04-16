@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceDeletedEvent;
-import org.apache.shardingsphere.readwritesplitting.exception.logic.ReadwriteSplittingDataSourceRuleNameNotFoundException;
+import org.apache.shardingsphere.readwritesplitting.exception.logic.ReadwriteSplittingDataSourceRuleNotFoundException;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 
 import java.util.Collection;
@@ -61,7 +61,7 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
         QualifiedDatabase qualifiedDatabase = dataSourceEvent.getQualifiedDatabase();
         ReadwriteSplittingDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDatabase.getGroupName());
         ShardingSpherePreconditions.checkNotNull(dataSourceRule,
-                () -> new ReadwriteSplittingDataSourceRuleNameNotFoundException(qualifiedDatabase.getGroupName(), qualifiedDatabase.getDatabaseName()));
+                () -> new ReadwriteSplittingDataSourceRuleNotFoundException(qualifiedDatabase.getGroupName(), qualifiedDatabase.getDatabaseName()));
         if (DataSourceState.DISABLED == dataSourceEvent.getDataSource().getStatus()) {
             dataSourceRule.disableDataSource(dataSourceEvent.getQualifiedDatabase().getDataSourceName());
         } else {
@@ -71,7 +71,7 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
     
     @Override
     public void cleanStorageNodeDataSource(final String groupName) {
-        ShardingSpherePreconditions.checkState(dataSourceRules.containsKey(groupName), () -> new ReadwriteSplittingDataSourceRuleNameNotFoundException(groupName, databaseName));
+        ShardingSpherePreconditions.checkState(dataSourceRules.containsKey(groupName), () -> new ReadwriteSplittingDataSourceRuleNotFoundException(groupName, databaseName));
         deleteStorageNodeDataSources(dataSourceRules.get(groupName));
     }
     

@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
- * Readwrite-splitting data source rule name not found exception.
+ * Readwrite-splitting data source rule not found exception.
  */
-public final class ReadwriteSplittingDataSourceRuleNameNotFoundException extends ReadwriteSplittingSQLException {
+public final class ReadwriteSplittingDataSourceRuleNotFoundException extends ReadwriteSplittingSQLException {
     
     private static final long serialVersionUID = -6293739163056594102L;
     
-    public ReadwriteSplittingDataSourceRuleNameNotFoundException(final String dataSourceRuleName, final String databaseName) {
-        super(XOpenSQLState.NOT_FOUND, 1, "Can not find readwrite-splitting data source rule name '%s' in database '%s'.", dataSourceRuleName, databaseName);
+    public ReadwriteSplittingDataSourceRuleNotFoundException(final String dataSourceRuleName, final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 1, "Can not find readwrite-splitting data source rule '%s' in database '%s'.", dataSourceRuleName, databaseName);
     }
 }
