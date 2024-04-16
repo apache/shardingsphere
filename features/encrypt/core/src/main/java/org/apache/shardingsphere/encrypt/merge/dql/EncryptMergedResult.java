@@ -25,6 +25,7 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
@@ -75,7 +76,7 @@ public final class EncryptMergedResult implements MergedResult {
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             log.error("Failed to decrypt the ciphertext '{}' in the column '{}' of table '{}'.", cipherValue, originalColumnName, originalTableName, ex);
-            throw new DecryptFailedException(String.valueOf(cipherValue), originalColumnName, originalTableName);
+            throw new DecryptFailedException(String.valueOf(cipherValue), new SQLExceptionIdentifier(database.getName(), originalTableName, originalColumnName));
         }
     }
     

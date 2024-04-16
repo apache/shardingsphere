@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.exception.data;
 
 import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
@@ -27,7 +28,7 @@ public final class DecryptFailedException extends EncryptSQLException {
     
     private static final long serialVersionUID = 1122241238288845667L;
     
-    public DecryptFailedException(final String ciphertext, final String column, final String table) {
-        super(XOpenSQLState.DATA_EXCEPTION, 30, "Failed to decrypt the ciphertext '%s' in the column '%s' of table '%s'.", ciphertext, column, table);
+    public DecryptFailedException(final String ciphertext, final SQLExceptionIdentifier sqlExceptionIdentifier) {
+        super(XOpenSQLState.DATA_EXCEPTION, 30, "Failed to decrypt the ciphertext '%s' in '%s'.", ciphertext, sqlExceptionIdentifier);
     }
 }
