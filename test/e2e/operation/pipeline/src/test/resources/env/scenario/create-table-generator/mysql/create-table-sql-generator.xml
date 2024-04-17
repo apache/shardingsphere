@@ -37,9 +37,9 @@
                 CREATE TABLE `t_order` (
                 `order_id` int NOT NULL,
                 `user_id` int NOT NULL,
-                `status` varchar(45) DEFAULT NULL,
+                `status` varchar(45) COLLATE utf8mb4_general_ci DEFAULT NULL,
                 PRIMARY KEY (`order_id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
             </sql>
         </output>
     </create-table-generator-assertion>
@@ -68,10 +68,10 @@
                 `item_id` int NOT NULL,
                 `order_id` int NOT NULL,
                 `user_id` int NOT NULL,
-                `status` varchar(45) DEFAULT NULL,
+                `status` varchar(45) COLLATE utf8mb4_general_ci DEFAULT NULL,
                 `creation_date` date DEFAULT NULL,
                 PRIMARY KEY (`item_id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
             </sql>
         </output>
     </create-table-generator-assertion>
