@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.encrypt.exception.data.DecryptFailedException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
@@ -38,7 +37,6 @@ import java.util.Optional;
 /**
  * Merged result for encrypt.
  */
-@Slf4j
 @RequiredArgsConstructor
 public final class EncryptMergedResult implements MergedResult {
     
