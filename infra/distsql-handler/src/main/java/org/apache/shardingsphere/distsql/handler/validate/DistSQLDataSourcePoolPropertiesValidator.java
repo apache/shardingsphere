@@ -36,6 +36,6 @@ public final class DistSQLDataSourcePoolPropertiesValidator {
      */
     public void validate(final Map<String, DataSourcePoolProperties> propsMap) {
         Map<String, Exception> exceptions = DataSourcePoolPropertiesValidator.validate(propsMap);
-        ShardingSpherePreconditions.checkState(exceptions.isEmpty(), () -> new StorageUnitsConnectException(exceptions));
+        ShardingSpherePreconditions.checkMustEmpty(exceptions, () -> new StorageUnitsConnectException(exceptions));
     }
 }

@@ -85,6 +85,6 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
         // TODO check actual tables not be used in multi rules, and remove this check logic
         Set<String> actualTables = routeContext.getRouteUnits().stream().flatMap(each -> each.getTableMappers().stream().map(RouteMapper::getActualName)).collect(Collectors.toSet());
         Collection<String> inUsedTables = actualTables.stream().filter(otherRuleActualTables::contains).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(inUsedTables.isEmpty(), () -> new InUsedTablesException(inUsedTables));
+        ShardingSpherePreconditions.checkMustEmpty(inUsedTables, () -> new InUsedTablesException(inUsedTables));
     }
 }

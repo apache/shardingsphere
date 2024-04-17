@@ -54,7 +54,7 @@ public final class DropBroadcastTableRuleExecutor implements DatabaseRuleDropExe
     private void checkBroadcastTableRuleExist(final DropBroadcastTableRuleStatement sqlStatement) {
         Collection<String> currentRules = new CaseInsensitiveSet<>(rule.getConfiguration().getTables());
         Collection<String> notExistedRules = sqlStatement.getTables().stream().filter(each -> !currentRules.contains(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedRules.isEmpty(), () -> new MissingRequiredRuleException("Broadcast", database.getName(), notExistedRules));
+        ShardingSpherePreconditions.checkMustEmpty(notExistedRules, () -> new MissingRequiredRuleException("Broadcast", database.getName(), notExistedRules));
     }
     
     @Override

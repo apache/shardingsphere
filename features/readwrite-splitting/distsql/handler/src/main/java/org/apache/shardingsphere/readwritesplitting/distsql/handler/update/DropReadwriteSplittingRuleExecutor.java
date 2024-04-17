@@ -66,13 +66,13 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     private void checkToBeDroppedRuleNames(final DropReadwriteSplittingRuleStatement sqlStatement) {
         Collection<String> currentRuleNames = rule.getConfiguration().getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = sqlStatement.getNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedRuleNames.isEmpty(), () -> new MissingRequiredRuleException("Readwrite-splitting", database.getName(), sqlStatement.getNames()));
+        ShardingSpherePreconditions.checkMustEmpty(notExistedRuleNames, () -> new MissingRequiredRuleException("Readwrite-splitting", database.getName(), sqlStatement.getNames()));
     }
     
     private void checkToBeDroppedInUsed(final DropReadwriteSplittingRuleStatement sqlStatement) {
         Collection<String> resourceBeUsed = getInUsedResources();
         Collection<String> ruleInUsed = sqlStatement.getNames().stream().filter(resourceBeUsed::contains).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(ruleInUsed.isEmpty(), () -> new InUsedRuleException("Readwrite-splitting", database.getName(), ruleInUsed));
+        ShardingSpherePreconditions.checkMustEmpty(ruleInUsed, () -> new InUsedRuleException("Readwrite-splitting", database.getName(), ruleInUsed));
     }
     
     private Collection<String> getInUsedResources() {

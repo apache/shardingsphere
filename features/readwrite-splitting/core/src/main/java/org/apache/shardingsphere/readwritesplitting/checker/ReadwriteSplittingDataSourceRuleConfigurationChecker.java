@@ -64,7 +64,7 @@ public final class ReadwriteSplittingDataSourceRuleConfigurationChecker {
         ShardingSpherePreconditions.checkNotEmpty(config.getName(), () -> new MissingRequiredReadwriteSplittingDataSourceRuleNameException(databaseName));
         ShardingSpherePreconditions.checkNotEmpty(config.getWriteDataSourceName(),
                 () -> new MissingRequiredReadwriteSplittingActualDataSourceException(ReadwriteSplittingDataSourceType.WRITE, exceptionIdentifier));
-        ShardingSpherePreconditions.checkState(!config.getReadDataSourceNames().isEmpty(),
+        ShardingSpherePreconditions.checkNotEmpty(config.getReadDataSourceNames(),
                 () -> new MissingRequiredReadwriteSplittingActualDataSourceException(ReadwriteSplittingDataSourceType.READ, exceptionIdentifier));
         checkActualSourceNames(ReadwriteSplittingDataSourceType.WRITE, config.getWriteDataSourceName(), builtWriteDataSourceNames, builtRules);
         config.getReadDataSourceNames().forEach(each -> checkActualSourceNames(ReadwriteSplittingDataSourceType.READ, each, builtReadDataSourceNames, builtRules));

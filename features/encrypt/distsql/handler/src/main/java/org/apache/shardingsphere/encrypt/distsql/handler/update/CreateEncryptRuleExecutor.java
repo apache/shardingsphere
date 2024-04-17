@@ -65,7 +65,7 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
     
     private void checkDuplicateRuleNames(final CreateEncryptRuleStatement sqlStatement) {
         Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement);
-        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("encrypt", database.getName(), duplicatedRuleNames));
+        ShardingSpherePreconditions.checkMustEmpty(duplicatedRuleNames, () -> new DuplicateRuleException("encrypt", database.getName(), duplicatedRuleNames));
     }
     
     private Collection<String> getDuplicatedRuleNames(final CreateEncryptRuleStatement sqlStatement) {
@@ -138,7 +138,7 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
     }
     
     private void checkDataSources() {
-        ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getStorageUnits().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
+        ShardingSpherePreconditions.checkNotEmpty(database.getResourceMetaData().getStorageUnits(), () -> new EmptyStorageUnitException(database.getName()));
     }
     
     @Override

@@ -59,7 +59,7 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
         Collection<String> currentEncryptTableNames = rule.getConfiguration().getTables()
                 .stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new MissingRequiredRuleException("Encrypt", database.getName(), notExistedTableNames));
+        ShardingSpherePreconditions.checkMustEmpty(notExistedTableNames, () -> new MissingRequiredRuleException("Encrypt", database.getName(), notExistedTableNames));
     }
     
     @Override
