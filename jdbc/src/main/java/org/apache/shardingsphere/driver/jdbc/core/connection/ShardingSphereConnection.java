@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
@@ -43,6 +44,7 @@ import java.sql.Statement;
 /**
  * ShardingSphere connection.
  */
+@Slf4j
 @HighFrequencyInvocation
 public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
@@ -311,7 +313,9 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Override
     public void close() throws SQLException {
+        log.info("close");
         if (databaseConnectionManager.getConnectionTransaction().isInTransaction()) {
+            log.info("close and rollback ");
             databaseConnectionManager.getConnectionTransaction().rollback();
         }
         closed = true;
