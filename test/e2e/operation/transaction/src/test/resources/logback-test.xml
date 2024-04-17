@@ -27,6 +27,13 @@
     <logger name="com.zaxxer.hikari.pool.ProxyConnection" level="OFF" />
     <logger name="org.testcontainers" level="INFO" />
     <logger name="com.github.dockerjava" level="WARN" />
+
+    <logger name="com.atomikos" level="INFO" />
+
+    <logger name="org.opengauss" level="INFO" />
+
+    <logger category="com.arjuna" level="TRACE" />
+    
     <root>
         <level value="INFO" />
         <appender-ref ref="console" />
