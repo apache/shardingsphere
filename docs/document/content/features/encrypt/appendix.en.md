@@ -9,6 +9,7 @@ Unsupported SQL：
 - Comparison operations are not supported for encrypted fields, such as GREATER THAN, LESS THAN, ORDER BY, BETWEEN.
 - Calculation operations are not supported for encrypted fields, such as AVG, SUM, and computation expressions.
 - SQL that contains encrypt column in subquery and uses asterisks for outer projection is not supported.
+- SQL that contains encrypt column in UNION, INTERSECT, and EXCEPT statements is not supported.
 
 Other:
 
