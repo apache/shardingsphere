@@ -224,6 +224,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 21004       | HY000     | '%s' column's encrypt algorithm '%s' should support %s in database '%s'.                     |
 | 21010       | 44000     | Altered column '%s' must use same encrypt algorithm with previous column '%s' in table '%s'. |
 | 21020       | 0A000     | The SQL clause '%s' is unsupported in encrypt feature.                                       |
+| 21030       | 22000     | Failed to decrypt the ciphertext '%s' in the column '%s' of table '%s'.                      |
+
 
 ### Shadow Database
 
