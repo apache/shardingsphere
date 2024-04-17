@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseTypeAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
+import org.apache.shardingsphere.encrypt.rewrite.token.util.EncryptTokenGeneratorUtils;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
@@ -90,6 +91,9 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     }
     
     private void addGenerateSQLTokens(final Collection<SQLToken> sqlTokens, final SelectStatementContext selectStatementContext) {
+        ShardingSpherePreconditions.checkState(
+                !selectStatementContext.isContainsCombine() || !EncryptTokenGeneratorUtils.isContainsEncryptProjectionInCombineStatement(selectStatementContext, encryptRule),
+                () -> new UnsupportedSQLOperationException("Can not support encrypt projection in combine statement"));
         for (ProjectionSegment each : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
             SubqueryType subqueryType = selectStatementContext.getSubqueryType();
             if (each instanceof ColumnProjectionSegment) {
