@@ -47,7 +47,7 @@ public final class ShadowRuleStatementChecker {
      */
     public static void checkStorageUnitsExist(final Collection<String> requiredStorageUnits, final ShardingSphereDatabase database) {
         Collection<String> notExistedStorageUnits = database.getResourceMetaData().getNotExistedDataSources(requiredStorageUnits);
-        ShardingSpherePreconditions.checkState(notExistedStorageUnits.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedStorageUnits));
+        ShardingSpherePreconditions.checkMustEmpty(notExistedStorageUnits, () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedStorageUnits));
     }
     
     /**
@@ -58,7 +58,7 @@ public final class ShadowRuleStatementChecker {
      */
     public static void checkDuplicated(final Collection<String> rules, final Function<Collection<String>, KernelSQLException> thrower) {
         Collection<String> duplicated = getDuplicated(rules);
-        ShardingSpherePreconditions.checkState(duplicated.isEmpty(), () -> thrower.apply(duplicated));
+        ShardingSpherePreconditions.checkMustEmpty(duplicated, () -> thrower.apply(duplicated));
     }
     
     /**
@@ -70,7 +70,7 @@ public final class ShadowRuleStatementChecker {
      */
     public static void checkDuplicated(final Collection<String> requiredRules, final Collection<String> currentRules, final Function<Collection<String>, KernelSQLException> thrower) {
         Collection<String> duplicated = getDuplicated(requiredRules, currentRules);
-        ShardingSpherePreconditions.checkState(duplicated.isEmpty(), () -> thrower.apply(duplicated));
+        ShardingSpherePreconditions.checkMustEmpty(duplicated, () -> thrower.apply(duplicated));
     }
     
     /**
@@ -82,7 +82,7 @@ public final class ShadowRuleStatementChecker {
      */
     public static void checkExisted(final Collection<String> requiredRules, final Collection<String> currentRules, final Function<Collection<String>, KernelSQLException> thrower) {
         Collection<String> notExisted = getNotExisted(requiredRules, currentRules);
-        ShardingSpherePreconditions.checkState(notExisted.isEmpty(), () -> thrower.apply(notExisted));
+        ShardingSpherePreconditions.checkMustEmpty(notExisted, () -> thrower.apply(notExisted));
     }
     
     private static Collection<String> getDuplicated(final Collection<String> names) {
@@ -108,7 +108,7 @@ public final class ShadowRuleStatementChecker {
         Collection<String> logicDataSources = getLogicDataSources(database);
         if (!logicDataSources.isEmpty()) {
             Collection<String> duplicatedNames = toBeCreatedRuleNames.stream().filter(logicDataSources::contains).collect(Collectors.toList());
-            ShardingSpherePreconditions.checkState(duplicatedNames.isEmpty(), () -> new InvalidRuleConfigurationException("shadow", duplicatedNames,
+            ShardingSpherePreconditions.checkMustEmpty(duplicatedNames, () -> new InvalidRuleConfigurationException("shadow", duplicatedNames,
                     Collections.singleton(String.format("%s already exists in storage unit", duplicatedNames))));
         }
     }

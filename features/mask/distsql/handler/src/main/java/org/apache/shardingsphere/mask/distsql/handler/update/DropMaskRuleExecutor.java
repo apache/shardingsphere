@@ -59,7 +59,7 @@ public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<Drop
     private void checkToBeDroppedMaskTableNames(final DropMaskRuleStatement sqlStatement) {
         Collection<String> currentMaskTableNames = rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentMaskTableNames.contains(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new MissingRequiredRuleException("Mask", database.getName(), notExistedTableNames));
+        ShardingSpherePreconditions.checkMustEmpty(notExistedTableNames, () -> new MissingRequiredRuleException("Mask", database.getName(), notExistedTableNames));
     }
     
     @Override

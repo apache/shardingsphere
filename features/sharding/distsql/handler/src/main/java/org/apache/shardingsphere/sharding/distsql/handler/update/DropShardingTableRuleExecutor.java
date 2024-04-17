@@ -61,7 +61,7 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
     private void checkToBeDroppedShardingTableNames(final DropShardingTableRuleStatement sqlStatement) {
         Collection<String> currentShardingTableNames = getCurrentShardingTableNames();
         Collection<String> notExistedTableNames = getToBeDroppedShardingTableNames(sqlStatement).stream().filter(each -> !currentShardingTableNames.contains(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new MissingRequiredRuleException("sharding", database.getName(), notExistedTableNames));
+        ShardingSpherePreconditions.checkMustEmpty(notExistedTableNames, () -> new MissingRequiredRuleException("sharding", database.getName(), notExistedTableNames));
     }
     
     private Collection<String> getToBeDroppedShardingTableNames(final DropShardingTableRuleStatement sqlStatement) {

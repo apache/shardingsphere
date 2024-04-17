@@ -43,7 +43,7 @@ public final class CreateBroadcastTableRuleExecutor implements DatabaseRuleCreat
     
     @Override
     public void checkBeforeUpdate(final CreateBroadcastTableRuleStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getStorageUnits().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
+        ShardingSpherePreconditions.checkNotEmpty(database.getResourceMetaData().getStorageUnits(), () -> new EmptyStorageUnitException(database.getName()));
         if (!sqlStatement.isIfNotExists()) {
             checkDuplicate(sqlStatement);
         }
@@ -51,7 +51,7 @@ public final class CreateBroadcastTableRuleExecutor implements DatabaseRuleCreat
     
     private void checkDuplicate(final CreateBroadcastTableRuleStatement sqlStatement) {
         Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement);
-        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("Broadcast", sqlStatement.getTables()));
+        ShardingSpherePreconditions.checkMustEmpty(duplicatedRuleNames, () -> new DuplicateRuleException("Broadcast", sqlStatement.getTables()));
     }
     
     private Collection<String> getDuplicatedRuleNames(final CreateBroadcastTableRuleStatement sqlStatement) {

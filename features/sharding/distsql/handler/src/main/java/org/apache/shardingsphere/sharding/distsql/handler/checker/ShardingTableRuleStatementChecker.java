@@ -314,7 +314,7 @@ public final class ShardingTableRuleStatementChecker {
         Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSource);
         Collection<String> logicDataSources = getLogicDataSources(database);
         notExistedDataSources.removeIf(logicDataSources::contains);
-        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
+        ShardingSpherePreconditions.checkMustEmpty(notExistedDataSources, () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
     }
     
     private static Collection<String> getRequiredDataSources(final ShardingRuleConfiguration config) {
@@ -347,16 +347,16 @@ public final class ShardingTableRuleStatementChecker {
                                     final boolean ifNotExists) {
         Collection<String> requiredTables = rules.stream().map(AbstractTableRuleSegment::getLogicTable).collect(Collectors.toList());
         Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(requiredTables);
-        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicatedRuleNames));
+        ShardingSpherePreconditions.checkMustEmpty(duplicatedRuleNames, () -> new DuplicateRuleException("sharding", databaseName, duplicatedRuleNames));
         Collection<String> currentShardingTables = null == currentRuleConfig ? Collections.emptyList() : getCurrentShardingTables(currentRuleConfig);
         if (isCreate) {
             if (!ifNotExists) {
                 duplicatedRuleNames.addAll(getDuplicatedRuleNames(requiredTables, currentShardingTables));
-                ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicatedRuleNames));
+                ShardingSpherePreconditions.checkMustEmpty(duplicatedRuleNames, () -> new DuplicateRuleException("sharding", databaseName, duplicatedRuleNames));
             }
         } else {
             Collection<String> notExistedRules = getNotExistedRules(requiredTables, currentShardingTables);
-            ShardingSpherePreconditions.checkState(notExistedRules.isEmpty(), () -> new MissingRequiredRuleException("sharding", databaseName, notExistedRules));
+            ShardingSpherePreconditions.checkMustEmpty(notExistedRules, () -> new MissingRequiredRuleException("sharding", databaseName, notExistedRules));
         }
     }
     

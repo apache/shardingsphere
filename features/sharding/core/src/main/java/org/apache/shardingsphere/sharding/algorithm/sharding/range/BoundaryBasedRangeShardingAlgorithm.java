@@ -41,7 +41,7 @@ public final class BoundaryBasedRangeShardingAlgorithm extends AbstractRangeShar
         ShardingSpherePreconditions.checkState(props.containsKey(SHARDING_RANGES_KEY), () -> new AlgorithmInitializationException(this, "Sharding ranges cannot be null."));
         List<Long> partitionRanges = Splitter.on(",").trimResults().splitToList(props.getProperty(SHARDING_RANGES_KEY)).stream()
                 .map(this::parseLong).filter(Objects::nonNull).sorted().collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(!partitionRanges.isEmpty(), () -> new AlgorithmInitializationException(this, "Sharding ranges can not be empty."));
+        ShardingSpherePreconditions.checkNotEmpty(partitionRanges, () -> new AlgorithmInitializationException(this, "Sharding ranges can not be empty."));
         Map<Integer, Range<Comparable<?>>> result = new HashMap<>(partitionRanges.size() + 1, 1F);
         for (int i = 0; i < partitionRanges.size(); i++) {
             Long rangeValue = partitionRanges.get(i);

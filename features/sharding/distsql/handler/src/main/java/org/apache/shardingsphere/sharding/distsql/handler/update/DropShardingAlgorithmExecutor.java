@@ -59,14 +59,13 @@ public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExec
     private void checkToBeDroppedShardingAlgorithms(final DropShardingAlgorithmStatement sqlStatement) {
         Collection<String> currentShardingAlgorithms = getCurrentShardingAlgorithms();
         Collection<String> notExistedAlgorithms = sqlStatement.getNames().stream().filter(each -> !currentShardingAlgorithms.contains(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(),
-                () -> new UnregisteredAlgorithmException("Sharding", notExistedAlgorithms, new SQLExceptionIdentifier(database.getName())));
+        ShardingSpherePreconditions.checkMustEmpty(notExistedAlgorithms, () -> new UnregisteredAlgorithmException("Sharding", notExistedAlgorithms, new SQLExceptionIdentifier(database.getName())));
     }
     
     private void checkShardingAlgorithmsInUsed(final DropShardingAlgorithmStatement sqlStatement) {
         Collection<String> allInUsed = getAllOfAlgorithmsInUsed();
         Collection<String> usedAlgorithms = sqlStatement.getNames().stream().filter(allInUsed::contains).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(usedAlgorithms.isEmpty(), () -> new InUsedAlgorithmException("Sharding", database.getName(), usedAlgorithms));
+        ShardingSpherePreconditions.checkMustEmpty(usedAlgorithms, () -> new InUsedAlgorithmException("Sharding", database.getName(), usedAlgorithms));
     }
     
     private Collection<String> getAllOfAlgorithmsInUsed() {

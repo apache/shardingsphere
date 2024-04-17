@@ -66,13 +66,13 @@ public final class RuleConfigurationCheckEngine {
         Collection<String> logicDataSources = database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class).stream()
                 .flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toSet());
         notExistedDataSources.removeIf(logicDataSources::contains);
-        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
+        ShardingSpherePreconditions.checkMustEmpty(notExistedDataSources, () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
     }
     
     private static void checkTablesNotDuplicated(final RuleConfiguration ruleConfig, final String databaseName, final Collection<String> tableNames) {
         Collection<String> duplicatedTables = tableNames.stream()
                 .collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream().filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(duplicatedTables.isEmpty(), () -> new DuplicateRuleException(getRuleType(ruleConfig), databaseName, duplicatedTables));
+        ShardingSpherePreconditions.checkMustEmpty(duplicatedTables, () -> new DuplicateRuleException(getRuleType(ruleConfig), databaseName, duplicatedTables));
     }
     
     private static String getRuleType(final RuleConfiguration ruleConfig) {

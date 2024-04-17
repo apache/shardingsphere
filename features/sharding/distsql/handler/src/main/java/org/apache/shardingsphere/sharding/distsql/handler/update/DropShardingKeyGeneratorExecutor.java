@@ -59,14 +59,14 @@ public final class DropShardingKeyGeneratorExecutor implements DatabaseRuleDropE
     
     private void checkExist(final DropShardingKeyGeneratorStatement sqlStatement) {
         Collection<String> notExistKeyGenerators = sqlStatement.getNames().stream().filter(each -> !rule.getConfiguration().getKeyGenerators().containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistKeyGenerators.isEmpty(),
+        ShardingSpherePreconditions.checkMustEmpty(notExistKeyGenerators,
                 () -> new UnregisteredAlgorithmException("Key generator", notExistKeyGenerators, new SQLExceptionIdentifier(database.getName())));
     }
     
     private void checkInUsed(final DropShardingKeyGeneratorStatement sqlStatement) {
         Collection<String> usedKeyGenerators = getUsedKeyGenerators();
         Collection<String> inUsedNames = sqlStatement.getNames().stream().filter(usedKeyGenerators::contains).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new InUsedAlgorithmException("Key generator", database.getName(), inUsedNames));
+        ShardingSpherePreconditions.checkMustEmpty(inUsedNames, () -> new InUsedAlgorithmException("Key generator", database.getName(), inUsedNames));
     }
     
     private Collection<String> getUsedKeyGenerators() {

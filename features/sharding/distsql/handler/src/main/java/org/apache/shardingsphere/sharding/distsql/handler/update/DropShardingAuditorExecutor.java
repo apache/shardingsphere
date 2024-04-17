@@ -58,14 +58,13 @@ public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecut
     
     private void checkExist(final DropShardingAuditorStatement sqlStatement) {
         Collection<String> notExistAuditors = sqlStatement.getNames().stream().filter(each -> !rule.getConfiguration().getAuditors().containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistAuditors.isEmpty(),
-                () -> new UnregisteredAlgorithmException("Sharding auditor", notExistAuditors, new SQLExceptionIdentifier(database.getName())));
+        ShardingSpherePreconditions.checkMustEmpty(notExistAuditors, () -> new UnregisteredAlgorithmException("Sharding auditor", notExistAuditors, new SQLExceptionIdentifier(database.getName())));
     }
     
     private void checkInUsed(final DropShardingAuditorStatement sqlStatement) {
         Collection<String> usedAuditors = getUsedAuditors();
         Collection<String> inUsedNames = sqlStatement.getNames().stream().filter(usedAuditors::contains).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new InUsedAlgorithmException("Sharding auditor", database.getName(), inUsedNames));
+        ShardingSpherePreconditions.checkMustEmpty(inUsedNames, () -> new InUsedAlgorithmException("Sharding auditor", database.getName(), inUsedNames));
     }
     
     private Collection<String> getUsedAuditors() {

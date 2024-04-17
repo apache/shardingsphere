@@ -61,7 +61,7 @@ public final class CreateMaskRuleExecutor implements DatabaseRuleCreateExecutor<
         if (null != rule) {
             Collection<String> currentRuleNames = rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
             Collection<String> duplicatedRuleNames = sqlStatement.getRules().stream().map(MaskRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toList());
-            ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("mask", database.getName(), duplicatedRuleNames));
+            ShardingSpherePreconditions.checkMustEmpty(duplicatedRuleNames, () -> new DuplicateRuleException("mask", database.getName(), duplicatedRuleNames));
         }
     }
     

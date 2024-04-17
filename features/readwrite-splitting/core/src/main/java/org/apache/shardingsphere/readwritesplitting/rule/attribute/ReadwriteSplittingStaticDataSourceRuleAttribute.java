@@ -60,8 +60,7 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
         StorageNodeDataSourceChangedEvent dataSourceEvent = (StorageNodeDataSourceChangedEvent) event;
         QualifiedDatabase qualifiedDatabase = dataSourceEvent.getQualifiedDatabase();
         ReadwriteSplittingDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDatabase.getGroupName());
-        ShardingSpherePreconditions.checkNotNull(dataSourceRule,
-                () -> new ReadwriteSplittingDataSourceRuleNotFoundException(qualifiedDatabase.getGroupName(), qualifiedDatabase.getDatabaseName()));
+        ShardingSpherePreconditions.checkNotNull(dataSourceRule, () -> new ReadwriteSplittingDataSourceRuleNotFoundException(qualifiedDatabase.getGroupName(), qualifiedDatabase.getDatabaseName()));
         if (DataSourceState.DISABLED == dataSourceEvent.getDataSource().getStatus()) {
             dataSourceRule.disableDataSource(dataSourceEvent.getQualifiedDatabase().getDataSourceName());
         } else {
