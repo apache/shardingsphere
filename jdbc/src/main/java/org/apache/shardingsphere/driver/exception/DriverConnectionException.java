@@ -34,8 +34,8 @@ public abstract class DriverConnectionException extends ConnectionSQLException {
         super(sqlState, getErrorCode(errorCode), reason, messageArgs);
     }
     
-    protected DriverConnectionException(final SQLState sqlState, final int errorCode, final String reason, final Exception cause) {
-        super(sqlState, getErrorCode(errorCode), reason, cause);
+    protected DriverConnectionException(final SQLState sqlState, final int errorCode, final Exception cause, final String reason, final Object... messageArgs) {
+        super(sqlState, getErrorCode(errorCode), cause, reason, messageArgs);
     }
     
     private static int getErrorCode(final int errorCode) {
