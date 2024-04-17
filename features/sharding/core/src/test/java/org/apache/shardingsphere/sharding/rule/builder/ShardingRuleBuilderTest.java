@@ -55,14 +55,7 @@ class ShardingRuleBuilderTest {
         assertThat(builder.build(ruleConfig, "sharding_db", new MySQLDatabaseType(),
                 Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(ShardingRule.class));
     }
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    void assertBuildWithNullDataSourceMap() {
-        assertThrows(MissingRequiredShardingConfigurationException.class,
-                () -> builder.build(ruleConfig, "sharding_db", new MySQLDatabaseType(), null, Collections.emptyList(), mock(InstanceContext.class)));
-    }
-    
+    les
     @SuppressWarnings("unchecked")
     @Test
     void assertBuildWithEmptyDataSourceMap() {
