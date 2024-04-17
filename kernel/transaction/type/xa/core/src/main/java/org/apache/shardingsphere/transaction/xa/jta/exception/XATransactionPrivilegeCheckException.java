@@ -33,6 +33,6 @@ public final class XATransactionPrivilegeCheckException extends XATransactionSQL
     }
     
     public XATransactionPrivilegeCheckException(final String privilege, final SQLException cause) {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 2, String.format("Check XA transaction privileges failed on data source, please grant '%s' to current user.", privilege), cause);
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 2, cause, "Check XA transaction privileges failed on data source, please grant '%s' to current user.", privilege);
     }
 }
