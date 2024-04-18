@@ -85,7 +85,7 @@ public final class E2ETestEnvironment {
         Properties props = EnvironmentProperties.loadProperties("env/engine-env.properties");
         adapter = props.getProperty("it.env.adapter", "proxy");
         plugin = props.getProperty("it.env.plugin", "file");
-        collectDataWaitSeconds = Long.valueOf(props.getProperty("it.env.collect.data.wait.seconds", "0"));
+        collectDataWaitSeconds = Long.parseLong(props.getProperty("it.env.collect.data.wait.seconds", "0"));
     }
     
     /**
@@ -98,9 +98,9 @@ public final class E2ETestEnvironment {
     }
     
     /**
-     * Start.
+     * Init environment.
      */
-    public void start() {
+    public void init() {
         if (AdapterType.PROXY.getValue().equalsIgnoreCase(adapter)) {
             createProxyEnvironment();
         } else if (AdapterType.JDBC.getValue().equalsIgnoreCase(adapter)) {
@@ -177,9 +177,9 @@ public final class E2ETestEnvironment {
     }
     
     /**
-     * Stop.
+     * Destroy environment.
      */
-    public void stop() {
+    public void destroy() {
         if (null != proxyRequestExecutor) {
             proxyRequestExecutor.stop();
         }

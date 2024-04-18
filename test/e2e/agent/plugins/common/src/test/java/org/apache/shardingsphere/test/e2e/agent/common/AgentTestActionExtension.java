@@ -29,11 +29,11 @@ public final class AgentTestActionExtension implements BeforeAllCallback, AfterA
     
     @Override
     public void beforeAll(final ExtensionContext extensionContext) throws Exception {
-        E2ETestEnvironment.getInstance().start();
+        E2ETestEnvironment.getInstance().init();
     }
     
     @Override
     public void afterAll(final ExtensionContext extensionContext) throws Exception {
-        E2ETestEnvironment.getInstance().stop();
+        E2ETestEnvironment.getInstance().destroy();
     }
 }
