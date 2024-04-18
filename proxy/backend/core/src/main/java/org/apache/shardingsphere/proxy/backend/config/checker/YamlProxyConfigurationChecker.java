@@ -47,6 +47,6 @@ public final class YamlProxyConfigurationChecker {
     private static void checkDataSources(final Map<String, YamlProxyDataSourceConfiguration> globalDataSources,
                                          final Map<String, YamlProxyDataSourceConfiguration> databaseDataSources, final String databaseName) {
         Collection<String> duplicatedDataSourceNames = globalDataSources.keySet().stream().filter(databaseDataSources.keySet()::contains).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(databaseName, duplicatedDataSourceNames));
+        ShardingSpherePreconditions.checkMustEmpty(duplicatedDataSourceNames, () -> new DuplicateStorageUnitException(databaseName, duplicatedDataSourceNames));
     }
 }

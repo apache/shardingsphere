@@ -201,7 +201,7 @@ Check out [Wiki](https://github.com/apache/shardingsphere/wiki) section for deta
 
 <p align="center">
 <br/><br/>
-<img src="https://landscape.cncf.io/images/left-logo.svg" width="150"/>&nbsp;&nbsp;<img src="https://landscape.cncf.io/images/right-logo.svg" width="200"/>
+<img src="https://landscape.cncf.io/images/cncf-landscape-horizontal-color.svg" width="165"/>&nbsp;&nbsp;<img src="https://www.cncf.io/wp-content/uploads/2023/04/cncf-main-site-logo.svg" width="200"/>
 <br/><br/>
 Apache ShardingSphere enriches the <a href="https://landscape.cncf.io/?category=app-definition-and-development&grouping=category">CNCF CLOUD NATIVE Landscape</a>.
 </p>

@@ -138,8 +138,7 @@ public class IntervalInlineExpressionParser implements InlineExpressionParser {
     
     private DateTimeFormatter getSuffixPattern(final Map<String, String> props) {
         String suffix = props.get(SUFFIX_PATTERN_KEY);
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(suffix),
-                () -> new RuntimeException(String.format("%s can not be null or empty.", SUFFIX_PATTERN_KEY)));
+        ShardingSpherePreconditions.checkNotEmpty(suffix, () -> new RuntimeException(String.format("%s can not be null or empty.", SUFFIX_PATTERN_KEY)));
         Chronology chronology = getChronology(props);
         return DateTimeFormatter.ofPattern(suffix).withChronology(chronology);
     }

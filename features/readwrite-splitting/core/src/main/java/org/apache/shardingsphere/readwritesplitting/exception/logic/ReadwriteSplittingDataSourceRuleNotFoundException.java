@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.kernel.connection;
+package org.apache.shardingsphere.readwritesplitting.exception.logic;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
- * Overall connection not enough exception.
+ * Readwrite-splitting data source rule not found exception.
  */
-public final class OverallConnectionNotEnoughException extends ConnectionSQLException {
+public final class ReadwriteSplittingDataSourceRuleNotFoundException extends ReadwriteSplittingSQLException {
     
-    private static final long serialVersionUID = -1297088138042287804L;
+    private static final long serialVersionUID = -6293739163056594102L;
     
-    public OverallConnectionNotEnoughException(final int desiredSize, final int actualSize, final Exception cause) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 0, cause, "Can not get %d connections one time, partition succeed connection(%d) have released. "
-                + "Please consider increasing the 'maxPoolSize' of the data sources or decreasing the 'max-connections-size-per-query' in properties.", desiredSize, actualSize);
+    public ReadwriteSplittingDataSourceRuleNotFoundException(final String dataSourceRuleName, final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 1, "Can not find readwrite-splitting data source rule '%s' in database '%s'.", dataSourceRuleName, databaseName);
     }
 }

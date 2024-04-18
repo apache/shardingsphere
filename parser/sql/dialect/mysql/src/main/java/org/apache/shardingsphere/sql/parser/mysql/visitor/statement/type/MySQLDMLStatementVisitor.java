@@ -158,7 +158,7 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.frameClause()) {
             result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), ctx.frameClause().getText()));
         }
-        if (ctx.identifier() != null) {
+        if (null != ctx.identifier()) {
             result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
         }
         return result;

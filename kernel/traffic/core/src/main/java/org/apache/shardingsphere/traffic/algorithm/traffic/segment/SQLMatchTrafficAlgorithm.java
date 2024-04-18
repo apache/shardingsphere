@@ -19,7 +19,6 @@ package org.apache.shardingsphere.traffic.algorithm.traffic.segment;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
@@ -45,7 +44,7 @@ public final class SQLMatchTrafficAlgorithm implements SegmentTrafficAlgorithm {
     public void init(final Properties props) {
         ShardingSpherePreconditions.checkState(props.containsKey(SQL_PROPS_KEY), () -> new AlgorithmInitializationException(this, "%s cannot be null", SQL_PROPS_KEY));
         sql = getExactlySQL(props.getProperty(SQL_PROPS_KEY));
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(String.valueOf(sql)), () -> new AlgorithmInitializationException(this, "SQL must be not empty"));
+        ShardingSpherePreconditions.checkNotEmpty(String.valueOf(sql), () -> new AlgorithmInitializationException(this, "SQL must be not empty"));
     }
     
     private Collection<String> getExactlySQL(final String value) {

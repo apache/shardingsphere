@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
-import com.google.common.base.Strings;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
@@ -64,7 +63,7 @@ public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleAl
     }
     
     private void checkAlgorithmCompleteness(final AlgorithmSegment algorithmSegment) {
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(algorithmSegment.getName()), () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier("")));
+        ShardingSpherePreconditions.checkNotEmpty(algorithmSegment.getName(), () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier("")));
     }
     
     private void checkAlgorithmType(final AlgorithmSegment algorithmSegment) {

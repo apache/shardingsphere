@@ -89,7 +89,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     @SneakyThrows(SystemException.class)
     @Override
     public boolean isInTransaction() {
-        return xaTransactionManagerProvider != null && Status.STATUS_NO_TRANSACTION != xaTransactionManagerProvider.getTransactionManager().getStatus();
+        return null != xaTransactionManagerProvider && Status.STATUS_NO_TRANSACTION != xaTransactionManagerProvider.getTransactionManager().getStatus();
     }
     
     @Override

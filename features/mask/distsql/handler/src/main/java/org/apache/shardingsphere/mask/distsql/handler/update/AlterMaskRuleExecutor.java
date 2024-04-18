@@ -57,7 +57,7 @@ public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<Al
     private void checkToBeAlteredRules(final AlterMaskRuleStatement sqlStatement) {
         Collection<String> currentMaskTableNames = rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedMaskTableNames = getToBeAlteredMaskTableNames(sqlStatement).stream().filter(each -> !currentMaskTableNames.contains(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedMaskTableNames.isEmpty(), () -> new MissingRequiredRuleException("Mask", database.getName(), notExistedMaskTableNames));
+        ShardingSpherePreconditions.checkMustEmpty(notExistedMaskTableNames, () -> new MissingRequiredRuleException("Mask", database.getName(), notExistedMaskTableNames));
     }
     
     private Collection<String> getToBeAlteredMaskTableNames(final AlterMaskRuleStatement sqlStatement) {

@@ -94,7 +94,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
         Collection<String> requiredRuleNames = segments.stream().map(ReadwriteSplittingRuleSegment::getName).collect(Collectors.toList());
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = requiredRuleNames.stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(notExistedRuleNames.isEmpty(), () -> new MissingRequiredRuleException("Readwrite-splitting", databaseName, notExistedRuleNames));
+        ShardingSpherePreconditions.checkMustEmpty(notExistedRuleNames, () -> new MissingRequiredRuleException("Readwrite-splitting", databaseName, notExistedRuleNames));
     }
     
     private static void checkDuplicateRuleNames(final ShardingSphereDatabase database,
@@ -108,7 +108,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
     
     private static void checkDuplicateRuleNamesWithSelf(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments) {
         Collection<String> duplicatedRuleNames = getDuplicated(segments.stream().map(ReadwriteSplittingRuleSegment::getName).collect(Collectors.toList()));
-        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("Readwrite-splitting", databaseName, duplicatedRuleNames));
+        ShardingSpherePreconditions.checkMustEmpty(duplicatedRuleNames, () -> new DuplicateRuleException("Readwrite-splitting", databaseName, duplicatedRuleNames));
     }
     
     private static Collection<String> getDuplicated(final Collection<String> required) {
@@ -124,7 +124,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
         }
         currentRuleNames.addAll(getLogicDataSources(database));
         Collection<String> toBeCreatedRuleNames = segments.stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(toBeCreatedRuleNames.isEmpty(), () -> new InvalidRuleConfigurationException("Readwrite-splitting", toBeCreatedRuleNames,
+        ShardingSpherePreconditions.checkMustEmpty(toBeCreatedRuleNames, () -> new InvalidRuleConfigurationException("Readwrite-splitting", toBeCreatedRuleNames,
                 Collections.singleton(String.format("%s already exists in storage unit", toBeCreatedRuleNames))));
     }
     
@@ -135,7 +135,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
             currentRuleNames.addAll(currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList()));
         }
         Collection<String> toBeCreatedRuleNames = segments.stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(toBeCreatedRuleNames.isEmpty(), () -> new DuplicateRuleException("Readwrite-splitting", databaseName, toBeCreatedRuleNames));
+        ShardingSpherePreconditions.checkMustEmpty(toBeCreatedRuleNames, () -> new DuplicateRuleException("Readwrite-splitting", databaseName, toBeCreatedRuleNames));
     }
     
     private static void checkDataSourcesExist(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments, final ShardingSphereDatabase database) {
@@ -145,7 +145,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
             requiredDataSources.addAll(each.getReadDataSources());
         });
         Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
-        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
+        ShardingSpherePreconditions.checkMustEmpty(notExistedDataSources, () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
     }
     
     private static Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {

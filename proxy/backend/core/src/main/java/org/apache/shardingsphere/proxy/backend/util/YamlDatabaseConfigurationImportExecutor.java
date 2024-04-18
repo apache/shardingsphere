@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.util;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationCheckEngine;
@@ -92,7 +91,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void checkDatabase(final String databaseName) {
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(databaseName), MissingRequiredDatabaseException::new);
+        ShardingSpherePreconditions.checkNotEmpty(databaseName, MissingRequiredDatabaseException::new);
         ShardingSpherePreconditions.checkState(!ProxyContext.getInstance().databaseExists(databaseName), () -> new DatabaseCreateExistsException(databaseName));
     }
     

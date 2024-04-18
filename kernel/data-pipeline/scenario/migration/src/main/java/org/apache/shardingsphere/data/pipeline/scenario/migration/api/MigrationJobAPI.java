@@ -183,7 +183,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     }
     
     private YamlRootConfiguration buildYamlRootConfiguration(final String databaseName, final Map<String, Map<String, Object>> yamlDataSources, final Collection<RuleConfiguration> rules) {
-        ShardingSpherePreconditions.checkState(!rules.isEmpty(), () -> new EmptyRuleException(databaseName));
+        ShardingSpherePreconditions.checkNotEmpty(rules, () -> new EmptyRuleException(databaseName));
         YamlRootConfiguration result = new YamlRootConfiguration();
         result.setDatabaseName(databaseName);
         result.setDataSources(yamlDataSources);
@@ -211,7 +211,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
                 duplicateDataSourceNames.add(entry.getKey());
             }
         }
-        ShardingSpherePreconditions.checkState(duplicateDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(contextKey.getDatabaseName(), duplicateDataSourceNames));
+        ShardingSpherePreconditions.checkMustEmpty(duplicateDataSourceNames, () -> new DuplicateStorageUnitException(contextKey.getDatabaseName(), duplicateDataSourceNames));
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(existDataSources);
         result.putAll(propsMap);
         dataSourcePersistService.persist(contextKey, getType(), result);
@@ -226,7 +226,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     public void dropMigrationSourceResources(final PipelineContextKey contextKey, final Collection<String> resourceNames) {
         Map<String, DataSourcePoolProperties> metaDataDataSource = dataSourcePersistService.load(contextKey, getType());
         Collection<String> notExistedResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(contextKey.getDatabaseName(), notExistedResources));
+        ShardingSpherePreconditions.checkMustEmpty(notExistedResources, () -> new MissingRequiredStorageUnitsException(contextKey.getDatabaseName(), notExistedResources));
         for (String each : resourceNames) {
             metaDataDataSource.remove(each);
         }

@@ -60,7 +60,7 @@ public final class CreateDefaultShadowAlgorithmExecutor implements DatabaseRuleC
     }
     
     private void checkAlgorithmCompleteness(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(!sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getName().isEmpty(),
+        ShardingSpherePreconditions.checkNotEmpty(sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getName(),
                 () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier(database.getName())));
     }
     

@@ -49,16 +49,16 @@ class ShowDefaultShardingStrategyExecutorTest {
     
     private DistSQLQueryExecuteEngine engine;
     
-    DistSQLQueryExecuteEngine setUp(final ShardingRuleConfiguration configuration) {
-        return new DistSQLQueryExecuteEngine(mock(ShowDefaultShardingStrategyStatement.class), "foo_db", mockContextManager(configuration), mock(DistSQLConnectionContext.class));
+    DistSQLQueryExecuteEngine setUp(final ShardingRuleConfiguration ruleConfig) {
+        return new DistSQLQueryExecuteEngine(mock(ShowDefaultShardingStrategyStatement.class), "foo_db", mockContextManager(ruleConfig), mock(DistSQLConnectionContext.class));
     }
     
-    private ContextManager mockContextManager(final ShardingRuleConfiguration configuration) {
+    private ContextManager mockContextManager(final ShardingRuleConfiguration ruleConfig) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getDatabase("foo_db")).thenReturn(database);
         ShardingRule rule = mock(ShardingRule.class);
-        when(rule.getConfiguration()).thenReturn(configuration);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
         when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
         return result;
     }

@@ -260,7 +260,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
             return shardingTable.getActualDataSourceNames();
         }
         Collection<String> result = databaseShardingStrategy.doSharding(shardingTable.getActualDataSourceNames(), databaseShardingValues, shardingTable.getDataSourceDataNode(), props);
-        ShardingSpherePreconditions.checkState(!result.isEmpty(), NoShardingDatabaseRouteInfoException::new);
+        ShardingSpherePreconditions.checkNotEmpty(result, NoShardingDatabaseRouteInfoException::new);
         ShardingSpherePreconditions.checkState(shardingTable.getActualDataSourceNames().containsAll(result),
                 () -> new MismatchedShardingDataSourceRouteInfoException(result, shardingTable.getActualDataSourceNames()));
         return result;

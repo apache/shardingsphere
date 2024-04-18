@@ -41,7 +41,7 @@ class KernelSQLExceptionTest {
     @Test
     void assertToSQLExceptionWithCause() {
         Exception cause = new RuntimeException("test");
-        SQLException actual = new KernelSQLException(XOpenSQLState.GENERAL_ERROR, 1, 1, "reason", cause) {
+        SQLException actual = new KernelSQLException(XOpenSQLState.GENERAL_ERROR, 1, 1, cause, "reason") {
         }.toSQLException();
         assertThat(actual.getSQLState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
         assertThat(actual.getErrorCode(), is(11001));

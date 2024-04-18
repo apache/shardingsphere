@@ -54,7 +54,7 @@ public final class AlterTrafficRuleExecutor implements GlobalRuleDefinitionExecu
     
     private void checkRuleNames(final AlterTrafficRuleStatement sqlStatement) {
         Collection<String> notExistRuleNames = getNotExistRuleNames(sqlStatement);
-        ShardingSpherePreconditions.checkState(notExistRuleNames.isEmpty(), () -> new MissingRequiredRuleException("Traffic", notExistRuleNames));
+        ShardingSpherePreconditions.checkMustEmpty(notExistRuleNames, () -> new MissingRequiredRuleException("Traffic", notExistRuleNames));
     }
     
     private Collection<String> getNotExistRuleNames(final AlterTrafficRuleStatement sqlStatement) {

@@ -203,7 +203,9 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             if (TransactionType.isDistributedTransaction(databaseConnectionManager.getConnectionTransaction().getTransactionType())) {
                 beginDistributedTransaction();
             } else {
-                getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
+                if (!getConnectionContext().getTransactionContext().isInTransaction()) {
+                    getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
+                }
             }
         }
     }
@@ -309,6 +311,9 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Override
     public void close() throws SQLException {
+        if (databaseConnectionManager.getConnectionTransaction().isInTransaction()) {
+            databaseConnectionManager.getConnectionTransaction().rollback();
+        }
         closed = true;
         databaseConnectionManager.close();
         processEngine.disconnect(processId);

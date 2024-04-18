@@ -29,6 +29,6 @@ public final class DriverRegisterException extends DriverConnectionException {
     private static final long serialVersionUID = -8091239932993280564L;
     
     public DriverRegisterException(final SQLException cause) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 0, "Can not register driver.", cause);
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 0, cause, "Can not register driver.");
     }
 }

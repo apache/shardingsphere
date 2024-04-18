@@ -31,6 +31,6 @@ public final class DuplicateReadwriteSplittingActualDataSourceException extends 
     
     public DuplicateReadwriteSplittingActualDataSourceException(final ReadwriteSplittingDataSourceType dataSourceType,
                                                                 final String dataSourceName, final ReadwriteSplittingRuleExceptionIdentifier exceptionIdentifier) {
-        super(XOpenSQLState.DUPLICATE, 3, "Readwrite-splitting %s data source '%s' is duplicated in %s.", dataSourceName, dataSourceType, exceptionIdentifier);
+        super(XOpenSQLState.DUPLICATE, 4, "Readwrite-splitting %s data source '%s' is duplicated in %s.", dataSourceName, dataSourceType, exceptionIdentifier);
     }
 }

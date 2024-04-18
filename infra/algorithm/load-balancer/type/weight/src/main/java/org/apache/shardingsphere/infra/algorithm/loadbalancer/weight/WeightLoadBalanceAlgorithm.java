@@ -45,7 +45,7 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
     @Override
     public void init(final Properties props) {
         Collection<String> availableTargetNames = props.stringPropertyNames();
-        ShardingSpherePreconditions.checkState(!availableTargetNames.isEmpty(), () -> new AlgorithmInitializationException(this, "Available target is required."));
+        ShardingSpherePreconditions.checkNotEmpty(availableTargetNames, () -> new AlgorithmInitializationException(this, "Available target is required."));
         for (String each : availableTargetNames) {
             String weight = props.getProperty(each);
             ShardingSpherePreconditions.checkNotNull(weight,

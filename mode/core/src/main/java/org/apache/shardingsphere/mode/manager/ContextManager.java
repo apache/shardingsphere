@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -109,7 +108,7 @@ public final class ContextManager implements AutoCloseable {
      * @return got database
      */
     public ShardingSphereDatabase getDatabase(final String name) {
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(name), NoDatabaseSelectedException::new);
+        ShardingSpherePreconditions.checkNotEmpty(name, NoDatabaseSelectedException::new);
         ShardingSphereMetaData metaData = getMetaDataContexts().getMetaData();
         ShardingSpherePreconditions.checkState(metaData.containsDatabase(name), () -> new UnknownDatabaseException(name));
         return metaData.getDatabase(name);
@@ -137,11 +136,13 @@ public final class ContextManager implements AutoCloseable {
             MetaDataBasedPersistService persistService = metaDataContexts.get().getPersistService();
             if (force) {
                 metaDataContexts.set(reloadedMetaDataContexts);
-                database.getSchemas().forEach((schemaName, schema) -> persistService.getDatabaseMetaDataService().persistByAlterConfiguration(database.getName(), schemaName, schema));
+                metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
+                        .forEach((schemaName, schema) -> persistService.getDatabaseMetaDataService().persistByAlterConfiguration(database.getName(), schemaName, schema));
             } else {
                 deletedSchemaNames(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
                 metaDataContexts.set(reloadedMetaDataContexts);
-                database.getSchemas().forEach((schemaName, schema) -> persistService.getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
+                metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
+                        .forEach((schemaName, schema) -> persistService.getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
             }
         } catch (final SQLException ex) {
             log.error("Refresh database meta data: {} failed", database.getName(), ex);
@@ -156,9 +157,10 @@ public final class ContextManager implements AutoCloseable {
     public void refreshTableMetaData(final ShardingSphereDatabase database) {
         try {
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
-            deletedSchemaNames(database.getName(), database, database);
+            deletedSchemaNames(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
             metaDataContexts.set(reloadedMetaDataContexts);
-            database.getSchemas().forEach((schemaName, schema) -> metaDataContexts.get().getPersistService().getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
+            metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
+                    .forEach((schemaName, schema) -> metaDataContexts.get().getPersistService().getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
         } catch (final SQLException ex) {
             log.error("Refresh table meta data: {} failed", database.getName(), ex);
         }

@@ -140,7 +140,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private Collection<TableMapperRuleAttribute> getTableMapperRuleAttributes(final ShardingSphereMetaData metaData, final String databaseName) {
         if (null == databaseName) {
-            ShardingSpherePreconditions.checkState(tablesContext.getSimpleTableSegments().isEmpty(), NoDatabaseSelectedException::new);
+            ShardingSpherePreconditions.checkMustEmpty(tablesContext.getSimpleTableSegments(), NoDatabaseSelectedException::new);
             return Collections.emptyList();
         }
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);

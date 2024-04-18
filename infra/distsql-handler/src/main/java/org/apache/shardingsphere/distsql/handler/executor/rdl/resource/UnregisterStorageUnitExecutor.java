@@ -66,7 +66,7 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
     private void checkExisted(final Collection<String> storageUnitNames) {
         Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         Collection<String> notExistedStorageUnits = storageUnitNames.stream().filter(each -> !storageUnits.containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedStorageUnits.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedStorageUnits));
+        ShardingSpherePreconditions.checkMustEmpty(notExistedStorageUnits, () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedStorageUnits));
     }
     
     private void checkInUsed(final UnregisterStorageUnitStatement sqlStatement) {
@@ -78,7 +78,7 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
         }
         Collection<Class<ShardingSphereRule>> ignoreUsageCheckRules = getIgnoreUsageCheckRules(sqlStatement);
         String firstResource = inUsedStorageUnitNames.iterator().next();
-        ShardingSpherePreconditions.checkState(!ignoreUsageCheckRules.isEmpty(), () -> new InUsedStorageUnitException(firstResource, inUsedStorageUnits.get(firstResource)));
+        ShardingSpherePreconditions.checkNotEmpty(ignoreUsageCheckRules, () -> new InUsedStorageUnitException(firstResource, inUsedStorageUnits.get(firstResource)));
         checkInUsedIgnoreTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits, ignoreUsageCheckRules);
     }
     
@@ -98,7 +98,7 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
         for (String each : inUsedResourceNames) {
             Collection<Class<? extends ShardingSphereRule>> inUsedRules = inUsedStorageUnits.get(each);
             ignoreShardingSphereRules.forEach(inUsedRules::remove);
-            ShardingSpherePreconditions.checkState(inUsedRules.isEmpty(), () -> new InUsedStorageUnitException(each, inUsedRules));
+            ShardingSpherePreconditions.checkMustEmpty(inUsedRules, () -> new InUsedStorageUnitException(each, inUsedRules));
         }
     }
     

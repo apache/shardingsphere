@@ -34,8 +34,8 @@ public abstract class ResourceDefinitionException extends MetaDataSQLException {
         super(sqlState, getErrorCode(errorCode), reason, messageArgs);
     }
     
-    protected ResourceDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Exception cause) {
-        super(sqlState, getErrorCode(errorCode), reason, cause);
+    protected ResourceDefinitionException(final SQLState sqlState, final int errorCode, final Exception cause, final String reason, final Object... messageArgs) {
+        super(sqlState, getErrorCode(errorCode), cause, reason, messageArgs);
     }
     
     private static int getErrorCode(final int errorCode) {

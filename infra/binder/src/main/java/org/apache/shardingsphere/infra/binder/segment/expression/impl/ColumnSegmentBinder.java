@@ -151,11 +151,11 @@ public final class ColumnSegmentBinder {
         }
         if (!isFindInputColumn) {
             result = findInputColumnSegmentByVariables(segment, statementBinderContext.getVariableNames()).orElse(null);
-            isFindInputColumn = result != null;
+            isFindInputColumn = null != result;
         }
         if (!isFindInputColumn) {
             result = findInputColumnSegmentByPivotColumns(segment, statementBinderContext.getPivotColumnNames()).orElse(null);
-            isFindInputColumn = result != null;
+            isFindInputColumn = null != result;
         }
         ShardingSpherePreconditions.checkState(isFindInputColumn || containsFunctionTable(tableBinderContexts, outerTableBinderContexts.values()),
                 () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));

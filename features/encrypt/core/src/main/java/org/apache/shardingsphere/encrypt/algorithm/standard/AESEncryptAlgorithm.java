@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.standard;
 
-import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -59,7 +58,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     private byte[] getSecretKey(final Properties props) {
         String aesKey = props.getProperty(AES_KEY);
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(aesKey), () -> new AlgorithmInitializationException(this, "%s can not be null or empty", AES_KEY));
+        ShardingSpherePreconditions.checkNotEmpty(aesKey, () -> new AlgorithmInitializationException(this, "%s can not be null or empty", AES_KEY));
         String digestAlgorithm = props.getProperty(DIGEST_ALGORITHM_NAME, MessageDigestAlgorithms.SHA_1);
         return Arrays.copyOf(DigestUtils.getDigest(digestAlgorithm.toUpperCase()).digest(aesKey.getBytes(StandardCharsets.UTF_8)), 16);
     }

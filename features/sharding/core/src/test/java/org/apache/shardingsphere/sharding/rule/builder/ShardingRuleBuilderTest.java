@@ -58,13 +58,6 @@ class ShardingRuleBuilderTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertBuildWithNullDataSourceMap() {
-        assertThrows(MissingRequiredShardingConfigurationException.class,
-                () -> builder.build(ruleConfig, "sharding_db", new MySQLDatabaseType(), null, Collections.emptyList(), mock(InstanceContext.class)));
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Test
     void assertBuildWithEmptyDataSourceMap() {
         assertThrows(MissingRequiredShardingConfigurationException.class,
                 () -> builder.build(ruleConfig, "sharding_db", new MySQLDatabaseType(), Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)));

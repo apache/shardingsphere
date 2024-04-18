@@ -63,7 +63,7 @@ public final class ShardingSchemaTableAggregationReviser implements SchemaTableA
         TableMetaData sample = tableMetaDataList.iterator().next();
         Collection<TableMetaDataViolation> violations = tableMetaDataList.stream()
                 .filter(each -> !sample.equals(each)).map(each -> new TableMetaDataViolation(each.getName(), each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(violations.isEmpty(), () -> new RuleAndStorageMetaDataMismatchedException(createErrorReason(logicTableName, violations)));
+        ShardingSpherePreconditions.checkMustEmpty(violations, () -> new RuleAndStorageMetaDataMismatchedException(createErrorReason(logicTableName, violations)));
     }
     
     private String createErrorReason(final String logicTableName, final Collection<TableMetaDataViolation> violations) {

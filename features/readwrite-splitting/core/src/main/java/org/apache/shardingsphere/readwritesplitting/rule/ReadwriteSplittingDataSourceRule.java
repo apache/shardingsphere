@@ -43,8 +43,8 @@ public final class ReadwriteSplittingDataSourceRule {
     
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final TransactionalReadQueryStrategy transactionalReadQueryStrategy,
-                                            final LoadBalanceAlgorithm loadBalancer) {
+    public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config,
+                                            final TransactionalReadQueryStrategy transactionalReadQueryStrategy, final LoadBalanceAlgorithm loadBalancer) {
         name = config.getName();
         this.transactionalReadQueryStrategy = transactionalReadQueryStrategy;
         this.loadBalancer = loadBalancer;

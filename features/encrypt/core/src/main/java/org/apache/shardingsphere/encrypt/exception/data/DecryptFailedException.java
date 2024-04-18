@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.kernel.connection;
+package org.apache.shardingsphere.encrypt.exception.data;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
+import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Overall connection not enough exception.
+ * Decrypt failed exception.
  */
-public final class OverallConnectionNotEnoughException extends ConnectionSQLException {
+public final class DecryptFailedException extends EncryptSQLException {
     
-    private static final long serialVersionUID = -1297088138042287804L;
+    private static final long serialVersionUID = 1122241238288845667L;
     
-    public OverallConnectionNotEnoughException(final int desiredSize, final int actualSize, final Exception cause) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 0, cause, "Can not get %d connections one time, partition succeed connection(%d) have released. "
-                + "Please consider increasing the 'maxPoolSize' of the data sources or decreasing the 'max-connections-size-per-query' in properties.", desiredSize, actualSize);
+    public DecryptFailedException(final String ciphertext, final SQLExceptionIdentifier sqlExceptionIdentifier, final Exception cause) {
+        super(XOpenSQLState.DATA_EXCEPTION, 30, cause, "Failed to decrypt the ciphertext '%s' in '%s'.", ciphertext, sqlExceptionIdentifier);
     }
 }

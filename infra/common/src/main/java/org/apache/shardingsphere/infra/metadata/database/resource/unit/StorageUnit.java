@@ -50,15 +50,15 @@ public final class StorageUnit {
     
     private final ConnectionProperties connectionProperties;
     
-    public StorageUnit(final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProperties, final DataSource dataSource) {
+    public StorageUnit(final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProps, final DataSource dataSource) {
         this.storageNode = storageNode;
-        Map<String, Object> standardProps = dataSourcePoolProperties.getConnectionPropertySynonyms().getStandardProperties();
+        Map<String, Object> standardProps = dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties();
         String url = standardProps.get("url").toString();
         storageType = DatabaseTypeFactory.get(url);
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
         catalog = isInstanceConnectionAvailable ? new StandardJdbcUrlParser().parse(url).getDatabase() : null;
         this.dataSource = new CatalogSwitchableDataSource(dataSource, catalog, url);
-        this.dataSourcePoolProperties = dataSourcePoolProperties;
+        this.dataSourcePoolProperties = dataSourcePoolProps;
         connectionProperties = createConnectionProperties(standardProps);
     }
     

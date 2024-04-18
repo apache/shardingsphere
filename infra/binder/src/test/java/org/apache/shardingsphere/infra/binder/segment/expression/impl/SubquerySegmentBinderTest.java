@@ -62,15 +62,15 @@ class SubquerySegmentBinderTest {
     
     @Test
     void assertBind() {
-        MySQLSelectStatement mySQLSelectStatement = new MySQLSelectStatement();
+        MySQLSelectStatement mysqlSelectStatement = new MySQLSelectStatement();
         ColumnSegment columnSegment = new ColumnSegment(58, 65, new IdentifierValue("order_id"));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(58, 65);
         projectionsSegment.getProjections().add(new ColumnProjectionSegment(columnSegment));
-        mySQLSelectStatement.setProjections(projectionsSegment);
-        mySQLSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(72, 78, new IdentifierValue("t_order"))));
+        mysqlSelectStatement.setProjections(projectionsSegment);
+        mysqlSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(72, 78, new IdentifierValue("t_order"))));
         ExpressionSegment whereExpressionSegment = new ColumnSegment(86, 91, new IdentifierValue("status"));
-        mySQLSelectStatement.setWhere(new WhereSegment(80, 102, whereExpressionSegment));
-        SubquerySegment subquerySegment = new SubquerySegment(39, 103, mySQLSelectStatement, "order_id = (SELECT order_id FROM t_order WHERE status = 'SUBMIT')");
+        mysqlSelectStatement.setWhere(new WhereSegment(80, 102, whereExpressionSegment));
+        SubquerySegment subquerySegment = new SubquerySegment(39, 103, mysqlSelectStatement, "order_id = (SELECT order_id FROM t_order WHERE status = 'SUBMIT')");
         SQLStatementBinderContext sqlStatementBinderContext =
                 new SQLStatementBinderContext(createMetaData(), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
         ColumnSegment boundedNameColumn = new ColumnSegment(7, 13, new IdentifierValue("user_id"));

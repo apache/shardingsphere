@@ -34,19 +34,19 @@ class SingleRuleConfigurationToDistSQLConverterTest {
     
     @Test
     void assertConvert() {
-        SingleRuleConfiguration singleRuleConfiguration = new SingleRuleConfiguration(new LinkedList<>(Arrays.asList("t_0", "t_1")), "foo_ds");
+        SingleRuleConfiguration singleRuleConfig = new SingleRuleConfiguration(new LinkedList<>(Arrays.asList("t_0", "t_1")), "foo_ds");
         SingleRuleConfigurationToDistSQLConverter singleRuleConfigurationToDistSQLConverter = new SingleRuleConfigurationToDistSQLConverter();
-        assertThat(singleRuleConfigurationToDistSQLConverter.convert(singleRuleConfiguration),
+        assertThat(singleRuleConfigurationToDistSQLConverter.convert(singleRuleConfig),
                 is("LOAD SINGLE TABLE t_0,t_1;" + System.lineSeparator() + System.lineSeparator() + "SET DEFAULT SINGLE TABLE STORAGE UNIT = foo_ds;"));
     }
     
     @Test
     void assertConvertWithoutDefaultDatasourceAndTables() {
-        SingleRuleConfiguration singleRuleConfiguration = mock(SingleRuleConfiguration.class);
-        when(singleRuleConfiguration.getDefaultDataSource()).thenReturn(Optional.empty());
-        when(singleRuleConfiguration.getTables()).thenReturn(Collections.emptyList());
+        SingleRuleConfiguration singleRuleConfig = mock(SingleRuleConfiguration.class);
+        when(singleRuleConfig.getDefaultDataSource()).thenReturn(Optional.empty());
+        when(singleRuleConfig.getTables()).thenReturn(Collections.emptyList());
         SingleRuleConfigurationToDistSQLConverter singleRuleConfigurationToDistSQLConverter = new SingleRuleConfigurationToDistSQLConverter();
-        assertThat(singleRuleConfigurationToDistSQLConverter.convert(singleRuleConfiguration), is(""));
+        assertThat(singleRuleConfigurationToDistSQLConverter.convert(singleRuleConfig), is(""));
     }
     
     @Test

@@ -136,7 +136,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         clientEncoding = startupPacket.getClientEncoding();
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(PostgreSQLCharacterSets.findCharacterSet(clientEncoding));
         String username = startupPacket.getUsername();
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(username), EmptyUsernameException::new);
+        ShardingSpherePreconditions.checkNotEmpty(username, EmptyUsernameException::new);
         context.writeAndFlush(getIdentifierPacket(username, rule));
         currentAuthResult = AuthenticationResultBuilder.continued(username, "", startupPacket.getDatabase());
         return currentAuthResult;

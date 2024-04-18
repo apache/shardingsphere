@@ -83,7 +83,7 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
     
     private void checkShadowTableAlgorithmsReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Map<String, AlgorithmConfiguration> shadowAlgorithms, final String databaseName) {
         for (ShadowTableConfiguration each : shadowTables.values()) {
-            ShardingSpherePreconditions.checkState(!each.getShadowAlgorithmNames().isEmpty(), () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier(databaseName)));
+            ShardingSpherePreconditions.checkNotEmpty(each.getShadowAlgorithmNames(), () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier(databaseName)));
             each.getShadowAlgorithmNames().forEach(shadowAlgorithmName -> ShardingSpherePreconditions.checkState(shadowAlgorithms.containsKey(shadowAlgorithmName),
                     () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier(databaseName))));
         }
