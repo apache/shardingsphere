@@ -39,6 +39,7 @@ public final class MySQLContainer extends DockerITContainer {
     private static final String READY_USER_PASSWORD = "123456";
     
     public MySQLContainer() {
+        // TODO image version adjusted to be configurable
         super("mysql", "mysql:8.0");
     }
     

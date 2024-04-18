@@ -44,6 +44,7 @@ public final class ShardingSphereJdbcContainer extends DockerITContainer {
     }
     
     public ShardingSphereJdbcContainer(final String plugin, final Consumer<OutputFrame> consumer) {
+        // TODO image version adjusted to be configurable
         super("jdbc", "apache/shardingsphere-jdbc-agent-test:latest");
         this.consumer = consumer;
         this.plugin = plugin;
