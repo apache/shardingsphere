@@ -121,6 +121,7 @@ class MaskMergedResultTest {
     }
     
     private MaskRule mockMaskAlgorithmAbsent() {
+        
         MaskRule result = mock(MaskRule.class);
         MaskTable maskTable = mock(MaskTable.class);
         when(maskTable.findAlgorithm("col")).thenReturn(Optional.empty());
