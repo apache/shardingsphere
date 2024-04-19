@@ -40,7 +40,7 @@ public interface DatabaseRuleBuilder<T extends RuleConfiguration> extends RuleBu
     /**
      * Build database rule.
      *
-     * @param config rule configuration
+     * @param ruleConfig rule configuration
      * @param databaseName database name
      * @param protocolType protocol type
      * @param dataSources data sources
@@ -48,5 +48,5 @@ public interface DatabaseRuleBuilder<T extends RuleConfiguration> extends RuleBu
      * @param instanceContext instance context
      * @return built database rule
      */
-    DatabaseRule build(T config, String databaseName, DatabaseType protocolType, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> builtRules, InstanceContext instanceContext);
+    DatabaseRule build(T ruleConfig, String databaseName, DatabaseType protocolType, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> builtRules, InstanceContext instanceContext);
 }

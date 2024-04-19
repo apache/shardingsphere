@@ -29,7 +29,7 @@ import java.util.Map;
 public final class ModeRuleBuilderFixture implements DatabaseRuleBuilder<ModeRuleConfigurationFixture> {
     
     @Override
-    public ModeRuleFixture build(final ModeRuleConfigurationFixture config, final String databaseName, final DatabaseType databaseType, final Map<String, DataSource> dataSources,
+    public ModeRuleFixture build(final ModeRuleConfigurationFixture ruleConfig, final String databaseName, final DatabaseType databaseType, final Map<String, DataSource> dataSources,
                                  final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
         return new ModeRuleFixture();
     }

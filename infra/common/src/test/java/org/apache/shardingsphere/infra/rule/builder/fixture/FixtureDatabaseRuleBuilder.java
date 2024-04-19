@@ -30,7 +30,7 @@ import java.util.Map;
 public final class FixtureDatabaseRuleBuilder implements DatabaseRuleBuilder<FixtureDatabaseRuleConfiguration> {
     
     @Override
-    public FixtureRule build(final FixtureDatabaseRuleConfiguration config, final String databaseName, final DatabaseType protocolType,
+    public FixtureRule build(final FixtureDatabaseRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType,
                              final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
         return new FixtureRule();
     }

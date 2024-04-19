@@ -35,9 +35,9 @@ import java.util.Map;
 public final class EncryptRuleBuilder implements DatabaseRuleBuilder<EncryptRuleConfiguration> {
     
     @Override
-    public EncryptRule build(final EncryptRuleConfiguration config, final String databaseName, final DatabaseType protocolType,
+    public EncryptRule build(final EncryptRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType,
                              final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new EncryptRule(databaseName, config);
+        return new EncryptRule(databaseName, ruleConfig);
     }
     
     @Override
