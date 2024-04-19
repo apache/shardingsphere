@@ -49,7 +49,7 @@ public final class SystemSchemaManager {
     
     static {
         List<String> resourceNames;
-        try (Stream<String> resourceNameStream = ClasspathResourceDirectoryReader.read("schema")) {
+        try (Stream<String> resourceNameStream = ClasspathResourceDirectoryReader.read(SystemSchemaManager.class.getClassLoader(), "schema")) {
             resourceNames = resourceNameStream.filter(each -> each.endsWith(".yaml")).collect(Collectors.toList());
         }
         DATABASE_TYPE_SCHEMA_TABLE_MAP = resourceNames.stream().map(resourceName -> resourceName.split("/")).filter(each -> each.length == 4)
