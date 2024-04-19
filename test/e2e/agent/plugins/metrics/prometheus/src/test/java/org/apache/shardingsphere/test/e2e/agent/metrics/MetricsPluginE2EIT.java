@@ -28,6 +28,7 @@ import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricQueryAsserti
 import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricTestCase;
 import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsMetaDataResult;
 import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsQueryResult;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -43,6 +44,7 @@ import java.util.stream.Stream;
 @Slf4j
 class MetricsPluginE2EIT {
     
+    @EnabledIf("isEnabled")
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertWithAgent(final MetricTestCase metricTestCase) {
@@ -73,6 +75,10 @@ class MetricsPluginE2EIT {
                 log.info("Access prometheus HTTP RESTFul API error: ", ex);
             }
         }
+    }
+    
+    private static boolean isEnabled() {
+        return E2ETestEnvironment.getInstance().containsTestParameter();
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
