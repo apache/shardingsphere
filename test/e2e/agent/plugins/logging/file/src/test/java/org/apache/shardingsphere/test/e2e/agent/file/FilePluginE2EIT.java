@@ -17,30 +17,29 @@
 
 package org.apache.shardingsphere.test.e2e.agent.file;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
+import org.apache.shardingsphere.test.e2e.agent.common.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.file.asserts.ContentAssert;
-import org.apache.shardingsphere.test.e2e.agent.file.loader.LogLoader;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.io.File;
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(AgentTestActionExtension.class)
+@Slf4j
 class FilePluginE2EIT {
     
+    @EnabledIf("isEnabled")
     @Test
     void assertWithAgent() {
-        assertTrue(new File(LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy())).exists(),
-                String.format("The file `%s` does not exist", LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy())));
-        Collection<String> actualLogLines = LogLoader.getLogLines(LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy()),
-                E2ETestEnvironment.getInstance().isAdaptedProxy());
+        Collection<String> actualLogLines = E2ETestEnvironment.getInstance().getActualLogs();
         assertFalse(actualLogLines.isEmpty(), "Actual log is empty");
-        if (E2ETestEnvironment.getInstance().isAdaptedProxy()) {
+        if (AdapterType.PROXY.getValue().equalsIgnoreCase(E2ETestEnvironment.getInstance().getAdapter())) {
             assertProxyWithAgent(actualLogLines);
         } else {
             assertJdbcWithAgent(actualLogLines);
@@ -53,5 +52,9 @@ class FilePluginE2EIT {
     
     private void assertJdbcWithAgent(final Collection<String> actualLogLines) {
         ContentAssert.assertIs(actualLogLines, "Build meta data contexts finished, cost\\s(?=[1-9]+\\d*)");
+    }
+    
+    private static boolean isEnabled() {
+        return E2ETestEnvironment.getInstance().containsTestParameter();
     }
 }

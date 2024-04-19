@@ -28,6 +28,7 @@ import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricQueryAsserti
 import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricTestCase;
 import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsMetaDataResult;
 import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsQueryResult;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,19 +38,18 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.Properties;
 import java.util.stream.Stream;
 
 @ExtendWith(AgentTestActionExtension.class)
 @Slf4j
 class MetricsPluginE2EIT {
     
+    @EnabledIf("isEnabled")
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertWithAgent(final MetricTestCase metricTestCase) {
-        Properties props = E2ETestEnvironment.getInstance().getProps();
-        String metaDataURL = props.getProperty("prometheus.metadata.url");
-        String queryURL = props.getProperty("prometheus.query.url");
+        String metaDataURL = E2ETestEnvironment.getInstance().getPrometheusHttpUrl() + "/api/v1/metadata";
+        String queryURL = E2ETestEnvironment.getInstance().getPrometheusHttpUrl() + "/api/v1/query";
         assertMetadata(metaDataURL, metricTestCase);
         assertQuery(queryURL, metricTestCase);
     }
@@ -75,6 +75,10 @@ class MetricsPluginE2EIT {
                 log.info("Access prometheus HTTP RESTFul API error: ", ex);
             }
         }
+    }
+    
+    private static boolean isEnabled() {
+        return E2ETestEnvironment.getInstance().containsTestParameter();
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
