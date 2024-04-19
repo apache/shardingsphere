@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.common.env;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.common.container.ITContainers;
@@ -83,8 +84,8 @@ public final class E2ETestEnvironment {
     
     private E2ETestEnvironment() {
         Properties props = EnvironmentProperties.loadProperties("env/engine-env.properties");
-        adapter = props.getProperty("it.env.adapter", "proxy");
-        plugin = props.getProperty("it.env.plugin", "file");
+        adapter = props.getProperty("it.env.adapter");
+        plugin = props.getProperty("it.env.plugin");
         collectDataWaitSeconds = Long.parseLong(props.getProperty("it.env.collect.data.wait.seconds", "0"));
     }
     
@@ -101,6 +102,9 @@ public final class E2ETestEnvironment {
      * Init environment.
      */
     public void init() {
+        if (!containsTestParameter()) {
+            return;
+        }
         if (AdapterType.PROXY.getValue().equalsIgnoreCase(adapter)) {
             createProxyEnvironment();
         } else if (AdapterType.JDBC.getValue().equalsIgnoreCase(adapter)) {
@@ -180,11 +184,23 @@ public final class E2ETestEnvironment {
      * Destroy environment.
      */
     public void destroy() {
+        if (!containsTestParameter()) {
+            return;
+        }
         if (null != proxyRequestExecutor) {
             proxyRequestExecutor.stop();
         }
         if (null != containers) {
             containers.stop();
         }
+    }
+    
+    /**
+     * Judge whether contains test parameter.
+     *
+     * @return contains or not
+     */
+    public boolean containsTestParameter() {
+        return !Strings.isNullOrEmpty(adapter) && !Strings.isNullOrEmpty(plugin);
     }
 }
