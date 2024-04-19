@@ -39,5 +39,10 @@ public final class TagAssertion {
     private String tagValue;
     
     @XmlAttribute(name = "need-assert-value")
-    private boolean needAssertValue;
+    private boolean needAssertValue = true;
+    
+    @Override
+    public String toString() {
+        return String.format("%s -> %s", tagKey, tagValue);
+    }
 }

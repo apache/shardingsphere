@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.agent.jdbc.project;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.controller.OrderController;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.service.OrderService;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.service.impl.OrderServiceImpl;
@@ -32,6 +33,7 @@ import java.util.concurrent.TimeUnit;
  * Jdbc project application.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class JdbcProjectApplication {
     
     /**
@@ -44,6 +46,7 @@ public final class JdbcProjectApplication {
      */
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws ClassNotFoundException, SQLException, InterruptedException {
+        log.info("JdbcProjectApplication started");
         run();
     }
     // CHECKSTYLE:ON

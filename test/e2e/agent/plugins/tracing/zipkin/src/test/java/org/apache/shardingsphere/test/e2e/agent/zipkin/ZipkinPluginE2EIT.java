@@ -37,7 +37,7 @@ class ZipkinPluginE2EIT {
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertWithAgent(final SpanTestCase spanTestCase) {
-        SpanAssert.assertIs(E2ETestEnvironment.getInstance().getProps().getProperty("zipkin.url"), spanTestCase);
+        SpanAssert.assertIs(E2ETestEnvironment.getInstance().getZipKinHttpUrl(), spanTestCase);
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {

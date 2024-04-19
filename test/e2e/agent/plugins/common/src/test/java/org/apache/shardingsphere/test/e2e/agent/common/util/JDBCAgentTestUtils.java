@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.agent.common.entity.OrderEntity;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,11 +39,11 @@ public final class JDBCAgentTestUtils {
      * Insert order.
      *
      * @param orderEntity order entity
-     * @param dataSource data source
+     * @param connection connection
      */
-    public static void insertOrder(final OrderEntity orderEntity, final DataSource dataSource) {
+    public static void insertOrder(final OrderEntity orderEntity, final Connection connection) {
         String sql = "INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)";
-        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             connection.setAutoCommit(false);
             preparedStatement.setLong(1, orderEntity.getOrderId());
             preparedStatement.setInt(2, orderEntity.getUserId());
@@ -59,11 +58,11 @@ public final class JDBCAgentTestUtils {
      * Insert order rollback.
      *
      * @param orderEntity order entity
-     * @param dataSource data source
+     * @param connection connection
      */
-    public static void insertOrderRollback(final OrderEntity orderEntity, final DataSource dataSource) {
+    public static void insertOrderRollback(final OrderEntity orderEntity, final Connection connection) {
         String sql = "INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)";
-        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             connection.setAutoCommit(false);
             preparedStatement.setLong(1, orderEntity.getOrderId());
             preparedStatement.setInt(2, orderEntity.getUserId());
@@ -78,11 +77,11 @@ public final class JDBCAgentTestUtils {
      * Delete order by order id.
      *
      * @param orderId order id
-     * @param dataSource data source
+     * @param connection connection
      */
-    public static void deleteOrderByOrderId(final Long orderId, final DataSource dataSource) {
+    public static void deleteOrderByOrderId(final Long orderId, final Connection connection) {
         String sql = "DELETE FROM t_order WHERE order_id=?";
-        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, orderId);
             preparedStatement.executeUpdate();
         } catch (final SQLException ignored) {
@@ -93,11 +92,11 @@ public final class JDBCAgentTestUtils {
      * Update order status.
      *
      * @param orderEntity order entity
-     * @param dataSource data source
+     * @param connection connection
      */
-    public static void updateOrderStatus(final OrderEntity orderEntity, final DataSource dataSource) {
+    public static void updateOrderStatus(final OrderEntity orderEntity, final Connection connection) {
         String sql = "UPDATE t_order SET status = ? WHERE order_id =?";
-        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             connection.setAutoCommit(false);
             preparedStatement.setString(1, orderEntity.getStatus());
             preparedStatement.setLong(2, orderEntity.getOrderId());
@@ -110,17 +109,17 @@ public final class JDBCAgentTestUtils {
     /**
      * Select all orders collection.
      *
-     * @param dataSource data source
+     * @param connection connection
      * @return collection
      */
-    public static Collection<OrderEntity> selectAllOrders(final DataSource dataSource) {
+    public static Collection<OrderEntity> selectAllOrders(final Connection connection) {
         String sql = "SELECT * FROM t_order";
-        return getOrders(sql, dataSource);
+        return getOrders(sql, connection);
     }
     
-    private static Collection<OrderEntity> getOrders(final String sql, final DataSource dataSource) {
+    private static Collection<OrderEntity> getOrders(final String sql, final Connection connection) {
         Collection<OrderEntity> result = new LinkedList<>();
-        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 OrderEntity orderEntity = new OrderEntity(resultSet.getLong(1), resultSet.getInt(2), resultSet.getString(3));
@@ -134,11 +133,11 @@ public final class JDBCAgentTestUtils {
     /**
      * Create execute error.
      *
-     * @param dataSource data source
+     * @param connection connection
      */
-    public static void createExecuteError(final DataSource dataSource) {
+    public static void createExecuteError(final Connection connection) {
         String sql = "SELECT * FROM non_existent_table";
-        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             statement.executeQuery(sql);
         } catch (final SQLException ignored) {
         }
