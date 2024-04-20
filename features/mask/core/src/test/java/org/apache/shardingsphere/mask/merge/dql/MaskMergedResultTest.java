@@ -38,9 +38,12 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 @ExtendWith(MockitoExtension.class)
 class MaskMergedResultTest {
@@ -59,6 +62,32 @@ class MaskMergedResultTest {
         assertThat(new MaskMergedResult(mockMaskRule(), mockSelectStatementContext(), mergedResult).getValue(1, String.class), is("MASK_VALUE"));
     }
     
+    @Test
+    void assertGetValueWithoutColumnProjection() throws SQLException {
+        when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
+        MaskRule maskRule = mock(MaskRule.class);
+        assertThat(new MaskMergedResult(maskRule, mockSelectStatementContextWithoutColumnProjection(), mergedResult).getValue(1, String.class), is("VALUE"));
+        
+    }
+    
+    @Test
+    void assertGetValueWithoutMaskTable() throws SQLException {
+        when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
+        assertThat(new MaskMergedResult(mockMaskRuleTableAbsent(), mockSelectStatementContextForMaskTableAbsent(), mergedResult).getValue(1, String.class), is("VALUE"));
+    }
+    
+    @Test
+    void assertGetValueWithoutMaskAlgorithm() throws SQLException {
+        when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
+        assertThat(new MaskMergedResult(mockMaskAlgorithmAbsent(), mockSelectStatementContext(), mergedResult).getValue(1, String.class), is("VALUE"));
+    }
+    
+    @Test
+    void assertGetValueWhenOriginalValueIsNull() throws SQLException {
+        when(mergedResult.getValue(1, Object.class)).thenReturn(null);
+        assertNull(new MaskMergedResult(mockMaskAlgorithmAbsent(), mockSelectStatementContext(), mergedResult).getValue(1, Object.class));
+    }
+    
     @SuppressWarnings("unchecked")
     private MaskRule mockMaskRule() {
         MaskAlgorithm<String, String> maskAlgorithm = mock(MaskAlgorithm.class);
@@ -74,6 +103,35 @@ class MaskMergedResultTest {
         ColumnProjection columnProjection = mock(ColumnProjection.class, RETURNS_DEEP_STUBS);
         when(columnProjection.getOriginalTable().getValue()).thenReturn("tbl");
         when(columnProjection.getName().getValue()).thenReturn("col");
+        SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getProjectionsContext().findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
+        return result;
+    }
+    
+    private SelectStatementContext mockSelectStatementContextWithoutColumnProjection() {
+        SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getProjectionsContext().findColumnProjection(anyInt())).thenReturn(Optional.empty());
+        return result;
+    }
+    
+    private MaskRule mockMaskRuleTableAbsent() {
+        MaskRule result = mock(MaskRule.class);
+        when(result.findMaskTable(anyString())).thenReturn(Optional.empty());
+        return result;
+    }
+    
+    private MaskRule mockMaskAlgorithmAbsent() {
+        
+        MaskRule result = mock(MaskRule.class);
+        MaskTable maskTable = mock(MaskTable.class);
+        when(maskTable.findAlgorithm("col")).thenReturn(Optional.empty());
+        when(result.findMaskTable("tbl")).thenReturn(Optional.of(maskTable));
+        return result;
+    }
+    
+    private SelectStatementContext mockSelectStatementContextForMaskTableAbsent() {
+        ColumnProjection columnProjection = mock(ColumnProjection.class, RETURNS_DEEP_STUBS);
+        when(columnProjection.getOriginalTable().getValue()).thenReturn("tbl");
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getProjectionsContext().findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
         return result;
