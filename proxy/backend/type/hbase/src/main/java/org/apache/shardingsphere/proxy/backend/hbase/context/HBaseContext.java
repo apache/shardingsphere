@@ -138,7 +138,7 @@ public final class HBaseContext implements AutoCloseable {
      * @return HBase connection
      */
     public Connection getConnection(final String tableName) {
-        ShardingSpherePreconditions.checkState(tableConnectionMap.containsKey(tableName), () -> new TableNotFoundException(tableName));
+        ShardingSpherePreconditions.checkContainsKey(tableConnectionMap, tableName, () -> new TableNotFoundException(tableName));
         return tableConnectionMap.get(tableName).getConnection();
     }
     

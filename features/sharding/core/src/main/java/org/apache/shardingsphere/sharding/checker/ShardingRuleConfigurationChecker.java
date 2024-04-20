@@ -101,7 +101,7 @@ public final class ShardingRuleConfigurationChecker implements RuleConfiguration
             return;
         }
         ShardingSpherePreconditions.checkNotEmpty(keyGenerateStrategy.getColumn(), () -> new MissingRequiredShardingConfigurationException("Key generate column", databaseName));
-        ShardingSpherePreconditions.checkState(keyGenerators.contains(keyGenerateStrategy.getKeyGeneratorName()),
+        ShardingSpherePreconditions.checkContains(keyGenerators, keyGenerateStrategy.getKeyGeneratorName(),
                 () -> new UnregisteredAlgorithmException("Key generate", keyGenerateStrategy.getKeyGeneratorName(), new SQLExceptionIdentifier(databaseName)));
     }
     
@@ -122,7 +122,7 @@ public final class ShardingRuleConfigurationChecker implements RuleConfiguration
                     () -> new MissingRequiredShardingConfigurationException("Complex sharding columns", databaseName));
         }
         ShardingSpherePreconditions.checkNotNull(shardingStrategy.getShardingAlgorithmName(), () -> new MissingRequiredShardingConfigurationException("Sharding algorithm name", databaseName));
-        ShardingSpherePreconditions.checkState(shardingAlgorithms.contains(shardingStrategy.getShardingAlgorithmName()),
+        ShardingSpherePreconditions.checkContains(shardingAlgorithms, shardingStrategy.getShardingAlgorithmName(),
                 () -> new UnregisteredAlgorithmException("Key generate", shardingStrategy.getShardingAlgorithmName(), new SQLExceptionIdentifier(databaseName)));
     }
     

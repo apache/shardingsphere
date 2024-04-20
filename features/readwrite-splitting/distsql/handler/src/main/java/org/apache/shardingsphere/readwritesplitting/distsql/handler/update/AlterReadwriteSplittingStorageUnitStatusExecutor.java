@@ -62,14 +62,14 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor
     private void checkBeforeUpdate(final AlterReadwriteSplittingStorageUnitStatusStatement sqlStatement) {
         Optional<ReadwriteSplittingDataSourceRule> dataSourceRule = rule.getDataSourceRules().values().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).findAny();
         ShardingSpherePreconditions.checkState(dataSourceRule.isPresent(), () -> new MissingRequiredRuleException("Readwrite-splitting", database.getName(), sqlStatement.getRuleName()));
-        ShardingSpherePreconditions.checkState(dataSourceRule.get().getReadwriteSplittingGroup().getReadDataSources().contains(sqlStatement.getStorageUnitName()),
+        ShardingSpherePreconditions.checkContains(dataSourceRule.get().getReadwriteSplittingGroup().getReadDataSources(), sqlStatement.getStorageUnitName(),
                 () -> new ReadwriteSplittingActualDataSourceNotFoundException(
                         ReadwriteSplittingDataSourceType.READ, sqlStatement.getStorageUnitName(), new ReadwriteSplittingRuleExceptionIdentifier(database.getName(), dataSourceRule.get().getName())));
         if (sqlStatement.isEnable()) {
-            ShardingSpherePreconditions.checkState(dataSourceRule.get().getDisabledDataSourceNames().contains(sqlStatement.getStorageUnitName()),
+            ShardingSpherePreconditions.checkContains(dataSourceRule.get().getDisabledDataSourceNames(), sqlStatement.getStorageUnitName(),
                     () -> new InvalidStorageUnitStatusException("storage unit is not disabled"));
         } else {
-            ShardingSpherePreconditions.checkState(!dataSourceRule.get().getDisabledDataSourceNames().contains(sqlStatement.getStorageUnitName()),
+            ShardingSpherePreconditions.checkNotContains(dataSourceRule.get().getDisabledDataSourceNames(), sqlStatement.getStorageUnitName(),
                     () -> new InvalidStorageUnitStatusException("storage unit is already disabled"));
         }
     }

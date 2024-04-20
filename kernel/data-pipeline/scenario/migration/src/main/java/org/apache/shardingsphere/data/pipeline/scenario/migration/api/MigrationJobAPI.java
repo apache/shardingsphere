@@ -134,7 +134,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
             if (configSources.containsKey(dataSourceName)) {
                 continue;
             }
-            ShardingSpherePreconditions.checkState(metaDataDataSource.containsKey(dataSourceName),
+            ShardingSpherePreconditions.checkContainsKey(metaDataDataSource, dataSourceName,
                     () -> new PipelineInvalidParameterException(dataSourceName + " doesn't exist. Run `SHOW MIGRATION SOURCE STORAGE UNITS;` to verify it."));
             Map<String, Object> sourceDataSourcePoolProps = dataSourceConfigSwapper.swapToMap(metaDataDataSource.get(dataSourceName));
             StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourcePoolProps);

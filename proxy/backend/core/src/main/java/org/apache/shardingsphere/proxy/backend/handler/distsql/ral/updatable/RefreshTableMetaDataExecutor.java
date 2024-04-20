@@ -64,8 +64,7 @@ public final class RefreshTableMetaDataExecutor implements DistSQLUpdateExecutor
         ShardingSpherePreconditions.checkNotEmpty(storageUnits, () -> new EmptyStorageUnitException(database.getName()));
         if (sqlStatement.getStorageUnitName().isPresent()) {
             String storageUnitName = sqlStatement.getStorageUnitName().get();
-            ShardingSpherePreconditions.checkState(
-                    storageUnits.containsKey(storageUnitName), () -> new MissingRequiredStorageUnitsException(database.getName(), Collections.singleton(storageUnitName)));
+            ShardingSpherePreconditions.checkContainsKey(storageUnits, storageUnitName, () -> new MissingRequiredStorageUnitsException(database.getName(), Collections.singleton(storageUnitName)));
         }
     }
     

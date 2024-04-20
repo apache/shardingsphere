@@ -42,7 +42,7 @@ public final class SQLMatchTrafficAlgorithm implements SegmentTrafficAlgorithm {
     
     @Override
     public void init(final Properties props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(SQL_PROPS_KEY), () -> new AlgorithmInitializationException(this, "%s cannot be null", SQL_PROPS_KEY));
+        ShardingSpherePreconditions.checkContainsKey(props, SQL_PROPS_KEY, () -> new AlgorithmInitializationException(this, "%s cannot be null", SQL_PROPS_KEY));
         sql = getExactlySQL(props.getProperty(SQL_PROPS_KEY));
         ShardingSpherePreconditions.checkNotEmpty(String.valueOf(sql), () -> new AlgorithmInitializationException(this, "SQL must be not empty"));
     }

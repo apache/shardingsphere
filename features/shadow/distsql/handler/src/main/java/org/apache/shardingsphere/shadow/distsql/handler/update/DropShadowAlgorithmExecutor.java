@@ -65,7 +65,7 @@ public final class DropShadowAlgorithmExecutor implements DatabaseRuleDropExecut
                     notExistedAlgorithms -> new UnregisteredAlgorithmException("Shadow", notExistedAlgorithms, new SQLExceptionIdentifier(database.getName())));
         }
         checkAlgorithmInUsed(requiredAlgorithms, getAlgorithmInUse(), identical -> new InUsedAlgorithmException("Shadow", database.getName(), identical));
-        ShardingSpherePreconditions.checkState(!requiredAlgorithms.contains(defaultShadowAlgorithmName),
+        ShardingSpherePreconditions.checkNotContains(requiredAlgorithms, defaultShadowAlgorithmName,
                 () -> new InUsedAlgorithmException("Shadow", database.getName(), Collections.singleton(defaultShadowAlgorithmName)));
     }
     

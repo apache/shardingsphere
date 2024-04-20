@@ -48,7 +48,7 @@ public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseR
     private void checkStorageUnitExist(final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
         if (!Strings.isNullOrEmpty(sqlStatement.getDefaultStorageUnit())) {
             Collection<String> storageUnitNames = database.getResourceMetaData().getStorageUnits().keySet();
-            ShardingSpherePreconditions.checkState(storageUnitNames.contains(sqlStatement.getDefaultStorageUnit()),
+            ShardingSpherePreconditions.checkContains(storageUnitNames, sqlStatement.getDefaultStorageUnit(),
                     () -> new MissingRequiredStorageUnitsException(database.getName(), Collections.singleton(sqlStatement.getDefaultStorageUnit())));
         }
     }

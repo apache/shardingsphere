@@ -211,7 +211,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
         Collection<String> validStrategyNames = Arrays.stream(TransactionalReadQueryStrategy.values()).map(Enum::name).collect(Collectors.toSet());
         for (ReadwriteSplittingRuleSegment each : segments) {
             if (null != each.getTransactionalReadQueryStrategy()) {
-                ShardingSpherePreconditions.checkState(validStrategyNames.contains(each.getTransactionalReadQueryStrategy().toUpperCase()),
+                ShardingSpherePreconditions.checkContains(validStrategyNames, each.getTransactionalReadQueryStrategy().toUpperCase(),
                         () -> new MissingRequiredStrategyException("Transactional read query", Collections.singleton(each.getTransactionalReadQueryStrategy())));
             }
         }

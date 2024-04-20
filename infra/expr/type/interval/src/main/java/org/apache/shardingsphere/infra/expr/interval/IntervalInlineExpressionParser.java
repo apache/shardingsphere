@@ -115,20 +115,17 @@ public class IntervalInlineExpressionParser implements InlineExpressionParser {
     }
     
     private String getPrefix(final Map<String, String> props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(PREFIX_KEY),
-                () -> new RuntimeException(String.format("%s can not be null.", PREFIX_KEY)));
+        ShardingSpherePreconditions.checkContainsKey(props, PREFIX_KEY, () -> new RuntimeException(String.format("%s can not be null.", PREFIX_KEY)));
         return props.get(PREFIX_KEY);
     }
     
     private TemporalAccessor getDateTimeLower(final Map<String, String> props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(DATE_TIME_LOWER_KEY),
-                () -> new RuntimeException(String.format("%s can not be null.", DATE_TIME_LOWER_KEY)));
+        ShardingSpherePreconditions.checkContainsKey(props, DATE_TIME_LOWER_KEY, () -> new RuntimeException(String.format("%s can not be null.", DATE_TIME_LOWER_KEY)));
         return getDateTime(props.get(DATE_TIME_LOWER_KEY));
     }
     
     private TemporalAccessor getDateTimeUpper(final Map<String, String> props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(DATE_TIME_UPPER_KEY),
-                () -> new RuntimeException(String.format("%s can not be null.", DATE_TIME_UPPER_KEY)));
+        ShardingSpherePreconditions.checkContainsKey(props, DATE_TIME_UPPER_KEY, () -> new RuntimeException(String.format("%s can not be null.", DATE_TIME_UPPER_KEY)));
         return getDateTime(props.get(DATE_TIME_UPPER_KEY));
     }
     
@@ -144,14 +141,12 @@ public class IntervalInlineExpressionParser implements InlineExpressionParser {
     }
     
     private int getStepAmount(final Map<String, String> props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(INTERVAL_AMOUNT_KEY),
-                () -> new RuntimeException(String.format("%s can not be null.", INTERVAL_AMOUNT_KEY)));
+        ShardingSpherePreconditions.checkContainsKey(props, INTERVAL_AMOUNT_KEY, () -> new RuntimeException(String.format("%s can not be null.", INTERVAL_AMOUNT_KEY)));
         return Integer.parseInt(props.get(INTERVAL_AMOUNT_KEY));
     }
     
     private ChronoUnit getStepUnit(final Map<String, String> props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(INTERVAL_UNIT_KEY),
-                () -> new RuntimeException(String.format("%s can not be null.", INTERVAL_UNIT_KEY)));
+        ShardingSpherePreconditions.checkContainsKey(props, INTERVAL_UNIT_KEY, () -> new RuntimeException(String.format("%s can not be null.", INTERVAL_UNIT_KEY)));
         String stepUnit = props.get(INTERVAL_UNIT_KEY);
         return Arrays.stream(ChronoUnit.values())
                 .filter(chronoUnit -> chronoUnit.toString().equals(stepUnit))
