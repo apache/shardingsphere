@@ -171,8 +171,7 @@ public class ShardingRuleChecker {
                     : ((StandardShardingStrategyConfiguration) shardingStrategy).getShardingColumn();
             String result = null;
             try {
-                result = ((InlineShardingAlgorithm) shardingAlgorithm).doSharding(Collections.emptySet(),
-                        new PreciseShardingValue<Comparable<?>>(shardingTable.getLogicTable(), shardingColumn, dataNodeInfo, 1));
+                result = ((InlineShardingAlgorithm) shardingAlgorithm).doSharding(Collections.emptySet(), new PreciseShardingValue<>(shardingTable.getLogicTable(), shardingColumn, dataNodeInfo, 1));
                 // CHECKSTYLE:OFF
             } catch (final Exception ignored) {
                 // CHECKSTYLE:ON
