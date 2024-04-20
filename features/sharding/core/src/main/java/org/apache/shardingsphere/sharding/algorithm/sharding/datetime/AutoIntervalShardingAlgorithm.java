@@ -75,7 +75,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     }
     
     private long getShardingSeconds(final Properties props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(SHARDING_SECONDS_KEY), () -> new AlgorithmInitializationException(this, String.format("%s cannot be null.", SHARDING_SECONDS_KEY)));
+        ShardingSpherePreconditions.checkContainsKey(props, SHARDING_SECONDS_KEY, () -> new AlgorithmInitializationException(this, String.format("%s cannot be null.", SHARDING_SECONDS_KEY)));
         return Long.parseLong(props.getProperty(SHARDING_SECONDS_KEY));
     }
     

@@ -466,7 +466,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     }
     
     private Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        ShardingSpherePreconditions.checkState(!INVALID_FEDERATION_TYPES.contains(type), () -> new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName())));
+        ShardingSpherePreconditions.checkNotContains(INVALID_FEDERATION_TYPES, type, () -> new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName())));
         Object result = currentRows[columnIndex - 1];
         wasNull = null == result;
         return columnTypeConverter.convertColumnValue(result);

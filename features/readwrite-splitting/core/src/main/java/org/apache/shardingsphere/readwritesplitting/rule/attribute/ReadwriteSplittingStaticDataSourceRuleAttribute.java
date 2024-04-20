@@ -70,7 +70,7 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
     
     @Override
     public void cleanStorageNodeDataSource(final String groupName) {
-        ShardingSpherePreconditions.checkState(dataSourceRules.containsKey(groupName), () -> new ReadwriteSplittingDataSourceRuleNotFoundException(groupName, databaseName));
+        ShardingSpherePreconditions.checkContainsKey(dataSourceRules, groupName, () -> new ReadwriteSplittingDataSourceRuleNotFoundException(groupName, databaseName));
         deleteStorageNodeDataSources(dataSourceRules.get(groupName));
     }
     

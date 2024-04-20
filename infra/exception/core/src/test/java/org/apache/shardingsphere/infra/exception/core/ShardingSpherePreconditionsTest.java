@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.SQLException;
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ShardingSpherePreconditionsTest {
@@ -32,8 +33,8 @@ class ShardingSpherePreconditionsTest {
     }
     
     @Test
-    void assertCheckStateToNotThrowException() throws SQLException {
-        ShardingSpherePreconditions.checkState(true, SQLException::new);
+    void assertCheckStateToNotThrowException() {
+        assertDoesNotThrow(() -> ShardingSpherePreconditions.checkState(true, SQLException::new));
     }
     
     @Test
@@ -42,8 +43,8 @@ class ShardingSpherePreconditionsTest {
     }
     
     @Test
-    void assertCheckNotNullToNotThrowException() throws SQLException {
-        ShardingSpherePreconditions.checkNotNull(new Object(), SQLException::new);
+    void assertCheckNotNullToNotThrowException() {
+        assertDoesNotThrow(() -> ShardingSpherePreconditions.checkNotNull(new Object(), SQLException::new));
     }
     
     @Test
@@ -53,8 +54,8 @@ class ShardingSpherePreconditionsTest {
     }
     
     @Test
-    void assertCheckNotEmptyWithStringToNotThrowException() throws SQLException {
-        ShardingSpherePreconditions.checkNotEmpty("foo", SQLException::new);
+    void assertCheckNotEmptyWithStringToNotThrowException() {
+        assertDoesNotThrow(() -> ShardingSpherePreconditions.checkNotEmpty("foo", SQLException::new));
     }
     
     @Test
@@ -63,8 +64,8 @@ class ShardingSpherePreconditionsTest {
     }
     
     @Test
-    void assertCheckNotEmptyWithCollectionToNotThrowException() throws SQLException {
-        ShardingSpherePreconditions.checkNotEmpty(Collections.singleton("foo"), SQLException::new);
+    void assertCheckNotEmptyWithCollectionToNotThrowException() {
+        assertDoesNotThrow(() -> ShardingSpherePreconditions.checkNotEmpty(Collections.singleton("foo"), SQLException::new));
     }
     
     @Test
@@ -73,8 +74,8 @@ class ShardingSpherePreconditionsTest {
     }
     
     @Test
-    void assertCheckNotEmptyWithMapToNotThrowException() throws SQLException {
-        ShardingSpherePreconditions.checkNotEmpty(Collections.singletonMap("key", "value"), SQLException::new);
+    void assertCheckNotEmptyWithMapToNotThrowException() {
+        assertDoesNotThrow(() -> ShardingSpherePreconditions.checkNotEmpty(Collections.singletonMap("key", "value"), SQLException::new));
     }
     
     @Test
@@ -83,8 +84,8 @@ class ShardingSpherePreconditionsTest {
     }
     
     @Test
-    void assertCheckMustEmptyWithCollectionToNotThrowException() throws SQLException {
-        ShardingSpherePreconditions.checkMustEmpty(Collections.emptyList(), SQLException::new);
+    void assertCheckMustEmptyWithCollectionToNotThrowException() {
+        assertDoesNotThrow(() -> ShardingSpherePreconditions.checkMustEmpty(Collections.emptyList(), SQLException::new));
     }
     
     @Test
@@ -93,7 +94,37 @@ class ShardingSpherePreconditionsTest {
     }
     
     @Test
-    void assertCheckMustEmptyWithMapToNotThrowException() throws SQLException {
-        ShardingSpherePreconditions.checkMustEmpty(Collections.emptyMap(), SQLException::new);
+    void assertCheckMustEmptyWithMapToNotThrowException() {
+        assertDoesNotThrow(() -> ShardingSpherePreconditions.checkMustEmpty(Collections.emptyMap(), SQLException::new));
+    }
+    
+    @Test
+    void assertCheckContainsToNotThrowException() {
+        assertDoesNotThrow(() -> ShardingSpherePreconditions.checkContains(Collections.singleton("foo"), "foo", SQLException::new));
+    }
+    
+    @Test
+    void assertCheckContainsToThrowsException() {
+        assertThrows(SQLException.class, () -> ShardingSpherePreconditions.checkContains(Collections.singleton("foo"), "bar", SQLException::new));
+    }
+    
+    @Test
+    void assertCheckNotContainsToNotThrowException() {
+        assertDoesNotThrow(() -> ShardingSpherePreconditions.checkNotContains(Collections.singleton("foo"), "bar", SQLException::new));
+    }
+    
+    @Test
+    void assertCheckNotContainsToThrowsException() {
+        assertThrows(SQLException.class, () -> ShardingSpherePreconditions.checkNotContains(Collections.singleton("foo"), "foo", SQLException::new));
+    }
+    
+    @Test
+    void assertCheckContainsKeyToNotThrowException() {
+        assertDoesNotThrow(() -> ShardingSpherePreconditions.checkContainsKey(Collections.singletonMap("foo", "value"), "foo", SQLException::new));
+    }
+    
+    @Test
+    void assertCheckContainsKeyToThrowsException() {
+        assertThrows(SQLException.class, () -> ShardingSpherePreconditions.checkContainsKey(Collections.singletonMap("foo", "value"), "bar", SQLException::new));
     }
 }

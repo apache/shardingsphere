@@ -74,6 +74,6 @@ public final class MaskAlgorithmPropertiesChecker {
     }
     
     private static void checkRequired(final Properties props, final String requiredPropKey, final MaskAlgorithm<?, ?> algorithm) {
-        ShardingSpherePreconditions.checkState(props.containsKey(requiredPropKey), () -> new AlgorithmInitializationException(algorithm, "%s is required", requiredPropKey));
+        ShardingSpherePreconditions.checkContainsKey(props, requiredPropKey, () -> new AlgorithmInitializationException(algorithm, "%s is required", requiredPropKey));
     }
 }

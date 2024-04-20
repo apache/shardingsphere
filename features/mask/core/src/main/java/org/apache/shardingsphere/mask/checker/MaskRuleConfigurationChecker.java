@@ -59,7 +59,7 @@ public final class MaskRuleConfigurationChecker implements RuleConfigurationChec
     }
     
     private void checkColumn(final String databaseName, final String tableName, final MaskColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
-        ShardingSpherePreconditions.checkState(maskAlgorithms.containsKey(columnRuleConfig.getMaskAlgorithm()),
+        ShardingSpherePreconditions.checkContainsKey(maskAlgorithms, columnRuleConfig.getMaskAlgorithm(),
                 () -> new UnregisteredAlgorithmException("Mask", columnRuleConfig.getMaskAlgorithm(), new SQLExceptionIdentifier(databaseName, tableName, columnRuleConfig.getLogicColumn())));
     }
     

@@ -162,7 +162,7 @@ public final class EncryptConditionEngine {
         if (LOGICAL_OPERATOR.contains(operator)) {
             return Optional.empty();
         }
-        ShardingSpherePreconditions.checkState(SUPPORTED_COMPARE_OPERATOR.contains(operator), () -> new UnsupportedEncryptSQLException(operator));
+        ShardingSpherePreconditions.checkContains(SUPPORTED_COMPARE_OPERATOR, operator, () -> new UnsupportedEncryptSQLException(operator));
         return createCompareEncryptCondition(tableName, expression, expression.getRight());
     }
     

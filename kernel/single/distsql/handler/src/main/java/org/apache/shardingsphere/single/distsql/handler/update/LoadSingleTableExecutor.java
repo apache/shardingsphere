@@ -95,7 +95,7 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     }
     
     private void checkStorageUnits(final LoadSingleTableStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getStorageUnits().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
+        ShardingSpherePreconditions.checkNotEmpty(database.getResourceMetaData().getStorageUnits(), () -> new EmptyStorageUnitException(database.getName()));
         Collection<String> requiredDataSources = getRequiredDataSources(sqlStatement);
         if (requiredDataSources.isEmpty()) {
             return;
@@ -104,7 +104,7 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
         Collection<String> logicDataSources = database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class).stream()
                 .flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toSet());
         notExistedDataSources.removeIf(logicDataSources::contains);
-        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
+        ShardingSpherePreconditions.checkMustEmpty(notExistedDataSources, () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
     }
     
     private void checkActualTableExist(final LoadSingleTableStatement sqlStatement, final String defaultSchemaName) {

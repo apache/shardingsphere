@@ -40,9 +40,9 @@ public final class VolumeBasedRangeShardingAlgorithm extends AbstractRangeShardi
     
     @Override
     public Map<Integer, Range<Comparable<?>>> calculatePartitionRange(final Properties props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(RANGE_LOWER_KEY), () -> new AlgorithmInitializationException(this, "Lower range cannot be null."));
-        ShardingSpherePreconditions.checkState(props.containsKey(RANGE_UPPER_KEY), () -> new AlgorithmInitializationException(this, "Upper range cannot be null."));
-        ShardingSpherePreconditions.checkState(props.containsKey(SHARDING_VOLUME_KEY), () -> new AlgorithmInitializationException(this, "Sharding volume cannot be null."));
+        ShardingSpherePreconditions.checkContainsKey(props, RANGE_LOWER_KEY, () -> new AlgorithmInitializationException(this, "Lower range cannot be null."));
+        ShardingSpherePreconditions.checkContainsKey(props, RANGE_UPPER_KEY, () -> new AlgorithmInitializationException(this, "Upper range cannot be null."));
+        ShardingSpherePreconditions.checkContainsKey(props, SHARDING_VOLUME_KEY, () -> new AlgorithmInitializationException(this, "Sharding volume cannot be null."));
         long lower = Long.parseLong(props.getProperty(RANGE_LOWER_KEY));
         long upper = Long.parseLong(props.getProperty(RANGE_UPPER_KEY));
         long volume = Long.parseLong(props.getProperty(SHARDING_VOLUME_KEY));
