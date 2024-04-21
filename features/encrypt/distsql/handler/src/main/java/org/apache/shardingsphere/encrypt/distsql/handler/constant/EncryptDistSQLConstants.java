@@ -26,10 +26,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptDistSQLConstants {
     
-    public static final String COMMA = ",";
-    
-    public static final String SEMI = ";";
-    
     public static final String CREATE_ENCRYPT = "CREATE ENCRYPT RULE";
     
     public static final String ENCRYPT = " %s ("

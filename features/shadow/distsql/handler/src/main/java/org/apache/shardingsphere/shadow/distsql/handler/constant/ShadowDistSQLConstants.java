@@ -26,10 +26,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowDistSQLConstants {
     
-    public static final String COMMA = ",";
-    
-    public static final String SEMI = ";";
-    
     public static final String CREATE_SHADOW = "CREATE SHADOW RULE";
     
     public static final String SHADOW = " %s("
