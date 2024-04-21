@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.provider;
 
+import org.apache.shardingsphere.distsql.handler.constant.DistSQLConstants;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
@@ -47,10 +48,10 @@ public final class ShadowRuleConfigurationToDistSQLConverter implements RuleConf
             String shadowTables = getShadowTables(shadowRuleName, ruleConfig.getTables(), ruleConfig.getShadowAlgorithms());
             result.append(String.format(ShadowDistSQLConstants.SHADOW, shadowRuleName, dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(), shadowTables));
             if (iterator.hasNext()) {
-                result.append(ShadowDistSQLConstants.COMMA);
+                result.append(DistSQLConstants.COMMA);
             }
         }
-        result.append(ShadowDistSQLConstants.SEMI);
+        result.append(DistSQLConstants.SEMI);
         return result.toString();
     }
     
@@ -64,7 +65,7 @@ public final class ShadowRuleConfigurationToDistSQLConverter implements RuleConf
                 result.append(String.format(ShadowDistSQLConstants.SHADOW_TABLE, shadowTableConfig.getKey(), shadowTableTypes));
             }
             if (iterator.hasNext()) {
-                result.append(ShadowDistSQLConstants.COMMA).append(System.lineSeparator());
+                result.append(DistSQLConstants.COMMA).append(System.lineSeparator());
             }
         }
         return result.toString();
@@ -76,7 +77,7 @@ public final class ShadowRuleConfigurationToDistSQLConverter implements RuleConf
         while (iterator.hasNext()) {
             result.append(AlgorithmDistSQLConverter.getAlgorithmType(algorithmConfigs.get(iterator.next())));
             if (iterator.hasNext()) {
-                result.append(ShadowDistSQLConstants.COMMA).append(' ');
+                result.append(DistSQLConstants.COMMA).append(' ');
             }
         }
         return result.toString();

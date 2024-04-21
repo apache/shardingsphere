@@ -15,28 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.handler.constant;
+package org.apache.shardingsphere.distsql.handler.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Readwrite-splitting DistSQL constants.
+ * DistSQL constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReadwriteSplittingDistSQLConstants {
+public final class DistSQLConstants {
     
-    public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
+    public static final String COMMA = ",";
     
-    public static final String READWRITE_SPLITTING_FOR_STATIC = " %s ("
-            + System.lineSeparator()
-            + "WRITE_STORAGE_UNIT=%s,"
-            + System.lineSeparator()
-            + "READ_STORAGE_UNITS(%s),"
-            + System.lineSeparator()
-            + "TRANSACTIONAL_READ_QUERY_STRATEGY='%s'%s"
-            + System.lineSeparator()
-            + ")";
-    
-    public static final String READ_RESOURCE = "%s";
+    public static final String SEMI = ";";
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.provider;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.distsql.handler.constant.DistSQLConstants;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
@@ -44,10 +45,10 @@ public final class ReadwriteSplittingRuleConfigurationToDistSQLConverter impleme
         while (iterator.hasNext()) {
             appendStaticReadWriteSplittingRule(ruleConfig.getLoadBalancers(), iterator.next(), result);
             if (iterator.hasNext()) {
-                result.append(ReadwriteSplittingDistSQLConstants.COMMA);
+                result.append(DistSQLConstants.COMMA);
             }
         }
-        result.append(ReadwriteSplittingDistSQLConstants.SEMI);
+        result.append(DistSQLConstants.SEMI);
         return result.toString();
     }
     
@@ -66,7 +67,7 @@ public final class ReadwriteSplittingRuleConfigurationToDistSQLConverter impleme
         while (iterator.hasNext()) {
             result.append(String.format(ReadwriteSplittingDistSQLConstants.READ_RESOURCE, iterator.next()));
             if (iterator.hasNext()) {
-                result.append(ReadwriteSplittingDistSQLConstants.COMMA);
+                result.append(DistSQLConstants.COMMA);
             }
         }
         return result.toString();
@@ -76,7 +77,7 @@ public final class ReadwriteSplittingRuleConfigurationToDistSQLConverter impleme
         StringBuilder result = new StringBuilder();
         String loadBalancerType = AlgorithmDistSQLConverter.getAlgorithmType(algorithmConfig);
         if (!Strings.isNullOrEmpty(loadBalancerType)) {
-            result.append(ReadwriteSplittingDistSQLConstants.COMMA).append(System.lineSeparator()).append(loadBalancerType);
+            result.append(DistSQLConstants.COMMA).append(System.lineSeparator()).append(loadBalancerType);
         }
         return result.toString();
     }

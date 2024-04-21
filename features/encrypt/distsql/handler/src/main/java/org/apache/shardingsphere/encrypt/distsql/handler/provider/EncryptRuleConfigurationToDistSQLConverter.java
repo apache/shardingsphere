@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.provider;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.distsql.handler.constant.DistSQLConstants;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
@@ -47,10 +48,10 @@ public final class EncryptRuleConfigurationToDistSQLConverter implements RuleCon
             EncryptTableRuleConfiguration tableRuleConfig = iterator.next();
             result.append(String.format(EncryptDistSQLConstants.ENCRYPT, tableRuleConfig.getName(), getEncryptColumns(tableRuleConfig.getColumns(), ruleConfig.getEncryptors())));
             if (iterator.hasNext()) {
-                result.append(EncryptDistSQLConstants.COMMA).append(System.lineSeparator());
+                result.append(DistSQLConstants.COMMA).append(System.lineSeparator());
             }
         }
-        result.append(EncryptDistSQLConstants.SEMI);
+        result.append(DistSQLConstants.SEMI);
         return result.toString();
     }
     
@@ -61,7 +62,7 @@ public final class EncryptRuleConfigurationToDistSQLConverter implements RuleCon
             EncryptColumnRuleConfiguration columnRuleConfig = iterator.next();
             result.append(String.format(EncryptDistSQLConstants.ENCRYPT_COLUMN, columnRuleConfig.getName(), getColumns(columnRuleConfig), getEncryptAlgorithms(columnRuleConfig, encryptors)));
             if (iterator.hasNext()) {
-                result.append(EncryptDistSQLConstants.COMMA).append(System.lineSeparator());
+                result.append(DistSQLConstants.COMMA).append(System.lineSeparator());
             }
         }
         return result.toString();
@@ -74,10 +75,10 @@ public final class EncryptRuleConfigurationToDistSQLConverter implements RuleCon
             result.append(String.format(EncryptDistSQLConstants.CIPHER, cipherColumnName));
         }
         if (ruleConfig.getAssistedQuery().isPresent()) {
-            result.append(EncryptDistSQLConstants.COMMA).append(' ').append(String.format(EncryptDistSQLConstants.ASSISTED_QUERY_COLUMN, ruleConfig.getAssistedQuery().get().getName()));
+            result.append(DistSQLConstants.COMMA).append(' ').append(String.format(EncryptDistSQLConstants.ASSISTED_QUERY_COLUMN, ruleConfig.getAssistedQuery().get().getName()));
         }
         if (ruleConfig.getLikeQuery().isPresent()) {
-            result.append(EncryptDistSQLConstants.COMMA).append(' ').append(String.format(EncryptDistSQLConstants.LIKE_QUERY_COLUMN, ruleConfig.getLikeQuery().get().getName()));
+            result.append(DistSQLConstants.COMMA).append(' ').append(String.format(EncryptDistSQLConstants.LIKE_QUERY_COLUMN, ruleConfig.getLikeQuery().get().getName()));
         }
         return result.toString();
     }
@@ -91,11 +92,11 @@ public final class EncryptRuleConfigurationToDistSQLConverter implements RuleCon
             result.append(String.format(EncryptDistSQLConstants.ENCRYPT_ALGORITHM, AlgorithmDistSQLConverter.getAlgorithmType(encryptors.get(cipherEncryptorName))));
         }
         if (!Strings.isNullOrEmpty(assistedQueryEncryptorName)) {
-            result.append(EncryptDistSQLConstants.COMMA).append(' ')
+            result.append(DistSQLConstants.COMMA).append(' ')
                     .append(String.format(EncryptDistSQLConstants.ASSISTED_QUERY_ALGORITHM, AlgorithmDistSQLConverter.getAlgorithmType(encryptors.get(assistedQueryEncryptorName))));
         }
         if (!Strings.isNullOrEmpty(likeQueryEncryptorName)) {
-            result.append(EncryptDistSQLConstants.COMMA).append(' ')
+            result.append(DistSQLConstants.COMMA).append(' ')
                     .append(String.format(EncryptDistSQLConstants.LIKE_QUERY_ALGORITHM, AlgorithmDistSQLConverter.getAlgorithmType(encryptors.get(likeQueryEncryptorName))));
         }
         return result.toString();
