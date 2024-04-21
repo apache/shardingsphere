@@ -29,9 +29,9 @@
         <column name="like_query_type" />
         <column name="like_query_props" />
     </metadata>
-    <row values="t_user| pwd| pwd_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;}| | | | " />
-    <row values="t_user_details| number| number_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;}| | | | " />
-    <row values="t_user_details| number_new| number_new_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;}| | | | " />
-    <row values="t_merchant| business_code| business_code_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;}| | | | " />
-    <row values="t_merchant| telephone| telephone_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;}| | | | " />
+    <row values="t_user| pwd| pwd_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | | "/>
+    <row values="t_user_details| number| number_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | | "/>
+    <row values="t_user_details| number_new| number_new_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | | "/>
+    <row values="t_merchant| business_code| business_code_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | | "/>
+    <row values="t_merchant| telephone| telephone_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;,&quot;digest-algorithm-name&quot;:&quot;SHA-1&quot;}| | | | "/>
 </dataset>

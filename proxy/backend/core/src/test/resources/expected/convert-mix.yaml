@@ -63,8 +63,8 @@ TYPE(NAME='random')
 
 CREATE ENCRYPT RULE t_encrypt (
 COLUMNS(
-(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc'))), ASSISTED_QUERY_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc')))),
-(NAME=order_id, CIPHER=order_cipher, ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc'))))
+(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))), ASSISTED_QUERY_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1')))),
+(NAME=order_id, CIPHER=order_cipher, ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))))
 ));
 
 CREATE SHARDING TABLE RULE t_order (
