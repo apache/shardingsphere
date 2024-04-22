@@ -42,6 +42,6 @@ public final class StorageNodeStatusSubscriber {
      */
     @Subscribe
     public void delete(final StorageNodeDataSourceDeletedEvent event) {
-        repository.delete(StorageNode.getStorageNodeDataSourcePath(event.getQualifiedDatabase()));
+        repository.delete(StorageNode.getStorageNodeDataSourcePath(event.getQualifiedDataSource()));
     }
 }

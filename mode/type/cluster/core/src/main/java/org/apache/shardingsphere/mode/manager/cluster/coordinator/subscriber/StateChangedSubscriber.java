@@ -60,14 +60,14 @@ public final class StateChangedSubscriber {
     @Subscribe
     public synchronized void renew(final StorageNodeChangedEvent event) {
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
-        if (!metaData.containsDatabase(event.getQualifiedDatabase().getDatabaseName())) {
+        if (!metaData.containsDatabase(event.getQualifiedDataSource().getDatabaseName())) {
             return;
         }
-        for (StaticDataSourceRuleAttribute each : metaData.getDatabase(event.getQualifiedDatabase().getDatabaseName()).getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)) {
-            each.updateStatus(new StorageNodeDataSourceChangedEvent(event.getQualifiedDatabase(), event.getDataSource()));
+        for (StaticDataSourceRuleAttribute each : metaData.getDatabase(event.getQualifiedDataSource().getDatabaseName()).getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)) {
+            each.updateStatus(new StorageNodeDataSourceChangedEvent(event.getQualifiedDataSource(), event.getDataSource()));
         }
         DataSourceStateManager.getInstance().updateState(
-                event.getQualifiedDatabase().getDatabaseName(), event.getQualifiedDatabase().getDataSourceName(), DataSourceState.valueOf(event.getDataSource().getStatus().name()));
+                event.getQualifiedDataSource().getDatabaseName(), event.getQualifiedDataSource().getDataSourceName(), DataSourceState.valueOf(event.getDataSource().getStatus().name()));
     }
     
     /**

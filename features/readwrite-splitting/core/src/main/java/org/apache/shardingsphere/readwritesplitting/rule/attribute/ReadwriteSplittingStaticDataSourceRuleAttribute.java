@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.rule.attribute;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
@@ -58,13 +58,14 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
     @Override
     public void updateStatus(final DataSourceStatusChangedEvent event) {
         StorageNodeDataSourceChangedEvent dataSourceEvent = (StorageNodeDataSourceChangedEvent) event;
-        QualifiedDatabase qualifiedDatabase = dataSourceEvent.getQualifiedDatabase();
-        ReadwriteSplittingDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDatabase.getGroupName());
-        ShardingSpherePreconditions.checkNotNull(dataSourceRule, () -> new ReadwriteSplittingDataSourceRuleNotFoundException(qualifiedDatabase.getGroupName(), qualifiedDatabase.getDatabaseName()));
+        QualifiedDataSource qualifiedDataSource = dataSourceEvent.getQualifiedDataSource();
+        ReadwriteSplittingDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDataSource.getGroupName());
+        ShardingSpherePreconditions.checkNotNull(dataSourceRule,
+                () -> new ReadwriteSplittingDataSourceRuleNotFoundException(qualifiedDataSource.getGroupName(), qualifiedDataSource.getDatabaseName()));
         if (DataSourceState.DISABLED == dataSourceEvent.getDataSource().getStatus()) {
-            dataSourceRule.disableDataSource(dataSourceEvent.getQualifiedDatabase().getDataSourceName());
+            dataSourceRule.disableDataSource(dataSourceEvent.getQualifiedDataSource().getDataSourceName());
         } else {
-            dataSourceRule.enableDataSource(dataSourceEvent.getQualifiedDatabase().getDataSourceName());
+            dataSourceRule.enableDataSource(dataSourceEvent.getQualifiedDataSource().getDataSourceName());
         }
     }
     
@@ -76,7 +77,7 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
     
     private void deleteStorageNodeDataSources(final ReadwriteSplittingDataSourceRule rule) {
         rule.getReadwriteSplittingGroup().getReadDataSources()
-                .forEach(each -> instanceContext.getEventBusContext().post(new StorageNodeDataSourceDeletedEvent(new QualifiedDatabase(databaseName, rule.getName(), each))));
+                .forEach(each -> instanceContext.getEventBusContext().post(new StorageNodeDataSourceDeletedEvent(new QualifiedDataSource(databaseName, rule.getName(), each))));
     }
     
     @Override

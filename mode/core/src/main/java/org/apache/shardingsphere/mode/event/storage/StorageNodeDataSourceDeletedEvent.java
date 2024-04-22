@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.event.storage;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 
 /**
  * Storage node data source deleted event.
@@ -28,5 +28,5 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabas
 @Getter
 public final class StorageNodeDataSourceDeletedEvent {
     
-    private final QualifiedDatabase qualifiedDatabase;
+    private final QualifiedDataSource qualifiedDataSource;
 }

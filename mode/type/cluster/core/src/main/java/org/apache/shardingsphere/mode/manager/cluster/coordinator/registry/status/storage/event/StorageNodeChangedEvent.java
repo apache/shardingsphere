@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 
 /**
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 @Getter
 public final class StorageNodeChangedEvent implements GovernanceEvent {
     
-    private final QualifiedDatabase qualifiedDatabase;
+    private final QualifiedDataSource qualifiedDataSource;
     
     private final StorageNodeDataSource dataSource;
 }

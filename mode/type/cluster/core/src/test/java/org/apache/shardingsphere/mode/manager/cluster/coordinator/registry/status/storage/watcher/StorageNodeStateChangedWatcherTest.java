@@ -40,9 +40,9 @@ class StorageNodeStateChangedWatcherTest {
                 new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: MEMBER\nstatus: ENABLED\n", Type.ADDED));
         assertTrue(actual.isPresent());
         StorageNodeChangedEvent actualEvent = (StorageNodeChangedEvent) actual.get();
-        assertThat(actualEvent.getQualifiedDatabase().getDatabaseName(), is("replica_query_db"));
-        assertThat(actualEvent.getQualifiedDatabase().getGroupName(), is("readwrite_ds"));
-        assertThat(actualEvent.getQualifiedDatabase().getDataSourceName(), is("replica_ds_0"));
+        assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
+        assertThat(actualEvent.getQualifiedDataSource().getGroupName(), is("readwrite_ds"));
+        assertThat(actualEvent.getQualifiedDataSource().getDataSourceName(), is("replica_ds_0"));
         assertThat(actualEvent.getDataSource().getRole(), is(StorageNodeRole.MEMBER));
         assertThat(actualEvent.getDataSource().getStatus(), is(DataSourceState.ENABLED));
     }
@@ -53,9 +53,9 @@ class StorageNodeStateChangedWatcherTest {
                 new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: MEMBER\nstatus: DISABLED\n", Type.DELETED));
         assertTrue(actual.isPresent());
         StorageNodeChangedEvent actualEvent = (StorageNodeChangedEvent) actual.get();
-        assertThat(actualEvent.getQualifiedDatabase().getDatabaseName(), is("replica_query_db"));
-        assertThat(actualEvent.getQualifiedDatabase().getGroupName(), is("readwrite_ds"));
-        assertThat(actualEvent.getQualifiedDatabase().getDataSourceName(), is("replica_ds_0"));
+        assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
+        assertThat(actualEvent.getQualifiedDataSource().getGroupName(), is("readwrite_ds"));
+        assertThat(actualEvent.getQualifiedDataSource().getDataSourceName(), is("replica_ds_0"));
         assertThat(actualEvent.getDataSource().getRole(), is(StorageNodeRole.MEMBER));
         assertThat(actualEvent.getDataSource().getStatus(), is(DataSourceState.DISABLED));
     }
