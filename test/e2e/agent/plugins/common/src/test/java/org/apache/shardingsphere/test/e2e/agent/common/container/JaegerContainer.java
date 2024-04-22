@@ -28,9 +28,8 @@ import java.util.Map;
  */
 public final class JaegerContainer extends DockerITContainer {
     
-    public JaegerContainer() {
-        // TODO image version adjusted to be configurable
-        super("jaeger", "jaegertracing/all-in-one:1.41");
+    public JaegerContainer(final String image) {
+        super("jaeger", image);
     }
     
     @Override

@@ -20,7 +20,8 @@ package org.apache.shardingsphere.test.e2e.agent.file.asserts;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Content assert.
@@ -42,6 +43,6 @@ public final class ContentAssert {
                 break;
             }
         }
-        assertNotNull(String.format("The log for the specified regular `%s` does not exist", expectedLogRegex), actualLog);
+        assertThat(String.format("No logs matching `%s`", expectedLogRegex), actualLog, notNullValue());
     }
 }

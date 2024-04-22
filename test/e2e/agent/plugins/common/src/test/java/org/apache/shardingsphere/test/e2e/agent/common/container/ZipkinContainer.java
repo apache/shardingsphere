@@ -24,9 +24,8 @@ public final class ZipkinContainer extends DockerITContainer {
     
     private static final int EXPOSED_PORT = 9411;
     
-    public ZipkinContainer() {
-        // TODO image version adjusted to be configurable
-        super("zipkin", "openzipkin/zipkin:3.2");
+    public ZipkinContainer(final String image) {
+        super("zipkin", image);
     }
     
     @Override
