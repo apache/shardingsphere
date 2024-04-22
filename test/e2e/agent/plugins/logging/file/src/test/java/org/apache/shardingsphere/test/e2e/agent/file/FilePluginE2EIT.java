@@ -30,7 +30,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import java.util.Collection;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -42,9 +41,8 @@ class FilePluginE2EIT {
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertWithAgent(final LogTestCase testCase) {
-        Collection<String> actualLogLines = E2ETestEnvironment.getInstance().getActualLogs();
-        assertFalse(actualLogLines.isEmpty(), "The actual log is empty");
-        ContentAssert.assertIs(actualLogLines, testCase.getLogRegex());
+        assertFalse(E2ETestEnvironment.getInstance().getActualLogs().isEmpty(), "The actual log is empty");
+        ContentAssert.assertIs(E2ETestEnvironment.getInstance().getActualLogs(), testCase.getLogRegex());
     }
     
     private static boolean isEnabled() {
