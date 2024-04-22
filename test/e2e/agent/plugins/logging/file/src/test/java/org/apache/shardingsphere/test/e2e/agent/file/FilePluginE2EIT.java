@@ -17,44 +17,43 @@
 
 package org.apache.shardingsphere.test.e2e.agent.file;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
-import org.apache.shardingsphere.test.e2e.agent.common.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.file.asserts.ContentAssert;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.test.e2e.agent.file.cases.IntegrationTestCasesLoader;
+import org.apache.shardingsphere.test.e2e.agent.file.cases.LogTestCase;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import java.util.Collection;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ExtendWith(AgentTestActionExtension.class)
-@Slf4j
 class FilePluginE2EIT {
     
     @EnabledIf("isEnabled")
-    @Test
-    void assertWithAgent() {
-        Collection<String> actualLogLines = E2ETestEnvironment.getInstance().getActualLogs();
-        assertFalse(actualLogLines.isEmpty(), "Actual log is empty");
-        if (AdapterType.PROXY.getValue().equalsIgnoreCase(E2ETestEnvironment.getInstance().getAdapter())) {
-            assertProxyWithAgent(actualLogLines);
-        } else {
-            assertJdbcWithAgent(actualLogLines);
-        }
-    }
-    
-    private void assertProxyWithAgent(final Collection<String> actualLogLines) {
-        ContentAssert.assertIs(actualLogLines, "Build meta data contexts finished, cost\\s(?=[1-9]+\\d*)");
-    }
-    
-    private void assertJdbcWithAgent(final Collection<String> actualLogLines) {
-        ContentAssert.assertIs(actualLogLines, "Build meta data contexts finished, cost\\s(?=[1-9]+\\d*)");
+    @ParameterizedTest
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertWithAgent(final LogTestCase testCase) {
+        assertFalse(E2ETestEnvironment.getInstance().getActualLogs().isEmpty(), "The actual log is empty");
+        ContentAssert.assertIs(E2ETestEnvironment.getInstance().getActualLogs(), testCase.getLogRegex());
     }
     
     private static boolean isEnabled() {
         return E2ETestEnvironment.getInstance().containsTestParameter();
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
+        }
     }
 }
