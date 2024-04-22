@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.util.directory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -45,6 +46,7 @@ import java.util.stream.Stream;
 /**
  * Classpath resource directory reader.
  */
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClasspathResourceDirectoryReader {
     
@@ -131,7 +133,13 @@ public class ClasspathResourceDirectoryReader {
         if (null == jar) {
             return Stream.empty();
         }
-        return jar.stream().filter(each -> each.getName().startsWith(directory) && !each.isDirectory()).map(JarEntry::getName);
+        try {
+            return jar.stream().filter(each -> each.getName().startsWith(directory) && !each.isDirectory()).map(JarEntry::getName);
+        } catch (final IllegalStateException ex) {
+            // todo Refactor to use JDK API to filter out closed JAR files used by application.
+            log.warn("Access jar file error: {}.", directoryUrl.getPath(), ex);
+            return Stream.empty();
+        }
     }
     
     @SneakyThrows(IOException.class)
