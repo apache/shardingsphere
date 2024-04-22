@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.storage.service;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
@@ -68,7 +68,7 @@ public final class StorageNodeStatusService {
      */
     public void changeMemberStorageNodeStatus(final String databaseName, final String groupName, final String storageUnitName, final DataSourceState dataSourceState) {
         StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, dataSourceState);
-        repository.persist(StorageNode.getStorageNodeDataSourcePath(new QualifiedDatabase(databaseName, groupName, storageUnitName)),
+        repository.persist(StorageNode.getStorageNodeDataSourcePath(new QualifiedDataSource(databaseName, groupName, storageUnitName)),
                 YamlEngine.marshal(new YamlStorageNodeDataSourceSwapper().swapToYamlConfiguration(storageNodeDataSource)));
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.storage.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -60,19 +60,19 @@ public final class StorageNode {
      * @param database cluster database
      * @return status path of storage node
      */
-    public static String getStorageNodeDataSourcePath(final QualifiedDatabase database) {
+    public static String getStorageNodeDataSourcePath(final QualifiedDataSource database) {
         return String.join("/", getRootPath(), database.toString());
     }
     
     /**
-     * Extract qualified database.
+     * Extract qualified data source.
      *
      * @param storageNodePath storage node path
-     * @return extracted qualified database
+     * @return extracted qualified data source
      */
-    public static Optional<QualifiedDatabase> extractQualifiedDatabase(final String storageNodePath) {
+    public static Optional<QualifiedDataSource> extractQualifiedDataSource(final String storageNodePath) {
         Pattern pattern = Pattern.compile(getRootPath() + "/(\\S+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(storageNodePath);
-        return matcher.find() ? Optional.of(new QualifiedDatabase(matcher.group(1))) : Optional.empty();
+        return matcher.find() ? Optional.of(new QualifiedDataSource(matcher.group(1))) : Optional.empty();
     }
 }

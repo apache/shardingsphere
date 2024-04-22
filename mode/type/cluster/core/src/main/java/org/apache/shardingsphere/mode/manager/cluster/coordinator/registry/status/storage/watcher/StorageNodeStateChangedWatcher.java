@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.watcher;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
@@ -55,9 +55,9 @@ public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<G
         if (Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<QualifiedDatabase> qualifiedDatabase = StorageNode.extractQualifiedDatabase(event.getKey());
-        if (qualifiedDatabase.isPresent()) {
-            QualifiedDatabase database = qualifiedDatabase.get();
+        Optional<QualifiedDataSource> qualifiedDataSource = StorageNode.extractQualifiedDataSource(event.getKey());
+        if (qualifiedDataSource.isPresent()) {
+            QualifiedDataSource database = qualifiedDataSource.get();
             StorageNodeDataSource storageNodeDataSource = new YamlStorageNodeDataSourceSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlStorageNodeDataSource.class));
             return Optional.of(new StorageNodeChangedEvent(database, storageNodeDataSource));
         }

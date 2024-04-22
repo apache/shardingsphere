@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.event.storage;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 
 /**
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 @Getter
 public final class StorageNodeDataSourceChangedEvent implements DataSourceStatusChangedEvent {
     
-    private final QualifiedDatabase qualifiedDatabase;
+    private final QualifiedDataSource qualifiedDataSource;
     
     private final StorageNodeDataSource dataSource;
 }
