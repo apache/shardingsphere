@@ -1034,8 +1034,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
                 result.getParameters().add((ColumnSegment) expr);
             } else if (expr instanceof LiteralExpressionSegment) {
                 result.getParameters().add((LiteralExpressionSegment) expr);
-            }
-            else if (expr instanceof FunctionSegment) {
+            } else if (expr instanceof FunctionSegment) {
                 result.getParameters().add((FunctionSegment) expr);
             }
         }
