@@ -28,9 +28,8 @@ public final class PrometheusContainer extends DockerITContainer {
     
     private static final int EXPOSED_PORT = 9090;
     
-    public PrometheusContainer() {
-        // TODO image version adjusted to be configurable
-        super("prometheus", "prom/prometheus:v2.41.0");
+    public PrometheusContainer(final String image) {
+        super("prometheus", image);
     }
     
     @Override
