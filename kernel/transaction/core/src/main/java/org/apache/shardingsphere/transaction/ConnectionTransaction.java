@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.transaction;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -36,29 +35,24 @@ public final class ConnectionTransaction {
     @Getter
     private final TransactionType transactionType;
     
-    @Setter
-    @Getter
-    private volatile boolean rollbackOnly;
-    
     private final ShardingSphereTransactionManager transactionManager;
     
-    public ConnectionTransaction(final TransactionRule rule) {
-        this(rule.getDefaultType(), rule);
-    }
+    private final TransactionConnectionContext transactionContext;
     
-    public ConnectionTransaction(final TransactionType transactionType, final TransactionRule rule) {
-        this.transactionType = transactionType;
+    public ConnectionTransaction(final TransactionRule rule, final TransactionConnectionContext transactionContext) {
+        this.transactionType = rule.getDefaultType();
+        this.transactionContext = transactionContext;
         transactionManager = rule.getResource().getTransactionManager(transactionType);
     }
     
     /**
      * Whether in transaction.
      * 
-     * @param transactionConnectionContext transaction connection context
+     * @param transactionContext transaction connection context
      * @return in transaction or not
      */
-    public boolean isInTransaction(final TransactionConnectionContext transactionConnectionContext) {
-        return transactionConnectionContext.isInTransaction() && null != transactionManager && transactionManager.isInTransaction();
+    public boolean isInTransaction(final TransactionConnectionContext transactionContext) {
+        return transactionContext.isInTransaction() && null != transactionManager && transactionManager.isInTransaction();
     }
     
     /**
@@ -113,7 +107,7 @@ public final class ConnectionTransaction {
      * Commit transaction.
      */
     public void commit() {
-        transactionManager.commit(rollbackOnly);
+        transactionManager.commit(transactionContext.isExceptionOccur());
     }
     
     /**

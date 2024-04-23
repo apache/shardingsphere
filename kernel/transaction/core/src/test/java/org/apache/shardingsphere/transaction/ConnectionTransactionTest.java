@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.transaction;
 
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -36,34 +37,34 @@ class ConnectionTransactionTest {
     
     @Test
     void assertDistributedTransactionOperationTypeCommit() {
-        connectionTransaction = new ConnectionTransaction(getXATransactionRule());
+        connectionTransaction = new ConnectionTransaction(getXATransactionRule(), new TransactionConnectionContext());
         DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(true);
         assertThat(operationType, is(DistributedTransactionOperationType.COMMIT));
     }
     
     @Test
     void assertDistributedTransactionOperationTypeIgnore() {
-        connectionTransaction = new ConnectionTransaction(getXATransactionRule());
+        connectionTransaction = new ConnectionTransaction(getXATransactionRule(), new TransactionConnectionContext());
         DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(false);
         assertThat(operationType, is(DistributedTransactionOperationType.IGNORE));
     }
     
     @Test
     void assertIsLocalTransaction() {
-        connectionTransaction = new ConnectionTransaction(getLocalTransactionRule());
+        connectionTransaction = new ConnectionTransaction(getLocalTransactionRule(), new TransactionConnectionContext());
         assertTrue(connectionTransaction.isLocalTransaction());
-        connectionTransaction = new ConnectionTransaction(getXATransactionRule());
+        connectionTransaction = new ConnectionTransaction(getXATransactionRule(), new TransactionConnectionContext());
         assertFalse(connectionTransaction.isLocalTransaction());
     }
     
     @Test
     void assertIsHoldTransaction() {
-        connectionTransaction = new ConnectionTransaction(getLocalTransactionRule());
+        connectionTransaction = new ConnectionTransaction(getLocalTransactionRule(), new TransactionConnectionContext());
         assertTrue(connectionTransaction.isHoldTransaction(false));
-        connectionTransaction = new ConnectionTransaction(getXATransactionRule());
+        connectionTransaction = new ConnectionTransaction(getXATransactionRule(), new TransactionConnectionContext());
         assertTrue(connectionTransaction.isInTransaction());
         assertTrue(connectionTransaction.isHoldTransaction(true));
-        connectionTransaction = new ConnectionTransaction(getLocalTransactionRule());
+        connectionTransaction = new ConnectionTransaction(getLocalTransactionRule(), new TransactionConnectionContext());
         assertFalse(connectionTransaction.isHoldTransaction(true));
     }
     

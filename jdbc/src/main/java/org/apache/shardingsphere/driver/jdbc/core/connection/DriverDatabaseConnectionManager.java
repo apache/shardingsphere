@@ -71,9 +71,6 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
     
     private final Map<String, DataSource> trafficDataSourceMap = new LinkedHashMap<>();
     
-    @Getter
-    private final ConnectionTransaction connectionTransaction;
-    
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
     private final MethodInvocationRecorder<Connection> methodInvocationRecorder = new MethodInvocationRecorder<>();
@@ -101,7 +98,6 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
             dataSourceMap.put(cacheKey, entry.getValue());
             trafficDataSourceMap.put(cacheKey, entry.getValue());
         }
-        connectionTransaction = createConnectionTransaction(contextManager);
         connectionContext = new ConnectionContext(cachedConnections::keySet);
         connectionContext.setCurrentDatabase(databaseName);
         this.contextManager = contextManager;
@@ -150,9 +146,14 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
         return String.format("%s//%s:%s/%s%s", jdbcUrlPrefix, instanceMetaData.getIp(), instanceMetaData.getPort(), schema, jdbcUrlSuffix);
     }
     
-    private ConnectionTransaction createConnectionTransaction(final ContextManager contextManager) {
+    /**
+     * Get connection transaction.
+     *
+     * @return connection transaction
+     */
+    public ConnectionTransaction getConnectionTransaction() {
         TransactionRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
-        return new ConnectionTransaction(rule);
+        return new ConnectionTransaction(rule, connectionContext.getTransactionContext());
     }
     
     /**
@@ -172,8 +173,9 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
      * @throws SQLException SQL exception
      */
     public void commit() throws SQLException {
+        ConnectionTransaction connectionTransaction = getConnectionTransaction();
         try {
-            if (connectionTransaction.isLocalTransaction() && connectionTransaction.isRollbackOnly()) {
+            if (connectionTransaction.isLocalTransaction() && connectionContext.getTransactionContext().isExceptionOccur()) {
                 forceExecuteTemplate.execute(cachedConnections.values(), Connection::rollback);
             } else if (connectionTransaction.isLocalTransaction()) {
                 forceExecuteTemplate.execute(cachedConnections.values(), Connection::commit);
@@ -193,6 +195,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
      * @throws SQLException SQL exception
      */
     public void rollback() throws SQLException {
+        ConnectionTransaction connectionTransaction = getConnectionTransaction();
         try {
             if (connectionTransaction.isLocalTransaction()) {
                 forceExecuteTemplate.execute(cachedConnections.values(), Connection::rollback);
@@ -415,7 +418,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
     private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource,
                                         final TransactionConnectionContext transactionConnectionContext) throws SQLException {
         Optional<Connection> connectionInTransaction =
-                isRawJdbcDataSource(databaseName, dataSourceName) ? connectionTransaction.getConnection(databaseName, dataSourceName, transactionConnectionContext) : Optional.empty();
+                isRawJdbcDataSource(databaseName, dataSourceName) ? getConnectionTransaction().getConnection(databaseName, dataSourceName, transactionConnectionContext) : Optional.empty();
         return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
     }
     
