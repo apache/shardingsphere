@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -40,10 +41,13 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptRuleTest {
+    
+    private static final String DIGEST_ALGORITHM_NAME = "digest-algorithm-name";
     
     @Test
     void assertFindEncryptTable() {
@@ -84,6 +88,18 @@ class EncryptRuleTest {
         pwdColumnConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("pwd_like", "like_query_test_encryptor"));
         assertTrue(pwdColumnConfig.getLikeQuery().isPresent());
         assertThat(pwdColumnConfig.getLikeQuery().get().getEncryptorName(), is("like_query_test_encryptor"));
+    }
+    
+    @Test
+    void assertAESEncryptRuleDefaultProps() {
+        EncryptRuleConfiguration defaultPropsEncryptRuleConfig = new EncryptRuleConfiguration(Collections.emptyList(),
+                Collections.singletonMap("aes_encryptor", new AlgorithmConfiguration("AES", new Properties())));
+        assertEquals(MessageDigestAlgorithms.SHA_1, defaultPropsEncryptRuleConfig.getEncryptors().get("aes_encryptor").getProps().getProperty(DIGEST_ALGORITHM_NAME));
+        Properties props = new Properties();
+        props.put(DIGEST_ALGORITHM_NAME, MessageDigestAlgorithms.SHA_256);
+        EncryptRuleConfiguration sha256EncryptRuleConfig = new EncryptRuleConfiguration(Collections.emptyList(),
+                Collections.singletonMap("aes_encryptor", new AlgorithmConfiguration("AES", props)));
+        assertEquals(MessageDigestAlgorithms.SHA_256, sha256EncryptRuleConfig.getEncryptors().get("aes_encryptor").getProps().getProperty(DIGEST_ALGORITHM_NAME));
     }
     
     private Map<String, AlgorithmConfiguration> getEncryptors(final AlgorithmConfiguration standardEncryptConfig, final AlgorithmConfiguration queryAssistedEncryptConfig,
