@@ -27,7 +27,10 @@ import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurati
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * Encrypt rule configuration.
@@ -41,11 +44,20 @@ public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration
     
     public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> encryptors) {
         this.tables = tables;
-        this.encryptors = encryptors;
-        for (AlgorithmConfiguration each : encryptors.values()) {
-            TypedSPILoader.findUninitedService(EncryptAlgorithm.class, each.getType()).map(EncryptAlgorithm::getMetaData).map(EncryptAlgorithmMetaData::getDefaultProps)
-                    .ifPresent(each.getProps()::putAll);
+        this.encryptors = rebuildEncryptorsWithDefaultProperties(encryptors);
+    }
+    
+    private Map<String, AlgorithmConfiguration> rebuildEncryptorsWithDefaultProperties(final Map<String, AlgorithmConfiguration> encryptors) {
+        Map<String, AlgorithmConfiguration> result = new HashMap<>();
+        for (Entry<String, AlgorithmConfiguration> entry : encryptors.entrySet()) {
+            Properties props = new Properties();
+            props.putAll(entry.getValue().getProps());
+            Properties defaultProps = TypedSPILoader.findUninitedService(EncryptAlgorithm.class, entry.getValue().getType()).map(EncryptAlgorithm::getMetaData)
+                    .map(EncryptAlgorithmMetaData::getDefaultProps).orElseGet(Properties::new);
+            defaultProps.forEach(props::putIfAbsent);
+            result.put(entry.getKey(), new AlgorithmConfiguration(entry.getValue().getType(), props));
         }
+        return result;
     }
     
     @Override
