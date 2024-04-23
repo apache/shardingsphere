@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.impl;
 
-import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+
+import java.util.List;
 
 /**
  * Default SQL builder.
  */
 public final class DefaultSQLBuilder extends AbstractSQLBuilder {
     
-    public DefaultSQLBuilder(final SQLRewriteContext context) {
-        super(context, null);
+    public DefaultSQLBuilder(final String sql, final List<SQLToken> sqlTokens) {
+        super(sql, sqlTokens, null);
     }
     
     @Override

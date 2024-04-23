@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.impl;
 
-import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+
+import java.util.List;
 
 /**
  * SQL builder with route.
@@ -29,8 +30,8 @@ public final class RouteSQLBuilder extends AbstractSQLBuilder {
     
     private final RouteUnit routeUnit;
     
-    public RouteSQLBuilder(final SQLRewriteContext context, final RouteUnit routeUnit) {
-        super(context, routeUnit);
+    public RouteSQLBuilder(final String sql, final List<SQLToken> sqlTokens, final RouteUnit routeUnit) {
+        super(sql, sqlTokens, routeUnit);
         this.routeUnit = routeUnit;
     }
     
