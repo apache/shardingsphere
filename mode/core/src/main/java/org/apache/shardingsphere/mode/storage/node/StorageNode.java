@@ -57,11 +57,11 @@ public final class StorageNode {
     /**
      * Get storage node data source path.
      *
-     * @param database cluster database
+     * @param qualifiedDataSource qualified data source
      * @return status path of storage node
      */
-    public static String getStorageNodeDataSourcePath(final QualifiedDataSource database) {
-        return String.join("/", getRootPath(), database.toString());
+    public static String getStorageNodeDataSourcePath(final QualifiedDataSource qualifiedDataSource) {
+        return String.join("/", getRootPath(), qualifiedDataSource.toString());
     }
     
     /**

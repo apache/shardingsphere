@@ -34,7 +34,6 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -55,7 +54,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
-import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -118,9 +116,9 @@ class StateChangedSubscriberTest {
         when(database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
         StorageNodeChangedEvent event = new StorageNodeChangedEvent(new QualifiedDataSource("db.readwrite_ds.ds_0"), new StorageNodeDataSource(StorageNodeRole.MEMBER, DataSourceState.DISABLED));
         subscriber.renew(event);
-        verify(ruleAttribute).updateStatus(argThat(
-                (ArgumentMatcher<StorageNodeDataSourceChangedEvent>) argumentEvent -> Objects.equals(event.getQualifiedDataSource(), argumentEvent.getQualifiedDataSource())
-                        && Objects.equals(event.getDataSource(), argumentEvent.getDataSource())));
+        verify(ruleAttribute).updateStatus(
+                argThat(qualifiedDataSource -> Objects.equals(event.getQualifiedDataSource(), qualifiedDataSource)),
+                argThat(dataSourceState -> Objects.equals(event.getDataSource().getStatus(), dataSourceState)));
     }
     
     @Test

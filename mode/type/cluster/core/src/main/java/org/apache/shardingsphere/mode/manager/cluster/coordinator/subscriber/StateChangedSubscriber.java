@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterLockDeletedEvent;
@@ -64,7 +63,7 @@ public final class StateChangedSubscriber {
             return;
         }
         for (StaticDataSourceRuleAttribute each : metaData.getDatabase(event.getQualifiedDataSource().getDatabaseName()).getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)) {
-            each.updateStatus(new StorageNodeDataSourceChangedEvent(event.getQualifiedDataSource(), event.getDataSource()));
+            each.updateStatus(event.getQualifiedDataSource(), event.getDataSource().getStatus());
         }
         DataSourceStateManager.getInstance().updateState(
                 event.getQualifiedDataSource().getDatabaseName(), event.getQualifiedDataSource().getDataSourceName(), DataSourceState.valueOf(event.getDataSource().getStatus().name()));
