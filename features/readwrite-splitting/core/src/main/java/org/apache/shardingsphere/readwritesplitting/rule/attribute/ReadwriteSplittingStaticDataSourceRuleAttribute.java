@@ -22,9 +22,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
-import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceDeletedEvent;
 import org.apache.shardingsphere.readwritesplitting.exception.logic.ReadwriteSplittingDataSourceRuleNotFoundException;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
@@ -56,16 +54,14 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
     }
     
     @Override
-    public void updateStatus(final DataSourceStatusChangedEvent event) {
-        StorageNodeDataSourceChangedEvent dataSourceEvent = (StorageNodeDataSourceChangedEvent) event;
-        QualifiedDataSource qualifiedDataSource = dataSourceEvent.getQualifiedDataSource();
+    public void updateStatus(final QualifiedDataSource qualifiedDataSource, final DataSourceState status) {
         ReadwriteSplittingDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDataSource.getGroupName());
         ShardingSpherePreconditions.checkNotNull(dataSourceRule,
                 () -> new ReadwriteSplittingDataSourceRuleNotFoundException(qualifiedDataSource.getGroupName(), qualifiedDataSource.getDatabaseName()));
-        if (DataSourceState.DISABLED == dataSourceEvent.getDataSource().getStatus()) {
-            dataSourceRule.disableDataSource(dataSourceEvent.getQualifiedDataSource().getDataSourceName());
+        if (DataSourceState.DISABLED == status) {
+            dataSourceRule.disableDataSource(qualifiedDataSource.getDataSourceName());
         } else {
-            dataSourceRule.enableDataSource(dataSourceEvent.getQualifiedDataSource().getDataSourceName());
+            dataSourceRule.enableDataSource(qualifiedDataSource.getDataSourceName());
         }
     }
     
