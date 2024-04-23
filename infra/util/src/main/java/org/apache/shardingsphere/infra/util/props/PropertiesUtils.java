@@ -31,7 +31,7 @@ import java.util.TreeMap;
 public final class PropertiesUtils {
     
     /**
-     * Convert properties To string.
+     * Convert properties to string.
      *
      * @param props properties
      * @return properties string
