@@ -3959,11 +3959,11 @@
                 </expression-projection>
             </projections>
             <from>
-                <subquery-table alias="Changes">
+                <subquery-table alias="Changes" start-index="104" stop-index="582">
                    <subquery>
                        <merge>
                            <source>
-                               <subquery-table alias="src">
+                               <subquery-table alias="src" start-index="151" stop-index="349">
                                    <subquery>
                                        <select>
                                            <projections start-index="159" stop-index="182">

@@ -318,7 +318,7 @@
                     <simple-table name="departments" alias="d" start-index="58" stop-index="70" />
                 </left>
                 <right>
-                    <subquery-table alias="v">
+                    <subquery-table alias="v" start-index="84" stop-index="152" >
                         <subquery>
                             <select>
                                 <projections start-index="92" stop-index="92">
@@ -1908,7 +1908,7 @@
                     <simple-table name="user" start-index="64" stop-index="67"/>
                 </left>
                 <right>
-                    <subquery-table alias="ms">
+                    <subquery-table alias="ms" start-index="80" stop-index="147">
                         <subquery>
                             <select>
                                 <projections start-index="88" stop-index="88">
@@ -2364,7 +2364,7 @@
                 <left>
                     <join-table join-type="LEFT">
                         <left>
-                            <subquery-table alias="t1">
+                            <subquery-table alias="t1" start-index="82" stop-index="502">
                                 <subquery>
                                     <select>
                                         <projections start-index="90" stop-index="248">
@@ -2518,7 +2518,7 @@
                             </subquery-table>
                         </left>
                         <right>
-                            <subquery-table alias="t2">
+                            <subquery-table alias="t2" start-index="514" stop-index="633">
                                 <subquery>
                                     <select>
                                         <projections start-index="522" stop-index="550">
@@ -2565,7 +2565,7 @@
                     </join-table>
                 </left>
                 <right>
-                    <subquery-table alias="t3">
+                    <subquery-table alias="t3" start-index="675" stop-index="809">
                         <subquery>
                             <select>
                                 <projections start-index="683" stop-index="700">
@@ -3023,7 +3023,7 @@
                     <simple-table name="user" start-index="64" stop-index="67" />
                 </left>
                 <right>
-                    <subquery-table alias="ms">
+                    <subquery-table alias="ms" start-index="80" stop-index="147">
                         <subquery>
                             <select>
                                 <projections start-index="88" stop-index="88">

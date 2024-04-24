@@ -226,10 +226,10 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         }
         if (null != ctx.dmlTableExprClause().dmlSubqueryClause()) {
             SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.dmlTableExprClause().dmlSubqueryClause());
-            return new SubqueryTableSegment(subquerySegment);
+            return new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
         }
         SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.dmlTableExprClause().tableCollectionExpr());
-        return new SubqueryTableSegment(subquerySegment);
+        return new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
     }
     
     @Override
@@ -421,10 +421,10 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         }
         if (null != ctx.dmlTableExprClause().dmlSubqueryClause()) {
             SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.dmlTableExprClause().dmlSubqueryClause());
-            return new SubqueryTableSegment(subquerySegment);
+            return new SubqueryTableSegment(ctx.dmlTableExprClause().dmlSubqueryClause().start.getStartIndex(), ctx.dmlTableExprClause().dmlSubqueryClause().stop.getStopIndex(), subquerySegment);
         }
         SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.dmlTableExprClause().tableCollectionExpr());
-        return new SubqueryTableSegment(subquerySegment);
+        return new SubqueryTableSegment(ctx.dmlTableExprClause().tableCollectionExpr().start.getStartIndex(), ctx.dmlTableExprClause().tableCollectionExpr().stop.getStopIndex(), subquerySegment);
     }
     
     @Override
@@ -1093,7 +1093,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result = (TableSegment) visit(ctx.selectTableReference());
         } else {
             SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.collectionExpr());
-            result = new SubqueryTableSegment(subquerySegment);
+            result = new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
         }
         return result;
     }
@@ -1163,11 +1163,11 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.lateralClause().selectSubquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.lateralClause().selectSubquery().start.getStartIndex(), ctx.lateralClause().selectSubquery().stop.getStopIndex(), subquery,
                     getOriginalText(ctx.lateralClause().selectSubquery()));
-            result = new SubqueryTableSegment(subquerySegment);
+            result = new SubqueryTableSegment(ctx.lateralClause().LP_().getSymbol().getStartIndex(), ctx.lateralClause().RP_().getSymbol().getStopIndex(), subquerySegment);
         } else {
             if (null != ctx.tableCollectionExpr().collectionExpr().selectSubquery()) {
                 SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.tableCollectionExpr());
-                result = new SubqueryTableSegment(subquerySegment);
+                result = new SubqueryTableSegment(ctx.tableCollectionExpr().start.getStartIndex(), ctx.tableCollectionExpr().stop.getStopIndex(), subquerySegment);
             } else {
                 result = new CollectionTableSegment((ExpressionSegment) visit(ctx.tableCollectionExpr()));
             }
@@ -1376,7 +1376,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         }
         OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.subquery());
         SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx.subquery()));
-        SubqueryTableSegment result = new SubqueryTableSegment(subquerySegment);
+        SubqueryTableSegment result = new SubqueryTableSegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquerySegment);
         if (null != ctx.alias()) {
             result.setAlias((AliasSegment) visit(ctx.alias()));
         }
@@ -1402,7 +1402,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.subquery());
         SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx.subquery()));
         subquerySegment.getSelect().getParameterMarkerSegments().addAll(popAllStatementParameterMarkerSegments());
-        SubqueryTableSegment result = new SubqueryTableSegment(subquerySegment);
+        SubqueryTableSegment result = new SubqueryTableSegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquerySegment);
         if (null != ctx.alias()) {
             result.setAlias((AliasSegment) visit(ctx.alias()));
         }

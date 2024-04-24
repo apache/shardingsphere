@@ -22,7 +22,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <subquery-table alias="temp">
+            <subquery-table alias="temp" start-index="14" stop-index="148" >
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="31">

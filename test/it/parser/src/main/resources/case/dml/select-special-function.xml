@@ -573,7 +573,7 @@
             <shorthand-projection start-index="7" stop-index="7"/>
         </projections>
         <from>
-            <subquery-table>
+            <subquery-table start-index="14" stop-index="34" >
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="22">

@@ -249,7 +249,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <subquery-table alias="row_">
+            <subquery-table alias="row_" start-index="14" stop-index="331" literal-start-index="14" literal-stop-index="332">
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="158">
@@ -393,7 +393,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <subquery-table alias="row_">
+            <subquery-table alias="row_" start-index="14" stop-index="349" literal-start-index="14" literal-stop-index="350">
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="176">
@@ -537,7 +537,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <subquery-table alias="row_">
+            <subquery-table alias="row_" start-index="14" stop-index="333" literal-start-index="14" literal-stop-index="334">
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="160">
@@ -681,7 +681,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <subquery-table alias="row_">
+            <subquery-table alias="row_" start-index="14" stop-index="351" literal-start-index="14" literal-stop-index="352">
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="178">
@@ -825,7 +825,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <subquery-table alias="row_">
+            <subquery-table alias="row_" start-index="14" stop-index="331" literal-start-index="14" literal-stop-index="332">
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="158">
@@ -969,7 +969,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <subquery-table alias="row_">
+            <subquery-table alias="row_" start-index="14" stop-index="349" literal-start-index="14" literal-stop-index="350">
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="176">
@@ -1113,7 +1113,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <subquery-table alias="row_">
+            <subquery-table alias="row_" start-index="14" stop-index="333" literal-start-index="14" literal-stop-index="334" >
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="160">
@@ -1257,7 +1257,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <subquery-table alias="row_">
+            <subquery-table alias="row_" start-index="14" stop-index="351" literal-start-index="14" literal-stop-index="352">
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="178">
@@ -1401,7 +1401,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <subquery-table start-index="14" stop-index="382" alias="t">
+            <subquery-table alias="t" start-index="14" stop-index="384">
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="43">
@@ -1411,7 +1411,7 @@
                             <column-projection start-index="30" stop-index="43" name="rownum" alias="rownum_" />
                         </projections>
                         <from>
-                            <subquery-table alias="row_">
+                            <subquery-table alias="row_" start-index="50" stop-index="363">
                                 <subquery>
                                     <select>
                                         <projections start-index="58" stop-index="139">
@@ -1572,7 +1572,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <subquery-table start-index="14" stop-index="382" alias="t">
+            <subquery-table start-index="14" stop-index="384" alias="t">
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="43">
@@ -1582,7 +1582,7 @@
                             <column-projection start-index="30" stop-index="43" name="rownum" alias="rownum_" />
                         </projections>
                         <from>
-                            <subquery-table alias="row_">
+                            <subquery-table alias="row_" start-index="50" stop-index="363">
                                 <subquery>
                                     <select>
                                         <projections start-index="58" stop-index="139">
@@ -1743,7 +1743,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <subquery-table start-index="14" stop-index="382" alias="tt">
+            <subquery-table alias="tt" start-index="14" stop-index="385">
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="43">
@@ -1753,7 +1753,7 @@
                             <column-projection start-index="30" stop-index="43" name="rownum" alias="rownum_" />
                         </projections>
                         <from>
-                            <subquery-table alias="row_">
+                            <subquery-table alias="row_" start-index="50" stop-index="363">
                                 <subquery>
                                     <select>
                                         <projections start-index="58" stop-index="139">
@@ -1914,7 +1914,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <subquery-table start-index="14" stop-index="382" alias="t">
+            <subquery-table alias="t" start-index="14" stop-index="384" >
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="43">
@@ -1924,7 +1924,7 @@
                             <column-projection start-index="30" stop-index="43" name="rownum" alias="rownum_" />
                         </projections>
                         <from>
-                            <subquery-table alias="row_">
+                            <subquery-table alias="row_" start-index="50" stop-index="363">
                                 <subquery>
                                     <select>
                                         <projections start-index="58" stop-index="139">

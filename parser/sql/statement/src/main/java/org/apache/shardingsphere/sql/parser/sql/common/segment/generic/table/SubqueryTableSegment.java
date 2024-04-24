@@ -34,6 +34,10 @@ import java.util.Optional;
 @Getter
 public final class SubqueryTableSegment implements TableSegment {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final SubquerySegment subquery;
     
     @Setter
@@ -63,12 +67,12 @@ public final class SubqueryTableSegment implements TableSegment {
     
     @Override
     public int getStartIndex() {
-        return subquery.getStartIndex();
+        return startIndex;
     }
     
     @Override
     public int getStopIndex() {
-        return subquery.getStopIndex();
+        return null == alias ? stopIndex : alias.getStopIndex();
     }
     
     /**

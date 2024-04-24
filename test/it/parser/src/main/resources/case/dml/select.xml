@@ -173,7 +173,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <subquery-table alias="a">
+            <subquery-table alias="a" start-index="14" stop-index="69">
                 <subquery start-index="14" stop-index="67">
                     <select>
                         <projections start-index="22" stop-index="22">
@@ -380,7 +380,7 @@
                                         </expression-projection>
                                     </projections>
                                     <from>
-                                        <subquery-table alias="dt">
+                                        <subquery-table alias="dt" start-index="48" stop-index="93">
                                             <subquery>
                                                 <select>
                                                     <projections start-index="56" stop-index="57">
@@ -4457,7 +4457,7 @@
         <from>
             <join-table join-type="COMMA">
                 <left>
-                    <subquery-table alias="a">
+                    <subquery-table alias="a" start-index="119" stop-index="219">
                         <subquery>
                             <select>
                                 <projections start-index="127" stop-index="178">
@@ -4476,7 +4476,7 @@
                     </subquery-table>
                 </left>
                 <right>
-                    <subquery-table alias="b">
+                    <subquery-table alias="b" start-index="222" stop-index="290">
                         <subquery>
                             <select>
                                 <projections start-index="230" stop-index="272">
@@ -4584,7 +4584,7 @@
                     <simple-table name="employees" alias="e" start-index="14" stop-index="24" />
                 </left>
                 <right>
-                    <subquery-table>
+                    <subquery-table start-index="34" stop-index="102">
                         <subquery>
                             <select>
                                 <projections start-index="42" stop-index="42">
@@ -4755,7 +4755,7 @@
 
     <select sql-case-id="select_with_model_dimension">
         <from>
-            <subquery-table>
+            <subquery-table start-index="38" stop-index="118">
                 <subquery>
                     <select>
                         <from start-index="81" stop-index="94">
@@ -5035,7 +5035,7 @@
 
     <select sql-case-id="select_with_model_in">
         <from>
-            <subquery-table>
+            <subquery-table start-index="47" stop-index="118">
                 <subquery>
                     <select>
                         <projections start-index="55" stop-index="107" literal-start-index="55" literal-stop-index="107">
@@ -6778,7 +6778,7 @@
             <column-projection name="salary" start-index="45" stop-index="50" literal-start-index="45" literal-stop-index="50" />
         </projections>
         <from>
-            <subquery-table>
+            <subquery-table start-index="57" stop-index="197">
                 <subquery>
                     <select>
                         <projections start-index="65" stop-index="180" literal-start-index="65" literal-stop-index="180">
@@ -9115,7 +9115,7 @@
             <column-projection name="Friends" start-index="19" stop-index="25"/>
         </projections>
         <from start-index="32" stop-index="356">
-            <subquery-table alias="Q">
+            <subquery-table alias="Q" start-index="32" stop-index="361">
                 <subquery start-index="32" stop-index="356">
                     <select>
                         <projections start-index="40" stop-index="198">

@@ -74,7 +74,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <subquery-table alias="dt">
+            <subquery-table alias="dt" start-index="14" stop-index="29">
                 <subquery>
                     <select>
                         <projections start-index="15" stop-index="15">
