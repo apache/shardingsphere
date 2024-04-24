@@ -46,7 +46,7 @@
             <simple-table name="bonuses" alias="D" start-index="11" stop-index="19" />
         </target>
         <source>
-            <subquery-table alias="S">
+            <subquery-table alias="S" start-index="27" stop-index="111">
                 <subquery>
                     <select>
                         <from>
@@ -152,7 +152,7 @@
             <simple-table name="bonuses" alias="D" start-index="11" stop-index="19" />
         </target>
         <source>
-            <subquery-table alias="S">
+            <subquery-table alias="S" start-index="27" stop-index="111">
                 <subquery>
                     <select>
                         <from>
@@ -250,7 +250,7 @@
             <simple-table alias="D" name="bonuses" start-index="11" stop-index="19" literal-start-index="11" literal-stop-index="19" />
         </target>
         <source>
-            <subquery-table alias="S">
+            <subquery-table alias="S" start-index="30" stop-index="120">
                 <subquery>
                     <select>
                         <projections start-index="38" stop-index="71" literal-start-index="38" literal-stop-index="71">
@@ -338,7 +338,7 @@
             <simple-table alias="t1" name="t_order" start-index="11" stop-index="20" />
         </target>
         <source>
-            <subquery-table alias="t2">
+            <subquery-table alias="t2" start-index="84" stop-index="193">
                 <subquery>
                     <select>
                         <projections start-index="92" stop-index="116">
@@ -458,7 +458,7 @@
     </merge>
     <merge sql-case-id="merge_into_select">
         <target>
-            <subquery-table alias="D">
+            <subquery-table alias="D" start-index="11" stop-index="60">
                 <subquery>
                     <select>
                         <projections start-index="19" stop-index="19" >
@@ -485,7 +485,7 @@
             </subquery-table>
         </target>
         <source>
-            <subquery-table alias="S">
+            <subquery-table alias="S" start-index="68" stop-index="152">
                 <subquery>
                     <select>
                         <from>

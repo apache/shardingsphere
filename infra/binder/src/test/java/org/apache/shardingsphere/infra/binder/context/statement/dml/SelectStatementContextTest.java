@@ -632,7 +632,7 @@ class SelectStatementContextTest {
     void assertContainsEnhancedTable() {
         SelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatement.setFrom(new SubqueryTableSegment(new SubquerySegment(0, 0, createSubSelectStatement(), "")));
+        selectStatement.setFrom(new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, createSubSelectStatement(), "")));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mockDatabase()), mock(ResourceMetaData.class),
                 mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         SelectStatementContext actual = new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);

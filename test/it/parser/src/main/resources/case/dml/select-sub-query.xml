@@ -26,7 +26,7 @@
                             <simple-table start-index="14" stop-index="15" name="t1" />
                         </left>
                         <right>
-                            <subquery-table alias="dt1">
+                            <subquery-table alias="dt1" start-index="18" stop-index="54">
                                 <subquery start-index="26" stop-index="47">
                                     <select>
                                         <projections distinct-row="true" start-index="43" stop-index="46">
@@ -41,7 +41,7 @@
                     </join-table>
                 </left>
                 <right>
-                    <subquery-table alias="dt2">
+                    <subquery-table alias="dt2" start-index="57" stop-index="94">
                         <subquery start-index="65" stop-index="87">
                             <select>
                                 <projections distinct-row="true" start-index="82" stop-index="86">
@@ -106,7 +106,7 @@
             </shorthand-projection>
         </projections>
         <from>
-            <subquery-table alias="t">
+            <subquery-table alias="t" start-index="16" stop-index="65">
                 <subquery>
                     <select parameters="3, 4">
                         <projections start-index="24" stop-index="24">
@@ -368,7 +368,7 @@
                     <simple-table name="t_order_federate" start-index="75" stop-index="90" />
                 </left>
                 <right>
-                    <subquery-table alias="u">
+                    <subquery-table alias="u" start-index="93" stop-index="124">
                         <subquery>
                             <select>
                                 <projections start-index="101" stop-index="101">
@@ -716,7 +716,7 @@
             </column-projection>
         </projections>
         <from start-index="133" stop-index="378">
-            <subquery-table alias="T1_1">
+            <subquery-table alias="T1_1" start-index="133" stop-index="386">
                 <subquery start-index="133" stop-index="378">
                     <select>
                         <projections start-index="141" stop-index="259">
@@ -775,7 +775,7 @@
             </column-projection>
          </projections>
         <from>
-            <subquery-table alias="T1_1">
+            <subquery-table alias="T1_1" start-index="95" stop-index="385">
                 <subquery start-index="95" stop-index="377">
                     <select>
                         <projections start-index="103" stop-index="184">
@@ -832,7 +832,7 @@
             </column-projection>
         </projections>
         <from>
-            <subquery-table alias="T1_1">
+            <subquery-table alias="T1_1" start-index="34" stop-index="147">
                 <subquery>
                     <select>
                         <projections start-index="42" stop-index="72">

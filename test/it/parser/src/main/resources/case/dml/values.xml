@@ -37,7 +37,8 @@
             </expression-projection>
         </projections>
         <from>
-            <subquery-table alias="v">
+            <!-- TODO check the visitor result when alias contains column -->
+            <subquery-table alias="v" start-index="47" stop-index="111">
                 <subquery>
                     <select>
                         <projections start-index="48" stop-index="105">

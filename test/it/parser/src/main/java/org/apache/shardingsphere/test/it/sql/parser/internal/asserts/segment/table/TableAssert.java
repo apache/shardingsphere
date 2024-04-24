@@ -167,6 +167,7 @@ public final class TableAssert {
      * @param expected expected subquery expression
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SubqueryTableSegment actual, final ExpectedSubqueryTable expected) {
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
         if (null != actual.getSubquery().getSelect()) {
             SelectStatementAssert.assertIs(assertContext, actual.getSubquery().getSelect(), expected.getSubquery().getSelectTestCases());
         }

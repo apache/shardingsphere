@@ -1595,7 +1595,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             } else {
                 subquerySegment.setSelect((SQLServerSelectStatement) visit(ctx.subquery()));
             }
-            SubqueryTableSegment result = new SubqueryTableSegment(subquerySegment);
+            SubqueryTableSegment result = new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
             if (null != ctx.alias()) {
                 result.setAlias((AliasSegment) visit(ctx.alias()));
             }

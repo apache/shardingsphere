@@ -527,7 +527,7 @@
     </delete>
 
     <delete sql-case-id="delete_with_simple_subquery">
-        <subquery-table>
+        <subquery-table start-index="12" stop-index="36">
             <subquery>
                 <select>
                     <from start-index="27" stop-index="35">
@@ -571,7 +571,7 @@
     </delete>
 
     <delete sql-case-id="delete_with_simple_subquery_without_from">
-        <subquery-table>
+        <subquery-table start-index="7" stop-index="43">
             <subquery>
                 <select>
                     <from start-index="27" stop-index="35">
