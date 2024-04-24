@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.impl;
 
-import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.sql.fixture.RouteUnitAwareSQLTokenFixture;
 import org.apache.shardingsphere.infra.rewrite.sql.fixture.SQLTokenFixture;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -29,24 +28,18 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class RouteSQLBuilderTest {
     
     @Test
     void assertToSQLWithNormalSQLToken() {
-        SQLRewriteContext context = mock(SQLRewriteContext.class);
-        when(context.getSql()).thenReturn("SELECT * FROM tbl WHERE id=?");
-        when(context.getSqlTokens()).thenReturn(Collections.singletonList(new SQLTokenFixture(14, 16)));
-        assertThat(new RouteSQLBuilder(context, createRouteUnit()).toSQL(), is("SELECT * FROM XXX WHERE id=?"));
+        assertThat(new RouteSQLBuilder("SELECT * FROM tbl WHERE id=?", Collections.singletonList(new SQLTokenFixture(14, 16)), createRouteUnit()).toSQL(), is("SELECT * FROM XXX WHERE id=?"));
     }
     
     @Test
     void assertToSQLWithRouteUnitAwareSQLToken() {
-        SQLRewriteContext context = mock(SQLRewriteContext.class);
-        when(context.getSql()).thenReturn("SELECT * FROM tbl WHERE id=?");
-        when(context.getSqlTokens()).thenReturn(Collections.singletonList(new RouteUnitAwareSQLTokenFixture(14, 16)));
-        assertThat(new RouteSQLBuilder(context, createRouteUnit()).toSQL(), is("SELECT * FROM tbl_0 WHERE id=?"));
+        assertThat(new RouteSQLBuilder("SELECT * FROM tbl WHERE id=?", Collections.singletonList(new RouteUnitAwareSQLTokenFixture(14, 16)), createRouteUnit()).toSQL(),
+                is("SELECT * FROM tbl_0 WHERE id=?"));
     }
     
     private RouteUnit createRouteUnit() {

@@ -86,7 +86,7 @@ public final class RouteSQLRewriteEngine {
         boolean containsDollarMarker = sqlRewriteContext.getSqlStatementContext() instanceof SelectStatementContext
                 && ((SelectStatementContext) (sqlRewriteContext.getSqlStatementContext())).isContainsDollarParameterMarker();
         for (RouteUnit each : routeUnits) {
-            sql.add(SQLUtils.trimSemicolon(new RouteSQLBuilder(sqlRewriteContext, each).toSQL()));
+            sql.add(SQLUtils.trimSemicolon(new RouteSQLBuilder(sqlRewriteContext.getSql(), sqlRewriteContext.getSqlTokens(), each).toSQL()));
             if (containsDollarMarker && !params.isEmpty()) {
                 continue;
             }
@@ -98,7 +98,8 @@ public final class RouteSQLRewriteEngine {
     private void addSQLRewriteUnits(final Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits, final SQLRewriteContext sqlRewriteContext,
                                     final RouteContext routeContext, final Collection<RouteUnit> routeUnits) {
         for (RouteUnit each : routeUnits) {
-            sqlRewriteUnits.put(each, new SQLRewriteUnit(new RouteSQLBuilder(sqlRewriteContext, each).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder(), routeContext, each)));
+            sqlRewriteUnits.put(each, new SQLRewriteUnit(new RouteSQLBuilder(sqlRewriteContext.getSql(), sqlRewriteContext.getSqlTokens(), each).toSQL(),
+                    getParameters(sqlRewriteContext.getParameterBuilder(), routeContext, each)));
         }
     }
     
