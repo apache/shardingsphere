@@ -19,7 +19,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
@@ -58,15 +59,16 @@ public final class StateChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final StorageNodeChangedEvent event) {
-        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
-        if (!metaData.containsDatabase(event.getQualifiedDataSource().getDatabaseName())) {
+        QualifiedDataSource qualifiedDataSource = event.getQualifiedDataSource();
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(qualifiedDataSource.getDatabaseName())) {
             return;
         }
-        for (StaticDataSourceRuleAttribute each : metaData.getDatabase(event.getQualifiedDataSource().getDatabaseName()).getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)) {
-            each.updateStatus(event.getQualifiedDataSource(), event.getDataSource().getStatus());
-        }
         DataSourceStateManager.getInstance().updateState(
-                event.getQualifiedDataSource().getDatabaseName(), event.getQualifiedDataSource().getDataSourceName(), DataSourceState.valueOf(event.getDataSource().getStatus().name()));
+                qualifiedDataSource.getDatabaseName(), qualifiedDataSource.getDataSourceName(), DataSourceState.valueOf(event.getDataSource().getStatus().name()));
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDataSource.getDatabaseName());
+        for (StaticDataSourceRuleAttribute each : database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)) {
+            each.updateStatus(qualifiedDataSource, event.getDataSource().getStatus());
+        }
     }
     
     /**
