@@ -103,6 +103,7 @@ public final class TransactionRule implements GlobalRule, AutoCloseable {
     
     @Override
     public void close() {
+        // TODO Consider shutting down the transaction manager gracefully
         ShardingSphereTransactionManagerEngine engine = resource.get();
         if (null != engine) {
             close(engine);
