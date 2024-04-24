@@ -32,6 +32,10 @@
     <test-case sql="SELECT 1=1, 1!=1, 1&gt;1, 1&lt;1, 1&gt;=1, 1&lt;=1" db-types="MySQL" scenario-types="db_tbl_sql_federation" >
         <assertion />
     </test-case>
+    
+    <test-case sql="SELECT * FROM t_order WHERE remark LIKE '%张%'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation" >
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
 
     <test-case sql="SELECT count(*) > 0 from t_order" db-types="MySQL" scenario-types="db_tbl_sql_federation" >
         <assertion expected-data-source-name="read_dataset" />
