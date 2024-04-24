@@ -23,8 +23,8 @@ import org.apache.calcite.sql.SqlDialect;
 import org.apache.calcite.sql.dialect.MssqlSqlDialect;
 import org.apache.calcite.sql.dialect.MysqlSqlDialect;
 import org.apache.calcite.sql.dialect.OracleSqlDialect;
-import org.apache.calcite.sql.dialect.PostgresqlSqlDialect;
 import org.apache.shardingsphere.sqlfederation.optimizer.sql.dialect.CustomMySQLSQLDialect;
+import org.apache.shardingsphere.sqlfederation.optimizer.sql.dialect.CustomPostgreSQLSQLDialect;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,8 +43,8 @@ public final class SQLDialectFactory {
         SQL_DIALECTS_REGISTRY.put("MariaDB", CustomMySQLSQLDialect.DEFAULT);
         SQL_DIALECTS_REGISTRY.put("Oracle", OracleSqlDialect.DEFAULT);
         SQL_DIALECTS_REGISTRY.put("SQLServer", MssqlSqlDialect.DEFAULT);
-        SQL_DIALECTS_REGISTRY.put("PostgreSQL", PostgresqlSqlDialect.DEFAULT);
-        SQL_DIALECTS_REGISTRY.put("openGauss", PostgresqlSqlDialect.DEFAULT);
+        SQL_DIALECTS_REGISTRY.put("PostgreSQL", CustomPostgreSQLSQLDialect.DEFAULT);
+        SQL_DIALECTS_REGISTRY.put("openGauss", CustomPostgreSQLSQLDialect.DEFAULT);
     }
     
     /**
