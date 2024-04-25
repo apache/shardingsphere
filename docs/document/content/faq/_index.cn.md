@@ -195,7 +195,7 @@ rules:
     tables:
       - "*.*"
   - !READWRITE_SPLITTING
-    dataSources:
+     dataSourceGroups:
       readwrite_ds:
         writeDataSourceName: write_ds
         readDataSourceNames:

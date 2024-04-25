@@ -200,7 +200,7 @@ One possible configuration is to use the `Row Value Expressions` SPI implementat
 ```yaml
 rules:
 - !READWRITE_SPLITTING
-   dataSources:
+   dataSourceGroups:
      <LITERAL>readwrite_ds:
        writeDataSourceName: <LITERAL>ds_0
        readDataSourceNames:

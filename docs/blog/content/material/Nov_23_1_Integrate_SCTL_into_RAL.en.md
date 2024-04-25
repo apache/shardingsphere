@@ -135,7 +135,7 @@ Output
 
     rules:
     - !READWRITE_SPLITTING
-    dataSources:
+    dataSourceGroups:
     ds_0:
       writeDataSourceName: write_ds_0
       readDataSourceNames: 
