@@ -27,7 +27,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +42,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -69,15 +67,6 @@ class ConnectionSessionTest {
     void assertSetCurrentSchema() {
         connectionSession.setCurrentDatabase("currentDatabase");
         assertThat(connectionSession.getDatabaseName(), is("currentDatabase"));
-    }
-    
-    @Test
-    void assertFailedSwitchTransactionTypeWhileBegin() {
-        connectionSession.setCurrentDatabase("db");
-        ContextManager contextManager = mockContextManager();
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        new BackendTransactionManager(databaseConnectionManager).begin();
-        assertThrows(SwitchTypeInTransactionException.class, () -> connectionSession.getTransactionStatus().setTransactionType(TransactionType.XA));
     }
     
     @Test
