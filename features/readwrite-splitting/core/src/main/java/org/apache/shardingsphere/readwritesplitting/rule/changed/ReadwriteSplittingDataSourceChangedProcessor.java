@@ -40,7 +40,8 @@ import java.util.Optional;
  * Readwrite-splitting data source changed processor.
  */
 public final class ReadwriteSplittingDataSourceChangedProcessor
-        implements RuleItemConfigurationChangedProcessor<ReadwriteSplittingRuleConfiguration, ReadwriteSplittingDataSourceGroupRuleConfiguration> {
+        implements
+            RuleItemConfigurationChangedProcessor<ReadwriteSplittingRuleConfiguration, ReadwriteSplittingDataSourceGroupRuleConfiguration> {
     
     @Override
     public ReadwriteSplittingDataSourceGroupRuleConfiguration swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
