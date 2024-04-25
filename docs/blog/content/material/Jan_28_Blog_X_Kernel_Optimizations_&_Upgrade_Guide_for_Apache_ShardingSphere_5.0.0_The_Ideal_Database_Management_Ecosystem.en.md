@@ -291,7 +291,7 @@ masterSlaveRule:
 # 5.0.0 GA Read/Write Splitting API
 rules:
 - !READWRITE_SPLITTING
-  dataSources:
+  dataSourceGroups:
     pr_ds:
       writeDataSourceName: write_ds
       readDataSourceNames:
@@ -564,7 +564,7 @@ rules:
         algorithm-expression: t_order_item_${order_id % 2}
 
 - !READWRITE_SPLITTING
-  dataSources:
+  dataSourceGroups:
     ms_ds_0:
       writeDataSourceName: ds_0
       readDataSourceNames:

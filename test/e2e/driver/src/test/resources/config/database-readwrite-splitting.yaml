@@ -22,7 +22,7 @@ rules:
   tables:
     - "*.*"
 - !READWRITE_SPLITTING
-  dataSources:
+  dataSourceGroups:
     test_ds:
       writeDataSourceName: test_primary_ds
       readDataSourceNames:

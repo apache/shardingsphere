@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ import java.util.Map;
 @Setter
 public final class YamlReadwriteSplittingRuleConfiguration implements YamlRuleConfiguration {
     
-    private Map<String, YamlReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedHashMap<>();
+    private Map<String, YamlReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = new LinkedHashMap<>();
     
     private Map<String, YamlAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
     

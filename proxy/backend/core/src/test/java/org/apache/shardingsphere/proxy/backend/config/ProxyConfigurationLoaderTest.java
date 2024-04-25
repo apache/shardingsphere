@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceCo
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -102,12 +102,12 @@ class ProxyConfigurationLoaderTest {
         Optional<YamlReadwriteSplittingRuleConfiguration> ruleConfig = actual.getRules().stream()
                 .filter(each -> each instanceof YamlReadwriteSplittingRuleConfiguration).findFirst().map(each -> (YamlReadwriteSplittingRuleConfiguration) each);
         assertTrue(ruleConfig.isPresent());
-        for (YamlReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.get().getDataSources().values()) {
+        for (YamlReadwriteSplittingDataSourceGroupRuleConfiguration each : ruleConfig.get().getDataSourceGroups().values()) {
             assertReadwriteSplittingRuleConfiguration(each);
         }
     }
     
-    private void assertReadwriteSplittingRuleConfiguration(final YamlReadwriteSplittingDataSourceRuleConfiguration actual) {
+    private void assertReadwriteSplittingRuleConfiguration(final YamlReadwriteSplittingDataSourceGroupRuleConfiguration actual) {
         assertThat(actual.getWriteDataSourceName(), is("write_ds"));
         assertThat(actual.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }

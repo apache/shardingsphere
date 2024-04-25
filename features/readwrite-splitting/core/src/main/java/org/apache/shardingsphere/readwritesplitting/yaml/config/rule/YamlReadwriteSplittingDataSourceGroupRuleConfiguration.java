@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import java.util.List;
 
 /**
- * Readwrite-splitting data source rule configuration for YAML.
+ * Readwrite-splitting data source rule group configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlReadwriteSplittingDataSourceRuleConfiguration implements YamlConfiguration {
+public final class YamlReadwriteSplittingDataSourceGroupRuleConfiguration implements YamlConfiguration {
     
     private String writeDataSourceName;
     

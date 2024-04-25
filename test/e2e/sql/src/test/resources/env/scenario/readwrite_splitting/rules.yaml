@@ -41,7 +41,7 @@ rules:
         none:
 
 - !READWRITE_SPLITTING
-  dataSources:
+  dataSourceGroups:
     write-read-ds:
       writeDataSourceName: write_ds
       readDataSourceNames:

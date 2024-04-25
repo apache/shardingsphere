@@ -26,7 +26,7 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,7 +45,7 @@ public final class YamlReadwriteSplittingRuleConfigurationSwapper implements Yam
     @Override
     public YamlReadwriteSplittingRuleConfiguration swapToYamlConfiguration(final ReadwriteSplittingRuleConfiguration data) {
         YamlReadwriteSplittingRuleConfiguration result = new YamlReadwriteSplittingRuleConfiguration();
-        result.setDataSources(data.getDataSourceGroups().stream().collect(
+        result.setDataSourceGroups(data.getDataSourceGroups().stream().collect(
                 Collectors.toMap(ReadwriteSplittingDataSourceGroupRuleConfiguration::getName, this::swapToYamlConfiguration, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         if (null != data.getLoadBalancers()) {
             data.getLoadBalancers().forEach((key, value) -> result.getLoadBalancers().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
@@ -53,8 +53,8 @@ public final class YamlReadwriteSplittingRuleConfigurationSwapper implements Yam
         return result;
     }
     
-    private YamlReadwriteSplittingDataSourceRuleConfiguration swapToYamlConfiguration(final ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupRuleConfig) {
-        YamlReadwriteSplittingDataSourceRuleConfiguration result = new YamlReadwriteSplittingDataSourceRuleConfiguration();
+    private YamlReadwriteSplittingDataSourceGroupRuleConfiguration swapToYamlConfiguration(final ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupRuleConfig) {
+        YamlReadwriteSplittingDataSourceGroupRuleConfiguration result = new YamlReadwriteSplittingDataSourceGroupRuleConfiguration();
         result.setWriteDataSourceName(dataSourceGroupRuleConfig.getWriteDataSourceName());
         result.setReadDataSourceNames(dataSourceGroupRuleConfig.getReadDataSourceNames());
         result.setTransactionalReadQueryStrategy(dataSourceGroupRuleConfig.getTransactionalReadQueryStrategy().name());
@@ -64,7 +64,7 @@ public final class YamlReadwriteSplittingRuleConfigurationSwapper implements Yam
     
     @Override
     public ReadwriteSplittingRuleConfiguration swapToObject(final YamlReadwriteSplittingRuleConfiguration yamlConfig) {
-        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSources = yamlConfig.getDataSources().entrySet().stream()
+        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSources = yamlConfig.getDataSourceGroups().entrySet().stream()
                 .map(entry -> swapToObject(entry.getKey(), entry.getValue())).collect(Collectors.toList());
         Map<String, AlgorithmConfiguration> loadBalancerMap = null == yamlConfig.getLoadBalancers()
                 ? Collections.emptyMap()
@@ -72,15 +72,15 @@ public final class YamlReadwriteSplittingRuleConfigurationSwapper implements Yam
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancerMap);
     }
     
-    private ReadwriteSplittingDataSourceGroupRuleConfiguration swapToObject(final String name, final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
-        return new ReadwriteSplittingDataSourceGroupRuleConfiguration(name, yamlDataSourceRuleConfig.getWriteDataSourceName(), yamlDataSourceRuleConfig.getReadDataSourceNames(),
-                getTransactionalReadQueryStrategy(yamlDataSourceRuleConfig), yamlDataSourceRuleConfig.getLoadBalancerName());
+    private ReadwriteSplittingDataSourceGroupRuleConfiguration swapToObject(final String name, final YamlReadwriteSplittingDataSourceGroupRuleConfiguration yamlDataSourceGroupRuleConfig) {
+        return new ReadwriteSplittingDataSourceGroupRuleConfiguration(name, yamlDataSourceGroupRuleConfig.getWriteDataSourceName(), yamlDataSourceGroupRuleConfig.getReadDataSourceNames(),
+                getTransactionalReadQueryStrategy(yamlDataSourceGroupRuleConfig), yamlDataSourceGroupRuleConfig.getLoadBalancerName());
     }
     
-    private TransactionalReadQueryStrategy getTransactionalReadQueryStrategy(final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
-        return Strings.isNullOrEmpty(yamlDataSourceRuleConfig.getTransactionalReadQueryStrategy())
+    private TransactionalReadQueryStrategy getTransactionalReadQueryStrategy(final YamlReadwriteSplittingDataSourceGroupRuleConfiguration yamlDataSourceGroupRuleConfig) {
+        return Strings.isNullOrEmpty(yamlDataSourceGroupRuleConfig.getTransactionalReadQueryStrategy())
                 ? TransactionalReadQueryStrategy.DYNAMIC
-                : TransactionalReadQueryStrategy.valueOf(yamlDataSourceRuleConfig.getTransactionalReadQueryStrategy());
+                : TransactionalReadQueryStrategy.valueOf(yamlDataSourceGroupRuleConfig.getTransactionalReadQueryStrategy());
     }
     
     @Override

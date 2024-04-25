@@ -31,7 +31,7 @@ dataSources:
 
 rules:
 - !READWRITE_SPLITTING
-  dataSources:
+  dataSourceGroups:
     readwrite_ds:
       writeDataSourceName: foo_db
       readDataSourceNames:

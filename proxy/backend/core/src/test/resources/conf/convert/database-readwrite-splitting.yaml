@@ -48,7 +48,7 @@ dataSources:
 
 rules:
 - !READWRITE_SPLITTING
-  dataSources:
+  dataSourceGroups:
     readwrite_ds:
       transactionalReadQueryStrategy: PRIMARY
       writeDataSourceName: write_ds_0

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.yaml;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -38,22 +38,22 @@ class ReadwriteSplittingRuleConfigurationYamlIT extends YamlRuleConfigurationIT 
     }
     
     private void assertReadwriteSplittingRule(final YamlReadwriteSplittingRuleConfiguration actual) {
-        assertThat(actual.getDataSources().size(), is(2));
+        assertThat(actual.getDataSourceGroups().size(), is(2));
         assertReadwriteSplittingRuleForDs0(actual);
         assertReadwriteSplittingRuleForDs1(actual);
     }
     
     private void assertReadwriteSplittingRuleForDs0(final YamlReadwriteSplittingRuleConfiguration actual) {
-        assertNotNull(actual.getDataSources().get("ds_0"));
-        YamlReadwriteSplittingDataSourceRuleConfiguration config = actual.getDataSources().get("ds_0");
+        assertNotNull(actual.getDataSourceGroups().get("ds_0"));
+        YamlReadwriteSplittingDataSourceGroupRuleConfiguration config = actual.getDataSourceGroups().get("ds_0");
         assertThat(config.getWriteDataSourceName(), is("write_ds_0"));
-        assertThat(actual.getDataSources().get("ds_0").getLoadBalancerName(), is("roundRobin"));
+        assertThat(actual.getDataSourceGroups().get("ds_0").getLoadBalancerName(), is("roundRobin"));
     }
     
     private void assertReadwriteSplittingRuleForDs1(final YamlReadwriteSplittingRuleConfiguration actual) {
-        assertNotNull(actual.getDataSources().get("ds_1"));
-        YamlReadwriteSplittingDataSourceRuleConfiguration config = actual.getDataSources().get("ds_1");
+        assertNotNull(actual.getDataSourceGroups().get("ds_1"));
+        YamlReadwriteSplittingDataSourceGroupRuleConfiguration config = actual.getDataSourceGroups().get("ds_1");
         assertThat(config.getWriteDataSourceName(), is("write_ds_1"));
-        assertThat(actual.getDataSources().get("ds_1").getLoadBalancerName(), is("random"));
+        assertThat(actual.getDataSourceGroups().get("ds_1").getLoadBalancerName(), is("random"));
     }
 }
