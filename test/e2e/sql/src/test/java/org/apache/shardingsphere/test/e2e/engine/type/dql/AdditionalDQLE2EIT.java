@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.engine.type.dql;
 
+import jakarta.xml.bind.JAXBException;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
@@ -30,7 +31,6 @@ import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
