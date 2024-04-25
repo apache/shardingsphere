@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.rule.attribute.exportable.ExportableRuleA
 import org.apache.shardingsphere.infra.rule.attribute.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.attribute.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.readwritesplitting.group.type.StaticReadwriteSplittingGroup;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -34,7 +34,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class ReadwriteSplittingExportableRuleAttribute implements ExportableRuleAttribute {
     
-    private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
+    private final Map<String, ReadwriteSplittingDataSourceGroupRule> dataSourceGroupRules;
     
     @Override
     public Map<String, Object> getExportData() {
@@ -44,8 +44,8 @@ public final class ReadwriteSplittingExportableRuleAttribute implements Exportab
     }
     
     private Map<String, Map<String, String>> exportStaticDataSources() {
-        Map<String, Map<String, String>> result = new LinkedHashMap<>(dataSourceRules.size(), 1F);
-        for (ReadwriteSplittingDataSourceRule each : dataSourceRules.values()) {
+        Map<String, Map<String, String>> result = new LinkedHashMap<>(dataSourceGroupRules.size(), 1F);
+        for (ReadwriteSplittingDataSourceGroupRule each : dataSourceGroupRules.values()) {
             if (each.getReadwriteSplittingGroup() instanceof StaticReadwriteSplittingGroup) {
                 Map<String, String> exportedDataSources = new LinkedHashMap<>(2, 1F);
                 exportedDataSources.put(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME, each.getWriteDataSource());

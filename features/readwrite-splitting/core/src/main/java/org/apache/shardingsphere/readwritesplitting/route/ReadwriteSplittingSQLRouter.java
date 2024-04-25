@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
@@ -46,9 +46,9 @@ public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadwriteSpl
     public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData,
                                            final ShardingSphereDatabase database, final ReadwriteSplittingRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
         RouteContext result = new RouteContext();
-        ReadwriteSplittingDataSourceRule singleDataSourceRule = rule.getSingleDataSourceRule();
-        String dataSourceName = new ReadwriteSplittingDataSourceRouter(singleDataSourceRule, connectionContext).route(queryContext.getSqlStatementContext(), queryContext.getHintValueContext());
-        result.getRouteUnits().add(new RouteUnit(new RouteMapper(singleDataSourceRule.getName(), dataSourceName), Collections.emptyList()));
+        ReadwriteSplittingDataSourceGroupRule dataSourceGroupRule = rule.getSingleDataSourceGroupRule();
+        String dataSourceName = new ReadwriteSplittingDataSourceRouter(dataSourceGroupRule, connectionContext).route(queryContext.getSqlStatementContext(), queryContext.getHintValueContext());
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceGroupRule.getName(), dataSourceName), Collections.emptyList()));
         return result;
     }
     
@@ -59,10 +59,10 @@ public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadwriteSpl
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {
             String dataSourceName = each.getDataSourceMapper().getLogicName();
-            Optional<ReadwriteSplittingDataSourceRule> dataSourceRule = rule.findDataSourceRule(dataSourceName);
-            if (dataSourceRule.isPresent() && dataSourceRule.get().getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
+            Optional<ReadwriteSplittingDataSourceGroupRule> dataSourceGroupRule = rule.findDataSourceGroupRule(dataSourceName);
+            if (dataSourceGroupRule.isPresent() && dataSourceGroupRule.get().getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 toBeRemoved.add(each);
-                String actualDataSourceName = new ReadwriteSplittingDataSourceRouter(dataSourceRule.get(), connectionContext).route(queryContext.getSqlStatementContext(),
+                String actualDataSourceName = new ReadwriteSplittingDataSourceRouter(dataSourceGroupRule.get(), connectionContext).route(queryContext.getSqlStatementContext(),
                         queryContext.getHintValueContext());
                 toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), actualDataSourceName), each.getTableMappers()));
             }

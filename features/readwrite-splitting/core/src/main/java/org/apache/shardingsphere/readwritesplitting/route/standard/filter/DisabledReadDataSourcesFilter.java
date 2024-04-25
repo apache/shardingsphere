@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.route.standard.filter;
 
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -28,7 +28,7 @@ import java.util.List;
 public final class DisabledReadDataSourcesFilter implements ReadDataSourcesFilter {
     
     @Override
-    public List<String> filter(final ReadwriteSplittingDataSourceRule rule, final List<String> toBeFilteredReadDataSources) {
+    public List<String> filter(final ReadwriteSplittingDataSourceGroupRule rule, final List<String> toBeFilteredReadDataSources) {
         List<String> result = new LinkedList<>(toBeFilteredReadDataSources);
         result.removeIf(rule.getDisabledDataSourceNames()::contains);
         return result;

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -59,12 +59,12 @@ class QualifiedReadwriteSplittingTransactionalDataSourceRouterTest {
     void assertRoute() {
         ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfig =
                 new ReadwriteSplittingDataSourceRuleConfiguration("test_config", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null);
-        ReadwriteSplittingDataSourceRule rule;
-        rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfig, TransactionalReadQueryStrategy.PRIMARY, null);
+        ReadwriteSplittingDataSourceGroupRule rule;
+        rule = new ReadwriteSplittingDataSourceGroupRule(readwriteSplittingDataSourceRuleConfig, TransactionalReadQueryStrategy.PRIMARY, null);
         assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext()).route(rule), is("write_ds"));
-        rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfig, TransactionalReadQueryStrategy.FIXED, new RoundRobinLoadBalanceAlgorithm());
+        rule = new ReadwriteSplittingDataSourceGroupRule(readwriteSplittingDataSourceRuleConfig, TransactionalReadQueryStrategy.FIXED, new RoundRobinLoadBalanceAlgorithm());
         assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext()).route(rule), is("read_ds_0"));
-        rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfig, TransactionalReadQueryStrategy.DYNAMIC, new RoundRobinLoadBalanceAlgorithm());
+        rule = new ReadwriteSplittingDataSourceGroupRule(readwriteSplittingDataSourceRuleConfig, TransactionalReadQueryStrategy.DYNAMIC, new RoundRobinLoadBalanceAlgorithm());
         assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext()).route(rule), is("read_ds_0"));
     }
 }

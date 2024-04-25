@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourc
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceDeletedEvent;
 import org.apache.shardingsphere.readwritesplitting.exception.logic.ReadwriteSplittingDataSourceRuleNotFoundException;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,14 +40,14 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
     
     private final String databaseName;
     
-    private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
+    private final Map<String, ReadwriteSplittingDataSourceGroupRule> dataSourceGroupRules;
     
     private final InstanceContext instanceContext;
     
     @Override
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>();
-        for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
+        for (Entry<String, ReadwriteSplittingDataSourceGroupRule> entry : dataSourceGroupRules.entrySet()) {
             result.put(entry.getValue().getName(), entry.getValue().getReadwriteSplittingGroup().getAllDataSources());
         }
         return result;
@@ -55,30 +55,30 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
     
     @Override
     public void updateStatus(final QualifiedDataSource qualifiedDataSource, final DataSourceState status) {
-        ReadwriteSplittingDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDataSource.getGroupName());
-        ShardingSpherePreconditions.checkNotNull(dataSourceRule,
+        ReadwriteSplittingDataSourceGroupRule dataSourceGroupRule = dataSourceGroupRules.get(qualifiedDataSource.getGroupName());
+        ShardingSpherePreconditions.checkNotNull(dataSourceGroupRule,
                 () -> new ReadwriteSplittingDataSourceRuleNotFoundException(qualifiedDataSource.getGroupName(), qualifiedDataSource.getDatabaseName()));
         if (DataSourceState.DISABLED == status) {
-            dataSourceRule.disableDataSource(qualifiedDataSource.getDataSourceName());
+            dataSourceGroupRule.disableDataSource(qualifiedDataSource.getDataSourceName());
         } else {
-            dataSourceRule.enableDataSource(qualifiedDataSource.getDataSourceName());
+            dataSourceGroupRule.enableDataSource(qualifiedDataSource.getDataSourceName());
         }
     }
     
     @Override
     public void cleanStorageNodeDataSource(final String groupName) {
-        ShardingSpherePreconditions.checkContainsKey(dataSourceRules, groupName, () -> new ReadwriteSplittingDataSourceRuleNotFoundException(groupName, databaseName));
-        deleteStorageNodeDataSources(dataSourceRules.get(groupName));
+        ShardingSpherePreconditions.checkContainsKey(dataSourceGroupRules, groupName, () -> new ReadwriteSplittingDataSourceRuleNotFoundException(groupName, databaseName));
+        deleteStorageNodeDataSources(dataSourceGroupRules.get(groupName));
     }
     
-    private void deleteStorageNodeDataSources(final ReadwriteSplittingDataSourceRule rule) {
+    private void deleteStorageNodeDataSources(final ReadwriteSplittingDataSourceGroupRule rule) {
         rule.getReadwriteSplittingGroup().getReadDataSources()
                 .forEach(each -> instanceContext.getEventBusContext().post(new StorageNodeDataSourceDeletedEvent(new QualifiedDataSource(databaseName, rule.getName(), each))));
     }
     
     @Override
     public void cleanStorageNodeDataSources() {
-        for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
+        for (Entry<String, ReadwriteSplittingDataSourceGroupRule> entry : dataSourceGroupRules.entrySet()) {
             deleteStorageNodeDataSources(entry.getValue());
         }
     }
