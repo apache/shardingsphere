@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.state.datasource.exception.UnavailableDataSourceException;
 
 import javax.sql.DataSource;
@@ -148,12 +149,11 @@ public final class DataSourceStateManager {
     /**
      * Update data source state.
      * 
-     * @param databaseName database name
-     * @param actualDataSourceName actual data source name
+     * @param qualifiedDataSource qualified data source
      * @param dataSourceState data source state
      */
-    public void updateState(final String databaseName, final String actualDataSourceName, final DataSourceState dataSourceState) {
-        dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), dataSourceState);
+    public void updateState(final QualifiedDataSource qualifiedDataSource, final DataSourceState dataSourceState) {
+        dataSourceStates.put(getCacheKey(qualifiedDataSource.getDatabaseName(), qualifiedDataSource.getDataSourceName()), dataSourceState);
     }
     
     private String getCacheKey(final String databaseName, final String dataSourceName) {
