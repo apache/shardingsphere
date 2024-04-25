@@ -30,7 +30,7 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingRuleNodePathProvider;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -45,15 +45,15 @@ public final class ReadwriteSplittingDataSourceChangedProcessor
     
     @Override
     public ReadwriteSplittingDataSourceGroupRuleConfiguration swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
-        YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig = YamlEngine.unmarshal(yamlContent, YamlReadwriteSplittingDataSourceRuleConfiguration.class);
-        return new ReadwriteSplittingDataSourceGroupRuleConfiguration(((AlterNamedRuleItemEvent) event).getItemName(), yamlDataSourceRuleConfig.getWriteDataSourceName(),
-                yamlDataSourceRuleConfig.getReadDataSourceNames(), getTransactionalReadQueryStrategy(yamlDataSourceRuleConfig), yamlDataSourceRuleConfig.getLoadBalancerName());
+        YamlReadwriteSplittingDataSourceGroupRuleConfiguration yamlDataSourceGroupRuleConfig = YamlEngine.unmarshal(yamlContent, YamlReadwriteSplittingDataSourceGroupRuleConfiguration.class);
+        return new ReadwriteSplittingDataSourceGroupRuleConfiguration(((AlterNamedRuleItemEvent) event).getItemName(), yamlDataSourceGroupRuleConfig.getWriteDataSourceName(),
+                yamlDataSourceGroupRuleConfig.getReadDataSourceNames(), getTransactionalReadQueryStrategy(yamlDataSourceGroupRuleConfig), yamlDataSourceGroupRuleConfig.getLoadBalancerName());
     }
     
-    private TransactionalReadQueryStrategy getTransactionalReadQueryStrategy(final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
-        return Strings.isNullOrEmpty(yamlDataSourceRuleConfig.getTransactionalReadQueryStrategy())
+    private TransactionalReadQueryStrategy getTransactionalReadQueryStrategy(final YamlReadwriteSplittingDataSourceGroupRuleConfiguration yamlDataSourceGroupRuleConfig) {
+        return Strings.isNullOrEmpty(yamlDataSourceGroupRuleConfig.getTransactionalReadQueryStrategy())
                 ? TransactionalReadQueryStrategy.DYNAMIC
-                : TransactionalReadQueryStrategy.valueOf(yamlDataSourceRuleConfig.getTransactionalReadQueryStrategy());
+                : TransactionalReadQueryStrategy.valueOf(yamlDataSourceGroupRuleConfig.getTransactionalReadQueryStrategy());
     }
     
     @Override

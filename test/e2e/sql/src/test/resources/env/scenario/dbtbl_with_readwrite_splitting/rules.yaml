@@ -81,7 +81,7 @@ rules:
     - t_product_category
 
 - !READWRITE_SPLITTING
-  dataSources:
+  dataSourceGroups:
     readwrite_ds_0:
       writeDataSourceName: write_ds_0
       readDataSourceNames:

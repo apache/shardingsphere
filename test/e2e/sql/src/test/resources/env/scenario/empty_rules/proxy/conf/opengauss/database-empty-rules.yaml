@@ -254,7 +254,7 @@ rules:
       type: IT.AUDITOR.FIXTURE
 
 - !READWRITE_SPLITTING
-  dataSources:
+  dataSourceGroups:
     readwrite_ds_0:
       writeDataSourceName: write_ds_0
       readDataSourceNames:

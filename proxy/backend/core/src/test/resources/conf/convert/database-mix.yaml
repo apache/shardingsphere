@@ -106,7 +106,7 @@ rules:
     snowflake:
       type: SNOWFLAKE
 - !READWRITE_SPLITTING
-  dataSources:
+  dataSourceGroups:
     readwrite_ds_0:
       writeDataSourceName: ds_0
       readDataSourceNames:

@@ -55,7 +55,7 @@
 #
 #rules:
 #- !READWRITE_SPLITTING
-#  dataSources:
+#  dataSourceGroups:
 #    readwrite_ds:
 #      writeDataSourceName: primary_ds
 #      readDataSourceNames:
@@ -105,7 +105,7 @@
 #
 #rules:
 #- !READWRITE_SPLITTING
-#  dataSources:
+#  dataSourceGroups:
 #    readwrite_ds:
 #      writeDataSourceName: write_ds
 #      readDataSourceNames:

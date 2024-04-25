@@ -14,7 +14,7 @@ weight = 3
 ```yaml
 rules:
 - !READWRITE_SPLITTING
-  dataSources:
+  dataSourceGroups:
     <data_source_name> (+): # 读写分离逻辑数据源名称，默认使用 Groovy 的行表达式 SPI 实现来解析
        write_data_source_name: # 写库数据源名称，默认使用 Groovy 的行表达式 SPI 实现来解析
        read_data_source_names: # 读库数据源名称，多个从数据源用逗号分隔，默认使用 Groovy 的行表达式 SPI 实现来解析
@@ -40,7 +40,7 @@ rules:
 ```yaml
 rules:
 - !READWRITE_SPLITTING
-  dataSources:
+  dataSourceGroups:
     readwrite_ds:
       writeDataSourceName: write_ds
       readDataSourceNames:

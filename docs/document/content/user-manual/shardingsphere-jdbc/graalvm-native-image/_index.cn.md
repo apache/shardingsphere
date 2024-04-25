@@ -192,7 +192,7 @@ Image 下使用。
 ```yaml
 rules:
 - !READWRITE_SPLITTING
-  dataSources:
+   dataSourceGroups:
     <LITERAL>readwrite_ds:
       writeDataSourceName: <LITERAL>ds_0
       readDataSourceNames:

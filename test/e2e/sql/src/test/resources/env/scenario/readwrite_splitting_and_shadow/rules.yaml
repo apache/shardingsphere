@@ -20,7 +20,7 @@ rules:
   tables:
     - "*.*"
 - !READWRITE_SPLITTING
-  dataSources:
+  dataSourceGroups:
     write-read-ds:
       writeDataSourceName: shadowDataSource
       readDataSourceNames:

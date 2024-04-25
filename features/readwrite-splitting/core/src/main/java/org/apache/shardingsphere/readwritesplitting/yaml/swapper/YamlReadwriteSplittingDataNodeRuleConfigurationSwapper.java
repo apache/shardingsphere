@@ -30,7 +30,7 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingRuleNodePathProvider;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -64,8 +64,8 @@ public final class YamlReadwriteSplittingDataNodeRuleConfigurationSwapper implem
         return result;
     }
     
-    private YamlReadwriteSplittingDataSourceRuleConfiguration swapToYamlConfiguration(final ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceRuleGroupConfig) {
-        YamlReadwriteSplittingDataSourceRuleConfiguration result = new YamlReadwriteSplittingDataSourceRuleConfiguration();
+    private YamlReadwriteSplittingDataSourceGroupRuleConfiguration swapToYamlConfiguration(final ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceRuleGroupConfig) {
+        YamlReadwriteSplittingDataSourceGroupRuleConfiguration result = new YamlReadwriteSplittingDataSourceGroupRuleConfiguration();
         result.setWriteDataSourceName(dataSourceRuleGroupConfig.getWriteDataSourceName());
         result.setReadDataSourceNames(dataSourceRuleGroupConfig.getReadDataSourceNames());
         result.setTransactionalReadQueryStrategy(dataSourceRuleGroupConfig.getTransactionalReadQueryStrategy().name());
@@ -83,22 +83,22 @@ public final class YamlReadwriteSplittingDataNodeRuleConfigurationSwapper implem
         Map<String, AlgorithmConfiguration> loadBalancerMap = new LinkedHashMap<>();
         for (YamlDataNode each : validDataNodes) {
             readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES).getName(each.getKey())
-                    .ifPresent(optional -> dataSourceGroups.add(swapDataSourceGroup(optional, YamlEngine.unmarshal(each.getValue(), YamlReadwriteSplittingDataSourceRuleConfiguration.class))));
+                    .ifPresent(optional -> dataSourceGroups.add(swapDataSourceGroup(optional, YamlEngine.unmarshal(each.getValue(), YamlReadwriteSplittingDataSourceGroupRuleConfiguration.class))));
             readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS).getName(each.getKey())
                     .ifPresent(optional -> loadBalancerMap.put(optional, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
         }
         return Optional.of(new ReadwriteSplittingRuleConfiguration(dataSourceGroups, loadBalancerMap));
     }
     
-    private ReadwriteSplittingDataSourceGroupRuleConfiguration swapDataSourceGroup(final String name, final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
+    private ReadwriteSplittingDataSourceGroupRuleConfiguration swapDataSourceGroup(final String name, final YamlReadwriteSplittingDataSourceGroupRuleConfiguration yamlDataSourceRuleConfig) {
         return new ReadwriteSplittingDataSourceGroupRuleConfiguration(name, yamlDataSourceRuleConfig.getWriteDataSourceName(), yamlDataSourceRuleConfig.getReadDataSourceNames(),
                 getTransactionalReadQueryStrategy(yamlDataSourceRuleConfig), yamlDataSourceRuleConfig.getLoadBalancerName());
     }
     
-    private TransactionalReadQueryStrategy getTransactionalReadQueryStrategy(final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
-        return Strings.isNullOrEmpty(yamlDataSourceRuleConfig.getTransactionalReadQueryStrategy())
+    private TransactionalReadQueryStrategy getTransactionalReadQueryStrategy(final YamlReadwriteSplittingDataSourceGroupRuleConfiguration yamlDataSourceGroupRuleConfig) {
+        return Strings.isNullOrEmpty(yamlDataSourceGroupRuleConfig.getTransactionalReadQueryStrategy())
                 ? TransactionalReadQueryStrategy.DYNAMIC
-                : TransactionalReadQueryStrategy.valueOf(yamlDataSourceRuleConfig.getTransactionalReadQueryStrategy());
+                : TransactionalReadQueryStrategy.valueOf(yamlDataSourceGroupRuleConfig.getTransactionalReadQueryStrategy());
     }
     
     @Override
