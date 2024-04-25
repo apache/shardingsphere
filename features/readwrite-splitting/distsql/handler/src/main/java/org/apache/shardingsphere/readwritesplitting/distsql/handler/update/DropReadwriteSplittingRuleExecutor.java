@@ -116,9 +116,9 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     }
     
     private void dropRule(final String ruleName) {
-        Optional<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceRuleGroupConfig = rule.getConfiguration().getDataSourceGroups().stream()
+        Optional<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroupRuleConfig = rule.getConfiguration().getDataSourceGroups().stream()
                 .filter(each -> ruleName.equals(each.getName())).findAny();
-        dataSourceRuleGroupConfig.ifPresent(optional -> rule.getConfiguration().getDataSourceGroups().remove(optional));
+        dataSourceGroupRuleConfig.ifPresent(optional -> rule.getConfiguration().getDataSourceGroups().remove(optional));
     }
     
     private Collection<String> findUnusedLoadBalancers() {
