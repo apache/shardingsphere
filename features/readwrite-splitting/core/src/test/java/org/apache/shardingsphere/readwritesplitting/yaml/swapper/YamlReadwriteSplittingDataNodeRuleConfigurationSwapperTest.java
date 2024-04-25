@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.yaml.swapper;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +41,7 @@ class YamlReadwriteSplittingDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToDataNodesLoadBalancersEmpty() {
-        ReadwriteSplittingRuleConfiguration config = new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration("group_0",
+        ReadwriteSplittingRuleConfiguration config = new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceGroupRuleConfiguration("group_0",
                 "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null)), Collections.emptyMap());
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
         assertThat(result.size(), is(1));
@@ -50,7 +50,7 @@ class YamlReadwriteSplittingDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToDataNodesLoadBalancers() {
-        ReadwriteSplittingRuleConfiguration config = new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration("group_0",
+        ReadwriteSplittingRuleConfiguration config = new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceGroupRuleConfiguration("group_0",
                 "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random")), Collections.singletonMap("random", new AlgorithmConfiguration("random", new Properties())));
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
         assertThat(result.size(), is(2));
@@ -76,12 +76,12 @@ class YamlReadwriteSplittingDataNodeRuleConfigurationSwapperTest {
                 + "writeDataSourceName: write_ds\n"));
         config.add(new YamlDataNode("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random/versions/0", "type: random\n"));
         ReadwriteSplittingRuleConfiguration result = swapper.swapToObject(config).get();
-        assertThat(result.getDataSources().size(), is(1));
-        assertThat(result.getDataSources().iterator().next().getName(), is("group_0"));
-        assertThat(result.getDataSources().iterator().next().getWriteDataSourceName(), is("write_ds"));
-        assertThat(result.getDataSources().iterator().next().getReadDataSourceNames().size(), is(2));
-        assertThat(result.getDataSources().iterator().next().getLoadBalancerName(), is("random"));
-        assertThat(result.getDataSources().iterator().next().getTransactionalReadQueryStrategy(), is(TransactionalReadQueryStrategy.DYNAMIC));
+        assertThat(result.getDataSourceGroups().size(), is(1));
+        assertThat(result.getDataSourceGroups().iterator().next().getName(), is("group_0"));
+        assertThat(result.getDataSourceGroups().iterator().next().getWriteDataSourceName(), is("write_ds"));
+        assertThat(result.getDataSourceGroups().iterator().next().getReadDataSourceNames().size(), is(2));
+        assertThat(result.getDataSourceGroups().iterator().next().getLoadBalancerName(), is("random"));
+        assertThat(result.getDataSourceGroups().iterator().next().getTransactionalReadQueryStrategy(), is(TransactionalReadQueryStrategy.DYNAMIC));
         assertThat(result.getLoadBalancers().size(), is(1));
         assertThat(result.getLoadBalancers().get("random").getType(), is("random"));
         assertThat(result.getLoadBalancers().get("random").getProps().size(), is(0));

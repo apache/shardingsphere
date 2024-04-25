@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.DuplicateReadwriteSplittingActualDataSourceException;
@@ -40,13 +40,14 @@ public final class ReadwriteSplittingDataSourceRuleConfigurationChecker {
     
     private final String databaseName;
     
-    private final ReadwriteSplittingDataSourceRuleConfiguration config;
+    private final ReadwriteSplittingDataSourceGroupRuleConfiguration config;
     
     private final Map<String, DataSource> dataSourceMap;
     
     private final ReadwriteSplittingRuleExceptionIdentifier exceptionIdentifier;
     
-    public ReadwriteSplittingDataSourceRuleConfigurationChecker(final String databaseName, final ReadwriteSplittingDataSourceRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
+    public ReadwriteSplittingDataSourceRuleConfigurationChecker(final String databaseName,
+                                                                final ReadwriteSplittingDataSourceGroupRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         this.databaseName = databaseName;
         this.config = config;
         this.dataSourceMap = dataSourceMap;

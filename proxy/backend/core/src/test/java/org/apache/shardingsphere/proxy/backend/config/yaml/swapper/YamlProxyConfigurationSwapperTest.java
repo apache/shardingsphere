@@ -27,7 +27,7 @@ import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -77,11 +77,11 @@ class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertReadwriteSplittingRuleConfiguration(final ReadwriteSplittingRuleConfiguration actual) {
-        assertThat(actual.getDataSources().size(), is(1));
-        ReadwriteSplittingDataSourceRuleConfiguration dataSource = actual.getDataSources().iterator().next();
-        assertThat(dataSource.getName(), is("readwrite_ds"));
-        assertThat(dataSource.getWriteDataSourceName(), is("foo_db"));
-        assertThat(dataSource.getReadDataSourceNames(), is(Collections.singletonList("foo_db")));
+        assertThat(actual.getDataSourceGroups().size(), is(1));
+        ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig = actual.getDataSourceGroups().iterator().next();
+        assertThat(dataSourceGroupConfig.getName(), is("readwrite_ds"));
+        assertThat(dataSourceGroupConfig.getWriteDataSourceName(), is("foo_db"));
+        assertThat(dataSourceGroupConfig.getReadDataSourceNames(), is(Collections.singletonList("foo_db")));
         assertThat(actual.getLoadBalancers().size(), is(1));
         AlgorithmConfiguration loadBalancer = actual.getLoadBalancers().get("round_robin");
         assertThat(loadBalancer.getProps().size(), is(1));

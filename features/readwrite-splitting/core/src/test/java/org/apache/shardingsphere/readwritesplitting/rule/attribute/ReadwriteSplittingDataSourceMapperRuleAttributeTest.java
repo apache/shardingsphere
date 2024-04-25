@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule.attribute;
 
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +40,6 @@ class ReadwriteSplittingDataSourceMapperRuleAttributeTest {
     
     private ReadwriteSplittingDataSourceGroupRule createDataSourceGroupRule() {
         return new ReadwriteSplittingDataSourceGroupRule(
-                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random"), null, null);
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random"), null, null);
     }
 }

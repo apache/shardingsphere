@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.route.standard;
 
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.round.robin.RoundRobinLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +36,7 @@ class StandardReadwriteSplittingDataSourceRouterTest {
     @BeforeEach
     void setUp() {
         rule = new ReadwriteSplittingDataSourceGroupRule(
-                new ReadwriteSplittingDataSourceRuleConfiguration("test_config", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null),
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("test_config", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null),
                 TransactionalReadQueryStrategy.DYNAMIC, new RoundRobinLoadBalanceAlgorithm());
     }
     
