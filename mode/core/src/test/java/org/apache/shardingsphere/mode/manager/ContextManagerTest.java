@@ -119,6 +119,7 @@ class ContextManagerTest {
         ShardingSphereDatabase database =
                 new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), resourceMetaData, mock(RuleMetaData.class), Collections.emptyMap());
         when(metaDataContexts.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(database);
+        when(metaDataContexts.getMetaData().containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
         assertThat(contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).size(), is(1));
     }
     
