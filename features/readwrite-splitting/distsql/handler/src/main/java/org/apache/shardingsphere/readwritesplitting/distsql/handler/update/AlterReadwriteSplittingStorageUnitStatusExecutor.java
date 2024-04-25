@@ -33,7 +33,7 @@ import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.ReadwriteSplittingActualDataSourceNotFoundException;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Optional;
@@ -60,16 +60,17 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor
     }
     
     private void checkBeforeUpdate(final AlterReadwriteSplittingStorageUnitStatusStatement sqlStatement) {
-        Optional<ReadwriteSplittingDataSourceRule> dataSourceRule = rule.getDataSourceRules().values().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).findAny();
-        ShardingSpherePreconditions.checkState(dataSourceRule.isPresent(), () -> new MissingRequiredRuleException("Readwrite-splitting", database.getName(), sqlStatement.getRuleName()));
-        ShardingSpherePreconditions.checkContains(dataSourceRule.get().getReadwriteSplittingGroup().getReadDataSources(), sqlStatement.getStorageUnitName(),
-                () -> new ReadwriteSplittingActualDataSourceNotFoundException(
-                        ReadwriteSplittingDataSourceType.READ, sqlStatement.getStorageUnitName(), new ReadwriteSplittingRuleExceptionIdentifier(database.getName(), dataSourceRule.get().getName())));
+        Optional<ReadwriteSplittingDataSourceGroupRule> dataSourceGroupRule = rule.getDataSourceRuleGroups().values().stream()
+                .filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).findAny();
+        ShardingSpherePreconditions.checkState(dataSourceGroupRule.isPresent(), () -> new MissingRequiredRuleException("Readwrite-splitting", database.getName(), sqlStatement.getRuleName()));
+        ShardingSpherePreconditions.checkContains(dataSourceGroupRule.get().getReadwriteSplittingGroup().getReadDataSources(), sqlStatement.getStorageUnitName(),
+                () -> new ReadwriteSplittingActualDataSourceNotFoundException(ReadwriteSplittingDataSourceType.READ,
+                        sqlStatement.getStorageUnitName(), new ReadwriteSplittingRuleExceptionIdentifier(database.getName(), dataSourceGroupRule.get().getName())));
         if (sqlStatement.isEnable()) {
-            ShardingSpherePreconditions.checkContains(dataSourceRule.get().getDisabledDataSourceNames(), sqlStatement.getStorageUnitName(),
+            ShardingSpherePreconditions.checkContains(dataSourceGroupRule.get().getDisabledDataSourceNames(), sqlStatement.getStorageUnitName(),
                     () -> new InvalidStorageUnitStatusException("storage unit is not disabled"));
         } else {
-            ShardingSpherePreconditions.checkNotContains(dataSourceRule.get().getDisabledDataSourceNames(), sqlStatement.getStorageUnitName(),
+            ShardingSpherePreconditions.checkNotContains(dataSourceGroupRule.get().getDisabledDataSourceNames(), sqlStatement.getStorageUnitName(),
                     () -> new InvalidStorageUnitStatusException("storage unit is already disabled"));
         }
     }

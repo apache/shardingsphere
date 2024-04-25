@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.readwritesplitting.route.qualified.QualifiedReadwriteSplittingDataSourceRouter;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatem
 public final class QualifiedReadwriteSplittingPrimaryDataSourceRouter implements QualifiedReadwriteSplittingDataSourceRouter {
     
     @Override
-    public boolean isQualified(final SQLStatementContext sqlStatementContext, final ReadwriteSplittingDataSourceRule rule, final HintValueContext hintValueContext) {
+    public boolean isQualified(final SQLStatementContext sqlStatementContext, final ReadwriteSplittingDataSourceGroupRule rule, final HintValueContext hintValueContext) {
         return isPrimaryRoute(sqlStatementContext, hintValueContext);
     }
     
@@ -59,7 +59,7 @@ public final class QualifiedReadwriteSplittingPrimaryDataSourceRouter implements
     }
     
     @Override
-    public String route(final ReadwriteSplittingDataSourceRule rule) {
+    public String route(final ReadwriteSplittingDataSourceGroupRule rule) {
         return rule.getWriteDataSource();
     }
 }

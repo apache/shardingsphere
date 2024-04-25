@@ -27,15 +27,14 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ReadwriteSplittingDataSourceRuleTest {
+class ReadwriteSplittingDataSourceGroupRuleTest {
     
     @Test
     void assertGetWriteDataSource() {
-        ReadwriteSplittingDataSourceRule readwriteSplittingDataSourceRule = new ReadwriteSplittingDataSourceRule(
-                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"),
-                        TransactionalReadQueryStrategy.DYNAMIC, null),
+        ReadwriteSplittingDataSourceGroupRule dataSourceGroupRule = new ReadwriteSplittingDataSourceGroupRule(
+                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), TransactionalReadQueryStrategy.DYNAMIC, null),
                 TransactionalReadQueryStrategy.DYNAMIC, new RandomLoadBalanceAlgorithm());
-        String writeDataSourceName = readwriteSplittingDataSourceRule.getWriteDataSource();
+        String writeDataSourceName = dataSourceGroupRule.getWriteDataSource();
         assertThat(writeDataSourceName, is("write_ds"));
     }
 }

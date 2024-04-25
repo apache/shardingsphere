@@ -28,10 +28,10 @@ import java.util.Collection;
 import java.util.HashSet;
 
 /**
- * Readwrite-splitting data source rule.
+ * Readwrite-splitting data source group rule.
  */
 @Getter
-public final class ReadwriteSplittingDataSourceRule {
+public final class ReadwriteSplittingDataSourceGroupRule {
     
     private final String name;
     
@@ -43,8 +43,8 @@ public final class ReadwriteSplittingDataSourceRule {
     
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config,
-                                            final TransactionalReadQueryStrategy transactionalReadQueryStrategy, final LoadBalanceAlgorithm loadBalancer) {
+    public ReadwriteSplittingDataSourceGroupRule(final ReadwriteSplittingDataSourceRuleConfiguration config,
+                                                 final TransactionalReadQueryStrategy transactionalReadQueryStrategy, final LoadBalanceAlgorithm loadBalancer) {
         name = config.getName();
         this.transactionalReadQueryStrategy = transactionalReadQueryStrategy;
         this.loadBalancer = loadBalancer;

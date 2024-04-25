@@ -39,15 +39,15 @@ import static org.mockito.Mockito.mock;
 class ReadwriteSplittingRuleTest {
     
     @Test
-    void assertFindDataSourceRule() {
-        Optional<ReadwriteSplittingDataSourceRule> actual = createReadwriteSplittingRule().findDataSourceRule("readwrite");
+    void assertFindDataSourceGroupRule() {
+        Optional<ReadwriteSplittingDataSourceGroupRule> actual = createReadwriteSplittingRule().findDataSourceGroupRule("readwrite");
         assertTrue(actual.isPresent());
-        assertDataSourceRule(actual.get());
+        assertDataSourceGroupRule(actual.get());
     }
     
     @Test
-    void assertGetSingleDataSourceRule() {
-        assertDataSourceRule(createReadwriteSplittingRule().getSingleDataSourceRule());
+    void assertGetSingleDataSourceGroupRule() {
+        assertDataSourceGroupRule(createReadwriteSplittingRule().getSingleDataSourceGroupRule());
     }
     
     private ReadwriteSplittingRule createReadwriteSplittingRule() {
@@ -57,7 +57,7 @@ class ReadwriteSplittingRuleTest {
                 Collections.singleton(config), Collections.singletonMap("random", new AlgorithmConfiguration("RANDOM", new Properties()))), mock(InstanceContext.class));
     }
     
-    private void assertDataSourceRule(final ReadwriteSplittingDataSourceRule actual) {
+    private void assertDataSourceGroupRule(final ReadwriteSplittingDataSourceGroupRule actual) {
         assertThat(actual.getName(), is("readwrite"));
         assertThat(actual.getReadwriteSplittingGroup().getWriteDataSource(), is("write_ds"));
         assertThat(actual.getReadwriteSplittingGroup().getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
@@ -69,7 +69,7 @@ class ReadwriteSplittingRuleTest {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
         readwriteSplittingRule.getAttributes().getAttribute(StaticDataSourceRuleAttribute.class).updateStatus(
                 new QualifiedDataSource("readwrite_splitting_db.readwrite.read_ds"), DataSourceState.DISABLED);
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getDisabledDataSourceNames(), is(Collections.singleton("read_ds")));
+        assertThat(readwriteSplittingRule.getSingleDataSourceGroupRule().getDisabledDataSourceNames(), is(Collections.singleton("read_ds")));
     }
     
     @Test
@@ -77,7 +77,7 @@ class ReadwriteSplittingRuleTest {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
         readwriteSplittingRule.getAttributes().getAttribute(StaticDataSourceRuleAttribute.class).updateStatus(
                 new QualifiedDataSource("readwrite_splitting_db.readwrite.read_ds_0"), DataSourceState.DISABLED);
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getDisabledDataSourceNames(), is(Collections.singleton("read_ds_0")));
+        assertThat(readwriteSplittingRule.getSingleDataSourceGroupRule().getDisabledDataSourceNames(), is(Collections.singleton("read_ds_0")));
     }
     
     @Test
@@ -85,10 +85,10 @@ class ReadwriteSplittingRuleTest {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
         readwriteSplittingRule.getAttributes().getAttribute(StaticDataSourceRuleAttribute.class).updateStatus(
                 new QualifiedDataSource("readwrite_splitting_db.readwrite.read_ds_0"), DataSourceState.DISABLED);
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getDisabledDataSourceNames(), is(Collections.singleton("read_ds_0")));
+        assertThat(readwriteSplittingRule.getSingleDataSourceGroupRule().getDisabledDataSourceNames(), is(Collections.singleton("read_ds_0")));
         readwriteSplittingRule.getAttributes().getAttribute(StaticDataSourceRuleAttribute.class).updateStatus(
                 new QualifiedDataSource("readwrite_splitting_db.readwrite.read_ds_0"), DataSourceState.ENABLED);
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getDisabledDataSourceNames(), is(Collections.emptySet()));
+        assertThat(readwriteSplittingRule.getSingleDataSourceGroupRule().getDisabledDataSourceNames(), is(Collections.emptySet()));
     }
     
     @Test
@@ -100,7 +100,7 @@ class ReadwriteSplittingRuleTest {
                 "random");
         ReadwriteSplittingRule readwriteSplittingRule = new ReadwriteSplittingRule("logic_db", new ReadwriteSplittingRuleConfiguration(
                 Collections.singleton(config), Collections.singletonMap("random", new AlgorithmConfiguration("RANDOM", new Properties()))), mock(InstanceContext.class));
-        Optional<ReadwriteSplittingDataSourceRule> actual = readwriteSplittingRule.findDataSourceRule("readwrite_ds");
+        Optional<ReadwriteSplittingDataSourceGroupRule> actual = readwriteSplittingRule.findDataSourceGroupRule("readwrite_ds");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("readwrite_ds"));
         assertThat(actual.get().getReadwriteSplittingGroup().getWriteDataSource(), is("write_ds"));

@@ -53,7 +53,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule {
     private final Map<String, LoadBalanceAlgorithm> loadBalancers;
     
     @Getter
-    private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
+    private final Map<String, ReadwriteSplittingDataSourceGroupRule> dataSourceRuleGroups;
     
     @Getter
     private final RuleAttributes attributes;
@@ -61,10 +61,12 @@ public final class ReadwriteSplittingRule implements DatabaseRule {
     public ReadwriteSplittingRule(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
         configuration = ruleConfig;
         loadBalancers = createLoadBalancers(ruleConfig);
-        dataSourceRules = createDataSourceRules(databaseName, ruleConfig);
+        dataSourceRuleGroups = createDataSourceGroupRules(databaseName, ruleConfig);
         attributes = new RuleAttributes(
-                new ReadwriteSplittingDataSourceMapperRuleAttribute(dataSourceRules.values()), new ReadwriteSplittingStaticDataSourceRuleAttribute(databaseName, dataSourceRules, instanceContext),
-                new ReadwriteSplittingExportableRuleAttribute(dataSourceRules), new ReadwriteSplittingStorageConnectorReusableRuleAttribute());
+                new ReadwriteSplittingDataSourceMapperRuleAttribute(dataSourceRuleGroups.values()),
+                new ReadwriteSplittingStaticDataSourceRuleAttribute(databaseName, dataSourceRuleGroups, instanceContext),
+                new ReadwriteSplittingExportableRuleAttribute(dataSourceRuleGroups),
+                new ReadwriteSplittingStorageConnectorReusableRuleAttribute());
     }
     
     private Map<String, LoadBalanceAlgorithm> createLoadBalancers(final ReadwriteSplittingRuleConfiguration ruleConfig) {
@@ -78,21 +80,21 @@ public final class ReadwriteSplittingRule implements DatabaseRule {
         return result;
     }
     
-    private Map<String, ReadwriteSplittingDataSourceRule> createDataSourceRules(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig) {
-        Map<String, ReadwriteSplittingDataSourceRule> result = new HashMap<>(ruleConfig.getDataSources().size(), 1F);
+    private Map<String, ReadwriteSplittingDataSourceGroupRule> createDataSourceGroupRules(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig) {
+        Map<String, ReadwriteSplittingDataSourceGroupRule> result = new HashMap<>(ruleConfig.getDataSources().size(), 1F);
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
-            result.putAll(createDataSourceRules(databaseName, each));
+            result.putAll(createDataSourceGroupRules(databaseName, each));
         }
         return result;
     }
     
-    private Map<String, ReadwriteSplittingDataSourceRule> createDataSourceRules(final String databaseName, final ReadwriteSplittingDataSourceRuleConfiguration config) {
+    private Map<String, ReadwriteSplittingDataSourceGroupRule> createDataSourceGroupRules(final String databaseName, final ReadwriteSplittingDataSourceRuleConfiguration config) {
         LoadBalanceAlgorithm loadBalanceAlgorithm = loadBalancers.getOrDefault(config.getName() + "." + config.getLoadBalancerName(), TypedSPILoader.getService(LoadBalanceAlgorithm.class, null));
-        return createStaticDataSourceRules(databaseName, config, loadBalanceAlgorithm);
+        return createStaticDataSourceGroupRules(databaseName, config, loadBalanceAlgorithm);
     }
     
-    private Map<String, ReadwriteSplittingDataSourceRule> createStaticDataSourceRules(final String databaseName, final ReadwriteSplittingDataSourceRuleConfiguration config,
-                                                                                      final LoadBalanceAlgorithm loadBalanceAlgorithm) {
+    private Map<String, ReadwriteSplittingDataSourceGroupRule> createStaticDataSourceGroupRules(final String databaseName, final ReadwriteSplittingDataSourceRuleConfiguration config,
+                                                                                                final LoadBalanceAlgorithm loadBalanceAlgorithm) {
         List<String> inlineLogicDataSourceNames = InlineExpressionParserFactory.newInstance(config.getName()).splitAndEvaluate();
         List<String> inlineWriteDataSourceNames = InlineExpressionParserFactory.newInstance(config.getWriteDataSourceName()).splitAndEvaluate();
         List<List<String>> inlineReadDataSourceNames = config.getReadDataSourceNames().stream()
@@ -103,11 +105,11 @@ public final class ReadwriteSplittingRule implements DatabaseRule {
         inlineReadDataSourceNames.forEach(each -> ShardingSpherePreconditions.checkState(each.size() == inlineLogicDataSourceNames.size(),
                 () -> new InvalidReadwriteSplittingActualDataSourceInlineExpressionException(
                         ReadwriteSplittingDataSourceType.READ, new ReadwriteSplittingRuleExceptionIdentifier(databaseName, config.getName()))));
-        Map<String, ReadwriteSplittingDataSourceRule> result = new HashMap<>(inlineLogicDataSourceNames.size(), 1F);
+        Map<String, ReadwriteSplittingDataSourceGroupRule> result = new HashMap<>(inlineLogicDataSourceNames.size(), 1F);
         for (int i = 0; i < inlineLogicDataSourceNames.size(); i++) {
             ReadwriteSplittingDataSourceRuleConfiguration staticConfig = createStaticDataSourceRuleConfiguration(
                     config, i, inlineLogicDataSourceNames, inlineWriteDataSourceNames, inlineReadDataSourceNames);
-            result.put(inlineLogicDataSourceNames.get(i), new ReadwriteSplittingDataSourceRule(staticConfig, config.getTransactionalReadQueryStrategy(), loadBalanceAlgorithm));
+            result.put(inlineLogicDataSourceNames.get(i), new ReadwriteSplittingDataSourceGroupRule(staticConfig, config.getTransactionalReadQueryStrategy(), loadBalanceAlgorithm));
         }
         return result;
     }
@@ -120,21 +122,21 @@ public final class ReadwriteSplittingRule implements DatabaseRule {
     }
     
     /**
-     * Get single data source rule.
+     * Get single data source group rule.
      *
-     * @return readwrite-splitting data source rule
+     * @return readwrite-splitting data source group rule
      */
-    public ReadwriteSplittingDataSourceRule getSingleDataSourceRule() {
-        return dataSourceRules.values().iterator().next();
+    public ReadwriteSplittingDataSourceGroupRule getSingleDataSourceGroupRule() {
+        return dataSourceRuleGroups.values().iterator().next();
     }
     
     /**
-     * Find data source rule.
+     * Find data source group rule.
      *
      * @param dataSourceName data source name
-     * @return readwrite-splitting data source rule
+     * @return readwrite-splitting data source group rule
      */
-    public Optional<ReadwriteSplittingDataSourceRule> findDataSourceRule(final String dataSourceName) {
-        return Optional.ofNullable(dataSourceRules.get(dataSourceName));
+    public Optional<ReadwriteSplittingDataSourceGroupRule> findDataSourceGroupRule(final String dataSourceName) {
+        return Optional.ofNullable(dataSourceRuleGroups.get(dataSourceName));
     }
 }

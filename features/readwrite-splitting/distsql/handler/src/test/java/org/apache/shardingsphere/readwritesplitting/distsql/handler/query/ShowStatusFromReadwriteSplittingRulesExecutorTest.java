@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.junit.jupiter.api.Test;
 
@@ -56,13 +56,13 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     
     private ReadwriteSplittingRule mockRule() {
         ReadwriteSplittingRule result = mock(ReadwriteSplittingRule.class);
-        Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules = Collections.singletonMap("group_0", mockReadwriteSplittingDataSourceRule());
-        when(result.getDataSourceRules()).thenReturn(dataSourceRules);
+        Map<String, ReadwriteSplittingDataSourceGroupRule> dataSourceGroupRules = Collections.singletonMap("group_0", mockDataSourceGroupRule());
+        when(result.getDataSourceRuleGroups()).thenReturn(dataSourceGroupRules);
         return result;
     }
     
-    private ReadwriteSplittingDataSourceRule mockReadwriteSplittingDataSourceRule() {
-        ReadwriteSplittingDataSourceRule result = mock(ReadwriteSplittingDataSourceRule.class, RETURNS_DEEP_STUBS);
+    private ReadwriteSplittingDataSourceGroupRule mockDataSourceGroupRule() {
+        ReadwriteSplittingDataSourceGroupRule result = mock(ReadwriteSplittingDataSourceGroupRule.class, RETURNS_DEEP_STUBS);
         when(result.getReadwriteSplittingGroup().getReadDataSources()).thenReturn(Arrays.asList("read_ds_0", "read_ds_1"));
         when(result.getDisabledDataSourceNames()).thenReturn(Collections.singleton("read_ds_1"));
         return result;
