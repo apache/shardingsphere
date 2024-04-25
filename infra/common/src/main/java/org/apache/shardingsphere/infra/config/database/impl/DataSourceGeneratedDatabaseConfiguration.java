@@ -24,13 +24,12 @@ import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfigur
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapCreator;
+import org.apache.shardingsphere.infra.util.close.DataSourcesCloser;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -75,21 +74,9 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            result.values().forEach(this::close);
+            DataSourcesCloser.close(result.values());
             throw ex;
         }
         return result;
-    }
-    
-    private void close(final DataSource dataSource) {
-        if (dataSource instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) dataSource).close();
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                throw new SQLWrapperException(new SQLException(ex));
-            }
-        }
     }
 }
