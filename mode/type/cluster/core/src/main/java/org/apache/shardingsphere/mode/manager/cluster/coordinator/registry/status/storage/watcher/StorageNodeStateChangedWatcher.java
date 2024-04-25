@@ -57,9 +57,8 @@ public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<G
         }
         Optional<QualifiedDataSource> qualifiedDataSource = StorageNode.extractQualifiedDataSource(event.getKey());
         if (qualifiedDataSource.isPresent()) {
-            QualifiedDataSource database = qualifiedDataSource.get();
             StorageNodeDataSource storageNodeDataSource = new YamlStorageNodeDataSourceSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlStorageNodeDataSource.class));
-            return Optional.of(new StorageNodeChangedEvent(database, storageNodeDataSource));
+            return Optional.of(new StorageNodeChangedEvent(qualifiedDataSource.get(), storageNodeDataSource));
         }
         return Optional.empty();
     }
