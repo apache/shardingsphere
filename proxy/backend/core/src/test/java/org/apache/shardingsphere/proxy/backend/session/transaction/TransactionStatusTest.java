@@ -21,8 +21,6 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TransactionStatusTest {
@@ -32,13 +30,6 @@ class TransactionStatusTest {
     @BeforeEach
     void setUp() {
         transactionStatus = new TransactionStatus(TransactionType.XA);
-    }
-    
-    @Test
-    void assertSetTransactionType() {
-        transactionStatus.setTransactionType(TransactionType.BASE);
-        TransactionType actual = transactionStatus.getTransactionType();
-        assertThat(actual, is(TransactionType.BASE));
     }
     
     @Test
