@@ -64,12 +64,12 @@ public final class YamlReadwriteSplittingDataNodeRuleConfigurationSwapper implem
         return result;
     }
     
-    private YamlReadwriteSplittingDataSourceGroupRuleConfiguration swapToYamlConfiguration(final ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceRuleGroupConfig) {
+    private YamlReadwriteSplittingDataSourceGroupRuleConfiguration swapToYamlConfiguration(final ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupRuleConfig) {
         YamlReadwriteSplittingDataSourceGroupRuleConfiguration result = new YamlReadwriteSplittingDataSourceGroupRuleConfiguration();
-        result.setWriteDataSourceName(dataSourceRuleGroupConfig.getWriteDataSourceName());
-        result.setReadDataSourceNames(dataSourceRuleGroupConfig.getReadDataSourceNames());
-        result.setTransactionalReadQueryStrategy(dataSourceRuleGroupConfig.getTransactionalReadQueryStrategy().name());
-        result.setLoadBalancerName(dataSourceRuleGroupConfig.getLoadBalancerName());
+        result.setWriteDataSourceName(dataSourceGroupRuleConfig.getWriteDataSourceName());
+        result.setReadDataSourceNames(dataSourceGroupRuleConfig.getReadDataSourceNames());
+        result.setTransactionalReadQueryStrategy(dataSourceGroupRuleConfig.getTransactionalReadQueryStrategy().name());
+        result.setLoadBalancerName(dataSourceGroupRuleConfig.getLoadBalancerName());
         return result;
     }
     
