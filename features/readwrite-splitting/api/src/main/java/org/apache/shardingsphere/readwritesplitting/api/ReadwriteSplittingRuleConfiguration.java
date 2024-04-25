@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
@@ -34,12 +34,12 @@ import java.util.Map;
 @Getter
 public final class ReadwriteSplittingRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
-    private final Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources;
+    private final Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups;
     
     private final Map<String, AlgorithmConfiguration> loadBalancers;
     
     @Override
     public boolean isEmpty() {
-        return dataSources.isEmpty();
+        return dataSourceGroups.isEmpty();
     }
 }

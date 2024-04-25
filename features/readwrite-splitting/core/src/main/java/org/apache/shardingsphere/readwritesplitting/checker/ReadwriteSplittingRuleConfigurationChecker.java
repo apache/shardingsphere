@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQ
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 
 import javax.sql.DataSource;
@@ -44,11 +44,11 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     
     @Override
     public void check(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        checkDataSources(databaseName, ruleConfig.getDataSources(), dataSourceMap, builtRules);
+        checkDataSources(databaseName, ruleConfig.getDataSourceGroups(), dataSourceMap, builtRules);
         checkLoadBalancer(databaseName, ruleConfig);
     }
     
-    private void checkDataSources(final String databaseName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs,
+    private void checkDataSources(final String databaseName, final Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> configs,
                                   final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
         Collection<String> builtWriteDataSourceNames = new HashSet<>();
         Collection<String> builtReadDataSourceNames = new HashSet<>();
@@ -58,7 +58,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     private void checkLoadBalancer(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig) {
         Map<String, LoadBalanceAlgorithm> loadBalancers = ruleConfig.getLoadBalancers().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> TypedSPILoader.getService(LoadBalanceAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps())));
-        for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
+        for (ReadwriteSplittingDataSourceGroupRuleConfiguration each : ruleConfig.getDataSourceGroups()) {
             if (Strings.isNullOrEmpty(each.getLoadBalancerName())) {
                 continue;
             }
@@ -71,7 +71,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     @Override
     public Collection<String> getRequiredDataSourceNames(final ReadwriteSplittingRuleConfiguration ruleConfig) {
         Collection<String> result = new LinkedHashSet<>();
-        for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
+        for (ReadwriteSplittingDataSourceGroupRuleConfiguration each : ruleConfig.getDataSourceGroups()) {
             if (null != each.getWriteDataSourceName()) {
                 result.add(each.getWriteDataSourceName());
             }

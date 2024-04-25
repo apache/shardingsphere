@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.converter;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +41,7 @@ class ReadwriteSplittingRuleStatementConverterTest {
     void assertEmptyRuleSegmentConvertResult() {
         ReadwriteSplittingRuleConfiguration actualEmptyRuleSegmentConvertResult = ReadwriteSplittingRuleStatementConverter
                 .convert(Collections.emptyList());
-        assertTrue(actualEmptyRuleSegmentConvertResult.getDataSources().isEmpty());
+        assertTrue(actualEmptyRuleSegmentConvertResult.getDataSourceGroups().isEmpty());
         assertTrue(actualEmptyRuleSegmentConvertResult.getLoadBalancers().isEmpty());
     }
     
@@ -51,11 +51,11 @@ class ReadwriteSplittingRuleStatementConverterTest {
                 "static_load_balancer_type", new Properties());
         ReadwriteSplittingRuleConfiguration actualSingleRuleSegmentConvertResult = ReadwriteSplittingRuleStatementConverter
                 .convert(Collections.singleton(expectedSingleReadwriteSplittingRuleSegment));
-        Collection<ReadwriteSplittingDataSourceRuleConfiguration> actualSingleRuleSegmentConvertResultDataSources = actualSingleRuleSegmentConvertResult.getDataSources();
+        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> actualSingleRuleSegmentConvertResultDataSourceGroups = actualSingleRuleSegmentConvertResult.getDataSourceGroups();
         Map<String, AlgorithmConfiguration> actualSingleRuleSegmentConvertResultLoadBalancers = actualSingleRuleSegmentConvertResult.getLoadBalancers();
-        assertThat(actualSingleRuleSegmentConvertResultDataSources.size(), is(1));
+        assertThat(actualSingleRuleSegmentConvertResultDataSourceGroups.size(), is(1));
         assertThat(actualSingleRuleSegmentConvertResultLoadBalancers.size(), is(1));
-        ReadwriteSplittingDataSourceRuleConfiguration actualRuleConfig = actualSingleRuleSegmentConvertResultDataSources.iterator().next();
+        ReadwriteSplittingDataSourceGroupRuleConfiguration actualRuleConfig = actualSingleRuleSegmentConvertResultDataSourceGroups.iterator().next();
         assertThat(actualRuleConfig.getName(), is(expectedSingleReadwriteSplittingRuleSegment.getName()));
         String expectedLoadBalancerName = String.format("%s_%s", expectedSingleReadwriteSplittingRuleSegment.getName(), expectedSingleReadwriteSplittingRuleSegment.getLoadBalancer().getName());
         assertThat(actualRuleConfig.getLoadBalancerName(), is(expectedLoadBalancerName));

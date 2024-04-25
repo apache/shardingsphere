@@ -24,11 +24,11 @@ import org.apache.shardingsphere.readwritesplitting.api.transaction.Transactiona
 import java.util.List;
 
 /**
- * Readwrite-splitting data source rule configuration.
+ * Readwrite-splitting data source group rule configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ReadwriteSplittingDataSourceRuleConfiguration {
+public final class ReadwriteSplittingDataSourceGroupRuleConfiguration {
     
     private final String name;
     
@@ -40,7 +40,7 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     
     private final String loadBalancerName;
     
-    public ReadwriteSplittingDataSourceRuleConfiguration(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final String loadBalancerName) {
+    public ReadwriteSplittingDataSourceGroupRuleConfiguration(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final String loadBalancerName) {
         this(name, writeDataSourceName, readDataSourceNames, TransactionalReadQueryStrategy.DYNAMIC, loadBalancerName);
     }
 }

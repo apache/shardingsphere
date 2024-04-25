@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrent
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.checker.ReadwriteSplittingRuleStatementChecker;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.converter.ReadwriteSplittingRuleStatementConverter;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingRuleStatement;
@@ -59,16 +59,16 @@ public final class AlterReadwriteSplittingRuleExecutor implements DatabaseRuleAl
     
     @Override
     public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(final ReadwriteSplittingRuleConfiguration toBeAlteredRuleConfig) {
-        Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
+        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = new LinkedList<>();
         Map<String, AlgorithmConfiguration> loadBalancers = new HashMap<>();
-        List<String> toBeAlteredDataSourceNames = toBeAlteredRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
-        for (ReadwriteSplittingDataSourceRuleConfiguration each : rule.getConfiguration().getDataSources()) {
+        List<String> toBeAlteredDataSourceNames = toBeAlteredRuleConfig.getDataSourceGroups().stream().map(ReadwriteSplittingDataSourceGroupRuleConfiguration::getName).collect(Collectors.toList());
+        for (ReadwriteSplittingDataSourceGroupRuleConfiguration each : rule.getConfiguration().getDataSourceGroups()) {
             if (toBeAlteredDataSourceNames.contains(each.getName())) {
-                dataSources.add(each);
+                dataSourceGroups.add(each);
                 loadBalancers.put(each.getLoadBalancerName(), rule.getConfiguration().getLoadBalancers().get(each.getLoadBalancerName()));
             }
         }
-        return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancers);
+        return new ReadwriteSplittingRuleConfiguration(dataSourceGroups, loadBalancers);
     }
     
     @Override

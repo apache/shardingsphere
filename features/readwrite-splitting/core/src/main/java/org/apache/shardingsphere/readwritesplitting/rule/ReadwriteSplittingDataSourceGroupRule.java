@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.group.ReadwriteSplittingGroup;
 import org.apache.shardingsphere.readwritesplitting.group.type.StaticReadwriteSplittingGroup;
@@ -43,7 +43,7 @@ public final class ReadwriteSplittingDataSourceGroupRule {
     
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public ReadwriteSplittingDataSourceGroupRule(final ReadwriteSplittingDataSourceRuleConfiguration config,
+    public ReadwriteSplittingDataSourceGroupRule(final ReadwriteSplittingDataSourceGroupRuleConfiguration config,
                                                  final TransactionalReadQueryStrategy transactionalReadQueryStrategy, final LoadBalanceAlgorithm loadBalancer) {
         name = config.getName();
         this.transactionalReadQueryStrategy = transactionalReadQueryStrategy;
@@ -51,7 +51,7 @@ public final class ReadwriteSplittingDataSourceGroupRule {
         readwriteSplittingGroup = createStaticReadwriteSplittingGroup(config);
     }
     
-    private StaticReadwriteSplittingGroup createStaticReadwriteSplittingGroup(final ReadwriteSplittingDataSourceRuleConfiguration config) {
+    private StaticReadwriteSplittingGroup createStaticReadwriteSplittingGroup(final ReadwriteSplittingDataSourceGroupRuleConfiguration config) {
         return new StaticReadwriteSplittingGroup(config.getWriteDataSourceName(), config.getReadDataSourceNames());
     }
     
