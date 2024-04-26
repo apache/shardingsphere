@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQ
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Empty algorithm exception.
+ * Missing required algorithm exception.
  */
-public final class EmptyAlgorithmException extends AlgorithmDefinitionException {
+public final class MissingRequiredAlgorithmException extends AlgorithmDefinitionException {
     
     private static final long serialVersionUID = 8128067899672436211L;
     
-    public EmptyAlgorithmException(final String algorithmType, final SQLExceptionIdentifier sqlExceptionIdentifier) {
+    public MissingRequiredAlgorithmException(final String algorithmType, final SQLExceptionIdentifier sqlExceptionIdentifier) {
         super(XOpenSQLState.NOT_FOUND, 1, "'%s' algorithm on %s is required.", algorithmType, sqlExceptionIdentifier);
     }
 }
