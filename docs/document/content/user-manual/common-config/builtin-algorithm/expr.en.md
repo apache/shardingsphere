@@ -88,6 +88,8 @@ And please make sure your own projects are compiled with OpenJDK 21+ or its down
 Due to the limitations of https://www.graalvm.org/jdk21/reference-manual/java-on-truffle/faq/#does-java-running-on-truffle-run-on-hotspot-too , 
 this module is only ready on Linux when used in environments other than GraalVM Native Image.
 
+Truffle's backward compatibility matrix with the JDK is located at https://medium.com/graalvm/40027a59c401 .
+
 ```xml
 <dependencies>
     <dependency>
@@ -98,12 +100,12 @@ this module is only ready on Linux when used in environments other than GraalVM 
     <dependency>
         <groupId>org.graalvm.polyglot</groupId>
         <artifactId>polyglot</artifactId>
-        <version>23.1.2</version>
+        <version>24.0.0</version>
     </dependency>
     <dependency>
         <groupId>org.graalvm.polyglot</groupId>
         <artifactId>java-community</artifactId>
-        <version>23.1.2</version>
+        <version>24.0.0</version>
         <type>pom</type>
     </dependency>
 </dependencies>

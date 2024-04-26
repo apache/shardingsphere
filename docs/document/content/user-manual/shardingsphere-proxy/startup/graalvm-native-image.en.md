@@ -27,9 +27,7 @@ services:
       - "3307:3307"
 ````
 
-- This section assumes a Linux (amd64, aarch64), MacOS (amd64) or Windows (amd64) environment.
-  If you are on MacOS (aarch64/M1) environment, you need to follow https://github.com/oracle/graal/issues/2666 which is
-  not closed yet.
+- This section assumes a Linux (amd64, aarch64), MacOS (amd64, aarch64/M1) or Windows (amd64) environment.
 
 ## Premise
 

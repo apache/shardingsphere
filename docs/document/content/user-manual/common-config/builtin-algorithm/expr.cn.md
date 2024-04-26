@@ -78,6 +78,8 @@ weight = 10
 由于 https://www.graalvm.org/jdk21/reference-manual/java-on-truffle/faq/#does-java-running-on-truffle-run-on-hotspot-too 的限制，
 当此模块在非 GraalVM Native Image 的环境中被使用时，仅在 Linux 上就绪。
 
+Truffle 与 JDK 的向后兼容性矩阵位于 https://medium.com/graalvm/40027a59c401 。
+
 ```xml
 <dependencies>
     <dependency>
@@ -88,12 +90,12 @@ weight = 10
     <dependency>
         <groupId>org.graalvm.polyglot</groupId>
         <artifactId>polyglot</artifactId>
-        <version>23.1.2</version>
+        <version>24.0.0</version>
     </dependency>
     <dependency>
         <groupId>org.graalvm.polyglot</groupId>
         <artifactId>java-community</artifactId>
-        <version>23.1.2</version>
+        <version>24.0.0</version>
         <type>pom</type>
     </dependency>
 </dependencies>
