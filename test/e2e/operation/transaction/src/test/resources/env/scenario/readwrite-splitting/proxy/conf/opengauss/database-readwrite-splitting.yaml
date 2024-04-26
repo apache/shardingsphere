@@ -21,7 +21,7 @@
 # 
 ######################################################################################################
 
-databaseName: sharding_db
+databaseName: readwrite-splitting
 dataSources:
   write_ds:
     url: jdbc:opengauss://opengauss.default.host:5432/write_ds
