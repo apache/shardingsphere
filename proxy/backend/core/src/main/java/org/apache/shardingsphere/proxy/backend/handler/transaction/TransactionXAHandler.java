@@ -24,18 +24,17 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XABeginStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XACommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARecoveryStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XAStatement;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionNestedBeginException;
 
 import java.sql.SQLException;
@@ -88,8 +87,7 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
     private ResponseHeader begin() throws SQLException {
         ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction(), XATransactionNestedBeginException::new);
         ResponseHeader result = backendHandler.execute();
-        TransactionType transactionType =
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
+        TransactionType transactionType = TransactionUtils.getTransactionType(connectionSession.getConnectionContext().getTransactionContext());
         connectionSession.getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(transactionType));
         return result;
     }

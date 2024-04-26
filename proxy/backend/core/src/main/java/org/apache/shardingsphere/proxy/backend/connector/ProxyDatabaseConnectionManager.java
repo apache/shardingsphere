@@ -33,8 +33,6 @@ import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionExcept
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
-import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
 
 import java.sql.Connection;
@@ -249,7 +247,7 @@ public final class ProxyDatabaseConnectionManager implements OnlineDatabaseConne
     public void closeExecutionResources() throws BackendConnectionException {
         synchronized (this) {
             Collection<Exception> result = new LinkedList<>(closeHandlers(false));
-            if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction(getTransactionType())) {
+            if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction(TransactionUtils.getTransactionType(connectionSession.getConnectionContext().getTransactionContext()))) {
                 result.addAll(closeHandlers(true));
                 result.addAll(closeConnections(false));
             } else if (closed.get()) {
@@ -349,12 +347,5 @@ public final class ProxyDatabaseConnectionManager implements OnlineDatabaseConne
             }
         }
         connectionSession.getRequiredSessionVariableRecorder().removeVariablesWithDefaultValue();
-    }
-    
-    private TransactionType getTransactionType() {
-        if (connectionSession.getConnectionContext().getTransactionContext().getTransactionType().isPresent()) {
-            return TransactionType.valueOf(connectionSession.getConnectionContext().getTransactionContext().getTransactionType().get());
-        }
-        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
     }
 }
