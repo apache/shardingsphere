@@ -39,7 +39,7 @@ class PostgreSQLComSyncExecutorTest {
     
     @Test
     void assertNewInstance() {
-        when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
+        when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus());
         PostgreSQLComSyncExecutor actual = new PostgreSQLComSyncExecutor(connectionSession);
         assertThat(actual.execute().iterator().next(), is(instanceOf(PostgreSQLReadyForQueryPacket.class)));
     }
