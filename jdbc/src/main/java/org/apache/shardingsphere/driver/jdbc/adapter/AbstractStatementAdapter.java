@@ -31,8 +31,8 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -60,9 +60,9 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         if (!connection.getAutoCommit()) {
             return false;
         }
-        ConnectionTransaction connectionTransaction = connection.getDatabaseConnectionManager().getConnectionTransaction();
+        TransactionType transactionType = connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
         boolean isInTransaction = connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction();
-        if (!TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) || isInTransaction) {
+        if (!TransactionType.isDistributedTransaction(transactionType) || isInTransaction) {
             return false;
         }
         return isWriteDMLStatement(sqlStatement) && multiExecutionUnits;
@@ -77,7 +77,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
             DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
             if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
-                connection.getDatabaseConnectionManager().getConnectionTransaction().setRollbackOnly(true);
+                connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().setExceptionOccur(true);
             }
         }
     }

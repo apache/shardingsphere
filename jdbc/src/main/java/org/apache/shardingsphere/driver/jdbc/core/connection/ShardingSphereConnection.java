@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.Array;
 import java.sql.CallableStatement;
@@ -170,7 +171,8 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private void processLocalTransaction() throws SQLException {
         databaseConnectionManager.setAutoCommit(autoCommit);
         if (!autoCommit) {
-            getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
+            getConnectionContext().getTransactionContext()
+                    .beginTransaction(String.valueOf(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType()));
         }
     }
     
@@ -215,7 +217,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         try {
             databaseConnectionManager.commit();
         } finally {
-            databaseConnectionManager.getConnectionTransaction().setRollbackOnly(false);
+            databaseConnectionManager.getConnectionContext().getTransactionContext().setExceptionOccur(false);
             getConnectionContext().close();
         }
     }
@@ -225,7 +227,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         try {
             databaseConnectionManager.rollback();
         } finally {
-            databaseConnectionManager.getConnectionTransaction().setRollbackOnly(false);
+            databaseConnectionManager.getConnectionContext().getTransactionContext().setExceptionOccur(false);
             getConnectionContext().close();
         }
     }

@@ -52,9 +52,9 @@ public final class BackendTransactionManager implements TransactionManager {
     
     public BackendTransactionManager(final ProxyDatabaseConnectionManager databaseConnectionManager) {
         connection = databaseConnectionManager;
-        transactionType = connection.getConnectionSession().getTransactionStatus().getTransactionType();
         localTransactionManager = new LocalTransactionManager(databaseConnectionManager);
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        transactionType = transactionRule.getDefaultType();
         ShardingSphereTransactionManagerEngine engine = transactionRule.getResource();
         shardingSphereTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
         transactionHooks = ShardingSphereServiceLoader.getServiceInstances(TransactionHook.class);
@@ -88,7 +88,7 @@ public final class BackendTransactionManager implements TransactionManager {
         }
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
-                if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
+                if (TransactionType.LOCAL == getTransactionType() || null == shardingSphereTransactionManager) {
                     localTransactionManager.commit();
                 } else {
                     shardingSphereTransactionManager.commit(connection.getConnectionSession().getTransactionStatus().isExceptionOccur());
@@ -105,6 +105,13 @@ public final class BackendTransactionManager implements TransactionManager {
         }
     }
     
+    private TransactionType getTransactionType() {
+        if (getTransactionContext().getTransactionType().isPresent()) {
+            return TransactionType.valueOf(getTransactionContext().getTransactionType().get());
+        }
+        return transactionType;
+    }
+    
     @Override
     public void rollback() throws SQLException {
         for (TransactionHook each : transactionHooks) {
@@ -112,7 +119,7 @@ public final class BackendTransactionManager implements TransactionManager {
         }
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
-                if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
+                if (TransactionType.LOCAL == getTransactionType() || null == shardingSphereTransactionManager) {
                     localTransactionManager.rollback();
                 } else {
                     shardingSphereTransactionManager.rollback();
