@@ -9377,4 +9377,14 @@
             <simple-table name="table1" start-index="19" stop-index="24"/>
         </from>
     </select>
+
+    <select sql-case-id="select_with_collation_keyword">
+        <projections start-index="7" stop-index="59">
+            <column-projection name="pg_get_expr" start-index="7" stop-index="32" alias="CONSTRAINT"/>
+            <column-projection name="indcollation" start-index="35" stop-index="59" alias="COLLATION"/>
+        </projections>
+        <from start-index="66" stop-index="73">
+            <simple-table name="pg_index" start-index="66" stop-index="73"/>
+        </from>
+    </select>
 </sql-parser-test-cases>
