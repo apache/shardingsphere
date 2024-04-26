@@ -106,8 +106,8 @@ public final class BackendTransactionManager implements TransactionManager {
     }
     
     private TransactionType getTransactionType() {
-        if (null != getTransactionContext().getTransactionType()) {
-            return TransactionType.valueOf(getTransactionContext().getTransactionType());
+        if (getTransactionContext().getTransactionType().isPresent()) {
+            return TransactionType.valueOf(getTransactionContext().getTransactionType().get());
         }
         return transactionType;
     }

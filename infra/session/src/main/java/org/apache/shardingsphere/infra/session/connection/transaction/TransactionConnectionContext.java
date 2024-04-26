@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.session.connection.transaction;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Optional;
+
 /**
  * Transaction connection context.
  */
@@ -56,6 +58,15 @@ public final class TransactionConnectionContext implements AutoCloseable {
      */
     public boolean isInDistributedTransaction() {
         return inTransaction && ("XA".equals(transactionType) || "BASE".equals(transactionType));
+    }
+    
+    /**
+     * Get transaction type. 
+     *
+     * @return transaction type
+     */
+    public Optional<String> getTransactionType() {
+        return Optional.ofNullable(transactionType);
     }
     
     @Override
