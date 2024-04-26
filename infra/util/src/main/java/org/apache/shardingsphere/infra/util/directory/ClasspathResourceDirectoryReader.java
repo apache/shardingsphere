@@ -46,9 +46,9 @@ import java.util.stream.Stream;
 /**
  * Classpath resource directory reader.
  */
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ClasspathResourceDirectoryReader {
+@Slf4j
+public final class ClasspathResourceDirectoryReader {
     
     private static final Collection<String> JAR_URL_PROTOCOLS = new HashSet<>(Arrays.asList("jar", "war", "zip", "wsjar", "vfszip"));
     
