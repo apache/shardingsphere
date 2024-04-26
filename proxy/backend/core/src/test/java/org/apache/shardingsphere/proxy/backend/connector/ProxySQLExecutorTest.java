@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.connector;
 
-import org.apache.shardingsphere.infra.exception.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -62,6 +62,7 @@ import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,6 +71,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -91,9 +93,11 @@ class ProxySQLExecutorTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ProxyDatabaseConnectionManager databaseConnectionManager;
     
+    @Mock
+    private TransactionRule transactionRule;
+    
     @BeforeEach
     void setUp() {
-        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.XA);
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
@@ -102,7 +106,8 @@ class ProxySQLExecutorTest {
         when(metaData.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
         when(metaData.getDatabases().values().iterator().next().getProtocolType()).thenReturn(databaseType);
         when(metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
-        when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singletonList(mock(SQLFederationRule.class))));
+        when(transactionRule.getDefaultType()).thenReturn(TransactionType.XA);
+        when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(mock(SQLFederationRule.class), transactionRule)));
         ContextManager contextManager = new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), metaData), mock(InstanceContext.class));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
@@ -125,7 +130,7 @@ class ProxySQLExecutorTest {
     
     @Test
     void assertCheckExecutePrerequisitesWhenExecuteTruncateInMySQLLocalTransaction() {
-        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
+        when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
                 new QueryContext(createMySQLTruncateStatementContext(), "", Collections.emptyList(), new HintValueContext()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext);
@@ -140,7 +145,7 @@ class ProxySQLExecutorTest {
     
     @Test
     void assertCheckExecutePrerequisitesWhenExecuteDDLInBaseTransaction() {
-        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.BASE);
+        when(transactionRule.getDefaultType()).thenReturn(TransactionType.BASE);
         ExecutionContext executionContext = new ExecutionContext(
                 new QueryContext(createMySQLCreateTableStatementContext(), "", Collections.emptyList(), new HintValueContext()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext);
@@ -156,7 +161,7 @@ class ProxySQLExecutorTest {
     
     @Test
     void assertCheckExecutePrerequisitesWhenExecuteDDLInPostgreSQLTransaction() {
-        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
+        when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
                 new QueryContext(createPostgreSQLCreateTableStatementContext(), "", Collections.emptyList(), new HintValueContext()), Collections.emptyList(), mock(RouteContext.class));
         assertThrows(TableModifyInTransactionException.class,
@@ -165,7 +170,7 @@ class ProxySQLExecutorTest {
     
     @Test
     void assertCheckExecutePrerequisitesWhenExecuteTruncateInPostgreSQLTransaction() {
-        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
+        when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
                 new QueryContext(createPostgreSQLTruncateStatementContext(), "", Collections.emptyList(), new HintValueContext()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext);
@@ -173,7 +178,7 @@ class ProxySQLExecutorTest {
     
     @Test
     void assertCheckExecutePrerequisitesWhenExecuteCursorInPostgreSQLTransaction() {
-        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
+        when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
                 new QueryContext(createCursorStatementContext(), "", Collections.emptyList(), new HintValueContext()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext);
@@ -181,7 +186,7 @@ class ProxySQLExecutorTest {
     
     @Test
     void assertCheckExecutePrerequisitesWhenExecuteDMLInPostgreSQLTransaction() {
-        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
+        when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
                 new QueryContext(createPostgreSQLInsertStatementContext(), "", Collections.emptyList(), new HintValueContext()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext);
@@ -189,7 +194,7 @@ class ProxySQLExecutorTest {
     
     @Test
     void assertCheckExecutePrerequisitesWhenExecuteDDLInMySQLTransaction() {
-        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
+        when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
                 new QueryContext(createMySQLCreateTableStatementContext(), "", Collections.emptyList(), new HintValueContext()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext);
@@ -204,7 +209,7 @@ class ProxySQLExecutorTest {
     
     @Test
     void assertCheckExecutePrerequisitesWhenExecuteDDLNotInPostgreSQLTransaction() {
-        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
+        when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(false);
         ExecutionContext executionContext = new ExecutionContext(
                 new QueryContext(createPostgreSQLCreateTableStatementContext(), "", Collections.emptyList(), new HintValueContext()), Collections.emptyList(), mock(RouteContext.class));

@@ -19,7 +19,11 @@ package org.apache.shardingsphere.proxy.backend.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
+import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.Connection;
 
@@ -69,5 +73,18 @@ public final class TransactionUtils {
             default:
                 return TransactionIsolationLevel.NONE;
         }
+    }
+    
+    /**
+     * Get transaction type.
+     *
+     * @param transactionContext transaction context
+     * @return transaction type
+     */
+    public static TransactionType getTransactionType(final TransactionConnectionContext transactionContext) {
+        if (transactionContext.getTransactionType().isPresent()) {
+            return TransactionType.valueOf(transactionContext.getTransactionType().get());
+        }
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
     }
 }

@@ -26,7 +26,6 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -45,7 +44,7 @@ class MySQLComStmtResetExecutorTest {
     void assertExecute() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
-        when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
+        when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus());
         MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("", mock(SQLStatementContext.class), new HintValueContext(), Collections.emptyList());
         preparedStatement.getLongData().put(0, new byte[0]);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, preparedStatement);

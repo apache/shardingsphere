@@ -24,27 +24,21 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 /**
  * Transaction status.
  */
+@Setter
 @Getter
 public final class TransactionStatus {
     
-    @Setter
     private volatile boolean inTransaction;
     
-    private final TransactionType transactionType;
-    
-    @Setter
     private volatile boolean exceptionOccur;
-    
-    public TransactionStatus(final TransactionType initialTransactionType) {
-        transactionType = initialTransactionType;
-    }
     
     /**
      * Judge whether in connection held transaction.
      * 
+     * @param transactionType transaction type
      * @return is in connection held transaction or not
      */
-    public boolean isInConnectionHeldTransaction() {
+    public boolean isInConnectionHeldTransaction(final TransactionType transactionType) {
         return inTransaction && TransactionType.BASE != transactionType;
     }
 }

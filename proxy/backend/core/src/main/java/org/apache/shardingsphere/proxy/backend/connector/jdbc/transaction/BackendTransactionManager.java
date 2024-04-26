@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -88,7 +89,7 @@ public final class BackendTransactionManager implements TransactionManager {
         }
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
-                if (TransactionType.LOCAL == getTransactionType() || null == shardingSphereTransactionManager) {
+                if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == shardingSphereTransactionManager) {
                     localTransactionManager.commit();
                 } else {
                     shardingSphereTransactionManager.commit(connection.getConnectionSession().getTransactionStatus().isExceptionOccur());
@@ -105,13 +106,6 @@ public final class BackendTransactionManager implements TransactionManager {
         }
     }
     
-    private TransactionType getTransactionType() {
-        if (getTransactionContext().getTransactionType().isPresent()) {
-            return TransactionType.valueOf(getTransactionContext().getTransactionType().get());
-        }
-        return transactionType;
-    }
-    
     @Override
     public void rollback() throws SQLException {
         for (TransactionHook each : transactionHooks) {
@@ -119,7 +113,7 @@ public final class BackendTransactionManager implements TransactionManager {
         }
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
-                if (TransactionType.LOCAL == getTransactionType() || null == shardingSphereTransactionManager) {
+                if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == shardingSphereTransactionManager) {
                     localTransactionManager.rollback();
                 } else {
                     shardingSphereTransactionManager.rollback();

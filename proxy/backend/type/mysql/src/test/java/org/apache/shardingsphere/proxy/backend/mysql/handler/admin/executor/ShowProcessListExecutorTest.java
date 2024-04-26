@@ -26,7 +26,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -52,7 +51,7 @@ class ShowProcessListExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShowProcessListExecutor showProcessListExecutor = new ShowProcessListExecutor(false);
         setupProcesses(showProcessListExecutor);
-        showProcessListExecutor.execute(new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap()));
+        showProcessListExecutor.execute(new ConnectionSession(mock(MySQLDatabaseType.class), new DefaultAttributeMap()));
         assertThat(showProcessListExecutor.getQueryResultMetaData().getColumnCount(), is(8));
         MergedResult mergedResult = showProcessListExecutor.getMergedResult();
         while (mergedResult.next()) {
