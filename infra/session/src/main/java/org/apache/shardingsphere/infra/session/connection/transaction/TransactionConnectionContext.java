@@ -69,6 +69,15 @@ public final class TransactionConnectionContext implements AutoCloseable {
         return Optional.ofNullable(transactionType);
     }
     
+    /**
+     * Get read write split replica route. 
+     *
+     * @return read write split replica route
+     */
+    public Optional<String> getReadWriteSplitReplicaRoute() {
+        return Optional.ofNullable(readWriteSplitReplicaRoute);
+    }
+    
     @Override
     public void close() {
         transactionType = null;
