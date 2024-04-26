@@ -29,6 +29,7 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,8 +66,9 @@ class OKProxyStateTest {
     void assertExecuteWithDistributedTransaction() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType())
+                .thenReturn(TransactionType.XA);
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
-        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.XA);
         when(connectionSession.getConnectionId()).thenReturn(1);
         ExecutorService executorService = registerMockExecutorService(1);
         new OKProxyState().execute(context, null, mock(DatabaseProtocolFrontendEngine.class), connectionSession);

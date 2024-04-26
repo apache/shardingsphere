@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.authentication.result.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.exception.ExpectedExceptions;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecuto
 import org.apache.shardingsphere.proxy.frontend.executor.UserExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.util.Optional;
 
@@ -53,8 +51,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final Channel channel) {
         this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
-        connectionSession = new ConnectionSession(databaseProtocolFrontendEngine.getType(),
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType(), channel);
+        connectionSession = new ConnectionSession(databaseProtocolFrontendEngine.getType(), channel);
     }
     
     @Override

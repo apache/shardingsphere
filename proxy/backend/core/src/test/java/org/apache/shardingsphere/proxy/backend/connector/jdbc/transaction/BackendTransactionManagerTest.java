@@ -167,7 +167,8 @@ class BackendTransactionManagerTest {
     }
     
     private void newBackendTransactionManager(final TransactionType transactionType, final boolean inTransaction) {
-        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(transactionType);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType())
+                .thenReturn(transactionType);
         when(transactionStatus.isInTransaction()).thenReturn(inTransaction);
         backendTransactionManager = new BackendTransactionManager(databaseConnectionManager);
         setLocalTransactionManager();

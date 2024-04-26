@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -39,7 +38,7 @@ class VersionValueProviderTest {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         try (MockedStatic<DatabaseProtocolServerInfo> mockedStatic = Mockito.mockStatic(DatabaseProtocolServerInfo.class)) {
             mockedStatic.when(() -> DatabaseProtocolServerInfo.getProtocolVersion(null, databaseType)).thenReturn("8.0");
-            ConnectionSession connectionSession = new ConnectionSession(databaseType, TransactionType.LOCAL, new DefaultAttributeMap());
+            ConnectionSession connectionSession = new ConnectionSession(databaseType, new DefaultAttributeMap());
             assertThat(new VersionValueProvider().get(Scope.GLOBAL, connectionSession, MySQLSystemVariable.VERSION), is("8.0"));
         }
     }

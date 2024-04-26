@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.state.impl;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.proxy.frontend.executor.UserExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyState;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.util.concurrent.ExecutorService;
 
@@ -41,11 +43,13 @@ public final class OKProxyState implements ProxyState {
     }
     
     private ExecutorService determineSuitableExecutorService(final ConnectionSession connectionSession) {
-        return requireOccupyThreadForConnection(connectionSession) ? ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId())
+        return requireOccupyThreadForConnection() ? ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId())
                 : UserExecutorGroup.getInstance().getExecutorService();
     }
     
-    private boolean requireOccupyThreadForConnection(final ConnectionSession connectionSession) {
-        return TransactionType.isDistributedTransaction(connectionSession.getTransactionStatus().getTransactionType());
+    private boolean requireOccupyThreadForConnection() {
+        TransactionType transactionType =
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
+        return TransactionType.isDistributedTransaction(transactionType);
     }
 }

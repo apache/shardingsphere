@@ -75,6 +75,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.implicit.ImplicitTransactionCallback;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -184,7 +185,9 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
             return false;
         }
         TransactionStatus transactionStatus = databaseConnectionManager.getConnectionSession().getTransactionStatus();
-        if (!TransactionType.isDistributedTransaction(transactionStatus.getTransactionType()) || transactionStatus.isInTransaction()) {
+        TransactionType transactionType =
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
+        if (!TransactionType.isDistributedTransaction(transactionType) || transactionStatus.isInTransaction()) {
             return false;
         }
         return isWriteDMLStatement(sqlStatement) && multiExecutionUnits;

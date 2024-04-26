@@ -24,7 +24,6 @@ import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysv
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -40,7 +39,7 @@ class TransactionIsolationValueProviderTest {
     
     @Test
     void assertGetSessionValue() {
-        ConnectionSession connectionSession = new ConnectionSession(TypedSPILoader.getService(DatabaseType.class, "MySQL"), TransactionType.LOCAL, new DefaultAttributeMap());
+        ConnectionSession connectionSession = new ConnectionSession(TypedSPILoader.getService(DatabaseType.class, "MySQL"), new DefaultAttributeMap());
         assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TRANSACTION_ISOLATION), is("REPEATABLE-READ"));
         assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TX_ISOLATION), is("REPEATABLE-READ"));
         connectionSession.setIsolationLevel(TransactionIsolationLevel.READ_COMMITTED);
