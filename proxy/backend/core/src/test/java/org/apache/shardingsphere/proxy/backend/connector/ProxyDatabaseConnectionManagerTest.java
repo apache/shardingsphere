@@ -114,7 +114,7 @@ class ProxyDatabaseConnectionManagerTest {
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(new RequiredSessionVariableRecorder());
     }
-
+    
     private ContextManager mockContextManager() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
@@ -125,7 +125,7 @@ class ProxyDatabaseConnectionManagerTest {
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singletonList(transactionRule)));
         return new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), metaData), mock(InstanceContext.class));
     }
-
+    
     @AfterEach
     void clean() throws ReflectiveOperationException {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
