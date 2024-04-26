@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.checker;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.exception.EmptyAlgorithmException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
@@ -83,9 +83,9 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
     
     private void checkShadowTableAlgorithmsReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Map<String, AlgorithmConfiguration> shadowAlgorithms, final String databaseName) {
         for (ShadowTableConfiguration each : shadowTables.values()) {
-            ShardingSpherePreconditions.checkNotEmpty(each.getShadowAlgorithmNames(), () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier(databaseName)));
+            ShardingSpherePreconditions.checkNotEmpty(each.getShadowAlgorithmNames(), () -> new MissingRequiredAlgorithmException("Shadow", new SQLExceptionIdentifier(databaseName)));
             each.getShadowAlgorithmNames().forEach(shadowAlgorithmName -> ShardingSpherePreconditions.checkContainsKey(shadowAlgorithms, shadowAlgorithmName,
-                    () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier(databaseName))));
+                    () -> new MissingRequiredAlgorithmException("Shadow", new SQLExceptionIdentifier(databaseName))));
         }
     }
     

@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.exception.EmptyAlgorithmException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
@@ -62,7 +62,7 @@ public final class CreateDefaultShardingStrategyExecutor implements DatabaseRule
         ShardingSpherePreconditions.checkState(ShardingStrategyType.isValidType(sqlStatement.getStrategyType()), () -> new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
         ShardingSpherePreconditions.checkState(ShardingStrategyType.getValueOf(sqlStatement.getStrategyType())
                 .isValid(sqlStatement.getShardingColumn()), () -> new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
-        ShardingSpherePreconditions.checkNotNull(sqlStatement.getAlgorithmSegment(), () -> new EmptyAlgorithmException("Sharding", new SQLExceptionIdentifier("")));
+        ShardingSpherePreconditions.checkNotNull(sqlStatement.getAlgorithmSegment(), () -> new MissingRequiredAlgorithmException("Sharding", new SQLExceptionIdentifier("")));
     }
     
     private void checkExist(final CreateDefaultShardingStrategyStatement sqlStatement) {

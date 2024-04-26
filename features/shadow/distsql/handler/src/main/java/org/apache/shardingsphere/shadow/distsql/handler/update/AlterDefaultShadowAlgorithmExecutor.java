@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.data
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.exception.EmptyAlgorithmException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
@@ -63,7 +63,7 @@ public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleAl
     }
     
     private void checkAlgorithmCompleteness(final AlgorithmSegment algorithmSegment) {
-        ShardingSpherePreconditions.checkNotEmpty(algorithmSegment.getName(), () -> new EmptyAlgorithmException("Shadow", new SQLExceptionIdentifier("")));
+        ShardingSpherePreconditions.checkNotEmpty(algorithmSegment.getName(), () -> new MissingRequiredAlgorithmException("Shadow", new SQLExceptionIdentifier("")));
     }
     
     private void checkAlgorithmType(final AlgorithmSegment algorithmSegment) {
