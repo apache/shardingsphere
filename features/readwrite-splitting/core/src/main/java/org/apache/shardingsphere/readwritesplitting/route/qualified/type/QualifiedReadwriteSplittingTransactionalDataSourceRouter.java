@@ -44,10 +44,10 @@ public final class QualifiedReadwriteSplittingTransactionalDataSourceRouter impl
     public String route(final ReadwriteSplittingDataSourceGroupRule rule) {
         switch (rule.getTransactionalReadQueryStrategy()) {
             case FIXED:
-                if (null == connectionContext.getTransactionContext().getReadWriteSplitReplicaRoute()) {
+                if (!connectionContext.getTransactionContext().getReadWriteSplitReplicaRoute().isPresent()) {
                     connectionContext.getTransactionContext().setReadWriteSplitReplicaRoute(standardRouter.route(rule));
                 }
-                return connectionContext.getTransactionContext().getReadWriteSplitReplicaRoute();
+                return connectionContext.getTransactionContext().getReadWriteSplitReplicaRoute().get();
             case DYNAMIC:
                 return standardRouter.route(rule);
             case PRIMARY:
