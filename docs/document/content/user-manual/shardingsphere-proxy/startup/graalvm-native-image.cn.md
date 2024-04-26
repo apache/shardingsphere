@@ -25,8 +25,7 @@ services:
       - "3307:3307"
 ```
 
-- 本节假定处于 Linux（amd64，aarch64）， MacOS（amd64）或 Windows（amd64）环境。
-  如果你位于 MacOS（aarch64/M1） 环境，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/2666 。
+- 本节假定处于 Linux（amd64，aarch64），MacOS（amd64，aarch64/M1）或 Windows（amd64）环境。
 
 ## 前提条件
 
