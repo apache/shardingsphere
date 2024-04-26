@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.merge.dal;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.merge.dal.show.DecoratedEncryptShowColumnsMergedResult;
 import org.apache.shardingsphere.encrypt.merge.dal.show.DecoratedEncryptShowCreateTableMergedResult;
 import org.apache.shardingsphere.encrypt.merge.dal.show.MergedEncryptShowColumnsMergedResult;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
@@ -35,7 +37,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 /**
  * DAL result decorator for encrypt.
  */
+@RequiredArgsConstructor
 public final class EncryptDALResultDecorator implements ResultDecorator<EncryptRule> {
+    
+    private final RuleMetaData globalRuleMetaData;
     
     @Override
     public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
@@ -44,7 +49,7 @@ public final class EncryptDALResultDecorator implements ResultDecorator<EncryptR
             return new MergedEncryptShowColumnsMergedResult(queryResult, sqlStatementContext, rule);
         }
         if (sqlStatement instanceof MySQLShowCreateTableStatement) {
-            return new MergedEncryptShowCreateTableMergedResult(queryResult, sqlStatementContext, rule);
+            return new MergedEncryptShowCreateTableMergedResult(globalRuleMetaData, queryResult, sqlStatementContext, rule);
         }
         return new TransparentMergedResult(queryResult);
     }
@@ -56,7 +61,7 @@ public final class EncryptDALResultDecorator implements ResultDecorator<EncryptR
             return new DecoratedEncryptShowColumnsMergedResult(mergedResult, sqlStatementContext, rule);
         }
         if (sqlStatement instanceof MySQLShowCreateTableStatement) {
-            return new DecoratedEncryptShowCreateTableMergedResult(mergedResult, sqlStatementContext, rule);
+            return new DecoratedEncryptShowCreateTableMergedResult(globalRuleMetaData, mergedResult, sqlStatementContext, rule);
         }
         return mergedResult;
     }

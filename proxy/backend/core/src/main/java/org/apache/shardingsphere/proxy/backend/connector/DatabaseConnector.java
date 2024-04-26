@@ -321,8 +321,8 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps(),
-                databaseConnectionManager.getConnectionSession().getConnectionContext());
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
+        MergeEngine mergeEngine = new MergeEngine(metaData.getGlobalRuleMetaData(), database, metaData.getProps(), databaseConnectionManager.getConnectionSession().getConnectionContext());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     

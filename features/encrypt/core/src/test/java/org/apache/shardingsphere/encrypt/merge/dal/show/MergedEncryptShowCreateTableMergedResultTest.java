@@ -25,7 +25,11 @@ import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowCreateTableStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -61,6 +65,20 @@ class MergedEncryptShowCreateTableMergedResultTest {
     void assertNextWhenNextNotExist() throws SQLException {
         when(queryResult.next()).thenReturn(true);
         assertTrue(createMergedEncryptShowCreateTableMergedResult(queryResult, mock(EncryptRule.class)).next());
+    }
+    
+    @Test
+    void assertGetValueWhenConfigFloatDataTypeAndComment() throws SQLException {
+        when(queryResult.next()).thenReturn(true).thenReturn(false);
+        when(queryResult.getValue(2, String.class)).thenReturn(
+                "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` FLOAT(10, 2) NOT NULL "
+                        + "COMMENT ',123\\&/\\`\"abc', `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_id_cipher", "foo_encryptor"));
+        MergedEncryptShowCreateTableMergedResult actual = createMergedEncryptShowCreateTableMergedResult(queryResult, mockEncryptRule(Collections.singleton(columnRuleConfig)));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(2, String.class),
+                is("CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id` FLOAT(10, 2) NOT NULL "
+                        + "COMMENT ',123\\&/\\`\"abc', `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"));
     }
     
     @Test
@@ -110,6 +128,8 @@ class MergedEncryptShowCreateTableMergedResultTest {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableNameSegment);
         when(sqlStatementContext.getAllTables()).thenReturn(Collections.singleton(simpleTableSegment));
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        return new MergedEncryptShowCreateTableMergedResult(queryResult, sqlStatementContext, encryptRule);
+        RuleMetaData ruleMetaData = mock(RuleMetaData.class);
+        when(ruleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(128, 1024), new CacheOption(2000, 65535))));
+        return new MergedEncryptShowCreateTableMergedResult(ruleMetaData, queryResult, sqlStatementContext, encryptRule);
     }
 }

@@ -597,7 +597,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(metaDataContexts.getMetaData().getDatabase(databaseName),
+        MergeEngine mergeEngine = new MergeEngine(metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getDatabase(databaseName),
                 metaDataContexts.getMetaData().getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
