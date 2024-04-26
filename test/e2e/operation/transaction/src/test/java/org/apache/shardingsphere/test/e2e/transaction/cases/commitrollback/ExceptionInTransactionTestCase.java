@@ -66,7 +66,6 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
         }
         try (Connection connection2 = getDataSource().getConnection()) {
             assertAccountRowCount(connection2, 0);
-        } catch (final SQLException ignored) {
         }
     }
 }

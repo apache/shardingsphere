@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.engine.base;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -44,6 +45,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
 import java.io.File;
 import java.sql.Connection;
@@ -99,7 +101,7 @@ public abstract class TransactionBaseE2EIT {
             try {
                 callTestCases(testParam, containerComposer);
             } finally {
-                containerComposer.getDataSource().close();
+                closeDataSource(containerComposer);
             }
         }
     }
@@ -124,6 +126,14 @@ public abstract class TransactionBaseE2EIT {
         }
     }
     
+    @SneakyThrows(Exception.class)
+    private static void closeDataSource(final TransactionContainerComposer containerComposer) {
+        DataSource dataSource = containerComposer.getDataSource();
+        if (dataSource instanceof AutoCloseable) {
+            ((AutoCloseable) dataSource).close();
+        }
+    }
+    
     private void alterTransactionRule(final TransactionType transactionType, final String providerType, final TransactionContainerComposer containerComposer) throws SQLException {
         if (Objects.equals(transactionType, TransactionType.LOCAL)) {
             alterLocalTransactionRule(containerComposer);
@@ -145,10 +155,6 @@ public abstract class TransactionBaseE2EIT {
                 throw new RuntimeException(ex);
             }
             log.info("Transaction IT {} -> {} test end.", testParam, each.getSimpleName());
-            try {
-                containerComposer.getDataSource().close();
-            } catch (final SQLException ignored) {
-            }
         }
     }
     
@@ -168,10 +174,6 @@ public abstract class TransactionBaseE2EIT {
                 throw new RuntimeException(ex);
             }
             log.info("Call transaction IT {} -> {} -> {} -> {} test end.", testParam, transactionType, provider, each.getSimpleName());
-            try {
-                containerComposer.getDataSource().close();
-            } catch (final SQLException ignored) {
-            }
         }
     }
     
