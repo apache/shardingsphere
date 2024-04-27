@@ -72,7 +72,8 @@ class YamlMaskDataNodeRuleConfigurationSwapperTest {
                 + "  foo_column:\n"
                 + "    logicColumn: foo_column\n"
                 + "    maskAlgorithm: FIXTURE\n"
-                + "name: foo\n"), new RepositoryTuple("/metadata/foo_db/rules/mask/mask_algorithms/FIXTURE/versions/0", "type: FIXTURE\n"));
+                + "name: foo\n"),
+                new RepositoryTuple("/metadata/foo_db/rules/mask/mask_algorithms/FIXTURE/versions/0", "type: FIXTURE\n"));
         Optional<MaskRuleConfiguration> actual = new YamlMaskDataNodeRuleConfigurationSwapper().swapToObject(repositoryTuples);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getTables().size(), is(1));
