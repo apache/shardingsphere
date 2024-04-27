@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 /**
  * ShardingSphere schema data registry subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class ShardingSphereSchemaDataRegistrySubscriber {
     
     private final ShardingSphereDataPersistService persistService;

@@ -32,7 +32,6 @@ import java.sql.Statement;
 /**
  * Standalone process subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class StandaloneProcessSubscriber implements ProcessSubscriber {
     
     private final EventBusContext eventBusContext;

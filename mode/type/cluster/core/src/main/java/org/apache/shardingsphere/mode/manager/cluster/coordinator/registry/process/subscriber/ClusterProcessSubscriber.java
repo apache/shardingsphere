@@ -41,7 +41,6 @@ import java.util.stream.Stream;
 /**
  * Cluster process subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class ClusterProcessSubscriber implements ProcessSubscriber {
     
     private final PersistRepository repository;
