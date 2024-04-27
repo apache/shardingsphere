@@ -19,7 +19,7 @@ package org.apache.shardingsphere.single.yaml.config.swapper;
 
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurationSwapper;
 import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleOrder;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * YAML single data node rule configuration swapper.
  */
-public final class YamlSingleDataNodeRuleConfigurationSwapper implements YamlDataNodeRuleConfigurationSwapper<SingleRuleConfiguration> {
+public final class YamlSingleDataNodeRuleConfigurationSwapper implements YamlDataNodeConfigurationSwapper<SingleRuleConfiguration> {
     
     private final RuleNodePath singleRuleNodePath = new SingleRuleNodePathProvider().getRuleNodePath();
     

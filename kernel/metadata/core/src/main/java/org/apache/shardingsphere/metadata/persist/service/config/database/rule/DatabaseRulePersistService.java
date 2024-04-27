@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.metadata.DatabaseRuleMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
@@ -53,7 +53,7 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
-        for (Entry<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> entry : new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs).entrySet()) {
+        for (Entry<RuleConfiguration, YamlDataNodeConfigurationSwapper> entry : new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
                 persistDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), repositoryTuples);
@@ -76,7 +76,7 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     @Override
     public Collection<MetaDataVersion> persistConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        for (Entry<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> entry : new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs).entrySet()) {
+        for (Entry<RuleConfiguration, YamlDataNodeConfigurationSwapper> entry : new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
                 result.addAll(persistDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), repositoryTuples));
@@ -103,7 +103,7 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     @Override
     public Collection<MetaDataVersion> deleteConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        for (Entry<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> entry : new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs).entrySet()) {
+        for (Entry<RuleConfiguration, YamlDataNodeConfigurationSwapper> entry : new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (repositoryTuples.isEmpty()) {
                 continue;

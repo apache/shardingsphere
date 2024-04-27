@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqltranslator.yaml.swapper;
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurationSwapper;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.constant.SQLTranslatorOrder;
 import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
@@ -32,7 +32,7 @@ import java.util.Optional;
 /**
  * YAML SQL translator data node rule configuration swapper.
  */
-public final class YamlSQLTranslatorDataNodeRuleConfigurationSwapper implements YamlDataNodeGlobalRuleConfigurationSwapper<SQLTranslatorRuleConfiguration> {
+public final class YamlSQLTranslatorDataNodeRuleConfigurationSwapper implements YamlDataNodeConfigurationSwapper<SQLTranslatorRuleConfiguration> {
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final SQLTranslatorRuleConfiguration data) {

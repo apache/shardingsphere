@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.traffic.yaml.swapper;
 
+import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurationSwapper;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.constant.TrafficOrder;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
@@ -35,7 +35,7 @@ import java.util.Optional;
 /**
  * YAML traffic data node rule configuration swapper.
  */
-public final class YamlTrafficDataNodeRuleConfigurationSwapper implements YamlDataNodeGlobalRuleConfigurationSwapper<TrafficRuleConfiguration> {
+public final class YamlTrafficDataNodeRuleConfigurationSwapper implements YamlDataNodeConfigurationSwapper<TrafficRuleConfiguration> {
     
     private final YamlTrafficStrategyConfigurationSwapper strategySwapper = new YamlTrafficStrategyConfigurationSwapper();
     
