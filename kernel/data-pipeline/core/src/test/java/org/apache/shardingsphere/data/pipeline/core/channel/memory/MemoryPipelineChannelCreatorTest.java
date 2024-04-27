@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTaskAckCallbac
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -33,6 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 class MemoryPipelineChannelCreatorTest {
     
@@ -41,7 +41,7 @@ class MemoryPipelineChannelCreatorTest {
         PipelineChannelCreator creator = TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY", PropertiesBuilder.build(new Property("block-queue-size", "2000")));
         assertThat(Plugins.getMemberAccessor().get(MemoryPipelineChannelCreator.class.getDeclaredField("queueSize"), creator), is(2000));
         PipelineChannel channel = creator.newInstance(1000, new InventoryTaskAckCallback(new AtomicReference<>()));
-        Assertions.assertInstanceOf(ArrayBlockingQueue.class, Plugins.getMemberAccessor().get(MemoryPipelineChannel.class.getDeclaredField("queue"), channel));
+        assertInstanceOf(ArrayBlockingQueue.class, Plugins.getMemberAccessor().get(MemoryPipelineChannel.class.getDeclaredField("queue"), channel));
     }
     
     @Test
@@ -49,7 +49,7 @@ class MemoryPipelineChannelCreatorTest {
         PipelineChannelCreator creator = TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY", PropertiesBuilder.build(new Property("block-queue-size", "0")));
         assertThat(Plugins.getMemberAccessor().get(MemoryPipelineChannelCreator.class.getDeclaredField("queueSize"), creator), is(0));
         PipelineChannel channel = creator.newInstance(1000, new InventoryTaskAckCallback(new AtomicReference<>()));
-        Assertions.assertInstanceOf(SynchronousQueue.class, Plugins.getMemberAccessor().get(MemoryPipelineChannel.class.getDeclaredField("queue"), channel));
+        assertInstanceOf(SynchronousQueue.class, Plugins.getMemberAccessor().get(MemoryPipelineChannel.class.getDeclaredField("queue"), channel));
     }
     
     @Test
