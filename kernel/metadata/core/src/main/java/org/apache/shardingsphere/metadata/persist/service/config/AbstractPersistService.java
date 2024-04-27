@@ -24,8 +24,8 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public abstract class AbstractPersistService {
@@ -40,14 +40,7 @@ public abstract class AbstractPersistService {
     
     protected final Collection<RepositoryTuple> getRepositoryTuples(final String rootPath) {
         Pattern pattern = Pattern.compile(ACTIVE_VERSION_PATTERN, Pattern.CASE_INSENSITIVE);
-        Collection<RepositoryTuple> result = new LinkedList<>();
-        for (String each : getNodes(rootPath)) {
-            if (pattern.matcher(each).find()) {
-                String activeRuleKey = each.replace(ACTIVE_VERSION_PATH, VERSIONS_PATH) + "/" + repository.getDirectly(each);
-                result.add(new RepositoryTuple(activeRuleKey, repository.getDirectly(activeRuleKey)));
-            }
-        }
-        return result;
+        return getNodes(rootPath).stream().filter(each -> pattern.matcher(each).find()).map(this::getRepositoryTuple).collect(Collectors.toList());
     }
     
     private Collection<String> getNodes(final String rootPath) {
@@ -68,5 +61,10 @@ public abstract class AbstractPersistService {
     
     private String getPath(final String path, final String childKey) {
         return String.join("/", path, childKey);
+    }
+    
+    private RepositoryTuple getRepositoryTuple(final String nodeValue) {
+        String activeRuleKey = nodeValue.replace(ACTIVE_VERSION_PATH, VERSIONS_PATH) + "/" + repository.getDirectly(nodeValue);
+        return new RepositoryTuple(activeRuleKey, repository.getDirectly(activeRuleKey));
     }
 }
