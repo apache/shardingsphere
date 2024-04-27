@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.encrypt.metadata.reviser.column;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -32,7 +33,7 @@ class EncryptColumnNameReviserTest {
         EncryptColumnNameReviser encryptColumnNameReviser = new EncryptColumnNameReviser(encryptTable);
         when(encryptTable.isCipherColumn("Cipher")).thenReturn(true);
         when(encryptTable.getLogicColumnByCipherColumn("Cipher")).thenReturn("Logic");
-        Assertions.assertEquals("Logic", encryptColumnNameReviser.revise("Cipher"));
-        Assertions.assertEquals("NonCipher", encryptColumnNameReviser.revise("NonCipher"));
+        assertThat(encryptColumnNameReviser.revise("Cipher"), is("Logic"));
+        assertThat(encryptColumnNameReviser.revise("NonCipher"), is("NonCipher"));
     }
 }
