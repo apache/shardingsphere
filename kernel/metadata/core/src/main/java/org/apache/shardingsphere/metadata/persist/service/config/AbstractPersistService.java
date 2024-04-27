@@ -38,24 +38,24 @@ public abstract class AbstractPersistService {
     
     private final PersistRepository repository;
     
-    protected final Collection<RepositoryTuple> getRepositoryTuples(final String rootPath) {
+    protected final Collection<RepositoryTuple> getRepositoryTuples(final String rootNode) {
         Pattern pattern = Pattern.compile(ACTIVE_VERSION_PATTERN, Pattern.CASE_INSENSITIVE);
-        return getNodes(rootPath).stream().filter(each -> pattern.matcher(each).find()).map(this::getRepositoryTuple).collect(Collectors.toList());
+        return loadNodes(rootNode).stream().filter(each -> pattern.matcher(each).find()).map(this::getRepositoryTuple).collect(Collectors.toList());
     }
     
-    private Collection<String> getNodes(final String rootPath) {
+    private Collection<String> loadNodes(final String rootNode) {
         Collection<String> result = new LinkedHashSet<>();
-        getAllNodes(result, rootPath);
+        loadNodes(rootNode, result);
         if (1 == result.size()) {
             return Collections.emptyList();
         }
         return result;
     }
     
-    private void getAllNodes(final Collection<String> keys, final String path) {
-        keys.add(path);
-        for (String each : repository.getChildrenKeys(path)) {
-            getAllNodes(keys, String.join("/", path, each));
+    private void loadNodes(final String toBeLoadedNode, final Collection<String> loadedNodes) {
+        loadedNodes.add(toBeLoadedNode);
+        for (String each : repository.getChildrenKeys(toBeLoadedNode)) {
+            loadNodes(String.join("/", toBeLoadedNode, each), loadedNodes);
         }
     }
     
