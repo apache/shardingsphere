@@ -61,11 +61,7 @@ public abstract class AbstractPersistService {
     
     private void getAllNodes(final Collection<String> keys, final String path) {
         keys.add(path);
-        Collection<String> childrenKeys = repository.getChildrenKeys(path);
-        if (childrenKeys.isEmpty()) {
-            return;
-        }
-        for (String each : childrenKeys) {
+        for (String each : repository.getChildrenKeys(path)) {
             getAllNodes(keys, getPath(path, each));
         }
     }
