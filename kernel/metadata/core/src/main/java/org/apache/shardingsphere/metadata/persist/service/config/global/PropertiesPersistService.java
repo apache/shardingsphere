@@ -52,7 +52,7 @@ public final class PropertiesPersistService implements GlobalPersistService<Prop
     }
     
     @Override
-    public Collection<MetaDataVersion> persistConfig(final Properties props) {
+    public Collection<MetaDataVersion> persistConfigurations(final Properties props) {
         List<String> versions = repository.getChildrenKeys(GlobalNode.getPropsVersionsNode());
         String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
         String persistKey = GlobalNode.getPropsVersionNode(nextActiveVersion);

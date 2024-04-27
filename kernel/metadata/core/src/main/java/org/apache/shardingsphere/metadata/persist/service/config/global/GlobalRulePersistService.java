@@ -62,7 +62,7 @@ public final class GlobalRulePersistService extends AbstractPersistService imple
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public Collection<MetaDataVersion> persistConfig(final Collection<RuleConfiguration> globalRuleConfigs) {
+    public Collection<MetaDataVersion> persistConfigurations(final Collection<RuleConfiguration> globalRuleConfigs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         Map<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> yamlConfigs = new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
         for (Entry<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
