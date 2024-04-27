@@ -91,13 +91,13 @@ public final class GlobalRulePersistService extends AbstractPersistService imple
     
     @Override
     public Collection<RuleConfiguration> load() {
-        Collection<RepositoryTuple> repositoryTuple = getRepositoryTuple(GlobalNode.getGlobalRuleRootNode());
-        return repositoryTuple.isEmpty() ? Collections.emptyList() : new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToRuleConfigurations(repositoryTuple);
+        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuple(GlobalNode.getGlobalRuleRootNode());
+        return repositoryTuples.isEmpty() ? Collections.emptyList() : new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToRuleConfigurations(repositoryTuples);
     }
     
     @Override
     public RuleConfiguration load(final String ruleName) {
-        Collection<RepositoryTuple> repositoryTuple = getRepositoryTuple(GlobalNode.getGlobalRuleNode(ruleName));
-        return new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapSingleRuleToRuleConfiguration(ruleName, repositoryTuple).orElse(null);
+        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuple(GlobalNode.getGlobalRuleNode(ruleName));
+        return new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapSingleRuleToRuleConfiguration(ruleName, repositoryTuples).orElse(null);
     }
 }

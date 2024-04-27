@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -52,8 +51,7 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
-        Map<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> yamlConfigs = new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
-        for (Entry<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        for (Entry<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> entry : new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
                 persistDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), repositoryTuples);
@@ -63,8 +61,8 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
     
     @Override
     public Collection<RuleConfiguration> load(final String databaseName) {
-        Collection<RepositoryTuple> repositoryTuple = getRepositoryTuple(DatabaseRuleMetaDataNode.getRulesNode(databaseName));
-        return repositoryTuple.isEmpty() ? Collections.emptyList() : new YamlDataNodeRuleConfigurationSwapperEngine().swapToRuleConfigurations(repositoryTuple);
+        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuple(DatabaseRuleMetaDataNode.getRulesNode(databaseName));
+        return repositoryTuples.isEmpty() ? Collections.emptyList() : new YamlDataNodeRuleConfigurationSwapperEngine().swapToRuleConfigurations(repositoryTuples);
     }
     
     @Override
@@ -74,10 +72,9 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public Collection<MetaDataVersion> persistConfig(final String databaseName, final Collection<RuleConfiguration> configs) {
+    public Collection<MetaDataVersion> persistConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        Map<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> yamlConfigs = new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
-        for (Entry<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        for (Entry<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> entry : new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
                 result.addAll(persistDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), repositoryTuples));
@@ -102,10 +99,9 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public Collection<MetaDataVersion> deleteConfig(final String databaseName, final Collection<RuleConfiguration> configs) {
+    public Collection<MetaDataVersion> deleteConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        Map<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> yamlConfigs = new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
-        for (Entry<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        for (Entry<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> entry : new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (repositoryTuples.isEmpty()) {
                 continue;

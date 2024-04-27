@@ -88,7 +88,7 @@ public final class DataSourceUnitPersistService implements DatabaseBasedPersistS
     }
     
     @Override
-    public Collection<MetaDataVersion> deleteConfig(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
+    public Collection<MetaDataVersion> deleteConfigurations(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
             String delKey = DataSourceMetaDataNode.getDataSourceUnitNode(databaseName, entry.getKey());
@@ -99,7 +99,7 @@ public final class DataSourceUnitPersistService implements DatabaseBasedPersistS
     }
     
     @Override
-    public Collection<MetaDataVersion> persistConfig(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
+    public Collection<MetaDataVersion> persistConfigurations(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
             List<String> versions = repository.getChildrenKeys(DataSourceMetaDataNode.getDataSourceUnitVersionsNode(databaseName, entry.getKey()));

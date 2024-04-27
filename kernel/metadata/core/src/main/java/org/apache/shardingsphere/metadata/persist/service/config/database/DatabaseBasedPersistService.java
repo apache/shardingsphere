@@ -67,17 +67,17 @@ public interface DatabaseBasedPersistService<T> {
      * Delete configurations.
      *
      * @param databaseName database name
-     * @param configs configurations
+     * @param configs to be deleted configurations
      * @return meta data versions
      */
-    Collection<MetaDataVersion> deleteConfig(String databaseName, T configs);
+    Collection<MetaDataVersion> deleteConfigurations(String databaseName, T configs);
     
     /**
      * Persist configurations.
      *
      * @param databaseName database name
-     * @param configs configurations
+     * @param configs to be persisted configurations
      * @return meta data versions
      */
-    Collection<MetaDataVersion> persistConfig(String databaseName, T configs);
+    Collection<MetaDataVersion> persistConfigurations(String databaseName, T configs);
 }
