@@ -84,6 +84,6 @@ class YamlReadwriteSplittingDataNodeRuleConfigurationSwapperTest {
         assertThat(actual.get().getDataSourceGroups().iterator().next().getTransactionalReadQueryStrategy(), is(TransactionalReadQueryStrategy.DYNAMIC));
         assertThat(actual.get().getLoadBalancers().size(), is(1));
         assertThat(actual.get().getLoadBalancers().get("random").getType(), is("random"));
-        assertThat(actual.get().getLoadBalancers().get("random").getProps().size(), is(0));
+        assertTrue(actual.get().getLoadBalancers().get("random").getProps().isEmpty());
     }
 }

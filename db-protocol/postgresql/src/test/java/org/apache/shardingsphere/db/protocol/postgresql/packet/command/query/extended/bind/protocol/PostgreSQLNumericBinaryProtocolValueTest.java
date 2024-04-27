@@ -50,8 +50,8 @@ class PostgreSQLNumericBinaryProtocolValueTest {
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
         byteBuf.writeBytes(expected);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        Object result = binaryProtocolValue.read(payload, expectedLength);
-        assertThat(result, is(bigDecimal));
+        Object actual = binaryProtocolValue.read(payload, expectedLength);
+        assertThat(actual, is(bigDecimal));
         assertThat(byteBuf.readerIndex(), is(expectedLength));
     }
     

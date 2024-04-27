@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.infra.metadata.database.rule;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -50,8 +47,6 @@ class RuleMetaDataTest {
     
     @Test
     void assertGetInUsedStorageUnitNameAndRulesMapWhenRulesAreEmpty() {
-        RuleMetaData ruleMetaData = new RuleMetaData(Collections.emptyList());
-        Map<String, Collection<Class<? extends ShardingSphereRule>>> actual = ruleMetaData.getInUsedStorageUnitNameAndRulesMap();
-        assertThat(actual.size(), is(0));
+        assertTrue(new RuleMetaData(Collections.emptyList()).getInUsedStorageUnitNameAndRulesMap().isEmpty());
     }
 }

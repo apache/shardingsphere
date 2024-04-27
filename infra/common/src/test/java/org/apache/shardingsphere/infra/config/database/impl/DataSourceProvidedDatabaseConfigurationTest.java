@@ -71,7 +71,7 @@ class DataSourceProvidedDatabaseConfigurationTest {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
         DataSourcePoolProperties props = databaseConfig.getStorageUnits().get("foo_ds").getDataSourcePoolProperties();
         Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();
-        assertThat(poolStandardProps.size(), is(0));
+        assertTrue(poolStandardProps.isEmpty());
         Map<String, Object> connStandardProps = props.getConnectionPropertySynonyms().getStandardProperties();
         assertThat(connStandardProps.size(), is(3));
         assertThat(connStandardProps.get("url"), is("jdbc:mock://127.0.0.1/foo_ds"));

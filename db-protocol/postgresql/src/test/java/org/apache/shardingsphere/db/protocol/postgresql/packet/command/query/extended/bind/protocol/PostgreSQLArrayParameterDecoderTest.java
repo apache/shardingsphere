@@ -35,75 +35,75 @@ class PostgreSQLArrayParameterDecoderTest {
     
     @Test
     void assertParseInt2ArrayNormalTextMode() {
-        short[] result = DECODER.decodeInt2Array(INT_ARRAY_STR.getBytes(), false);
-        assertThat(result.length, is(2));
-        assertThat(result[0], is((short) 11));
-        assertThat(result[1], is((short) 12));
+        short[] actual = DECODER.decodeInt2Array(INT_ARRAY_STR.getBytes(), false);
+        assertThat(actual.length, is(2));
+        assertThat(actual[0], is((short) 11));
+        assertThat(actual[1], is((short) 12));
     }
     
     @Test
     void assertParseInt4ArrayNormalTextMode() {
-        int[] result = DECODER.decodeInt4Array(INT_ARRAY_STR.getBytes(), false);
-        assertThat(result.length, is(2));
-        assertThat(result[0], is(11));
-        assertThat(result[1], is(12));
+        int[] actual = DECODER.decodeInt4Array(INT_ARRAY_STR.getBytes(), false);
+        assertThat(actual.length, is(2));
+        assertThat(actual[0], is(11));
+        assertThat(actual[1], is(12));
     }
     
     @Test
     void assertParseInt8ArrayNormalTextMode() {
-        long[] result = DECODER.decodeInt8Array(INT_ARRAY_STR.getBytes(), false);
-        assertThat(result.length, is(2));
-        assertThat(result[0], is(11L));
-        assertThat(result[1], is(12L));
+        long[] actual = DECODER.decodeInt8Array(INT_ARRAY_STR.getBytes(), false);
+        assertThat(actual.length, is(2));
+        assertThat(actual[0], is(11L));
+        assertThat(actual[1], is(12L));
     }
     
     @Test
     void assertParseFloat4ArrayNormalTextMode() {
-        float[] result = DECODER.decodeFloat4Array(FLOAT_ARRAY_STR.getBytes(), false);
-        assertThat(result.length, is(2));
-        assertThat(Float.compare(result[0], 11.1F), is(0));
-        assertThat(Float.compare(result[1], 12.1F), is(0));
+        float[] actual = DECODER.decodeFloat4Array(FLOAT_ARRAY_STR.getBytes(), false);
+        assertThat(actual.length, is(2));
+        assertThat(Float.compare(actual[0], 11.1F), is(0));
+        assertThat(Float.compare(actual[1], 12.1F), is(0));
     }
     
     @Test
     void assertParseFloat8ArrayNormalTextMode() {
-        double[] result = DECODER.decodeFloat8Array(FLOAT_ARRAY_STR.getBytes(), false);
-        assertThat(result.length, is(2));
-        assertThat(Double.compare(result[0], 11.1D), is(0));
-        assertThat(Double.compare(result[1], 12.1D), is(0));
+        double[] actual = DECODER.decodeFloat8Array(FLOAT_ARRAY_STR.getBytes(), false);
+        assertThat(actual.length, is(2));
+        assertThat(Double.compare(actual[0], 11.1D), is(0));
+        assertThat(Double.compare(actual[1], 12.1D), is(0));
     }
     
     @Test
     void assertParseBoolArrayNormalTextMode() {
-        boolean[] result = DECODER.decodeBoolArray("{\"true\",\"false\"}".getBytes(), false);
-        assertThat(result.length, is(2));
-        assertTrue(result[0]);
-        assertFalse(result[1]);
+        boolean[] actual = DECODER.decodeBoolArray("{\"true\",\"false\"}".getBytes(), false);
+        assertThat(actual.length, is(2));
+        assertTrue(actual[0]);
+        assertFalse(actual[1]);
     }
     
     @Test
     void assertParseStringArrayNormalTextMode() {
-        String[] result = DECODER.decodeStringArray("{\"a\",\"b\"}".getBytes(), false);
-        assertThat(result.length, is(2));
-        assertThat(result[0], is("a"));
-        assertThat(result[1], is("b"));
+        String[] actual = DECODER.decodeStringArray("{\"a\",\"b\"}".getBytes(), false);
+        assertThat(actual.length, is(2));
+        assertThat(actual[0], is("a"));
+        assertThat(actual[1], is("b"));
     }
     
     @Test
     void assertParseStringArrayWithEscapeTextMode() {
-        String[] result = DECODER.decodeStringArray("{\"\\\"a\",\"\\\\b\",\"c\"}".getBytes(), false);
-        assertThat(result.length, is(3));
-        assertThat(result[0], is("\"a"));
-        assertThat(result[1], is("\\b"));
-        assertThat(result[2], is("c"));
+        String[] actual = DECODER.decodeStringArray("{\"\\\"a\",\"\\\\b\",\"c\"}".getBytes(), false);
+        assertThat(actual.length, is(3));
+        assertThat(actual[0], is("\"a"));
+        assertThat(actual[1], is("\\b"));
+        assertThat(actual[2], is("c"));
     }
     
     @Test
     void assertParseStringArrayWithNullTextMode() {
-        String[] result = DECODER.decodeStringArray("{\"a\",\"b\",NULL}".getBytes(), false);
-        assertThat(result.length, is(3));
-        assertThat(result[0], is("a"));
-        assertThat(result[1], is("b"));
-        assertNull(result[2]);
+        String[] actual = DECODER.decodeStringArray("{\"a\",\"b\",NULL}".getBytes(), false);
+        assertThat(actual.length, is(3));
+        assertThat(actual[0], is("a"));
+        assertThat(actual[1], is("b"));
+        assertNull(actual[2]);
     }
 }

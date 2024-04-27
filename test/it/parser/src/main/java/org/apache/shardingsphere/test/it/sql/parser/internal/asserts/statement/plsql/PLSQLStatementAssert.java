@@ -83,7 +83,7 @@ public final class PLSQLStatementAssert {
             assertThat(assertContext.getText("Procedure name mismatched:"), actual.getProcedureName().get().getIdentifier().getValue(), is(expected.getProcedureName().getName()));
         }
         if (null == expected.getProcedureBodyEndNameSegments()) {
-            assertThat(assertContext.getText("Procedure body end names size mismatched:"), actual.getProcedureBodyEndNameSegments().size(), is(0));
+            assertThat(assertContext.getText("Procedure body end names size mismatched:"), actual.getProcedureBodyEndNameSegments().isEmpty());
         } else {
             assertThat(assertContext.getText("Procedure body end names size mismatched:"), actual.getProcedureBodyEndNameSegments().size(), is(expected.getProcedureBodyEndNameSegments().size()));
             for (int i = 0; i < expected.getProcedureBodyEndNameSegments().size(); i++) {

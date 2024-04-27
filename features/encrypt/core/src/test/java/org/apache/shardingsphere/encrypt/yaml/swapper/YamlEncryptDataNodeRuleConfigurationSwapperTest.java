@@ -85,6 +85,6 @@ class YamlEncryptDataNodeRuleConfigurationSwapperTest {
         assertThat(actual.get().getTables().iterator().next().getColumns().iterator().next().getCipher().getEncryptorName(), is("FOO"));
         assertThat(actual.get().getEncryptors().size(), is(1));
         assertThat(actual.get().getEncryptors().get("FOO").getType(), is("FOO"));
-        assertThat(actual.get().getEncryptors().get("FOO").getProps().size(), is(0));
+        assertTrue(actual.get().getEncryptors().get("FOO").getProps().isEmpty());
     }
 }

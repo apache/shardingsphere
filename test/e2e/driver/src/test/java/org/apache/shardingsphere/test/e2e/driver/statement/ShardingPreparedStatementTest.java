@@ -128,8 +128,8 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
             preparedStatement.setString(2, "BATCH2");
             preparedStatement.setString(3, "BATCH3");
             preparedStatement.setString(4, "BATCH4");
-            int result = preparedStatement.executeUpdate();
-            assertThat(result, is(4));
+            int actual = preparedStatement.executeUpdate();
+            assertThat(actual, is(4));
             ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
             assertTrue(generateKeyResultSet.next());
             assertThat(generateKeyResultSet.getLong(1), is(1L));
@@ -358,9 +358,9 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
             preparedStatement.setInt(4, 12);
             preparedStatement.setInt(5, 12);
             preparedStatement.setString(6, "MULTI");
-            int result = preparedStatement.executeUpdate();
+            int actual = preparedStatement.executeUpdate();
             ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
-            assertThat(result, is(2));
+            assertThat(actual, is(2));
             assertTrue(generateKeyResultSet.next());
             assertThat(generateKeyResultSet.getInt(1), is(1));
             assertTrue(generateKeyResultSet.next());
@@ -460,8 +460,8 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
             preparedStatement.setInt(7, userId2);
             preparedStatement.setString(8, status);
             preparedStatement.setString(9, updatedStatus);
-            int result = preparedStatement.executeUpdate();
-            assertThat(result, is(2));
+            int actual = preparedStatement.executeUpdate();
+            assertThat(actual, is(2));
             queryStatement.setInt(1, orderId);
             queryStatement.setInt(2, userId1);
             try (ResultSet resultSet = queryStatement.executeQuery()) {
@@ -490,8 +490,8 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
             preparedStatement.setInt(7, userId2);
             preparedStatement.setString(8, status);
             preparedStatement.setString(9, updatedStatus);
-            int result = preparedStatement.executeUpdate();
-            assertThat(result, is(4));
+            int actual = preparedStatement.executeUpdate();
+            assertThat(actual, is(4));
             queryStatement.setInt(1, orderId);
             queryStatement.setInt(2, userId1);
             try (ResultSet resultSet = queryStatement.executeQuery()) {
@@ -523,11 +523,11 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
             preparedStatement.setString(1, "init");
             preparedStatement.setString(2, "batch");
             preparedStatement.addBatch();
-            int[] result = preparedStatement.executeBatch();
-            assertThat(result.length, is(3));
-            assertThat(result[0], is(4));
-            assertThat(result[1], is(0));
-            assertThat(result[2], is(4));
+            int[] actual = preparedStatement.executeBatch();
+            assertThat(actual.length, is(3));
+            assertThat(actual[0], is(4));
+            assertThat(actual[1], is(0));
+            assertThat(actual[2], is(4));
         }
     }
     
@@ -575,17 +575,17 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
     
     @Test
     void assertExecuteSelectAutoTableGetResultSet() throws SQLException {
-        Collection<Integer> result = Arrays.asList(1001, 1100, 1101);
+        Collection<Integer> actual = Arrays.asList(1001, 1100, 1101);
         try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_AUTO_SQL)) {
             preparedStatement.setInt(1, 1001);
             int count = 0;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    assertTrue(result.contains(resultSet.getInt(2)));
+                    assertTrue(actual.contains(resultSet.getInt(2)));
                     count++;
                 }
             }
-            assertThat(result.size(), is(count));
+            assertThat(actual.size(), is(count));
         }
     }
     
@@ -615,8 +615,7 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
             preparedStatement.setString(4, "BATCH");
             preparedStatement.addBatch();
             preparedStatement.clearBatch();
-            int[] result = preparedStatement.executeBatch();
-            assertThat(result.length, is(0));
+            assertThat(preparedStatement.executeBatch().length, is(0));
         }
     }
     
