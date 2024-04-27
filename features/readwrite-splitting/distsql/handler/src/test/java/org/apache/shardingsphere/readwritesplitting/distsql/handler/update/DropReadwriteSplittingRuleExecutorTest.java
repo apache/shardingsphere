@@ -47,6 +47,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -110,7 +111,7 @@ class DropReadwriteSplittingRuleExecutorTest {
         executor.setRule(rule);
         ReadwriteSplittingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement());
         assertThat(actual.getDataSourceGroups().size(), is(1));
-        assertThat(actual.getLoadBalancers().size(), is(0));
+        assertTrue(actual.getLoadBalancers().isEmpty());
     }
     
     @Test

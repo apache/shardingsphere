@@ -49,8 +49,8 @@ class PostgreSQLInt2ArrayBinaryProtocolValueTest {
         byteBuf.writeCharSequence(parameterValue, StandardCharsets.ISO_8859_1);
         byteBuf.readInt();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        Object result = newInstance().read(payload, parameterValue.length());
-        assertThat(result, is(new short[]{11, 12}));
+        Object actual = newInstance().read(payload, parameterValue.length());
+        assertThat(actual, is(new short[]{11, 12}));
         assertThat(byteBuf.readerIndex(), is(expectedLength));
     }
     

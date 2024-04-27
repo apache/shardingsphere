@@ -117,13 +117,13 @@ class EncryptPreparedStatementTest extends AbstractEncryptDriverTest {
     
     @Test
     void assertUpdateWithExecuteUpdate() throws SQLException {
-        int result;
+        int actual;
         try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(UPDATE_SQL)) {
             preparedStatement.setObject(1, 'f');
             preparedStatement.setObject(2, 'a');
-            result = preparedStatement.executeUpdate();
+            actual = preparedStatement.executeUpdate();
         }
-        assertThat(result, is(2));
+        assertThat(actual, is(2));
         assertResultSet(2, 1, "encryptValue", "assistedEncryptValue");
     }
     

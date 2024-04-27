@@ -42,7 +42,7 @@ class YamlMaskDataNodeRuleConfigurationSwapperTest {
     @Test
     void assertSwapEmptyConfigurationToDataNodes() {
         MaskRuleConfiguration config = new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
-        assertThat(new YamlMaskDataNodeRuleConfigurationSwapper().swapToRepositoryTuples(config).size(), is(0));
+        assertTrue(new YamlMaskDataNodeRuleConfigurationSwapper().swapToRepositoryTuples(config).isEmpty());
     }
     
     @Test
@@ -82,6 +82,6 @@ class YamlMaskDataNodeRuleConfigurationSwapperTest {
         assertThat(actual.get().getTables().iterator().next().getColumns().iterator().next().getMaskAlgorithm(), is("FIXTURE"));
         assertThat(actual.get().getMaskAlgorithms().size(), is(1));
         assertThat(actual.get().getMaskAlgorithms().get("FIXTURE").getType(), is("FIXTURE"));
-        assertThat(actual.get().getMaskAlgorithms().get("FIXTURE").getProps().size(), is(0));
+        assertTrue(actual.get().getMaskAlgorithms().get("FIXTURE").getProps().isEmpty());
     }
 }

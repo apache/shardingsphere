@@ -102,7 +102,7 @@ class YamlShadowDataNodeRuleConfigurationSwapperTest {
         assertThat(actual.get().getTables().get("foo_table").getShadowAlgorithmNames().iterator().next(), is("FIXTURE"));
         assertThat(actual.get().getShadowAlgorithms().size(), is(1));
         assertThat(actual.get().getShadowAlgorithms().get("FIXTURE").getType(), is("FIXTURE"));
-        assertThat(actual.get().getShadowAlgorithms().get("FIXTURE").getProps().size(), is(0));
+        assertTrue(actual.get().getShadowAlgorithms().get("FIXTURE").getProps().isEmpty());
         assertThat(actual.get().getDefaultShadowAlgorithmName(), is("FIXTURE"));
     }
 }

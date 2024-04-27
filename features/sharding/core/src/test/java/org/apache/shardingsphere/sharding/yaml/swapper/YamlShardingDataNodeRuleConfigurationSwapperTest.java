@@ -237,11 +237,11 @@ class YamlShardingDataNodeRuleConfigurationSwapperTest {
         assertThat(actual.getShardingAlgorithms().get("hash_mod").getProps().get("sharding-count"), is("4"));
         assertThat(actual.getKeyGenerators().size(), is(3));
         assertThat(actual.getKeyGenerators().get("uuid").getType(), is("UUID"));
-        assertThat(actual.getKeyGenerators().get("uuid").getProps().size(), is(0));
+        assertTrue(actual.getKeyGenerators().get("uuid").getProps().isEmpty());
         assertThat(actual.getKeyGenerators().get("auto_increment").getType(), is("AUTO_INCREMENT.FIXTURE"));
         assertThat(actual.getAuditors().size(), is(1));
         assertThat(actual.getAuditors().get("audit_algorithm").getType(), is("DML_SHARDING_CONDITIONS"));
-        assertThat(actual.getAuditors().get("audit_algorithm").getProps().size(), is(0));
+        assertTrue(actual.getAuditors().get("audit_algorithm").getProps().isEmpty());
         assertNull(actual.getShardingCache());
     }
 }

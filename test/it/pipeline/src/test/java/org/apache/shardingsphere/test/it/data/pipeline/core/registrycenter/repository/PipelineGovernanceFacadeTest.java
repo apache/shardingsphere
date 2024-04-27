@@ -139,7 +139,7 @@ class PipelineGovernanceFacadeTest {
         assertThat(actualCheckJobIds.size(), is(1));
         assertThat(actualCheckJobIds.iterator().next(), is(checkJobId));
         governanceFacade.getJobFacade().getCheck().deleteCheckJobResult(jobItemContext.getJobId(), checkJobId);
-        assertThat(governanceFacade.getJobFacade().getCheck().listCheckJobIds(jobItemContext.getJobId()).size(), is(0));
+        assertTrue(governanceFacade.getJobFacade().getCheck().listCheckJobIds(jobItemContext.getJobId()).isEmpty());
     }
     
     @Test

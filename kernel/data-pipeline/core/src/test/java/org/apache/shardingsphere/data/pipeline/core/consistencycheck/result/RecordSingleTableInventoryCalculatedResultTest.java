@@ -62,16 +62,14 @@ class RecordSingleTableInventoryCalculatedResultTest {
     
     @Test
     void assertRecordsCountNotEquals() {
-        RecordSingleTableInventoryCalculatedResult result1 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord()));
-        RecordSingleTableInventoryCalculatedResult result2 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.emptyList());
-        assertThat(result1, not(result2));
+        assertThat(new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord())),
+                not(new RecordSingleTableInventoryCalculatedResult(1000, Collections.emptyList())));
     }
     
     @Test
     void assertMaxUniqueKeyValueNotEquals() {
-        RecordSingleTableInventoryCalculatedResult result1 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord()));
-        RecordSingleTableInventoryCalculatedResult result2 = new RecordSingleTableInventoryCalculatedResult(1001, Collections.singletonList(buildFixedFullTypeRecord()));
-        assertThat(result1, not(result2));
+        assertThat(new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord())),
+                not(new RecordSingleTableInventoryCalculatedResult(1001, Collections.singletonList(buildFixedFullTypeRecord()))));
     }
     
     @Test

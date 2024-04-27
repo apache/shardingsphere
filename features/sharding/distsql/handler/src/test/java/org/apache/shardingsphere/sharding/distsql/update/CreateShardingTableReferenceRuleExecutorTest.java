@@ -33,9 +33,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -81,7 +80,7 @@ class CreateShardingTableReferenceRuleExecutorTest {
         executor.checkBeforeUpdate(sqlStatement);
         ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         Collection<ShardingTableReferenceRuleConfiguration> referenceRuleConfigs = toBeCreatedRuleConfig.getBindingTableGroups();
-        assertThat(referenceRuleConfigs.size(), is(0));
+        assertTrue(referenceRuleConfigs.isEmpty());
     }
     
     private ShardingRuleConfiguration getCurrentRuleConfiguration() {

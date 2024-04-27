@@ -37,6 +37,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -85,7 +86,7 @@ class DropDefaultShardingStrategyExecutorTest {
         executor.setRule(rule);
         ShardingRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("Table"));
         assertNull(toBeDroppedRuleConfig.getDefaultTableShardingStrategy());
-        assertThat(toBeDroppedRuleConfig.getShardingAlgorithms().size(), is(0));
+        assertTrue(toBeDroppedRuleConfig.getShardingAlgorithms().isEmpty());
     }
     
     @Test
