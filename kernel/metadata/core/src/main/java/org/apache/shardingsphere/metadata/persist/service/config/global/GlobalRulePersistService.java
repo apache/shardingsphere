@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -64,8 +63,8 @@ public final class GlobalRulePersistService extends AbstractPersistService imple
     @Override
     public Collection<MetaDataVersion> persistConfigurations(final Collection<RuleConfiguration> globalRuleConfigs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        Map<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> yamlConfigs = new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
-        for (Entry<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        for (Entry<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> entry : new YamlDataNodeGlobalRuleConfigurationSwapperEngine()
+                .swapToYamlRuleConfigurations(globalRuleConfigs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
                 result.addAll(persistDataNodes(repositoryTuples));
