@@ -39,7 +39,7 @@ public abstract class AbstractPersistService {
     
     private final PersistRepository repository;
     
-    protected final Collection<RepositoryTuple> getRepositoryTuple(final String rootPath) {
+    protected final Collection<RepositoryTuple> getRepositoryTuples(final String rootPath) {
         Collection<RepositoryTuple> result = new LinkedList<>();
         Pattern pattern = Pattern.compile(ACTIVE_VERSION_PATTERN, Pattern.CASE_INSENSITIVE);
         for (String each : getNodes(rootPath)) {
