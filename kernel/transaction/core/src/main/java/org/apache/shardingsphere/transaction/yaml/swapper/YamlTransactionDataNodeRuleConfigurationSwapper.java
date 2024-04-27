@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.constant.TransactionOrder;
@@ -36,8 +36,8 @@ import java.util.Properties;
 public final class YamlTransactionDataNodeRuleConfigurationSwapper implements YamlDataNodeGlobalRuleConfigurationSwapper<TransactionRuleConfiguration> {
     
     @Override
-    public Collection<YamlDataNode> swapToDataNodes(final TransactionRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final TransactionRuleConfiguration data) {
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlTransactionRuleConfiguration swapToYamlConfiguration(final TransactionRuleConfiguration data) {
@@ -49,13 +49,11 @@ public final class YamlTransactionDataNodeRuleConfigurationSwapper implements Ya
     }
     
     @Override
-    public Optional<TransactionRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
-        for (YamlDataNode each : dataNodes) {
-            Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
-            if (!version.isPresent()) {
-                continue;
+    public Optional<TransactionRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
+        for (RepositoryTuple each : repositoryTuples) {
+            if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
+                return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTransactionRuleConfiguration.class)));
             }
-            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTransactionRuleConfiguration.class)));
         }
         return Optional.empty();
     }

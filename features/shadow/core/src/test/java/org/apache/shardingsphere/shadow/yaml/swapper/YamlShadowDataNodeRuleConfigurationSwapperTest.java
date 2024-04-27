@@ -18,23 +18,26 @@
 package org.apache.shardingsphere.shadow.yaml.swapper;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlShadowDataNodeRuleConfigurationSwapperTest {
     
@@ -42,17 +45,14 @@ class YamlShadowDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapEmptyConfigToDataNodes() {
-        ShadowRuleConfiguration config = new ShadowRuleConfiguration();
-        Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(0));
+        assertTrue(swapper.swapToRepositoryTuples(new ShadowRuleConfiguration()).isEmpty());
     }
     
     @Test
     void assertSwapFullConfigToDataNodes() {
-        ShadowRuleConfiguration config = createMaximumShadowRule();
-        Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(4));
-        Iterator<YamlDataNode> iterator = result.iterator();
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(createMaximumShadowRule());
+        assertThat(actual.size(), is(4));
+        Iterator<RepositoryTuple> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("algorithms/FIXTURE"));
         assertThat(iterator.next().getKey(), is("default_algorithm_name"));
         assertThat(iterator.next().getKey(), is("data_sources/foo"));
@@ -76,34 +76,33 @@ class YamlShadowDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToObjectEmpty() {
-        Collection<YamlDataNode> config = new LinkedList<>();
-        assertFalse(swapper.swapToObject(config).isPresent());
+        assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     
     @Test
     void assertSwapToObject() {
-        Collection<YamlDataNode> config = new LinkedList<>();
-        config.add(new YamlDataNode("/metadata/foo_db/rules/shadow/data_sources/foo_db/versions/0", "productionDataSourceName: ds_0\n"
-                + "shadowDataSourceName: ds_1\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/shadow/tables/foo_table/versions/0", "dataSourceNames:\n"
-                + "- ds_0\n"
-                + "shadowAlgorithmNames:\n"
-                + "- FIXTURE\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/shadow/algorithms/FIXTURE/versions/0", "type: FIXTURE\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/shadow/default_algorithm_name/versions/0", "FIXTURE"));
-        ShadowRuleConfiguration result = swapper.swapToObject(config).get();
-        assertThat(result.getDataSources().size(), is(1));
-        assertThat(result.getDataSources().iterator().next().getName(), is("foo_db"));
-        assertThat(result.getDataSources().iterator().next().getProductionDataSourceName(), is("ds_0"));
-        assertThat(result.getDataSources().iterator().next().getShadowDataSourceName(), is("ds_1"));
-        assertThat(result.getTables().size(), is(1));
-        assertThat(result.getTables().get("foo_table").getDataSourceNames().size(), is(1));
-        assertThat(result.getTables().get("foo_table").getDataSourceNames().iterator().next(), is("ds_0"));
-        assertThat(result.getTables().get("foo_table").getShadowAlgorithmNames().size(), is(1));
-        assertThat(result.getTables().get("foo_table").getShadowAlgorithmNames().iterator().next(), is("FIXTURE"));
-        assertThat(result.getShadowAlgorithms().size(), is(1));
-        assertThat(result.getShadowAlgorithms().get("FIXTURE").getType(), is("FIXTURE"));
-        assertThat(result.getShadowAlgorithms().get("FIXTURE").getProps().size(), is(0));
-        assertThat(result.getDefaultShadowAlgorithmName(), is("FIXTURE"));
+        Collection<RepositoryTuple> repositoryTuples = Arrays.asList(
+                new RepositoryTuple("/metadata/foo_db/rules/shadow/data_sources/foo_db/versions/0", "productionDataSourceName: ds_0\nshadowDataSourceName: ds_1\n"),
+                new RepositoryTuple("/metadata/foo_db/rules/shadow/tables/foo_table/versions/0", "dataSourceNames:\n"
+                        + "- ds_0\n"
+                        + "shadowAlgorithmNames:\n"
+                        + "- FIXTURE\n"),
+                new RepositoryTuple("/metadata/foo_db/rules/shadow/algorithms/FIXTURE/versions/0", "type: FIXTURE\n"),
+                new RepositoryTuple("/metadata/foo_db/rules/shadow/default_algorithm_name/versions/0", "FIXTURE"));
+        Optional<ShadowRuleConfiguration> actual = swapper.swapToObject(repositoryTuples);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getDataSources().size(), is(1));
+        assertThat(actual.get().getDataSources().iterator().next().getName(), is("foo_db"));
+        assertThat(actual.get().getDataSources().iterator().next().getProductionDataSourceName(), is("ds_0"));
+        assertThat(actual.get().getDataSources().iterator().next().getShadowDataSourceName(), is("ds_1"));
+        assertThat(actual.get().getTables().size(), is(1));
+        assertThat(actual.get().getTables().get("foo_table").getDataSourceNames().size(), is(1));
+        assertThat(actual.get().getTables().get("foo_table").getDataSourceNames().iterator().next(), is("ds_0"));
+        assertThat(actual.get().getTables().get("foo_table").getShadowAlgorithmNames().size(), is(1));
+        assertThat(actual.get().getTables().get("foo_table").getShadowAlgorithmNames().iterator().next(), is("FIXTURE"));
+        assertThat(actual.get().getShadowAlgorithms().size(), is(1));
+        assertThat(actual.get().getShadowAlgorithms().get("FIXTURE").getType(), is("FIXTURE"));
+        assertThat(actual.get().getShadowAlgorithms().get("FIXTURE").getProps().size(), is(0));
+        assertThat(actual.get().getDefaultShadowAlgorithmName(), is("FIXTURE"));
     }
 }

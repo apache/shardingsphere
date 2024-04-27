@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * YAML data node.
+ * Repository tuple.
  */
 @RequiredArgsConstructor
 @Getter
-public final class YamlDataNode {
+public final class RepositoryTuple {
     
     private final String key;
     

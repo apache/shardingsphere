@@ -29,6 +29,6 @@ class YamlSingleDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToDataNodes() {
-        assertThat(swapper.swapToDataNodes(new SingleRuleConfiguration()).iterator().next().getKey(), is("tables"));
+        assertThat(swapper.swapToRepositoryTuples(new SingleRuleConfiguration()).iterator().next().getKey(), is("tables"));
     }
 }

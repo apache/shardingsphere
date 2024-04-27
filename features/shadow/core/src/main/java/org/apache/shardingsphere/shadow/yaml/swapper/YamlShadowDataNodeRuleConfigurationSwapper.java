@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapper;
@@ -53,21 +53,21 @@ public final class YamlShadowDataNodeRuleConfigurationSwapper implements YamlDat
     private final RuleNodePath shadowRuleNodePath = new ShadowRuleNodePathProvider().getRuleNodePath();
     
     @Override
-    public Collection<YamlDataNode> swapToDataNodes(final ShadowRuleConfiguration data) {
-        Collection<YamlDataNode> result = new LinkedList<>();
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final ShadowRuleConfiguration data) {
+        Collection<RepositoryTuple> result = new LinkedList<>();
         for (Entry<String, AlgorithmConfiguration> entry : data.getShadowAlgorithms().entrySet()) {
-            result.add(new YamlDataNode(shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.ALGORITHMS).getPath(entry.getKey()),
+            result.add(new RepositoryTuple(shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.ALGORITHMS).getPath(entry.getKey()),
                     YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         if (!Strings.isNullOrEmpty(data.getDefaultShadowAlgorithmName())) {
-            result.add(new YamlDataNode(shadowRuleNodePath.getUniqueItem(ShadowRuleNodePathProvider.DEFAULT_ALGORITHM).getPath(), data.getDefaultShadowAlgorithmName()));
+            result.add(new RepositoryTuple(shadowRuleNodePath.getUniqueItem(ShadowRuleNodePathProvider.DEFAULT_ALGORITHM).getPath(), data.getDefaultShadowAlgorithmName()));
         }
         for (ShadowDataSourceConfiguration each : data.getDataSources()) {
-            result.add(new YamlDataNode(shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.DATA_SOURCES).getPath(each.getName()),
+            result.add(new RepositoryTuple(shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.DATA_SOURCES).getPath(each.getName()),
                     YamlEngine.marshal(swapToDataSourceYamlConfiguration(each))));
         }
         for (Entry<String, ShadowTableConfiguration> entry : data.getTables().entrySet()) {
-            result.add(new YamlDataNode(shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.TABLES).getPath(entry.getKey()),
+            result.add(new RepositoryTuple(shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.TABLES).getPath(entry.getKey()),
                     YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         return result;
@@ -81,13 +81,13 @@ public final class YamlShadowDataNodeRuleConfigurationSwapper implements YamlDat
     }
     
     @Override
-    public Optional<ShadowRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
-        List<YamlDataNode> validDataNodes = dataNodes.stream().filter(each -> shadowRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
-        if (validDataNodes.isEmpty()) {
+    public Optional<ShadowRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
+        List<RepositoryTuple> validRepositoryTuples = repositoryTuples.stream().filter(each -> shadowRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
+        if (validRepositoryTuples.isEmpty()) {
             return Optional.empty();
         }
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        for (YamlDataNode each : validDataNodes) {
+        for (RepositoryTuple each : validRepositoryTuples) {
             shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.DATA_SOURCES).getName(each.getKey())
                     .ifPresent(optional -> result.getDataSources().add(swapDataSource(optional, YamlEngine.unmarshal(each.getValue(), YamlShadowDataSourceConfiguration.class))));
             shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.TABLES).getName(each.getKey())

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.yaml.config.swapper.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -44,14 +44,14 @@ public final class YamlDataNodeRuleConfigurationSwapperEngine {
     /**
      * Swap from YAML rule configurations to rule configurations.
      *
-     * @param dataNodes YAML data nodes
+     * @param repositoryTuples repository tuples
      * @return rule configurations
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlDataNode> dataNodes) {
+    public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<RepositoryTuple> repositoryTuples) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (YamlDataNodeRuleConfigurationSwapper each : OrderedSPILoader.getServices(YamlDataNodeRuleConfigurationSwapper.class)) {
-            each.swapToObject(dataNodes).ifPresent(optional -> result.add((RuleConfiguration) optional));
+            each.swapToObject(repositoryTuples).ifPresent(optional -> result.add((RuleConfiguration) optional));
         }
         return result;
     }

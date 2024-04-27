@@ -20,7 +20,7 @@ package org.apache.shardingsphere.authority.yaml.swapper;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -38,16 +38,16 @@ class YamlAuthorityDataNodeRuleConfigurationSwapperTest {
     @Test
     void assertSwapToDataNodes() {
         Collection<ShardingSphereUser> users = Collections.singleton(new ShardingSphereUser("root", "", "localhost"));
-        Collection<YamlDataNode> actual = swapper.swapToDataNodes(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()),
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()),
                 Collections.singletonMap("md5", new AlgorithmConfiguration("MD5", createProperties())), "scram_sha256"));
-        YamlDataNode yamlDataNode = actual.iterator().next();
-        assertThat(yamlDataNode.getKey(), is("authority"));
-        assertThat(yamlDataNode.getValue(), containsString("user: root@localhost"));
-        assertThat(yamlDataNode.getValue(), containsString("password: ''"));
-        assertThat(yamlDataNode.getValue(), containsString("type: ALL_PERMITTED"));
-        assertThat(yamlDataNode.getValue(), containsString("defaultAuthenticator: scram_sha256"));
-        assertThat(yamlDataNode.getValue(), containsString("type: MD5"));
-        assertThat(yamlDataNode.getValue(), containsString("proxy-frontend-database-protocol-type: openGauss"));
+        RepositoryTuple repositoryTuple = actual.iterator().next();
+        assertThat(repositoryTuple.getKey(), is("authority"));
+        assertThat(repositoryTuple.getValue(), containsString("user: root@localhost"));
+        assertThat(repositoryTuple.getValue(), containsString("password: ''"));
+        assertThat(repositoryTuple.getValue(), containsString("type: ALL_PERMITTED"));
+        assertThat(repositoryTuple.getValue(), containsString("defaultAuthenticator: scram_sha256"));
+        assertThat(repositoryTuple.getValue(), containsString("type: MD5"));
+        assertThat(repositoryTuple.getValue(), containsString("proxy-frontend-database-protocol-type: openGauss"));
     }
     
     private Properties createProperties() {

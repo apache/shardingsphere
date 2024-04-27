@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.single.yaml.config.swapper;
 
-import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapper;
+import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
@@ -28,7 +28,6 @@ import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfigura
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -40,8 +39,8 @@ public final class YamlSingleDataNodeRuleConfigurationSwapper implements YamlDat
     private final RuleNodePath singleRuleNodePath = new SingleRuleNodePathProvider().getRuleNodePath();
     
     @Override
-    public Collection<YamlDataNode> swapToDataNodes(final SingleRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(SingleRuleNodePathProvider.TABLES, YamlEngine.marshal(swapToYamlConfiguration(data))));
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final SingleRuleConfiguration data) {
+        return Collections.singletonList(new RepositoryTuple(SingleRuleNodePathProvider.TABLES, YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlSingleRuleConfiguration swapToYamlConfiguration(final SingleRuleConfiguration data) {
@@ -52,9 +51,8 @@ public final class YamlSingleDataNodeRuleConfigurationSwapper implements YamlDat
     }
     
     @Override
-    public Optional<SingleRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
-        List<YamlDataNode> validDataNodes = dataNodes.stream().filter(each -> singleRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
-        for (YamlDataNode each : validDataNodes) {
+    public Optional<SingleRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
+        for (RepositoryTuple each : repositoryTuples.stream().filter(each -> singleRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList())) {
             if (singleRuleNodePath.getUniqueItem(SingleRuleNodePathProvider.TABLES).isValidatedPath(each.getKey())) {
                 return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class)));
             }

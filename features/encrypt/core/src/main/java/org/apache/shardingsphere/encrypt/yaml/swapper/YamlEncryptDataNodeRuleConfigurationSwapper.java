@@ -26,7 +26,7 @@ import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleC
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapper;
@@ -52,28 +52,28 @@ public final class YamlEncryptDataNodeRuleConfigurationSwapper implements YamlDa
     private final RuleNodePath encryptRuleNodePath = new EncryptRuleNodePathProvider().getRuleNodePath();
     
     @Override
-    public Collection<YamlDataNode> swapToDataNodes(final EncryptRuleConfiguration data) {
-        Collection<YamlDataNode> result = new LinkedList<>();
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final EncryptRuleConfiguration data) {
+        Collection<RepositoryTuple> result = new LinkedList<>();
         for (Entry<String, AlgorithmConfiguration> entry : data.getEncryptors().entrySet()) {
-            result.add(new YamlDataNode(encryptRuleNodePath.getNamedItem(EncryptRuleNodePathProvider.ENCRYPTORS).getPath(entry.getKey()),
-                    YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
+            result.add(new RepositoryTuple(
+                    encryptRuleNodePath.getNamedItem(EncryptRuleNodePathProvider.ENCRYPTORS).getPath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         for (EncryptTableRuleConfiguration each : data.getTables()) {
-            result.add(new YamlDataNode(encryptRuleNodePath.getNamedItem(EncryptRuleNodePathProvider.TABLES).getPath(each.getName()),
-                    YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
+            result.add(new RepositoryTuple(
+                    encryptRuleNodePath.getNamedItem(EncryptRuleNodePathProvider.TABLES).getPath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
         }
         return result;
     }
     
     @Override
-    public Optional<EncryptRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
-        List<YamlDataNode> validDataNodes = dataNodes.stream().filter(each -> encryptRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
-        if (validDataNodes.isEmpty()) {
+    public Optional<EncryptRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
+        List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> encryptRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
+        if (validTuples.isEmpty()) {
             return Optional.empty();
         }
         Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> encryptors = new LinkedHashMap<>();
-        for (YamlDataNode each : validDataNodes) {
+        for (RepositoryTuple each : validTuples) {
             encryptRuleNodePath.getNamedItem(EncryptRuleNodePathProvider.TABLES).getName(each.getKey())
                     .ifPresent(optional -> tables.add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlEncryptTableRuleConfiguration.class))));
             encryptRuleNodePath.getNamedItem(EncryptRuleNodePathProvider.ENCRYPTORS).getName(each.getKey())

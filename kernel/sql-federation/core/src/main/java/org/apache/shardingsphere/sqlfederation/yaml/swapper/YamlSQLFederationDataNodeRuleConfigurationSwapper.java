@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqlfederation.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
@@ -38,8 +38,8 @@ public final class YamlSQLFederationDataNodeRuleConfigurationSwapper implements 
     private final YamlSQLFederationExecutionPlanCacheConfigurationSwapper executionPlanCacheConfigSwapper = new YamlSQLFederationExecutionPlanCacheConfigurationSwapper();
     
     @Override
-    public Collection<YamlDataNode> swapToDataNodes(final SQLFederationRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final SQLFederationRuleConfiguration data) {
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlSQLFederationRuleConfiguration swapToYamlConfiguration(final SQLFederationRuleConfiguration data) {
@@ -51,13 +51,11 @@ public final class YamlSQLFederationDataNodeRuleConfigurationSwapper implements 
     }
     
     @Override
-    public Optional<SQLFederationRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
-        for (YamlDataNode each : dataNodes) {
-            Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
-            if (!version.isPresent()) {
-                continue;
+    public Optional<SQLFederationRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
+        for (RepositoryTuple each : repositoryTuples) {
+            if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
+                return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLFederationRuleConfiguration.class)));
             }
-            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLFederationRuleConfiguration.class)));
         }
         return Optional.empty();
     }

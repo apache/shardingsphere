@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
@@ -49,17 +49,14 @@ class YamlShardingDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapEmptyConfigToDataNodes() {
-        ShardingRuleConfiguration config = new ShardingRuleConfiguration();
-        Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(0));
+        assertTrue(swapper.swapToRepositoryTuples(new ShardingRuleConfiguration()).isEmpty());
     }
     
     @Test
     void assertSwapFullConfigToDataNodes() {
-        ShardingRuleConfiguration config = createMaximumShardingRule();
-        Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(15));
-        Iterator<YamlDataNode> iterator = result.iterator();
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(createMaximumShardingRule());
+        assertThat(actual.size(), is(15));
+        Iterator<RepositoryTuple> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("algorithms/core_standard_fixture"));
         assertThat(iterator.next().getKey(), is("algorithms/hash_mod"));
         assertThat(iterator.next().getKey(), is("key_generators/uuid"));
@@ -115,14 +112,13 @@ class YamlShardingDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToObjectEmpty() {
-        Collection<YamlDataNode> config = new LinkedList<>();
-        assertFalse(swapper.swapToObject(config).isPresent());
+        assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     
     @Test
     void assertSwapToObject() {
-        Collection<YamlDataNode> config = new LinkedList<>();
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/tables/LOGIC_TABLE/versions/0", "actualDataNodes: ds_${0..1}.table_${0..2}\n"
+        Collection<RepositoryTuple> repositoryTuples = new LinkedList<>();
+        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/tables/LOGIC_TABLE/versions/0", "actualDataNodes: ds_${0..1}.table_${0..2}\n"
                 + "auditStrategy:\n"
                 + "  allowHintDisable: false\n"
                 + "  auditorNames:\n"
@@ -139,7 +135,7 @@ class YamlShardingDataNodeRuleConfigurationSwapperTest {
                 + "  standard:\n"
                 + "    shardingAlgorithmName: table_inline\n"
                 + "    shardingColumn: order_id\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/tables/SUB_LOGIC_TABLE/versions/0", "actualDataNodes: ds_${0..1}.sub_table_${0..2}\n"
+        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/tables/SUB_LOGIC_TABLE/versions/0", "actualDataNodes: ds_${0..1}.sub_table_${0..2}\n"
                 + "databaseStrategy:\n"
                 + "  standard:\n"
                 + "    shardingAlgorithmName: database_inline\n"
@@ -152,7 +148,7 @@ class YamlShardingDataNodeRuleConfigurationSwapperTest {
                 + "  standard:\n"
                 + "    shardingAlgorithmName: table_inline\n"
                 + "    shardingColumn: order_id\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/auto_tables/auto_table/versions/0", "actualDataSources: ds_1,ds_2\n"
+        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/auto_tables/auto_table/versions/0", "actualDataSources: ds_1,ds_2\n"
                 + "auditStrategy:\n"
                 + "  allowHintDisable: true\n"
                 + "  auditorNames:\n"
@@ -165,87 +161,87 @@ class YamlShardingDataNodeRuleConfigurationSwapperTest {
                 + "  standard:\n"
                 + "    shardingAlgorithmName: hash_mod\n"
                 + "    shardingColumn: user_id\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/binding_tables/foo/versions/0", "foo:LOGIC_TABLE,SUB_LOGIC_TABLE"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_database_strategy/versions/0", "standard:\n"
+        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/binding_tables/foo/versions/0", "foo:LOGIC_TABLE,SUB_LOGIC_TABLE"));
+        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/default_strategies/default_database_strategy/versions/0", "standard:\n"
                 + "  shardingAlgorithmName: standard\n"
                 + "  shardingColumn: ds_id\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_table_strategy/versions/0", "standard:\n"
+        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/default_strategies/default_table_strategy/versions/0", "standard:\n"
                 + "  shardingAlgorithmName: standard\n"
                 + "  shardingColumn: table_id\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_key_generate_strategy/versions/0", "column: id\n"
+        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/default_strategies/default_key_generate_strategy/versions/0", "column: id\n"
                 + "keyGeneratorName: default\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_audit_strategy/versions/0", "allowHintDisable: false\n"
+        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/default_strategies/default_audit_strategy/versions/0", "allowHintDisable: false\n"
                 + "auditorNames:\n"
                 + "- audit_algorithm\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/algorithms/core_standard_fixture/versions/0", "type: CORE.STANDARD.FIXTURE\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/algorithms/hash_mod/versions/0", "props:\n"
+        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/algorithms/core_standard_fixture/versions/0", "type: CORE.STANDARD.FIXTURE\n"));
+        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/algorithms/hash_mod/versions/0", "props:\n"
                 + "  sharding-count: '4'\n"
                 + "type: hash_mod\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/key_generators/uuid/versions/0", "type: UUID\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/key_generators/default/versions/0", "type: UUID\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/key_generators/auto_increment/versions/0", "type: AUTO_INCREMENT.FIXTURE\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/auditors/audit_algorithm/versions/0", "type: DML_SHARDING_CONDITIONS\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_sharding_column/versions/0", "table_id"));
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = swapper.swapToObject(config);
+        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/key_generators/uuid/versions/0", "type: UUID\n"));
+        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/key_generators/default/versions/0", "type: UUID\n"));
+        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/key_generators/auto_increment/versions/0", "type: AUTO_INCREMENT.FIXTURE\n"));
+        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/auditors/audit_algorithm/versions/0", "type: DML_SHARDING_CONDITIONS\n"));
+        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/default_strategies/default_sharding_column/versions/0", "table_id"));
+        Optional<ShardingRuleConfiguration> shardingRuleConfig = swapper.swapToObject(repositoryTuples);
         assertTrue(shardingRuleConfig.isPresent());
-        ShardingRuleConfiguration result = shardingRuleConfig.get();
-        assertThat(result.getTables().size(), is(2));
-        assertThat(result.getTables().iterator().next().getLogicTable(), is("LOGIC_TABLE"));
-        assertThat(result.getTables().iterator().next().getActualDataNodes(), is("ds_${0..1}.table_${0..2}"));
-        assertInstanceOf(StandardShardingStrategyConfiguration.class, result.getTables().iterator().next().getDatabaseShardingStrategy());
-        assertThat(((StandardShardingStrategyConfiguration) result.getTables().iterator().next().getDatabaseShardingStrategy()).getShardingColumn(), is("user_id"));
-        assertThat(result.getTables().iterator().next().getDatabaseShardingStrategy().getShardingAlgorithmName(), is("database_inline"));
-        assertThat(result.getTables().iterator().next().getDatabaseShardingStrategy().getType(), is("STANDARD"));
-        assertInstanceOf(StandardShardingStrategyConfiguration.class, result.getTables().iterator().next().getTableShardingStrategy());
-        assertThat(((StandardShardingStrategyConfiguration) result.getTables().iterator().next().getTableShardingStrategy()).getShardingColumn(), is("order_id"));
-        assertThat(result.getTables().iterator().next().getTableShardingStrategy().getShardingAlgorithmName(), is("table_inline"));
-        assertThat(result.getTables().iterator().next().getTableShardingStrategy().getType(), is("STANDARD"));
-        assertThat(result.getTables().iterator().next().getKeyGenerateStrategy().getColumn(), is("id"));
-        assertThat(result.getTables().iterator().next().getKeyGenerateStrategy().getKeyGeneratorName(), is("uuid"));
-        assertThat(result.getTables().iterator().next().getAuditStrategy().getAuditorNames().size(), is(1));
-        assertThat(result.getTables().iterator().next().getAuditStrategy().getAuditorNames().iterator().next(), is("audit_algorithm"));
-        assertFalse(result.getTables().iterator().next().getAuditStrategy().isAllowHintDisable());
-        assertThat(result.getAutoTables().size(), is(1));
-        assertThat(result.getAutoTables().iterator().next().getLogicTable(), is("auto_table"));
-        assertThat(result.getAutoTables().iterator().next().getActualDataSources(), is("ds_1,ds_2"));
-        assertInstanceOf(StandardShardingStrategyConfiguration.class, result.getAutoTables().iterator().next().getShardingStrategy());
-        assertThat(((StandardShardingStrategyConfiguration) result.getAutoTables().iterator().next().getShardingStrategy()).getShardingColumn(), is("user_id"));
-        assertThat(result.getAutoTables().iterator().next().getShardingStrategy().getShardingAlgorithmName(), is("hash_mod"));
-        assertThat(result.getAutoTables().iterator().next().getShardingStrategy().getType(), is("STANDARD"));
-        assertThat(result.getAutoTables().iterator().next().getKeyGenerateStrategy().getColumn(), is("id"));
-        assertThat(result.getAutoTables().iterator().next().getKeyGenerateStrategy().getKeyGeneratorName(), is("auto_increment"));
-        assertThat(result.getAutoTables().iterator().next().getAuditStrategy().getAuditorNames().size(), is(1));
-        assertThat(result.getAutoTables().iterator().next().getAuditStrategy().getAuditorNames().iterator().next(), is("audit_algorithm"));
-        assertTrue(result.getAutoTables().iterator().next().getAuditStrategy().isAllowHintDisable());
-        assertThat(result.getBindingTableGroups().size(), is(1));
-        assertThat(result.getBindingTableGroups().iterator().next().getName(), is("foo"));
-        assertThat(result.getBindingTableGroups().iterator().next().getReference(), is("LOGIC_TABLE,SUB_LOGIC_TABLE"));
-        assertInstanceOf(StandardShardingStrategyConfiguration.class, result.getDefaultDatabaseShardingStrategy());
-        assertThat(((StandardShardingStrategyConfiguration) result.getDefaultDatabaseShardingStrategy()).getType(), is("STANDARD"));
-        assertThat(((StandardShardingStrategyConfiguration) result.getDefaultDatabaseShardingStrategy()).getShardingColumn(), is("ds_id"));
-        assertThat(result.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName(), is("standard"));
-        assertInstanceOf(StandardShardingStrategyConfiguration.class, result.getDefaultTableShardingStrategy());
-        assertThat(((StandardShardingStrategyConfiguration) result.getDefaultTableShardingStrategy()).getType(), is("STANDARD"));
-        assertThat(((StandardShardingStrategyConfiguration) result.getDefaultTableShardingStrategy()).getShardingColumn(), is("table_id"));
-        assertThat(result.getDefaultTableShardingStrategy().getShardingAlgorithmName(), is("standard"));
-        assertThat(result.getDefaultKeyGenerateStrategy().getColumn(), is("id"));
-        assertThat(result.getDefaultKeyGenerateStrategy().getKeyGeneratorName(), is("default"));
-        assertThat(result.getDefaultAuditStrategy().getAuditorNames().size(), is(1));
-        assertThat(result.getDefaultAuditStrategy().getAuditorNames().iterator().next(), is("audit_algorithm"));
-        assertFalse(result.getDefaultAuditStrategy().isAllowHintDisable());
-        assertThat(result.getDefaultShardingColumn(), is("table_id"));
-        assertThat(result.getShardingAlgorithms().size(), is(2));
-        assertThat(result.getShardingAlgorithms().get("core_standard_fixture").getType(), is("CORE.STANDARD.FIXTURE"));
-        assertThat(result.getShardingAlgorithms().get("hash_mod").getType(), is("hash_mod"));
-        assertThat(result.getShardingAlgorithms().get("hash_mod").getProps().size(), is(1));
-        assertThat(result.getShardingAlgorithms().get("hash_mod").getProps().get("sharding-count"), is("4"));
-        assertThat(result.getKeyGenerators().size(), is(3));
-        assertThat(result.getKeyGenerators().get("uuid").getType(), is("UUID"));
-        assertThat(result.getKeyGenerators().get("uuid").getProps().size(), is(0));
-        assertThat(result.getKeyGenerators().get("auto_increment").getType(), is("AUTO_INCREMENT.FIXTURE"));
-        assertThat(result.getAuditors().size(), is(1));
-        assertThat(result.getAuditors().get("audit_algorithm").getType(), is("DML_SHARDING_CONDITIONS"));
-        assertThat(result.getAuditors().get("audit_algorithm").getProps().size(), is(0));
-        assertNull(result.getShardingCache());
+        ShardingRuleConfiguration actual = shardingRuleConfig.get();
+        assertThat(actual.getTables().size(), is(2));
+        assertThat(actual.getTables().iterator().next().getLogicTable(), is("LOGIC_TABLE"));
+        assertThat(actual.getTables().iterator().next().getActualDataNodes(), is("ds_${0..1}.table_${0..2}"));
+        assertInstanceOf(StandardShardingStrategyConfiguration.class, actual.getTables().iterator().next().getDatabaseShardingStrategy());
+        assertThat(((StandardShardingStrategyConfiguration) actual.getTables().iterator().next().getDatabaseShardingStrategy()).getShardingColumn(), is("user_id"));
+        assertThat(actual.getTables().iterator().next().getDatabaseShardingStrategy().getShardingAlgorithmName(), is("database_inline"));
+        assertThat(actual.getTables().iterator().next().getDatabaseShardingStrategy().getType(), is("STANDARD"));
+        assertInstanceOf(StandardShardingStrategyConfiguration.class, actual.getTables().iterator().next().getTableShardingStrategy());
+        assertThat(((StandardShardingStrategyConfiguration) actual.getTables().iterator().next().getTableShardingStrategy()).getShardingColumn(), is("order_id"));
+        assertThat(actual.getTables().iterator().next().getTableShardingStrategy().getShardingAlgorithmName(), is("table_inline"));
+        assertThat(actual.getTables().iterator().next().getTableShardingStrategy().getType(), is("STANDARD"));
+        assertThat(actual.getTables().iterator().next().getKeyGenerateStrategy().getColumn(), is("id"));
+        assertThat(actual.getTables().iterator().next().getKeyGenerateStrategy().getKeyGeneratorName(), is("uuid"));
+        assertThat(actual.getTables().iterator().next().getAuditStrategy().getAuditorNames().size(), is(1));
+        assertThat(actual.getTables().iterator().next().getAuditStrategy().getAuditorNames().iterator().next(), is("audit_algorithm"));
+        assertFalse(actual.getTables().iterator().next().getAuditStrategy().isAllowHintDisable());
+        assertThat(actual.getAutoTables().size(), is(1));
+        assertThat(actual.getAutoTables().iterator().next().getLogicTable(), is("auto_table"));
+        assertThat(actual.getAutoTables().iterator().next().getActualDataSources(), is("ds_1,ds_2"));
+        assertInstanceOf(StandardShardingStrategyConfiguration.class, actual.getAutoTables().iterator().next().getShardingStrategy());
+        assertThat(((StandardShardingStrategyConfiguration) actual.getAutoTables().iterator().next().getShardingStrategy()).getShardingColumn(), is("user_id"));
+        assertThat(actual.getAutoTables().iterator().next().getShardingStrategy().getShardingAlgorithmName(), is("hash_mod"));
+        assertThat(actual.getAutoTables().iterator().next().getShardingStrategy().getType(), is("STANDARD"));
+        assertThat(actual.getAutoTables().iterator().next().getKeyGenerateStrategy().getColumn(), is("id"));
+        assertThat(actual.getAutoTables().iterator().next().getKeyGenerateStrategy().getKeyGeneratorName(), is("auto_increment"));
+        assertThat(actual.getAutoTables().iterator().next().getAuditStrategy().getAuditorNames().size(), is(1));
+        assertThat(actual.getAutoTables().iterator().next().getAuditStrategy().getAuditorNames().iterator().next(), is("audit_algorithm"));
+        assertTrue(actual.getAutoTables().iterator().next().getAuditStrategy().isAllowHintDisable());
+        assertThat(actual.getBindingTableGroups().size(), is(1));
+        assertThat(actual.getBindingTableGroups().iterator().next().getName(), is("foo"));
+        assertThat(actual.getBindingTableGroups().iterator().next().getReference(), is("LOGIC_TABLE,SUB_LOGIC_TABLE"));
+        assertInstanceOf(StandardShardingStrategyConfiguration.class, actual.getDefaultDatabaseShardingStrategy());
+        assertThat(((StandardShardingStrategyConfiguration) actual.getDefaultDatabaseShardingStrategy()).getType(), is("STANDARD"));
+        assertThat(((StandardShardingStrategyConfiguration) actual.getDefaultDatabaseShardingStrategy()).getShardingColumn(), is("ds_id"));
+        assertThat(actual.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName(), is("standard"));
+        assertInstanceOf(StandardShardingStrategyConfiguration.class, actual.getDefaultTableShardingStrategy());
+        assertThat(((StandardShardingStrategyConfiguration) actual.getDefaultTableShardingStrategy()).getType(), is("STANDARD"));
+        assertThat(((StandardShardingStrategyConfiguration) actual.getDefaultTableShardingStrategy()).getShardingColumn(), is("table_id"));
+        assertThat(actual.getDefaultTableShardingStrategy().getShardingAlgorithmName(), is("standard"));
+        assertThat(actual.getDefaultKeyGenerateStrategy().getColumn(), is("id"));
+        assertThat(actual.getDefaultKeyGenerateStrategy().getKeyGeneratorName(), is("default"));
+        assertThat(actual.getDefaultAuditStrategy().getAuditorNames().size(), is(1));
+        assertThat(actual.getDefaultAuditStrategy().getAuditorNames().iterator().next(), is("audit_algorithm"));
+        assertFalse(actual.getDefaultAuditStrategy().isAllowHintDisable());
+        assertThat(actual.getDefaultShardingColumn(), is("table_id"));
+        assertThat(actual.getShardingAlgorithms().size(), is(2));
+        assertThat(actual.getShardingAlgorithms().get("core_standard_fixture").getType(), is("CORE.STANDARD.FIXTURE"));
+        assertThat(actual.getShardingAlgorithms().get("hash_mod").getType(), is("hash_mod"));
+        assertThat(actual.getShardingAlgorithms().get("hash_mod").getProps().size(), is(1));
+        assertThat(actual.getShardingAlgorithms().get("hash_mod").getProps().get("sharding-count"), is("4"));
+        assertThat(actual.getKeyGenerators().size(), is(3));
+        assertThat(actual.getKeyGenerators().get("uuid").getType(), is("UUID"));
+        assertThat(actual.getKeyGenerators().get("uuid").getProps().size(), is(0));
+        assertThat(actual.getKeyGenerators().get("auto_increment").getType(), is("AUTO_INCREMENT.FIXTURE"));
+        assertThat(actual.getAuditors().size(), is(1));
+        assertThat(actual.getAuditors().get("audit_algorithm").getType(), is("DML_SHARDING_CONDITIONS"));
+        assertThat(actual.getAuditors().get("audit_algorithm").getProps().size(), is(0));
+        assertNull(actual.getShardingCache());
     }
 }

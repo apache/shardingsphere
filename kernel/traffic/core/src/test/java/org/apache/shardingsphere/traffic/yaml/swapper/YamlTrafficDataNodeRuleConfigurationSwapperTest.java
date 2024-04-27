@@ -29,6 +29,6 @@ class YamlTrafficDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToDataNodes() {
-        assertThat(swapper.swapToDataNodes(new TrafficRuleConfiguration()).iterator().next().getKey(), is("traffic"));
+        assertThat(swapper.swapToRepositoryTuples(new TrafficRuleConfiguration()).iterator().next().getKey(), is("traffic"));
     }
 }

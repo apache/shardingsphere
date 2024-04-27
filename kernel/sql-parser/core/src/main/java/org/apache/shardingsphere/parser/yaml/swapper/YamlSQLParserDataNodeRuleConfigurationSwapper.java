@@ -19,7 +19,7 @@ package org.apache.shardingsphere.parser.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.constant.SQLParserOrder;
@@ -39,8 +39,8 @@ public final class YamlSQLParserDataNodeRuleConfigurationSwapper implements Yaml
     private final YamlSQLParserCacheOptionConfigurationSwapper cacheOptionSwapper = new YamlSQLParserCacheOptionConfigurationSwapper();
     
     @Override
-    public Collection<YamlDataNode> swapToDataNodes(final SQLParserRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final SQLParserRuleConfiguration data) {
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlSQLParserRuleConfiguration swapToYamlConfiguration(final SQLParserRuleConfiguration data) {
@@ -51,13 +51,11 @@ public final class YamlSQLParserDataNodeRuleConfigurationSwapper implements Yaml
     }
     
     @Override
-    public Optional<SQLParserRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
-        for (YamlDataNode each : dataNodes) {
-            Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
-            if (!version.isPresent()) {
-                continue;
+    public Optional<SQLParserRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
+        for (RepositoryTuple each : repositoryTuples) {
+            if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
+                return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLParserRuleConfiguration.class)));
             }
-            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLParserRuleConfiguration.class)));
         }
         return Optional.empty();
     }
