@@ -80,23 +80,23 @@ public final class GlobalRulePersistService extends AbstractPersistService imple
             String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             String persistKey = GlobalNode.getGlobalRuleVersionNode(each.getKey(), nextActiveVersion);
             repository.persist(persistKey, each.getValue());
-            if (Strings.isNullOrEmpty(getActiveVersion(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey())))) {
+            if (Strings.isNullOrEmpty(repository.getDirectly(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey())))) {
                 repository.persist(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), DEFAULT_VERSION);
             }
-            result.add(new MetaDataVersion(GlobalNode.getGlobalRuleNode(each.getKey()), getActiveVersion(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey())), nextActiveVersion));
+            result.add(new MetaDataVersion(GlobalNode.getGlobalRuleNode(each.getKey()), repository.getDirectly(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey())), nextActiveVersion));
         }
         return result;
     }
     
     @Override
     public Collection<RuleConfiguration> load() {
-        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuple(GlobalNode.getGlobalRuleRootNode());
+        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuples(GlobalNode.getGlobalRuleRootNode());
         return repositoryTuples.isEmpty() ? Collections.emptyList() : new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToRuleConfigurations(repositoryTuples);
     }
     
     @Override
     public RuleConfiguration load(final String ruleName) {
-        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuple(GlobalNode.getGlobalRuleNode(ruleName));
+        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuples(GlobalNode.getGlobalRuleNode(ruleName));
         return new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapSingleRuleToRuleConfiguration(ruleName, repositoryTuples).orElse(null);
     }
 }

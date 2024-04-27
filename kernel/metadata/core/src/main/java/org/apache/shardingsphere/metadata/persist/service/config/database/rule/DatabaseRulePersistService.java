@@ -61,7 +61,7 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
     
     @Override
     public Collection<RuleConfiguration> load(final String databaseName) {
-        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuple(DatabaseRuleMetaDataNode.getRulesNode(databaseName));
+        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuples(DatabaseRuleMetaDataNode.getRulesNode(databaseName));
         return repositoryTuples.isEmpty() ? Collections.emptyList() : new YamlDataNodeRuleConfigurationSwapperEngine().swapToRuleConfigurations(repositoryTuples);
     }
     

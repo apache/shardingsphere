@@ -24,9 +24,8 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public abstract class AbstractPersistService {
@@ -39,49 +38,29 @@ public abstract class AbstractPersistService {
     
     private final PersistRepository repository;
     
-    /**
-     * Get repository tuples.
-     *
-     * @param rootPath root path
-     * @return repository tuples
-     */
-    public Collection<RepositoryTuple> getRepositoryTuple(final String rootPath) {
-        Collection<RepositoryTuple> result = new LinkedList<>();
+    protected final Collection<RepositoryTuple> getRepositoryTuples(final String rootNode) {
         Pattern pattern = Pattern.compile(ACTIVE_VERSION_PATTERN, Pattern.CASE_INSENSITIVE);
-        for (String each : getNodes(rootPath)) {
-            if (pattern.matcher(each).find()) {
-                String activeRuleKey = each.replace(ACTIVE_VERSION_PATH, VERSIONS_PATH) + "/" + getActiveVersion(each);
-                result.add(new RepositoryTuple(activeRuleKey, repository.getDirectly(activeRuleKey)));
-            }
-        }
-        return result;
+        return loadNodes(rootNode).stream().filter(each -> pattern.matcher(each).find()).map(this::getRepositoryTuple).collect(Collectors.toList());
     }
     
-    private Collection<String> getNodes(final String rootPath) {
+    private Collection<String> loadNodes(final String rootNode) {
         Collection<String> result = new LinkedHashSet<>();
-        getAllNodes(result, rootPath);
+        loadNodes(rootNode, result);
         if (1 == result.size()) {
             return Collections.emptyList();
         }
         return result;
     }
     
-    private void getAllNodes(final Collection<String> keys, final String path) {
-        keys.add(path);
-        List<String> childKeys = repository.getChildrenKeys(path);
-        if (childKeys.isEmpty()) {
-            return;
-        }
-        for (String each : childKeys) {
-            getAllNodes(keys, getPath(path, each));
+    private void loadNodes(final String toBeLoadedNode, final Collection<String> loadedNodes) {
+        loadedNodes.add(toBeLoadedNode);
+        for (String each : repository.getChildrenKeys(toBeLoadedNode)) {
+            loadNodes(String.join("/", toBeLoadedNode, each), loadedNodes);
         }
     }
     
-    private String getPath(final String path, final String childKey) {
-        return String.join("/", path, childKey);
-    }
-    
-    protected String getActiveVersion(final String key) {
-        return repository.getDirectly(key);
+    private RepositoryTuple getRepositoryTuple(final String node) {
+        String activeRuleKey = node.replace(ACTIVE_VERSION_PATH, VERSIONS_PATH) + "/" + repository.getDirectly(node);
+        return new RepositoryTuple(activeRuleKey, repository.getDirectly(activeRuleKey));
     }
 }
