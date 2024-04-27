@@ -84,9 +84,9 @@ class YamlShadowDataNodeRuleConfigurationSwapperTest {
         Collection<RepositoryTuple> repositoryTuples = Arrays.asList(
                 new RepositoryTuple("/metadata/foo_db/rules/shadow/data_sources/foo_db/versions/0", "productionDataSourceName: ds_0\nshadowDataSourceName: ds_1\n"),
                 new RepositoryTuple("/metadata/foo_db/rules/shadow/tables/foo_table/versions/0", "dataSourceNames:\n"
-                + "- ds_0\n"
-                + "shadowAlgorithmNames:\n"
-                + "- FIXTURE\n"),
+                        + "- ds_0\n"
+                        + "shadowAlgorithmNames:\n"
+                        + "- FIXTURE\n"),
                 new RepositoryTuple("/metadata/foo_db/rules/shadow/algorithms/FIXTURE/versions/0", "type: FIXTURE\n"),
                 new RepositoryTuple("/metadata/foo_db/rules/shadow/default_algorithm_name/versions/0", "FIXTURE"));
         Optional<ShadowRuleConfiguration> actual = swapper.swapToObject(repositoryTuples);
