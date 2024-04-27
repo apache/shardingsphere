@@ -63,8 +63,8 @@ public abstract class AbstractPersistService {
         return String.join("/", path, childKey);
     }
     
-    private RepositoryTuple getRepositoryTuple(final String nodeValue) {
-        String activeRuleKey = nodeValue.replace(ACTIVE_VERSION_PATH, VERSIONS_PATH) + "/" + repository.getDirectly(nodeValue);
+    private RepositoryTuple getRepositoryTuple(final String node) {
+        String activeRuleKey = node.replace(ACTIVE_VERSION_PATH, VERSIONS_PATH) + "/" + repository.getDirectly(node);
         return new RepositoryTuple(activeRuleKey, repository.getDirectly(activeRuleKey));
     }
 }
