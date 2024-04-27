@@ -23,7 +23,6 @@ import lombok.Getter;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings("UnstableApiUsage")
 @Getter
 public final class EventListenerFixture {
     
@@ -34,6 +33,7 @@ public final class EventListenerFixture {
      * 
      * @param event event
      */
+    @SuppressWarnings("unused")
     @Subscribe
     public void listen(final String event) {
         events.add(event);

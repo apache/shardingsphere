@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
 /**
  * Show process list executor.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor {
     
     private final boolean showFullProcesslist;
@@ -68,6 +67,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
      *
      * @param event show process list response event
      */
+    @SuppressWarnings("unused")
     @Subscribe
     public void receiveProcessListData(final ShowProcessListResponseEvent event) {
         processes = event.getProcesses();

@@ -42,7 +42,7 @@ public final class RuleItemChangedSubscriber {
      *
      * @param event alter rule item event
      */
-    @SuppressWarnings({"UnstableApiUsage", "rawtypes", "unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked", "unused"})
     @Subscribe
     public void renew(final AlterRuleItemEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
@@ -69,7 +69,7 @@ public final class RuleItemChangedSubscriber {
      *
      * @param event drop rule item event
      */
-    @SuppressWarnings({"UnstableApiUsage", "rawtypes", "unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked", "unused"})
     @Subscribe
     public void renew(final DropRuleItemEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
