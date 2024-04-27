@@ -39,13 +39,7 @@ public abstract class AbstractPersistService {
     
     private final PersistRepository repository;
     
-    /**
-     * Get repository tuples.
-     *
-     * @param rootPath root path
-     * @return repository tuples
-     */
-    public Collection<RepositoryTuple> getRepositoryTuple(final String rootPath) {
+    protected final Collection<RepositoryTuple> getRepositoryTuple(final String rootPath) {
         Collection<RepositoryTuple> result = new LinkedList<>();
         Pattern pattern = Pattern.compile(ACTIVE_VERSION_PATTERN, Pattern.CASE_INSENSITIVE);
         for (String each : getNodes(rootPath)) {
@@ -81,7 +75,7 @@ public abstract class AbstractPersistService {
         return String.join("/", path, childKey);
     }
     
-    protected String getActiveVersion(final String key) {
+    protected final String getActiveVersion(final String key) {
         return repository.getDirectly(key);
     }
 }
