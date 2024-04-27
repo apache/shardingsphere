@@ -18,18 +18,19 @@
 package org.apache.shardingsphere.broadcast.yaml.swapper;
 
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlBroadcastDataNodeRuleConfigurationSwapperTest {
     
@@ -37,17 +38,14 @@ class YamlBroadcastDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapEmptyConfigToDataNodes() {
-        BroadcastRuleConfiguration config = new BroadcastRuleConfiguration(Collections.emptyList());
-        Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(0));
+        assertTrue(swapper.swapToRepositoryTuples(new BroadcastRuleConfiguration(Collections.emptyList())).isEmpty());
     }
     
     @Test
     void assertSwapFullConfigToDataNodes() {
-        BroadcastRuleConfiguration config = createMaximumBroadcastRule();
-        Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(1));
-        Iterator<YamlDataNode> iterator = result.iterator();
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(createMaximumBroadcastRule());
+        assertThat(actual.size(), is(1));
+        Iterator<RepositoryTuple> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("tables"));
     }
     
@@ -57,19 +55,16 @@ class YamlBroadcastDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToObjectEmpty() {
-        Collection<YamlDataNode> config = new LinkedList<>();
-        assertFalse(swapper.swapToObject(config).isPresent());
+        assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     
     @Test
     void assertSwapToObject() {
-        Collection<YamlDataNode> config = new LinkedList<>();
-        config.add(new YamlDataNode("/metadata/foo_db/rules/broadcast/tables", "tables:\n"
-                + "- foo_table\n"
-                + "- foo_table2\n"));
-        BroadcastRuleConfiguration result = swapper.swapToObject(config).get();
-        assertThat(result.getTables().size(), is(2));
-        Iterator<String> iterator = result.getTables().iterator();
+        Optional<BroadcastRuleConfiguration> actual = swapper.swapToObject(
+                Collections.singleton(new RepositoryTuple("/metadata/foo_db/rules/broadcast/tables", "tables:\n" + "- foo_table\n" + "- foo_table2\n")));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getTables().size(), is(2));
+        Iterator<String> iterator = actual.get().getTables().iterator();
         assertThat(iterator.next(), is("foo_table"));
         assertThat(iterator.next(), is("foo_table2"));
     }

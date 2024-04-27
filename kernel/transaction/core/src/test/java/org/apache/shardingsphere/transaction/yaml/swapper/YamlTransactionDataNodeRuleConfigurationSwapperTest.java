@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.yaml.swapper;
 
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +33,7 @@ class YamlTransactionDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToDataNodes() {
-        Collection<YamlDataNode> actual = swapper.swapToDataNodes(new TransactionRuleConfiguration("", "", new Properties()));
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(new TransactionRuleConfiguration("", "", new Properties()));
         assertThat(actual.iterator().next().getKey(), is("transaction"));
     }
 }

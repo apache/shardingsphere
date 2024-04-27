@@ -22,18 +22,20 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleCo
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlEncryptDataNodeRuleConfigurationSwapperTest {
     
@@ -41,53 +43,48 @@ class YamlEncryptDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapEmptyConfigToDataNodes() {
-        EncryptRuleConfiguration config = new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
-        Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(0));
+        assertTrue(swapper.swapToRepositoryTuples(new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())).isEmpty());
     }
     
     @Test
     void assertSwapFullConfigToDataNodes() {
-        EncryptRuleConfiguration config = createMaximumEncryptRule();
-        Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(2));
-        Iterator<YamlDataNode> iterator = result.iterator();
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(createMaximumEncryptRule());
+        assertThat(actual.size(), is(2));
+        Iterator<RepositoryTuple> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("encryptors/FOO"));
         assertThat(iterator.next().getKey(), is("tables/foo"));
     }
     
     private EncryptRuleConfiguration createMaximumEncryptRule() {
-        Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
-        tables.add(new EncryptTableRuleConfiguration("foo", Collections.singleton(new EncryptColumnRuleConfiguration("foo_column", new EncryptColumnItemRuleConfiguration("FIXTURE", "FOO")))));
+        Collection<EncryptTableRuleConfiguration> tables = Collections.singleton(
+                new EncryptTableRuleConfiguration("foo", Collections.singleton(new EncryptColumnRuleConfiguration("foo_column", new EncryptColumnItemRuleConfiguration("FIXTURE", "FOO")))));
         return new EncryptRuleConfiguration(tables, Collections.singletonMap("FOO", new AlgorithmConfiguration("FOO", new Properties())));
     }
     
     @Test
     void assertSwapToObjectEmpty() {
-        Collection<YamlDataNode> config = new LinkedList<>();
-        assertFalse(swapper.swapToObject(config).isPresent());
+        assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     
     @Test
     void assertSwapToObject() {
-        Collection<YamlDataNode> config = new LinkedList<>();
-        config.add(new YamlDataNode("/metadata/foo_db/rules/encrypt/tables/foo/versions/0", "columns:\n"
+        Collection<RepositoryTuple> repositoryTuples = Arrays.asList(new RepositoryTuple("/metadata/foo_db/rules/encrypt/tables/foo/versions/0", "columns:\n"
                 + "  foo_column:\n"
                 + "    cipher:\n"
                 + "      encryptorName: FOO\n"
                 + "      name: FIXTURE\n"
                 + "    name: foo_column\n"
-                + "name: foo\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/encrypt/encryptors/FOO/versions/0", "type: FOO\n"));
-        EncryptRuleConfiguration result = swapper.swapToObject(config).get();
-        assertThat(result.getTables().size(), is(1));
-        assertThat(result.getTables().iterator().next().getName(), is("foo"));
-        assertThat(result.getTables().iterator().next().getColumns().size(), is(1));
-        assertThat(result.getTables().iterator().next().getColumns().iterator().next().getName(), is("foo_column"));
-        assertThat(result.getTables().iterator().next().getColumns().iterator().next().getCipher().getName(), is("FIXTURE"));
-        assertThat(result.getTables().iterator().next().getColumns().iterator().next().getCipher().getEncryptorName(), is("FOO"));
-        assertThat(result.getEncryptors().size(), is(1));
-        assertThat(result.getEncryptors().get("FOO").getType(), is("FOO"));
-        assertThat(result.getEncryptors().get("FOO").getProps().size(), is(0));
+                + "name: foo\n"), new RepositoryTuple("/metadata/foo_db/rules/encrypt/encryptors/FOO/versions/0", "type: FOO\n"));
+        Optional<EncryptRuleConfiguration> actual = swapper.swapToObject(repositoryTuples);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getTables().size(), is(1));
+        assertThat(actual.get().getTables().iterator().next().getName(), is("foo"));
+        assertThat(actual.get().getTables().iterator().next().getColumns().size(), is(1));
+        assertThat(actual.get().getTables().iterator().next().getColumns().iterator().next().getName(), is("foo_column"));
+        assertThat(actual.get().getTables().iterator().next().getColumns().iterator().next().getCipher().getName(), is("FIXTURE"));
+        assertThat(actual.get().getTables().iterator().next().getColumns().iterator().next().getCipher().getEncryptorName(), is("FOO"));
+        assertThat(actual.get().getEncryptors().size(), is(1));
+        assertThat(actual.get().getEncryptors().get("FOO").getType(), is("FOO"));
+        assertThat(actual.get().getEncryptors().get("FOO").getProps().size(), is(0));
     }
 }

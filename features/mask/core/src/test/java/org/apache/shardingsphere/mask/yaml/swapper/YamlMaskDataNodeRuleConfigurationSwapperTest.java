@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.mask.yaml.swapper;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -41,15 +42,15 @@ class YamlMaskDataNodeRuleConfigurationSwapperTest {
     @Test
     void assertSwapEmptyConfigurationToDataNodes() {
         MaskRuleConfiguration config = new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
-        assertThat(new YamlMaskDataNodeRuleConfigurationSwapper().swapToDataNodes(config).size(), is(0));
+        assertThat(new YamlMaskDataNodeRuleConfigurationSwapper().swapToRepositoryTuples(config).size(), is(0));
     }
     
     @Test
     void assertSwapFullConfigurationToDataNodes() {
         MaskRuleConfiguration config = createMaximumMaskRule();
-        Collection<YamlDataNode> actual = new YamlMaskDataNodeRuleConfigurationSwapper().swapToDataNodes(config);
+        Collection<RepositoryTuple> actual = new YamlMaskDataNodeRuleConfigurationSwapper().swapToRepositoryTuples(config);
         assertThat(actual.size(), is(2));
-        Iterator<YamlDataNode> iterator = actual.iterator();
+        Iterator<RepositoryTuple> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("mask_algorithms/FIXTURE"));
         assertThat(iterator.next().getKey(), is("tables/foo"));
     }
@@ -67,14 +68,12 @@ class YamlMaskDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        Collection<YamlDataNode> config = new LinkedList<>();
-        config.add(new YamlDataNode("/metadata/foo_db/rules/mask/tables/foo/versions/0", "columns:\n"
+        Collection<RepositoryTuple> repositoryTuples = Arrays.asList(new RepositoryTuple("/metadata/foo_db/rules/mask/tables/foo/versions/0", "columns:\n"
                 + "  foo_column:\n"
                 + "    logicColumn: foo_column\n"
                 + "    maskAlgorithm: FIXTURE\n"
-                + "name: foo\n"));
-        config.add(new YamlDataNode("/metadata/foo_db/rules/mask/mask_algorithms/FIXTURE/versions/0", "type: FIXTURE\n"));
-        Optional<MaskRuleConfiguration> actual = new YamlMaskDataNodeRuleConfigurationSwapper().swapToObject(config);
+                + "name: foo\n"), new RepositoryTuple("/metadata/foo_db/rules/mask/mask_algorithms/FIXTURE/versions/0", "type: FIXTURE\n"));
+        Optional<MaskRuleConfiguration> actual = new YamlMaskDataNodeRuleConfigurationSwapper().swapToObject(repositoryTuples);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getTables().size(), is(1));
         assertThat(actual.get().getTables().iterator().next().getName(), is("foo"));

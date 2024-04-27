@@ -29,6 +29,6 @@ class YamlSQLTranslatorDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToDataNodes() {
-        assertThat(swapper.swapToDataNodes(new DefaultSQLTranslatorRuleConfigurationBuilder().build()).iterator().next().getKey(), is("sql_translator"));
+        assertThat(swapper.swapToRepositoryTuples(new DefaultSQLTranslatorRuleConfigurationBuilder().build()).iterator().next().getKey(), is("sql_translator"));
     }
 }

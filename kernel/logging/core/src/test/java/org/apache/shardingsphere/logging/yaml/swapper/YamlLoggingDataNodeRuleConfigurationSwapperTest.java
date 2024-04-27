@@ -29,6 +29,6 @@ class YamlLoggingDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToDataNodes() {
-        assertThat(swapper.swapToDataNodes(new DefaultLoggingRuleConfigurationBuilder().build()).iterator().next().getKey(), is("logging"));
+        assertThat(swapper.swapToRepositoryTuples(new DefaultLoggingRuleConfigurationBuilder().build()).iterator().next().getKey(), is("logging"));
     }
 }

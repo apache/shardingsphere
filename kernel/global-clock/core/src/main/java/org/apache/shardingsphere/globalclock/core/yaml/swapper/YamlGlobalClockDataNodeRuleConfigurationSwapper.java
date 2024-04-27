@@ -22,7 +22,7 @@ import org.apache.shardingsphere.globalclock.core.rule.constant.GlobalClockOrder
 import org.apache.shardingsphere.globalclock.core.yaml.config.YamlGlobalClockRuleConfiguration;
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapper;
 
 import java.util.Collection;
@@ -36,8 +36,8 @@ import java.util.Properties;
 public final class YamlGlobalClockDataNodeRuleConfigurationSwapper implements YamlDataNodeGlobalRuleConfigurationSwapper<GlobalClockRuleConfiguration> {
     
     @Override
-    public Collection<YamlDataNode> swapToDataNodes(final GlobalClockRuleConfiguration data) {
-        return Collections.singletonList(new YamlDataNode(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final GlobalClockRuleConfiguration data) {
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
     }
     
     private YamlGlobalClockRuleConfiguration swapToYamlConfiguration(final GlobalClockRuleConfiguration data) {
@@ -50,13 +50,11 @@ public final class YamlGlobalClockDataNodeRuleConfigurationSwapper implements Ya
     }
     
     @Override
-    public Optional<GlobalClockRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
-        for (YamlDataNode each : dataNodes) {
-            Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
-            if (!version.isPresent()) {
-                continue;
+    public Optional<GlobalClockRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
+        for (RepositoryTuple each : repositoryTuples) {
+            if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
+                return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlGlobalClockRuleConfiguration.class)));
             }
-            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlGlobalClockRuleConfiguration.class)));
         }
         return Optional.empty();
     }

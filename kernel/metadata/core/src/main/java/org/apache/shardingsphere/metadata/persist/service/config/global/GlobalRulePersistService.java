@@ -20,7 +20,7 @@ package org.apache.shardingsphere.metadata.persist.service.config.global;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
@@ -53,11 +53,10 @@ public final class GlobalRulePersistService extends AbstractPersistService imple
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
         Map<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> yamlConfigs = new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
         for (Entry<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
-            Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
-            if (dataNodes.isEmpty()) {
-                continue;
+            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
+            if (!repositoryTuples.isEmpty()) {
+                persistDataNodes(repositoryTuples);
             }
-            persistDataNodes(dataNodes);
         }
     }
     
@@ -67,18 +66,17 @@ public final class GlobalRulePersistService extends AbstractPersistService imple
         Collection<MetaDataVersion> result = new LinkedList<>();
         Map<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> yamlConfigs = new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
         for (Entry<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
-            Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
-            if (dataNodes.isEmpty()) {
-                continue;
+            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
+            if (!repositoryTuples.isEmpty()) {
+                result.addAll(persistDataNodes(repositoryTuples));
             }
-            result.addAll(persistDataNodes(dataNodes));
         }
         return result;
     }
     
-    private Collection<MetaDataVersion> persistDataNodes(final Collection<YamlDataNode> dataNodes) {
+    private Collection<MetaDataVersion> persistDataNodes(final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        for (YamlDataNode each : dataNodes) {
+        for (RepositoryTuple each : repositoryTuples) {
             List<String> versions = repository.getChildrenKeys(GlobalNode.getGlobalRuleVersionsNode(each.getKey()));
             String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             String persistKey = GlobalNode.getGlobalRuleVersionNode(each.getKey(), nextActiveVersion);
@@ -93,13 +91,13 @@ public final class GlobalRulePersistService extends AbstractPersistService imple
     
     @Override
     public Collection<RuleConfiguration> load() {
-        Collection<YamlDataNode> dataNodes = getDataNodes(GlobalNode.getGlobalRuleRootNode());
-        return dataNodes.isEmpty() ? Collections.emptyList() : new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
+        Collection<RepositoryTuple> repositoryTuple = getRepositoryTuple(GlobalNode.getGlobalRuleRootNode());
+        return repositoryTuple.isEmpty() ? Collections.emptyList() : new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToRuleConfigurations(repositoryTuple);
     }
     
     @Override
     public RuleConfiguration load(final String ruleName) {
-        Collection<YamlDataNode> dataNodes = getDataNodes(GlobalNode.getGlobalRuleNode(ruleName));
-        return new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapSingleRuleToRuleConfiguration(ruleName, dataNodes).orElse(null);
+        Collection<RepositoryTuple> repositoryTuple = getRepositoryTuple(GlobalNode.getGlobalRuleNode(ruleName));
+        return new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapSingleRuleToRuleConfiguration(ruleName, repositoryTuple).orElse(null);
     }
 }

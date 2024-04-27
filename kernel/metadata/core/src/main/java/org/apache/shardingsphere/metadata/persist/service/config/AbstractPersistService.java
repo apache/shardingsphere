@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.metadata.persist.service.config;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
@@ -41,19 +40,18 @@ public abstract class AbstractPersistService {
     private final PersistRepository repository;
     
     /**
-     * Get data nodes.
+     * Get repository tuples.
      *
      * @param rootPath root path
-     * @return yaml data nodes
+     * @return repository tuples
      */
-    public Collection<YamlDataNode> getDataNodes(final String rootPath) {
-        Collection<YamlDataNode> result = new LinkedList<>();
+    public Collection<RepositoryTuple> getRepositoryTuple(final String rootPath) {
+        Collection<RepositoryTuple> result = new LinkedList<>();
+        Pattern pattern = Pattern.compile(ACTIVE_VERSION_PATTERN, Pattern.CASE_INSENSITIVE);
         for (String each : getNodes(rootPath)) {
-            Pattern pattern = Pattern.compile(ACTIVE_VERSION_PATTERN, Pattern.CASE_INSENSITIVE);
-            Matcher matcher = pattern.matcher(each);
-            if (matcher.find()) {
+            if (pattern.matcher(each).find()) {
                 String activeRuleKey = each.replace(ACTIVE_VERSION_PATH, VERSIONS_PATH) + "/" + getActiveVersion(each);
-                result.add(new YamlDataNode(activeRuleKey, repository.getDirectly(activeRuleKey)));
+                result.add(new RepositoryTuple(activeRuleKey, repository.getDirectly(activeRuleKey)));
             }
         }
         return result;

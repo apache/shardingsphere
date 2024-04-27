@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.globalclock.core.yaml.swapper;
 
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -33,7 +33,7 @@ class YamlGlobalClockDataNodeRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToDataNodes() {
-        Collection<YamlDataNode> actual = swapper.swapToDataNodes(new GlobalClockRuleConfiguration("", "", false, new Properties()));
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(new GlobalClockRuleConfiguration("", "", false, new Properties()));
         assertThat(actual.iterator().next().getKey(), is("global_clock"));
     }
 }

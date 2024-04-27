@@ -20,7 +20,7 @@ package org.apache.shardingsphere.metadata.persist.service.config.database.rule;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.metadata.DatabaseRuleMetaDataNode;
@@ -54,18 +54,17 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
     public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
         Map<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> yamlConfigs = new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
         for (Entry<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
-            Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
-            if (dataNodes.isEmpty()) {
-                continue;
+            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
+            if (!repositoryTuples.isEmpty()) {
+                persistDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), repositoryTuples);
             }
-            persistDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), dataNodes);
         }
     }
     
     @Override
     public Collection<RuleConfiguration> load(final String databaseName) {
-        Collection<YamlDataNode> dataNodes = getDataNodes(DatabaseRuleMetaDataNode.getRulesNode(databaseName));
-        return dataNodes.isEmpty() ? Collections.emptyList() : new YamlDataNodeRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
+        Collection<RepositoryTuple> repositoryTuple = getRepositoryTuple(DatabaseRuleMetaDataNode.getRulesNode(databaseName));
+        return repositoryTuple.isEmpty() ? Collections.emptyList() : new YamlDataNodeRuleConfigurationSwapperEngine().swapToRuleConfigurations(repositoryTuple);
     }
     
     @Override
@@ -79,18 +78,17 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
         Collection<MetaDataVersion> result = new LinkedList<>();
         Map<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> yamlConfigs = new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
         for (Entry<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
-            Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
-            if (dataNodes.isEmpty()) {
-                continue;
+            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
+            if (!repositoryTuples.isEmpty()) {
+                result.addAll(persistDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), repositoryTuples));
             }
-            result.addAll(persistDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), dataNodes));
         }
         return result;
     }
     
-    private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
+    private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        for (YamlDataNode each : dataNodes) {
+        for (RepositoryTuple each : repositoryTuples) {
             List<String> versions = repository.getChildrenKeys(DatabaseRuleMetaDataNode.getDatabaseRuleVersionsNode(databaseName, ruleName, each.getKey()));
             String nextVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             repository.persist(DatabaseRuleMetaDataNode.getDatabaseRuleVersionNode(databaseName, ruleName, each.getKey(), nextVersion), each.getValue());
@@ -108,20 +106,20 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
         Collection<MetaDataVersion> result = new LinkedList<>();
         Map<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> yamlConfigs = new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
         for (Entry<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
-            Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
-            if (dataNodes.isEmpty()) {
+            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
+            if (repositoryTuples.isEmpty()) {
                 continue;
             }
-            List<YamlDataNode> newDataNodes = new LinkedList<>(dataNodes);
-            Collections.reverse(newDataNodes);
-            result.addAll(deleteDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), newDataNodes));
+            List<RepositoryTuple> newRepositoryTuples = new LinkedList<>(repositoryTuples);
+            Collections.reverse(newRepositoryTuples);
+            result.addAll(deleteDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), newRepositoryTuples));
         }
         return result;
     }
     
-    private Collection<MetaDataVersion> deleteDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
+    private Collection<MetaDataVersion> deleteDataNodes(final String databaseName, final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        for (YamlDataNode each : dataNodes) {
+        for (RepositoryTuple each : repositoryTuples) {
             String delKey = DatabaseRuleMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey());
             repository.delete(delKey);
             result.add(new MetaDataVersion(delKey));

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.yaml.swapper;
 
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -30,18 +30,18 @@ import java.util.Optional;
 public interface YamlDataNodeConfigurationSwapper<T> {
     
     /**
-    * Swap to YAML data node.
+    * Swap to repository tuples.
     *
     * @param data data to be swapped
-    * @return YAML data nodes
+    * @return repository tuples
     */
-    Collection<YamlDataNode> swapToDataNodes(T data);
+    Collection<RepositoryTuple> swapToRepositoryTuples(T data);
     
     /**
-     * Swap from data node to object.
+     * Swap from repository tuple to object.
      *
-     * @param dataNodes data nodes
+     * @param repositoryTuples repository tuples
      * @return swapped object
      */
-    Optional<T> swapToObject(Collection<YamlDataNode> dataNodes);
+    Optional<T> swapToObject(Collection<RepositoryTuple> repositoryTuples);
 }
