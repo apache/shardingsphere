@@ -306,7 +306,8 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     public void alterGlobalRuleConfiguration(final RuleConfiguration toBeAlteredRuleConfig) {
         contextManager.getConfigurationContextManager().alterGlobalRuleConfiguration(toBeAlteredRuleConfig);
         GlobalPersistService<Collection<RuleConfiguration>> globalRuleService = contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService();
-        contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(globalRuleService.persistConfig(Collections.singleton(toBeAlteredRuleConfig)));
+        contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService()
+                .switchActiveVersion(globalRuleService.persistConfigurations(Collections.singleton(toBeAlteredRuleConfig)));
         clearServiceCache();
     }
     
@@ -314,7 +315,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     public void alterProperties(final Properties props) {
         contextManager.getConfigurationContextManager().alterProperties(props);
         if (null != contextManager.getMetaDataContexts().getPersistService().getPropsService()) {
-            Collection<MetaDataVersion> versions = contextManager.getMetaDataContexts().getPersistService().getPropsService().persistConfig(props);
+            Collection<MetaDataVersion> versions = contextManager.getMetaDataContexts().getPersistService().getPropsService().persistConfigurations(props);
             contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(versions);
         }
         clearServiceCache();

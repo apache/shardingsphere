@@ -39,10 +39,10 @@ public interface GlobalPersistService<T> {
     /**
      * Persist configurations.
      *
-     * @param globalRuleConfigs configurations
+     * @param globalRuleConfigs global configurations
      * @return meta data versions
      */
-    Collection<MetaDataVersion> persistConfig(T globalRuleConfigs);
+    Collection<MetaDataVersion> persistConfigurations(T globalRuleConfigs);
     
     /**
      * Load configurations.
