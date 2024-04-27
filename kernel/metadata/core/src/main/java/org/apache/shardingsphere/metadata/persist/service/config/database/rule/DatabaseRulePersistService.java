@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.metadata.DatabaseRuleMetaDataNode;
-import org.apache.shardingsphere.metadata.persist.service.config.AbstractPersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
@@ -37,15 +37,17 @@ import java.util.Map.Entry;
 /**
  * Database rule persist service.
  */
-public final class DatabaseRulePersistService extends AbstractPersistService implements DatabaseBasedPersistService<Collection<RuleConfiguration>> {
+public final class DatabaseRulePersistService implements DatabaseBasedPersistService<Collection<RuleConfiguration>> {
     
     private static final String DEFAULT_VERSION = "0";
     
     private final PersistRepository repository;
     
+    private final RepositoryTuplePersistService repositoryTuplePersistService;
+    
     public DatabaseRulePersistService(final PersistRepository repository) {
-        super(repository);
         this.repository = repository;
+        repositoryTuplePersistService = new RepositoryTuplePersistService(repository);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -61,7 +63,7 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
     
     @Override
     public Collection<RuleConfiguration> load(final String databaseName) {
-        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuples(DatabaseRuleMetaDataNode.getRulesNode(databaseName));
+        Collection<RepositoryTuple> repositoryTuples = repositoryTuplePersistService.loadRepositoryTuples(DatabaseRuleMetaDataNode.getRulesNode(databaseName));
         return repositoryTuples.isEmpty() ? Collections.emptyList() : new YamlDataNodeRuleConfigurationSwapperEngine().swapToRuleConfigurations(repositoryTuples);
     }
     

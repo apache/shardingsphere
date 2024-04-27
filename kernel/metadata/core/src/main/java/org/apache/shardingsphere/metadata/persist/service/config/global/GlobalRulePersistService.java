@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
-import org.apache.shardingsphere.metadata.persist.service.config.AbstractPersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
@@ -36,15 +36,17 @@ import java.util.Map.Entry;
 /**
  * Global rule persist service.
  */
-public final class GlobalRulePersistService extends AbstractPersistService implements GlobalPersistService<Collection<RuleConfiguration>> {
+public final class GlobalRulePersistService implements GlobalPersistService<Collection<RuleConfiguration>> {
     
     private static final String DEFAULT_VERSION = "0";
     
     private final PersistRepository repository;
     
+    private final RepositoryTuplePersistService repositoryTuplePersistService;
+    
     public GlobalRulePersistService(final PersistRepository repository) {
-        super(repository);
         this.repository = repository;
+        repositoryTuplePersistService = new RepositoryTuplePersistService(repository);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -54,7 +56,7 @@ public final class GlobalRulePersistService extends AbstractPersistService imple
                 .swapToYamlRuleConfigurations(globalRuleConfigs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
-                persistDataNodes(repositoryTuples);
+                persistTuples(repositoryTuples);
             }
         }
     }
@@ -67,13 +69,13 @@ public final class GlobalRulePersistService extends AbstractPersistService imple
                 .swapToYamlRuleConfigurations(globalRuleConfigs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
-                result.addAll(persistDataNodes(repositoryTuples));
+                result.addAll(persistTuples(repositoryTuples));
             }
         }
         return result;
     }
     
-    private Collection<MetaDataVersion> persistDataNodes(final Collection<RepositoryTuple> repositoryTuples) {
+    private Collection<MetaDataVersion> persistTuples(final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
             List<String> versions = repository.getChildrenKeys(GlobalNode.getGlobalRuleVersionsNode(each.getKey()));
@@ -90,13 +92,13 @@ public final class GlobalRulePersistService extends AbstractPersistService imple
     
     @Override
     public Collection<RuleConfiguration> load() {
-        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuples(GlobalNode.getGlobalRuleRootNode());
+        Collection<RepositoryTuple> repositoryTuples = repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleRootNode());
         return repositoryTuples.isEmpty() ? Collections.emptyList() : new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToRuleConfigurations(repositoryTuples);
     }
     
     @Override
     public RuleConfiguration load(final String ruleName) {
-        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuples(GlobalNode.getGlobalRuleNode(ruleName));
+        Collection<RepositoryTuple> repositoryTuples = repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleNode(ruleName));
         return new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapSingleRuleToRuleConfiguration(ruleName, repositoryTuples).orElse(null);
     }
 }

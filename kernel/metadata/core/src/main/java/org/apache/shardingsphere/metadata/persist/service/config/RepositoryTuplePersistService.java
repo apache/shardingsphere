@@ -27,8 +27,11 @@ import java.util.LinkedHashSet;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * Repository tuple persist service.
+ */
 @RequiredArgsConstructor
-public abstract class AbstractPersistService {
+public final class RepositoryTuplePersistService {
     
     private static final String ACTIVE_VERSION_PATTERN = "/active_version$";
     
@@ -38,7 +41,13 @@ public abstract class AbstractPersistService {
     
     private final PersistRepository repository;
     
-    protected final Collection<RepositoryTuple> getRepositoryTuples(final String rootNode) {
+    /**
+     * Load repository tuples.
+     * 
+     * @param rootNode root node
+     * @return loaded repository tuples
+     */
+    public Collection<RepositoryTuple> loadRepositoryTuples(final String rootNode) {
         Pattern pattern = Pattern.compile(ACTIVE_VERSION_PATTERN, Pattern.CASE_INSENSITIVE);
         return loadNodes(rootNode).stream().filter(each -> pattern.matcher(each).find()).map(this::getRepositoryTuple).collect(Collectors.toList());
     }
