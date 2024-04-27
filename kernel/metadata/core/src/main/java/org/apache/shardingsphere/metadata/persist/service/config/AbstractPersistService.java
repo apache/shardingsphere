@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
@@ -40,11 +39,11 @@ public abstract class AbstractPersistService {
     private final PersistRepository repository;
     
     protected final Collection<RepositoryTuple> getRepositoryTuples(final String rootPath) {
-        Collection<RepositoryTuple> result = new LinkedList<>();
         Pattern pattern = Pattern.compile(ACTIVE_VERSION_PATTERN, Pattern.CASE_INSENSITIVE);
+        Collection<RepositoryTuple> result = new LinkedList<>();
         for (String each : getNodes(rootPath)) {
             if (pattern.matcher(each).find()) {
-                String activeRuleKey = each.replace(ACTIVE_VERSION_PATH, VERSIONS_PATH) + "/" + getActiveVersion(each);
+                String activeRuleKey = each.replace(ACTIVE_VERSION_PATH, VERSIONS_PATH) + "/" + repository.getDirectly(each);
                 result.add(new RepositoryTuple(activeRuleKey, repository.getDirectly(activeRuleKey)));
             }
         }
@@ -62,20 +61,16 @@ public abstract class AbstractPersistService {
     
     private void getAllNodes(final Collection<String> keys, final String path) {
         keys.add(path);
-        List<String> childKeys = repository.getChildrenKeys(path);
-        if (childKeys.isEmpty()) {
+        Collection<String> childrenKeys = repository.getChildrenKeys(path);
+        if (childrenKeys.isEmpty()) {
             return;
         }
-        for (String each : childKeys) {
+        for (String each : childrenKeys) {
             getAllNodes(keys, getPath(path, each));
         }
     }
     
     private String getPath(final String path, final String childKey) {
         return String.join("/", path, childKey);
-    }
-    
-    protected final String getActiveVersion(final String key) {
-        return repository.getDirectly(key);
     }
 }
