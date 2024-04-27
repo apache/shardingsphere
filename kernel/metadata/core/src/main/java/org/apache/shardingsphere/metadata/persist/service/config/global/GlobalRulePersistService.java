@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -51,8 +50,8 @@ public final class GlobalRulePersistService extends AbstractPersistService imple
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
-        Map<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> yamlConfigs = new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
-        for (Entry<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        for (Entry<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> entry : new YamlDataNodeGlobalRuleConfigurationSwapperEngine()
+                .swapToYamlRuleConfigurations(globalRuleConfigs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
                 persistDataNodes(repositoryTuples);
@@ -64,8 +63,8 @@ public final class GlobalRulePersistService extends AbstractPersistService imple
     @Override
     public Collection<MetaDataVersion> persistConfigurations(final Collection<RuleConfiguration> globalRuleConfigs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        Map<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> yamlConfigs = new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
-        for (Entry<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        for (Entry<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> entry : new YamlDataNodeGlobalRuleConfigurationSwapperEngine()
+                .swapToYamlRuleConfigurations(globalRuleConfigs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
                 result.addAll(persistDataNodes(repositoryTuples));
@@ -91,13 +90,13 @@ public final class GlobalRulePersistService extends AbstractPersistService imple
     
     @Override
     public Collection<RuleConfiguration> load() {
-        Collection<RepositoryTuple> repositoryTuple = getRepositoryTuple(GlobalNode.getGlobalRuleRootNode());
-        return repositoryTuple.isEmpty() ? Collections.emptyList() : new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToRuleConfigurations(repositoryTuple);
+        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuple(GlobalNode.getGlobalRuleRootNode());
+        return repositoryTuples.isEmpty() ? Collections.emptyList() : new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToRuleConfigurations(repositoryTuples);
     }
     
     @Override
     public RuleConfiguration load(final String ruleName) {
-        Collection<RepositoryTuple> repositoryTuple = getRepositoryTuple(GlobalNode.getGlobalRuleNode(ruleName));
-        return new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapSingleRuleToRuleConfiguration(ruleName, repositoryTuple).orElse(null);
+        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuple(GlobalNode.getGlobalRuleNode(ruleName));
+        return new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapSingleRuleToRuleConfiguration(ruleName, repositoryTuples).orElse(null);
     }
 }
