@@ -77,8 +77,8 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
         dataSourceNodeService = new DataSourceNodePersistService(repository);
         databaseMetaDataService = new DatabaseMetaDataPersistService(repository, metaDataVersionPersistService);
         databaseRulePersistService = new DatabaseRulePersistService(repository);
-        globalRuleService = new GlobalRulePersistService(repository);
-        propsService = new PropertiesPersistService(repository);
+        globalRuleService = new GlobalRulePersistService(repository, metaDataVersionPersistService);
+        propsService = new PropertiesPersistService(repository, metaDataVersionPersistService);
         shardingSphereDataPersistService = new ShardingSphereDataPersistService(repository);
     }
     
