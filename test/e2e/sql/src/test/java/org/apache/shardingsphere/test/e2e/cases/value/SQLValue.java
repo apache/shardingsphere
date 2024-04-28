@@ -64,22 +64,29 @@ public final class SQLValue {
                 return value;
             case "tinyint":
                 return Byte.parseByte(value);
+            case "tinyint unsigned":
             case "smallint":
                 return Short.parseShort(value);
+            case "smallint unsigned":
             case "mediumint":
             case "year":
             case "int":
                 return Integer.parseInt(value);
+            case "int unsigned":
+            case "bigint unsigned":
             case "bigint":
             case "long":
                 return Long.parseLong(value);
             case "float":
                 return Float.parseFloat(value);
+            case "float unsigned":
             case "double":
                 return Double.parseDouble(value);
             case "numeric":
                 return value.contains(".") ? Double.parseDouble(value) : Long.parseLong(value);
+            case "double unsigned":
             case "decimal":
+            case "decimal unsigned":
                 return new BigDecimal(value);
             case "boolean":
                 return Boolean.parseBoolean(value);
