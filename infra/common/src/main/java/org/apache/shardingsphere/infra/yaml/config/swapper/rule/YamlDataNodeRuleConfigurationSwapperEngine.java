@@ -24,24 +24,12 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurati
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * YAML data node rule configuration swapper engine.
  */
 public final class YamlDataNodeRuleConfigurationSwapperEngine {
-    
-    /**
-     * Swap to YAML global rule configurations.
-     *
-     * @param ruleConfigs rule configurations
-     * @return YAML global rule configurations
-     */
-    @SuppressWarnings("rawtypes")
-    public Map<RuleConfiguration, YamlDataNodeConfigurationSwapper> swapToYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
-        return OrderedSPILoader.getServices(YamlDataNodeConfigurationSwapper.class, ruleConfigs);
-    }
     
     /**
      * Swap from YAML global rule configurations to rule configurations.

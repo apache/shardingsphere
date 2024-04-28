@@ -20,6 +20,7 @@ package org.apache.shardingsphere.metadata.persist.service.config.global;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapperEngine;
@@ -57,8 +58,7 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
-        for (Entry<RuleConfiguration, YamlDataNodeConfigurationSwapper> entry : new YamlDataNodeRuleConfigurationSwapperEngine()
-                .swapToYamlRuleConfigurations(globalRuleConfigs).entrySet()) {
+        for (Entry<RuleConfiguration, YamlDataNodeConfigurationSwapper> entry : OrderedSPILoader.getServices(YamlDataNodeConfigurationSwapper.class, globalRuleConfigs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
                 metaDataVersions.addAll(persistTuples(repositoryTuples));
