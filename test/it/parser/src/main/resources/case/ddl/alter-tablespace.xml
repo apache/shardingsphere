@@ -149,4 +149,8 @@
     <alter-tablespace sql-case-id="alter_tablespace_add_tempfile_size_m_reuse">
         <tablespace start-index="17" stop-index="22" name="lmtemp" />
     </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_with_initial_size">
+        <tablespace start-index="17" stop-index="20" name="ts_1" />
+    </alter-tablespace>
 </sql-parser-test-cases>
