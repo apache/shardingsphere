@@ -3149,3 +3149,11 @@ ZONE
 TIMESTAMPDIFF
     : T I M E S T A M P D I F F
     ;
+
+AUTHENTICATION_FIDO
+    : A U T H E N T I C A T I O N UL_ F I D O
+    ;
+
+FACTOR
+    : F A C T O R
+    ;

@@ -135,7 +135,7 @@ accountLockPasswordExpireOption
     ;
 
 alterUser
-    : ALTER USER ifExists? alterUserList requireClause? connectOptions? accountLockPasswordExpireOptions?
+    : ALTER USER ifExists? alterUserList requireClause? connectOptions? accountLockPasswordExpireOptions? alterOperation?
     | ALTER USER ifExists? USER LP_ RP_ userFuncAuthOption
     | ALTER USER ifExists? username DEFAULT ROLE (NONE | ALL | roleName (COMMA_ roleName)*)
     ;
@@ -146,6 +146,18 @@ alterUserEntry
 
 alterUserList
     : alterUserEntry (COMMA_ alterUserEntry)*
+    ;
+
+alterOperation
+    : (ADD | MODIFY | DROP | SET) factoryOperation
+    ;
+
+factoryOperation
+    : NUMBER_ FACTOR (IDENTIFIED WITH authentication_fido)?
+    ;
+
+authentication_fido
+    : AUTHENTICATION_FIDO
     ;
 
 dropUser
