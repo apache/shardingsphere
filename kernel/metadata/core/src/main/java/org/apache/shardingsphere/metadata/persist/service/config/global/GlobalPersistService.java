@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.metadata.persist.service.config.global;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-
-import java.util.Collection;
 
 /**
  * Global persist service.
@@ -35,14 +32,6 @@ public interface GlobalPersistService<T> {
      * @param globalRuleConfigs configurations
      */
     void persist(T globalRuleConfigs);
-    
-    /**
-     * Persist configurations.
-     *
-     * @param globalRuleConfigs global configurations
-     * @return meta data versions
-     */
-    Collection<MetaDataVersion> persistConfigurations(T globalRuleConfigs);
     
     /**
      * Load configurations.

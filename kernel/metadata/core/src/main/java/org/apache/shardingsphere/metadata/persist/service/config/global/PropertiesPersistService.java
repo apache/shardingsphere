@@ -22,9 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
+import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -39,28 +39,18 @@ public final class PropertiesPersistService implements GlobalPersistService<Prop
     
     private final PersistRepository repository;
     
-    @Override
-    public void persist(final Properties props) {
-        if (Strings.isNullOrEmpty(getActiveVersion())) {
-            repository.persist(GlobalNode.getPropsActiveVersionNode(), DEFAULT_VERSION);
-        }
-        List<String> versions = repository.getChildrenKeys(GlobalNode.getPropsVersionsNode());
-        repository.persist(GlobalNode.getPropsVersionNode(versions.isEmpty()
-                ? DEFAULT_VERSION
-                : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), YamlEngine.marshal(props));
-        
-    }
+    private final MetaDataVersionPersistService metaDataVersionPersistService;
     
     @Override
-    public Collection<MetaDataVersion> persistConfigurations(final Properties props) {
+    public void persist(final Properties props) {
         List<String> versions = repository.getChildrenKeys(GlobalNode.getPropsVersionsNode());
         String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-        String persistKey = GlobalNode.getPropsVersionNode(nextActiveVersion);
-        repository.persist(persistKey, YamlEngine.marshal(props));
+        repository.persist(GlobalNode.getPropsVersionNode(nextActiveVersion), YamlEngine.marshal(props));
         if (Strings.isNullOrEmpty(getActiveVersion())) {
             repository.persist(GlobalNode.getPropsActiveVersionNode(), DEFAULT_VERSION);
         }
-        return Collections.singletonList(new MetaDataVersion(GlobalNode.getPropsRootNode(), getActiveVersion(), nextActiveVersion));
+        metaDataVersionPersistService.switchActiveVersion(Collections.singletonList(new MetaDataVersion(GlobalNode.getPropsRootNode(),
+                getActiveVersion(), nextActiveVersion)));
     }
     
     @Override
