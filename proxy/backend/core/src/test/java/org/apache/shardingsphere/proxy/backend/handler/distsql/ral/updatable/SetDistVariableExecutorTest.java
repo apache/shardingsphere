@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.standalone.StandaloneModeContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -48,6 +49,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
@@ -103,8 +106,10 @@ class SetDistVariableExecutorTest {
     }
     
     private ContextManager mockContextManager() {
+        MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
+        when(metaDataPersistService.getPropsService()).thenReturn(mock(PropertiesPersistService.class));
         StandaloneModeContextManager standaloneModeContextManager = new StandaloneModeContextManager();
-        ContextManager result = new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()),
+        ContextManager result = new ContextManager(new MetaDataContexts(metaDataPersistService, new ShardingSphereMetaData()),
                 new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(WorkerIdGenerator.class),
                         new ModeConfiguration("Standalone", null), standaloneModeContextManager, mock(LockContext.class), new EventBusContext()));
         standaloneModeContextManager.setContextManagerAware(result);
