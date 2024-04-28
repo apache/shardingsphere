@@ -64,8 +64,7 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     
     @Override
     public Collection<RuleConfiguration> load(final String databaseName) {
-        Collection<RepositoryTuple> repositoryTuples = repositoryTuplePersistService.loadRepositoryTuples(DatabaseRuleMetaDataNode.getRulesNode(databaseName));
-        return repositoryTuples.isEmpty() ? Collections.emptyList() : new RepositoryTupleSwapperEngine().swapToRuleConfigurations(repositoryTuples);
+        return new RepositoryTupleSwapperEngine().swapToRuleConfigurations(repositoryTuplePersistService.loadRepositoryTuples(DatabaseRuleMetaDataNode.getRulesNode(databaseName)));
     }
     
     @Override

@@ -30,10 +30,10 @@ import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersio
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Global rule persist service.
@@ -83,13 +83,11 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
     
     @Override
     public Collection<RuleConfiguration> load() {
-        Collection<RepositoryTuple> repositoryTuples = repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleRootNode());
-        return repositoryTuples.isEmpty() ? Collections.emptyList() : new RepositoryTupleSwapperEngine().swapToRuleConfigurations(repositoryTuples);
+        return new RepositoryTupleSwapperEngine().swapToRuleConfigurations(repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleRootNode()));
     }
     
     @Override
-    public RuleConfiguration load(final String ruleName) {
-        Collection<RepositoryTuple> repositoryTuples = repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleNode(ruleName));
-        return new RepositoryTupleSwapperEngine().swapSingleRuleToRuleConfiguration(ruleName, repositoryTuples).orElse(null);
+    public Optional<RuleConfiguration> load(final String ruleName) {
+        return new RepositoryTupleSwapperEngine().swapToRuleConfiguration(ruleName, repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleNode(ruleName)));
     }
 }

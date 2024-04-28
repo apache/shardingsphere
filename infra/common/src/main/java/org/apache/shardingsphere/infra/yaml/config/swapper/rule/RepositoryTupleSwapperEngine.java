@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleSwapper;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -32,13 +33,16 @@ import java.util.Optional;
 public final class RepositoryTupleSwapperEngine {
     
     /**
-     * Swap from YAML global rule configurations to rule configurations.
+     * Swap to rule configurations.
      *
      * @param repositoryTuples repository tuples
      * @return global rule configurations
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<RepositoryTuple> repositoryTuples) {
+        if (repositoryTuples.isEmpty()) {
+            return Collections.emptyList();
+        }
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
             each.swapToObject(repositoryTuples).ifPresent(optional -> result.add((RuleConfiguration) optional));
@@ -47,14 +51,14 @@ public final class RepositoryTupleSwapperEngine {
     }
     
     /**
-     * Swap from single YAML global rule configuration to rule configurations.
+     * Swap to rule configuration.
      *
      * @param ruleName rule name
      * @param repositoryTuples repository tuples
      * @return global rule configuration
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Optional<RuleConfiguration> swapSingleRuleToRuleConfiguration(final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
+    public Optional<RuleConfiguration> swapToRuleConfiguration(final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
             if (ruleName.equals(each.getRuleTagName().toLowerCase())) {
                 return each.swapToObject(repositoryTuples);
