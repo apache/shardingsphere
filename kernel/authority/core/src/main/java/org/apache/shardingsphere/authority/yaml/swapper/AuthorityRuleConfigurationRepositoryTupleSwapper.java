@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleSwapper;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;
 import java.util.Collections;

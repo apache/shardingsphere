@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleSwapper;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Collection;

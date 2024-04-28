@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.swapper;
+package org.apache.shardingsphere.mode.spi;
 
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;

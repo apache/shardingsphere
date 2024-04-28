@@ -20,7 +20,7 @@ package org.apache.shardingsphere.logging.yaml.swapper;
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleSwapper;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 import org.apache.shardingsphere.logging.constant.LoggingOrder;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
