@@ -25,12 +25,12 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Repository tuple configuration swapper.
+ * Repository tuple swapper.
  *
  * @param <T> type of swapped object
  */
 @SingletonSPI
-public interface RepositoryTupleConfigurationSwapper<T> extends OrderedSPI<T> {
+public interface RepositoryTupleSwapper<T> extends OrderedSPI<T> {
     
     /**
     * Swap to repository tuples.
