@@ -24,12 +24,12 @@ import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathPr
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.mode.path.RuleNodePath;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurationSwapper;
+import org.apache.shardingsphere.mode.path.RuleNodePath;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * YAML encrypt data node rule configuration swapper.
  */
-public final class YamlEncryptDataNodeRuleConfigurationSwapper implements YamlDataNodeRuleConfigurationSwapper<EncryptRuleConfiguration> {
+public final class YamlEncryptDataNodeRuleConfigurationSwapper implements YamlDataNodeConfigurationSwapper<EncryptRuleConfiguration> {
     
     private final YamlEncryptTableRuleConfigurationSwapper tableSwapper = new YamlEncryptTableRuleConfigurationSwapper();
     

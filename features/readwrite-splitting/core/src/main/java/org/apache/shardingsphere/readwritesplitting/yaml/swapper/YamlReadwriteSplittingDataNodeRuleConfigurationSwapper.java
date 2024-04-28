@@ -19,12 +19,12 @@ package org.apache.shardingsphere.readwritesplitting.yaml.swapper;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.mode.path.RuleNodePath;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurationSwapper;
+import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 /**
  * YAML readwrite-splitting data node rule configuration swapper.
  */
-public final class YamlReadwriteSplittingDataNodeRuleConfigurationSwapper implements YamlDataNodeRuleConfigurationSwapper<ReadwriteSplittingRuleConfiguration> {
+public final class YamlReadwriteSplittingDataNodeRuleConfigurationSwapper implements YamlDataNodeConfigurationSwapper<ReadwriteSplittingRuleConfiguration> {
     
     private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     

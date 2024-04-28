@@ -21,10 +21,10 @@ import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration
 import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePathProvider;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
-import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurationSwapper;
+import org.apache.shardingsphere.mode.path.RuleNodePath;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * YAML broadcast data node rule configuration swapper.
  */
-public final class YamlBroadcastDataNodeRuleConfigurationSwapper implements YamlDataNodeRuleConfigurationSwapper<BroadcastRuleConfiguration> {
+public final class YamlBroadcastDataNodeRuleConfigurationSwapper implements YamlDataNodeConfigurationSwapper<BroadcastRuleConfiguration> {
     
     private final RuleNodePath broadcastRuleNodePath = new BroadcastRuleNodePathProvider().getRuleNodePath();
     

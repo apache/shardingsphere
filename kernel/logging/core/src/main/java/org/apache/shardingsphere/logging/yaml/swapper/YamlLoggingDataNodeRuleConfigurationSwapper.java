@@ -20,7 +20,7 @@ package org.apache.shardingsphere.logging.yaml.swapper;
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurationSwapper;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 import org.apache.shardingsphere.logging.constant.LoggingOrder;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
@@ -35,7 +35,7 @@ import java.util.Optional;
 /**
  * YAML logging data node rule configuration swapper.
  */
-public final class YamlLoggingDataNodeRuleConfigurationSwapper implements YamlDataNodeGlobalRuleConfigurationSwapper<LoggingRuleConfiguration> {
+public final class YamlLoggingDataNodeRuleConfigurationSwapper implements YamlDataNodeConfigurationSwapper<LoggingRuleConfiguration> {
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final LoggingRuleConfiguration data) {
