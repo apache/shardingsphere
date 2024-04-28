@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurati
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * YAML data node rule configuration swapper engine.
@@ -32,21 +32,10 @@ import java.util.Map;
 public final class YamlDataNodeRuleConfigurationSwapperEngine {
     
     /**
-     * Swap to YAML rule configurations.
-     *
-     * @param ruleConfigs rule configurations
-     * @return YAML rule configurations
-     */
-    @SuppressWarnings("rawtypes")
-    public Map<RuleConfiguration, YamlDataNodeConfigurationSwapper> swapToYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
-        return OrderedSPILoader.getServices(YamlDataNodeConfigurationSwapper.class, ruleConfigs);
-    }
-    
-    /**
-     * Swap from YAML rule configurations to rule configurations.
+     * Swap from YAML global rule configurations to rule configurations.
      *
      * @param repositoryTuples repository tuples
-     * @return rule configurations
+     * @return global rule configurations
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<RepositoryTuple> repositoryTuples) {
@@ -55,5 +44,22 @@ public final class YamlDataNodeRuleConfigurationSwapperEngine {
             each.swapToObject(repositoryTuples).ifPresent(optional -> result.add((RuleConfiguration) optional));
         }
         return result;
+    }
+    
+    /**
+     * Swap from single YAML global rule configuration to rule configurations.
+     *
+     * @param ruleName rule name
+     * @param repositoryTuples repository tuples
+     * @return global rule configuration
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Optional<RuleConfiguration> swapSingleRuleToRuleConfiguration(final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
+        for (YamlDataNodeConfigurationSwapper each : OrderedSPILoader.getServices(YamlDataNodeConfigurationSwapper.class)) {
+            if (ruleName.equals(each.getRuleTagName().toLowerCase())) {
+                return each.swapToObject(repositoryTuples);
+            }
+        }
+        return Optional.empty();
     }
 }
