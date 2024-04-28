@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
@@ -57,7 +57,7 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
-        for (Entry<RuleConfiguration, YamlDataNodeConfigurationSwapper> entry : new YamlDataNodeGlobalRuleConfigurationSwapperEngine()
+        for (Entry<RuleConfiguration, YamlDataNodeConfigurationSwapper> entry : new YamlDataNodeRuleConfigurationSwapperEngine()
                 .swapToYamlRuleConfigurations(globalRuleConfigs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
@@ -84,12 +84,12 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
     @Override
     public Collection<RuleConfiguration> load() {
         Collection<RepositoryTuple> repositoryTuples = repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleRootNode());
-        return repositoryTuples.isEmpty() ? Collections.emptyList() : new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapToRuleConfigurations(repositoryTuples);
+        return repositoryTuples.isEmpty() ? Collections.emptyList() : new YamlDataNodeRuleConfigurationSwapperEngine().swapToRuleConfigurations(repositoryTuples);
     }
     
     @Override
     public RuleConfiguration load(final String ruleName) {
         Collection<RepositoryTuple> repositoryTuples = repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleNode(ruleName));
-        return new YamlDataNodeGlobalRuleConfigurationSwapperEngine().swapSingleRuleToRuleConfiguration(ruleName, repositoryTuples).orElse(null);
+        return new YamlDataNodeRuleConfigurationSwapperEngine().swapSingleRuleToRuleConfiguration(ruleName, repositoryTuples).orElse(null);
     }
 }
