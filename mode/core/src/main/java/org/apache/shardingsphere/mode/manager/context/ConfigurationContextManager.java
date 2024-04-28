@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleConfigurationSwapper;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
@@ -376,7 +376,8 @@ public final class ConfigurationContextManager {
     @SuppressWarnings("rawtypes")
     @SneakyThrows(Exception.class)
     private void closeStaleTransactionRule(final RuleConfiguration ruleConfig) {
-        for (Entry<RuleConfiguration, YamlDataNodeConfigurationSwapper> entry : OrderedSPILoader.getServices(YamlDataNodeConfigurationSwapper.class, Collections.singleton(ruleConfig)).entrySet()) {
+        for (Entry<RuleConfiguration, RepositoryTupleConfigurationSwapper> entry : OrderedSPILoader.getServices(
+                RepositoryTupleConfigurationSwapper.class, Collections.singleton(ruleConfig)).entrySet()) {
             if ("transaction".equalsIgnoreCase(entry.getValue().getRuleTagName())) {
                 Optional<TransactionRule> transactionRule = metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
                 if (!transactionRule.isPresent()) {
