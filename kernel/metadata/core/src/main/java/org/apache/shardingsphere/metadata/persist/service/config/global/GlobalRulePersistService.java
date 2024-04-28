@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
@@ -58,7 +58,7 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
-        for (Entry<RuleConfiguration, YamlDataNodeConfigurationSwapper> entry : OrderedSPILoader.getServices(YamlDataNodeConfigurationSwapper.class, globalRuleConfigs).entrySet()) {
+        for (Entry<RuleConfiguration, RepositoryTupleConfigurationSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleConfigurationSwapper.class, globalRuleConfigs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
                 metaDataVersions.addAll(persistTuples(repositoryTuples));

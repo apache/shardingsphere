@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.yaml.config.swapper.rule;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -40,7 +40,7 @@ public final class YamlDataNodeRuleConfigurationSwapperEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<RepositoryTuple> repositoryTuples) {
         Collection<RuleConfiguration> result = new LinkedList<>();
-        for (YamlDataNodeConfigurationSwapper each : OrderedSPILoader.getServices(YamlDataNodeConfigurationSwapper.class)) {
+        for (RepositoryTupleConfigurationSwapper each : OrderedSPILoader.getServices(RepositoryTupleConfigurationSwapper.class)) {
             each.swapToObject(repositoryTuples).ifPresent(optional -> result.add((RuleConfiguration) optional));
         }
         return result;
@@ -55,7 +55,7 @@ public final class YamlDataNodeRuleConfigurationSwapperEngine {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Optional<RuleConfiguration> swapSingleRuleToRuleConfiguration(final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
-        for (YamlDataNodeConfigurationSwapper each : OrderedSPILoader.getServices(YamlDataNodeConfigurationSwapper.class)) {
+        for (RepositoryTupleConfigurationSwapper each : OrderedSPILoader.getServices(RepositoryTupleConfigurationSwapper.class)) {
             if (ruleName.equals(each.getRuleTagName().toLowerCase())) {
                 return each.swapToObject(repositoryTuples);
             }
