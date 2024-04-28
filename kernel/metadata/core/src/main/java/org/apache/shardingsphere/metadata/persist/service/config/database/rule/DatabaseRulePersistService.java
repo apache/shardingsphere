@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.RepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.metadata.DatabaseRuleMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
@@ -65,7 +65,7 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     @Override
     public Collection<RuleConfiguration> load(final String databaseName) {
         Collection<RepositoryTuple> repositoryTuples = repositoryTuplePersistService.loadRepositoryTuples(DatabaseRuleMetaDataNode.getRulesNode(databaseName));
-        return repositoryTuples.isEmpty() ? Collections.emptyList() : new YamlDataNodeRuleConfigurationSwapperEngine().swapToRuleConfigurations(repositoryTuples);
+        return repositoryTuples.isEmpty() ? Collections.emptyList() : new RepositoryTupleSwapperEngine().swapToRuleConfigurations(repositoryTuples);
     }
     
     @Override

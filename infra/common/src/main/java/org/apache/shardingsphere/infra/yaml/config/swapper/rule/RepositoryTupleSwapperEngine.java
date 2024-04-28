@@ -27,9 +27,9 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * YAML data node rule configuration swapper engine.
+ * Repository tuple swapper engine.
  */
-public final class YamlDataNodeRuleConfigurationSwapperEngine {
+public final class RepositoryTupleSwapperEngine {
     
     /**
      * Swap from YAML global rule configurations to rule configurations.
