@@ -86,9 +86,9 @@ public abstract class BaseDQLE2EIT {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(cacheKey)) {
                     new DataSetEnvironmentManager(
-                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), containerComposer.getActualDataSourceMap()).fillData();
+                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), containerComposer.getActualDataSourceMap(), testParam.getDatabaseType()).fillData();
                     new DataSetEnvironmentManager(
-                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.EXPECTED), containerComposer.getExpectedDataSourceMap()).fillData();
+                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.EXPECTED), containerComposer.getExpectedDataSourceMap(), testParam.getDatabaseType()).fillData();
                     FILLED_SUITES.add(cacheKey);
                 }
             }

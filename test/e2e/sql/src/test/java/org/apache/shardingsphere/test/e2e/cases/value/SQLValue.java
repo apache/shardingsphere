@@ -47,7 +47,7 @@ public final class SQLValue {
     }
     
     private Object getValue(final String value, final String type) {
-        if (type.startsWith("enum#") || type.startsWith("cast#")) {
+        if (type.startsWith("enum#") || type.startsWith("set#") || type.startsWith("cast#")) {
             return value;
         }
         if ("null".equalsIgnoreCase(value)) {
@@ -57,13 +57,20 @@ public final class SQLValue {
             case "String":
             case "varchar":
             case "char":
+            case "text":
+            case "longtext":
+            case "mediumtext":
+            case "json":
                 return value;
             case "tinyint":
                 return Byte.parseByte(value);
             case "smallint":
                 return Short.parseShort(value);
+            case "mediumint":
+            case "year":
             case "int":
                 return Integer.parseInt(value);
+            case "bigint":
             case "long":
                 return Long.parseLong(value);
             case "float":
@@ -87,6 +94,12 @@ public final class SQLValue {
                 return Time.valueOf(LocalTime.parse(value, DateTimeFormatterFactory.getTimeFormatter()));
             case "timestamp":
                 return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getShortMillsFormatter()));
+            case "blob":
+            case "longblob":
+            case "mediumblob":
+            case "bit":
+            case "binary":
+            case "varbinary":
             case "bytes":
                 return value.getBytes(StandardCharsets.UTF_8);
             case "uuid":

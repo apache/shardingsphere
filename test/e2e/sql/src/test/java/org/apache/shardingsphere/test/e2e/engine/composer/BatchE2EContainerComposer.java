@@ -52,7 +52,7 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer implem
         for (IntegrationTestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
             dataSets.add(DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), each.getExpectedDataFile()));
         }
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap(), testParam.getDatabaseType());
         dataSetEnvironmentManager.fillData();
     }
     
