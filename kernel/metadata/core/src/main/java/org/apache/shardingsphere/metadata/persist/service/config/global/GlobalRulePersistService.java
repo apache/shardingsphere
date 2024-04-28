@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlob
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeGlobalRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
+import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
@@ -42,37 +43,28 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
     
     private final PersistRepository repository;
     
+    private final MetaDataVersionPersistService metaDataVersionPersistService;
+    
     private final RepositoryTuplePersistService repositoryTuplePersistService;
     
-    public GlobalRulePersistService(final PersistRepository repository) {
+    public GlobalRulePersistService(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
         this.repository = repository;
+        this.metaDataVersionPersistService = metaDataVersionPersistService;
         repositoryTuplePersistService = new RepositoryTuplePersistService(repository);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
+        Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
         for (Entry<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> entry : new YamlDataNodeGlobalRuleConfigurationSwapperEngine()
                 .swapToYamlRuleConfigurations(globalRuleConfigs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
-                persistTuples(repositoryTuples);
+                metaDataVersions.addAll(persistTuples(repositoryTuples));
             }
         }
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
-    public Collection<MetaDataVersion> persistConfigurations(final Collection<RuleConfiguration> globalRuleConfigs) {
-        Collection<MetaDataVersion> result = new LinkedList<>();
-        for (Entry<RuleConfiguration, YamlDataNodeGlobalRuleConfigurationSwapper> entry : new YamlDataNodeGlobalRuleConfigurationSwapperEngine()
-                .swapToYamlRuleConfigurations(globalRuleConfigs).entrySet()) {
-            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
-            if (!repositoryTuples.isEmpty()) {
-                result.addAll(persistTuples(repositoryTuples));
-            }
-        }
-        return result;
+        metaDataVersionPersistService.switchActiveVersion(metaDataVersions);
     }
     
     private Collection<MetaDataVersion> persistTuples(final Collection<RepositoryTuple> repositoryTuples) {
@@ -80,8 +72,7 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
         for (RepositoryTuple each : repositoryTuples) {
             List<String> versions = repository.getChildrenKeys(GlobalNode.getGlobalRuleVersionsNode(each.getKey()));
             String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            String persistKey = GlobalNode.getGlobalRuleVersionNode(each.getKey(), nextActiveVersion);
-            repository.persist(persistKey, each.getValue());
+            repository.persist(GlobalNode.getGlobalRuleVersionNode(each.getKey(), nextActiveVersion), each.getValue());
             if (Strings.isNullOrEmpty(repository.getDirectly(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey())))) {
                 repository.persist(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), DEFAULT_VERSION);
             }
