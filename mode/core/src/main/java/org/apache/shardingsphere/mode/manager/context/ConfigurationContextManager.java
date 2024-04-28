@@ -387,7 +387,7 @@ public final class ConfigurationContextManager {
             }
         }
     }
-     
+    
     /**
      * Alter properties.
      *
