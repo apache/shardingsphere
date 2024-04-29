@@ -708,8 +708,10 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitOptOnConflict(final OptOnConflictContext ctx) {
-        SetClauseListContext setClauseListContext = ctx.setClauseList();
-        Collection<ColumnAssignmentSegment> assignments = ((SetAssignmentSegment) visit(setClauseListContext)).getAssignments();
+        Collection<ColumnAssignmentSegment> assignments = new LinkedList<>();
+        if (null != ctx.setClauseList()) {
+            assignments = ((SetAssignmentSegment) visit(ctx.setClauseList())).getAssignments();
+        }
         return new OnDuplicateKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments);
     }
     
