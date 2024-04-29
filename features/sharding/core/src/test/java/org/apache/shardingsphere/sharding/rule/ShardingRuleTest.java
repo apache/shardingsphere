@@ -79,6 +79,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -197,7 +198,7 @@ class ShardingRuleTest {
         ruleConfig.getTables().add(versionTableRuleConfig);
         ruleConfig.getShardingAlgorithms().put("order_id_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
         ruleConfig.getShardingAlgorithms().put("user_id_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
-        new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class, RETURNS_DEEP_STUBS));
+        assertDoesNotThrow(() -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test
@@ -209,7 +210,7 @@ class ShardingRuleTest {
         ruleConfig.getTables().add(tableRuleConfig);
         ruleConfig.getShardingAlgorithms().put("t_order_interval_inline",
                 new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_interval_${order_id.substring(0, 6)}"))));
-        new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class, RETURNS_DEEP_STUBS));
+        assertDoesNotThrow(() -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test
