@@ -41,7 +41,8 @@ class MaskRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapEmptyConfigurationToDataNodes() {
-        assertTrue(new MaskRuleConfigurationRepositoryTupleSwapper().swapToRepositoryTuples(new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())).isEmpty());
+        MaskRuleConfiguration ruleConfig = new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
+        assertTrue(new MaskRuleConfigurationRepositoryTupleSwapper().swapToRepositoryTuples(ruleConfig).isEmpty());
     }
     
     @Test
