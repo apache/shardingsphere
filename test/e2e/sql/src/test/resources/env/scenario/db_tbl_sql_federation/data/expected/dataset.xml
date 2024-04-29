@@ -56,6 +56,44 @@
         <column name="status" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
+    <metadata data-nodes="sql_federation.t_product_extend">
+        <column name="extend_id" type="int" />
+        <column name="product_id" type="int" />
+        <column name="type_int" type="int" />
+        <column name="type_smallint" type="smallint" />
+        <column name="type_decimal" type="decimal" />
+        <column name="type_float" type="float" />
+        <column name="type_double" type="double" />
+        <column name="type_bit" type="bit" />
+        <column name="type_tinyint" type="tinyint" />
+        <column name="type_mediumint" type="mediumint" />
+        <column name="type_bigint" type="bigint" />
+        <column name="type_date" type="Date" />
+        <column name="type_time" type="time" />
+        <column name="type_datetime" type="datetime" />
+        <column name="type_timestamp" type="timestamp" />
+        <column name="type_year" type="year" />
+        <column name="type_char" type="char" />
+        <column name="type_text" type="text" />
+        <column name="type_varchar" type="varchar" />
+        <column name="type_longtext" type="longtext" />
+        <column name="type_longblob" type="longblob" />
+        <column name="type_mediumtext" type="mediumtext" />
+        <column name="type_mediumblob" type="mediumblob" />
+        <column name="type_binary" type="binary" />
+        <column name="type_varbinary" type="varbinary" />
+        <column name="type_blob" type="blob" />
+        <column name="type_enum" type="enum#season" />
+        <column name="type_set" type="set#season" />
+        <column name="type_json" type="json" />
+        <column name="type_unsigned_int" type="int unsigned" />
+        <column name="type_unsigned_bigint" type="bigint unsigned" />
+        <column name="type_unsigned_tinyint" type="tinyint unsigned" />
+        <column name="type_unsigned_smallint" type="smallint unsigned" />
+        <column name="type_unsigned_float" type="float unsigned" />
+        <column name="type_unsigned_double" type="double unsigned" />
+        <column name="type_unsigned_decimal" type="decimal unsigned" />
+    </metadata>
     <metadata data-nodes="sql_federation.t_product_detail">
         <column name="detail_id" type="numeric" />
         <column name="product_id" type="numeric" />
@@ -435,6 +473,26 @@
     <row data-node="sql_federation.t_product" values="18, intel cpu, 10, 1600, on sale, 2017-08-08" />
     <row data-node="sql_federation.t_product" values="19, hp computer, 10, 4600, on sale, 2017-08-08" />
     <row data-node="sql_federation.t_product" values="20, tesla model 3, 14, 324600, on sale, 2017-08-08" />
+    <row data-node="sql_federation.t_product_extend" values="1, 1, 1, 1, 1.01, 1.01, 1.01, a, 1, 1000, 100000001, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, A, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, A, A, Blob content, spring, spring, {&quot;key&quot;: &quot;value&quot;}, 1, 1, 1, 1, 1.01, 1.01, 1.01" />
+    <row data-node="sql_federation.t_product_extend" values="2, 2, 2, 2, 2.01, 2.01, 2.01, b, 2, 2000, 100000002, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, B, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, B, B, Blob content, summer, summer, {&quot;key&quot;: &quot;value&quot;}, 2, 2, 2, 2, 2.01, 2.01, 2.01" />
+    <row data-node="sql_federation.t_product_extend" values="3, 3, 3, 3, 3.01, 3.01, 3.01, c, 3, 3000, 100000003, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, C, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, C, C, Blob content, autumn, autumn, {&quot;key&quot;: &quot;value&quot;}, 3, 3, 3, 3, 3.01, 3.01, 3.01" />
+    <row data-node="sql_federation.t_product_extend" values="4, 4, 4, 4, 4.01, 4.01, 4.01, d, 4, 4000, 100000004, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, D, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, D, D, Blob content, winter, winter, {&quot;key&quot;: &quot;value&quot;}, 4, 4, 4, 4, 4.01, 4.01, 4.01" />
+    <row data-node="sql_federation.t_product_extend" values="5, 5, 5, 5, 5.01, 5.01, 5.01, e, 5, 5000, 100000005, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, E, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, E, E, Blob content, spring, spring, {&quot;key&quot;: &quot;value&quot;}, 5, 5, 5, 5, 5.01, 5.01, 5.01" />
+    <row data-node="sql_federation.t_product_extend" values="6, 6, 6, 6, 6.01, 6.01, 6.01, f, 6, 6000, 100000006, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, F, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, F, F, Blob content, summer, summer, {&quot;key&quot;: &quot;value&quot;}, 6, 6, 6, 6, 6.01, 6.01, 6.01" />
+    <row data-node="sql_federation.t_product_extend" values="7, 7, 7, 7, 7.01, 7.01, 7.01, g, 7, 7000, 100000007, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, G, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, G, G, Blob content, autumn, autumn, {&quot;key&quot;: &quot;value&quot;}, 7, 7, 7, 7, 7.01, 7.01, 7.01" />
+    <row data-node="sql_federation.t_product_extend" values="8, 8, 8, 8, 8.01, 8.01, 8.01, h, 8, 8000, 100000008, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, H, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, H, H, Blob content, winter, winter, {&quot;key&quot;: &quot;value&quot;}, 8, 8, 8, 8, 8.01, 8.01, 8.01" />
+    <row data-node="sql_federation.t_product_extend" values="9, 9, 9, 9, 9.01, 9.01, 9.01, i, 9, 9000, 100000009, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, I, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, I, I, Blob content, spring, spring, {&quot;key&quot;: &quot;value&quot;}, 9, 9, 9, 9, 9.01, 9.01, 9.01" />
+    <row data-node="sql_federation.t_product_extend" values="10, 10, 10, 10, 10.01, 10.01, 10.01, j, 10, 10000, 100000010, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, J, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, J, J, Blob content, summer, summer, {&quot;key&quot;: &quot;value&quot;}, 10, 10, 10, 10, 10.01, 10.01, 10.01" />
+    <row data-node="sql_federation.t_product_extend" values="11, 11, 11, 11, 11.01, 11.01, 11.01, k, 11, 11000, 100000011, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, K, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, K, K, Blob content, autumn, autumn, {&quot;key&quot;: &quot;value&quot;}, 11, 11, 11, 11, 11.01, 11.01, 11.01" />
+    <row data-node="sql_federation.t_product_extend" values="12, 12, 12, 12, 12.01, 12.01, 12.01, l, 12, 12000, 100000012, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, L, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, L, L, Blob content, winter, winter, {&quot;key&quot;: &quot;value&quot;}, 12, 12, 12, 12, 12.01, 12.01, 12.01" />
+    <row data-node="sql_federation.t_product_extend" values="13, 13, 13, 13, 13.01, 13.01, 13.01, m, 13, 13000, 100000013, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, M, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, M, M, Blob content, spring, spring, {&quot;key&quot;: &quot;value&quot;}, 13, 13, 13, 13, 13.01, 13.01, 13.01" />
+    <row data-node="sql_federation.t_product_extend" values="14, 14, 14, 14, 14.01, 14.01, 14.01, n, 14, 14000, 100000014, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, N, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, N, N, Blob content, summer, summer, {&quot;key&quot;: &quot;value&quot;}, 14, 14, 14, 14, 14.01, 14.01, 14.01" />
+    <row data-node="sql_federation.t_product_extend" values="15, 15, 15, 15, 15.01, 15.01, 15.01, o, 15, 15000, 100000015, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, O, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, O, O, Blob content, autumn, autumn, {&quot;key&quot;: &quot;value&quot;}, 15, 15, 15, 15, 15.01, 15.01, 15.01" />
+    <row data-node="sql_federation.t_product_extend" values="16, 16, 16, 16, 16.01, 16.01, 16.01, p, 16, 16000, 100000016, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, P, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, P, P, Blob content, winter, winter, {&quot;key&quot;: &quot;value&quot;}, 16, 16, 16, 16, 16.01, 16.01, 16.01" />
+    <row data-node="sql_federation.t_product_extend" values="17, 17, 17, 17, 17.01, 17.01, 17.01, q, 17, 17000, 100000017, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, Q, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, Q, Q, Blob content, spring, spring, {&quot;key&quot;: &quot;value&quot;}, 17, 17, 17, 17, 17.01, 17.01, 17.01" />
+    <row data-node="sql_federation.t_product_extend" values="18, 18, 18, 18, 18.01, 18.01, 18.01, r, 18, 18000, 100000018, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, R, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, R, R, Blob content, summer, summer, {&quot;key&quot;: &quot;value&quot;}, 18, 18, 18, 18, 18.01, 18.01, 18.01" />
+    <row data-node="sql_federation.t_product_extend" values="19, 19, 19, 19, 19.01, 19.01, 19.01, s, 19, 19000, 100000019, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, S, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, S, S, Blob content, autumn, autumn, {&quot;key&quot;: &quot;value&quot;}, 19, 19, 19, 19, 19.01, 19.01, 19.01" />
+    <row data-node="sql_federation.t_product_extend" values="20, 20, 20, 20, 20.01, 20.01, 20.01, t, 20, 20000, 100000020, 2024-04-28, 23:59:59, 2024-04-28, 2024-04-28 00:00:00.0, 2024, T, Lorem ipsum dolor sit amet, Varchar, Long text content, Long blob content, Medium text content, Medium blob content, T, T, Blob content, winter, winter, {&quot;key&quot;: &quot;value&quot;}, 20, 20, 20, 20, 20.01, 20.01, 20.01" />
     <row data-node="sql_federation.t_product_detail" values="1, 1, qq coins, 2017-08-08" />
     <row data-node="sql_federation.t_product_detail" values="2, 2, haier washing machine, 2017-08-08" />
     <row data-node="sql_federation.t_product_detail" values="3, 3, huawei mobile phones, 2017-08-08" />

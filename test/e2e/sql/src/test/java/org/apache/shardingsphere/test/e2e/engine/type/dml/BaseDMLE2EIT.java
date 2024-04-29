@@ -72,7 +72,8 @@ public abstract class BaseDMLE2EIT {
      * @throws JAXBException JAXB exception
      */
     public final void init(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, IOException, JAXBException {
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), containerComposer.getActualDataSourceMap());
+        dataSetEnvironmentManager =
+                new DataSetEnvironmentManager(new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), containerComposer.getActualDataSourceMap(), testParam.getDatabaseType());
         dataSetEnvironmentManager.fillData();
     }
     

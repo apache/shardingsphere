@@ -68,11 +68,14 @@ public final class DataSetEnvironmentManager {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    public DataSetEnvironmentManager(final String dataSetFile, final Map<String, DataSource> dataSourceMap) throws IOException, JAXBException {
+    private final DatabaseType databaseType;
+    
+    public DataSetEnvironmentManager(final String dataSetFile, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(dataSetFile)) {
             dataSet = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
         this.dataSourceMap = dataSourceMap;
+        this.databaseType = databaseType;
     }
     
     /**
@@ -106,6 +109,10 @@ public final class DataSetEnvironmentManager {
     private Map<DataNode, List<DataSetRow>> getDataSetRowMap() {
         Map<DataNode, List<DataSetRow>> result = new LinkedHashMap<>(dataSet.getRows().size(), 1F);
         for (DataSetRow each : dataSet.getRows()) {
+            // The data type of the current table is currently only used by mysql.
+            if (each.getDataNode().contains("t_product_extend") && !"MySQL".equals(databaseType.getType())) {
+                continue;
+            }
             DataNode dataNode = new DataNode(each.getDataNode());
             if (!result.containsKey(dataNode)) {
                 result.put(dataNode, new LinkedList<>());
