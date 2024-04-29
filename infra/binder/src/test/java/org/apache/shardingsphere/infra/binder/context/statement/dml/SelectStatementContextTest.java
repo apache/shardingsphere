@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.dml;
 
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.SubqueryProjection;
@@ -73,6 +74,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -438,28 +440,33 @@ class SelectStatementContextTest {
     
     @Test
     void assertFindColumnProjectionFromColumnProjection() {
-        ColumnProjection projection = mock(ColumnProjection.class);
-        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        ColumnProjection columnProjection = mock(ColumnProjection.class);
+        ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         
-        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(projection));
+        when(selectStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
+        when(projectionsContext.getExpandProjections()).thenReturn(Collections.singletonList(columnProjection));
         
         Optional<ColumnProjection> result = selectStatementContext.findColumnProjection(1);
         
         assertTrue(result.isPresent());
+        assertEquals(columnProjection, result.get());
     }
     
     @Test
     void assertFindColumnProjectionFromSubqueryProjection() {
-        SubqueryProjection projection = mock(SubqueryProjection.class, RETURNS_DEEP_STUBS);
         ColumnProjection columnProjection = mock(ColumnProjection.class);
-        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        SubqueryProjection subqueryProjection = mock(SubqueryProjection.class);
+        ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         
-        when(projection.getProjection()).thenReturn(columnProjection);
-        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(projection));
+        when(selectStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
+        when(projectionsContext.getExpandProjections()).thenReturn(Collections.singletonList(subqueryProjection));
         
         Optional<ColumnProjection> result = selectStatementContext.findColumnProjection(1);
         
         assertTrue(result.isPresent());
+        assertEquals(columnProjection, result.get());
     }
     
     @Test
