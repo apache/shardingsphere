@@ -61,4 +61,6 @@
     <create-user sql-case-id="create_azure_ad_user_with_login" />
     <create-user sql-case-id="create_azure_ad_user_as_group_from_login" />
     <create-user sql-case-id="create_azure_ad_user_without_login" />
+    <create-user sql-case-id="create _user_with_option" />
+    <create-user sql-case-id="create_user_with_user_auth_option" />
 </sql-parser-test-cases>
