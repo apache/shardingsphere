@@ -65,9 +65,20 @@ public final class DataConsistencyCheckUtils {
         return true;
     }
     
+    /**
+     * Whether column values are matched or not.
+     *
+     * @param equalsBuilder equals builder
+     * @param thisColumnValue this column value
+     * @param thatColumnValue that column value
+     * @return true if matched, otherwise false
+     */
     @SneakyThrows(SQLException.class)
-    private static boolean isMatched(final EqualsBuilder equalsBuilder, final Object thisColumnValue, final Object thatColumnValue) {
+    public static boolean isMatched(final EqualsBuilder equalsBuilder, final Object thisColumnValue, final Object thatColumnValue) {
         equalsBuilder.reset();
+        if (isInteger(thisColumnValue) && isInteger(thatColumnValue)) {
+            return isIntegerEquals((Number) thisColumnValue, (Number) thatColumnValue);
+        }
         if (thisColumnValue instanceof SQLXML && thatColumnValue instanceof SQLXML) {
             return ((SQLXML) thisColumnValue).getString().equals(((SQLXML) thatColumnValue).getString());
         }
@@ -78,6 +89,17 @@ public final class DataConsistencyCheckUtils {
             return Objects.deepEquals(((Array) thisColumnValue).getArray(), ((Array) thatColumnValue).getArray());
         }
         return equalsBuilder.append(thisColumnValue, thatColumnValue).isEquals();
+    }
+    
+    private static boolean isInteger(final Object value) {
+        if (!(value instanceof Number)) {
+            return false;
+        }
+        return value instanceof Long || value instanceof Integer || value instanceof Short || value instanceof Byte;
+    }
+    
+    private static boolean isIntegerEquals(final Number one, final Number another) {
+        return one.longValue() == another.longValue();
     }
     
     /**

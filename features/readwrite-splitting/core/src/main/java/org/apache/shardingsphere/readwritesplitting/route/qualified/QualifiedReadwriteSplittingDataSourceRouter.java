@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.route.qualified;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 
 /**
  * Qualified data source router for readwrite-splitting.
@@ -35,7 +35,7 @@ public interface QualifiedReadwriteSplittingDataSourceRouter {
      * 
      * @return qualified to route or not
      */
-    boolean isQualified(SQLStatementContext sqlStatementContext, ReadwriteSplittingDataSourceRule rule, HintValueContext hintValueContext);
+    boolean isQualified(SQLStatementContext sqlStatementContext, ReadwriteSplittingDataSourceGroupRule rule, HintValueContext hintValueContext);
     
     /**
      * Route to data source.
@@ -43,5 +43,5 @@ public interface QualifiedReadwriteSplittingDataSourceRouter {
      * @param rule Readwrite-splitting data source rule
      * @return routed data source name
      */
-    String route(ReadwriteSplittingDataSourceRule rule);
+    String route(ReadwriteSplittingDataSourceGroupRule rule);
 }

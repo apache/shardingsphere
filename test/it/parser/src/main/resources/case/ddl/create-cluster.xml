@@ -49,4 +49,8 @@
     <create-cluster sql-case-id="create_cluster_hashkeys" />
     <create-cluster sql-case-id="create_cluster_single_table" />
     <create-cluster sql-case-id="create_cluster_single_table_hash" />
+    <create-cluster sql-case-id="create_cluster_size_initial_next" />
+    <create-cluster sql-case-id="create_cluster_hash_is_mod" />
+    <create-cluster sql-case-id="create_cluster_number_size" />
+    <create-cluster sql-case-id="create_cluster_number_size_hashkeys" />
 </sql-parser-test-cases>

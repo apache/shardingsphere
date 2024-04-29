@@ -253,4 +253,20 @@
         </table>
         <column start-index="60" stop-index="67" name="order_id" />
     </create-index>
+
+    <create-index sql-case-id="create_index_on_local_parallel_nologging">
+        <index name="from_number_ix" start-index="13" stop-index="26" />
+        <table>
+            <simple-table name="call_detail_records" start-index="31" stop-index="49" />
+        </table>
+        <column start-index="51" stop-index="61" name="from_number" />
+    </create-index>
+
+    <create-index sql-case-id="create_bitmap_index_on_local_parallel_nologging">
+        <index name="is_active_bix" start-index="20" stop-index="32" />
+        <table>
+            <simple-table name="credit_card_accounts" start-index="37" stop-index="56" />
+        </table>
+        <column start-index="58" stop-index="66" name="is_active" />
+    </create-index>
 </sql-parser-test-cases>

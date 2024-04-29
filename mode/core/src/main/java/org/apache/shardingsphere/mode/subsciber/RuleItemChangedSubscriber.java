@@ -42,7 +42,7 @@ public final class RuleItemChangedSubscriber {
      *
      * @param event alter rule item event
      */
-    @SuppressWarnings({"UnstableApiUsage", "rawtypes", "unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked", "unused"})
     @Subscribe
     public void renew(final AlterRuleItemEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
@@ -51,11 +51,16 @@ public final class RuleItemChangedSubscriber {
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
         String yamlContent =
                 contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getVersionPathByActiveVersion(event.getActiveVersionKey(), event.getActiveVersion());
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(event.getDatabaseName());
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(database);
         synchronized (this) {
             processor.changeRuleItemConfiguration(event, currentRuleConfig, processor.swapRuleItemConfiguration(event, yamlContent));
-            contextManager.getInstanceContext().getEventBusContext().post(new AlterDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
+            // TODO Remove isCluster judgment
+            if (contextManager.getInstanceContext().isCluster()) {
+                contextManager.getInstanceContext().getEventBusContext().post(new AlterDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
+                return;
+            }
+            contextManager.getConfigurationContextManager().alterRuleConfiguration(event.getDatabaseName(), currentRuleConfig);
         }
     }
     
@@ -64,18 +69,23 @@ public final class RuleItemChangedSubscriber {
      *
      * @param event drop rule item event
      */
-    @SuppressWarnings({"UnstableApiUsage", "rawtypes", "unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked", "unused"})
     @Subscribe
     public void renew(final DropRuleItemEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(event.getDatabaseName());
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(database);
         synchronized (this) {
             processor.dropRuleItemConfiguration(event, currentRuleConfig);
-            contextManager.getInstanceContext().getEventBusContext().post(new DropDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
+            // TODO Remove isCluster judgment
+            if (contextManager.getInstanceContext().isCluster()) {
+                contextManager.getInstanceContext().getEventBusContext().post(new DropDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
+                return;
+            }
+            contextManager.getConfigurationContextManager().dropRuleConfiguration(event.getDatabaseName(), currentRuleConfig);
         }
     }
 }

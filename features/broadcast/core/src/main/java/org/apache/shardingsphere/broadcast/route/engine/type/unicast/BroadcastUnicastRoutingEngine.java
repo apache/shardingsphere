@@ -50,7 +50,7 @@ public final class BroadcastUnicastRoutingEngine implements BroadcastRouteEngine
     
     @Override
     public RouteContext route(final RouteContext routeContext, final BroadcastRule broadcastRule) {
-        RouteMapper dataSourceMapper = getDataSourceRouteMapper(broadcastRule.getAvailableDataSourceNames());
+        RouteMapper dataSourceMapper = getDataSourceRouteMapper(broadcastRule.getDataSourceNames());
         routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, createTableRouteMappers()));
         return routeContext;
     }

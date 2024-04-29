@@ -13,12 +13,12 @@ The `DROP SHADOW ALGORITHM` syntax is used to drop shadow algorithm for specifie
 {{% tab name="Grammar" %}}
 ```sql
 DropShadowAlgorithm ::=
-  'DROP' 'SHADOW' 'ALGORITHM' ifExists? shadowAlgorithmName (',' shadowAlgorithmName)* ('FROM' databaseName)?
+  'DROP' 'SHADOW' 'ALGORITHM' ifExists? algorithmName (',' algorithmName)* ('FROM' databaseName)?
 
 ifExists ::=
   'IF' 'EXISTS'
 
-shadowAlgorithmName ::=
+algorithmName ::=
   identifier
 
 databaseName ::=

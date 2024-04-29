@@ -22,9 +22,11 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.OptionHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleUpdateStatement;
@@ -92,6 +94,19 @@ public final class UpdateStatementHandler implements SQLStatementHandler {
     }
     
     /**
+     * Get option hint segment.
+     *
+     * @param updateStatement update statement
+     * @return option hint segment
+     */
+    public static Optional<OptionHintSegment> getOptionHintSegment(final UpdateStatement updateStatement) {
+        if (updateStatement instanceof SQLServerStatement) {
+            return ((SQLServerUpdateStatement) updateStatement).getOptionHintSegment();
+        }
+        return Optional.empty();
+    }
+    
+    /**
      * Set order by segment.
      * 
      * @param updateStatement update statement
@@ -136,6 +151,31 @@ public final class UpdateStatementHandler implements SQLStatementHandler {
     public static void setDeleteWhereSegment(final UpdateStatement updateStatement, final WhereSegment deleteWhereSegment) {
         if (updateStatement instanceof OracleUpdateStatement) {
             ((OracleUpdateStatement) updateStatement).setDeleteWhere(deleteWhereSegment);
+        }
+    }
+    
+    /**
+     * Get output segment.
+     *
+     * @param updateStatement update statement
+     * @return output segment
+     */
+    public static Optional<OutputSegment> getOutputSegment(final UpdateStatement updateStatement) {
+        if (updateStatement instanceof SQLServerStatement) {
+            return ((SQLServerUpdateStatement) updateStatement).getOutputSegment();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Set output segment.
+     *
+     * @param updateStatement update statement
+     * @param outputSegment output segment
+     */
+    public static void setOutputSegment(final UpdateStatement updateStatement, final OutputSegment outputSegment) {
+        if (updateStatement instanceof SQLServerStatement) {
+            ((SQLServerUpdateStatement) updateStatement).setOutputSegment(outputSegment);
         }
     }
 }

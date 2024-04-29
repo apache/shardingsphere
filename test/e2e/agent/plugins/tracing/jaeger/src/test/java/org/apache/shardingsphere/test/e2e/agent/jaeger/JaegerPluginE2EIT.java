@@ -22,6 +22,7 @@ import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.asserts.SpanAssert;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.IntegrationTestCasesLoader;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.SpanTestCase;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,10 +35,15 @@ import java.util.stream.Stream;
 @ExtendWith(AgentTestActionExtension.class)
 class JaegerPluginE2EIT {
     
+    @EnabledIf("isEnabled")
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertWithAgent(final SpanTestCase spanTestCase) {
-        SpanAssert.assertIs(E2ETestEnvironment.getInstance().getProps().getProperty("jaeger.url"), spanTestCase);
+        SpanAssert.assertIs(E2ETestEnvironment.getInstance().getJaegerHttpUrl(), spanTestCase);
+    }
+    
+    private static boolean isEnabled() {
+        return E2ETestEnvironment.getInstance().containsTestParameter();
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {

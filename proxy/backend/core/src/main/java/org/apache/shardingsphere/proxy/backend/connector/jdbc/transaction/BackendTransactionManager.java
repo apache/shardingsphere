@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -52,9 +53,9 @@ public final class BackendTransactionManager implements TransactionManager {
     
     public BackendTransactionManager(final ProxyDatabaseConnectionManager databaseConnectionManager) {
         connection = databaseConnectionManager;
-        transactionType = connection.getConnectionSession().getTransactionStatus().getTransactionType();
         localTransactionManager = new LocalTransactionManager(databaseConnectionManager);
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        transactionType = transactionRule.getDefaultType();
         ShardingSphereTransactionManagerEngine engine = transactionRule.getResource();
         shardingSphereTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
         transactionHooks = ShardingSphereServiceLoader.getServiceInstances(TransactionHook.class);
@@ -64,7 +65,7 @@ public final class BackendTransactionManager implements TransactionManager {
     public void begin() {
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             connection.getConnectionSession().getTransactionStatus().setInTransaction(true);
-            getTransactionContext().setInTransaction(true);
+            getTransactionContext().beginTransaction(String.valueOf(transactionType));
             connection.closeHandlers(true);
             connection.closeConnections(false);
         }
@@ -88,7 +89,7 @@ public final class BackendTransactionManager implements TransactionManager {
         }
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
-                if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
+                if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == shardingSphereTransactionManager) {
                     localTransactionManager.commit();
                 } else {
                     shardingSphereTransactionManager.commit(connection.getConnectionSession().getTransactionStatus().isExceptionOccur());
@@ -99,8 +100,8 @@ public final class BackendTransactionManager implements TransactionManager {
                 }
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
                 connection.getConnectionSession().getTransactionStatus().setExceptionOccur(false);
-                connection.getConnectionSession().getConnectionContext().clearTransactionConnectionContext();
-                connection.getConnectionSession().getConnectionContext().clearCursorConnectionContext();
+                connection.getConnectionSession().getConnectionContext().clearTransactionContext();
+                connection.getConnectionSession().getConnectionContext().clearCursorContext();
             }
         }
     }
@@ -112,7 +113,7 @@ public final class BackendTransactionManager implements TransactionManager {
         }
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
-                if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
+                if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == shardingSphereTransactionManager) {
                     localTransactionManager.rollback();
                 } else {
                     shardingSphereTransactionManager.rollback();
@@ -123,8 +124,8 @@ public final class BackendTransactionManager implements TransactionManager {
                 }
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
                 connection.getConnectionSession().getTransactionStatus().setExceptionOccur(false);
-                connection.getConnectionSession().getConnectionContext().clearTransactionConnectionContext();
-                connection.getConnectionSession().getConnectionContext().clearCursorConnectionContext();
+                connection.getConnectionSession().getConnectionContext().clearTransactionContext();
+                connection.getConnectionSession().getConnectionContext().clearCursorContext();
             }
         }
     }

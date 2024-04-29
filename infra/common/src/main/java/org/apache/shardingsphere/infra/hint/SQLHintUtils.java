@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -48,63 +47,18 @@ public final class SQLHintUtils {
     private static final int SQL_HINT_VALUE_SIZE = 2;
     
     /**
-     * Get SQL hint props.
-     *
-     * @param comment SQL comment
-     * @return SQL hint props
-     */
-    public static Properties getSQLHintProps(final String comment) {
-        Properties result = new Properties();
-        String lowerCaseComment = comment.toLowerCase();
-        int startIndex = lowerCaseComment.startsWith(SQLHintTokenEnum.SQL_START_HINT_TOKEN.getAlias().toLowerCase())
-                ? lowerCaseComment.indexOf(SQLHintTokenEnum.SQL_HINT_TOKEN.getAlias())
-                : lowerCaseComment.indexOf(SQLHintTokenEnum.SQL_HINT_TOKEN.getKey());
-        if (startIndex < 0) {
-            return result;
-        }
-        startIndex = startIndex + SQLHintTokenEnum.SQL_HINT_TOKEN.getKey().length();
-        int endIndex = comment.endsWith(SQL_COMMENT_SUFFIX) ? comment.indexOf(SQL_COMMENT_SUFFIX) : comment.length();
-        Collection<String> sqlHints = Splitter.on(SQL_HINT_SPLIT).trimResults().splitToList(comment.substring(startIndex, endIndex).trim());
-        for (String each : sqlHints) {
-            List<String> hintValues = Splitter.on(SQL_HINT_VALUE_SPLIT).trimResults().splitToList(each);
-            if (SQL_HINT_VALUE_SIZE == hintValues.size()) {
-                result.put(hintValues.get(0), convert(hintValues.get(1)));
-            }
-        }
-        return result;
-    }
-    
-    private static Object convert(final String value) {
-        try {
-            return new BigInteger(value);
-        } catch (final NumberFormatException e) {
-            return value;
-        }
-    }
-    
-    /**
-     * Get splitter SQL hint Value.
-     *
-     * @param value SQL hint value
-     * @return Splitter SQL hint value
-     */
-    public static Collection<String> getSplitterSQLHintValue(final String value) {
-        return value.isEmpty() ? Collections.emptySet() : new HashSet<>(Splitter.on(SQLHintUtils.SQL_HINT_VALUE_COLLECTION_SPLIT).omitEmptyStrings().trimResults().splitToList(value));
-    }
-    
-    /**
      * Extract SQL hint.
      *
      * @param sql SQL
-     * @return Hint value context
+     * @return hint value context
      */
-    public static Optional<HintValueContext> extractHint(final String sql) {
-        if (!startWithHint(sql)) {
-            return Optional.empty();
+    public static HintValueContext extractHint(final String sql) {
+        if (!startWithHint(sql, SQLHintTokenEnum.SQL_START_HINT_TOKEN)) {
+            return new HintValueContext();
         }
         HintValueContext result = new HintValueContext();
         String hintText = sql.substring(0, sql.indexOf(SQL_COMMENT_SUFFIX) + 2);
-        Properties hintProps = SQLHintUtils.getSQLHintProps(hintText);
+        Properties hintProps = getSQLHintProps(hintText);
         if (containsPropertyKey(hintProps, SQLHintPropertiesKey.DATASOURCE_NAME_KEY)) {
             result.setDataSourceName(getProperty(hintProps, SQLHintPropertiesKey.DATASOURCE_NAME_KEY));
         }
@@ -118,7 +72,8 @@ public final class SQLHintUtils {
             result.setSkipSQLRewrite(Boolean.parseBoolean(getProperty(hintProps, SQLHintPropertiesKey.SKIP_SQL_REWRITE_KEY)));
         }
         if (containsPropertyKey(hintProps, SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY)) {
-            result.setDisableAuditNames(getProperty(hintProps, SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY));
+            String property = getProperty(hintProps, SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY);
+            result.getDisableAuditNames().addAll(getSplitterSQLHintValue(property));
         }
         if (containsPropertyKey(hintProps, SQLHintPropertiesKey.SHADOW_KEY)) {
             result.setShadow(Boolean.parseBoolean(getProperty(hintProps, SQLHintPropertiesKey.SHADOW_KEY)));
@@ -132,11 +87,57 @@ public final class SQLHintUtils {
                 result.getShardingTableValues().put(Objects.toString(entry.getKey()).toUpperCase(), value);
             }
         }
-        return Optional.of(result);
+        return result;
     }
     
-    private static boolean startWithHint(final String sql) {
-        return null != sql && (sql.startsWith(SQLHintTokenEnum.SQL_START_HINT_TOKEN.getKey()) || sql.startsWith(SQLHintTokenEnum.SQL_START_HINT_TOKEN.getAlias()));
+    /**
+     * Remove SQL hint.
+     *
+     * @param sql SQL
+     * @return SQL after remove hint
+     */
+    public static String removeHint(final String sql) {
+        return startWithHint(sql, SQLHintTokenEnum.SQL_START_HINT_TOKEN) ? sql.substring(sql.indexOf(SQL_COMMENT_SUFFIX) + 2).trim() : sql;
+    }
+    
+    private static Properties getSQLHintProps(final String comment) {
+        Properties result = new Properties();
+        int startIndex = getStartIndex(comment, SQLHintTokenEnum.SQL_START_HINT_TOKEN, SQLHintTokenEnum.SQL_HINT_TOKEN);
+        if (startIndex < 0) {
+            return result;
+        }
+        int endIndex = comment.endsWith(SQL_COMMENT_SUFFIX) ? comment.indexOf(SQL_COMMENT_SUFFIX) : comment.length();
+        Collection<String> sqlHints = Splitter.on(SQL_HINT_SPLIT).trimResults().splitToList(comment.substring(startIndex, endIndex).trim());
+        for (String each : sqlHints) {
+            List<String> hintValues = Splitter.on(SQL_HINT_VALUE_SPLIT).limit(SQL_HINT_VALUE_SIZE).trimResults().splitToList(each);
+            if (SQL_HINT_VALUE_SIZE == hintValues.size()) {
+                result.put(hintValues.get(0), convert(hintValues.get(1)));
+            }
+        }
+        return result;
+    }
+    
+    private static int getStartIndex(final String comment, final SQLHintTokenEnum sqlStartHintToken, final SQLHintTokenEnum sqlHintToken) {
+        String lowerCaseComment = comment.toLowerCase();
+        int result = lowerCaseComment.startsWith(sqlStartHintToken.getAlias().toLowerCase())
+                ? lowerCaseComment.indexOf(sqlHintToken.getAlias())
+                : lowerCaseComment.indexOf(sqlHintToken.getKey());
+        if (result >= 0) {
+            return result + sqlHintToken.getKey().length();
+        }
+        return result;
+    }
+    
+    private static Object convert(final String value) {
+        try {
+            return new BigInteger(value);
+        } catch (final NumberFormatException ignored) {
+            return value;
+        }
+    }
+    
+    private static boolean startWithHint(final String sql, final SQLHintTokenEnum sqlStartHintToken) {
+        return null != sql && (sql.startsWith(sqlStartHintToken.getKey()) || sql.startsWith(sqlStartHintToken.getAlias()));
     }
     
     private static boolean containsPropertyKey(final Properties hintProps, final SQLHintPropertiesKey sqlHintPropsKey) {
@@ -152,13 +153,7 @@ public final class SQLHintUtils {
         return null == result ? hintProps.getProperty(sqlHintPropsKey.getAlias()) : result;
     }
     
-    /**
-     * Remove SQL hint.
-     *
-     * @param sql SQL
-     * @return SQL after remove hint
-     */
-    public static String removeHint(final String sql) {
-        return startWithHint(sql) ? sql.substring(sql.indexOf(SQL_COMMENT_SUFFIX) + 2) : sql;
+    private static Collection<String> getSplitterSQLHintValue(final String property) {
+        return property.isEmpty() ? Collections.emptySet() : new HashSet<>(Splitter.on(SQLHintUtils.SQL_HINT_VALUE_COLLECTION_SPLIT).omitEmptyStrings().trimResults().splitToList(property));
     }
 }

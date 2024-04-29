@@ -31,15 +31,15 @@ class SQLStatementParserEngineFactoryTest {
     
     @Test
     void assertGetSQLStatementParserEngineNotSame() {
-        SQLStatementParserEngine before = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
-        SQLStatementParserEngine after = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L), true);
+        SQLStatementParserEngine before = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(64, 1024L));
+        SQLStatementParserEngine after = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
         assertNotSame(before, after);
     }
     
     @Test
     void assertGetSQLStatementParserEngineSame() {
-        SQLStatementParserEngine before = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
-        SQLStatementParserEngine after = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
+        SQLStatementParserEngine before = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
+        SQLStatementParserEngine after = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
         assertSame(before, after);
     }
 }

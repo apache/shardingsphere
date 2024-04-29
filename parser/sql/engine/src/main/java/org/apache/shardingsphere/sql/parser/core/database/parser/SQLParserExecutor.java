@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.sql.parser.spi.SQLDialectParserFacade;
+import org.apache.shardingsphere.sql.parser.spi.DialectSQLParserFacade;
 
 /**
  * SQL parser executor.
@@ -54,7 +54,7 @@ public final class SQLParserExecutor {
     }
     
     private ParseASTNode twoPhaseParse(final String sql) {
-        SQLDialectParserFacade sqlParserFacade = DatabaseTypedSPILoader.getService(SQLDialectParserFacade.class, databaseType);
+        DialectSQLParserFacade sqlParserFacade = DatabaseTypedSPILoader.getService(DialectSQLParserFacade.class, databaseType);
         SQLParser sqlParser = SQLParserFactory.newInstance(sql, sqlParserFacade.getLexerClass(), sqlParserFacade.getParserClass());
         try {
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
@@ -66,8 +66,8 @@ public final class SQLParserExecutor {
             ((Parser) sqlParser).addErrorListener(SQLParserErrorListener.getInstance());
             try {
                 return (ParseASTNode) sqlParser.parse();
-            } catch (final ParseCancellationException e) {
-                throw new SQLParsingException(sql + ", " + e.getMessage());
+            } catch (final ParseCancellationException exception) {
+                throw new SQLParsingException(sql + ", " + exception.getMessage());
             }
         }
     }

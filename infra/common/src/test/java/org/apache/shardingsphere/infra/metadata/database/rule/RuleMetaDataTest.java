@@ -44,4 +44,9 @@ class RuleMetaDataTest {
     void assertGetSingleRule() {
         assertThat(ruleMetaData.getSingleRule(ShardingSphereRuleFixture.class), instanceOf(ShardingSphereRuleFixture.class));
     }
+    
+    @Test
+    void assertGetInUsedStorageUnitNameAndRulesMapWhenRulesAreEmpty() {
+        assertTrue(new RuleMetaData(Collections.emptyList()).getInUsedStorageUnitNameAndRulesMap().isEmpty());
+    }
 }

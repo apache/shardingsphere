@@ -17,34 +17,31 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration.metadata.processor;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
-import org.apache.shardingsphere.data.pipeline.common.metadata.node.config.processor.impl.AbstractJobConfigurationChangedProcessor;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.JobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.prepare.MigrationJobPreparer;
-import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.swapper.YamlMigrationJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.preparer.MigrationJobPreparer;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 
 /**
  * Migration job configuration changed processor.
  */
-@Slf4j
-public final class MigrationJobConfigurationChangedProcessor extends AbstractJobConfigurationChangedProcessor {
+public final class MigrationJobConfigurationChangedProcessor implements JobConfigurationChangedProcessor<MigrationJobConfiguration> {
     
     @Override
-    protected void onDeleted(final JobConfiguration jobConfig) {
+    public PipelineJob createJob(final MigrationJobConfiguration jobConfig) {
+        return new MigrationJob(jobConfig.getJobId());
+    }
+    
+    @Override
+    public void clean(final JobConfiguration jobConfig) {
         new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfig.getJobParameter()));
     }
     
     @Override
-    protected AbstractPipelineJob buildPipelineJob(final String jobId) {
-        return new MigrationJob(jobId);
-    }
-    
-    @Override
-    protected JobType getJobType() {
-        return new MigrationJobType();
+    public String getType() {
+        return "MIGRATION";
     }
 }

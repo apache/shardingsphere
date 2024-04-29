@@ -58,7 +58,7 @@ public final class CursorToken extends SQLToken implements Substitutable, RouteU
     
     private String getCursorValue(final RouteUnit routeUnit) {
         Map<String, String> logicAndActualTables = TokenUtils.getLogicAndActualTableMap(routeUnit, sqlStatementContext, shardingRule);
-        String actualTableName = logicAndActualTables.isEmpty() ? null : logicAndActualTables.values().iterator().next();
+        String actualTableName = logicAndActualTables.values().stream().sorted().findFirst().orElse(null);
         return Strings.isNullOrEmpty(actualTableName) ? identifier.getValue() : identifier.getValue() + "_" + actualTableName;
     }
 }

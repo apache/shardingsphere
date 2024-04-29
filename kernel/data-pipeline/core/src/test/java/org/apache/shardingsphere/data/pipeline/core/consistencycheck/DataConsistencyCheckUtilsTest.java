@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -24,6 +25,16 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataConsistencyCheckUtilsTest {
+    
+    @Test
+    void assertIsIntegerEquals() {
+        EqualsBuilder equalsBuilder = new EqualsBuilder();
+        String value = "123";
+        Long longValue = Long.parseLong(value);
+        assertTrue(DataConsistencyCheckUtils.isMatched(equalsBuilder, longValue, Integer.parseInt(value)));
+        assertTrue(DataConsistencyCheckUtils.isMatched(equalsBuilder, longValue, Short.parseShort(value)));
+        assertTrue(DataConsistencyCheckUtils.isMatched(equalsBuilder, longValue, Byte.parseByte(value)));
+    }
     
     @Test
     void assertIsBigDecimalEquals() {

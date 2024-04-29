@@ -21,7 +21,7 @@ import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -48,9 +48,9 @@ class PostgreSQLUnspecifiedBinaryProtocolValueTest {
         byteBuf.writeCharSequence(timestampStr, StandardCharsets.ISO_8859_1);
         byteBuf.readInt();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        Object result = new PostgreSQLUnspecifiedBinaryProtocolValue().read(payload, timestampStr.length());
-        assertThat(result, instanceOf(PostgreSQLTypeUnspecifiedSQLParameter.class));
-        assertThat(result.toString(), is(timestampStr));
+        Object actual = new PostgreSQLUnspecifiedBinaryProtocolValue().read(payload, timestampStr.length());
+        assertThat(actual, instanceOf(PostgreSQLTypeUnspecifiedSQLParameter.class));
+        assertThat(actual.toString(), is(timestampStr));
         assertThat(byteBuf.readerIndex(), is(expectedLength));
     }
     

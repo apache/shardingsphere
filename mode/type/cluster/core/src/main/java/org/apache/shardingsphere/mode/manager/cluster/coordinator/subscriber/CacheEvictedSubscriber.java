@@ -36,7 +36,7 @@ public final class CacheEvictedSubscriber {
      *
      * @param ignored unused
      */
-    @SuppressWarnings({"UnstableApiUsage", "unused"})
+    @SuppressWarnings("unused")
     @Subscribe
     public void onGovernanceEvent(final GovernanceEvent ignored) {
         OrderedServicesCache.clearCache();

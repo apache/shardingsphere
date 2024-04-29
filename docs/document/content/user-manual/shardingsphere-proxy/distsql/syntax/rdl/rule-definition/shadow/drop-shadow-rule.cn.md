@@ -13,12 +13,12 @@ weight = 3
 {{% tab name="语法" %}}
 ```sql
 DropShadowRule ::=
-  'DROP' 'SHADOW' 'RULE' ifExists? shadowRuleName ('FROM' databaseName)?
+  'DROP' 'SHADOW' 'RULE' ifExists? ruleName ('FROM' databaseName)?
 
 ifExists ::=
   'IF' 'EXISTS'
 
-shadowRuleName ::=
+ruleName ::=
   identifier
 
 databaseName ::=

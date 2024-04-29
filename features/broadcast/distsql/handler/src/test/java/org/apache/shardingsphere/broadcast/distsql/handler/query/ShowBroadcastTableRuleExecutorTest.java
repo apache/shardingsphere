@@ -20,57 +20,52 @@ package org.apache.shardingsphere.broadcast.distsql.handler.query;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.ShowBroadcastTableRulesStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShowBroadcastTableRuleExecutorTest {
     
+    private DistSQLQueryExecuteEngine engine;
+    
+    @BeforeEach
+    void setUp() {
+        engine = new DistSQLQueryExecuteEngine(mock(ShowBroadcastTableRulesStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
+        BroadcastRule rule = mockBroadcastRule();
+        when(database.getRuleMetaData().findSingleRule(BroadcastRule.class)).thenReturn(Optional.of(rule));
+        return result;
+    }
+    
     @Test
-    void assertGetRowData() {
-        ShardingSphereDatabase database = mockDatabase();
-        RQLExecutor<ShowBroadcastTableRulesStatement> executor = new ShowBroadcastTableRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowBroadcastTableRulesStatement.class));
+    void assertGetRowData() throws SQLException {
+        engine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("t_address"));
-    }
-    
-    @Test
-    void assertGetRowDataWithoutMaskRule() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        Collection<LocalDataQueryResultRow> actual = new ShowBroadcastTableRuleExecutor().getRows(database, mock(ShowBroadcastTableRulesStatement.class));
-        assertTrue(actual.isEmpty());
-    }
-    
-    @Test
-    void assertGetColumnNames() {
-        RQLExecutor<ShowBroadcastTableRulesStatement> executor = new ShowBroadcastTableRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(1));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("broadcast_table"));
-    }
-    
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(mockBroadcastRule()));
-        when(result.getRuleMetaData()).thenReturn(ruleMetaData);
-        return result;
     }
     
     private BroadcastRule mockBroadcastRule() {

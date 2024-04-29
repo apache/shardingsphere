@@ -76,7 +76,7 @@
     <sql-case id="alter_database_add_logfile_group" value="ALTER DATABASE ADD LOGFILE GROUP 3 ('diska:log3.log', 'diskb:log3.log') SIZE 50K" db-types="Oracle" />
     <sql-case id="alter_database_drop_logfile_member" value="ALTER DATABASE DROP LOGFILE MEMBER 'diskb:log3.log'" db-types="Oracle" />
     <sql-case id="alter_database_mount" value="ALTER DATABASE db1 MOUNT" db-types="Oracle" />
-    <sql-case id="alter_database_open_readonly" value="ALTER DATABASE db1 OPEN READONLY" db-types="Oracle" />
+    <sql-case id="alter_database_open_readonly" value="ALTER DATABASE db1 OPEN READ ONLY" db-types="Oracle" />
     <sql-case id="alter_database_recovery1" value="ALTER DATABASE db1 BEGIN BACKUP" db-types="Oracle" />
     <sql-case id="alter_database_recovery2" value="ALTER DATABASE db1 END BACKUP" db-types="Oracle" />
     <sql-case id="alter_database_rename" value="ALTER DATABASE db1 RENAME FILE 'a.dbf' to 'b.dbf'" db-types="Oracle" />

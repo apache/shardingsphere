@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.infra.util.groovy;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +28,8 @@ import java.util.List;
  * - `org.apache.shardingsphere.infra.expr.espresso.EspressoInlineExpressionParser`
  * - `org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser`
  */
-public class GroovyUtils {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class GroovyUtils {
     
     /**
      * Split GroovyShell expression to a ArrayList.

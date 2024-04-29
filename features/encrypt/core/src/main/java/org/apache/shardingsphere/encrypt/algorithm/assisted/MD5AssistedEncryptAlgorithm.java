@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.encrypt.algorithm.assisted;
 
 import lombok.EqualsAndHashCode;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
+import lombok.Getter;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.messagedigest.core.MessageDigestAlgorithm;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Properties;
 
@@ -28,20 +31,26 @@ import java.util.Properties;
  * MD5 assisted encrypt algorithm.
  */
 @EqualsAndHashCode
-public final class MD5AssistedEncryptAlgorithm implements AssistedEncryptAlgorithm {
+public final class MD5AssistedEncryptAlgorithm implements EncryptAlgorithm {
     
-    private static final String SALT_KEY = "salt";
+    @Getter
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false, new Properties());
     
-    private String salt;
+    private MessageDigestAlgorithm digestAlgorithm;
     
     @Override
     public void init(final Properties props) {
-        this.salt = props.getProperty(SALT_KEY, "");
+        digestAlgorithm = TypedSPILoader.getService(MessageDigestAlgorithm.class, getType(), props);
     }
     
     @Override
-    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return null == plainValue ? null : DigestUtils.md5Hex(plainValue + salt);
+    public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
+        return digestAlgorithm.digest(plainValue);
+    }
+    
+    @Override
+    public Object decrypt(final Object cipherValue, final AlgorithmSQLContext algorithmSQLContext) {
+        throw new UnsupportedOperationException(String.format("Algorithm `%s` is unsupported to decrypt", getType()));
     }
     
     @Override

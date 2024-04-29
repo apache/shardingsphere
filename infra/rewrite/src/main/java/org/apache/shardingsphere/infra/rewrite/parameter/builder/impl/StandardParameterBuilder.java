@@ -23,12 +23,11 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilde
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 /**
  * Standard parameter builder.
@@ -39,23 +38,29 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     private final List<Object> originalParameters;
     
     @Getter
-    private final Map<Integer, Collection<Object>> addedIndexAndParameters = new TreeMap<>();
+    private final Map<Integer, Collection<Object>> addedIndexAndParameters = new HashMap<>();
     
     private final Map<Integer, Object> replacedIndexAndParameters = new LinkedHashMap<>();
     
+    private int addedParameterCount;
+    
+    private int maxAddedParameterIndex;
+    
     /**
      * Add added parameters.
-     * 
+     *
      * @param index parameters index to be added
      * @param params parameters to be added
      */
     public void addAddedParameters(final int index, final Collection<Object> params) {
+        addedParameterCount += params.size();
+        maxAddedParameterIndex = Math.max(maxAddedParameterIndex, index);
         addedIndexAndParameters.put(index, params);
     }
     
     /**
      * Add replaced parameter.
-     * 
+     *
      * @param index parameter index to be replaced
      * @param param parameter to be replaced
      */
@@ -65,28 +70,35 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     
     @Override
     public List<Object> getParameters() {
-        List<Object> replacedParams = new ArrayList<>(originalParameters);
-        for (Entry<Integer, Object> entry : replacedIndexAndParameters.entrySet()) {
-            replacedParams.set(entry.getKey(), entry.getValue());
+        if (addedIndexAndParameters.isEmpty() && replacedIndexAndParameters.isEmpty()) {
+            return new ArrayList<>(originalParameters);
         }
+        List<Object> replacedParams = getReplacedParameters();
         int maxParamIndex = getMaxParameterIndex();
-        List<Object> result = new LinkedList<>();
+        List<Object> result = new ArrayList<>(replacedParams.size() + addedParameterCount);
         for (int index = 0; index <= maxParamIndex; index++) {
-            List<Object> currentIndexParams = new LinkedList<>();
             if (replacedParams.size() > index) {
-                currentIndexParams.add(replacedParams.get(index));
+                result.add(replacedParams.get(index));
             }
             if (addedIndexAndParameters.containsKey(index)) {
-                currentIndexParams.addAll(addedIndexAndParameters.get(index));
+                result.addAll(addedIndexAndParameters.get(index));
             }
-            result.addAll(currentIndexParams);
+        }
+        return result;
+    }
+    
+    private List<Object> getReplacedParameters() {
+        if (replacedIndexAndParameters.isEmpty()) {
+            return originalParameters;
+        }
+        List<Object> result = new ArrayList<>(originalParameters);
+        for (Entry<Integer, Object> entry : replacedIndexAndParameters.entrySet()) {
+            result.set(entry.getKey(), entry.getValue());
         }
         return result;
     }
     
     private int getMaxParameterIndex() {
-        return addedIndexAndParameters.isEmpty()
-                ? originalParameters.size() - 1
-                : Math.max(originalParameters.size() - 1, ((TreeMap<Integer, Collection<Object>>) addedIndexAndParameters).descendingMap().firstKey());
+        return addedIndexAndParameters.isEmpty() ? originalParameters.size() - 1 : Math.max(originalParameters.size() - 1, maxAddedParameterIndex);
     }
 }

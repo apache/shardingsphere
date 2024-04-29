@@ -21,19 +21,22 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.SchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
@@ -45,6 +48,7 @@ import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -98,46 +102,84 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
+     * Get database.
+     *
+     * @param name database name
+     * @return got database
+     */
+    public ShardingSphereDatabase getDatabase(final String name) {
+        ShardingSpherePreconditions.checkNotEmpty(name, NoDatabaseSelectedException::new);
+        ShardingSphereMetaData metaData = getMetaDataContexts().getMetaData();
+        ShardingSpherePreconditions.checkState(metaData.containsDatabase(name), () -> new UnknownDatabaseException(name));
+        return metaData.getDatabase(name);
+    }
+    
+    /**
      * Get storage units.
      *
      * @param databaseName database name
      * @return storage units
      */
     public Map<String, StorageUnit> getStorageUnits(final String databaseName) {
-        return metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits();
+        return getDatabase(databaseName).getResourceMetaData().getStorageUnits();
     }
     
     /**
-     * Reload database meta data from governance center.
-     * 
-     * @param databaseName to be reloaded database name
+     * Reload database meta data.
+     *
+     * @param database to be reloaded database
+     * @param force whether to force refresh table metadata
      */
-    public void reloadDatabaseMetaData(final String databaseName) {
+    public void refreshDatabaseMetaData(final ShardingSphereDatabase database, final boolean force) {
         try {
-            ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
-            Map<String, DataSourcePoolProperties> dataSourcePoolPropsFromRegCenter = metaDataContexts.get().getPersistService().getDataSourceUnitService().load(databaseName);
-            SwitchingResource switchingResource = new ResourceSwitchManager().createByAlterDataSourcePoolProperties(database.getResourceMetaData(), dataSourcePoolPropsFromRegCenter);
-            metaDataContexts.get().getMetaData().getDatabases().putAll(configurationContextManager.renewDatabase(database, switchingResource));
-            MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(databaseName, switchingResource);
-            deletedSchemaNames(databaseName, reloadedMetaDataContexts.getMetaData().getDatabase(databaseName), database);
-            metaDataContexts.set(reloadedMetaDataContexts);
-            metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas()
-                    .forEach((schemaName, schema) -> metaDataContexts.get().getPersistService().getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
-            switchingResource.closeStaleDataSources();
+            MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
+            MetaDataBasedPersistService persistService = metaDataContexts.get().getPersistService();
+            if (force) {
+                metaDataContexts.set(reloadedMetaDataContexts);
+                metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
+                        .forEach((schemaName, schema) -> persistService.getDatabaseMetaDataService().persistByAlterConfiguration(database.getName(), schemaName, schema));
+            } else {
+                deletedSchemaNames(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
+                metaDataContexts.set(reloadedMetaDataContexts);
+                metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
+                        .forEach((schemaName, schema) -> persistService.getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
+            }
         } catch (final SQLException ex) {
-            log.error("Reload database meta data: {} failed", databaseName, ex);
+            log.error("Refresh database meta data: {} failed", database.getName(), ex);
         }
     }
     
-    private MetaDataContexts createMetaDataContexts(final String databaseName, final SwitchingResource switchingResource) throws SQLException {
+    /**
+     * Reload table meta data.
+     * 
+     * @param database to be reloaded database
+     */
+    public void refreshTableMetaData(final ShardingSphereDatabase database) {
+        try {
+            MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
+            deletedSchemaNames(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
+            metaDataContexts.set(reloadedMetaDataContexts);
+            metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
+                    .forEach((schemaName, schema) -> metaDataContexts.get().getPersistService().getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
+        } catch (final SQLException ex) {
+            log.error("Refresh table meta data: {} failed", database.getName(), ex);
+        }
+    }
+    
+    private MetaDataContexts createMetaDataContexts(final ShardingSphereDatabase database) throws SQLException {
         MetaDataBasedPersistService metaDataPersistService = metaDataContexts.get().getPersistService();
-        Map<String, ShardingSphereDatabase> changedDatabases = configurationContextManager.createChangedDatabases(databaseName, false,
-                switchingResource, metaDataPersistService.getDatabaseRulePersistService().load(databaseName));
+        Map<String, DataSourcePoolProperties> dataSourcePoolPropsFromRegCenter = metaDataPersistService.getDataSourceUnitService().load(database.getName());
+        SwitchingResource switchingResource = new ResourceSwitchManager().alterStorageUnit(database.getResourceMetaData(), dataSourcePoolPropsFromRegCenter);
+        metaDataContexts.get().getMetaData().getDatabases().putAll(configurationContextManager.renewDatabase(database, switchingResource));
+        Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(database.getName());
+        Map<String, ShardingSphereDatabase> changedDatabases = configurationContextManager.createChangedDatabases(database.getName(), false, switchingResource, ruleConfigs);
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
-        RuleMetaData changedGlobalMetaData = new RuleMetaData(
-                GlobalRulesBuilder.buildRules(metaDataPersistService.getGlobalRuleService().load(), changedDatabases, props));
-        return new MetaDataContexts(metaDataContexts.get().getPersistService(),
+        Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
+        RuleMetaData changedGlobalMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, changedDatabases, props));
+        MetaDataContexts result = new MetaDataContexts(metaDataPersistService,
                 new ShardingSphereMetaData(changedDatabases, metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
+        switchingResource.closeStaleDataSources();
+        return result;
     }
     
     /**
@@ -148,37 +190,36 @@ public final class ContextManager implements AutoCloseable {
      * @param currentDatabase current database
      */
     public void deletedSchemaNames(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        SchemaManager.getToBeDeletedSchemaNames(reloadDatabase.getSchemas(), currentDatabase.getSchemas()).keySet()
+        GenericSchemaManager.getToBeDeletedSchemaNames(reloadDatabase.getSchemas(), currentDatabase.getSchemas()).keySet()
                 .forEach(each -> metaDataContexts.get().getPersistService().getDatabaseMetaDataService().dropSchema(databaseName, each));
     }
     
     /**
      * Reload schema.
      * 
-     * @param databaseName database name
+     * @param database database
      * @param schemaName to be reloaded schema name
      * @param dataSourceName data source name
      */
-    public void reloadSchema(final String databaseName, final String schemaName, final String dataSourceName) {
+    public void reloadSchema(final ShardingSphereDatabase database, final String schemaName, final String dataSourceName) {
         try {
-            ShardingSphereSchema reloadedSchema = loadSchema(databaseName, schemaName, dataSourceName);
+            ShardingSphereSchema reloadedSchema = loadSchema(database, schemaName, dataSourceName);
             if (reloadedSchema.getTables().isEmpty()) {
-                metaDataContexts.get().getMetaData().getDatabase(databaseName).dropSchema(schemaName);
-                metaDataContexts.get().getPersistService().getDatabaseMetaDataService().dropSchema(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(),
+                database.dropSchema(schemaName);
+                metaDataContexts.get().getPersistService().getDatabaseMetaDataService().dropSchema(database.getName(),
                         schemaName);
             } else {
-                metaDataContexts.get().getMetaData().getDatabase(databaseName).addSchema(schemaName, reloadedSchema);
+                database.addSchema(schemaName, reloadedSchema);
                 metaDataContexts.get().getPersistService().getDatabaseMetaDataService()
-                        .compareAndPersist(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(), schemaName, reloadedSchema);
+                        .compareAndPersist(database.getName(), schemaName, reloadedSchema);
             }
         } catch (final SQLException ex) {
-            log.error("Reload meta data of database: {} schema: {} with data source: {} failed", databaseName, schemaName, dataSourceName, ex);
+            log.error("Reload meta data of database: {} schema: {} with data source: {} failed", database.getName(), schemaName, dataSourceName, ex);
         }
     }
     
-    private ShardingSphereSchema loadSchema(final String databaseName, final String schemaName, final String dataSourceName) throws SQLException {
-        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
-        database.reloadRules(MutableDataNodeRule.class);
+    private ShardingSphereSchema loadSchema(final ShardingSphereDatabase database, final String schemaName, final String dataSourceName) throws SQLException {
+        database.reloadRules();
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
                 Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnits().get(dataSourceName).getStorageType()),
                 Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnits().get(dataSourceName).getDataSource()),
@@ -191,38 +232,37 @@ public final class ContextManager implements AutoCloseable {
     /**
      * Reload table.
      * 
-     * @param databaseName database name
+     * @param database database
      * @param schemaName schema name
      * @param tableName to be reloaded table name
      */
-    public void reloadTable(final String databaseName, final String schemaName, final String tableName) {
-        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
+    public void reloadTable(final ShardingSphereDatabase database, final String schemaName, final String tableName) {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
                 database.getResourceMetaData().getStorageUnits(), database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
         try {
             persistTable(database, schemaName, tableName, material);
         } catch (final SQLException ex) {
-            log.error("Reload table: {} meta data of database: {} schema: {} failed", tableName, databaseName, schemaName, ex);
+            log.error("Reload table: {} meta data of database: {} schema: {} failed", tableName, database.getName(), schemaName, ex);
         }
     }
     
     /**
      * Reload table from single data source.
      * 
-     * @param databaseName database name
+     * @param database database
      * @param schemaName schema name
      * @param dataSourceName data source name
      * @param tableName to be reloaded table name
      */
-    public void reloadTable(final String databaseName, final String schemaName, final String dataSourceName, final String tableName) {
-        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
+    public void reloadTable(final ShardingSphereDatabase database, final String schemaName, final String dataSourceName, final String tableName) {
         StorageUnit storageUnit = database.getResourceMetaData().getStorageUnits().get(dataSourceName);
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(), Collections.singletonMap(dataSourceName, storageUnit.getStorageType()),
-                Collections.singletonMap(dataSourceName, storageUnit.getDataSource()), database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
+                Collections.singletonMap(dataSourceName, storageUnit.getStorageType()), Collections.singletonMap(dataSourceName, storageUnit.getDataSource()),
+                database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
         try {
             persistTable(database, schemaName, tableName, material);
         } catch (final SQLException ex) {
-            log.error("Reload table: {} meta data of database: {} schema: {} with data source: {} failed", tableName, databaseName, schemaName, dataSourceName, ex);
+            log.error("Reload table: {} meta data of database: {} schema: {} with data source: {} failed", tableName, database.getName(), schemaName, dataSourceName, ex);
         }
     }
     

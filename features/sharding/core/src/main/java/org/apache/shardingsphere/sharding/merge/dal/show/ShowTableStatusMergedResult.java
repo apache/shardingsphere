@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResu
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -51,8 +51,8 @@ public final class ShowTableStatusMergedResult extends MemoryMergedResult<Shardi
             while (each.next()) {
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
-                Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
-                tableRule.ifPresent(optional -> memoryResultSetRow.setCell(1, optional.getLogicTable()));
+                Optional<ShardingTable> shardingTable = shardingRule.findShardingTableByActualTable(actualTableName);
+                shardingTable.ifPresent(optional -> memoryResultSetRow.setCell(1, optional.getLogicTable()));
                 String tableName = memoryResultSetRow.getCell(1).toString();
                 if (memoryQueryResultRows.containsKey(tableName)) {
                     merge(memoryQueryResultRows.get(tableName), memoryResultSetRow);

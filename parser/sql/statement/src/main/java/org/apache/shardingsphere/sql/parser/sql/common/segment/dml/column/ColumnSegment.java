@@ -20,11 +20,13 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.ColumnSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,6 +53,8 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     private ColumnSegmentBoundedInfo otherUsingColumnBoundedInfo;
     
     private boolean isVariable;
+    
+    private List<ParenthesesSegment> parentheses = new LinkedList<>();
     
     public ColumnSegment(final int startIndex, final int stopIndex, final IdentifierValue identifier) {
         this.startIndex = startIndex;

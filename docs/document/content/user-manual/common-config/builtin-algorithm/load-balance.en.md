@@ -23,7 +23,7 @@ Type: RANDOM
 
 Type: WEIGHT
 
-Attributes: 
+Attributes:
 
 | *Name*          | *DataType* | *Description*                                                                                                                                                                     |
 |-----------------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -38,7 +38,7 @@ Attributes:
 ```yaml
 rules:
 - !READWRITE_SPLITTING
-  dataSources:
+  dataSourceGroups:
     readwrite_ds:
       writeDataSourceName: write_ds
       readDataSourceNames:
@@ -54,4 +54,4 @@ rules:
 ## Related References
 
 - [Core Feature: Read/Write Splitting](/en/features/readwrite-splitting/)
-- [Developer Guide: Read/Write Splitting](/en/dev-manual/readwrite-splitting/)
+- [Developer Guide: Read/Write Splitting](/en/dev-manual/infra-algorithm/)

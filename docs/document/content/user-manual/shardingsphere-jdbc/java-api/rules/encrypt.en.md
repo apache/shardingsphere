@@ -1,6 +1,6 @@
 +++
 title = "Encryption"
-weight = 4
+weight = 5
 +++
 
 ## Background

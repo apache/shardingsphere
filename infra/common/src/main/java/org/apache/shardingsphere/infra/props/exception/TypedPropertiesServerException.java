@@ -33,6 +33,6 @@ public final class TypedPropertiesServerException extends ShardingSphereServerEx
     private static final int ERROR_CODE = 1;
     
     public TypedPropertiesServerException(final Collection<String> errorMessages) {
-        super(ERROR_CATEGORY, ERROR_CODE, String.join(System.lineSeparator(), errorMessages));
+        super(ERROR_CATEGORY, ERROR_CODE, String.format("Properties convert failed, details are: %s.", String.join(System.lineSeparator(), errorMessages)));
     }
 }

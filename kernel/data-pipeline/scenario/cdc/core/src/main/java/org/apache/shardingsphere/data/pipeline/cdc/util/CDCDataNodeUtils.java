@@ -19,15 +19,18 @@ package org.apache.shardingsphere.data.pipeline.cdc.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,16 +53,21 @@ public final class CDCDataNodeUtils {
     public static Map<String, List<DataNode>> buildDataNodesMap(final ShardingSphereDatabase database, final Collection<String> tableNames) {
         Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         Optional<SingleRule> singleRule = database.getRuleMetaData().findSingleRule(SingleRule.class);
+        Optional<BroadcastRule> broadcastRule = database.getRuleMetaData().findSingleRule(BroadcastRule.class);
         Map<String, List<DataNode>> result = new HashMap<>();
         // TODO support virtual data source name
         for (String each : tableNames) {
-            if (singleRule.isPresent() && singleRule.get().getAllDataNodes().containsKey(each)) {
-                result.put(each, new ArrayList<>(singleRule.get().getAllDataNodes().get(each)));
+            if (singleRule.isPresent() && singleRule.get().getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().containsKey(each)) {
+                result.put(each, new ArrayList<>(singleRule.get().getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().get(each)));
                 continue;
             }
-            if (shardingRule.isPresent() && shardingRule.get().findTableRule(each).isPresent()) {
-                TableRule tableRule = shardingRule.get().getTableRule(each);
-                result.put(each, tableRule.getActualDataNodes());
+            if (shardingRule.isPresent() && shardingRule.get().findShardingTable(each).isPresent()) {
+                ShardingTable shardingTable = shardingRule.get().getShardingTable(each);
+                result.put(each, shardingTable.getActualDataNodes());
+                continue;
+            }
+            if (broadcastRule.isPresent() && broadcastRule.get().getAttributes().getAttribute(DataNodeRuleAttribute.class).findFirstActualTable(each).isPresent()) {
+                result.put(each, Collections.singletonList(broadcastRule.get().getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().get(each).iterator().next()));
                 continue;
             }
             throw new PipelineInvalidParameterException(String.format("Not find actual data nodes of `%s`", each));

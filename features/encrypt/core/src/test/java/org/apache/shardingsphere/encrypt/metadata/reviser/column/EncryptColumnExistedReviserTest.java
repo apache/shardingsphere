@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 class EncryptColumnExistedReviserTest {
     
     @Test
-    public void assertIsExistedWithCipherColumn() {
+    void assertIsExistedWithCipherColumn() {
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(encryptTable.isCipherColumn("cipher_column")).thenReturn(true);
         EncryptColumnExistedReviser reviser = new EncryptColumnExistedReviser(encryptTable);
@@ -36,7 +36,7 @@ class EncryptColumnExistedReviserTest {
     }
     
     @Test
-    public void assertIsExistedWithAssistedQueryColumn() {
+    void assertIsExistedWithAssistedQueryColumn() {
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(encryptTable.isAssistedQueryColumn("assisted_query_column")).thenReturn(true);
         EncryptColumnExistedReviser reviser = new EncryptColumnExistedReviser(encryptTable);
@@ -44,7 +44,7 @@ class EncryptColumnExistedReviserTest {
     }
     
     @Test
-    public void assertIsExistedWithLikeQueryColumn() {
+    void assertIsExistedWithLikeQueryColumn() {
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(encryptTable.isLikeQueryColumn("like_query_column")).thenReturn(true);
         EncryptColumnExistedReviser reviser = new EncryptColumnExistedReviser(encryptTable);
@@ -52,7 +52,7 @@ class EncryptColumnExistedReviserTest {
     }
     
     @Test
-    public void assertIsExistedWithNormalColumn() {
+    void assertIsExistedWithNormalColumn() {
         EncryptTable encryptTable = mock(EncryptTable.class);
         EncryptColumnExistedReviser reviser = new EncryptColumnExistedReviser(encryptTable);
         assertTrue(reviser.isExisted("normal_column"));

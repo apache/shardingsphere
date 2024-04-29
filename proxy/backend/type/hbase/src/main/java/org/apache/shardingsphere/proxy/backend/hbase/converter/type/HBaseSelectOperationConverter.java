@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.hbase.converter.type;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Query;
 import org.apache.hadoop.hbase.client.Scan;
@@ -50,7 +49,6 @@ import java.util.stream.Collectors;
  * HBase select operation converter.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class HBaseSelectOperationConverter implements HBaseOperationConverter {
     
     private final SQLStatementContext sqlStatementContext;

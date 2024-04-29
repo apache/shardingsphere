@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.single.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Single table not found exception.
  */
-public final class SingleTableNotFoundException extends MetaDataSQLException {
+public final class SingleTableNotFoundException extends SingleDefinitionException {
     
     private static final long serialVersionUID = 3498790429190415298L;
     
     public SingleTableNotFoundException(final String tableName) {
-        super(XOpenSQLState.NOT_FOUND, 21, "Single table `%s` does not exist.", tableName);
+        super(XOpenSQLState.NOT_FOUND, 1, "Single table '%s' does not exist.", tableName);
     }
 }

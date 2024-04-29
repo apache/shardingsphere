@@ -24,9 +24,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -79,9 +78,9 @@ class MySQLQueryHeaderBuilderTest {
     void assertBuildWithNullSchema() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchemas()).thenReturn(Collections.emptyMap());
-        DataNodeContainedRule containedRule = mock(DataNodeContainedRule.class);
-        when(containedRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_order"));
-        when(database.getRuleMetaData().findRules(DataNodeContainedRule.class)).thenReturn(Collections.singletonList(containedRule));
+        DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
+        when(ruleAttribute.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_order"));
+        when(database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
         QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
         QueryHeader actual = new MySQLQueryHeaderBuilder().build(queryResultMetaData, database, queryResultMetaData.getColumnName(1), queryResultMetaData.getColumnLabel(1), 1);
         assertFalse(actual.isPrimaryKey());
@@ -104,9 +103,9 @@ class MySQLQueryHeaderBuilderTest {
         when(schema.getTable("t_logic_order")).thenReturn(
                 new ShardingSphereTable("t_logic_order", Collections.singleton(column), Collections.singleton(new ShardingSphereIndex("order_id")), Collections.emptyList()));
         when(result.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        ShardingRule shardingRule = mock(ShardingRule.class);
-        when(shardingRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
-        when(result.getRuleMetaData().findRules(DataNodeContainedRule.class)).thenReturn(Collections.singleton(shardingRule));
+        DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
+        when(ruleAttribute.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
+        when(result.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
         when(result.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         return result;
     }

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.segment.from.impl.JoinTableSegment
 import org.apache.shardingsphere.infra.binder.segment.from.impl.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.impl.SubqueryTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.CollectionTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
@@ -64,6 +65,10 @@ public final class TableSegmentBinder {
         }
         if (segment instanceof FunctionTableSegment) {
             tableBinderContexts.put(segment.getAliasName().orElseGet(() -> ((FunctionTableSegment) segment).getTableFunction().getText()).toLowerCase(), new FunctionTableSegmentBinderContext());
+            return segment;
+        }
+        if (segment instanceof CollectionTableSegment) {
+            tableBinderContexts.put(segment.getAliasName().orElseGet(() -> ((CollectionTableSegment) segment).getExpressionSegment().getText()).toLowerCase(), new FunctionTableSegmentBinderContext());
             return segment;
         }
         return segment;

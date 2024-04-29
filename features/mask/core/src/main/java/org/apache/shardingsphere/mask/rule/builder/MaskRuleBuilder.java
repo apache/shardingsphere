@@ -35,9 +35,9 @@ import java.util.Map;
 public final class MaskRuleBuilder implements DatabaseRuleBuilder<MaskRuleConfiguration> {
     
     @Override
-    public MaskRule build(final MaskRuleConfiguration config, final String databaseName, final DatabaseType protocolType,
+    public MaskRule build(final MaskRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType,
                           final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new MaskRule(config);
+        return new MaskRule(ruleConfig);
     }
     
     @Override

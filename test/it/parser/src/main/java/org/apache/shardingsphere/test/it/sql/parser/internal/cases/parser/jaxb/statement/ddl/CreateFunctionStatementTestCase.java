@@ -17,10 +17,38 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedDynamicSqlStatementExpressionSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedProcedureCallNameSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedRoutineName;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedSQLStatementSegment;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Create function statement test case.
  */
+@Getter
+@Setter
 public final class CreateFunctionStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "function-name")
+    private ExpectedRoutineName functionName;
+    
+    @XmlElementWrapper(name = "sql-statements")
+    @XmlElement(name = "sql-statement")
+    private List<ExpectedSQLStatementSegment> sqlStatements = new LinkedList<>();
+    
+    @XmlElementWrapper(name = "procedure-calls")
+    @XmlElement(name = "procedure-call")
+    private List<ExpectedProcedureCallNameSegment> procedureCalls = new LinkedList<>();
+    
+    @XmlElementWrapper(name = "dynamic-sql-statement-expressions")
+    @XmlElement(name = "dynamic-sql-statement-expression")
+    private List<ExpectedDynamicSqlStatementExpressionSegment> dynamicSqlStatementExpressions = new LinkedList<>();
 }

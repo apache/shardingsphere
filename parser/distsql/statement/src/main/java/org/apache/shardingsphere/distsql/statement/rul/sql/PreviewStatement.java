@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.distsql.statement.rul.sql;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rul.SQLRULStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 
 /**
  * Preview statement.
  */
+@RequiredArgsConstructor
 @Getter
-public final class PreviewStatement extends SQLRULStatement {
+public final class PreviewStatement extends RULStatement {
     
-    public PreviewStatement(final String sql) {
-        super(sql);
-    }
+    private final String sql;
 }

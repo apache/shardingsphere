@@ -30,7 +30,6 @@ import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnection
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 
 /**
  * Connection session.
@@ -75,9 +74,9 @@ public final class ConnectionSession {
     
     private QueryContext queryContext;
     
-    public ConnectionSession(final DatabaseType protocolType, final TransactionType initialTransactionType, final AttributeMap attributeMap) {
+    public ConnectionSession(final DatabaseType protocolType, final AttributeMap attributeMap) {
         this.protocolType = protocolType;
-        transactionStatus = new TransactionStatus(initialTransactionType);
+        transactionStatus = new TransactionStatus();
         this.attributeMap = attributeMap;
         databaseConnectionManager = new ProxyDatabaseConnectionManager(this);
         statementManager = new JDBCBackendStatement();

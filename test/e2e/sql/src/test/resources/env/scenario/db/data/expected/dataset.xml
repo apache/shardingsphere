@@ -75,15 +75,6 @@
         <column name="continent_name" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <metadata data-nodes="expected_dataset.t_single_table">
-        <column name="single_id" type="numeric" />
-        <column name="id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-    <metadata data-nodes="expected_dataset.t_broadcast_table">
-        <column name="id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
     <row data-node="expected_dataset.t_order" values="1000, 10, init, null, test, 2017-08-08" />
     <row data-node="expected_dataset.t_order" values="1001, 10, init, 2, test, 2017-08-08" />
     <row data-node="expected_dataset.t_order" values="2000, 20, init, null, test, 2017-08-08" />
@@ -310,9 +301,4 @@
     <row data-node="expected_dataset.t_product_category" values="14, car, 13, 2, 2017-08-08" />
     <row data-node="expected_dataset.t_country" values="1, usa, north america, 2017-08-08" />
     <row data-node="expected_dataset.t_country" values="86, china, asia, 2017-08-08" />
-    <row data-node="expected_dataset.t_single_table" values="1, 1000, init" />
-    <row data-node="expected_dataset.t_single_table" values="2, 1101, init" />
-    <row data-node="expected_dataset.t_single_table" values="3, 2300, init" />
-    <row data-node="expected_dataset.t_single_table" values="4, 2401, init" />
-    <row data-node="expected_dataset.t_broadcast_table" values="1, init" />
 </dataset>

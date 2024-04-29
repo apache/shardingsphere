@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.infra.exception.core;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -52,6 +55,121 @@ public final class ShardingSpherePreconditions {
      */
     public static <T extends Throwable> void checkNotNull(final Object reference, final Supplier<T> exceptionSupplierIfUnexpected) throws T {
         if (null == reference) {
+            throw exceptionSupplierIfUnexpected.get();
+        }
+    }
+    
+    /**
+     * Ensures that a string passed as a parameter to the calling method is not empty.
+     *
+     * @param <T> type of exception
+     * @param value string to be checked
+     * @param exceptionSupplierIfUnexpected exception from this supplier will be thrown if expression is unexpected
+     * @throws T exception to be thrown
+     */
+    public static <T extends Throwable> void checkNotEmpty(final String value, final Supplier<T> exceptionSupplierIfUnexpected) throws T {
+        if (Strings.isNullOrEmpty(value)) {
+            throw exceptionSupplierIfUnexpected.get();
+        }
+    }
+    
+    /**
+     * Ensures that a collection passed as a parameter to the calling method is not empty.
+     *
+     * @param <T> type of exception
+     * @param values collection to be checked
+     * @param exceptionSupplierIfUnexpected exception from this supplier will be thrown if expression is unexpected
+     * @throws T exception to be thrown
+     */
+    public static <T extends Throwable> void checkNotEmpty(final Collection<?> values, final Supplier<T> exceptionSupplierIfUnexpected) throws T {
+        if (values.isEmpty()) {
+            throw exceptionSupplierIfUnexpected.get();
+        }
+    }
+    
+    /**
+     * Ensures that a collection passed as a parameter to the calling method is not empty.
+     *
+     * @param <T> type of exception
+     * @param map map to be checked
+     * @param exceptionSupplierIfUnexpected exception from this supplier will be thrown if expression is unexpected
+     * @throws T exception to be thrown
+     */
+    public static <T extends Throwable> void checkNotEmpty(final Map<?, ?> map, final Supplier<T> exceptionSupplierIfUnexpected) throws T {
+        if (map.isEmpty()) {
+            throw exceptionSupplierIfUnexpected.get();
+        }
+    }
+    
+    /**
+     * Ensures that a collection passed as a parameter to the calling method must empty.
+     *
+     * @param <T> type of exception
+     * @param values collection to be checked
+     * @param exceptionSupplierIfUnexpected exception from this supplier will be thrown if expression is unexpected
+     * @throws T exception to be thrown
+     */
+    public static <T extends Throwable> void checkMustEmpty(final Collection<?> values, final Supplier<T> exceptionSupplierIfUnexpected) throws T {
+        if (!values.isEmpty()) {
+            throw exceptionSupplierIfUnexpected.get();
+        }
+    }
+    
+    /**
+     * Ensures that a map passed as a parameter to the calling method must empty.
+     *
+     * @param <T> type of exception
+     * @param map map to be checked
+     * @param exceptionSupplierIfUnexpected exception from this supplier will be thrown if expression is unexpected
+     * @throws T exception to be thrown
+     */
+    public static <T extends Throwable> void checkMustEmpty(final Map<?, ?> map, final Supplier<T> exceptionSupplierIfUnexpected) throws T {
+        if (!map.isEmpty()) {
+            throw exceptionSupplierIfUnexpected.get();
+        }
+    }
+    
+    /**
+     * Ensures that a collection passed as a parameter to the calling method must contain element.
+     *
+     * @param <T> type of exception
+     * @param values values to be checked
+     * @param element element to be checked
+     * @param exceptionSupplierIfUnexpected exception from this supplier will be thrown if expression is unexpected
+     * @throws T exception to be thrown
+     */
+    public static <T extends Throwable> void checkContains(final Collection<?> values, final Object element, final Supplier<T> exceptionSupplierIfUnexpected) throws T {
+        if (!values.contains(element)) {
+            throw exceptionSupplierIfUnexpected.get();
+        }
+    }
+    
+    /**
+     * Ensures that a collection passed as a parameter to the calling method must not contain element.
+     *
+     * @param <T> type of exception
+     * @param values values to be checked
+     * @param element element to be checked
+     * @param exceptionSupplierIfUnexpected exception from this supplier will be thrown if expression is unexpected
+     * @throws T exception to be thrown
+     */
+    public static <T extends Throwable> void checkNotContains(final Collection<?> values, final Object element, final Supplier<T> exceptionSupplierIfUnexpected) throws T {
+        if (values.contains(element)) {
+            throw exceptionSupplierIfUnexpected.get();
+        }
+    }
+    
+    /**
+     * Ensures that a map passed as a parameter to the calling method must contain key.
+     *
+     * @param <T> type of exception
+     * @param map map to be checked
+     * @param key key to be checked
+     * @param exceptionSupplierIfUnexpected exception from this supplier will be thrown if expression is unexpected
+     * @throws T exception to be thrown
+     */
+    public static <T extends Throwable> void checkContainsKey(final Map<?, ?> map, final Object key, final Supplier<T> exceptionSupplierIfUnexpected) throws T {
+        if (!map.containsKey(key)) {
             throw exceptionSupplierIfUnexpected.get();
         }
     }

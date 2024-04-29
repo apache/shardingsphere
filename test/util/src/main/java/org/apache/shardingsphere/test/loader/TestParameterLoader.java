@@ -19,9 +19,11 @@ package org.apache.shardingsphere.test.loader;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.io.Files;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.test.env.EnvironmentContext;
 import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
 import org.apache.shardingsphere.test.loader.summary.FileSummary;
@@ -32,15 +34,13 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URLConnection;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Test parameter loader.
@@ -50,10 +50,6 @@ import java.util.stream.Collectors;
 public final class TestParameterLoader {
     
     private static final String TOKEN_KEY = "it.github.token";
-    
-    private static final int DEFAULT_DOWNLOAD_THREADS = 4;
-    
-    private final ExecutorService executorService = Executors.newFixedThreadPool(DEFAULT_DOWNLOAD_THREADS);
     
     private final TestParameterLoadStrategy loadStrategy;
     
@@ -69,26 +65,33 @@ public final class TestParameterLoader {
      * @return loaded test parameters
      */
     @SneakyThrows
-    public Collection<ExternalSQLTestParameter> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
-        Collection<ExternalSQLTestParameter> result = new LinkedList<>();
-        Map<String, List<String>> sqlCaseFileContents = downloadAllBySummary(sqlCaseURI);
-        Map<String, List<String>> resultFileContents = downloadAllBySummary(resultURI);
-        for (Entry<String, List<String>> each : sqlCaseFileContents.entrySet()) {
-            String fileName = each.getKey();
-            List<String> sqlCaseFileContent = each.getValue();
-            List<String> resultFileContent = resultFileContents.getOrDefault(fileName, Lists.newArrayList());
-            result.addAll(loadTemplate.load(fileName, sqlCaseFileContent, resultFileContent, databaseType, reportType));
-        }
-        return result;
+    public Stream<ExternalSQLTestParameter> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
+        return load(sqlCaseURI, resultURI, databaseType, reportType, null);
     }
     
-    private Map<String, List<String>> downloadAllBySummary(final URI sqlCaseURI) throws InterruptedException {
-        Map<String, List<String>> contents = new ConcurrentHashMap<>();
-        Collection<FileSummary> fileSummaries = loadStrategy.loadSQLCaseFileSummaries(sqlCaseURI);
-        executorService.invokeAll(fileSummaries.stream()
-                .map(summary -> (Callable<Object>) () -> contents.put(summary.getFileName(), loadContent(URI.create(summary.getAccessURI()))))
-                .collect(Collectors.toList()));
-        return contents;
+    /**
+     * Load test parameters.
+     *
+     * @param sqlCaseURI SQL case URI
+     * @param resultURI result URI
+     * @param databaseType database type
+     * @param reportType report type
+     * @param caseRegex case regex
+     * @return loaded test parameters
+     */
+    @SneakyThrows
+    public Stream<ExternalSQLTestParameter> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType, final String caseRegex) {
+        Collection<FileSummary> sqlCaseFileSummaries = loadStrategy.loadSQLCaseFileSummaries(sqlCaseURI);
+        Collection<FileSummary> resultFileSummaries = loadStrategy.loadSQLCaseFileSummaries(resultURI);
+        Map<String, FileSummary> resultFileSummaryMap =
+                resultFileSummaries.stream().collect(Collectors.toMap(fileSummary -> Files.getNameWithoutExtension(fileSummary.getFileName()), Function.identity()));
+        return sqlCaseFileSummaries.stream().filter(each -> StringUtils.isEmpty(caseRegex) || each.getFileName().matches(caseRegex)).flatMap(each -> {
+            List<String> sqlCaseFileContent = loadContent(URI.create(each.getAccessURI()));
+            String fileName = Files.getNameWithoutExtension(each.getFileName());
+            Optional<FileSummary> resultFileSummary = Optional.ofNullable(resultFileSummaryMap.get(fileName));
+            List<String> resultFileContent = resultFileSummary.map(summary -> loadContent(URI.create(summary.getAccessURI()))).orElse(Collections.emptyList());
+            return loadTemplate.load(fileName, sqlCaseFileContent, resultFileContent, databaseType, reportType).stream();
+        });
     }
     
     private List<String> loadContent(final URI uri) {

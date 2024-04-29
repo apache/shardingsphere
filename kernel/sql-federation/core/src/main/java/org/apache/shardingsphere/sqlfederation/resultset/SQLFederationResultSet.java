@@ -17,14 +17,17 @@
 
 package org.apache.shardingsphere.sqlfederation.resultset;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.schema.Schema;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
+import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -45,7 +48,6 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -69,19 +71,22 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     private final SQLFederationResultSetMetaData resultSetMetaData;
     
+    private final SQLFederationColumnTypeConverter columnTypeConverter;
+    
     private Object[] currentRows;
     
     private boolean wasNull;
     
     private boolean closed;
     
-    public SQLFederationResultSet(final Enumerator<Object> enumerator, final ShardingSphereSchema schema, final Schema sqlFederationSchema,
-                                  final SelectStatementContext selectStatementContext, final RelDataType resultColumnType) {
+    public SQLFederationResultSet(final Enumerator<Object> enumerator, final Schema sqlFederationSchema, final SelectStatementContext selectStatementContext, final RelDataType resultColumnType) {
         this.enumerator = enumerator;
-        columnLabelAndIndexes = new HashMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
-        Map<Integer, String> indexAndColumnLabels = new HashMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
+        DatabaseType databaseType = selectStatementContext.getDatabaseType().getTrunkDatabaseType().orElse(selectStatementContext.getDatabaseType());
+        columnTypeConverter = DatabaseTypedSPILoader.getService(SQLFederationColumnTypeConverter.class, databaseType);
+        columnLabelAndIndexes = new CaseInsensitiveMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
+        Map<Integer, String> indexAndColumnLabels = new CaseInsensitiveMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
         handleColumnLabelAndIndex(columnLabelAndIndexes, indexAndColumnLabels, selectStatementContext);
-        resultSetMetaData = new SQLFederationResultSetMetaData(schema, sqlFederationSchema, selectStatementContext, resultColumnType, indexAndColumnLabels);
+        resultSetMetaData = new SQLFederationResultSetMetaData(sqlFederationSchema, selectStatementContext, resultColumnType, indexAndColumnLabels, columnTypeConverter);
     }
     
     private void handleColumnLabelAndIndex(final Map<String, Integer> columnLabelAndIndexes, final Map<Integer, String> indexAndColumnLabels, final SelectStatementContext selectStatementContext) {
@@ -89,7 +94,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
         for (int columnIndex = 1; columnIndex <= projections.size(); columnIndex++) {
             Projection projection = projections.get(columnIndex - 1);
             String columnLabel = projection.getColumnLabel();
-            columnLabelAndIndexes.put(columnLabel.toLowerCase(), columnIndex);
+            columnLabelAndIndexes.put(columnLabel, columnIndex);
             indexAndColumnLabels.put(columnIndex, columnLabel);
         }
     }
@@ -97,7 +102,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     @Override
     public boolean next() {
         boolean result = enumerator.moveNext();
-        if (result) {
+        if (result && null != enumerator.current()) {
             currentRows = enumerator.current().getClass().isArray() ? (Object[]) enumerator.current() : new Object[]{enumerator.current()};
         } else {
             currentRows = new Object[]{};
@@ -455,16 +460,16 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     }
     
     private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLException {
-        Integer result = columnLabelAndIndexes.get(columnLabel.toLowerCase());
+        Integer result = columnLabelAndIndexes.get(columnLabel);
         ShardingSpherePreconditions.checkNotNull(result, () -> new SQLFeatureNotSupportedException(String.format("can not get index from column label `%s`", columnLabel)));
         return result;
     }
     
     private Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        ShardingSpherePreconditions.checkState(!INVALID_FEDERATION_TYPES.contains(type), () -> new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName())));
+        ShardingSpherePreconditions.checkNotContains(INVALID_FEDERATION_TYPES, type, () -> new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName())));
         Object result = currentRows[columnIndex - 1];
         wasNull = null == result;
-        return result;
+        return columnTypeConverter.convertColumnValue(result);
     }
     
     private Object getCalendarValue(final int columnIndex) {

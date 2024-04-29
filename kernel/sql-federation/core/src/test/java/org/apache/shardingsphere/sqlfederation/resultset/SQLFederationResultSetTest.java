@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,7 +68,7 @@ class SQLFederationResultSetTest {
     @BeforeEach
     void setUp() {
         enumerator = createEnumerator();
-        federationResultSet = new SQLFederationResultSet(enumerator, mock(ShardingSphereSchema.class), mock(SQLFederationSchema.class), createSelectStatementContext(), mock(RelDataType.class));
+        federationResultSet = new SQLFederationResultSet(enumerator, mock(SQLFederationSchema.class), createSelectStatementContext(), mock(RelDataType.class));
     }
     
     private SelectStatementContext createSelectStatementContext() {
@@ -80,6 +80,7 @@ class SQLFederationResultSetTest {
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getTableNames()).thenReturn(Collections.emptyList());
         when(result.getTablesContext()).thenReturn(tablesContext);
+        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         return result;
     }
     

@@ -18,33 +18,28 @@
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressUpdatedParameter;
-import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * Single channel consumer importer.
  */
 @RequiredArgsConstructor
-public final class SingleChannelConsumerImporter extends AbstractLifecycleExecutor implements Importer {
+public final class SingleChannelConsumerImporter extends AbstractPipelineLifecycleRunnable implements Importer {
     
     private final PipelineChannel channel;
     
     private final int batchSize;
     
-    private final int timeout;
-    
-    private final TimeUnit timeUnit;
+    private final long timeoutMillis;
     
     private final PipelineSink sink;
     
@@ -53,7 +48,7 @@ public final class SingleChannelConsumerImporter extends AbstractLifecycleExecut
     @Override
     protected void runBlocking() {
         while (isRunning()) {
-            List<Record> records = channel.fetchRecords(batchSize, timeout, timeUnit).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
+            List<Record> records = channel.fetch(batchSize, timeoutMillis);
             if (records.isEmpty()) {
                 continue;
             }

@@ -100,7 +100,11 @@ alterService
     ;
 
 alterSchema
-    : ALTER SCHEMA schemaName TRANSFER class_? ignoredIdentifier
+    : ALTER SCHEMA schemaName TRANSFER class_? securableName
+    ;
+
+securableName
+    : identifier (DOT_ identifier)?
     ;
 
 dropTable
@@ -145,6 +149,31 @@ dropSchema
 
 truncateTable
     : TRUNCATE TABLE tableName
+    ;
+
+updateStatistics
+    : UPDATE STATISTICS tableName (LP_? indexName (COMMA_ indexName)* RP_?)? statisticsWithClause?
+    ;
+
+statisticsWithClause
+    : WITH sampleOption? statisticsOptions?
+    ;
+
+sampleOption
+    : (FULLSCAN | (SAMPLE NUMBER_ (PERCENT | ROWS))) (PERSIST_SAMPLE_PERCENT EQ_ (ON | OFF))?
+    | RESAMPLE (ON PARTITIONS LP_ NUMBER_ (COMMA_ NUMBER_)* RP_)?
+    ;
+
+statisticsOptions
+    : (COMMA_? statisticsOption)+
+    ;
+
+statisticsOption
+    : ALL | COLUMNS | INDEX
+    | NORECOMPUTE
+    | INCREMENTAL EQ_ (ON | OFF)
+    | MAXDOP EQ_ NUMBER_
+    | AUTO_DROP EQ_ (ON | OFF)
     ;
 
 fileTableClause
@@ -293,7 +322,15 @@ columnSetDefinition
     ;
 
 tableConstraint 
-    : (CONSTRAINT constraintName)? (tablePrimaryConstraint | tableForeignKeyConstraint | checkConstraint)
+    : (CONSTRAINT constraintName)? (tablePrimaryConstraint | tableForeignKeyConstraint | checkConstraint | edgeConstraint)
+    ;
+
+edgeConstraint
+    : connectionClause (ON DELETE (NO ACTION | CASCADE))?
+    ;
+
+connectionClause
+    : CONNECTION LP_ (nodeAlias TO nodeAlias) (COMMA_ nodeAlias TO nodeAlias)*? RP_
     ;
 
 tablePrimaryConstraint
@@ -684,7 +721,7 @@ funcInlineReturn
     ;
 
 funcScalarReturn
-    : RETURNS dataType (WITH functionOption (COMMA_ functionOption)*)? AS? BEGIN compoundStatement RETURN expr
+    : RETURNS dataType (WITH functionOption (COMMA_ functionOption)*)? AS? BEGIN compoundStatement RETURN expr SEMI_ END
     ;
 
 tableTypeDefinition

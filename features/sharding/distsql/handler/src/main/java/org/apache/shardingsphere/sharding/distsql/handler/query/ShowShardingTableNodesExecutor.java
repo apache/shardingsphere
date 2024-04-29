@@ -17,56 +17,49 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableNodesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show sharding table nodes.
+ * Show sharding table nodes executor.
  */
-public final class ShowShardingTableNodesExecutor implements RQLExecutor<ShowShardingTableNodesStatement> {
+@Setter
+public final class ShowShardingTableNodesExecutor implements DistSQLQueryExecutor<ShowShardingTableNodesStatement>, DistSQLExecutorRuleAware<ShardingRule> {
     
-    private static final String NAME = "name";
-    
-    private static final String NODES = "nodes";
+    private ShardingRule rule;
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableNodesStatement sqlStatement) {
-        Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        if (!shardingRule.isPresent()) {
-            return Collections.emptyList();
-        }
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+    public Collection<String> getColumnNames(final ShowShardingTableNodesStatement sqlStatement) {
+        return Arrays.asList("name", "nodes");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableNodesStatement sqlStatement, final ContextManager contextManager) {
         String tableName = sqlStatement.getTableName();
-        if (null == tableName) {
-            for (Entry<String, TableRule> entry : shardingRule.get().getTableRules().entrySet()) {
-                result.add(new LocalDataQueryResultRow(entry.getKey(), getTableNodes(entry.getValue())));
-            }
-        } else {
-            result.add(new LocalDataQueryResultRow(tableName, getTableNodes(shardingRule.get().getTableRule(tableName))));
-        }
-        return result;
+        return null == tableName
+                ? rule.getShardingTables().entrySet().stream().map(entry -> new LocalDataQueryResultRow(entry.getKey(), getTableNodes(entry.getValue()))).collect(Collectors.toList())
+                : Collections.singleton(new LocalDataQueryResultRow(tableName, getTableNodes(rule.getShardingTable(tableName))));
     }
     
-    private String getTableNodes(final TableRule tableRule) {
-        return tableRule.getActualDataNodes().stream().map(DataNode::format).collect(Collectors.joining(", "));
+    private String getTableNodes(final ShardingTable shardingTable) {
+        return shardingTable.getActualDataNodes().stream().map(DataNode::format).collect(Collectors.joining(", "));
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList(NAME, NODES);
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

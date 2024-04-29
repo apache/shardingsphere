@@ -37,7 +37,7 @@ public final class AutoCommitUtils {
      * @return need to open a new transaction.
      */
     public static boolean needOpenTransaction(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement && null == ((SelectStatement) sqlStatement).getFrom()) {
+        if (sqlStatement instanceof SelectStatement && !((SelectStatement) sqlStatement).getFrom().isPresent()) {
             return false;
         }
         return sqlStatement instanceof DDLStatement || sqlStatement instanceof DMLStatement;

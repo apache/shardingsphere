@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.checker;
 
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -55,7 +55,7 @@ class ShadowRuleConfigurationCheckerTest {
     }
     
     private AlgorithmConfiguration createAlgorithmConfiguration() {
-        return new AlgorithmConfiguration("user-id-insert-match-algorithm",
+        return new AlgorithmConfiguration("REGEX_MATCH",
                 PropertiesBuilder.build(new Property("column", "shadow"), new Property("operation", "insert"), new Property("regex", "[1]")));
     }
 }

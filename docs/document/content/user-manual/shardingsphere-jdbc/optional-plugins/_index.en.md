@@ -45,12 +45,11 @@ All optional plugins are listed below in the form of `groupId:artifactId`.
 - Cluster mode configuration information persistence definition
   - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-zookeeper`, Zookeeper based persistence
   - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-etcd`, Etcd based persistence
-  - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-consul`, Consul based persistence
 - XA transaction manager provider definition
   - `org.apache.shardingsphere:shardingsphere-transaction-xa-narayana`, XA distributed transaction manager based on Narayana
-- SQL translator
-  - `org.apache.shardingsphere:shardingsphere-sql-translator-jooq-provider`, JooQ SQL translator
 - Row Value Expressions definition
   - `org.apache.shardingsphere:shardingsphere-infra-expr-espresso`，Row Value Expressions that uses the Groovy syntax based on GraalVM Truffle's Espresso implementation
+- Database type identification
+  - `org.apache.shardingsphere:shardingsphere-infra-database-testcontainers`, Adaptation of jdbcURL for `JDBC support` of `testcontainers-java`
 
 In addition to the above optional plugins, ShardingSphere community developers have contributed a number of plugin implementations. These plugins can be found in [ShardingSphere Plugins] (https://github.com/apache/shardingsphere-plugin) repository. Plugins in ShardingSphere Plugin repository would remain the same release plan with ShardingSphere, they can be retrieved at https://central.sonatype.com/, and install into ShardingSphere.

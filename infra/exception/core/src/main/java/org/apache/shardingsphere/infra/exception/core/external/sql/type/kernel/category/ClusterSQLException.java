@@ -32,4 +32,8 @@ public abstract class ClusterSQLException extends KernelSQLException {
     protected ClusterSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
     }
+    
+    protected ClusterSQLException(final SQLState sqlState, final int errorCode, final Exception cause, final String reason, final Object... messageArgs) {
+        super(sqlState, KERNEL_CODE, errorCode, cause, reason, messageArgs);
+    }
 }

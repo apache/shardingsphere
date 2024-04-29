@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.checker.dialect;
 
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.checker.XATransactionPrivilegeChecker;
-import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionCheckPrivilegeFailedException;
-import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionPrivilegeException;
+import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionPrivilegeCheckException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -46,7 +46,7 @@ public final class MySQLXATransactionPrivilegeChecker implements XATransactionPr
                 checkPrivilege(connection);
             }
         } catch (final SQLException ex) {
-            throw new XATransactionCheckPrivilegeFailedException(ex);
+            throw new SQLWrapperException(ex);
         }
     }
     
@@ -61,9 +61,9 @@ public final class MySQLXATransactionPrivilegeChecker implements XATransactionPr
                 }
             }
         } catch (final SQLException ex) {
-            throw new XATransactionCheckPrivilegeFailedException(ex);
+            throw new XATransactionPrivilegeCheckException("XA_RECOVER_ADMIN", ex);
         }
-        throw new XATransactionPrivilegeException("XA_RECOVER_ADMIN");
+        throw new XATransactionPrivilegeCheckException("XA_RECOVER_ADMIN");
     }
     
     private boolean matchPrivileges(final String privilege) {

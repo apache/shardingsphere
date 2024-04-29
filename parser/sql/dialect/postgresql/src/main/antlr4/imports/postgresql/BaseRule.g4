@@ -441,6 +441,8 @@ unreservedWord
     | JSON
     | PARAM
     | TABLE
+    | CONSTRAINT
+    | COLLATION
     ;
 
 typeFuncNameKeyword

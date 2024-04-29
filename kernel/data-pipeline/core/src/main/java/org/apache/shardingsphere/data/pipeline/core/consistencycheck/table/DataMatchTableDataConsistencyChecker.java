@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
 import com.google.common.base.Strings;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.RecordSingleTableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
@@ -33,7 +32,6 @@ import java.util.Properties;
  * Data match table data consistency checker.
  */
 @SPIDescription("Match raw data of records.")
-@Slf4j
 public final class DataMatchTableDataConsistencyChecker implements TableDataConsistencyChecker {
     
     private static final String CHUNK_SIZE_KEY = "chunk-size";

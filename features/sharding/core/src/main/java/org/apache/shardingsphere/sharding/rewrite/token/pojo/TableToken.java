@@ -51,7 +51,7 @@ public final class TableToken extends SQLToken implements Substitutable, RouteUn
     @Override
     public String toString(final RouteUnit routeUnit) {
         String actualTableName = TokenUtils.getLogicAndActualTableMap(routeUnit, sqlStatementContext, shardingRule).get(tableName.getValue().toLowerCase());
-        actualTableName = null == actualTableName ? tableName.getValue().toLowerCase() : actualTableName;
+        actualTableName = null == actualTableName ? tableName.getValue() : actualTableName;
         return tableName.getQuoteCharacter().wrap(actualTableName);
     }
 }

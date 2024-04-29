@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -64,30 +63,26 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
     public final ExecutionGroupContext<T> prepare(final RouteContext routeContext, final Map<String, Integer> connectionOffsets, final Collection<ExecutionUnit> executionUnits,
                                                   final ExecutionGroupReportContext reportContext) throws SQLException {
         Collection<ExecutionGroup<T>> result = new LinkedList<>();
-        for (Entry<String, List<SQLUnit>> entry : aggregateSQLUnitGroups(executionUnits).entrySet()) {
+        for (Entry<String, List<ExecutionUnit>> entry : aggregateExecutionUnitGroups(executionUnits).entrySet()) {
             String dataSourceName = entry.getKey();
-            List<SQLUnit> sqlUnits = entry.getValue();
-            List<List<SQLUnit>> sqlUnitGroups = group(sqlUnits);
-            ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
-            result.addAll(group(dataSourceName, connectionOffsets.getOrDefault(dataSourceName, 0), sqlUnitGroups, connectionMode));
+            List<List<ExecutionUnit>> executionUnitGroups = group(entry.getValue());
+            ConnectionMode connectionMode = maxConnectionsSizePerQuery < entry.getValue().size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
+            result.addAll(group(dataSourceName, connectionOffsets.getOrDefault(dataSourceName, 0), executionUnitGroups, connectionMode));
         }
         return decorate(routeContext, result, reportContext);
     }
     
-    private List<List<SQLUnit>> group(final List<SQLUnit> sqlUnits) {
+    private List<List<ExecutionUnit>> group(final List<ExecutionUnit> sqlUnits) {
         int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
         return Lists.partition(sqlUnits, desiredPartitionSize);
     }
     
-    protected abstract List<ExecutionGroup<T>> group(String dataSourceName, int connectionOffset, List<List<SQLUnit>> sqlUnitGroups, ConnectionMode connectionMode) throws SQLException;
+    protected abstract List<ExecutionGroup<T>> group(String dataSourceName, int connectionOffset, List<List<ExecutionUnit>> executionUnitGroups, ConnectionMode connectionMode) throws SQLException;
     
-    private Map<String, List<SQLUnit>> aggregateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
-        Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1F);
+    private Map<String, List<ExecutionUnit>> aggregateExecutionUnitGroups(final Collection<ExecutionUnit> executionUnits) {
+        Map<String, List<ExecutionUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1F);
         for (ExecutionUnit each : executionUnits) {
-            if (!result.containsKey(each.getDataSourceName())) {
-                result.put(each.getDataSourceName(), new LinkedList<>());
-            }
-            result.get(each.getDataSourceName()).add(each.getSqlUnit());
+            result.computeIfAbsent(each.getDataSourceName(), unused -> new LinkedList<>()).add(each);
         }
         return result;
     }

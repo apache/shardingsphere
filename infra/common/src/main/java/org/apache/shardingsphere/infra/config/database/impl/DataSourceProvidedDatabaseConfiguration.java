@@ -69,7 +69,8 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
         for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropsMap.entrySet()) {
             String storageUnitName = entry.getKey();
             StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
-            StorageUnit storageUnit = new StorageUnit(storageNode, entry.getValue(), storageNodeDataSources.get(storageNode));
+            DataSource dataSource = storageNodeDataSources.containsKey(storageNode) ? storageNodeDataSources.get(storageNode) : storageNodeDataSources.get(new StorageNode(storageUnitName));
+            StorageUnit storageUnit = new StorageUnit(storageNode, entry.getValue(), dataSource);
             result.put(storageUnitName, storageUnit);
         }
         return result;

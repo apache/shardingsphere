@@ -28,6 +28,6 @@ public final class TransactionTimeoutException extends TransactionSQLException {
     private static final long serialVersionUID = -2976178098576465693L;
     
     public TransactionTimeoutException() {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 2, "Transaction timeout should more than 0s");
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 3, "Transaction timeout should more than 0.");
     }
 }

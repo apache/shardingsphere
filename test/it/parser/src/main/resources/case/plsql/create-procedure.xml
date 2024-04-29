@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <create-procedure sql-case-id="pl_sql_create_procedure">
+        <procedure-name name="test_procedure" />
+        <sql-statements>
+            <sql-statement start-index="162" stop-index="187" statement-class-simple-name="OracleSavepointStatement" />
+            <sql-statement start-index="205" stop-index="269" statement-class-simple-name="OracleSelectStatement" />
+            <sql-statement start-index="1200" stop-index="1205" statement-class-simple-name="OracleCommitStatement" />
+            <sql-statement start-index="1246" stop-index="1288" statement-class-simple-name="OracleRollbackStatement" />
+            <sql-statement start-index="1403" stop-index="1445" statement-class-simple-name="OracleRollbackStatement" />
+        </sql-statements>
+        <procedure-calls>
+            <procedure-call name="DBMS_OUTPUT.PUT_LINE" />
+            <procedure-call name="DBMS_OUTPUT.PUT_LINE" />
+        </procedure-calls>
+        <procedure-body-end-names>
+            <procedure-body-end-name name="cp_SHOPBudget_Gy" />
+        </procedure-body-end-names>
+    </create-procedure>
+</sql-parser-test-cases>

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sharding.exception.metadata.ActualTableNotFoundException;
@@ -36,7 +37,7 @@ import java.util.Optional;
 @Getter
 public final class BindingTableRule {
     
-    private final Map<String, TableRule> tableRules = new LinkedHashMap<>();
+    private final Map<String, ShardingTable> shardingTables = new CaseInsensitiveMap<>();
     
     /**
      * Judge contains this logic table in this rule.
@@ -45,7 +46,7 @@ public final class BindingTableRule {
      * @return contains this logic table or not
      */
     public boolean hasLogicTable(final String logicTable) {
-        return tableRules.containsKey(logicTable.toLowerCase());
+        return shardingTables.containsKey(logicTable);
     }
     
     /**
@@ -60,14 +61,14 @@ public final class BindingTableRule {
      * @throws BindingTableNotFoundException binding table not found exception
      */
     public String getBindingActualTable(final String dataSource, final String logicTable, final String otherLogicTable, final String otherActualTable) {
-        Optional<TableRule> otherLogicTableRule = Optional.ofNullable(tableRules.get(otherLogicTable.toLowerCase()));
-        int index = otherLogicTableRule.map(optional -> optional.findActualTableIndex(dataSource, otherActualTable)).orElse(-1);
+        Optional<ShardingTable> otherShardingTable = Optional.ofNullable(shardingTables.get(otherLogicTable));
+        int index = otherShardingTable.map(optional -> optional.findActualTableIndex(dataSource, otherActualTable)).orElse(-1);
         if (-1 == index) {
             throw new ActualTableNotFoundException(dataSource, otherActualTable);
         }
-        Optional<TableRule> tableRule = Optional.ofNullable(tableRules.get(logicTable.toLowerCase()));
-        if (tableRule.isPresent()) {
-            return tableRule.get().getActualDataNodes().get(index).getTableName();
+        Optional<ShardingTable> shardingTable = Optional.ofNullable(shardingTables.get(logicTable));
+        if (shardingTable.isPresent()) {
+            return shardingTable.get().getActualDataNodes().get(index).getTableName();
         }
         throw new BindingTableNotFoundException(dataSource, logicTable, otherActualTable);
     }
@@ -78,7 +79,7 @@ public final class BindingTableRule {
      * @return logical tables.
      */
     public Collection<String> getAllLogicTables() {
-        return tableRules.keySet();
+        return shardingTables.keySet();
     }
     
     /**
@@ -93,9 +94,8 @@ public final class BindingTableRule {
     public Map<String, String> getLogicAndActualTables(final String dataSource, final String logicTable, final String actualTable, final Collection<String> availableLogicBindingTables) {
         Map<String, String> result = new LinkedHashMap<>();
         for (String each : availableLogicBindingTables) {
-            String availableLogicTable = each.toLowerCase();
-            if (!availableLogicTable.equalsIgnoreCase(logicTable) && hasLogicTable(availableLogicTable)) {
-                result.put(availableLogicTable, getBindingActualTable(dataSource, availableLogicTable, logicTable, actualTable));
+            if (!each.equalsIgnoreCase(logicTable) && hasLogicTable(each)) {
+                result.put(each, getBindingActualTable(dataSource, each, logicTable, actualTable));
             }
         }
         return result;

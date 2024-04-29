@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.exception.metadata.DuplicatedIndexException;
+import org.apache.shardingsphere.sharding.exception.metadata.DuplicateIndexException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
@@ -53,7 +53,7 @@ public final class ShardingCreateIndexStatementValidator extends ShardingDDLStat
         String tableName = createIndexStatement.getTable().getTableName().getIdentifier().getValue();
         String indexName = ((IndexAvailable) sqlStatementContext).getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).findFirst().orElse(null);
         if (schema.containsIndex(tableName, indexName)) {
-            throw new DuplicatedIndexException(indexName);
+            throw new DuplicateIndexException(indexName);
         }
     }
     

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.postgresql.exception.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -148,7 +148,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 }
                 String columnName = columnNamesOfInsert.get(columnIndex);
                 ShardingSphereColumn column = table.getColumn(columnName);
-                ShardingSpherePreconditions.checkState(null != column, () -> new ColumnNotFoundException(logicTableName, columnName));
+                ShardingSpherePreconditions.checkNotNull(column, () -> new ColumnNotFoundException(logicTableName, columnName));
                 preparedStatement.getParameterTypes().set(parameterMarkerIndex++, PostgreSQLColumnType.valueOfJDBCType(column.getDataType()));
             }
         }
@@ -166,7 +166,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     }
     
     private ShardingSphereTable getTableFromMetaData(final String databaseName, final InsertStatement insertStatement, final String logicTableName) {
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase(databaseName);
         String schemaName = insertStatement.getTable().getOwner().map(optional -> optional.getIdentifier()
                 .getValue()).orElseGet(() -> new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName));
         return database.getSchema(schemaName).getTable(logicTableName);
@@ -241,7 +241,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), databaseName, logicPreparedStatement.getHintValueContext())
                 .bind(logicPreparedStatement.getSqlStatementContext().getSqlStatement(), Collections.emptyList());
         QueryContext queryContext = new QueryContext(sqlStatementContext, logicPreparedStatement.getSql(), Collections.emptyList(), logicPreparedStatement.getHintValueContext());
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase(databaseName);
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(
                 queryContext, database, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps(), connectionSession.getConnectionContext());
         ExecutionUnit executionUnitSample = executionContext.getExecutionUnits().iterator().next();

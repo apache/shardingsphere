@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.check.datasource;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithCheckPrivilegeFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidSourceDataSourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
-import org.apache.shardingsphere.data.pipeline.spi.check.DialectDataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.core.checker.DialectDataSourceChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
@@ -41,7 +41,8 @@ public final class MySQLDataSourceChecker implements DialectDataSourceChecker {
     
     private static final String SHOW_GRANTS_SQL = "SHOW GRANTS";
     
-    private static final String[][] REQUIRED_PRIVILEGES = {{"ALL PRIVILEGES", "ON *.*"}, {"REPLICATION SLAVE", "REPLICATION CLIENT", "ON *.*"}};
+    // BINLOG MONITOR is a synonym for REPLICATION CLIENT for MariaDB
+    private static final String[][] REQUIRED_PRIVILEGES = {{"ALL PRIVILEGES", "ON *.*"}, {"REPLICATION SLAVE", "REPLICATION CLIENT", "ON *.*"}, {"REPLICATION SLAVE", "BINLOG MONITOR", "ON *.*"}};
     
     private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(3, 1F);
     

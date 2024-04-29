@@ -278,3 +278,7 @@ NOT
 NONE
     : N O N E
     ;
+
+PLUGINS
+    : P L U G I N S
+    ;

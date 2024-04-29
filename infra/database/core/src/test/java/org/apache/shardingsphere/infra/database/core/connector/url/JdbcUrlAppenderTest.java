@@ -39,10 +39,9 @@ class JdbcUrlAppenderTest {
     @Test
     void assertAppendQueryPropertiesWithOriginalQueryProperties() {
         String actual = new JdbcUrlAppender().appendQueryProperties(
-                "jdbc:trunk://192.168.0.1:3306/foo_ds?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true",
+                "jdbc:trunk://192.168.0.1:3306/foo_ds?useSSL=false&rewriteBatchedStatements=true",
                 PropertiesBuilder.build(new Property("useSSL", Boolean.FALSE.toString()), new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
         assertThat(actual, startsWith("jdbc:trunk://192.168.0.1:3306/foo_ds?"));
-        assertThat(actual, containsString("serverTimezone=UTC"));
         assertThat(actual, containsString("rewriteBatchedStatements=true"));
         assertThat(actual, containsString("useSSL=false"));
     }

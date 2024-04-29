@@ -465,7 +465,7 @@
 1. Support parsing ALTER OPERATOR in PostgreSQL
 1. Add PostgreSQL Copy Statement
 1. Add PostgreSQL Comment Statement
-1. Support listen statement in postgreSQL
+1. Support listen statement in PostgreSQL
 1. Support DECLARE cursor statement
 1. Add default serverConfig in helm charts
 1. Assemble openGauss JDBC Driver into Proxy distribution

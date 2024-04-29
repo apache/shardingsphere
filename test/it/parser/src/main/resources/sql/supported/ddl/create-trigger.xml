@@ -17,15 +17,79 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_trigger" value="CREATE TRIGGER reminder1
-        ON Sales.Customer
-        AFTER INSERT, UPDATE
-        AS INSERT INTO SalesPersonQuotaHistory VALUES(t1, 100)" db-types="SQLServer" />
-    <sql-case id="create_trigger_with_database_scoped" value="CREATE TRIGGER ddl_trig_database
-        ON ALL SERVER
-        AFTER INSERT
-        AS
-            SELECT EVENTDATA()" db-types="SQLServer" />
-
+    <sql-case id="create_trigger" value="CREATE TRIGGER reminder1 ON Sales.Customer AFTER INSERT, UPDATE AS INSERT INTO SalesPersonQuotaHistory VALUES(t1, 100)" db-types="SQLServer" />
+    <sql-case id="create_trigger_with_database_scoped" value="CREATE TRIGGER ddl_trig_database ON ALL SERVER AFTER INSERT AS SELECT EVENTDATA()" db-types="SQLServer" />
     <sql-case id="create_trigger_with_create_view" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN create view v1 as select 1; END" db-types="MySQL" />
+    <sql-case id="create_trigger_with_dml_event_clause" value="CREATE TRIGGER scott.emp_permit_changes BEFORE DELETE OR INSERT OR UPDATE ON scott.emp BEGIN IF (IS_SERVERERROR (1017)) THEN NULL; ELSE NULL; END IF; END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_body" value="CREATE TRIGGER log_errors AFTER SERVERERROR ON DATABASE BEGIN IF (IS_SERVERERROR (1017)) THEN NULL; ELSE NULL; END IF; END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_execute_immediate_statement" value="CREATE TRIGGER adg_logon_sync_trigger AFTER LOGON ON user.schema begin if (SYS_CONTEXT('USERENV', 'DATABASE_ROLE')  IN ('PHYSICAL STANDBY')) then execute immediate 'alter session sync with primary'; end if; end;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_assignment_statement" value="CREATE TRIGGER Contacts_BI BEFORE INSERT ON Contacts FOR EACH ROW BEGIN :NEW.ID := Contacts_Seq.NEXTVAL; END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_logon" value="CREATE OR REPLACE TRIGGER check_user AFTER LOGON ON DATABASE BEGIN check_user; EXCEPTION WHEN OTHERS THEN RAISE_APPLICATION_ERROR (-20000, 'Unexpected error: '|| DBMS_Utility.Format_Error_Stack); END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_cascade_1" value="CREATE OR REPLACE TRIGGER dept_cascade3 AFTER UPDATE OF Deptno ON dept BEGIN UPDATE emp SET Update_id = NULL WHERE Update_id = Integritypackage.Updateseq; END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_cascade_2" value="CREATE OR REPLACE TRIGGER dept_del_cascade AFTER DELETE ON dept FOR EACH ROW BEGIN DELETE FROM emp WHERE emp.Deptno = :OLD.Deptno; END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_cascade_3" value="CREATE OR REPLACE TRIGGER dept_cascade2 AFTER DELETE OR UPDATE OF Deptno ON dept FOR EACH ROW BEGIN IF UPDATING THEN UPDATE emp SET Deptno = :NEW.Deptno, Update_id = Integritypackage.Updateseq WHERE emp.Deptno = :OLD.Deptno AND Update_id IS NULL; END IF; IF DELETING THEN DELETE FROM emp WHERE emp.Deptno = :OLD.Deptno; END IF; END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_cascade_4" value="CREATE OR REPLACE TRIGGER dept_restrict BEFORE DELETE OR UPDATE OF Deptno ON dept FOR EACH ROW DECLARE Dummy INTEGER; Employees_present EXCEPTION; employees_not_present  EXCEPTION; CURSOR Dummy_cursor (Dn NUMBER) IS SELECT Deptno FROM emp WHERE Deptno = Dn; BEGIN OPEN Dummy_cursor (:OLD.Deptno); FETCH Dummy_cursor INTO Dummy; IF Dummy_cursor%FOUND THEN RAISE Employees_present; ELSE RAISE Employees_not_present; END IF; CLOSE Dummy_cursor; EXCEPTION WHEN Employees_present THEN CLOSE Dummy_cursor; Raise_application_error(-20001, 'Employees Present in' || ' Department ' || TO_CHAR(:OLD.DEPTNO)); WHEN Employees_not_present THEN CLOSE Dummy_cursor; END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_dataManipulationLanguage_statement" value="CREATE OR REPLACE TRIGGER lineitems_trigger
+        AFTER INSERT OR UPDATE OR DELETE ON lineitems
+        FOR EACH ROW
+      BEGIN
+        IF (INSERTING OR UPDATING)
+        THEN
+          UPDATE orders SET line_items_count = NVL(line_items_count,0)+1
+          WHERE order_id = :new.order_id;
+        END IF;
+        IF (DELETING OR UPDATING)
+        THEN
+          UPDATE orders SET line_items_count = NVL(line_items_count,0)-1
+          WHERE order_id = :old.order_id;
+        END IF;
+      END;" db-types="Oracle"/>
+    <sql-case id="create_trigger_with_exceptionInit_pragma" value="CREATE OR REPLACE TRIGGER Employee_permit_changes
+            BEFORE INSERT OR DELETE OR UPDATE ON employees
+          DECLARE
+            Dummy             INTEGER;
+            Not_on_weekends   EXCEPTION;
+            Nonworking_hours  EXCEPTION;
+            PRAGMA EXCEPTION_INIT (Not_on_weekends, -4097);
+            PRAGMA EXCEPTION_INIT (Nonworking_hours, -4099);
+          BEGIN
+             IF (TO_CHAR(Sysdate, 'DAY') = 'SAT' OR
+               TO_CHAR(Sysdate, 'DAY') = 'SUN') THEN
+                 RAISE Not_on_weekends;
+             END IF;
+            IF (TO_CHAR(Sysdate, 'HH24') &lt; 8 OR
+              TO_CHAR(Sysdate, 'HH24') &gt; 18) THEN
+                RAISE Nonworking_hours;
+            END IF;
+          EXCEPTION
+            WHEN Not_on_weekends THEN
+              Raise_application_error(-20324,'Might not change '
+                ||'employee table during the weekend');
+            WHEN Nonworking_hours THEN
+              Raise_application_error(-20326,'Might not change '
+               ||'emp table during Nonworking hours');
+          END;" db-types="Oracle"/>
+    <sql-case id="create_trigger_with_dml_event" value="CREATE OR REPLACE TRIGGER order_info_insert
+          INSTEAD OF INSERT ON order_info
+          DECLARE
+            duplicate_info EXCEPTION;
+            PRAGMA EXCEPTION_INIT (duplicate_info, -00001);
+          BEGIN
+            INSERT INTO customers
+              (customer_id, cust_last_name, cust_first_name)
+            VALUES (
+            :new.customer_id,
+            :new.cust_last_name,
+            :new.cust_first_name);
+          INSERT INTO orders (order_id, order_date, customer_id)
+          VALUES (
+            :new.order_id,
+            :new.order_date,
+            :new.customer_id);
+          EXCEPTION
+            WHEN duplicate_info THEN
+              RAISE_APPLICATION_ERROR (
+                num=&gt; -20107,
+                msg=&gt; 'Duplicate customer or order ID');
+          END order_info_insert;" db-types="Oracle" />
 </sql-cases>

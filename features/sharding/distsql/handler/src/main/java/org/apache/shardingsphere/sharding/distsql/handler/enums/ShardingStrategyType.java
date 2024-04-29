@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.enums;
 
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
@@ -183,12 +183,12 @@ public enum ShardingStrategyType {
     }
     
     /**
-     * Determine whether contains type.
+     * Judge whether the input strategy type is valid.
      *
      * @param type type
-     * @return contains or not
+     * @return true or false
      */
-    public static boolean contains(final String type) {
+    public static boolean isValidType(final String type) {
         return Arrays.stream(values()).map(Enum::name).anyMatch(each -> each.equalsIgnoreCase(type));
     }
 }

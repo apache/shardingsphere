@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.from.impl;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.SimpleTableSegmentBinderContext;
@@ -27,9 +28,10 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.exception.TableNotExistsException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -45,7 +47,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -56,7 +57,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SimpleTableSegmentBinder {
     
-    private static final Collection<String> SYSTEM_CATALOG_TABLES = new HashSet<>(4, 1F);
+    private static final Collection<String> SYSTEM_CATALOG_TABLES = new CaseInsensitiveSet<>(4, 1F);
     
     private static final String PG_CATALOG = "pg_catalog";
     
@@ -79,6 +80,7 @@ public final class SimpleTableSegmentBinder {
         fillPivotColumnNamesInBinderContext(segment, statementBinderContext);
         IdentifierValue originalDatabase = getDatabaseName(segment, statementBinderContext);
         IdentifierValue originalSchema = getSchemaName(segment, statementBinderContext);
+        ShardingSpherePreconditions.checkNotNull(originalDatabase.getValue(), NoDatabaseSelectedException::new);
         checkTableExists(segment.getTableName().getIdentifier().getValue(), statementBinderContext, originalDatabase.getValue(), originalSchema.getValue());
         ShardingSphereSchema schema = statementBinderContext.getMetaData().getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue());
         tableBinderContexts.put((segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue())).toLowerCase(),
@@ -108,7 +110,7 @@ public final class SimpleTableSegmentBinder {
         // TODO getSchemaName according to search path
         DatabaseType databaseType = statementBinderContext.getDatabaseType();
         if ((databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType)
-                && SYSTEM_CATALOG_TABLES.contains(segment.getTableName().getIdentifier().getValue().toLowerCase())) {
+                && SYSTEM_CATALOG_TABLES.contains(segment.getTableName().getIdentifier().getValue())) {
             return new IdentifierValue(PG_CATALOG);
         }
         return new IdentifierValue(new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(statementBinderContext.getDefaultDatabaseName()));
@@ -137,12 +139,15 @@ public final class SimpleTableSegmentBinder {
         if ("dual".equalsIgnoreCase(tableName)) {
             return;
         }
-        if (SystemSchemaBuilderRule.isSystemTable(schemaName, tableName)) {
+        if (SystemSchemaManager.isSystemTable(schemaName, tableName)) {
+            return;
+        }
+        if (statementBinderContext.getExternalTableBinderContexts().containsKey(tableName)) {
             return;
         }
         ShardingSpherePreconditions.checkState(statementBinderContext.getMetaData().containsDatabase(databaseName)
                 && statementBinderContext.getMetaData().getDatabase(databaseName).containsSchema(schemaName)
                 && statementBinderContext.getMetaData().getDatabase(databaseName).getSchema(schemaName).containsTable(tableName),
-                () -> new TableNotExistsException(tableName));
+                () -> new TableNotFoundException(tableName));
     }
 }

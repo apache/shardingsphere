@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder
-org.apache.shardingsphere.mode.manager.cluster.NewClusterContextManagerBuilder

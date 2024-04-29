@@ -38,15 +38,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
-        <spring-framework.version>5.2.15.RELEASE</spring-framework.version>
+        <spring-framework.version>5.2.22.RELEASE</spring-framework.version>
         <spring-boot.version>2.3.12.RELEASE</spring-boot.version>
         <hikari-cp.version>3.4.2</hikari-cp.version>
-        <mysql-connector-java.version>5.1.49</mysql-connector-java.version>
-        <postgresql.version>42.4.3</postgresql.version>
+        <mysql-connector-java.version>8.3.0</mysql-connector-java.version>
+        <postgresql.version>42.7.2</postgresql.version>
         <h2.version>2.2.224</h2.version>
         <slf4j.version>1.7.7</slf4j.version>
-        <logback.version>1.2.10</logback.version>
-        <lombok.version>1.18.20</lombok.version>
+        <logback.version>1.2.13</logback.version>
+        <lombok.version>1.18.30</lombok.version>
         <mybatis.version>3.5.9</mybatis.version>
         <mybatis-spring.version>2.0.5</mybatis-spring.version>
         <mybatis-spring-boot.version>2.1.3</mybatis-spring-boot.version>
@@ -64,7 +64,7 @@
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <freemarker.version>2.3.31</freemarker.version>
-        <snakeyaml.version>1.33</snakeyaml.version>
+        <snakeyaml.version>2.2</snakeyaml.version>
         <flatten-maven-plugin.version>1.2.5</flatten-maven-plugin.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
@@ -84,7 +84,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-jdbc-core</artifactId>
+                <artifactId>shardingsphere-jdbc</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -307,8 +307,8 @@
             <version>${postgresql.version}</version>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <version>${mysql-connector-java.version}</version>
         </dependency>
         <dependency>

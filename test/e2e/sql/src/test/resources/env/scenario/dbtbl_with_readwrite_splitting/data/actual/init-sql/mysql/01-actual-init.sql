@@ -84,8 +84,6 @@ CREATE TABLE write_ds_0.t_user (user_id INT PRIMARY KEY, user_name VARCHAR(50) N
 CREATE TABLE write_ds_0.t_product (product_id INT PRIMARY KEY, product_name VARCHAR(50) NOT NULL, category_id INT NOT NULL, price DECIMAL NOT NULL, status VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_0.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_0.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE write_ds_0.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE write_ds_0.t_single_table (single_id INT NOT NULL AUTO_INCREMENT, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
 CREATE INDEX order_index_t_order_0 ON write_ds_0.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON write_ds_0.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON write_ds_0.t_order_2 (order_id);
@@ -121,7 +119,6 @@ CREATE TABLE write_ds_1.t_merchant (merchant_id INT PRIMARY KEY, country_id INT 
 CREATE TABLE write_ds_1.t_product_detail (detail_id INT PRIMARY KEY, product_id INT NOT NULL, description VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_1.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_1.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE write_ds_1.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON write_ds_1.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON write_ds_1.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON write_ds_1.t_order_2 (order_id);
@@ -155,7 +152,6 @@ CREATE TABLE write_ds_2.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NUL
 CREATE TABLE write_ds_2.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_2.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_2.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE write_ds_2.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON write_ds_2.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON write_ds_2.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON write_ds_2.t_order_2 (order_id);
@@ -189,7 +185,6 @@ CREATE TABLE write_ds_3.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NUL
 CREATE TABLE write_ds_3.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_3.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_3.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE write_ds_3.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON write_ds_3.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON write_ds_3.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON write_ds_3.t_order_2 (order_id);
@@ -223,7 +218,6 @@ CREATE TABLE write_ds_4.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NUL
 CREATE TABLE write_ds_4.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_4.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_4.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE write_ds_4.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON write_ds_4.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON write_ds_4.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON write_ds_4.t_order_2 (order_id);
@@ -257,7 +251,6 @@ CREATE TABLE write_ds_5.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NUL
 CREATE TABLE write_ds_5.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_5.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_5.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE write_ds_5.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON write_ds_5.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON write_ds_5.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON write_ds_5.t_order_2 (order_id);
@@ -291,7 +284,6 @@ CREATE TABLE write_ds_6.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NUL
 CREATE TABLE write_ds_6.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_6.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_6.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE write_ds_6.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON write_ds_6.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON write_ds_6.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON write_ds_6.t_order_2 (order_id);
@@ -325,7 +317,6 @@ CREATE TABLE write_ds_7.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NUL
 CREATE TABLE write_ds_7.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_7.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_7.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE write_ds_7.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON write_ds_7.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON write_ds_7.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON write_ds_7.t_order_2 (order_id);
@@ -359,7 +350,6 @@ CREATE TABLE write_ds_8.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NUL
 CREATE TABLE write_ds_8.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_8.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_8.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE write_ds_8.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON write_ds_8.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON write_ds_8.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON write_ds_8.t_order_2 (order_id);
@@ -393,7 +383,6 @@ CREATE TABLE write_ds_9.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NUL
 CREATE TABLE write_ds_9.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_9.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_9.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE write_ds_9.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON write_ds_9.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON write_ds_9.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON write_ds_9.t_order_2 (order_id);
@@ -429,8 +418,6 @@ CREATE TABLE read_ds_0.t_user (user_id INT PRIMARY KEY, user_name VARCHAR(50) NO
 CREATE TABLE read_ds_0.t_product (product_id INT PRIMARY KEY, product_name VARCHAR(50) NOT NULL, category_id INT NOT NULL, price DECIMAL NOT NULL, status VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_0.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_0.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE read_ds_0.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE read_ds_0.t_single_table (single_id INT NOT NULL AUTO_INCREMENT, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
 CREATE INDEX order_index_t_order_0 ON read_ds_0.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON read_ds_0.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON read_ds_0.t_order_2 (order_id);
@@ -466,7 +453,6 @@ CREATE TABLE read_ds_1.t_merchant (merchant_id INT PRIMARY KEY, country_id INT N
 CREATE TABLE read_ds_1.t_product_detail (detail_id INT PRIMARY KEY, product_id INT NOT NULL, description VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_1.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_1.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE read_ds_1.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON read_ds_1.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON read_ds_1.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON read_ds_1.t_order_2 (order_id);
@@ -500,7 +486,6 @@ CREATE TABLE read_ds_2.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL
 CREATE TABLE read_ds_2.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_2.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_2.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE read_ds_2.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON read_ds_2.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON read_ds_2.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON read_ds_2.t_order_2 (order_id);
@@ -534,7 +519,6 @@ CREATE TABLE read_ds_3.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL
 CREATE TABLE read_ds_3.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_3.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_3.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE read_ds_3.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON read_ds_3.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON read_ds_3.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON read_ds_3.t_order_2 (order_id);
@@ -568,7 +552,6 @@ CREATE TABLE read_ds_4.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL
 CREATE TABLE read_ds_4.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_4.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_4.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE read_ds_4.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON read_ds_4.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON read_ds_4.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON read_ds_4.t_order_2 (order_id);
@@ -602,7 +585,6 @@ CREATE TABLE read_ds_5.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL
 CREATE TABLE read_ds_5.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_5.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_5.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE read_ds_5.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON read_ds_5.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON read_ds_5.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON read_ds_5.t_order_2 (order_id);
@@ -636,7 +618,6 @@ CREATE TABLE read_ds_6.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL
 CREATE TABLE read_ds_6.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_6.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_6.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE read_ds_6.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON read_ds_6.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON read_ds_6.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON read_ds_6.t_order_2 (order_id);
@@ -670,7 +651,6 @@ CREATE TABLE read_ds_7.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL
 CREATE TABLE read_ds_7.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_7.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_7.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE read_ds_7.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON read_ds_7.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON read_ds_7.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON read_ds_7.t_order_2 (order_id);
@@ -704,7 +684,6 @@ CREATE TABLE read_ds_8.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL
 CREATE TABLE read_ds_8.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_8.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_8.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE read_ds_8.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON read_ds_8.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON read_ds_8.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON read_ds_8.t_order_2 (order_id);
@@ -738,7 +717,6 @@ CREATE TABLE read_ds_9.t_order_9 (order_id INT PRIMARY KEY, user_id INT NOT NULL
 CREATE TABLE read_ds_9.t_order_item_9 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_9.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_9.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
-CREATE TABLE read_ds_9.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order_0 ON read_ds_9.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON read_ds_9.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON read_ds_9.t_order_2 (order_id);

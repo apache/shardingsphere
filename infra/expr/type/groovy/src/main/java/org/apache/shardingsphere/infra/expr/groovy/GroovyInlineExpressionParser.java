@@ -23,6 +23,7 @@ import groovy.lang.Closure;
 import groovy.lang.GString;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
+import groovy.util.Expando;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.util.groovy.GroovyUtils;
 
@@ -82,12 +83,15 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
     
     /**
      * Turn inline expression into Groovy Closure. This function will replace all inline expression placeholders.
-     *
+     * For compatibility reasons, it does not check whether the unit of the input parameter map is null.
      * @return The result of the Groovy Closure pattern.
      */
     @Override
-    public Closure<?> evaluateClosure() {
-        return (Closure<?>) evaluate("{it -> \"" + handlePlaceHolder(inlineExpression) + "\"}");
+    public String evaluateWithArgs(final Map<String, Comparable<?>> map) {
+        Closure<?> result = ((Closure<?>) evaluate("{it -> \"" + handlePlaceHolder(inlineExpression) + "\"}")).rehydrate(new Expando(), null, null);
+        result.setResolveStrategy(Closure.DELEGATE_ONLY);
+        map.forEach(result::setProperty);
+        return result.call().toString();
     }
     
     private List<Object> evaluate(final List<String> inlineExpressions) {
@@ -167,10 +171,5 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
     @Override
     public String getType() {
         return "GROOVY";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
     }
 }

@@ -53,15 +53,15 @@ public abstract class InternalSQLParserIT {
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertSupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());
-        SQLStatement actual = parseSQLStatement("H2".equals(databaseType) ? "MySQL" : databaseType, sql);
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES.get(sqlCaseId);
+        SQLStatement actual = parseSQLStatement("H2".equals(databaseType) ? "MySQL" : databaseType, sql);
         SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sql, expected.getParameters(), sqlCaseType), actual, expected);
     }
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
         return "ShardingSphere".equals(databaseType)
                 ? new DistSQLStatementParserEngine().parse(sql)
-                : new SQLStatementVisitorEngine(databaseType, true).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
+                : new SQLStatementVisitorEngine(databaseType).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {

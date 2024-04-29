@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 import java.sql.SQLException;
@@ -25,11 +24,11 @@ import java.sql.SQLException;
 /**
  * Split pipeline job by unique key exception.
  */
-public final class SplitPipelineJobByUniqueKeyException extends PipelineSQLException {
+public final class SplitPipelineJobByUniqueKeyException extends PipelineJobException {
     
     private static final long serialVersionUID = -7804078676439253443L;
     
     public SplitPipelineJobByUniqueKeyException(final String tableName, final String uniqueKey, final SQLException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 84, String.format("Can not split by unique key `%s` for table `%s`, reason is: %s", uniqueKey, tableName, cause.getMessage()), cause);
+        super(XOpenSQLState.GENERAL_ERROR, 4, String.format("Can not split by unique key '%s' for table '%s'.", uniqueKey, tableName), cause);
     }
 }

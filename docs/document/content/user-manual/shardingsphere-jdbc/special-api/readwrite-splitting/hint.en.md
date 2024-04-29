@@ -77,4 +77,4 @@ try (HintManager hintManager = HintManager.getInstance();
 ## Related References
 
 - [Core Feature: Read/write Splitting](/en/features/readwrite-splitting/)
-- [Developer Guide: Read/write Splitting](/en/dev-manual/readwrite-splitting/)
+- [Developer Guide: Read/write Splitting](/en/dev-manual/infra-algorithm/)

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShar
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
@@ -125,7 +125,7 @@ public final class ShardingConditions {
                 startIndexShardingConditions.computeIfAbsent(each.getStartIndex(), unused -> new LinkedList<>()).add(each);
             }
             for (SelectStatement each : selectStatements) {
-                if (each.getFrom() instanceof SubqueryTableSegment) {
+                if (each.getFrom().isPresent() && each.getFrom().get() instanceof SubqueryTableSegment) {
                     continue;
                 }
                 if (!each.getWhere().isPresent() || !startIndexShardingConditions.containsKey(each.getWhere().get().getExpr().getStartIndex())) {
@@ -178,20 +178,19 @@ public final class ShardingConditions {
         return true;
     }
     
-    private boolean isSameShardingCondition(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
-        return shardingValue1.getTableName().equals(shardingValue2.getTableName())
-                && shardingValue1.getColumnName().equals(shardingValue2.getColumnName()) || isBindingTable(shardingRule, shardingValue1, shardingValue2);
+    private boolean isSameShardingCondition(final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
+        return shardingValue1.getTableName().equals(shardingValue2.getTableName()) && shardingValue1.getColumnName().equals(shardingValue2.getColumnName());
     }
     
     private Collection<String> findHintStrategyTables(final SQLStatementContext sqlStatementContext) {
         Collection<String> result = new HashSet<>();
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            Optional<TableRule> tableRule = rule.findTableRule(each);
-            if (!tableRule.isPresent()) {
+            Optional<ShardingTable> shardingTable = rule.findShardingTable(each);
+            if (!shardingTable.isPresent()) {
                 continue;
             }
-            ShardingStrategyConfiguration databaseHintStrategy = rule.getDatabaseShardingStrategyConfiguration(tableRule.get());
-            ShardingStrategyConfiguration tableHintStrategy = rule.getTableShardingStrategyConfiguration(tableRule.get());
+            ShardingStrategyConfiguration databaseHintStrategy = rule.getDatabaseShardingStrategyConfiguration(shardingTable.get());
+            ShardingStrategyConfiguration tableHintStrategy = rule.getTableShardingStrategyConfiguration(shardingTable.get());
             boolean isDatabaseTableHintStrategy = databaseHintStrategy instanceof HintShardingStrategyConfiguration && tableHintStrategy instanceof HintShardingStrategyConfiguration;
             boolean isDatabaseHintStrategy = databaseHintStrategy instanceof HintShardingStrategyConfiguration && tableHintStrategy instanceof NoneShardingStrategyConfiguration;
             boolean isTableHintStrategy = databaseHintStrategy instanceof NoneShardingStrategyConfiguration && tableHintStrategy instanceof HintShardingStrategyConfiguration;
@@ -208,7 +207,10 @@ public final class ShardingConditions {
     }
     
     private boolean isSameShardingConditionValue(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
-        return isSameShardingCondition(shardingRule, shardingValue1, shardingValue2) && isSameShardingValue(shardingValue1, shardingValue2);
+        if (isBindingTable(shardingRule, shardingValue1, shardingValue2)) {
+            return true;
+        }
+        return isSameShardingCondition(shardingValue1, shardingValue2) && isSameShardingValue(shardingValue1, shardingValue2);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

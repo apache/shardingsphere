@@ -21,6 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
 
 import java.util.Collection;
 
@@ -40,4 +41,14 @@ public final class TableMetaData {
     private final Collection<IndexMetaData> indexes;
     
     private final Collection<ConstraintMetaData> constraints;
+    
+    private final TableType type;
+    
+    public TableMetaData(final String name, final Collection<ColumnMetaData> columns, final Collection<IndexMetaData> indexes, final Collection<ConstraintMetaData> constraints) {
+        this.name = name;
+        this.type = TableType.TABLE;
+        this.columns = columns;
+        this.indexes = indexes;
+        this.constraints = constraints;
+    }
 }

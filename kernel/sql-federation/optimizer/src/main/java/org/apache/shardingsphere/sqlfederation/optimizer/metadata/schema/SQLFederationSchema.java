@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.rel.type.RelDataType;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFedera
 import org.apache.shardingsphere.sqlfederation.optimizer.statistic.SQLFederationStatistic;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -51,13 +51,13 @@ public final class SQLFederationSchema extends AbstractSchema {
     }
     
     private Map<String, Table> createTableMap(final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
-        Map<String, Table> result = new LinkedHashMap<>(schema.getTables().size(), 1F);
+        Map<String, Table> result = new CaseInsensitiveMap<>(schema.getTables().size(), 1F);
         for (ShardingSphereTable each : schema.getTables().values()) {
             if (schema.containsView(each.getName())) {
-                result.put(each.getName().toLowerCase(), getViewTable(schema, each, protocolType, javaTypeFactory));
+                result.put(each.getName(), getViewTable(schema, each, protocolType, javaTypeFactory));
             } else {
                 // TODO implement table statistic logic after using custom operators
-                result.put(each.getName().toLowerCase(), new SQLFederationTable(each, new SQLFederationStatistic(), protocolType));
+                result.put(each.getName(), new SQLFederationTable(each, new SQLFederationStatistic(), protocolType));
             }
         }
         return result;

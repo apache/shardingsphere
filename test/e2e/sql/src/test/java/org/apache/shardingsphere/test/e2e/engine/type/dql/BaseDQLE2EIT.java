@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.engine.type.dql;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
@@ -36,6 +37,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
@@ -69,9 +71,13 @@ public abstract class BaseDQLE2EIT {
     public final void init(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, IOException, JAXBException {
         fillDataOnlyOnce(testParam, containerComposer);
         expectedDataSource = null == containerComposer.getAssertion().getExpectedDataSourceName() || 1 == containerComposer.getExpectedDataSourceMap().size()
-                ? containerComposer.getExpectedDataSourceMap().values().iterator().next()
+                ? getFirstExpectedDataSource(containerComposer.getExpectedDataSourceMap().values())
                 : containerComposer.getExpectedDataSourceMap().get(containerComposer.getAssertion().getExpectedDataSourceName());
         useXMLAsExpectedDataset = null != containerComposer.getAssertion().getExpectedDataFile();
+    }
+    
+    private DataSource getFirstExpectedDataSource(final Collection<DataSource> dataSources) {
+        return dataSources.isEmpty() ? null : dataSources.iterator().next();
     }
     
     private void fillDataOnlyOnce(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws IOException, JAXBException {
@@ -80,17 +86,17 @@ public abstract class BaseDQLE2EIT {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(cacheKey)) {
                     new DataSetEnvironmentManager(
-                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), containerComposer.getActualDataSourceMap()).fillData();
+                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), containerComposer.getActualDataSourceMap(), testParam.getDatabaseType()).fillData();
                     new DataSetEnvironmentManager(
-                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.EXPECTED), containerComposer.getExpectedDataSourceMap()).fillData();
+                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.EXPECTED), containerComposer.getExpectedDataSourceMap(), testParam.getDatabaseType()).fillData();
                     FILLED_SUITES.add(cacheKey);
                 }
             }
         }
     }
     
-    protected final void assertResultSet(final ResultSet actualResultSet, final ResultSet expectedResultSet) throws SQLException {
-        assertMetaData(actualResultSet.getMetaData(), expectedResultSet.getMetaData());
+    protected final void assertResultSet(final ResultSet actualResultSet, final ResultSet expectedResultSet, final AssertionTestParameter testParam) throws SQLException {
+        assertMetaData(actualResultSet.getMetaData(), expectedResultSet.getMetaData(), testParam);
         assertRows(actualResultSet, expectedResultSet);
     }
     
@@ -115,11 +121,15 @@ public abstract class BaseDQLE2EIT {
         return result;
     }
     
-    private void assertMetaData(final ResultSetMetaData actualResultSetMetaData, final ResultSetMetaData expectedResultSetMetaData) throws SQLException {
+    private void assertMetaData(final ResultSetMetaData actualResultSetMetaData, final ResultSetMetaData expectedResultSetMetaData, final AssertionTestParameter testParam) throws SQLException {
         assertThat(actualResultSetMetaData.getColumnCount(), is(expectedResultSetMetaData.getColumnCount()));
         for (int i = 0; i < actualResultSetMetaData.getColumnCount(); i++) {
             assertThat(actualResultSetMetaData.getColumnLabel(i + 1), is(expectedResultSetMetaData.getColumnLabel(i + 1)));
             assertThat(actualResultSetMetaData.getColumnName(i + 1), is(expectedResultSetMetaData.getColumnName(i + 1)));
+            if ("jdbc".equals(testParam.getAdapter()) && "Cluster".equals(testParam.getMode())) {
+                // FIXME correct columnType with proxy adapter
+                assertThat(actualResultSetMetaData.getColumnType(i + 1), is(expectedResultSetMetaData.getColumnType(i + 1)));
+            }
         }
     }
     
@@ -145,40 +155,11 @@ public abstract class BaseDQLE2EIT {
         int rowCount = 0;
         ResultSetMetaData actualMetaData = actual.getMetaData();
         while (actual.next()) {
-            assertTrue(rowCount < expected.size(), "Size of actual result set is different with size of expected dat set rows.");
-            DataSetRow expectedRow = getExpectedRowAndRemoveMayNotExistRow(actual, notAssertionColumns, actualMetaData, expected, rowCount);
-            assertRow(actual, notAssertionColumns, actualMetaData, expectedRow);
+            assertTrue(rowCount < expected.size(), "Size of actual result set is different with size of expected data set rows.");
+            assertRow(actual, notAssertionColumns, actualMetaData, expected.get(rowCount));
             rowCount++;
         }
-        assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
-    }
-    
-    private DataSetRow getExpectedRowAndRemoveMayNotExistRow(final ResultSet actual, final Collection<String> notAssertionColumns, final ResultSetMetaData actualMetaData,
-                                                             final List<DataSetRow> expected, final int rowCount) throws SQLException {
-        if (!expected.get(rowCount).isMayNotExist()) {
-            return expected.get(rowCount);
-        }
-        if (isMoveToNextExpectedRow(actual, notAssertionColumns, actualMetaData, expected, rowCount)) {
-            expected.remove(rowCount);
-        } else {
-            return expected.get(rowCount);
-        }
-        return getExpectedRowAndRemoveMayNotExistRow(actual, notAssertionColumns, actualMetaData, expected, rowCount);
-    }
-    
-    private boolean isMoveToNextExpectedRow(final ResultSet actual, final Collection<String> notAssertionColumns, final ResultSetMetaData actualMetaData,
-                                            final List<DataSetRow> expected, final int rowCount) throws SQLException {
-        int columnIndex = 1;
-        for (String each : expected.get(rowCount).splitValues("|")) {
-            String columnLabel = actualMetaData.getColumnLabel(columnIndex);
-            if (!notAssertionColumns.contains(columnLabel)) {
-                if (!each.equals(String.valueOf(actual.getObject(columnIndex)).trim()) || !each.equals(String.valueOf(actual.getObject(columnLabel)).trim())) {
-                    return true;
-                }
-            }
-            columnIndex++;
-        }
-        return false;
+        assertThat("Size of actual result set is different with size of expected data set rows.", rowCount, is(expected.size()));
     }
     
     private void assertRow(final ResultSet actualResultSet, final ResultSetMetaData actualMetaData,
@@ -196,6 +177,14 @@ public abstract class BaseDQLE2EIT {
                 } else if (actualValue instanceof Timestamp && expectedValue instanceof LocalDateTime) {
                     // TODO Since mysql 8.0.23, for the DATETIME type, the mysql driver returns the LocalDateTime type, but the proxy returns the Timestamp type.
                     assertThat(((Timestamp) actualValue).toLocalDateTime(), is(expectedValue));
+                } else if (Types.TIMESTAMP == actualMetaData.getColumnType(i + 1) || Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1)) {
+                    Object convertedActualValue = Types.TIMESTAMP == actualMetaData.getColumnType(i + 1)
+                            ? actualResultSet.getTimestamp(i + 1).toLocalDateTime().format(DateTimeFormatterFactory.getStandardFormatter())
+                            : actualValue;
+                    Object convertedExpectedValue = Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1)
+                            ? expectedResultSet.getTimestamp(i + 1).toLocalDateTime().format(DateTimeFormatterFactory.getStandardFormatter())
+                            : actualValue;
+                    assertThat(String.valueOf(convertedActualValue), is(String.valueOf(convertedExpectedValue)));
                 } else {
                     assertThat(String.valueOf(actualValue), is(String.valueOf(expectedValue)));
                 }

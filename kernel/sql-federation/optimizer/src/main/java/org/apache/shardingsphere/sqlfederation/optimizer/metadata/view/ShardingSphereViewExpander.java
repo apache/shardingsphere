@@ -47,7 +47,7 @@ public final class ShardingSphereViewExpander implements ViewExpander {
     @Override
     public RelRoot expandView(final RelDataType rowType, final String queryString, final List<String> schemaPath, @Nullable final List<String> viewPath) {
         SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType, sqlParserRule.getSqlStatementCache(),
-                sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled()).parse(queryString, false);
+                sqlParserRule.getParseTreeCache()).parse(queryString, false);
         SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
         return sqlToRelConverter.convertQuery(sqlNode, true, true);
     }

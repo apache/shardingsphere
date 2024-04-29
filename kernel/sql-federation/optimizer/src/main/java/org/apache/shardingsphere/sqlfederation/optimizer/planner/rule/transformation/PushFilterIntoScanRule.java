@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.transformation;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.logical.LogicalFilter;
@@ -28,7 +29,6 @@ import org.immutables.value.Value;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 
 /**
  * Push filter into scan rule.
@@ -36,7 +36,7 @@ import java.util.HashSet;
 @Value.Enclosing
 public final class PushFilterIntoScanRule extends RelRule<PushFilterIntoScanRule.Config> implements TransformationRule {
     
-    private static final Collection<String> SYSTEM_SCHEMAS = new HashSet<>(Arrays.asList("information_schema", "performance_schema", "mysql", "sys", "shardingsphere", "pg_catalog"));
+    private static final Collection<String> SYSTEM_SCHEMAS = new CaseInsensitiveSet<>(Arrays.asList("information_schema", "performance_schema", "mysql", "sys", "shardingsphere", "pg_catalog"));
     
     private static final String CORRELATE_REFERENCE = "$cor";
     
@@ -48,7 +48,7 @@ public final class PushFilterIntoScanRule extends RelRule<PushFilterIntoScanRule
     public boolean matches(final RelOptRuleCall call) {
         LogicalScan logicalScan = call.rel(1);
         for (String each : logicalScan.getTable().getQualifiedName()) {
-            if (SYSTEM_SCHEMAS.contains(each.toLowerCase())) {
+            if (SYSTEM_SCHEMAS.contains(each)) {
                 return false;
             }
         }

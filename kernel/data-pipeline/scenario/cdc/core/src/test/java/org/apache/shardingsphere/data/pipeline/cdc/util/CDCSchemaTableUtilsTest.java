@@ -55,7 +55,7 @@ class CDCSchemaTableUtilsTest {
         assertThat(actual, is(expected));
         schemaTables = Collections.singletonList(SchemaTable.newBuilder().setTable("t_order").build());
         actual = CDCSchemaTableUtils.parseTableExpressionWithSchema(database, schemaTables);
-        expected = Collections.singletonMap("", Collections.singleton("t_order"));
+        expected = Collections.singletonMap("public", Collections.singleton("t_order"));
         assertThat(actual, is(expected));
         schemaTables = Collections.singletonList(SchemaTable.newBuilder().setSchema("*").setTable("t_order").build());
         actual = CDCSchemaTableUtils.parseTableExpressionWithSchema(database, schemaTables);

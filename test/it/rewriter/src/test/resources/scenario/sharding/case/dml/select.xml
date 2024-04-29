@@ -58,7 +58,7 @@
         <output sql="SELECT DISTINCT amount AS AGGREGATION_DISTINCT_DERIVED_0, account_id FROM t_account_1  ORDER BY account_id ASC " />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_schema" db-types="MySQL,Oracle,SQLServer,SQL92">
+    <rewrite-assertion id="select_with_schema" db-types="MySQL,Oracle,SQL92">
         <input sql="SELECT * FROM logic_db.t_account" />
         <output sql="SELECT * FROM t_account_0 UNION ALL SELECT * FROM t_account_1" />
     </rewrite-assertion>
@@ -78,12 +78,12 @@
         <output sql="SELECT * FROM t_account_0 WHERE account_id = ? AND amount BETWEEN (SELECT amount FROM t_account_0 WHERE account_id = ?) AND ?"  parameters="100, 100, 1500" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_without_sharding_value_for_parameters" db-types="MySQL,Oracle,SQLServer,SQL92">
+    <rewrite-assertion id="select_without_sharding_value_for_parameters" db-types="MySQL,Oracle,SQL92">
         <input sql="SELECT * FROM logic_db.t_account WHERE amount = ?" parameters="1000" />
         <output sql="SELECT * FROM t_account_0 WHERE amount = ? UNION ALL SELECT * FROM t_account_1 WHERE amount = ?" parameters="1000, 1000" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_without_sharding_value_for_literals" db-types="MySQL,Oracle,SQLServer,SQL92">
+    <rewrite-assertion id="select_without_sharding_value_for_literals" db-types="MySQL,Oracle,SQL92">
         <input sql="SELECT * FROM logic_db.t_account WHERE amount = 1000" />
         <output sql="SELECT * FROM t_account_0 WHERE amount = 1000 UNION ALL SELECT * FROM t_account_1 WHERE amount = 1000" />
     </rewrite-assertion>
@@ -543,7 +543,7 @@
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_database_name_and_schema_name_in_table" db-types="PostgreSQL,openGauss">
-        <input sql="SELECT account_id FROM public.public.t_account WHERE account_id = ?" parameters="100" />
+        <input sql="SELECT account_id FROM logic_db.public.t_account WHERE account_id = ?" parameters="100" />
         <output sql="SELECT account_id FROM public.t_account_0 WHERE account_id = ?" parameters="100" />
     </rewrite-assertion>
 

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -55,12 +55,12 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
         Collection<String> bindingTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         Collection<RouteContext> routeContexts = new LinkedList<>();
         for (String each : logicTables) {
-            Optional<TableRule> tableRule = shardingRule.findTableRule(each);
-            if (tableRule.isPresent()) {
+            Optional<ShardingTable> shardingTable = shardingRule.findShardingTable(each);
+            if (shardingTable.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
-                    routeContexts.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, sqlStatementContext, hintValueContext, props).route(shardingRule));
+                    routeContexts.add(new ShardingStandardRoutingEngine(shardingTable.get().getLogicTable(), shardingConditions, sqlStatementContext, hintValueContext, props).route(shardingRule));
                 }
-                shardingRule.findBindingTableRule(each).ifPresent(optional -> bindingTableNames.addAll(optional.getTableRules().keySet()));
+                shardingRule.findBindingTableRule(each).ifPresent(optional -> bindingTableNames.addAll(optional.getShardingTables().keySet()));
             }
         }
         if (routeContexts.isEmpty()) {

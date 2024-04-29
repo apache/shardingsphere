@@ -32,9 +32,9 @@ public final class SQLStatementParserExecutor {
     
     private final SQLStatementVisitorEngine visitorEngine;
     
-    public SQLStatementParserExecutor(final DatabaseType databaseType, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
+    public SQLStatementParserExecutor(final DatabaseType databaseType, final CacheOption parseTreeCacheOption) {
         parserEngine = new SQLParserEngine(databaseType, parseTreeCacheOption);
-        visitorEngine = new SQLStatementVisitorEngine(databaseType, isParseComment);
+        visitorEngine = new SQLStatementVisitorEngine(databaseType);
     }
     
     /**

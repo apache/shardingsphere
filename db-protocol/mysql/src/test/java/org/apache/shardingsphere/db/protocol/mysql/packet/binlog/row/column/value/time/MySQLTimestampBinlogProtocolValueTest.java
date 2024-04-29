@@ -19,13 +19,13 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.val
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Timestamp;
-import java.time.format.DateTimeFormatter;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,7 +45,7 @@ class MySQLTimestampBinlogProtocolValueTest {
         int currentSeconds = Long.valueOf(System.currentTimeMillis() / 1000L).intValue();
         when(payload.readInt4()).thenReturn(currentSeconds);
         assertThat(new MySQLTimestampBinlogProtocolValue().read(columnDef, payload),
-                is(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(new Timestamp(currentSeconds * 1000L).toLocalDateTime())));
+                is(DateTimeFormatterFactory.getStandardFormatter().format(new Timestamp(currentSeconds * 1000L).toLocalDateTime())));
     }
     
     @Test

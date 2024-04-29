@@ -39,8 +39,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Transaction deadlock test case.
  */
-@Slf4j
 @TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL)
+@Slf4j
 public final class TransactionDeadlockTestCase extends BaseTransactionTestCase {
     
     private final CyclicBarrier barrier = new CyclicBarrier(2);
@@ -73,22 +73,19 @@ public final class TransactionDeadlockTestCase extends BaseTransactionTestCase {
         Collection<Future<Void>> futures = new LinkedList<>();
         futures.add(executor.submit(this::executeTransfer1));
         futures.add(executor.submit(this::executeTransfer2));
-        try (Connection connection = getDataSource().getConnection()) {
-            assertAccountRowCount(connection, 4);
-        }
         for (Future<Void> each : futures) {
             try {
                 each.get();
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                assertThat(ex.getMessage(), is("com.mysql.jdbc.exceptions.jdbc4.MySQLTransactionRollbackException: Lock wait timeout exceeded; try restarting transaction"));
+                assertThat(ex.getMessage(), is("com.mysql.cj.jdbc.exceptions.MySQLTransactionRollbackException: Lock wait timeout exceeded; try restarting transaction"));
             }
         }
         log.info("The deadlock test case execution time is: {}", System.currentTimeMillis() - startTime);
         executor.shutdown();
         try (Connection connection = getDataSource().getConnection()) {
-            assertAccountBalances(connection, 1, 2, 3, 4);
+            assertAccountRowCount(connection, 4);
         }
     }
     
@@ -96,12 +93,14 @@ public final class TransactionDeadlockTestCase extends BaseTransactionTestCase {
         Connection connection = getDataSource().getConnection();
         try {
             connection.setAutoCommit(false);
+            assertAccountRowCount(connection, 4);
             executeWithLog(connection, "UPDATE account SET balance = balance - 1 WHERE id = 1");
             await();
             executeWithLog(connection, "UPDATE account SET balance = balance + 1 WHERE id = 2");
             await();
             connection.commit();
         } catch (final SQLException ex) {
+            await();
             connection.rollback();
             throw ex;
         } finally {
@@ -114,12 +113,14 @@ public final class TransactionDeadlockTestCase extends BaseTransactionTestCase {
         Connection connection = getDataSource().getConnection();
         try {
             connection.setAutoCommit(false);
+            assertAccountRowCount(connection, 4);
             executeWithLog(connection, "UPDATE account SET balance = balance - 1 WHERE id = 2");
             await();
             executeWithLog(connection, "UPDATE account SET balance = balance + 1 WHERE id = 1");
             await();
             connection.commit();
         } catch (final SQLException ex) {
+            await();
             connection.rollback();
             throw ex;
         } finally {

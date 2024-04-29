@@ -20,7 +20,7 @@ lexer grammar Keyword;
 import Alphabet, Number;
 
 WS
-    : [ \t\r\n] + ->skip
+    : [ \t\r\n\u3000] + ->skip
     ;
 
 SELECT
@@ -834,4 +834,120 @@ ANYDATASET
 
 AUTONOMOUS_TRANSACTION
     : A U T O N O M O U S UL_ T R A N S A C T I O N
+    ;
+
+WM_CONCAT
+    : W M UL_ C O N C A T
+    ;
+
+DECLARE
+    : D E C L A R E
+    ;
+    
+BULK
+    : B U L K
+    ;
+
+COLLECT
+    : C O L L E C T
+    ;    
+
+INSERTING
+    : I N S E R T I N G
+    ;
+    
+UPDATING
+    : U P D A T I N G
+    ;
+    
+DELETING
+    : D E L E T I N G
+    ;
+    
+ROWCOUNT
+    : R O W C O U N T
+    ;
+    
+BULK_ROWCOUNT
+    : B U L K UL_ R O W C O U N T
+    ;
+    
+RAISE
+    : R A I S E
+    ;
+    
+WHILE
+    : W H I L E
+    ;
+    
+GOTO
+    : G O T O
+    ;
+    
+MUTABLE
+    : M U T A B L E
+    ;
+    
+IMMUTABLE
+    : I M M U T A B L E
+    ;
+    
+INDICES
+    : I N D I C E S
+    ;
+    
+PAIRS
+    : P A I R S
+    ;
+    
+PIPE
+    : P I P E
+    ;
+    
+FORALL
+    : F O R A L L
+    ;
+
+HTTP
+    : H T T P
+    ;
+
+DIGEST
+    : D I G E S T
+    ;
+
+CONTAINER_DATA
+    : C O N T A I N E R  UL_ D A T A
+    ;
+
+CONDITION
+    : C O N D I T I O N
+    ;
+
+EVALUATE
+    : E V A L U A T E
+    ;
+
+TERMINATED
+    : T E R M I N A T E D
+    ;
+
+WHITESPACE
+    : W H I T E S P A C E
+    ;
+
+OPTIONALLY
+    : O P T I O N A L L Y
+    ;
+
+ENCLOSED
+    : E N C L O S E D
+    ;
+
+LRTRIM
+    : L R T R I M
+    ;
+
+GETLENGTH
+    : G E T L E N G T H
     ;

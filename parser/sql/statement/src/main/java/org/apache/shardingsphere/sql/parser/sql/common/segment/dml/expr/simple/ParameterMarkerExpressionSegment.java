@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.ColumnSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
@@ -35,7 +36,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "boundedInfo")
 public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment, ProjectionSegment, AliasAvailable, ParameterMarkerSegment {
     
     private final int startIndex;
@@ -48,6 +49,9 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     
     @Setter
     private AliasSegment alias;
+    
+    @Setter
+    private ColumnSegmentBoundedInfo boundedInfo;
     
     public ParameterMarkerExpressionSegment(final int startIndex, final int stopIndex, final int parameterMarkerIndex) {
         this.startIndex = startIndex;
@@ -77,6 +81,11 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     }
     
     @Override
+    public ColumnSegmentBoundedInfo getBoundedInfo() {
+        return Optional.ofNullable(boundedInfo).orElseGet(() -> new ColumnSegmentBoundedInfo(new IdentifierValue("")));
+    }
+    
+    @Override
     public int getStopIndex() {
         return null == alias ? stopIndex : alias.getStopIndex();
     }
@@ -84,5 +93,14 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     @Override
     public String getText() {
         return parameterMarkerType.getMarker();
+    }
+    
+    /**
+     * Get alias segment.
+     * 
+     * @return alias segment
+     */
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.ofNullable(alias);
     }
 }

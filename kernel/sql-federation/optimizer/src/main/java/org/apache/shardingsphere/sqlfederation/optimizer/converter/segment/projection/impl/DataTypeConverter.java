@@ -45,7 +45,12 @@ public final class DataTypeConverter {
         if (null == segment) {
             return Optional.empty();
         }
-        return Optional.of(new SqlDataTypeSpec(new SqlBasicTypeNameSpec(Objects.requireNonNull(SqlTypeName.get(segment.getDataTypeName())), segment.getDataLength().getPrecision(), SqlParserPos.ZERO),
-                SqlParserPos.ZERO));
+        return Optional.of(new SqlDataTypeSpec(getSqlBasicTypeNameSpec(segment), SqlParserPos.ZERO));
+    }
+    
+    private static SqlBasicTypeNameSpec getSqlBasicTypeNameSpec(final DataTypeSegment segment) {
+        SqlTypeName sqlTypeName = Objects.requireNonNull(SqlTypeName.get(segment.getDataTypeName().toUpperCase()));
+        return segment.getDataTypeLength().isPresent() ? new SqlBasicTypeNameSpec(sqlTypeName, segment.getDataLength().getPrecision(), SqlParserPos.ZERO)
+                : new SqlBasicTypeNameSpec(sqlTypeName, SqlParserPos.ZERO);
     }
 }

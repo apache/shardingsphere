@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.spi;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
 
 /**
  * Mask algorithm.

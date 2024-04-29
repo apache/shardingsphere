@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.recorder.MethodTimeRecorder;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.HistogramMetricsCollector;
@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * Execute latency histogram advance for ShardingSphere-Proxy.
  */
-public final class ExecuteLatencyHistogramAdvice implements InstanceMethodAdvice {
+public final class ExecuteLatencyHistogramAdvice extends AbstractInstanceMethodAdvice {
     
     private final MetricConfiguration config = new MetricConfiguration("proxy_execute_latency_millis",
             MetricCollectorType.HISTOGRAM, "Execute latency millis histogram of ShardingSphere-Proxy", Collections.emptyList(), Collections.singletonMap("buckets", getBuckets()));

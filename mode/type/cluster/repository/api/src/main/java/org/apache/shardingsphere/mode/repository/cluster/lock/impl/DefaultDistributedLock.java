@@ -76,7 +76,7 @@ public final class DefaultDistributedLock implements DistributedLock {
         if (newLockCount > 0) {
             return;
         }
-        ShardingSpherePreconditions.checkState(newLockCount == 0, () -> new IllegalMonitorStateException(String.format("Lock count has gone negative for lock: %s.", lockKey)));
+        ShardingSpherePreconditions.checkState(0 == newLockCount, () -> new IllegalMonitorStateException(String.format("Lock count has gone negative for lock: %s.", lockKey)));
         try {
             client.delete(lockKey);
         } finally {

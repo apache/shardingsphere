@@ -32,7 +32,6 @@ import java.sql.Statement;
 /**
  * Standalone process subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class StandaloneProcessSubscriber implements ProcessSubscriber {
     
     private final EventBusContext eventBusContext;
@@ -55,7 +54,7 @@ public final class StandaloneProcessSubscriber implements ProcessSubscriber {
         if (null == process) {
             return;
         }
-        for (Statement each : process.getProcessStatements()) {
+        for (Statement each : process.getProcessStatements().values()) {
             each.cancel();
         }
     }

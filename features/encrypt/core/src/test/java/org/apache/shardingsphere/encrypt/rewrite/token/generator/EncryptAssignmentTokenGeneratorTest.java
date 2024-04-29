@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -62,7 +62,7 @@ class EncryptAssignmentTokenGeneratorTest {
     private InsertStatementContext insertStatement;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private AssignmentSegment assignmentSegment;
+    private ColumnAssignmentSegment assignmentSegment;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private SetAssignmentSegment setAssignmentSegment;

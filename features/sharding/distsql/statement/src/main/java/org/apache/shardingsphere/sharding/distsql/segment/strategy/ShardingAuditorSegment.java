@@ -20,14 +20,14 @@ package org.apache.shardingsphere.sharding.distsql.segment.strategy;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
 /**
  * Sharding auditor segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingAuditorSegment implements ASTNode {
+public final class ShardingAuditorSegment implements DistSQLSegment {
     
     private final String auditorName;
     

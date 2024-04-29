@@ -29,8 +29,6 @@ import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 @Setter
 public final class YamlSQLParserRuleConfiguration implements YamlGlobalRuleConfiguration {
     
-    private boolean sqlCommentParseEnabled;
-    
     private YamlSQLParserCacheOptionRuleConfiguration sqlStatementCache;
     
     private YamlSQLParserCacheOptionRuleConfiguration parseTreeCache;

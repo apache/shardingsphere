@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -28,10 +29,12 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaD
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
-import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -95,10 +98,20 @@ public final class MetaDataContexts implements AutoCloseable {
         }
     }
     
+    @SneakyThrows(Exception.class)
     @Override
     public void close() {
         persistService.getRepository().close();
-        metaData.getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource);
-        metaData.getDatabases().values().forEach(each -> each.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource));
+        for (ShardingSphereRule each : getAllRules()) {
+            if (each instanceof AutoCloseable) {
+                ((AutoCloseable) each).close();
+            }
+        }
+    }
+    
+    private Collection<ShardingSphereRule> getAllRules() {
+        Collection<ShardingSphereRule> result = new LinkedList<>(metaData.getGlobalRuleMetaData().getRules());
+        metaData.getDatabases().values().stream().map(each -> each.getRuleMetaData().getRules()).forEach(result::addAll);
+        return result;
     }
 }

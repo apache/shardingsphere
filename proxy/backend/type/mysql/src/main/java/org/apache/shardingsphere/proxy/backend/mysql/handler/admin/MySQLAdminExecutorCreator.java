@@ -94,7 +94,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             return Optional.of(new ShowDatabasesExecutor((MySQLShowDatabasesStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowProcessListStatement) {
-            return Optional.of(new ShowProcessListExecutor());
+            return Optional.of(new ShowProcessListExecutor(((MySQLShowProcessListStatement) sqlStatement).isFull()));
         }
         if (sqlStatement instanceof MySQLKillStatement) {
             return Optional.of(new KillProcessExecutor((MySQLKillStatement) sqlStatement));
@@ -112,7 +112,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     }
     
     private Optional<DatabaseAdminExecutor> create(final SelectStatement selectStatement, final String sql, final String databaseName, final List<Object> parameters) {
-        if (null == selectStatement.getFrom()) {
+        if (!selectStatement.getFrom().isPresent()) {
             return findAdminExecutorForSelectWithoutFrom(sql, databaseName, selectStatement);
         }
         if (isQueryInformationSchema(databaseName)) {
@@ -161,7 +161,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     
     private boolean isQueryInformationSchema(final String databaseName) {
         // TODO remove DefaultDatabaseMetaDataExecutor when sql federation can support all system table query
-        return INFORMATION_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getDatabase(databaseName).isComplete();
+        return INFORMATION_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete();
     }
     
     private boolean isQueryPerformanceSchema(final String databaseName) {
@@ -180,7 +180,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         if (hasNoResource()) {
             return Optional.of(new NoResourceShowExecutor(sqlStatement));
         }
-        boolean isNotUseSchema = null == databaseName && null == sqlStatement.getFrom();
+        boolean isNotUseSchema = null == databaseName && !sqlStatement.getFrom().isPresent();
         return isNotUseSchema ? Optional.of(new UnicastResourceShowExecutor(sqlStatement, sql)) : Optional.empty();
     }
     
@@ -190,7 +190,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             return true;
         }
         for (String each : databaseNames) {
-            if (ProxyContext.getInstance().getDatabase(each).containsDataSource()) {
+            if (ProxyContext.getInstance().getContextManager().getDatabase(each).containsDataSource()) {
                 return false;
             }
         }

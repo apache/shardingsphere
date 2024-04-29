@@ -23,6 +23,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
@@ -49,8 +50,11 @@ public final class MySQLHandshakeResponse41Packet extends MySQLPacket {
     
     private String authPluginName;
     
+    private int multiStatementsOption;
+    
     public MySQLHandshakeResponse41Packet(final MySQLPacketPayload payload) {
         capabilityFlags = payload.readInt4();
+        multiStatementsOption = readMultiStatementsOption(capabilityFlags);
         maxPacketSize = payload.readInt4();
         characterSet = payload.readInt1();
         payload.skipReserved(23);
@@ -58,6 +62,11 @@ public final class MySQLHandshakeResponse41Packet extends MySQLPacket {
         authResponse = readAuthResponse(payload);
         database = readDatabase(payload);
         authPluginName = readAuthPluginName(payload);
+    }
+    
+    private int readMultiStatementsOption(final int capabilityFlags) {
+        return 0 == (capabilityFlags & MySQLCapabilityFlag.CLIENT_MULTI_STATEMENTS.getValue()) ? MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_OFF
+                : MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON;
     }
     
     private byte[] readAuthResponse(final MySQLPacketPayload payload) {

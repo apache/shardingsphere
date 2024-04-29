@@ -81,7 +81,7 @@ public final class BroadcastTableTransactionTestCase extends BaseTransactionTest
             assertTableRowCount(connection, T_ADDRESS, 0);
             executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');");
             assertTableRowCount(connection, T_ADDRESS, 1);
-            connection.commit();
+            connection.rollback();
         }
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 
@@ -30,10 +31,16 @@ public abstract class KernelSQLException extends ShardingSphereSQLException {
     private static final int TYPE_OFFSET = 1;
     
     protected KernelSQLException(final SQLState sqlState, final int kernelCode, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, TYPE_OFFSET, kernelCode * 1000 + errorCode, reason, messageArgs);
+        super(sqlState, TYPE_OFFSET, getErrorCode(kernelCode, errorCode), reason, messageArgs);
     }
     
-    protected KernelSQLException(final SQLState sqlState, final int kernelCode, final int errorCode, final String reason, final Exception cause) {
-        super(sqlState.getValue(), TYPE_OFFSET, kernelCode * 1000 + errorCode, reason, cause);
+    protected KernelSQLException(final SQLState sqlState, final int kernelCode, final int errorCode, final Exception cause, final String reason, final Object... messageArgs) {
+        super(sqlState, TYPE_OFFSET, getErrorCode(kernelCode, errorCode), cause, reason, messageArgs);
+    }
+    
+    private static int getErrorCode(final int kernelCode, final int errorCode) {
+        Preconditions.checkArgument(kernelCode >= 0 && kernelCode < 10, "The value range of kernel code should be [0, 10).");
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 1000, "The value range of error code should be [0, 1000).");
+        return kernelCode * 1000 + errorCode;
     }
 }

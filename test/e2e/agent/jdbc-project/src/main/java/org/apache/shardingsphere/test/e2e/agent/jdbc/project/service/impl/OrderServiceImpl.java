@@ -35,8 +35,8 @@ import java.util.LinkedList;
 /**
  * Order service impl.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class OrderServiceImpl implements OrderService {
     
     private final Connection connection;

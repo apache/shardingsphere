@@ -59,9 +59,10 @@ public final class DatabaseRulesBuilder {
     public static Collection<ShardingSphereRule> build(final String databaseName, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig, final InstanceContext instanceContext) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, DatabaseRuleBuilder> entry : getRuleBuilderMap(databaseConfig).entrySet()) {
+            Map<String, DataSource> dataSources = databaseConfig.getStorageUnits().entrySet().stream()
+                    .collect(Collectors.toMap(Entry::getKey, storageUnit -> storageUnit.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
             RuleConfigurationChecker configChecker = OrderedSPILoader.getServicesByClass(
                     RuleConfigurationChecker.class, Collections.singleton(entry.getKey().getClass())).get(entry.getKey().getClass());
-            Map<String, DataSource> dataSources = databaseConfig.getStorageUnits().entrySet().stream().collect(Collectors.toMap(Entry::getKey, storageUnit -> storageUnit.getValue().getDataSource()));
             if (null != configChecker) {
                 configChecker.check(databaseName, entry.getKey(), dataSources, result);
             }

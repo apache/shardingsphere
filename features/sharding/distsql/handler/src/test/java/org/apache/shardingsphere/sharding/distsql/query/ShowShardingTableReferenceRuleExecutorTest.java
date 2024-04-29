@@ -17,22 +17,22 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableReferenceRuleExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableReferenceRulesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,47 +42,47 @@ import static org.mockito.Mockito.when;
 
 class ShowShardingTableReferenceRuleExecutorTest {
     
-    @Test
-    void assertGetRowData() {
-        RQLExecutor<ShowShardingTableReferenceRulesStatement> executor = new ShowShardingTableReferenceRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowShardingTableReferenceRulesStatement.class));
-        assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("foo"));
-        assertThat(row.getCell(2), is("t_order,t_order_item"));
+    private DistSQLQueryExecuteEngine engine;
+    
+    DistSQLQueryExecuteEngine setUp(final ShowShardingTableReferenceRulesStatement statement) {
+        return new DistSQLQueryExecuteEngine(statement, "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
     }
     
-    @Test
-    void assertGetRowDataWithSpecifiedRuleName() {
-        RQLExecutor<ShowShardingTableReferenceRulesStatement> executor = new ShowShardingTableReferenceRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), new ShowShardingTableReferenceRulesStatement("foo", null));
-        assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("foo"));
-        assertThat(row.getCell(2), is("t_order,t_order_item"));
-    }
-    
-    @Test
-    void assertGetColumnNames() {
-        RQLExecutor<ShowShardingTableReferenceRulesStatement> executor = new ShowShardingTableReferenceRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(2));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("name"));
-        assertThat(iterator.next(), is("sharding_table_reference"));
-    }
-    
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
         return result;
     }
     
-    private RuleConfiguration createRuleConfiguration() {
+    @Test
+    void assertGetRowData() throws SQLException {
+        engine = setUp(mock(ShowShardingTableReferenceRulesStatement.class));
+        engine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = engine.getRows();
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("foo"));
+        assertThat(row.getCell(2), is("t_order,t_order_item"));
+    }
+    
+    @Test
+    void assertGetRowDataWithSpecifiedRuleName() throws SQLException {
+        engine = setUp(new ShowShardingTableReferenceRulesStatement("foo", null));
+        engine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = engine.getRows();
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("foo"));
+        assertThat(row.getCell(2), is("t_order,t_order_item"));
+    }
+    
+    private ShardingRuleConfiguration createRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(new ShardingTableRuleConfiguration("t_order", null));
         result.getTables().add(new ShardingTableRuleConfiguration("t_order_item", null));

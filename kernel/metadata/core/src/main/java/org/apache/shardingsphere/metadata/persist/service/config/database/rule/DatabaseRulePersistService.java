@@ -18,56 +18,114 @@
 package org.apache.shardingsphere.metadata.persist.service.config.database.rule;
 
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
+import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTupleSwapperEngine;
+import org.apache.shardingsphere.metadata.persist.node.metadata.DatabaseRuleMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * Database rule persist service.
  */
-@RequiredArgsConstructor
 public final class DatabaseRulePersistService implements DatabaseBasedPersistService<Collection<RuleConfiguration>> {
     
     private static final String DEFAULT_VERSION = "0";
     
     private final PersistRepository repository;
     
+    private final RepositoryTuplePersistService repositoryTuplePersistService;
+    
+    public DatabaseRulePersistService(final PersistRepository repository) {
+        this.repository = repository;
+        repositoryTuplePersistService = new RepositoryTuplePersistService(repository);
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
-        if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
-            repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
+        for (Entry<RuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, configs).entrySet()) {
+            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
+            if (!repositoryTuples.isEmpty()) {
+                persistDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), repositoryTuples);
+            }
         }
-        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName)),
-                YamlEngine.marshal(createYamlRuleConfigurations(configs)));
     }
     
-    private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
-        return new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(ruleConfigs);
-    }
-    
-    @SuppressWarnings("unchecked")
     @Override
     public Collection<RuleConfiguration> load(final String databaseName) {
-        return isExisted(databaseName)
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName,
-                        getDatabaseActiveVersion(databaseName))), Collection.class, true))
-                : new LinkedList<>();
+        return new RepositoryTupleSwapperEngine().swapToRuleConfigurations(repositoryTuplePersistService.loadRepositoryTuples(DatabaseRuleMetaDataNode.getRulesNode(databaseName)));
     }
     
-    private boolean isExisted(final String databaseName) {
-        return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))
-                && !Strings.isNullOrEmpty(repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName))));
+    @Override
+    public void delete(final String databaseName, final String name) {
+        repository.delete(DatabaseRuleMetaDataNode.getDatabaseRuleNode(databaseName, name));
     }
     
-    private String getDatabaseActiveVersion(final String databaseName) {
-        return repository.getDirectly(DatabaseMetaDataNode.getActiveVersionPath(databaseName));
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public Collection<MetaDataVersion> persistConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
+        Collection<MetaDataVersion> result = new LinkedList<>();
+        for (Entry<RuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, configs).entrySet()) {
+            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
+            if (!repositoryTuples.isEmpty()) {
+                result.addAll(persistDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), repositoryTuples));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
+        Collection<MetaDataVersion> result = new LinkedList<>();
+        for (RepositoryTuple each : repositoryTuples) {
+            List<String> versions = repository.getChildrenKeys(DatabaseRuleMetaDataNode.getDatabaseRuleVersionsNode(databaseName, ruleName, each.getKey()));
+            String nextVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            repository.persist(DatabaseRuleMetaDataNode.getDatabaseRuleVersionNode(databaseName, ruleName, each.getKey(), nextVersion), each.getValue());
+            if (Strings.isNullOrEmpty(getActiveVersion(databaseName, ruleName, each.getKey()))) {
+                repository.persist(DatabaseRuleMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, each.getKey()), DEFAULT_VERSION);
+            }
+            result.add(new MetaDataVersion(DatabaseRuleMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey()), getActiveVersion(databaseName, ruleName, each.getKey()), nextVersion));
+        }
+        return result;
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public Collection<MetaDataVersion> deleteConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
+        Collection<MetaDataVersion> result = new LinkedList<>();
+        for (Entry<RuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, configs).entrySet()) {
+            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
+            if (repositoryTuples.isEmpty()) {
+                continue;
+            }
+            List<RepositoryTuple> newRepositoryTuples = new LinkedList<>(repositoryTuples);
+            Collections.reverse(newRepositoryTuples);
+            result.addAll(deleteDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), newRepositoryTuples));
+        }
+        return result;
+    }
+    
+    private Collection<MetaDataVersion> deleteDataNodes(final String databaseName, final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
+        Collection<MetaDataVersion> result = new LinkedList<>();
+        for (RepositoryTuple each : repositoryTuples) {
+            String delKey = DatabaseRuleMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey());
+            repository.delete(delKey);
+            result.add(new MetaDataVersion(delKey));
+        }
+        return result;
+    }
+    
+    private String getActiveVersion(final String databaseName, final String ruleName, final String key) {
+        return repository.getDirectly(DatabaseRuleMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, key));
     }
 }

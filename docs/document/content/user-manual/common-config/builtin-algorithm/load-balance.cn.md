@@ -36,7 +36,7 @@ ShardingSphere 内置提供了多种负载均衡算法，具体包括了轮询�
 ```yaml
 rules:
 - !READWRITE_SPLITTING
-  dataSources:
+  dataSourceGroups:
     readwrite_ds:
       writeDataSourceName: write_ds
       readDataSourceNames:
@@ -53,4 +53,4 @@ rules:
 ## 相关参考
 
 - [核心特性：读写分离](/cn/features/readwrite-splitting/)
-- [开发者指南：读写分离](/cn/dev-manual/readwrite-splitting/)
+- [开发者指南：读写分离](/cn/dev-manual/infra-algorithm/)

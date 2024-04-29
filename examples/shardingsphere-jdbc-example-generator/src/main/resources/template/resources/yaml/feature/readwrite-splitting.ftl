@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 - !READWRITE_SPLITTING
-  dataSources:
+  dataSourceGroups:
     readwrite_ds:
       writeDataSourceName: ds_0
       readDataSourceNames:

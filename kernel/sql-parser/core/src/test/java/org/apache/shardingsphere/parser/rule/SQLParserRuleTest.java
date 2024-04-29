@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQLParserRuleTest {
     
@@ -35,7 +34,7 @@ class SQLParserRuleTest {
     
     @BeforeEach
     void setup() {
-        sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(true, new CacheOption(2, 4), new CacheOption(3, 7)));
+        sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(2, 4), new CacheOption(3, 7)));
     }
     
     @Test
@@ -45,8 +44,6 @@ class SQLParserRuleTest {
     
     @Test
     void assertFields() {
-        assertTrue(sqlParserRule.isSqlCommentParseEnabled());
-        assertTrue(sqlParserRule.getConfiguration().isSqlCommentParseEnabled());
         assertThat(sqlParserRule.getConfiguration().getParseTreeCache().getInitialCapacity(), is(2));
         assertThat(sqlParserRule.getConfiguration().getParseTreeCache().getMaximumSize(), is(4L));
         assertThat(sqlParserRule.getConfiguration().getSqlStatementCache().getInitialCapacity(), is(3));

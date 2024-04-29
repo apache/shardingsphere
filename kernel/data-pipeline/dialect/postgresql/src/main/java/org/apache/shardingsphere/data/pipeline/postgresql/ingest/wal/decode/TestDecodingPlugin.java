@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Delet
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.WriteRowEvent;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
@@ -41,6 +42,7 @@ import java.util.List;
 /**
  * Test decoding plugin.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class TestDecodingPlugin implements DecodingPlugin {
     
@@ -48,14 +50,15 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     
     @Override
     public AbstractWALEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
+        AbstractWALEvent result;
         String type = readEventType(data);
         if (type.startsWith("BEGIN")) {
-            return new BeginTXEvent(Long.parseLong(readNextSegment(data)));
+            result = new BeginTXEvent(Long.parseLong(readNextSegment(data)), null);
+        } else if (type.startsWith("COMMIT")) {
+            result = new CommitTXEvent(Long.parseLong(readNextSegment(data)), null);
+        } else {
+            result = "table".equals(type) ? readTableEvent(data) : new PlaceholderEvent();
         }
-        if (type.startsWith("COMMIT")) {
-            return new CommitTXEvent(Long.parseLong(readNextSegment(data)), null);
-        }
-        AbstractWALEvent result = "table".equals(type) ? readTableEvent(data) : new PlaceholderEvent();
         result.setLogSequenceNumber(logSequenceNumber);
         return result;
     }
@@ -65,17 +68,23 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     }
     
     private AbstractRowEvent readTableEvent(final ByteBuffer data) {
-        AbstractRowEvent result;
         String tableName = readTableName(data);
         String rowEventType = readRowEventType(data);
-        switch (rowEventType) {
-            case IngestDataChangeType.INSERT:
+        PipelineSQLOperationType type;
+        try {
+            type = PipelineSQLOperationType.valueOf(rowEventType);
+        } catch (final IllegalArgumentException ex) {
+            throw new IngestException("Unknown rowEventType: " + rowEventType);
+        }
+        AbstractRowEvent result;
+        switch (type) {
+            case INSERT:
                 result = readWriteRowEvent(data);
                 break;
-            case IngestDataChangeType.UPDATE:
+            case UPDATE:
                 result = readUpdateRowEvent(data);
                 break;
-            case IngestDataChangeType.DELETE:
+            case DELETE:
                 result = readDeleteRowEvent(data);
                 break;
             default:

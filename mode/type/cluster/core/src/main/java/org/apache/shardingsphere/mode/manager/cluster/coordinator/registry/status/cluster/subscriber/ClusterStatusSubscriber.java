@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 /**
  * Cluster status subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class ClusterStatusSubscriber {
     
     private final ClusterPersistRepository repository;

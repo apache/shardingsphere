@@ -10,7 +10,6 @@ SQL 解析 YAML 配置方式具有可读性高，使用简单的特点。通过 
 
 ```yaml
 sqlParser:
-  sqlCommentParseEnabled: # 是否解析 SQL 注释
   sqlStatementCache: # SQL 语句本地缓存配置项
     initialCapacity: # 本地缓存初始容量
     maximumSize: # 本地缓存最大容量
@@ -28,7 +27,6 @@ sqlParser:
 ## 配置示例
 ```yaml
 sqlParser:
-  sqlCommentParseEnabled: true
   sqlStatementCache:
     initialCapacity: 2000
     maximumSize: 65535

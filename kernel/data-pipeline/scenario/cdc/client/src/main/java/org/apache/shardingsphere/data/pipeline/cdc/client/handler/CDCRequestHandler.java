@@ -50,6 +50,8 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
     private final ExceptionHandler exceptionHandler;
     
+    private final ServerErrorResultHandler errorResultHandler;
+    
     @Override
     public void channelRegistered(final ChannelHandlerContext ctx) {
         ClientConnectionContext context = new ClientConnectionContext();
@@ -78,7 +80,7 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
                 future.countDown();
                 requestType = future.getRequestType();
             }
-            exceptionHandler.handleServerException(new ServerErrorResult(response.getErrorCode(), response.getErrorMessage(), requestType));
+            errorResultHandler.handleServerError(ctx, new ServerErrorResult(response.getErrorCode(), response.getErrorMessage(), requestType));
             responseFuture.ifPresent(future -> {
                 future.setErrorCode(response.getErrorCode());
                 future.setErrorMessage(response.getErrorMessage());
@@ -113,6 +115,6 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
-        exceptionHandler.handleSocketException(cause);
+        exceptionHandler.handleException(ctx, cause);
     }
 }

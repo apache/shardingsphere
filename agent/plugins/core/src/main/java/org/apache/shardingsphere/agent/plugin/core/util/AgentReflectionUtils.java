@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Optional;
 
 /**
@@ -72,28 +71,5 @@ public final class AgentReflectionUtils {
             }
         }
         return Optional.empty();
-    }
-    
-    /**
-     * Invoke method.
-     * 
-     * @param method method
-     * @param target target
-     * @param args arguments
-     * @param <T> type of invoke result
-     * @return invoke result
-     */
-    @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static <T> T invokeMethod(final Method method, final Object target, final Object... args) {
-        boolean accessible = method.isAccessible();
-        if (!accessible) {
-            method.setAccessible(true);
-        }
-        T result = (T) method.invoke(target, args);
-        if (!accessible) {
-            method.setAccessible(false);
-        }
-        return result;
     }
 }

@@ -95,12 +95,12 @@ user=benchmarksql
 password=PWbmsql
 ```
 
-### ShardingSphere Proxy server.yaml 参数建议
+### ShardingSphere Proxy global.yaml 参数建议
 
 `proxy-backend-query-fetch-size` 参数值默认值为 -1，修改为 `50` 左右可以尽量减少多行结果集的 fetch 次数。 
 `proxy-frontend-executor-size` 参数默认值为 CPU * 2，可以根据实际测试结果减少至 CPU * 0.5 左右；如果涉及 NUMA，可以根据实际测试结果设置为单个 CPU 的物理核数。
 
-`server.yaml` 文件节选：
+`global.yaml` 文件节选：
 ```yaml
 props:
   proxy-backend-query-fetch-size: 50

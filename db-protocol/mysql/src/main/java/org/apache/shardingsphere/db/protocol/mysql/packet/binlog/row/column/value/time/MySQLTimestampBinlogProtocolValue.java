@@ -20,10 +20,10 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.val
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.time.format.DateTimeFormatter;
 
 /**
  * MySQL TIMESTAMP binlog protocol value.
@@ -33,11 +33,9 @@ import java.time.format.DateTimeFormatter;
  */
 public final class MySQLTimestampBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int seconds = payload.readInt4();
-        return 0 == seconds ? MySQLTimeValueUtils.DATETIME_OF_ZERO : dateTimeFormatter.format(new Timestamp(seconds * 1000L).toLocalDateTime());
+        return 0 == seconds ? MySQLTimeValueUtils.DATETIME_OF_ZERO : DateTimeFormatterFactory.getStandardFormatter().format(new Timestamp(seconds * 1000L).toLocalDateTime());
     }
 }

@@ -17,28 +17,30 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableRuleExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -49,10 +51,27 @@ import static org.mockito.Mockito.when;
 
 class ShowShardingTableRuleExecutorTest {
     
+    private DistSQLQueryExecuteEngine engine;
+    
+    @BeforeEach
+    void setUp() {
+        engine = new DistSQLQueryExecuteEngine(mock(ShowShardingTableRulesStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
+        when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
+        return result;
+    }
+    
     @Test
-    void assertGetRowData() {
-        RQLExecutor<ShowShardingTableRulesStatement> executor = new ShowShardingTableRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowShardingTableRulesStatement.class));
+    void assertGetRowData() throws SQLException {
+        engine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -62,11 +81,11 @@ class ShowShardingTableRuleExecutorTest {
         assertThat(row.getCell(4), is("STANDARD"));
         assertThat(row.getCell(5), is("user_id"));
         assertThat(row.getCell(6), is("INLINE"));
-        assertThat(row.getCell(7), is("algorithm-expression=ds_${user_id % 2}"));
+        assertThat(row.getCell(7), is("{\"algorithm-expression\":\"ds_${user_id % 2}\"}"));
         assertThat(row.getCell(8), is("STANDARD"));
         assertThat(row.getCell(9), is("order_id"));
         assertThat(row.getCell(10), is("INLINE"));
-        assertThat(row.getCell(11), is("algorithm-expression=t_order_${order_id % 2}"));
+        assertThat(row.getCell(11), is("{\"algorithm-expression\":\"t_order_${order_id % 2}\"}"));
         assertThat(row.getCell(12), is("order_id"));
         assertThat(row.getCell(13), is("SNOWFLAKE"));
         assertThat(row.getCell(14), is(""));
@@ -74,39 +93,7 @@ class ShowShardingTableRuleExecutorTest {
         assertThat(row.getCell(16), is("true"));
     }
     
-    @Test
-    void assertGetColumnNames() {
-        RQLExecutor<ShowShardingTableRulesStatement> executor = new ShowShardingTableRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(16));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("table"));
-        assertThat(iterator.next(), is("actual_data_nodes"));
-        assertThat(iterator.next(), is("actual_data_sources"));
-        assertThat(iterator.next(), is("database_strategy_type"));
-        assertThat(iterator.next(), is("database_sharding_column"));
-        assertThat(iterator.next(), is("database_sharding_algorithm_type"));
-        assertThat(iterator.next(), is("database_sharding_algorithm_props"));
-        assertThat(iterator.next(), is("table_strategy_type"));
-        assertThat(iterator.next(), is("table_sharding_column"));
-        assertThat(iterator.next(), is("table_sharding_algorithm_type"));
-        assertThat(iterator.next(), is("table_sharding_algorithm_props"));
-        assertThat(iterator.next(), is("key_generate_column"));
-        assertThat(iterator.next(), is("key_generator_type"));
-        assertThat(iterator.next(), is("key_generator_props"));
-        assertThat(iterator.next(), is("auditor_types"));
-        assertThat(iterator.next(), is("allow_hint_disable"));
-    }
-    
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingRule rule = mock(ShardingRule.class);
-        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        return result;
-    }
-    
-    private RuleConfiguration createRuleConfiguration() {
+    private ShardingRuleConfiguration createRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(createShardingTableRuleConfiguration());
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "database_inline"));

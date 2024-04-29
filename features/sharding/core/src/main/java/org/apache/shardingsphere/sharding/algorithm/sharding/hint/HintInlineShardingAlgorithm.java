@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.hint;
 
-import groovy.lang.Closure;
-import groovy.util.Expando;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
-import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -50,7 +50,7 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     
     private String getAlgorithmExpression(final Properties props) {
         String algorithmExpression = props.getProperty(ALGORITHM_EXPRESSION_KEY, DEFAULT_ALGORITHM_EXPRESSION);
-        ShardingSpherePreconditions.checkNotNull(algorithmExpression, () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression can not be null."));
+        ShardingSpherePreconditions.checkNotNull(algorithmExpression, () -> new AlgorithmInitializationException(this, "Inline sharding algorithm expression can not be null."));
         return InlineExpressionParserFactory.newInstance(algorithmExpression.trim()).handlePlaceHolder();
     }
     
@@ -61,15 +61,9 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     
     private String doSharding(final Comparable<?> shardingValue) {
         ShardingSpherePreconditions.checkNotNull(shardingValue, NullShardingValueException::new);
-        Closure<?> closure = createClosure();
-        closure.setProperty(HINT_INLINE_VALUE_PROPERTY_NAME, shardingValue);
-        return closure.call().toString();
-    }
-    
-    private Closure<?> createClosure() {
-        Closure<?> result = InlineExpressionParserFactory.newInstance(algorithmExpression).evaluateClosure().rehydrate(new Expando(), null, null);
-        result.setResolveStrategy(Closure.DELEGATE_ONLY);
-        return result;
+        Map<String, Comparable<?>> map = new LinkedHashMap<>();
+        map.put(HINT_INLINE_VALUE_PROPERTY_NAME, shardingValue);
+        return InlineExpressionParserFactory.newInstance(algorithmExpression).evaluateWithArgs(map);
     }
     
     @Override

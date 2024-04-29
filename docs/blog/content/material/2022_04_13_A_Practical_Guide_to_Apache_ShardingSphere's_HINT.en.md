@@ -276,9 +276,7 @@ Next, I’d like to showcase how to use `SQL HINT`.
 - **How to Use SQL HINT**
 `SQL HINT` is easy to use with ShardingSphere-JDBC and ShardingSphere-Proxy.
 
-Step 1: Turn on the annotation parser and set `sqlCommentParseEnabled` to true.
-
-Step 2: Add SQL comments. Currently `SQL HINT` supports specifying data source routing and primary database routing.
+Step 1: Add SQL comments. Currently `SQL HINT` supports specifying data source routing and primary database routing.
 
 - Data source-specified Routing: currently only supports routing to one data source. The comment format only supports `/* */` for the time being and starts with `ShardingSphere hint`: with the attribute name `dataSourceName`.
 

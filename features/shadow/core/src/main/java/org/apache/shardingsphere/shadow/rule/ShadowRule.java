@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.shadow.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguratio
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
+import org.apache.shardingsphere.shadow.rule.attribute.ShadowDataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
@@ -42,9 +42,9 @@ import java.util.Optional;
  * Databases shadow rule.
  */
 @Getter
-public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
+public final class ShadowRule implements DatabaseRule {
     
-    private final RuleConfiguration configuration;
+    private final ShadowRuleConfiguration configuration;
     
     private final Collection<String> hintShadowAlgorithmNames = new LinkedList<>();
     
@@ -56,6 +56,9 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     
     private final ShadowAlgorithm defaultShadowAlgorithm;
     
+    @Getter
+    private final RuleAttributes attributes;
+    
     public ShadowRule(final ShadowRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         initShadowDataSourceMappings(ruleConfig.getDataSources());
@@ -65,6 +68,7 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
             hintShadowAlgorithmNames.add(ruleConfig.getDefaultShadowAlgorithmName());
         }
         initShadowTableRules(ruleConfig.getTables());
+        attributes = new RuleAttributes(new ShadowDataSourceMapperRuleAttribute(shadowDataSourceMappings));
     }
     
     private void initShadowDataSourceMappings(final Collection<ShadowDataSourceConfiguration> dataSources) {
@@ -232,19 +236,5 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     public Optional<String> getSourceDataSourceName(final String actualDataSourceName) {
         ShadowDataSourceRule shadowDataSourceRule = shadowDataSourceMappings.get(actualDataSourceName);
         return null == shadowDataSourceRule ? Optional.empty() : Optional.of(shadowDataSourceRule.getProductionDataSource());
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        shadowDataSourceMappings.forEach((key, value) -> result.put(key, createShadowDataSources(value)));
-        return result;
-    }
-    
-    private Collection<String> createShadowDataSources(final ShadowDataSourceRule shadowDataSourceRule) {
-        Collection<String> result = new LinkedList<>();
-        result.add(shadowDataSourceRule.getProductionDataSource());
-        result.add(shadowDataSourceRule.getShadowDataSource());
-        return result;
     }
 }

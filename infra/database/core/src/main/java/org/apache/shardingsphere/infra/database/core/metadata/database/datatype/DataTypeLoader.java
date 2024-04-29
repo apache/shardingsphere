@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.database.datatype;
 
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 

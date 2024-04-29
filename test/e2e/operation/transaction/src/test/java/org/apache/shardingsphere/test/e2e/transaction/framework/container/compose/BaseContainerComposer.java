@@ -30,14 +30,6 @@ public abstract class BaseContainerComposer implements Startable {
         this.containers = new ITContainers(scenario);
     }
     
-    /**
-     * Get proxy jdbc url.
-     *
-     * @param databaseName database name
-     * @return proxy jdbc url
-     */
-    public abstract String getProxyJdbcUrl(String databaseName);
-    
     @Override
     public void start() {
         getContainers().start();

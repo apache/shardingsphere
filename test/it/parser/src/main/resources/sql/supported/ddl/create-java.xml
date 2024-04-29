@@ -17,5 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_java" value="CREATE JAVA SOURCE NAMED &quot;Welcome&quot; AS public class Welcome { public static String welcome() { return &quot;Welcome World&quot;;" db-types="Oracle" />
+    <sql-case id="create_java" value="CREATE JAVA SOURCE NAMED &quot;Welcome&quot; AS
+   public class Welcome {
+      public static String welcome() {
+         return &quot;Welcome World&quot;;   } }" db-types="Oracle" />
 </sql-cases>

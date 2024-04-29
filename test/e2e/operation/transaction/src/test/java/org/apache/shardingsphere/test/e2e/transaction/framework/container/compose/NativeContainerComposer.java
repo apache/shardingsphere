@@ -17,28 +17,16 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.framework.container.compose;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
-
 /**
  * Native composed container, you need start ShardingSphere-Proxy at firstly.
  */
 public final class NativeContainerComposer extends BaseContainerComposer {
     
-    private final DatabaseType databaseType;
-    
-    public NativeContainerComposer(final DatabaseType databaseType) {
+    public NativeContainerComposer() {
         super("");
-        this.databaseType = databaseType;
     }
     
     @Override
     public void start() {
-        
-    }
-    
-    @Override
-    public String getProxyJdbcUrl(final String databaseName) {
-        return DataSourceEnvironment.getURL(databaseType, "localhost", 3307, databaseName);
     }
 }

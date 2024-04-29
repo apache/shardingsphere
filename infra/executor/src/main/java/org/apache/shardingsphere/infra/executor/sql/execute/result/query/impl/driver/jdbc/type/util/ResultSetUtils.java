@@ -22,7 +22,7 @@ import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.executor.exception.UnsupportedDataTypeConversionException;
+import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.math.BigDecimal;
@@ -54,7 +54,7 @@ public final class ResultSetUtils {
      * @throws SQLFeatureNotSupportedException SQL feature not supported exception
      */
     public static Object convertValue(final Object value, final Class<?> convertType) throws SQLFeatureNotSupportedException {
-        ShardingSpherePreconditions.checkState(null != convertType, () -> new SQLFeatureNotSupportedException("Type can not be null"));
+        ShardingSpherePreconditions.checkNotNull(convertType, () -> new SQLFeatureNotSupportedException("Type can not be null"));
         if (null == value) {
             return convertNullValue(convertType);
         }
@@ -126,7 +126,7 @@ public final class ResultSetUtils {
     private static BigDecimal adjustBigDecimalResult(final BigDecimal value, final boolean needScale, final int scale) {
         if (needScale) {
             try {
-                return value.setScale(scale);
+                return value.setScale(scale, RoundingMode.UNNECESSARY);
             } catch (final ArithmeticException ex) {
                 return value.setScale(scale, RoundingMode.HALF_UP);
             }

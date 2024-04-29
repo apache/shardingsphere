@@ -14,7 +14,7 @@ Use MySQL as example, can replace to other databases.
 1. Create to be registered MySQL databases;
 1. Create role and user in MySQL with creation permission for ShardingSphere-Proxy;
 1. Start Zookeeper service;
-1. Add `mode` and `authentication` configurations to `server.yaml`;
+1. Add `mode` and `authentication` configurations to `global.yaml`;
 1. Start ShardingSphere-Proxy;
 1. Use SDK or terminal connect to ShardingSphere-Proxy.
 

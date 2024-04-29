@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
+import org.apache.shardingsphere.mode.storage.node.StorageNode;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -39,8 +40,8 @@ class StorageNodeTest {
     }
     
     @Test
-    void assertExtractQualifiedDatabase() {
-        Optional<QualifiedDatabase> actual = StorageNode.extractQualifiedDatabase("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0");
+    void assertExtractQualifiedDataSource() {
+        Optional<QualifiedDataSource> actual = StorageNode.extractQualifiedDataSource("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDatabaseName(), is("replica_query_db"));
         assertThat(actual.get().getGroupName(), is("readwrite_ds"));

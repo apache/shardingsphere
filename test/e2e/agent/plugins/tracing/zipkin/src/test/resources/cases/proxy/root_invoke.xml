@@ -18,7 +18,7 @@
 
 <integration-test-cases>
     <test-case service-name="shardingsphere" span-name="/ShardingSphere/rootInvoke/">
-        <tag-assertion key="component" value="ShardingSphere" need-assert-value="true" />
-        <tag-assertion key="span.kind" value="client" need-assert-value="true" />
+        <tag-assertion key="component" value="ShardingSphere"/>
+        <tag-assertion key="span.kind" value="client"/>
     </test-case>
 </integration-test-cases>

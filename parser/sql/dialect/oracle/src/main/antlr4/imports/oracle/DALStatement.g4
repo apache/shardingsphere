@@ -30,3 +30,65 @@ dbLinkInfo
 explain
     : EXPLAIN PLAN (SET STATEMENT_ID EQ_ stringLiterals)? (INTO (schemaName DOT_)? tableName (AT_ dbLinkInfo)? )? FOR (insert | delete | update | select)
     ;
+
+schema
+    : identifier
+    ;
+
+parameterName
+    : identifier
+    ;
+
+originalName
+    : identifier
+    ;
+
+systemVariable
+    : identifier
+    ;
+
+showOptions
+// TODO refactor systemVariable sytax according to https://docs.oracle.com/en/database/oracle/oracle-database/23/sqpug/SET-system-variable-summary.html#GUID-A6A5ADFF-4119-4BA4-A13E-BC8D29166FAE
+//    : systemVariable
+    : ALL
+    | CON_ID
+    | CON_NAME
+    | EDITION
+    | (BTI | BTITLE)
+    | (ERR | ERRORS) ((ANALYTIC VIEW | ATTRIBUTE DIMENSION | HIERARCHY | FUNCTION | PROCEDURE | PACKAGE | PACKAGE BODY | TRIGGER  | VIEW | TYPE | TYPE BODY | DIMENSION | JAVA CLASS) (schema DOT_)? name)?
+    | HISTORY
+    | LNO
+    | LOBPREFETCH
+    | (PARAMETER | PARAMETERS) parameterName?
+    | PDBS
+    | PNO
+    | (RECYC | RECYCLEBIN) originalName?
+    | (REL | RELEASE)
+    | (REPF | REPFOOTER)
+    | (REPH | REPHEADER)
+    | (ROWPREF | ROWPREFETCH)
+    | SGA
+    | (SPOO | SPOOL)
+    | (SPPARAMETER | SPPARAMETERS) parameterName?
+    | SQLCODE
+    | (STATEMENTC | STATEMENTCACHE)
+    | (TTI | TLE)
+    | USER
+    | XQUERY
+    ;
+
+show
+    : (SHO | SHOW) showOptions
+    ;
+
+fileExt
+    : DOT_ identifier
+    ;
+
+spoolFileName
+    : identifier fileExt?
+    ;
+
+spool
+    : (SPOOL | SPO) (spoolFileName (CRE | CREATE | REP | REPLACE | APP | APPEND)?) | OFF | OUT
+    ;

@@ -30,23 +30,6 @@ chapter = true
 | COMPLEX_INLINE           | N        | 基于行表达式的复合分片算法             | [`org.apache.shardingsphere.sharding.algorithm.sharding.complex.ComplexInlineShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/sharding/inline/ComplexInlineShardingAlgorithm.java)                                          |
 | HINT_INLINE              | N        | 基于行表达式的 Hint 分片算法         | [`org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/sharding/hint/HintInlineShardingAlgorithm.java)                                                     |
 
-## KeyGenerateAlgorithm
-
-### 全限定类名
-
-[`org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/api/src/main/java/org/apache/shardingsphere/sharding/spi/KeyGenerateAlgorithm.java)
-
-### 定义
-
-分布式主键生成算法
-
-### 已知实现
-
-| *配置标识*          | *详细说明*                  | *全限定类名*                                                                                                                                                                                                                                                                                               |
-|-----------------|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| SNOWFLAKE       | 基于雪花算法的分布式主键生成算法        | [`org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/keygen/SnowflakeKeyGenerateAlgorithm.java)                               |
-| UUID            | 基于 UUID 的分布式主键生成算法      | [`org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/keygen/UUIDKeyGenerateAlgorithm.java)                                         |
-
 ## ShardingAuditAlgorithm
 
 ### 全限定类名
@@ -96,4 +79,5 @@ chapter = true
 |----------|----------------------------------------------------|--------------------------------------------------------------------------------|
 | GROOVY   | 使用 Groovy 语法的行表达式                                  | `org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser`     |
 | LITERAL  | 使用标准列表的行表达式                                        | `org.apache.shardingsphere.infra.expr.literal.LiteralInlineExpressionParser`   |
+| INTERVAL | 基于固定时间范围的 Key-Value 语法的行表达式                        | `org.apache.shardingsphere.infra.expr.interval.IntervalInlineExpressionParser` |
 | ESPRESSO | 基于 GraalVM Truffle 的 Espresso 实现的使用 Groovy 语法的行表达式 | `org.apache.shardingsphere.infra.expr.espresso.EspressoInlineExpressionParser` |

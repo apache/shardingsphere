@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 225 companies.
+Total: 219 companies.
 
 ### Infra Software
 <ul>
@@ -129,6 +129,9 @@ Total: 225 companies.
     <li><a href="https://www.wegooooo.com/" rel="nofollow">wegooooo.com</a></li>
     <li><a href="https://www.lingxing.com/" rel="nofollow">LINGXING</a></li>
     <li><a href="http://sz.aisino.com/" rel="nofollow">Aisino</a></li>
+    <li><a href="https://studio.nsdt.cloud/" rel="nofollow">NSDT</a></li>
+    <li><a href="http://www.cictec.cn" rel="nofollow">Beijing CIC Technology</a></li>
+    <li><a href="https://www.mizarvision.com/" rel="nofollow">MizarVision</a></li>
 </ul>
 
 ### Transportation
@@ -170,6 +173,7 @@ Total: 225 companies.
     <li><a href="https://www.tujia.com/" rel="nofollow">TuJia</a></li>
     <li><a href="https://www.fotoplace.cc/" rel="nofollow">Fotoplace</a></li>
     <li><a href="http://www.yaduo.com/" rel="nofollow">YaDuo</a></li>
+    <li><a href="https://www.fangte.com/" rel="nofollow">Fangte</a></li>
 </ul>
 
 ### E-Entertainment
@@ -301,6 +305,7 @@ Total: 225 companies.
     <li><a href="https://www.ywwl.com/" rel="nofollow">YOWANT</a></li>
     <li><a href="http://www.le7soft.com/" rel="nofollow">Le7Soft</a></li>
     <li><a href="http://www.hylink.net.cn/" rel="nofollow">hyLink</a></li>
+    <li><a href="https://www.datainstack.com/" rel="nofollow">Datainstack</a></li>
 </ul>
 
 ### Health Care

@@ -30,6 +30,6 @@ class MariaDBDatabaseTypeTest {
     
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:mariadb:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:mariadb:")));
     }
 }

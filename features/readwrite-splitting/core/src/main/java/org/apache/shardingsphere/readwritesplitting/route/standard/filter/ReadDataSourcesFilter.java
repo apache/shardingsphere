@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.route.standard.filter;
 
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 
 import java.util.List;
 
@@ -35,5 +35,5 @@ public interface ReadDataSourcesFilter {
      * @param toBeFilteredReadDataSources to be filtered read data sources
      * @return filtered read data sources
      */
-    List<String> filter(ReadwriteSplittingDataSourceRule rule, List<String> toBeFilteredReadDataSources);
+    List<String> filter(ReadwriteSplittingDataSourceGroupRule rule, List<String> toBeFilteredReadDataSources);
 }

@@ -24,13 +24,14 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.sharding.metadata.data.dialect.DialectShardingStatisticsTableCollector;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -48,15 +49,15 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
     private static final String SHARDING_TABLE_STATISTICS = "sharding_table_statistics";
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
-                                                     final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final Map<String, ShardingSphereDatabase> databases,
+                                                     final RuleMetaData globalRuleMetaData) throws SQLException {
         ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_TABLE_STATISTICS);
-        DatabaseType protocolType = shardingSphereDatabases.values().iterator().next().getProtocolType();
+        DatabaseType protocolType = databases.values().iterator().next().getProtocolType();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
         if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
-            collectFromDatabase(shardingSphereDatabases.get(databaseName), result);
+            collectFromDatabase(databases.get(databaseName), result);
         } else {
-            for (ShardingSphereDatabase each : shardingSphereDatabases.values()) {
+            for (ShardingSphereDatabase each : databases.values()) {
                 collectFromDatabase(each, result);
             }
         }
@@ -73,7 +74,7 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
     
     private void collectForShardingStatisticTable(final ShardingSphereDatabase database, final ShardingRule shardingRule, final ShardingSphereTableData tableData) throws SQLException {
         int count = 1;
-        for (TableRule each : shardingRule.getTableRules().values()) {
+        for (ShardingTable each : shardingRule.getShardingTables().values()) {
             for (DataNode dataNode : each.getActualDataNodes()) {
                 List<Object> row = new LinkedList<>();
                 row.add(count++);

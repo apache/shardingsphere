@@ -1,0 +1,89 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+######################################################################################################
+# 
+# If you want to configure governance, authorization and proxy properties, please refer to this file.
+# 
+######################################################################################################
+
+#mode:
+#  type: Cluster
+#  repository:
+#    type: ZooKeeper
+#    props:
+#      namespace: governance_ds
+#      server-lists: localhost:2181
+#      retryIntervalMilliseconds: 500
+#      timeToLiveSeconds: 60
+#      maxRetries: 3
+#      operationTimeoutMilliseconds: 500
+#
+#authority:
+#  users:
+#    - user: root@%
+#      password: root
+#    - user: sharding
+#      password: sharding
+#  privilege:
+#    type: ALL_PERMITTED
+#
+#transaction:
+#  defaultType: XA
+#  providerType: Atomikos
+#
+#sqlParser:
+#  sqlStatementCache:
+#    initialCapacity: 2000
+#    maximumSize: 65535
+#  parseTreeCache:
+#    initialCapacity: 128
+#    maximumSize: 1024
+#
+#logging:
+#  loggers:
+#  - loggerName: ShardingSphere-SQL
+#    additivity: true
+#    level: INFO
+#    props:
+#      enable: false
+#
+#sqlFederation:
+#  sqlFederationEnabled: false
+#  executionPlanCache:
+#    initialCapacity: 2000
+#    maximumSize: 65535
+#
+#props:
+#  system-log-level: INFO
+#  max-connections-size-per-query: 1
+#  kernel-executor-size: 16  # Infinite by default.
+#  proxy-frontend-flush-threshold: 128  # The default value is 128.
+#  # sql-show is the same as props in logger ShardingSphere-SQL, and its priority is lower than logging rule
+#  sql-show: false
+#  check-table-metadata-enabled: false
+#    # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
+#    # The default value is -1, which means set the minimum value for different JDBC drivers.
+#  proxy-backend-query-fetch-size: -1
+#  proxy-frontend-executor-size: 0 # Proxy frontend executor size. The default value is 0, which means let Netty decide.
+#  proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
+#  proxy-default-port: 3307 # Proxy default port.
+#  proxy-netty-backlog: 1024 # Proxy netty backlog.
+#  cdc-server-port: 33071 # CDC server port
+#  proxy-frontend-ssl-enabled: false
+#  proxy-frontend-ssl-cipher: ''
+#  proxy-frontend-ssl-version: TLSv1.2,TLSv1.3

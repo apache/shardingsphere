@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -87,6 +88,13 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("ORDER_ID", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("USER_ID", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("CONTENT", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_user", new ShardingSphereTable("t_user", Arrays.asList(
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("user_name", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("email", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("telephone", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         ShardingSphereSchema result = new ShardingSphereSchema(tables, Collections.emptyMap());
         return Collections.singletonMap(schemaName, result);
     }
@@ -95,10 +103,11 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
     protected void mockRules(final Collection<ShardingSphereRule> rules, final String schemaName, final SQLStatement sqlStatement) {
         Optional<SingleRule> singleRule = rules.stream().filter(each -> each instanceof SingleRule).map(each -> (SingleRule) each).findFirst();
         if (singleRule.isPresent() && !(sqlStatement instanceof CreateTableStatement)) {
-            singleRule.get().put("encrypt_ds", schemaName, "t_account");
-            singleRule.get().put("encrypt_ds", schemaName, "t_account_bak");
-            singleRule.get().put("encrypt_ds", schemaName, "t_account_detail");
-            singleRule.get().put("encrypt_ds", schemaName, "t_order");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_account");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_account_bak");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_account_detail");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_order");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_user");
         }
     }
     

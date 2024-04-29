@@ -25,15 +25,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseCluster;
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseBackgroundExecutorManager;
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseExecutor;
-import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 import org.apache.shardingsphere.proxy.backend.hbase.props.HBaseProperties;
 import org.apache.shardingsphere.proxy.backend.hbase.props.HBasePropertyKey;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -81,8 +82,9 @@ public final class HBaseContext implements AutoCloseable {
      * Initialize HBase context.
      * 
      * @param connections A connection for per HBase cluster
+     * @throws SQLException SQL exception
      */
-    public void init(final Map<String, Connection> connections) {
+    public void init(final Map<String, Connection> connections) throws SQLException {
         this.connections = new ArrayList<>(connections.size());
         warmUpContext = HBaseRegionWarmUpContext.getInstance();
         warmUpContext.init(getWarmUpThreadSize());
@@ -109,8 +111,9 @@ public final class HBaseContext implements AutoCloseable {
      * Load tables.
      * 
      * @param hbaseCluster HBase cluster
+     * @throws SQLException SQL exception
      */
-    public synchronized void loadTables(final HBaseCluster hbaseCluster) {
+    public synchronized void loadTables(final HBaseCluster hbaseCluster) throws SQLException {
         warmUpContext.initStatisticsInfo(System.currentTimeMillis());
         HTableDescriptor[] hTableDescriptor = HBaseExecutor.executeAdmin(hbaseCluster.getConnection(), Admin::listTables);
         for (String each : Arrays.stream(hTableDescriptor).map(HTableDescriptor::getNameAsString).collect(Collectors.toList())) {
@@ -135,7 +138,7 @@ public final class HBaseContext implements AutoCloseable {
      * @return HBase connection
      */
     public Connection getConnection(final String tableName) {
-        ShardingSpherePreconditions.checkState(tableConnectionMap.containsKey(tableName), () -> new HBaseOperationException(String.format("Table `%s` is not exists", tableName)));
+        ShardingSpherePreconditions.checkContainsKey(tableConnectionMap, tableName, () -> new TableNotFoundException(tableName));
         return tableConnectionMap.get(tableName).getConnection();
     }
     
@@ -154,15 +157,16 @@ public final class HBaseContext implements AutoCloseable {
      * 
      * @param clusterName cluster name
      * @return HBase connection
+     * @throws SQLException SQL exception
      */
-    public Connection getConnectionByClusterName(final String clusterName) {
+    public Connection getConnectionByClusterName(final String clusterName) throws SQLException {
         Optional<HBaseCluster> cluster = connections.stream().filter(each -> each.getClusterName().equalsIgnoreCase(clusterName)).findFirst();
-        ShardingSpherePreconditions.checkState(cluster.isPresent(), () -> new HBaseOperationException(String.format("Cluster `%s` is not exists", clusterName)));
+        ShardingSpherePreconditions.checkState(cluster.isPresent(), () -> new SQLException(String.format("Cluster `%s` is not exists", clusterName)));
         return cluster.get().getConnection();
     }
     
     @Override
-    public void close() {
+    public void close() throws SQLException {
         connections.clear();
         tableConnectionMap.clear();
         executorManager.close();
@@ -170,8 +174,7 @@ public final class HBaseContext implements AutoCloseable {
             try {
                 connection.close();
             } catch (final IOException ex) {
-                // TODO define new exception, do not use RuntimeException
-                throw new RuntimeException(ex);
+                throw new SQLException(ex);
             }
         }
     }

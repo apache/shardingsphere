@@ -1,0 +1,248 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: replication_applier_status_by_worker
+type: TABLE
+columns:
+  channel_name:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: CHANNEL_NAME
+    nullable: false
+    primaryKey: true
+    unsigned: false
+    visible: true
+  worker_id:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: WORKER_ID
+    nullable: false
+    primaryKey: true
+    unsigned: true
+    visible: true
+  thread_id:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: THREAD_ID
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  service_state:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: SERVICE_STATE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_error_number:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: LAST_ERROR_NUMBER
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_error_message:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: LAST_ERROR_MESSAGE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_error_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_ERROR_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_applied_transaction:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: LAST_APPLIED_TRANSACTION
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_applied_transaction_original_commit_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_APPLIED_TRANSACTION_ORIGINAL_COMMIT_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_applied_transaction_immediate_commit_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_APPLIED_TRANSACTION_IMMEDIATE_COMMIT_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_applied_transaction_start_apply_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_APPLIED_TRANSACTION_START_APPLY_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_applied_transaction_end_apply_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_APPLIED_TRANSACTION_END_APPLY_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  applying_transaction:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: APPLYING_TRANSACTION
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  applying_transaction_original_commit_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: APPLYING_TRANSACTION_ORIGINAL_COMMIT_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  applying_transaction_immediate_commit_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: APPLYING_TRANSACTION_IMMEDIATE_COMMIT_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  applying_transaction_start_apply_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: APPLYING_TRANSACTION_START_APPLY_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_applied_transaction_retries_count:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: LAST_APPLIED_TRANSACTION_RETRIES_COUNT
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  last_applied_transaction_last_transient_error_number:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: LAST_APPLIED_TRANSACTION_LAST_TRANSIENT_ERROR_NUMBER
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_applied_transaction_last_transient_error_message:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: LAST_APPLIED_TRANSACTION_LAST_TRANSIENT_ERROR_MESSAGE
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_applied_transaction_last_transient_error_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_APPLIED_TRANSACTION_LAST_TRANSIENT_ERROR_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  applying_transaction_retries_count:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: APPLYING_TRANSACTION_RETRIES_COUNT
+    nullable: false
+    primaryKey: false
+    unsigned: true
+    visible: true
+  applying_transaction_last_transient_error_number:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: APPLYING_TRANSACTION_LAST_TRANSIENT_ERROR_NUMBER
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  applying_transaction_last_transient_error_message:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: APPLYING_TRANSACTION_LAST_TRANSIENT_ERROR_MESSAGE
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  applying_transaction_last_transient_error_timestamp:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: APPLYING_TRANSACTION_LAST_TRANSIENT_ERROR_TIMESTAMP
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  primary:
+    name: PRIMARY
+    unique: true
+    columns:
+      - CHANNEL_NAME
+      - WORKER_ID
+  thread_id:
+    name: THREAD_ID
+    unique: false
+    columns:
+      - THREAD_ID

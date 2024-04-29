@@ -25,7 +25,7 @@ import org.apache.shardingsphere.readwritesplitting.route.qualified.QualifiedRea
 import org.apache.shardingsphere.readwritesplitting.route.qualified.type.QualifiedReadwriteSplittingPrimaryDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.route.qualified.type.QualifiedReadwriteSplittingTransactionalDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.route.standard.StandardReadwriteSplittingDataSourceRouter;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,7 +36,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class ReadwriteSplittingDataSourceRouter {
     
-    private final ReadwriteSplittingDataSourceRule rule;
+    private final ReadwriteSplittingDataSourceGroupRule rule;
     
     private final ConnectionContext connectionContext;
     

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -54,11 +54,11 @@ public final class ShowCreateTableMergedResult extends LogicTablesMergedResult {
         for (ShardingSphereConstraint each : table.getConstraintValues()) {
             String actualIndexName = IndexMetaDataUtils.getActualIndexName(each.getName(), actualTableName);
             memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(actualIndexName, each.getName()));
-            Optional<TableRule> tableRule = shardingRule.findTableRule(each.getReferencedTableName());
-            if (!tableRule.isPresent()) {
+            Optional<ShardingTable> shardingTable = shardingRule.findShardingTable(each.getReferencedTableName());
+            if (!shardingTable.isPresent()) {
                 continue;
             }
-            for (DataNode dataNode : tableRule.get().getActualDataNodes()) {
+            for (DataNode dataNode : shardingTable.get().getActualDataNodes()) {
                 memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(dataNode.getTableName(), each.getReferencedTableName()));
             }
         }

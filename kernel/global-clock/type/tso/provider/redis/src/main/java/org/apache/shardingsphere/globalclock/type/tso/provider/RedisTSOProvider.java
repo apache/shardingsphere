@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.globalclock.type.tso.provider;
 
 import com.google.common.base.Strings;
-import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -29,7 +28,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Redis timestamp oracle provider.
  */
-@Slf4j
 public final class RedisTSOProvider implements TSOProvider {
     
     private static final String CSN_KEY = "csn";

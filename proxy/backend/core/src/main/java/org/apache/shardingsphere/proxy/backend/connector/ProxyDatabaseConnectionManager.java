@@ -23,7 +23,7 @@ import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.OnlineDatabaseConnectionManager;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ResourceLock;
@@ -51,7 +51,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ProxyDatabaseConnectionManager implements DatabaseConnectionManager<Connection> {
+public final class ProxyDatabaseConnectionManager implements OnlineDatabaseConnectionManager<Connection> {
     
     private final ConnectionSession connectionSession;
     
@@ -247,7 +247,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     public void closeExecutionResources() throws BackendConnectionException {
         synchronized (this) {
             Collection<Exception> result = new LinkedList<>(closeHandlers(false));
-            if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
+            if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction(TransactionUtils.getTransactionType(connectionSession.getConnectionContext().getTransactionContext()))) {
                 result.addAll(closeHandlers(true));
                 result.addAll(closeConnections(false));
             } else if (closed.get()) {

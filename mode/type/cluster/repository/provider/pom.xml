@@ -30,6 +30,5 @@
     <modules>
         <module>zookeeper</module>
         <module>etcd</module>
-        <module>consul</module>
     </modules>
 </project>

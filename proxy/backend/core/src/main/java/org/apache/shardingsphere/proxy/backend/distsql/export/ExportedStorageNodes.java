@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.distsql.export;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.json.JsonConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
@@ -31,9 +30,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class ExportedStorageNodes {
+public final class ExportedStorageNodes implements JsonConfiguration {
     
     @JsonProperty("storage_nodes")
     private Map<String, Collection<ExportedStorageNode>> storageNodes;

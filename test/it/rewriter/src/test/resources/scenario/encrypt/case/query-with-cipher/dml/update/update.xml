@@ -51,12 +51,12 @@
     
     <rewrite-assertion id="update_blank_to_clear_plain_with_skip_sql_rewrite_sql_hint" db-types="MySQL">
         <input sql="/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */ UPDATE t_account_bak SET certificate_number = '', status = 'OK'" />
-        <output sql="/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */ UPDATE t_account_bak SET certificate_number = '', status = 'OK'" />
+        <output sql="UPDATE t_account_bak SET certificate_number = '', status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="update_blank_to_clear_plain_without_skip_sql_rewrite_sql_hint" db-types="MySQL">
         <input sql="/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=false */ UPDATE t_account_bak SET certificate_number = '', status = 'OK'" />
-        <output sql="/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=false */ UPDATE t_account_bak SET cipher_certificate_number = 'encrypt_', assisted_query_certificate_number = 'assisted_query_', like_query_certificate_number = 'like_query_', status = 'OK'" />
+        <output sql="UPDATE t_account_bak SET cipher_certificate_number = 'encrypt_', assisted_query_certificate_number = 'assisted_query_', like_query_certificate_number = 'like_query_', status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="update_null_to_clear_plain" db-types="MySQL">

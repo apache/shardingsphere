@@ -150,3 +150,7 @@ SQL_HINT
 NOT
     : N O T
     ;
+
+PLUGINS
+    : P L U G I N S
+    ;

@@ -27,7 +27,7 @@ public final class CloseTransactionManagerFailedException extends TransactionSQL
     
     private static final long serialVersionUID = -3396778990357223580L;
     
-    public CloseTransactionManagerFailedException(final Exception exception) {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 205, "Close transaction manager failed, `%s`", exception.getMessage());
+    public CloseTransactionManagerFailedException(final Exception cause) {
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 4, cause, "Close transaction manager failed.");
     }
 }

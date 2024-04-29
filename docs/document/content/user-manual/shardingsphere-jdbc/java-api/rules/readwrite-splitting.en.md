@@ -1,6 +1,6 @@
 +++
 title = "Readwrite-splitting"
-weight = 2
+weight = 3
 +++
 
 ## Background
@@ -22,7 +22,7 @@ Configurable Properties:
 
 ### Primary-secondary Data Source Configuration
 
-Class name: org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration
+Class name: org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration
 
 Configurable Properties:
 

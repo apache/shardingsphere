@@ -893,4 +893,919 @@
             </right>
         </combine>
     </select>
+    
+    <select sql-case-id="select_union_all_where">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="TEST_TABLE_1" start-index="14" stop-index="25" />
+        </from>
+        <combine combine-type="UNION_ALL" start-index="0" stop-index="88">
+            <left>
+                <projections start-index="7" stop-index="7">
+                    <shorthand-projection start-index="7" stop-index="7" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_TABLE_1" start-index="14" stop-index="25" />
+                </from>
+                <where start-index="27" stop-index="38">
+                    <expr>
+                        <binary-operation-expression start-index="33" stop-index="38">
+                            <left>
+                                <column name="ID" start-index="33" stop-index="34" />
+                            </left>
+                            <right>
+                                <literal-expression value="1" start-index="38" stop-index="38" />
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </expr>
+                </where>
+            </left>
+            <right>
+                <projections start-index="57" stop-index="57">
+                    <shorthand-projection start-index="57" stop-index="57" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_TABLE_2" start-index="64" stop-index="75" />
+                </from>
+                <where start-index="77" stop-index="88">
+                    <expr>
+                        <binary-operation-expression start-index="83" stop-index="88">
+                            <left>
+                                <column name="ID" start-index="83" stop-index="84" />
+                            </left>
+                            <right>
+                                <literal-expression value="2" start-index="88" stop-index="88" />
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </expr>
+                </where>
+            </right>
+        </combine>
+    </select>
+    
+    <select sql-case-id="select_union_all_minus">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="TEST_TABLE_1" start-index="14" stop-index="25" />
+        </from>
+        <combine combine-type="MINUS" start-index="0" stop-index="95">
+            <left>
+                <projections start-index="7" stop-index="7">
+                    <shorthand-projection start-index="7" stop-index="7" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_TABLE_1" start-index="14" stop-index="25" />
+                </from>
+                <combine combine-type="UNION_ALL" start-index="0" stop-index="62">
+                    <left>
+                        <projections start-index="7" stop-index="7">
+                            <shorthand-projection start-index="7" stop-index="7" />
+                        </projections>
+                        <from>
+                            <simple-table name="TEST_TABLE_1" start-index="14" stop-index="25" />
+                        </from>
+                    </left>
+                    <right>
+                        <projections start-index="44" stop-index="44">
+                            <shorthand-projection start-index="44" stop-index="44" />
+                        </projections>
+                        <from>
+                            <simple-table name="TEST_TABLE_2" start-index="51" stop-index="62" />
+                        </from>
+                    </right>
+                </combine>
+            </left>
+            <right>
+                <projections start-index="77" stop-index="77">
+                    <shorthand-projection start-index="77" stop-index="77" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_TABLE_3" start-index="84" stop-index="95" />
+                </from>
+            </right>
+        </combine>
+    </select>
+    
+    <select sql-case-id="select_union_subquery">
+        <projections start-index="8" stop-index="14">
+            <column-projection name="TEST_ID" start-index="8" stop-index="14" />
+        </projections>
+        <from>
+            <simple-table name="TEST_TABLE" start-index="22" stop-index="31" />
+        </from>
+        <combine combine-type="UNION" start-index="0" stop-index="71">
+            <left>
+                <projections start-index="8" stop-index="14">
+                    <column-projection name="TEST_ID" start-index="8" stop-index="14" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_TABLE" start-index="22" stop-index="31" />
+                </from>
+            </left>
+            <right>
+                <projections start-index="48" stop-index="54">
+                    <column-projection name="TEST_ID" start-index="48" stop-index="54" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_TABLE" start-index="61" stop-index="70" />
+                </from>
+            </right>
+        </combine>
+    </select>
+    
+    <select sql-case-id="select_union_case_when_order_by">
+        <projections start-index="8" stop-index="166">
+            <column-projection name="PRODUCT_ID" start-index="8" stop-index="17" />
+            <column-projection name="PRODUCT_NAME" start-index="20" stop-index="31" />
+            <column-projection name="PRICE" start-index="34" stop-index="38" />
+            <expression-projection alias="REGION" text="" start-index="41" stop-index="166">
+                <expr>
+                    <case-when-expression>
+                        <when-exprs>
+                            <binary-operation-expression start-index="52" stop-index="67">
+                                <left>
+                                    <column name="REGION" start-index="52" stop-index="57" />
+                                </left>
+                                <right>
+                                    <literal-expression value="NORTH" start-index="61" stop-index="67" />
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <when-exprs>
+                            <binary-operation-expression start-index="95" stop-index="110">
+                                <left>
+                                    <column name="REGION" start-index="95" stop-index="100" />
+                                </left>
+                                <right>
+                                    <literal-expression value="SOUTH" start-index="104" stop-index="110" />
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="NORTH REGION" start-index="74" stop-index="87" />
+                        </then-exprs>
+                        <then-exprs>
+                            <literal-expression value="SOUTH REGION" start-index="117" stop-index="130" />
+                        </then-exprs>
+                        <else-expr>
+                            <literal-expression value="OTHER REGION" start-index="138" stop-index="151" />
+                        </else-expr>
+                    </case-when-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="PRODUCTS" start-index="173" stop-index="180" />
+        </from>
+        <combine combine-type="UNION" start-index="0" stop-index="564">
+            <left>
+                <projections start-index="8" stop-index="166">
+                    <column-projection name="PRODUCT_ID" start-index="8" stop-index="17" />
+                    <column-projection name="PRODUCT_NAME" start-index="20" stop-index="31" />
+                    <column-projection name="PRICE" start-index="34" stop-index="38" />
+                    <expression-projection alias="REGION" text="" start-index="41" stop-index="166">
+                        <expr>
+                            <case-when-expression>
+                                <when-exprs>
+                                    <binary-operation-expression start-index="52" stop-index="67">
+                                        <left>
+                                            <column name="REGION" start-index="52" stop-index="57" />
+                                        </left>
+                                        <right>
+                                            <literal-expression value="NORTH" start-index="61" stop-index="67" />
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </when-exprs>
+                                <when-exprs>
+                                    <binary-operation-expression start-index="95" stop-index="110">
+                                        <left>
+                                            <column name="REGION" start-index="95" stop-index="100" />
+                                        </left>
+                                        <right>
+                                            <literal-expression value="SOUTH" start-index="104" stop-index="110" />
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </when-exprs>
+                                <then-exprs>
+                                    <literal-expression value="NORTH REGION" start-index="74" stop-index="87" />
+                                </then-exprs>
+                                <then-exprs>
+                                    <literal-expression value="SOUTH REGION" start-index="117" stop-index="130" />
+                                </then-exprs>
+                                <else-expr>
+                                    <literal-expression value="OTHER REGION" start-index="138" stop-index="151" />
+                                </else-expr>
+                            </case-when-expression>
+                        </expr>
+                    </expression-projection>
+                </projections>
+                <from>
+                    <simple-table name="PRODUCTS" start-index="173" stop-index="180" />
+                </from>
+                <combine combine-type="UNION" start-index="0" stop-index="353">
+                    <left>
+                        <projections start-index="8" stop-index="166">
+                            <column-projection name="PRODUCT_ID" start-index="8" stop-index="17" />
+                            <column-projection name="PRODUCT_NAME" start-index="20" stop-index="31" />
+                            <column-projection name="PRICE" start-index="34" stop-index="38" />
+                            <expression-projection alias="REGION" text="" start-index="41" stop-index="166">
+                                <expr>
+                                    <case-when-expression>
+                                        <when-exprs>
+                                            <binary-operation-expression start-index="52" stop-index="67">
+                                                <left>
+                                                    <column name="REGION" start-index="52" stop-index="57" />
+                                                </left>
+                                                <right>
+                                                    <literal-expression value="NORTH" start-index="61" stop-index="67" />
+                                                </right>
+                                                <operator>=</operator>
+                                            </binary-operation-expression>
+                                        </when-exprs>
+                                        <when-exprs>
+                                            <binary-operation-expression start-index="95" stop-index="110">
+                                                <left>
+                                                    <column name="REGION" start-index="95" stop-index="100" />
+                                                </left>
+                                                <right>
+                                                    <literal-expression value="SOUTH" start-index="104" stop-index="110" />
+                                                </right>
+                                                <operator>=</operator>
+                                            </binary-operation-expression>
+                                        </when-exprs>
+                                        <then-exprs>
+                                            <literal-expression value="NORTH REGION" start-index="74" stop-index="87" />
+                                        </then-exprs>
+                                        <then-exprs>
+                                            <literal-expression value="SOUTH REGION" start-index="117" stop-index="130" />
+                                        </then-exprs>
+                                        <else-expr>
+                                            <literal-expression value="OTHER REGION" start-index="138" stop-index="151" />
+                                        </else-expr>
+                                    </case-when-expression>
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                        <from>
+                            <simple-table name="PRODUCTS" start-index="173" stop-index="180" />
+                        </from>
+                    </left>
+                    <right>
+                        <projections start-index="199" stop-index="339">
+                            <column-projection name="PRODUCT_ID" start-index="199" stop-index="208" />
+                            <column-projection name="PRODUCT_NAME" start-index="211" stop-index="222" />
+                            <column-projection name="PRICE" start-index="225" stop-index="229" />
+                            <expression-projection alias="COUNTRY" text="" start-index="232" stop-index="339">
+                                <expr>
+                                    <case-when-expression>
+                                        <when-exprs>
+                                            <binary-operation-expression start-index="242" stop-index="256">
+                                                <left>
+                                                    <column name="COUNTRY" start-index="242" stop-index="248" />
+                                                </left>
+                                                <right>
+                                                    <literal-expression value="USA" start-index="252" stop-index="256" />
+                                                </right>
+                                                <operator>=</operator>
+                                            </binary-operation-expression>
+                                        </when-exprs>
+                                        <when-exprs>
+                                            <binary-operation-expression start-index="274" stop-index="290">
+                                                <left>
+                                                    <column name="COUNTRY" start-index="274" stop-index="280" />
+                                                </left>
+                                                <right>
+                                                    <literal-expression value="CHINA" start-index="284" stop-index="290" />
+                                                </right>
+                                                <operator>=</operator>
+                                            </binary-operation-expression>
+                                        </when-exprs>
+                                        <then-exprs>
+                                            <literal-expression value="USA" start-index="263" stop-index="267" />
+                                        </then-exprs>
+                                        <then-exprs>
+                                            <literal-expression value="CHINA" start-index="297" stop-index="303" />
+                                        </then-exprs>
+                                        <else-expr>
+                                            <literal-expression value="OTHER COUNTRY" start-index="310" stop-index="324" />
+                                        </else-expr>
+                                    </case-when-expression>
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                        <from>
+                            <simple-table name="PRODUCTS" start-index="346" stop-index="353" />
+                        </from>     
+                    </right>
+                </combine>
+            </left>
+            <right>
+                <projections start-index="372" stop-index="530">
+                    <column-projection name="PRODUCT_ID" start-index="372" stop-index="381" />
+                    <column-projection name="PRODUCT_NAME" start-index="384" stop-index="395" />
+                    <column-projection name="PRICE" start-index="398" stop-index="402" />
+                    <expression-projection alias="CONTINENT" text="" start-index="405" stop-index="530">
+                        <expr>
+                            <case-when-expression>
+                                <when-exprs>
+                                    <binary-operation-expression start-index="415" stop-index="435">
+                                        <left>
+                                            <column name="CONTINENT" start-index="415" stop-index="423" />
+                                        </left>
+                                        <right>
+                                            <literal-expression value="AMERICA" start-index="427" stop-index="435" />
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </when-exprs>
+                                <when-exprs>
+                                    <binary-operation-expression start-index="457" stop-index="476">
+                                        <left>
+                                            <column name="CONTINENT" start-index="457" stop-index="465" />
+                                        </left>
+                                        <right>
+                                            <literal-expression value="EUROPE" start-index="469" stop-index="476" />
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </when-exprs>
+                                <then-exprs>
+                                    <literal-expression value="AMERICA" start-index="442" stop-index="450" />
+                                </then-exprs>
+                                <then-exprs>
+                                    <literal-expression value="EUROPE" start-index="483" stop-index="490" />
+                                </then-exprs>
+                                <else-expr>
+                                    <literal-expression value="OTHER CONTINENT" start-index="497" stop-index="513" />
+                                </else-expr>
+                            </case-when-expression>
+                        </expr>
+                    </expression-projection>
+                </projections>
+                <from>
+                    <simple-table name="PRODUCTS" start-index="537" stop-index="544" />
+                </from>
+                <order-by>
+                    <column-item name="PRODUCT_ID" order-direction="ASC" start-index="555" stop-index="564" />
+                </order-by>
+            </right>
+        </combine>
+    </select>
+    
+    <select sql-case-id="select_intersect_with_dual">
+        <projections start-index="7" stop-index="7">
+            <expression-projection text="3" start-index="7" stop-index="7">
+                <literal-expression value="3" start-index="7" stop-index="7" />
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="14" stop-index="17" />
+        </from>
+        <combine combine-type="INTERSECT" start-index="0" stop-index="47">
+            <left>
+                <projections start-index="7" stop-index="7">
+                    <expression-projection text="3" start-index="7" stop-index="7">
+                        <literal-expression value="3" start-index="7" stop-index="7" />
+                    </expression-projection>
+                </projections>
+                <from>
+                    <simple-table name="DUAL" start-index="14" stop-index="17" />
+                </from>
+            </left>
+            <right>
+                <projections start-index="36" stop-index="37">
+                    <expression-projection alias="f" text="3" start-index="36" stop-index="37">
+                        <expr>
+                            <literal-expression value="3" start-index="36" stop-index="36" />
+                        </expr>
+                    </expression-projection>
+                </projections>
+                <from>
+                    <simple-table name="DUAL" start-index="44" stop-index="47" />
+                </from>
+            </right>
+        </combine>
+    </select>
+    
+    <select sql-case-id="select_intersect_to_binary_float">
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="TO_BINARY_FLOAT(3)" start-index="7" stop-index="24">
+                <expr>
+                    <function function-name="TO_BINARY_FLOAT" text="TO_BINARY_FLOAT(3)" start-index="7" stop-index="24" >
+                        <parameter>
+                            <literal-expression value="3" start-index="23" stop-index="23" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="31" stop-index="34" />
+        </from>
+        <combine combine-type="INTERSECT" start-index="0" stop-index="64">
+            <left>
+                <projections start-index="7" stop-index="24">
+                    <expression-projection text="TO_BINARY_FLOAT(3)" start-index="7" stop-index="24">
+                        <expr>
+                            <function function-name="TO_BINARY_FLOAT" text="TO_BINARY_FLOAT(3)" start-index="7" stop-index="24" >
+                                <parameter>
+                                    <literal-expression value="3" start-index="23" stop-index="23" />
+                                </parameter>
+                            </function>
+                        </expr>
+                    </expression-projection>
+                </projections>
+                <from>
+                    <simple-table name="DUAL" start-index="31" stop-index="34" />
+                </from>
+            </left>
+            <right>
+                <projections start-index="53" stop-index="54">
+                    <expression-projection alias="f" text="3" start-index="53" stop-index="54">
+                        <expr>
+                            <literal-expression value="3" start-index="53" stop-index="53" />
+                        </expr>
+                    </expression-projection>
+                </projections>
+                <from>
+                    <simple-table name="DUAL" start-index="61" stop-index="64" />
+                </from>
+            </right>
+        </combine>
+    </select>
+    
+    <select sql-case-id="select_intersect_with_order_by">
+        <projections start-index="7" stop-index="16">
+            <column-projection name="PRODUCT_ID" start-index="7" stop-index="16" />
+        </projections>
+        <from>
+            <simple-table name="INVENTORIES" start-index="23" stop-index="33" />
+        </from>
+        <combine combine-type="INTERSECT" start-index="0" stop-index="98">
+            <left>
+                <projections start-index="7" stop-index="16">
+                    <column-projection name="PRODUCT_ID" start-index="7" stop-index="16" />
+                </projections>
+                <from>
+                    <simple-table name="INVENTORIES" start-index="23" stop-index="33" />
+                </from>
+            </left>
+            <right>
+                <projections start-index="52" stop-index="61">
+                    <column-projection name="PRODUCT_ID" start-index="52" stop-index="61" />
+                </projections>
+                <from>
+                    <simple-table name="ORDER_ITEMS" start-index="68" stop-index="78" />
+                </from>
+                <order-by>
+                    <column-item name="PRODUCT_ID" order-direction="ASC" start-index="89" stop-index="98" />
+                </order-by>
+            </right>
+        </combine>
+    </select>
+    
+    <select sql-case-id="select_union_to_char_function">
+        <projections start-index="7" stop-index="74">
+            <column-projection name="location_id" start-index="7" stop-index="17" />
+            <column-projection alias="Department" name="department_name" start-index="20" stop-index="47" />
+            <expression-projection alias="Warehouse" text="TO_CHAR(NULL)" start-index="50" stop-index="74">
+                <expr>
+                    <function function-name="TO_CHAR" text="TO_CHAR(NULL)" start-index="50" stop-index="62" >
+                        <parameter>
+                            <literal-expression value="null" start-index="58" stop-index="61" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="departments" start-index="82" stop-index="92" />
+        </from>
+        <combine combine-type="UNION" start-index="0" stop-index="177">
+            <left>
+                <projections start-index="7" stop-index="74">
+                    <column-projection name="location_id" start-index="7" stop-index="17" />
+                    <column-projection alias="Department" name="department_name" start-index="20" stop-index="47" />
+                    <expression-projection alias="Warehouse" text="TO_CHAR(NULL)" start-index="50" stop-index="74">
+                        <expr>
+                            <function function-name="TO_CHAR" text="TO_CHAR(NULL)" start-index="50" stop-index="62" >
+                                <parameter>
+                                    <literal-expression value="null" start-index="58" stop-index="61" />
+                                </parameter>
+                            </function>
+                        </expr>
+                    </expression-projection>
+                </projections>
+                <from>
+                    <simple-table name="departments" start-index="82" stop-index="92" />
+                </from>
+            </left>
+            <right>
+                <projections start-index="107" stop-index="161">
+                    <column-projection name="location_id" start-index="107" stop-index="117" />
+                    <column-projection name="warehouse_name" start-index="148" stop-index="161" />
+                    <expression-projection alias="Department" text="TO_CHAR(NULL)" start-index="120" stop-index="145">
+                        <expr>
+                            <function function-name="TO_CHAR" text="TO_CHAR(NULL)" start-index="120" stop-index="132" >
+                                <parameter>
+                                    <literal-expression value="null" start-index="128" stop-index="131" />
+                                </parameter>
+                            </function>
+                        </expr>
+                    </expression-projection>
+                </projections>
+                <from>
+                    <simple-table name="warehouses" start-index="168" stop-index="177" />
+                </from>
+            </right>
+        </combine>
+    </select>
+    
+    <select sql-case-id="select_minus_with_order_by">
+        <projections start-index="7" stop-index="16">
+            <column-projection name="PRODUCT_ID" start-index="7" stop-index="16" />
+        </projections>
+        <from>
+            <simple-table name="INVENTORIES" start-index="23" stop-index="33" />
+        </from>
+        <combine combine-type="MINUS" start-index="0" stop-index="94">
+            <left>
+                <projections start-index="7" stop-index="16">
+                    <column-projection name="PRODUCT_ID" start-index="7" stop-index="16" />
+                </projections>
+                <from>
+                    <simple-table name="INVENTORIES" start-index="23" stop-index="33" />
+                </from>
+            </left>
+            <right>
+                <projections start-index="48" stop-index="57">
+                    <column-projection name="PRODUCT_ID" start-index="48" stop-index="57" />
+                </projections>
+                <from>
+                    <simple-table name="ORDER_ITEMS" start-index="64" stop-index="74" />
+                </from>
+                <order-by>
+                    <column-item name="PRODUCT_ID" order-direction="ASC" start-index="85" stop-index="94" />
+                </order-by>
+            </right>
+        </combine>
+    </select>
+    
+    <select sql-case-id="select_priority_union_intersect_minus">
+        <projections start-index="7" stop-index="29">
+            <column-projection name="EMPLOYEE_ID" start-index="7" stop-index="17" />
+            <column-projection name="FIRST_NAME" start-index="20" stop-index="29" />
+        </projections>
+        <from>
+            <simple-table name="EMPLOYEES" start-index="36" stop-index="44" />
+        </from>
+        <combine combine-type="MINUS" start-index="0" stop-index="340">
+            <left>
+                <projections start-index="7" stop-index="29">
+                    <column-projection name="EMPLOYEE_ID" start-index="7" stop-index="17" />
+                    <column-projection name="FIRST_NAME" start-index="20" stop-index="29" />
+                </projections>
+                <from>
+                    <simple-table name="EMPLOYEES" start-index="36" stop-index="44" />
+                </from>
+                <combine combine-type="UNION" start-index="0" stop-index="228">
+                    <left>
+                        <projections start-index="7" stop-index="29">
+                            <column-projection name="EMPLOYEE_ID" start-index="7" stop-index="17" />
+                            <column-projection name="FIRST_NAME" start-index="20" stop-index="29" />
+                        </projections>
+                        <from>
+                            <simple-table name="EMPLOYEES" start-index="36" stop-index="44" />
+                        </from>
+                        <where start-index="46" stop-index="69">
+                            <expr>
+                                <binary-operation-expression start-index="52" stop-index="69">
+                                    <left>
+                                        <column name="DEPARTMENT_ID" start-index="52" stop-index="64" />
+                                    </left>
+                                    <right>
+                                        <literal-expression value="10" start-index="68" stop-index="69" />
+                                    </right>
+                                    <operator>=</operator>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </left>
+                    <right>
+                        <projections start-index="89" stop-index="111">
+                            <column-projection name="EMPLOYEE_ID" start-index="89" stop-index="99" />
+                            <column-projection name="FIRST_NAME" start-index="102" stop-index="111" />
+                        </projections>
+                        <from>
+                            <simple-table name="EMPLOYEES" start-index="118" stop-index="126" />
+                        </from>
+                        <combine combine-type="INTERSECT" start-index="82" stop-index="227">
+                            <left>
+                                <projections start-index="89" stop-index="111">
+                                    <column-projection name="EMPLOYEE_ID" start-index="89" stop-index="99" />
+                                    <column-projection name="FIRST_NAME" start-index="102" stop-index="111" />
+                                </projections>
+                                <from>
+                                    <simple-table name="EMPLOYEES" start-index="118" stop-index="126" />
+                                </from>
+                                <where start-index="128" stop-index="151">
+                                    <expr>
+                                        <binary-operation-expression start-index="134" stop-index="151">
+                                            <left>
+                                                <column name="DEPARTMENT_ID" start-index="134" stop-index="146" />
+                                            </left>
+                                            <right>
+                                                <literal-expression value="20" start-index="150" stop-index="151" />
+                                            </right>
+                                            <operator>=</operator>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </left>
+                            <right>
+                                <projections start-index="170" stop-index="192">
+                                    <column-projection name="EMPLOYEE_ID" start-index="170" stop-index="180" />
+                                    <column-projection name="FIRST_NAME" start-index="183" stop-index="192" />
+                                </projections>
+                                <from>
+                                    <simple-table name="EMPLOYEES" start-index="199" stop-index="207" />
+                                </from>
+                                <where start-index="209" stop-index="227">
+                                    <expr>
+                                        <binary-operation-expression start-index="215" stop-index="227">
+                                            <left>
+                                                <column name="SALARY" start-index="215" stop-index="220" />
+                                            </left>
+                                            <right>
+                                                <literal-expression value="5000" start-index="224" stop-index="227" />
+                                            </right>
+                                            <operator>&gt;</operator>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </right>
+                        </combine>
+                    </right>
+                </combine>
+            </left>
+            <right>
+                <projections start-index="247" stop-index="269">
+                    <column-projection name="EMPLOYEE_ID" start-index="247" stop-index="257" />
+                    <column-projection name="FIRST_NAME" start-index="260" stop-index="269" />
+                </projections>
+                <from>
+                    <simple-table name="EMPLOYEES" start-index="276" stop-index="284" />
+                </from>
+                <where start-index="286" stop-index="340">
+                    <expr>
+                        <binary-operation-expression start-index="292" stop-index="340">
+                            <left>
+                                <column name="HIRE_DATE" start-index="292" stop-index="300" />
+                            </left>
+                            <right>
+                                <function function-name="TO_DATE" text="TO_DATE('01-JAN-2005', 'DD-MON-YYYY')" start-index="304" stop-index="340" >
+                                    <parameter>
+                                        <literal-expression value="'01-JAN-2005'" start-index="312" stop-index="324" />
+                                    </parameter>
+                                    <parameter>
+                                        <literal-expression value="'DD-MON-YYYY'" start-index="327" stop-index="339" />
+                                    </parameter>
+                                </function>
+                            </right>
+                            <operator>&lt;</operator>
+                        </binary-operation-expression>
+                    </expr>
+                </where>
+            </right>
+        </combine>
+    </select>
+    
+    <select sql-case-id="select_union_intersect_minus">
+        <projections start-index="7" stop-index="40">
+            <column-projection name="employee_id" start-index="7" stop-index="17" />
+            <column-projection name="first_name" start-index="20" stop-index="29" />
+            <column-projection name="last_name" start-index="32" stop-index="40" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="47" stop-index="55" />
+        </from>
+        <combine combine-type="MINUS" start-index="0" stop-index="382">
+            <left>
+                <projections start-index="7" stop-index="40">
+                    <column-projection name="employee_id" start-index="7" stop-index="17" />
+                    <column-projection name="first_name" start-index="20" stop-index="29" />
+                    <column-projection name="last_name" start-index="32" stop-index="40" />
+                </projections>
+                <from>
+                    <simple-table name="employees" start-index="47" stop-index="55" />
+                </from>
+                <combine combine-type="INTERSECT" start-index="0" stop-index="259">
+                    <left>
+                        <projections start-index="7" stop-index="40">
+                            <column-projection name="employee_id" start-index="7" stop-index="17" />
+                            <column-projection name="first_name" start-index="20" stop-index="29" />
+                            <column-projection name="last_name" start-index="32" stop-index="40" />
+                        </projections>
+                        <from>
+                            <simple-table name="employees" start-index="47" stop-index="55" />
+                        </from>
+                        <combine combine-type="UNION" start-index="0" stop-index="172">
+                            <left>
+                                <projections start-index="7" stop-index="40">
+                                    <column-projection name="employee_id" start-index="7" stop-index="17" />
+                                    <column-projection name="first_name" start-index="20" stop-index="29" />
+                                    <column-projection name="last_name" start-index="32" stop-index="40" />
+                                </projections>
+                                <from>
+                                    <simple-table name="employees" start-index="47" stop-index="55" />
+                                </from>
+                                <where start-index="57" stop-index="80">
+                                    <expr>
+                                        <binary-operation-expression start-index="63" stop-index="80">
+                                            <left>
+                                                <column name="department_id" start-index="63" stop-index="75" />
+                                            </left>
+                                            <right>
+                                                <literal-expression value="10" start-index="79" stop-index="80" />
+                                            </right>
+                                            <operator>=</operator>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </left>
+                            <right>
+                                <projections start-index="99" stop-index="132">
+                                    <column-projection name="employee_id" start-index="99" stop-index="109" />
+                                    <column-projection name="first_name" start-index="112" stop-index="121" />
+                                    <column-projection name="last_name" start-index="124" stop-index="132" />
+                                </projections>
+                                <from>
+                                    <simple-table name="employees" start-index="139" stop-index="147" />
+                                </from>
+                                <where start-index="149" stop-index="172">
+                                    <expr>
+                                        <binary-operation-expression start-index="155" stop-index="172">
+                                            <left>
+                                                <column name="department_id" start-index="155" stop-index="167" />
+                                            </left>
+                                            <right>
+                                                <literal-expression value="20" start-index="171" stop-index="172" />
+                                            </right>
+                                            <operator>=</operator>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </right>
+                        </combine>
+                    </left>
+                    <right>
+                        <projections start-index="191" stop-index="224">
+                            <column-projection name="employee_id" start-index="191" stop-index="201" />
+                            <column-projection name="first_name" start-index="204" stop-index="213" />
+                            <column-projection name="last_name" start-index="216" stop-index="224" />
+                        </projections>
+                        <from>
+                            <simple-table name="employees" start-index="231" stop-index="239" />
+                        </from>
+                        <where start-index="241" stop-index="259">
+                            <expr>
+                                <binary-operation-expression start-index="247" stop-index="259">
+                                    <left>
+                                        <column name="salary" start-index="247" stop-index="252" />
+                                    </left>
+                                    <right>
+                                        <literal-expression value="5000" start-index="256" stop-index="259" />
+                                    </right>
+                                    <operator>&gt;</operator>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </right>
+                </combine>
+            </left>
+            <right>
+                <projections start-index="278" stop-index="311">
+                    <column-projection name="employee_id" start-index="278" stop-index="288" />
+                    <column-projection name="first_name" start-index="291" stop-index="300" />
+                    <column-projection name="last_name" start-index="303" stop-index="311" />
+                </projections>
+                <from>
+                    <simple-table name="employees" start-index="318" stop-index="326" />
+                </from>
+                <where start-index="328" stop-index="382">
+                    <expr>
+                        <binary-operation-expression start-index="334" stop-index="382">
+                            <left>
+                                <column name="hire_date" start-index="334" stop-index="342" />
+                            </left>
+                            <right>
+                                <function function-name="TO_DATE" text="TO_DATE('01-JAN-2005', 'DD-MON-YYYY')" start-index="346" stop-index="382" >
+                                    <parameter>
+                                        <literal-expression value="'01-JAN-2005'" start-index="354" stop-index="366" />
+                                    </parameter>
+                                    <parameter>
+                                        <literal-expression value="'DD-MON-YYYY'" start-index="369" stop-index="381" />
+                                    </parameter>
+                                </function>
+                            </right>
+                            <operator>&lt;</operator>
+                        </binary-operation-expression>
+                    </expr>
+                </where>
+            </right>
+        </combine>
+    </select>
+    
+    <select sql-case-id="select_nest_union_intersect_union_all">
+        <projections start-index="7" stop-index="29">
+            <column-projection name="EMPLOYEE_ID" start-index="7" stop-index="17" />
+            <column-projection name="FIRST_NAME" start-index="20" stop-index="29" />
+        </projections>
+        <from>
+            <simple-table name="EMPLOYEES" start-index="36" stop-index="44" />
+        </from>
+        <combine combine-type="UNION" start-index="0" stop-index="237">
+            <left>
+                <projections start-index="7" stop-index="29">
+                    <column-projection name="EMPLOYEE_ID" start-index="7" stop-index="17" />
+                    <column-projection name="FIRST_NAME" start-index="20" stop-index="29" />
+                </projections>
+                <from>
+                    <simple-table name="EMPLOYEES" start-index="36" stop-index="44" />
+                </from>
+            </left>
+            <right>
+                <projections start-index="60" stop-index="82">
+                    <column-projection name="EMPLOYEE_ID" start-index="60" stop-index="70" />
+                    <column-projection name="FIRST_NAME" start-index="73" stop-index="82" />
+                </projections>
+                <from>
+                    <simple-table name="EMPLOYEES" start-index="89" stop-index="97" />
+                </from>
+                <combine combine-type="INTERSECT" start-index="53" stop-index="236">
+                    <left>
+                        <projections start-index="60" stop-index="82">
+                            <column-projection name="EMPLOYEE_ID" start-index="60" stop-index="70" />
+                            <column-projection name="FIRST_NAME" start-index="73" stop-index="82" />
+                        </projections>
+                        <from>
+                            <simple-table name="EMPLOYEES" start-index="89" stop-index="97" />
+                        </from>
+                        <where start-index="99" stop-index="122">
+                            <expr>
+                                <binary-operation-expression start-index="105" stop-index="122">
+                                    <left>
+                                        <column name="DEPARTMENT_ID" start-index="105" stop-index="117" />
+                                    </left>
+                                    <right>
+                                        <literal-expression value="20" start-index="121" stop-index="122" />
+                                    </right>
+                                    <operator>=</operator>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </left>
+                    <right>
+                        <projections start-index="142" stop-index="164">
+                            <column-projection name="EMPLOYEE_ID" start-index="142" stop-index="152" />
+                            <column-projection name="FIRST_NAME" start-index="155" stop-index="164" />
+                        </projections>
+                        <from>
+                            <simple-table name="EMPLOYEES" start-index="171" stop-index="179" />
+                        </from>
+                        <combine combine-type="UNION_ALL" start-index="135" stop-index="235">
+                            <left>
+                                <projections start-index="142" stop-index="164">
+                                    <column-projection name="EMPLOYEE_ID" start-index="142" stop-index="152" />
+                                    <column-projection name="FIRST_NAME" start-index="155" stop-index="164" />
+                                </projections>
+                                <from>
+                                    <simple-table name="EMPLOYEES" start-index="171" stop-index="179" />
+                                </from>
+                            </left>
+                            <right>
+                                <projections start-index="198" stop-index="220">
+                                    <column-projection name="EMPLOYEE_ID" start-index="198" stop-index="208" />
+                                    <column-projection name="FIRST_NAME" start-index="211" stop-index="220" />
+                                </projections>
+                                <from>
+                                    <simple-table name="EMPLOYEES" start-index="227" stop-index="235" />
+                                </from>
+                            </right>
+                        </combine>
+                    </right>
+                </combine>
+            </right>
+        </combine>
+    </select>
 </sql-parser-test-cases>

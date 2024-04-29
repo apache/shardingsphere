@@ -62,10 +62,6 @@ CREATE TABLE tbl.t_order_9(order_id BIGINT PRIMARY KEY, user_id INT NOT NULL, st
 CREATE TABLE tbl.t_order_item_9(item_id BIGINT PRIMARY KEY, order_id BIGINT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE INDEX order_index_t_order_9 ON tbl.t_order_9 (order_id);
 
-CREATE TABLE tbl.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-
-CREATE TABLE tbl.t_single_table (single_id INT NOT NULL AUTO_INCREMENT, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
-
 CREATE TABLE tbl.t_product_0 (product_id INT PRIMARY KEY, product_name VARCHAR(50) NOT NULL, category_id INT NOT NULL, price DECIMAL NOT NULL, status VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE tbl.t_product_1 (product_id INT PRIMARY KEY, product_name VARCHAR(50) NOT NULL, category_id INT NOT NULL, price DECIMAL NOT NULL, status VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE tbl.t_product_2 (product_id INT PRIMARY KEY, product_name VARCHAR(50) NOT NULL, category_id INT NOT NULL, price DECIMAL NOT NULL, status VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);

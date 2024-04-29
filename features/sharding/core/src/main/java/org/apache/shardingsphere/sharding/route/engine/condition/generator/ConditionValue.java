@@ -58,7 +58,8 @@ public final class ConditionValue {
         int parameterMarkerIndex = expressionSegment.getParameterMarkerIndex();
         if (parameterMarkerIndex < params.size()) {
             Object result = params.get(parameterMarkerIndex);
-            ShardingSpherePreconditions.checkState(result instanceof Comparable, () -> new NotImplementComparableValueException("Sharding", result));
+            isNull = null == result;
+            ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableValueException("Sharding", result));
             return (Comparable<?>) result;
         }
         return null;

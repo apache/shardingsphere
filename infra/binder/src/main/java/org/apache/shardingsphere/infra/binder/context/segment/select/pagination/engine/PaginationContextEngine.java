@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.pagination.engine;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
@@ -32,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +42,10 @@ import java.util.Optional;
 /**
  * Pagination context engine.
  */
+@RequiredArgsConstructor
 public final class PaginationContextEngine {
+    
+    private final DatabaseType databaseType;
     
     /**
      * Create pagination context.
@@ -65,7 +71,7 @@ public final class PaginationContextEngine {
             return new TopPaginationContextEngine().createPaginationContext(topProjectionSegment.get(), expressions, params);
         }
         if (!expressions.isEmpty() && containsRowNumberPagination(selectStatement)) {
-            return new RowNumberPaginationContextEngine().createPaginationContext(expressions, projectionsContext, params);
+            return new RowNumberPaginationContextEngine(databaseType).createPaginationContext(expressions, projectionsContext, params);
         }
         return new PaginationContext(null, null, params);
     }
@@ -75,7 +81,7 @@ public final class PaginationContextEngine {
     }
     
     private Optional<TopProjectionSegment> findTopProjection(final SelectStatement selectStatement) {
-        List<SubqueryTableSegment> subqueryTableSegments = SQLUtils.getSubqueryTableSegmentFromTableSegment(selectStatement.getFrom());
+        List<SubqueryTableSegment> subqueryTableSegments = selectStatement.getFrom().map(SQLUtils::getSubqueryTableSegmentFromTableSegment).orElse(Collections.emptyList());
         for (SubqueryTableSegment subquery : subqueryTableSegments) {
             SelectStatement subquerySelect = subquery.getSubquery().getSelect();
             for (ProjectionSegment each : subquerySelect.getProjections().getProjections()) {

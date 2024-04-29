@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContex
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -42,12 +41,13 @@ public final class InExpressionBinder {
      * @param parentSegmentType parent segment type
      * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
+     * @param outerTableBinderContexts outer table binder contexts
      * @return bounded in expression
      */
     public static InExpression bind(final InExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext statementBinderContext,
-                                    final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        ExpressionSegment boundedLeft = ExpressionSegmentBinder.bind(segment.getLeft(), parentSegmentType, statementBinderContext, tableBinderContexts, Collections.emptyMap());
-        ExpressionSegment boundedRight = ExpressionSegmentBinder.bind(segment.getRight(), parentSegmentType, statementBinderContext, tableBinderContexts, Collections.emptyMap());
+                                    final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        ExpressionSegment boundedLeft = ExpressionSegmentBinder.bind(segment.getLeft(), parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
+        ExpressionSegment boundedRight = ExpressionSegmentBinder.bind(segment.getRight(), parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         return new InExpression(segment.getStartIndex(), segment.getStopIndex(), boundedLeft, boundedRight, segment.isNot());
     }
 }

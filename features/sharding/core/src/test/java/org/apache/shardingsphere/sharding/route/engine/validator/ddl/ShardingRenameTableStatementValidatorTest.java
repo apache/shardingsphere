@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteE
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingRenameTableStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -75,9 +75,9 @@ class ShardingRenameTableStatementValidatorTest {
     void assertPostValidateDifferentRouteUnitsAndDataNodesSize() {
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(mock(RouteUnit.class));
-        TableRule tableRule = mock(TableRule.class);
-        when(tableRule.getActualDataNodes()).thenReturn(Arrays.asList(mock(DataNode.class), mock(DataNode.class)));
-        when(shardingRule.getTableRule("t_order")).thenReturn(tableRule);
+        ShardingTable shardingTable = mock(ShardingTable.class);
+        when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(mock(DataNode.class), mock(DataNode.class)));
+        when(shardingRule.getShardingTable("t_order")).thenReturn(shardingTable);
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         SQLStatementContext sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
@@ -90,9 +90,9 @@ class ShardingRenameTableStatementValidatorTest {
     void assertPostValidateNormalCase() {
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(mock(RouteUnit.class));
-        TableRule tableRule = mock(TableRule.class);
-        when(tableRule.getActualDataNodes()).thenReturn(Collections.singletonList(mock(DataNode.class)));
-        when(shardingRule.getTableRule("t_order")).thenReturn(tableRule);
+        ShardingTable shardingTable = mock(ShardingTable.class);
+        when(shardingTable.getActualDataNodes()).thenReturn(Collections.singletonList(mock(DataNode.class)));
+        when(shardingRule.getShardingTable("t_order")).thenReturn(shardingTable);
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         SQLStatementContext sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);

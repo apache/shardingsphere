@@ -76,13 +76,10 @@ rules:
     - t_broadcast_table_for_ddl
 
 sqlFederation:
-  sqlFederationEnabled: true
+  sqlFederationEnabled: false
   executionPlanCache:
     initialCapacity: 2000
     maximumSize: 65535
-    
-sqlParser:
-  sqlCommentParseEnabled: true
 
 props:
   sql-show: true

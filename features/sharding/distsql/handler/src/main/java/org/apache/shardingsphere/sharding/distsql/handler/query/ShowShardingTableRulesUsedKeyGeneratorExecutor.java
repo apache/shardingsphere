@@ -17,51 +17,54 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Show sharding table rules used key generator executor.
  */
-public final class ShowShardingTableRulesUsedKeyGeneratorExecutor implements RQLExecutor<ShowShardingTableRulesUsedKeyGeneratorStatement> {
+@Setter
+public final class ShowShardingTableRulesUsedKeyGeneratorExecutor implements DistSQLQueryExecutor<ShowShardingTableRulesUsedKeyGeneratorStatement>, DistSQLExecutorRuleAware<ShardingRule> {
+    
+    private ShardingRule rule;
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableRulesUsedKeyGeneratorStatement sqlStatement) {
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        rule.ifPresent(optional -> requireResult(sqlStatement, result, optional));
-        return result;
+    public Collection<String> getColumnNames(final ShowShardingTableRulesUsedKeyGeneratorStatement sqlStatement) {
+        return Arrays.asList("type", "name");
     }
     
-    private void requireResult(final ShowShardingTableRulesUsedKeyGeneratorStatement statement, final Collection<LocalDataQueryResultRow> result, final ShardingRule rule) {
-        if (!statement.getKeyGeneratorName().isPresent()) {
-            return;
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableRulesUsedKeyGeneratorStatement sqlStatement, final ContextManager contextManager) {
+        if (!sqlStatement.getKeyGeneratorName().isPresent()) {
+            return Collections.emptyList();
         }
-        ShardingRuleConfiguration config = (ShardingRuleConfiguration) rule.getConfiguration();
-        config.getTables().forEach(each -> {
-            if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        rule.getConfiguration().getTables().forEach(each -> {
+            if (null != each.getKeyGenerateStrategy() && sqlStatement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
                 result.add(new LocalDataQueryResultRow("table", each.getLogicTable()));
             }
         });
-        config.getAutoTables().forEach(each -> {
-            if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
+        rule.getConfiguration().getAutoTables().forEach(each -> {
+            if (null != each.getKeyGenerateStrategy() && sqlStatement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
                 result.add(new LocalDataQueryResultRow("auto_table", each.getLogicTable()));
             }
         });
+        return result;
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("type", "name");
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

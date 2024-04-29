@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.mode.manager.cluster.yaml.ClusterYamlPersistRepositoryConfigurationSwapper
-org.apache.shardingsphere.mode.manager.cluster.yaml.NewClusterYamlPersistRepositoryConfigurationSwapper

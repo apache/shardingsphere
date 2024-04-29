@@ -17,16 +17,19 @@
 
 package org.apache.shardingsphere.mode.manager.context;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.connection.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.util.Collections;
@@ -52,13 +55,7 @@ public final class ResourceMetaDataContextManager {
         }
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.get().getMetaData().getProps());
         metaDataContexts.get().getMetaData().addDatabase(databaseName, protocolType, metaDataContexts.get().getMetaData().getProps());
-        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
-        alterMetaDataHeldRule(database);
         metaDataContexts.set(new MetaDataContexts(metaDataContexts.get().getPersistService(), metaDataContexts.get().getMetaData()));
-    }
-    
-    private void alterMetaDataHeldRule(final ShardingSphereDatabase database) {
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findRules(MetaDataHeldRule.class).forEach(each -> each.alterDatabase(database));
     }
     
     /**
@@ -71,7 +68,6 @@ public final class ResourceMetaDataContextManager {
             return;
         }
         metaDataContexts.get().getMetaData().dropDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName());
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findRules(MetaDataHeldRule.class).forEach(each -> each.dropDatabase(databaseName));
     }
     
     /**
@@ -81,12 +77,13 @@ public final class ResourceMetaDataContextManager {
      * @param schemaName schema name
      */
     public synchronized void addSchema(final String databaseName, final String schemaName) {
-        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
+        ShardingSphereMetaData metaData = metaDataContexts.get().getMetaData();
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         if (database.containsSchema(schemaName)) {
             return;
         }
         database.addSchema(schemaName, new ShardingSphereSchema());
-        alterMetaDataHeldRule(database);
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
     /**
@@ -96,15 +93,16 @@ public final class ResourceMetaDataContextManager {
      * @param schemaName schema name
      */
     public synchronized void dropSchema(final String databaseName, final String schemaName) {
-        if (!metaDataContexts.get().getMetaData().containsDatabase(databaseName)) {
+        ShardingSphereMetaData metaData = metaDataContexts.get().getMetaData();
+        if (!metaData.containsDatabase(databaseName)) {
             return;
         }
-        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         if (!database.containsSchema(schemaName)) {
             return;
         }
         database.dropSchema(schemaName);
-        alterMetaDataHeldRule(database);
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
     /**
@@ -116,12 +114,15 @@ public final class ResourceMetaDataContextManager {
      * @param toBeDeletedViewName to be deleted view name
      */
     public synchronized void alterSchema(final String databaseName, final String schemaName, final String toBeDeletedTableName, final String toBeDeletedViewName) {
-        if (!metaDataContexts.get().getMetaData().containsDatabase(databaseName) || !metaDataContexts.get().getMetaData().getDatabase(databaseName).containsSchema(schemaName)) {
+        ShardingSphereMetaData metaData = metaDataContexts.get().getMetaData();
+        if (!metaData.containsDatabase(databaseName) || !metaData.getDatabase(databaseName).containsSchema(schemaName)) {
             return;
         }
         Optional.ofNullable(toBeDeletedTableName).ifPresent(optional -> dropTable(databaseName, schemaName, optional));
         Optional.ofNullable(toBeDeletedViewName).ifPresent(optional -> dropView(databaseName, schemaName, optional));
-        alterMetaDataHeldRule(metaDataContexts.get().getMetaData().getDatabase(databaseName));
+        if (!Strings.isNullOrEmpty(toBeDeletedTableName) || !Strings.isNullOrEmpty(toBeDeletedViewName)) {
+            metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        }
     }
     
     /**
@@ -133,43 +134,42 @@ public final class ResourceMetaDataContextManager {
      * @param toBeChangedView to be changed view
      */
     public synchronized void alterSchema(final String databaseName, final String schemaName, final ShardingSphereTable toBeChangedTable, final ShardingSphereView toBeChangedView) {
-        if (!metaDataContexts.get().getMetaData().containsDatabase(databaseName) || !metaDataContexts.get().getMetaData().getDatabase(databaseName).containsSchema(schemaName)) {
+        ShardingSphereMetaData metaData = metaDataContexts.get().getMetaData();
+        if (!metaData.containsDatabase(databaseName) || !metaData.getDatabase(databaseName).containsSchema(schemaName)) {
             return;
         }
         Optional.ofNullable(toBeChangedTable).ifPresent(optional -> alterTable(databaseName, schemaName, optional));
         Optional.ofNullable(toBeChangedView).ifPresent(optional -> alterView(databaseName, schemaName, optional));
-        alterMetaDataHeldRule(metaDataContexts.get().getMetaData().getDatabase(databaseName));
+        if (null != toBeChangedTable || null != toBeChangedView) {
+            metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        }
     }
     
     private void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
         metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchema(schemaName).removeTable(toBeDeletedTableName);
-        metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules().stream().filter(MutableDataNodeRule.class::isInstance).findFirst()
-                .ifPresent(optional -> ((MutableDataNodeRule) optional).remove(schemaName, toBeDeletedTableName));
+        metaDataContexts.get().getMetaData().getDatabase(databaseName)
+                .getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.remove(schemaName, toBeDeletedTableName));
     }
     
     private void dropView(final String databaseName, final String schemaName, final String toBeDeletedViewName) {
         metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchema(schemaName).removeView(toBeDeletedViewName);
-        metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules().stream().filter(MutableDataNodeRule.class::isInstance).findFirst()
-                .ifPresent(optional -> ((MutableDataNodeRule) optional).remove(schemaName, toBeDeletedViewName));
+        metaDataContexts.get().getMetaData().getDatabase(databaseName)
+                .getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.remove(schemaName, toBeDeletedViewName));
     }
     
     private void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable beBoChangedTable) {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
-        if (isSingleTable(database, beBoChangedTable.getName())) {
-            database.reloadRules(MutableDataNodeRule.class);
+        if (TableRefreshUtils.isSingleTable(beBoChangedTable.getName(), database)) {
+            database.reloadRules();
         }
         database.getSchema(schemaName).putTable(beBoChangedTable.getName(), beBoChangedTable);
     }
     
     private void alterView(final String databaseName, final String schemaName, final ShardingSphereView beBoChangedView) {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
-        if (isSingleTable(database, beBoChangedView.getName())) {
-            database.reloadRules(MutableDataNodeRule.class);
+        if (TableRefreshUtils.isSingleTable(beBoChangedView.getName(), database)) {
+            database.reloadRules();
         }
         database.getSchema(schemaName).putView(beBoChangedView.getName(), beBoChangedView);
-    }
-    
-    private boolean isSingleTable(final ShardingSphereDatabase database, final String tableName) {
-        return database.getRuleMetaData().findRules(TableContainedRule.class).stream().noneMatch(each -> each.getDistributedTableMapper().contains(tableName));
     }
 }

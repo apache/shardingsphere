@@ -17,14 +17,26 @@
 
 package org.apache.shardingsphere.test.e2e.driver.fixture.encrypt;
 
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
+import lombok.Getter;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
-public final class JDBCQueryAssistedEncryptAlgorithmFixture implements AssistedEncryptAlgorithm {
+import java.util.Properties;
+
+@Getter
+public final class JDBCQueryAssistedEncryptAlgorithmFixture implements EncryptAlgorithm {
+    
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false, new Properties());
     
     @Override
-    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+    public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
         return "assistedEncryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final Object cipherValue, final AlgorithmSQLContext algorithmSQLContext) {
+        throw new UnsupportedOperationException(String.format("Algorithm `%s` is unsupported to decrypt", getType()));
     }
     
     @Override

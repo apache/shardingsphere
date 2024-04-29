@@ -1,0 +1,245 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: PARTITIONS
+type: TABLE
+columns:
+  table_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: TABLE_CATALOG
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  table_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: TABLE_SCHEMA
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  table_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: TABLE_NAME
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  partition_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PARTITION_NAME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  subpartition_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SUBPARTITION_NAME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  partition_ordinal_position:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PARTITION_ORDINAL_POSITION
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  subpartition_ordinal_position:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUBPARTITION_ORDINAL_POSITION
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  partition_method:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PARTITION_METHOD
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  subpartition_method:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SUBPARTITION_METHOD
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  partition_expression:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: PARTITION_EXPRESSION
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  subpartition_expression:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: SUBPARTITION_EXPRESSION
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  partition_description:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: PARTITION_DESCRIPTION
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  table_rows:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: TABLE_ROWS
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_row_length:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: AVG_ROW_LENGTH
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  data_length:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: DATA_LENGTH
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_data_length:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MAX_DATA_LENGTH
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  index_length:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: INDEX_LENGTH
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  data_free:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: DATA_FREE
+    nullable: true
+    primaryKey: false
+    unsigned: true
+    visible: true
+  create_time:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: CREATE_TIME
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  update_time:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: UPDATE_TIME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  check_time:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: CHECK_TIME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  checksum:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: CHECKSUM
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  partition_comment:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: PARTITION_COMMENT
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  nodegroup:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: NODEGROUP
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tablespace_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: TABLESPACE_NAME
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true

@@ -33,6 +33,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlEngineTest {
     
@@ -47,20 +48,31 @@ class YamlEngineTest {
     }
     
     @Test
+    void assertUnmarshalWithEmptyFile() throws IOException {
+        URL url = getClass().getClassLoader().getResource("yaml/empty-config.yaml");
+        assertNotNull(url);
+        YamlShortcutsConfigurationFixture actual = YamlEngine.unmarshal(new File(url.getFile()), YamlShortcutsConfigurationFixture.class);
+        assertNotNull(actual);
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
     void assertUnmarshalWithYamlBytes() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/shortcuts-fixture.yaml");
         assertNotNull(url);
-        StringBuilder yamlContent = new StringBuilder();
-        try (
-                FileReader fileReader = new FileReader(url.getFile());
-                BufferedReader reader = new BufferedReader(fileReader)) {
-            String line;
-            while (null != (line = reader.readLine())) {
-                yamlContent.append(line).append(System.lineSeparator());
-            }
-        }
-        YamlShortcutsConfigurationFixture actual = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlShortcutsConfigurationFixture.class);
+        String yamlContent = readContent(url);
+        YamlShortcutsConfigurationFixture actual = YamlEngine.unmarshal(yamlContent.getBytes(), YamlShortcutsConfigurationFixture.class);
         assertThat(actual.getName(), is("test"));
+    }
+    
+    @Test
+    void assertUnmarshalWithEmptyYamlBytes() throws IOException {
+        URL url = getClass().getClassLoader().getResource("yaml/empty-config.yaml");
+        assertNotNull(url);
+        String yamlContent = readContent(url);
+        YamlShortcutsConfigurationFixture actual = YamlEngine.unmarshal(yamlContent.getBytes(), YamlShortcutsConfigurationFixture.class);
+        assertNotNull(actual);
+        assertTrue(actual.isEmpty());
     }
     
     @Test
@@ -82,6 +94,13 @@ class YamlEngineTest {
     }
     
     @Test
+    void assertUnmarshalWithEmptyProperties() {
+        Properties actual = YamlEngine.unmarshal("", Properties.class);
+        assertNotNull(actual);
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
     void assertMarshal() {
         YamlShortcutsConfigurationFixture actual = new YamlShortcutsConfigurationFixture();
         actual.setName("test");
@@ -92,16 +111,8 @@ class YamlEngineTest {
     void assertUnmarshalInvalidYaml() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/accepted-class.yaml");
         assertNotNull(url);
-        StringBuilder yamlContent = new StringBuilder();
-        try (
-                FileReader fileReader = new FileReader(url.getFile());
-                BufferedReader reader = new BufferedReader(fileReader)) {
-            String line;
-            while (null != (line = reader.readLine())) {
-                yamlContent.append(line).append(System.lineSeparator());
-            }
-        }
-        assertThrows(ComposerException.class, () -> YamlEngine.unmarshal(yamlContent.toString(), Object.class));
+        String yamlContent = readContent(url);
+        assertThrows(ComposerException.class, () -> YamlEngine.unmarshal(yamlContent, Object.class));
     }
     
     @Test
@@ -113,5 +124,18 @@ class YamlEngineTest {
         String res = "- !FIXTURE" + System.lineSeparator() + "  name: test" + System.lineSeparator() + "- !FIXTURE"
                 + System.lineSeparator() + "  name: test" + System.lineSeparator();
         assertThat(YamlEngine.marshal(Arrays.asList(actual, actualAnother)), is(res));
+    }
+    
+    private String readContent(final URL url) throws IOException {
+        StringBuilder result = new StringBuilder();
+        try (
+                FileReader fileReader = new FileReader(url.getFile());
+                BufferedReader reader = new BufferedReader(fileReader)) {
+            String line;
+            while (null != (line = reader.readLine())) {
+                result.append(line).append(System.lineSeparator());
+            }
+        }
+        return result.toString();
     }
 }

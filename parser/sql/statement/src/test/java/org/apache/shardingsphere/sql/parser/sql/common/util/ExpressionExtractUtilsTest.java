@@ -121,8 +121,7 @@ class ExpressionExtractUtilsTest {
         functionSegment.getParameters().add(param1);
         functionSegment.getParameters().add(param2);
         functionSegment.getParameters().add(param3);
-        List<ParameterMarkerExpressionSegment> result = ExpressionExtractUtils.getParameterMarkerExpressions(Collections.singleton(functionSegment));
-        assertThat(result.size(), is(1));
+        assertThat(ExpressionExtractUtils.getParameterMarkerExpressions(Collections.singleton(functionSegment)).size(), is(1));
     }
     
     @Test

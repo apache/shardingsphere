@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.route.qualified.QualifiedReadwriteSplittingDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.route.standard.StandardReadwriteSplittingDataSourceRouter;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 
 /**
  * Qualified data source transactional router for readwrite-splitting.
@@ -36,18 +36,18 @@ public final class QualifiedReadwriteSplittingTransactionalDataSourceRouter impl
     private final StandardReadwriteSplittingDataSourceRouter standardRouter = new StandardReadwriteSplittingDataSourceRouter();
     
     @Override
-    public boolean isQualified(final SQLStatementContext sqlStatementContext, final ReadwriteSplittingDataSourceRule rule, final HintValueContext hintValueContext) {
+    public boolean isQualified(final SQLStatementContext sqlStatementContext, final ReadwriteSplittingDataSourceGroupRule rule, final HintValueContext hintValueContext) {
         return connectionContext.getTransactionContext().isInTransaction();
     }
     
     @Override
-    public String route(final ReadwriteSplittingDataSourceRule rule) {
+    public String route(final ReadwriteSplittingDataSourceGroupRule rule) {
         switch (rule.getTransactionalReadQueryStrategy()) {
             case FIXED:
-                if (null == connectionContext.getTransactionContext().getReadWriteSplitReplicaRoute()) {
+                if (!connectionContext.getTransactionContext().getReadWriteSplitReplicaRoute().isPresent()) {
                     connectionContext.getTransactionContext().setReadWriteSplitReplicaRoute(standardRouter.route(rule));
                 }
-                return connectionContext.getTransactionContext().getReadWriteSplitReplicaRoute();
+                return connectionContext.getTransactionContext().getReadWriteSplitReplicaRoute().get();
             case DYNAMIC:
                 return standardRouter.route(rule);
             case PRIMARY:

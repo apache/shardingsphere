@@ -54,43 +54,13 @@ value ::=
 {{% /tab %}}
 {{< /tabs >}}
 
-### 补充说明
-
-- `ALTER MIGRATION RULE` 可以只修改数据迁移规则中一项配置并不影响其他配置
-
 ### 示例
-
-- 修改数据迁移规则
 
 ```sql
 ALTER MIGRATION RULE (
   READ( WORKER_THREAD=20, BATCH_SIZE=1000, SHARDING_SIZE=10000000, RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))), 
   WRITE( WORKER_THREAD=20, BATCH_SIZE=1000, RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))), 
   STREAM_CHANNEL ( TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='2000')))
-  );
-```
-
-- 仅修改数据迁移规则中的数据读取配置
-
-```sql
-ALTER MIGRATION RULE (
-  READ(WORKER_THREAD=20, BATCH_SIZE=1000, SHARDING_SIZE=10000000, RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500'))))
-  );
-```
-
-- 仅修改数据迁移规则中的数据写入配置
-
-```sql
-ALTER MIGRATION RULE (
-  WRITE(WORKER_THREAD=20, BATCH_SIZE=1000, SHARDING_SIZE=10000000, RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500'))))
-  );
-```
-
-- 仅修改数据迁移规则中的数据通道配置
-
-```sql
-ALTER MIGRATION RULE (
-  STREAM_CHANNEL ( TYPE( NAME='MEMORY', PROPERTIES('block-queue-size'='2000')))
   );
 ```
 

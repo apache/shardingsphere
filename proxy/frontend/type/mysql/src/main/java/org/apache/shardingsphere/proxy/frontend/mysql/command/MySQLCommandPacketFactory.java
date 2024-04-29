@@ -50,11 +50,10 @@ public final class MySQLCommandPacketFactory {
      * @param commandPacketType command packet type for MySQL
      * @param payload packet payload for MySQL
      * @param connectionSession connection session
-     * @param sqlCommentParseEnabled SQL comment parse enabled
      * @return created instance
      */
     public static MySQLCommandPacket newInstance(final MySQLCommandPacketType commandPacketType, final MySQLPacketPayload payload,
-                                                 final ConnectionSession connectionSession, final boolean sqlCommentParseEnabled) {
+                                                 final ConnectionSession connectionSession) {
         switch (commandPacketType) {
             case COM_QUIT:
                 return new MySQLComQuitPacket();
@@ -63,9 +62,9 @@ public final class MySQLCommandPacketFactory {
             case COM_FIELD_LIST:
                 return new MySQLComFieldListPacket(payload);
             case COM_QUERY:
-                return new MySQLComQueryPacket(payload, sqlCommentParseEnabled);
+                return new MySQLComQueryPacket(payload);
             case COM_STMT_PREPARE:
-                return new MySQLComStmtPreparePacket(payload, sqlCommentParseEnabled);
+                return new MySQLComStmtPreparePacket(payload);
             case COM_STMT_EXECUTE:
                 MySQLServerPreparedStatement serverPreparedStatement =
                         connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(payload.getByteBuf().getIntLE(payload.getByteBuf().readerIndex()));

@@ -39,15 +39,15 @@ class SystemSchemaBuilderTest {
         Map<String, ShardingSphereSchema> actualInformationSchema = SystemSchemaBuilder.build("information_schema", databaseType, configProps);
         assertThat(actualInformationSchema.size(), is(1));
         assertTrue(actualInformationSchema.containsKey("information_schema"));
-        assertThat(actualInformationSchema.get("information_schema").getTables().size(), is(61));
+        assertThat(actualInformationSchema.get("information_schema").getTables().size(), is(95));
         Map<String, ShardingSphereSchema> actualMySQLSchema = SystemSchemaBuilder.build("mysql", databaseType, configProps);
         assertThat(actualMySQLSchema.size(), is(1));
         assertTrue(actualMySQLSchema.containsKey("mysql"));
-        assertThat(actualMySQLSchema.get("mysql").getTables().size(), is(31));
+        assertThat(actualMySQLSchema.get("mysql").getTables().size(), is(40));
         Map<String, ShardingSphereSchema> actualPerformanceSchema = SystemSchemaBuilder.build("performance_schema", databaseType, configProps);
         assertThat(actualPerformanceSchema.size(), is(1));
         assertTrue(actualPerformanceSchema.containsKey("performance_schema"));
-        assertThat(actualPerformanceSchema.get("performance_schema").getTables().size(), is(87));
+        assertThat(actualPerformanceSchema.get("performance_schema").getTables().size(), is(114));
         Map<String, ShardingSphereSchema> actualSysSchema = SystemSchemaBuilder.build("sys", databaseType, configProps);
         assertThat(actualSysSchema.size(), is(1));
         assertTrue(actualSysSchema.containsKey("sys"));

@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 
 class ExecuteErrorsCountAdviceTest {
     
-    private final MetricConfiguration config = new MetricConfiguration("proxy_execute_errors_total", MetricCollectorType.COUNTER, null, Collections.emptyList(), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("proxy_execute_errors_total", MetricCollectorType.COUNTER, null, Collections.emptyList());
     
     @AfterEach
     void reset() {

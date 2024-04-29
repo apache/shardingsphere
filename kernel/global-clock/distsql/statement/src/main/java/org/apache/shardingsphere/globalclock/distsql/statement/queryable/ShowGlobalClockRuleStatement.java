@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.globalclock.distsql.statement.queryable;
 
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.global.ShowGlobalRulesStatement;
 
 /**
  * Show global clock rule statement.
  */
-public final class ShowGlobalClockRuleStatement extends QueryableRALStatement {
+public final class ShowGlobalClockRuleStatement extends ShowGlobalRulesStatement {
 }

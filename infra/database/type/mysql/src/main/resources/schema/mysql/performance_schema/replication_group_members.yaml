@@ -1,0 +1,92 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: replication_group_members
+type: TABLE
+columns:
+  channel_name:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: CHANNEL_NAME
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  member_id:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: MEMBER_ID
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  member_host:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: MEMBER_HOST
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  member_port:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MEMBER_PORT
+    nullable: true
+    primaryKey: false
+    unsigned: false
+    visible: true
+  member_state:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: MEMBER_STATE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  member_role:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: MEMBER_ROLE
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  member_version:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: MEMBER_VERSION
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true
+  member_communication_stack:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: MEMBER_COMMUNICATION_STACK
+    nullable: false
+    primaryKey: false
+    unsigned: false
+    visible: true

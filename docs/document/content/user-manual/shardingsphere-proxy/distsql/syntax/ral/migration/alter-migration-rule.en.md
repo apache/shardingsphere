@@ -54,42 +54,13 @@ value ::=
 {{% /tab %}}
 {{< /tabs >}}
 
-### Supplement
-
-- `ALTER MIGRATION RULE` able to modify only one configuration in the data migration rule without affecting other configurations.
-
 ### Example
-
-- Alter migration rule
 
 ```sql
 ALTER MIGRATION RULE (
   READ( WORKER_THREAD=20, BATCH_SIZE=1000, SHARDING_SIZE=10000000, RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))), 
   WRITE( WORKER_THREAD=20, BATCH_SIZE=1000, RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))), 
   STREAM_CHANNEL ( TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='2000')))
-  );
-```
-
-- Alter read configuration only in migration rule
-
-```sql
-ALTER MIGRATION RULE (
-  READ(WORKER_THREAD=20, BATCH_SIZE=1000, SHARDING_SIZE=10000000, RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500'))))
-  );
-```
-
-- Alter write configuration only in migration rule
-
-```sql
-ALTER MIGRATION RULE (
-  WRITE(WORKER_THREAD=20, BATCH_SIZE=1000, SHARDING_SIZE=10000000, RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500'))))
-  );
-```
-- Alter stream channel configuration in migration rule
-
-```sql
-ALTER MIGRATION RULE (
-  STREAM_CHANNEL ( TYPE( NAME='MEMORY', PROPERTIES('block-queue-size'='2000')))
   );
 ```
 

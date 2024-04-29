@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.exception.mysql.mapper;
 
+import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.connection.TooManyConnectionsException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
@@ -34,13 +36,13 @@ import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorGlobalVari
 import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorLocalVariableException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.HandshakeException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.IncorrectGlobalLocalVariableException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.sql.DialectSQLParsingException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.TooManyPlaceholdersException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.infra.exception.mysql.vendor.MySQLVendorError;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.vendor.VendorError;
 
 import java.sql.SQLException;
 
@@ -68,6 +70,10 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
         if (sqlDialectException instanceof TableExistsException) {
             return toSQLException(MySQLVendorError.ER_TABLE_EXISTS_ERROR, ((TableExistsException) sqlDialectException).getTableName());
         }
+        if (sqlDialectException instanceof DialectSQLParsingException) {
+            return toSQLException(MySQLVendorError.ER_PARSE_ERROR, sqlDialectException.getMessage(), ((DialectSQLParsingException) sqlDialectException).getSymbol(),
+                    ((DialectSQLParsingException) sqlDialectException).getLine());
+        }
         if (sqlDialectException instanceof NoSuchTableException) {
             return toSQLException(MySQLVendorError.ER_NO_SUCH_TABLE, ((NoSuchTableException) sqlDialectException).getTableName());
         }
@@ -82,6 +88,9 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
         }
         if (sqlDialectException instanceof UnsupportedPreparedStatementException) {
             return toSQLException(MySQLVendorError.ER_UNSUPPORTED_PS);
+        }
+        if (sqlDialectException instanceof TooManyPlaceholdersException) {
+            return toSQLException(MySQLVendorError.ER_PS_MANY_PARAM);
         }
         if (sqlDialectException instanceof UnknownCharsetException) {
             return toSQLException(MySQLVendorError.ER_UNKNOWN_CHARACTER_SET, ((UnknownCharsetException) sqlDialectException).getCharset());

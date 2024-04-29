@@ -39,7 +39,7 @@ class BroadcastInstanceBroadcastRoutingEngineTest {
         when(resourceMetaData.getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("ds_0"));
         BroadcastInstanceBroadcastRoutingEngine engine = new BroadcastInstanceBroadcastRoutingEngine(resourceMetaData);
         BroadcastRule broadcastRule = mock(BroadcastRule.class);
-        when(broadcastRule.getAvailableDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(broadcastRule.getDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         RouteContext routeContext = engine.route(new RouteContext(), broadcastRule);
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertDataSourceRouteMapper(routeContext.getRouteUnits().iterator().next(), "ds_0");

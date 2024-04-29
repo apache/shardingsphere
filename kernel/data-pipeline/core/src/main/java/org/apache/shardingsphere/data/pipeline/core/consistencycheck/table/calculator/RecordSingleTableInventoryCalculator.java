@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.query.JDBCStreamQueryBuilder;
-import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineDataConsistencyCalculateSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.RecordSingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
-import org.apache.shardingsphere.data.pipeline.core.dumper.ColumnValueReaderEngine;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCancelingException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.ColumnValueReaderEngine;
+import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineDataConsistencyCalculateSQLBuilder;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
@@ -46,8 +47,8 @@ import java.util.Optional;
 /**
  * Record single table inventory calculator.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
-@Slf4j
 public final class RecordSingleTableInventoryCalculator extends AbstractStreamingSingleTableInventoryCalculator {
     
     private final int chunkSize;
@@ -62,7 +63,8 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
             ResultSet resultSet = calculationContext.getResultSet();
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             while (resultSet.next()) {
-                ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName()));
+                ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException(
+                        "Calculate chunk canceled, schema name: %s, table name: %s", param.getSchemaName(), param.getLogicTableName()));
                 Map<String, Object> columnRecord = new LinkedHashMap<>();
                 for (int columnIndex = 1, columnCount = resultSetMetaData.getColumnCount(); columnIndex <= columnCount; columnIndex++) {
                     columnRecord.put(resultSetMetaData.getColumnLabel(columnIndex), columnValueReaderEngine.read(resultSet, resultSetMetaData, columnIndex));
@@ -77,7 +79,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
                 calculationContext.close();
             }
             return records.isEmpty() ? Optional.empty() : Optional.of(new RecordSingleTableInventoryCalculatedResult(maxUniqueKeyValue, records));
-        } catch (final PipelineSQLException ex) {
+        } catch (final PipelineSQLException | PipelineJobCancelingException ex) {
             calculationContext.close();
             throw ex;
             // CHECKSTYLE:OFF
@@ -128,7 +130,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
     
     private String getQuerySQL(final SingleTableInventoryCalculateParameter param) {
         if (null == param.getFirstUniqueKey()) {
-            throw new UnsupportedOperationException("Data consistency of DATA_MATCH type not support table without unique key and primary key now");
+            throw new UnsupportedOperationException("Record inventory calculator does not support table without unique key and primary key now");
         }
         PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder = new PipelineDataConsistencyCalculateSQLBuilder(param.getDatabaseType());
         Collection<String> columnNames = param.getColumnNames().isEmpty() ? Collections.singleton("*") : param.getColumnNames();

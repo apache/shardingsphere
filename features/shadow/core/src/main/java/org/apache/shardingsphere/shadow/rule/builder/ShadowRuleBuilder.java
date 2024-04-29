@@ -35,9 +35,9 @@ import java.util.Map;
 public final class ShadowRuleBuilder implements DatabaseRuleBuilder<ShadowRuleConfiguration> {
     
     @Override
-    public ShadowRule build(final ShadowRuleConfiguration config, final String databaseName, final DatabaseType protocolType,
+    public ShadowRule build(final ShadowRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType,
                             final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new ShadowRule(config);
+        return new ShadowRule(ruleConfig);
     }
     
     @Override

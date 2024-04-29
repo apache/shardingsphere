@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.hbase.result.update;
 
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseRegionWarmUpContext;
-import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,19 +38,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class HBaseRegionReloadUpdater implements HBaseUpdater {
     
     @Override
-    public Collection<UpdateResult> executeUpdate(final HBaseOperation operation) {
+    public Collection<UpdateResult> executeUpdate(final HBaseOperation operation) throws SQLException {
         List<String> tables = Arrays.asList(operation.getTableName().split(","));
         AtomicInteger updateCount = new AtomicInteger();
         tables.stream().filter(this::isNotNullTableName).forEach(this::checkTableExists);
-        tables.stream().filter(this::isNotNullTableName).forEach(each -> {
-            updateCount.getAndIncrement();
-            HBaseRegionWarmUpContext.getInstance().loadRegionInfo(each, HBaseContext.getInstance().getConnection(each));
-        });
+        for (String each : tables) {
+            if (isNotNullTableName(each)) {
+                updateCount.getAndIncrement();
+                HBaseRegionWarmUpContext.getInstance().loadRegionInfo(each, HBaseContext.getInstance().getConnection(each));
+            }
+        }
         return Collections.singleton(new UpdateResult(updateCount.get(), 0));
     }
     
     private void checkTableExists(final String tableName) {
-        ShardingSpherePreconditions.checkState(HBaseContext.getInstance().isTableExists(tableName), () -> new HBaseOperationException(String.format("Table `%s` is not exists", tableName)));
+        ShardingSpherePreconditions.checkState(HBaseContext.getInstance().isTableExists(tableName), () -> new TableNotFoundException(tableName));
     }
     
     private boolean isNotNullTableName(final String tableName) {

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proce
 public final class ContextManagerSubscriberFacade {
     
     public ContextManagerSubscriberFacade(final RegistryCenter registryCenter, final ContextManager contextManager) {
-        new ConfigurationChangedSubscriber(registryCenter, contextManager);
+        new ConfigurationChangedSubscriber(contextManager);
         new ResourceMetaDataChangedSubscriber(contextManager);
         new DatabaseChangedSubscriber(contextManager);
         new StateChangedSubscriber(registryCenter, contextManager);

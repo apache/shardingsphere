@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.single.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Drop not empty schema exception.
  */
-public final class DropNotEmptySchemaException extends MetaDataSQLException {
+public final class DropNotEmptySchemaException extends SingleDefinitionException {
     
     private static final long serialVersionUID = 5285619119572894557L;
     
     public DropNotEmptySchemaException(final String schemaName) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 30, "Can not drop schema `%s` because of contains tables.", schemaName);
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 3, "Can not drop schema '%s' because of contains tables.", schemaName);
     }
 }

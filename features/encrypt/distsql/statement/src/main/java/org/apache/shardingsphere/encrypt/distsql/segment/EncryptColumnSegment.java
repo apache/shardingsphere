@@ -19,14 +19,14 @@ package org.apache.shardingsphere.encrypt.distsql.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
 /**
  * Encrypt column segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class EncryptColumnSegment implements ASTNode {
+public final class EncryptColumnSegment implements DistSQLSegment {
     
     private final String name;
     

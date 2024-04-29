@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.distsql.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
@@ -44,9 +44,9 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterReadwriteSplittingStorageUnitStatusStatement actual,
                                 final AlterReadwriteSplittingStorageUnitStatusStatementTestCase expected) {
         if (ExistingAssert.assertIs(assertContext, actual, expected)) {
-            assertThat(actual.getGroupName(), is(expected.getGroupName()));
+            assertThat(actual.getRuleName(), is(expected.getRuleName()));
             assertThat(actual.getStorageUnitName(), is(expected.getStorageUnitName()));
-            assertThat(actual.getStatus(), is(expected.getStatus()));
+            assertThat(actual.isEnable(), is(expected.isEnable()));
             assertIs(assertContext, actual, (DatabaseContainedTestCase) expected);
         }
     }

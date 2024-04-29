@@ -49,6 +49,10 @@
         <column name="id" type="numeric" />
         <column name="val" type="varchar" />
     </metadata>
+    <metadata data-nodes="passthrough.t_data_type_uuid">
+        <column name="id" type="numeric" />
+        <column name="val" type="varchar" />
+    </metadata>
     <metadata data-nodes="passthrough.t_data_type_date">
         <column name="id" type="numeric" />
         <column name="creation_date" type="Date" />

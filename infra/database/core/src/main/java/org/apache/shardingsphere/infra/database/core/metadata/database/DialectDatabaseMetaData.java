@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.database;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.sql.Connection;
@@ -65,7 +65,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return is reserved word or not
      */
     // TODO Reuse java.sql.DatabaseMetaData.getSQLKeywords
-    default boolean isReservedWord(String identifier) {
+    default boolean isReservedWord(final String identifier) {
         return false;
     }
     
@@ -127,6 +127,15 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return support or not
      */
     default boolean isSupportThreeTierStorageStructure() {
+        return false;
+    }
+    
+    /**
+     * Is support global CSN.
+     * 
+     * @return support or not
+     */
+    default boolean isSupportGlobalCSN() {
         return false;
     }
 }

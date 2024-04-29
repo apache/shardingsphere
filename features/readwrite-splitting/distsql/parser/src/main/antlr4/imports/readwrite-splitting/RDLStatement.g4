@@ -39,10 +39,6 @@ dataSourceDefinition
     : writeStorageUnit COMMA_ readStorageUnits
     ;
 
-ruleName
-    : IDENTIFIER_
-    ;
-
 writeStorageUnit
     : WRITE_STORAGE_UNIT EQ_ writeStorageUnitName
     ;

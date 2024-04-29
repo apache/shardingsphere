@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 /**
@@ -35,10 +36,21 @@ public final class SubquerySegment implements ExpressionSegment {
     
     private final int stopIndex;
     
-    private final SelectStatement select;
+    @Setter
+    private SelectStatement select;
+    
+    @Setter
+    private MergeStatement merge;
     
     private final String text;
     
     @Setter
     private SubqueryType subqueryType;
+    
+    public SubquerySegment(final int startIndex, final int stopIndex, final SelectStatement select, final String text) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.select = select;
+        this.text = text;
+    }
 }

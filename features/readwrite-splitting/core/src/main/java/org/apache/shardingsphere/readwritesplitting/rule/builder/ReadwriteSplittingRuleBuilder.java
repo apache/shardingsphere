@@ -35,9 +35,9 @@ import java.util.Map;
 public final class ReadwriteSplittingRuleBuilder implements DatabaseRuleBuilder<ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public ReadwriteSplittingRule build(final ReadwriteSplittingRuleConfiguration config, final String databaseName, final DatabaseType protocolType,
+    public ReadwriteSplittingRule build(final ReadwriteSplittingRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType,
                                         final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new ReadwriteSplittingRule(databaseName, config, instanceContext);
+        return new ReadwriteSplittingRule(databaseName, ruleConfig, instanceContext);
     }
     
     @Override

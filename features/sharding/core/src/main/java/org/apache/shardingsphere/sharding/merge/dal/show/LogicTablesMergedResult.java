@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResul
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -60,14 +60,14 @@ public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
                                                                       final ShardingSphereSchema schema, final QueryResult queryResult, final Set<String> tableNames) throws SQLException {
         MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(queryResult);
         String actualTableName = memoryResultSetRow.getCell(1).toString();
-        Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
-        if (tableRule.isPresent() && tableNames.add(tableRule.get().getLogicTable())) {
-            String logicTableName = tableRule.get().getLogicTable();
+        Optional<ShardingTable> shardingTable = shardingRule.findShardingTableByActualTable(actualTableName);
+        if (shardingTable.isPresent() && tableNames.add(shardingTable.get().getLogicTable())) {
+            String logicTableName = shardingTable.get().getLogicTable();
             memoryResultSetRow.setCell(1, logicTableName);
             setCellValue(memoryResultSetRow, logicTableName, actualTableName, schema.getTable(logicTableName), shardingRule);
             return Optional.of(memoryResultSetRow);
         }
-        if (shardingRule.getTableRules().isEmpty() || tableNames.add(actualTableName)) {
+        if (shardingRule.getShardingTables().isEmpty() || tableNames.add(actualTableName)) {
             setCellValue(memoryResultSetRow, actualTableName, actualTableName, schema.getTable(actualTableName), shardingRule);
             return Optional.of(memoryResultSetRow);
         }

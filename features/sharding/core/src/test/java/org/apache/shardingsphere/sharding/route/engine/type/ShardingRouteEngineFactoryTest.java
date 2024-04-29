@@ -337,7 +337,7 @@ class ShardingRouteEngineFactoryTest {
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
         ShardingRule shardingRule = mock(ShardingRule.class, RETURNS_DEEP_STUBS);
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
-        when(shardingRule.getTableRule("t_order").getActualDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(shardingRule.getShardingTable("t_order").getActualDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         when(shardingRule.isAllShardingTables(Collections.singletonList("t_order"))).thenReturn(true);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext());
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, mock(ConfigurationProperties.class),

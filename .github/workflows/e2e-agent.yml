@@ -59,11 +59,50 @@ jobs:
   global-environment:
     name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
-
+  
+  build-e2e-image:
+    name: Build E2E Image
+    needs: global-environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 11
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-${{ github.sha }}
+          restore-keys: |
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
+      - name: Build Project
+        run: ./mvnw -B clean install -DskipTests -Prelease
+      - name: Build Proxy E2E Image
+        run: ./mvnw clean install -DskipTests -Pit.env.proxy -f test/e2e/agent/plugins/common/pom.xml
+      - name: Save Proxy E2E Image
+        run: docker save -o /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-agent-test.tar apache/shardingsphere-proxy-agent-test:latest
+      - uses: actions/upload-artifact@v4
+        with:
+          name: proxy-e2e-image
+          path: /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-agent-test.tar
+          retention-days: 10
+      - name: Build JDBC E2E Image
+        run: ./mvnw clean install -DskipTests -Pit.env.jdbc -f test/e2e/agent/plugins/common/pom.xml
+      - name: Save JDBC E2E Image
+        run: docker save -o /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-jdbc-agent-test.tar apache/shardingsphere-jdbc-agent-test:latest
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jdbc-e2e-image
+          path: /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-jdbc-agent-test.tar
+          retention-days: 10
+          
   agent-mysql:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: E2E - Agent with MySQL
-    needs: global-environment
+    needs: [ global-environment, build-e2e-image ]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -96,20 +135,36 @@ jobs:
             feature: tracing
             plugin: zipkin
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 11
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
+      - name: Download Proxy E2E Image
+        if: matrix.adapter == 'proxy'
+        uses: actions/download-artifact@v4
+        with:
+          name: proxy-e2e-image
+          path: /tmp/
+      - name: Load Proxy E2E Image
+        if: matrix.adapter == 'proxy'
+        run: docker load -i /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-agent-test.tar
+      - name: Download JDBC E2E Image
+        if: matrix.adapter == 'jdbc'
+        uses: actions/download-artifact@v4
+        with:
+          name: jdbc-e2e-image
+          path: /tmp/
+      - name: Load JDBC E2E Image
+        if: matrix.adapter == 'jdbc'
+        run: docker load -i /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-jdbc-agent-test.tar
       - name: Build Project
-        run:
-          ./mvnw -B clean install -DskipITs -DskipTests -Prelease
+        run: ./mvnw -B clean install -am -pl test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }} -DskipTests
       - name: Run E2E Test
-        run:
-          ./mvnw -B clean install -f test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }}/pom.xml -Dspotless.apply.skip=true -Dit.env.adapter=${{ matrix.adapter }} -Dit.env.type=${{ matrix.plugin }} -Pit.env.${{ matrix.adapter }}.${{ matrix.plugin }}
+        run: ./mvnw -nsu -B clean install -f test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }}/pom.xml -Dit.env.adapter=${{ matrix.adapter }} -Dit.env.plugin=${{ matrix.plugin }}

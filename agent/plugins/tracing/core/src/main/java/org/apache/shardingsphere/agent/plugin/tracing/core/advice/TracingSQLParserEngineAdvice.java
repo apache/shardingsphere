@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.core.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 
 import java.lang.reflect.Method;
@@ -28,7 +28,7 @@ import java.lang.reflect.Method;
  * 
  * @param <T> type of root span
  */
-public abstract class TracingSQLParserEngineAdvice<T> implements InstanceMethodAdvice {
+public abstract class TracingSQLParserEngineAdvice<T> extends AbstractInstanceMethodAdvice {
     
     protected static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
     

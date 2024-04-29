@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="update_statistics_with_no_index" value="UPDATE STATISTICS Sales.SalesOrderDetail;" db-types="SQLServer"/>
+    <sql-case id="update_statistics_with_full_scan" value="UPDATE STATISTICS Customer (CustomerStats1) WITH FULLSCAN;" db-types="SQLServer" />
+    <sql-case id="update_statistics_with_auto_drop" value="UPDATE STATISTICS Customer (CustomerStats1) WITH AUTO_DROP = ON;" db-types="SQLServer"/>
+    <sql-case id="update_statistics_with_sample" value="UPDATE STATISTICS Production.Product(Products) WITH SAMPLE 50 PERCENT;" db-types="SQLServer"/>
+    <sql-case id="update_statistics_with_full_scan_no_recompute" value="UPDATE STATISTICS Production.Product(Products) WITH FULLSCAN, NORECOMPUTE;" db-types="SQLServer"/>
+    <sql-case id="update_statistics_with_resample_on_partitions" value="UPDATE STATISTICS dbo.PartitionIncrStatDemo(IX_PartitionIncrStatDemo_ID) WITH RESAMPLE ON PARTITIONS(3)" db-types="SQLServer"/>
+</sql-cases>

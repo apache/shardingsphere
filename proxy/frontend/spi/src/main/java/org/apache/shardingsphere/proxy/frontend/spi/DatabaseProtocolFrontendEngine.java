@@ -34,7 +34,7 @@ public interface DatabaseProtocolFrontendEngine extends DatabaseTypedSPI {
      * 
      * @param channel channel
      */
-    default void initChannel(Channel channel) {
+    default void initChannel(final Channel channel) {
     }
     
     /**

@@ -38,14 +38,14 @@ class MySQLComQueryPacketTest {
     @Test
     void assertNew() {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl");
-        MySQLComQueryPacket actual = new MySQLComQueryPacket(payload, false);
+        MySQLComQueryPacket actual = new MySQLComQueryPacket(payload);
         assertThat(actual.getSQL(), is("SELECT id FROM tbl"));
     }
     
     @Test
     void assertWrite() {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl");
-        MySQLComQueryPacket actual = new MySQLComQueryPacket(payload, false);
+        MySQLComQueryPacket actual = new MySQLComQueryPacket(payload);
         actual.write(payload);
         verify(payload).writeInt1(MySQLCommandPacketType.COM_QUERY.getValue());
         verify(payload).writeStringEOF("SELECT id FROM tbl");

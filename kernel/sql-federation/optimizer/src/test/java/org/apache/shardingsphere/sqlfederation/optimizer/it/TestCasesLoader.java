@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.it;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
@@ -32,6 +33,8 @@ import java.util.Objects;
 public final class TestCasesLoader {
     
     private static final TestCasesLoader INSTANCE = new TestCasesLoader();
+    
+    private static final ObjectMapper XML_MAPPER = XmlMapper.builder().build();
     
     /**
      * Get singleton instance.
@@ -47,9 +50,8 @@ public final class TestCasesLoader {
      *
      * @return collection of test cases
      * @throws IOException exception for read file.
-     * @throws JAXBException exception for parse xml file.
      */
-    public Collection<TestCase> generate() throws IOException, JAXBException {
+    public Collection<TestCase> generate() throws IOException {
         Collection<TestCase> result = new LinkedList<>();
         URL queryCaseUrl = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("cases/federation-query-sql-cases.xml"));
         URL deleteCaseUrl = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("cases/federation-delete-sql-cases.xml"));
@@ -58,9 +60,9 @@ public final class TestCasesLoader {
         return result;
     }
     
-    private Collection<TestCase> loadTestCase(final URL url) throws IOException, JAXBException {
+    private Collection<TestCase> loadTestCase(final URL url) throws IOException {
         try (FileReader reader = new FileReader(url.getFile())) {
-            TestCases testCases = (TestCases) JAXBContext.newInstance(TestCases.class).createUnmarshaller().unmarshal(reader);
+            TestCases testCases = XML_MAPPER.readValue(reader, TestCases.class);
             return testCases.getTestCases();
         }
     }

@@ -995,6 +995,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
         Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
         Optional<NameSegment> columnName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
         columnName.ifPresent(optional -> result.setColumn(new ColumnSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier())));
+        result.setComment(new IdentifierValue(ctx.commentClauses().commentText().getText()));
         setTableSegment(result, nameSegmentIterator);
         return result;
     }
@@ -1003,6 +1004,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     private OpenGaussCommentStatement commentOnTable(final CommentContext ctx) {
         OpenGaussCommentStatement result = new OpenGaussCommentStatement();
         Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
+        result.setComment(new IdentifierValue(ctx.commentClauses().commentText().getText()));
         setTableSegment(result, nameSegmentIterator);
         return result;
     }

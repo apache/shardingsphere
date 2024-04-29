@@ -103,7 +103,7 @@ public final class AgentPluginClassLoader extends ClassLoader {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         try {
             byte[] buffer = new byte[buffSize];
-            int len = -1;
+            int len;
             while ((len = inStream.read(buffer)) != -1) {
                 result.write(buffer, 0, len);
             }

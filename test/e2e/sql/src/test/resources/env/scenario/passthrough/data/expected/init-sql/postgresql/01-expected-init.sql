@@ -30,3 +30,4 @@ CREATE TABLE t_with_generated_id (id SERIAL PRIMARY KEY, val VARCHAR NOT NULL);
 CREATE TABLE t_data_type_money (id INT PRIMARY KEY, val money);
 CREATE TABLE t_data_type_bytea (id INT PRIMARY KEY, val bytea NOT NULL);
 CREATE TABLE t_data_type_date (id INT PRIMARY KEY, creation_date DATE NOT NULL, update_date TIMESTAMP NOT NULL);
+CREATE TABLE t_data_type_uuid (id INT PRIMARY KEY, val UUID NOT NULL);

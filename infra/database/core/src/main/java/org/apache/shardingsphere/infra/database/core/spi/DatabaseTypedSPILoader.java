@@ -80,7 +80,7 @@ public final class DatabaseTypedSPILoader {
      * @return found service
      */
     public static <T extends DatabaseTypedSPI> T getService(final Class<T> spiClass, final DatabaseType databaseType) {
-        return findService(spiClass, databaseType).orElseThrow(() -> new ServiceProviderNotFoundException(spiClass, databaseType.getType()));
+        return findService(spiClass, databaseType).orElseGet(() -> TypedSPILoader.getService(spiClass, null));
     }
     
     /**

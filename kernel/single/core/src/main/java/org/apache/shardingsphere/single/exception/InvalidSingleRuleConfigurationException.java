@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.single.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Invalid single rule configuration exception.
  */
-public final class InvalidSingleRuleConfigurationException extends MetaDataSQLException {
+public final class InvalidSingleRuleConfigurationException extends SingleDefinitionException {
     
     private static final long serialVersionUID = 1337703808376580240L;
     
     public InvalidSingleRuleConfigurationException(final String message) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 22, "Invalid single rule configuration, reason is: %s.", message);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Invalid single rule configuration, reason is: %s.", message);
     }
 }

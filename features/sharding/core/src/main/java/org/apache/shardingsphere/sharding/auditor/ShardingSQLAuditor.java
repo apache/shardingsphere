@@ -43,7 +43,7 @@ public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
         if (auditStrategies.isEmpty()) {
             return;
         }
-        Collection<String> disableAuditNames = hintValueContext.findDisableAuditNames();
+        Collection<String> disableAuditNames = hintValueContext.getDisableAuditNames();
         for (ShardingAuditStrategyConfiguration auditStrategy : auditStrategies) {
             for (String auditorName : auditStrategy.getAuditorNames()) {
                 if (!auditStrategy.isAllowHintDisable() || !disableAuditNames.contains(auditorName.toLowerCase())) {
@@ -57,7 +57,7 @@ public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         Collection<ShardingAuditStrategyConfiguration> result = new ArrayList<>(tableNames.size());
         for (String each : tableNames) {
-            rule.findTableRule(each).ifPresent(optional -> result.add(rule.getAuditStrategyConfiguration(optional)));
+            rule.findShardingTable(each).ifPresent(optional -> result.add(rule.getAuditStrategyConfiguration(optional)));
         }
         return result;
     }

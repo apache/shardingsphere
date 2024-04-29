@@ -20,8 +20,6 @@ package org.apache.shardingsphere.test.e2e.transaction.framework.container.confi
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
@@ -44,16 +42,16 @@ public final class ProxyClusterContainerConfigurationFactory {
      */
     public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType) {
         String containerCommand = "readwrite-splitting".equals(scenario) ? "-f" : "";
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(scenario, databaseType), AdapterContainerUtils.getAdapterContainerImage(), containerCommand);
+        return new AdaptorContainerConfiguration(getProxyDatasourceName(scenario), getMountedResource(scenario, databaseType), AdapterContainerUtils.getAdapterContainerImage(), containerCommand);
     }
     
-    private static String getProxyDatasourceName(final DatabaseType databaseType) {
-        return (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) ? "postgres" : "";
+    private static String getProxyDatasourceName(final String scenario) {
+        return "default".equals(scenario) ? "sharding_db" : scenario;
     }
     
     private static Map<String, String> getMountedResource(final String scenario, final DatabaseType databaseType) {
         Map<String, String> result = new HashMap<>(2, 1F);
-        result.put(String.format("/env/%s/server.yaml", databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "server.yaml");
+        result.put(String.format("/env/%s/global.yaml", databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
         result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         return result;
     }

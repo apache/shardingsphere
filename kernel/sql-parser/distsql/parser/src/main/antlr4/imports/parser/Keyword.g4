@@ -39,10 +39,6 @@ SQL_PARSER
     : S Q L UL_ P A R S E R
     ;
 
-SQL_COMMENT_PARSE_ENABLED
-    : S Q L UL_ C O M M E N T UL_ P A R S E UL_ E N A B L E D
-    ;
-
 PARSE_TREE_CACHE
     : P A R S E UL_ T R E E UL_ C A C H E
     ;

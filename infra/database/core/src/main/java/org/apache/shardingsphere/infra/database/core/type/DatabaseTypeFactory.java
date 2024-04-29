@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.database.core.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.exception.UnsupportedStorageTypeException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
@@ -39,7 +40,7 @@ public final class DatabaseTypeFactory {
      */
     public static DatabaseType get(final String url) {
         Collection<DatabaseType> databaseTypes = ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().filter(each -> matchURLs(url, each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(!databaseTypes.isEmpty(), () -> new UnsupportedStorageTypeException(url));
+        ShardingSpherePreconditions.checkNotEmpty(databaseTypes, () -> new UnsupportedStorageTypeException(url));
         for (DatabaseType each : databaseTypes) {
             if (each.getTrunkDatabaseType().isPresent()) {
                 return each;

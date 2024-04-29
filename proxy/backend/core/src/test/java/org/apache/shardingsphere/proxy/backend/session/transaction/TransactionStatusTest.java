@@ -18,33 +18,17 @@
 package org.apache.shardingsphere.proxy.backend.session.transaction;
 
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TransactionStatusTest {
     
-    private TransactionStatus transactionStatus;
-    
-    @BeforeEach
-    void setUp() {
-        transactionStatus = new TransactionStatus(TransactionType.XA);
-    }
-    
     @Test
-    void assertSetTransactionType() {
-        transactionStatus.setTransactionType(TransactionType.BASE);
-        TransactionType actual = transactionStatus.getTransactionType();
-        assertThat(actual, is(TransactionType.BASE));
-    }
-    
-    @Test
-    void assertSetInTransaction() {
+    void assertIsInConnectionHeldTransaction() {
+        TransactionStatus transactionStatus = new TransactionStatus();
         transactionStatus.setInTransaction(true);
-        boolean actual = transactionStatus.isInConnectionHeldTransaction();
+        boolean actual = transactionStatus.isInConnectionHeldTransaction(TransactionType.XA);
         assertTrue(actual);
     }
 }

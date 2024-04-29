@@ -22,9 +22,9 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 
 /**
@@ -32,12 +32,13 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-@ToString
 public final class HintValueContext {
     
     private final Multimap<String, Comparable<?>> shardingDatabaseValues = ArrayListMultimap.create();
     
     private final Multimap<String, Comparable<?>> shardingTableValues = ArrayListMultimap.create();
+    
+    private final Collection<String> disableAuditNames = new LinkedHashSet<>();
     
     private String dataSourceName = "";
     
@@ -49,18 +50,7 @@ public final class HintValueContext {
     
     private boolean skipSQLRewrite;
     
-    private String disableAuditNames = "";
-    
     private boolean shadow;
-    
-    /**
-     * Find hint disable audit names.
-     *
-     * @return disable audit names
-     */
-    public Collection<String> findDisableAuditNames() {
-        return SQLHintUtils.getSplitterSQLHintValue(disableAuditNames);
-    }
     
     /**
      * Find hint data source name.

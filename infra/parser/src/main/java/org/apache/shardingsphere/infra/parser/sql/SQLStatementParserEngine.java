@@ -39,15 +39,11 @@ public final class SQLStatementParserEngine {
     @Getter
     private final CacheOption parseTreeCacheOption;
     
-    @Getter
-    private final boolean isParseComment;
-    
-    public SQLStatementParserEngine(final DatabaseType databaseType, final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
-        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, parseTreeCacheOption, isParseComment);
-        sqlStatementCache = SQLStatementCacheBuilder.build(databaseType, sqlStatementCacheOption, parseTreeCacheOption, isParseComment);
+    public SQLStatementParserEngine(final DatabaseType databaseType, final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption) {
+        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, parseTreeCacheOption);
+        sqlStatementCache = SQLStatementCacheBuilder.build(databaseType, sqlStatementCacheOption, parseTreeCacheOption);
         this.sqlStatementCacheOption = sqlStatementCacheOption;
         this.parseTreeCacheOption = parseTreeCacheOption;
-        this.isParseComment = isParseComment;
     }
     
     /**

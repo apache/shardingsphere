@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.merge.dql;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;

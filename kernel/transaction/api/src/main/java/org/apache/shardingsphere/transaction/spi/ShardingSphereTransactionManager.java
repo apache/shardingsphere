@@ -94,7 +94,7 @@ public interface ShardingSphereTransactionManager extends TypedSPI, AutoCloseabl
      * @param providerType transaction manager provider type 
      * @return contains provider type or not
      */
-    default boolean containsProviderType(String providerType) {
+    default boolean containsProviderType(final String providerType) {
         return true;
     }
     

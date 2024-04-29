@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.
 /**
  * Database changed subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
+@SuppressWarnings("unused")
 public final class DatabaseChangedSubscriber {
     
     private final ContextManager contextManager;

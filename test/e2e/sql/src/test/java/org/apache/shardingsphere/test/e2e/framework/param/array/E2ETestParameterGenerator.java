@@ -163,14 +163,17 @@ public final class E2ETestParameterGenerator {
     
     private Collection<E2ETestParameter> getCaseTestParameter(final IntegrationTestCaseContext testCaseContext, final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
         Collection<E2ETestParameter> result = new LinkedList<>();
-        for (String adapter : envAdapters) {
-            result.addAll(getCaseTestParameter(testCaseContext, adapter, databaseType, sqlCommandType));
+        for (String each : envAdapters) {
+            result.addAll(getCaseTestParameter(testCaseContext, each, databaseType, sqlCommandType));
         }
         return result;
     }
     
     private Collection<E2ETestParameter> getCaseTestParameter(final IntegrationTestCaseContext testCaseContext, final String adapter,
                                                               final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
+        if (null != testCaseContext.getTestCase().getAdapters() && !testCaseContext.getTestCase().getAdapters().contains(adapter)) {
+            return Collections.emptyList();
+        }
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return envScenarios.stream().filter(each -> scenarios.isEmpty() || scenarios.contains(each))
                 .map(each -> new CaseTestParameter(testCaseContext, adapter, each, envMode, databaseType, sqlCommandType)).collect(Collectors.toList());

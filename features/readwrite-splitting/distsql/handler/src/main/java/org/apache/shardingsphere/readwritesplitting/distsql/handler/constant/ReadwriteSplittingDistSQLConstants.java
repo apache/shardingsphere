@@ -26,10 +26,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingDistSQLConstants {
     
-    public static final String COMMA = ",";
-    
-    public static final String SEMI = ";";
-    
     public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
     
     public static final String READWRITE_SPLITTING_FOR_STATIC = " %s ("

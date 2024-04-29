@@ -146,3 +146,11 @@ AES
 NOT
     : N O T
     ;
+
+ALGORITHM
+    : A L G O R I T H M 
+    ;
+
+PLUGINS
+    : P L U G I N S
+    ;

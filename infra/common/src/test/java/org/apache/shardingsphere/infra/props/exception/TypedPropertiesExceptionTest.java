@@ -28,6 +28,7 @@ class TypedPropertiesExceptionTest {
     
     @Test
     void assertGetMessage() {
-        assertThat(new TypedPropertiesServerException(Arrays.asList("foo_msg", "bar_msg")).getMessage(), is("PROPS-00001: foo_msg" + System.lineSeparator() + "bar_msg"));
+        assertThat(new TypedPropertiesServerException(Arrays.asList("foo_msg", "bar_msg")).getMessage(),
+                is("PROPS-00001: Properties convert failed, details are: foo_msg" + System.lineSeparator() + "bar_msg."));
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.task.runner;
 
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 
 /**
  * Pipeline tasks runner.

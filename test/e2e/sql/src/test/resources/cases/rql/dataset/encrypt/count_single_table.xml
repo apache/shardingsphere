@@ -17,8 +17,9 @@
 
 <dataset>
     <metadata>
+        <column name="rule_name" />
         <column name="database" />
         <column name="count" />
     </metadata>
-    <row values="encrypt| 6" />
+    <row values="single| encrypt| 6" />
 </dataset>

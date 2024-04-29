@@ -40,6 +40,28 @@ public final class ReadwriteSplittingInTransactionTestCase extends BaseTransacti
     }
     
     @Override
+    protected void beforeTest() throws SQLException {
+        super.beforeTest();
+        unregisterAbnormalStoreUnitAfterForceStartup();
+    }
+    
+    private void unregisterAbnormalStoreUnitAfterForceStartup() throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            ResultSet resultSet = connection.createStatement().executeQuery("SHOW STORAGE UNITS");
+            boolean hasAbnormalStorageUnit = false;
+            while (resultSet.next()) {
+                if ("read_ds_error".equals(resultSet.getString("name"))) {
+                    hasAbnormalStorageUnit = true;
+                    break;
+                }
+            }
+            if (hasAbnormalStorageUnit) {
+                executeWithLog(connection, "UNREGISTER STORAGE UNIT read_ds_error");
+            }
+        }
+    }
+    
+    @Override
     protected void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertRollback();
         assertCommit();
@@ -76,11 +98,14 @@ public final class ReadwriteSplittingInTransactionTestCase extends BaseTransacti
     }
     
     private String preview(final Connection connection, final String sql) throws SQLException {
-        ResultSet resultSet = connection.createStatement().executeQuery(String.format("PREVIEW %s;", sql));
-        if (resultSet.next()) {
-            return resultSet.getString("data_source_name");
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(String.format("PREVIEW %s;", sql));
+            ResultSet resultSet = statement.getResultSet();
+            if (resultSet.next()) {
+                return resultSet.getString("data_source_name");
+            }
+            return "";
         }
-        return "";
     }
     
     private void assertWriteDataSourceTableRowCount(final Connection connection, final int rowNum) throws SQLException {

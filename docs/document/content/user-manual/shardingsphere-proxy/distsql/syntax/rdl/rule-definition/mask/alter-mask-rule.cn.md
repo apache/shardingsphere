@@ -22,7 +22,7 @@ columnDefinition ::=
   '(' 'NAME' '=' columnName ',' maskAlgorithmDefinition ')'
 
 maskAlgorithmDefinition ::=
-  'TYPE' '(' 'NAME' '=' maskAlgorithmType (',' propertiesDefinition)? ')'
+  'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 propertiesDefinition ::=
   'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
@@ -33,7 +33,7 @@ ruleName ::=
 columnName ::=
   identifier
 
-maskAlgorithmType ::=
+algorithmType ::=
   literal
 
 key ::=
@@ -50,7 +50,7 @@ value ::=
 
 ### 补充说明
 
-- `maskAlgorithmType` 指定数据脱敏算法类型，请参考 [数据脱敏算法](/cn/user-manual/common-config/builtin-algorithm/mask/)。
+- `algorithmType` 指定数据脱敏算法类型，请参考 [数据脱敏算法](/cn/user-manual/common-config/builtin-algorithm/mask/)。
 
 ### 示例
 

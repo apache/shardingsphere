@@ -13,12 +13,12 @@ The `DROP READWRITE_SPLITTING RULE` syntax is used to drop readwrite-splitting r
 {{% tab name="Grammar" %}}
 ```sql
 DropReadwriteSplittingRule ::=
-  'DROP' 'READWRITE_SPLITTING' 'RULE' ifExists? readwriteSplittingRuleName (',' readwriteSplittingRuleName)* ('FROM' databaseName)?
+  'DROP' 'READWRITE_SPLITTING' 'RULE' ifExists? ruleName (',' ruleName)* ('FROM' databaseName)?
 
 ifExists ::=
   'IF' 'EXISTS'
 
-readwriteSplittingRuleName ::=
+ruleName ::=
   identifier
 
 databaseName ::=

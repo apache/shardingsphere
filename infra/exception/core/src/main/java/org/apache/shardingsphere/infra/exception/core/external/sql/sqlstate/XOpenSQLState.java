@@ -43,6 +43,8 @@ public enum XOpenSQLState implements SQLState {
     
     MISMATCH_INSERT_VALUES_AND_COLUMNS("21S01"),
     
+    DATA_EXCEPTION("22000"),
+    
     INVALID_PARAMETER_VALUE("22023"),
     
     INVALID_TRANSACTION_STATE("25000"),

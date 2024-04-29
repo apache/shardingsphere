@@ -85,7 +85,7 @@ class RALE2EIT {
         if (null == containerComposer.getAssertion().getInitialSQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getInitialSQL().getSql())) {
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(containerComposer.getAssertion().getInitialSQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
@@ -105,7 +105,7 @@ class RALE2EIT {
         if (null == containerComposer.getAssertion().getDestroySQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getDestroySQL().getSql())) {
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(containerComposer.getAssertion().getDestroySQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
@@ -124,7 +124,8 @@ class RALE2EIT {
     }
     
     private void assertResultSet(final SingleE2EContainerComposer containerComposer, final Statement statement, final String sql) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(sql)) {
+        statement.execute(sql);
+        try (ResultSet resultSet = statement.getResultSet()) {
             assertResultSet(containerComposer, resultSet);
         }
     }
@@ -162,11 +163,11 @@ class RALE2EIT {
         int rowCount = 0;
         ResultSetMetaData actualMetaData = actual.getMetaData();
         while (actual.next()) {
-            assertTrue(rowCount < expected.size(), "Size of actual result set is different with size of expected dat set rows.");
+            assertTrue(rowCount < expected.size(), "Size of actual result set is different with size of expected data set rows.");
             assertRow(actual, notAssertionColumns, actualMetaData, expected.get(rowCount));
             rowCount++;
         }
-        assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
+        assertThat("Size of actual result set is different with size of expected data set rows.", rowCount, is(expected.size()));
     }
     
     private void assertRow(final ResultSet actual, final Collection<String> notAssertionColumns, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {

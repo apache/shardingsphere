@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.engine;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -28,8 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,14 +47,14 @@ public final class GeneratedKeyContextEngine {
      * Create generate key context.
      *
      * @param insertColumnNames insert column names
-     * @param valueExpressions value expressions
+     * @param insertValueContexts insert value contexts
      * @param params SQL parameters
      * @return generate key context
      */
-    public Optional<GeneratedKeyContext> createGenerateKeyContext(final List<String> insertColumnNames, final List<List<ExpressionSegment>> valueExpressions, final List<Object> params) {
+    public Optional<GeneratedKeyContext> createGenerateKeyContext(final List<String> insertColumnNames, final List<InsertValueContext> insertValueContexts, final List<Object> params) {
         String tableName = Optional.ofNullable(insertStatement.getTable()).map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         return findGenerateKeyColumn(tableName).map(optional -> containsGenerateKey(insertColumnNames, optional)
-                ? findGeneratedKey(insertColumnNames, valueExpressions, params, optional)
+                ? findGeneratedKey(insertColumnNames, insertValueContexts, params, optional)
                 : new GeneratedKeyContext(optional, true));
     }
     
@@ -72,7 +72,7 @@ public final class GeneratedKeyContextEngine {
     
     private boolean containsGenerateKey(final List<String> insertColumnNames, final String generateKeyColumnName) {
         return insertColumnNames.isEmpty() ? schema.getVisibleColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).size() == getValueCountForPerGroup()
-                : insertColumnNames.contains(generateKeyColumnName);
+                : new CaseInsensitiveSet<>(insertColumnNames).contains(generateKeyColumnName);
     }
     
     private int getValueCountForPerGroup() {
@@ -89,28 +89,21 @@ public final class GeneratedKeyContextEngine {
         return 0;
     }
     
-    private GeneratedKeyContext findGeneratedKey(final List<String> insertColumnNames, final List<List<ExpressionSegment>> valueExpressions,
+    private GeneratedKeyContext findGeneratedKey(final List<String> insertColumnNames, final List<InsertValueContext> insertValueContexts,
                                                  final List<Object> params, final String generateKeyColumnName) {
         GeneratedKeyContext result = new GeneratedKeyContext(generateKeyColumnName, false);
-        for (ExpressionSegment each : findGenerateKeyExpressions(insertColumnNames, valueExpressions, generateKeyColumnName)) {
-            if (each instanceof ParameterMarkerExpressionSegment) {
+        for (InsertValueContext each : insertValueContexts) {
+            ExpressionSegment expression = each.getValueExpressions().get(findGenerateKeyIndex(insertColumnNames, generateKeyColumnName.toLowerCase()));
+            if (expression instanceof ParameterMarkerExpressionSegment) {
                 if (params.isEmpty()) {
                     continue;
                 }
-                if (null != params.get(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex())) {
-                    result.getGeneratedValues().add((Comparable<?>) params.get(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex()));
+                if (null != params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex())) {
+                    result.getGeneratedValues().add((Comparable<?>) params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()));
                 }
-            } else if (each instanceof LiteralExpressionSegment) {
-                result.getGeneratedValues().add((Comparable<?>) ((LiteralExpressionSegment) each).getLiterals());
+            } else if (expression instanceof LiteralExpressionSegment) {
+                result.getGeneratedValues().add((Comparable<?>) ((LiteralExpressionSegment) expression).getLiterals());
             }
-        }
-        return result;
-    }
-    
-    private Collection<ExpressionSegment> findGenerateKeyExpressions(final List<String> insertColumnNames, final List<List<ExpressionSegment>> valueExpressions, final String generateKeyColumnName) {
-        Collection<ExpressionSegment> result = new LinkedList<>();
-        for (List<ExpressionSegment> each : valueExpressions) {
-            result.add(each.get(findGenerateKeyIndex(insertColumnNames, generateKeyColumnName.toLowerCase())));
         }
         return result;
     }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.recorder.MethodTimeRecorder;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.HistogramMetricsCollector;
@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * Abstract execute latency histogram advice for ShardingSphere-JDBC.
  */
-public abstract class AbstractExecuteLatencyHistogramAdvice implements InstanceMethodAdvice {
+public abstract class AbstractExecuteLatencyHistogramAdvice extends AbstractInstanceMethodAdvice {
     
     private final MetricConfiguration config = new MetricConfiguration("jdbc_statement_execute_latency_millis", MetricCollectorType.HISTOGRAM,
             "Statement execute latency millis histogram", Collections.singletonMap("buckets", getBuckets()));

@@ -20,6 +20,9 @@
     },
     {
       "pattern": "^https://www.apiseven.com"
+    },
+    {
+      "pattern": "^https://whimsy.apache.org"
     }
   ], "replacementPatterns": [
   {

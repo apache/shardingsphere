@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.exception.core.external.sql.type.feature;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 
@@ -30,6 +31,16 @@ public abstract class FeatureSQLException extends ShardingSphereSQLException {
     private static final int TYPE_OFFSET = 2;
     
     protected FeatureSQLException(final SQLState sqlState, final int featureCode, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, TYPE_OFFSET, featureCode * 100 + errorCode, reason, messageArgs);
+        super(sqlState, TYPE_OFFSET, getErrorCode(featureCode, errorCode), reason, messageArgs);
+    }
+    
+    protected FeatureSQLException(final SQLState sqlState, final int featureCode, final int errorCode, final Exception cause, final String reason, final Object... messageArgs) {
+        super(sqlState, TYPE_OFFSET, getErrorCode(featureCode, errorCode), cause, reason, messageArgs);
+    }
+    
+    private static int getErrorCode(final int featureCode, final int errorCode) {
+        Preconditions.checkArgument(featureCode >= 0 && featureCode < 100, "The value range of feature code should be [0, 100).");
+        Preconditions.checkArgument(errorCode >= 0 && errorCode < 100, "The value range of error code should be [0, 100).");
+        return featureCode * 100 + errorCode;
     }
 }

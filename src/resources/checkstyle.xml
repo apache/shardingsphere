@@ -208,7 +208,9 @@
         <module name="AvoidEscapedUnicodeCharacters" />
         <module name="CommentsIndentation" />
         <module name="DescendantToken" />
-        <module name="FinalParameters" />
+        <module name="FinalParameters">
+            <property name="tokens" value="METHOD_DEF, CTOR_DEF, LITERAL_CATCH" />
+        </module>
         <module name="Indentation">
             <property name="arrayInitIndent" value="2" />
             <property name="lineWrappingIndentation" value="8" />
@@ -230,7 +232,9 @@
         <module name="AbbreviationAsWordInName">
             <property name="allowedAbbreviationLength" value="8" />
         </module>
-        <module name="CatchParameterName" />
+        <module name="CatchParameterName">
+            <property name="format" value="^(ex|[a-z][a-z][a-zA-Z]+)$"/>
+        </module>
         <module name="ClassTypeParameterName" />
         <module name="ConstantName" />
         <module name="InterfaceTypeParameterName" />

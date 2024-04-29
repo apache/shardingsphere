@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextRequiredQueryableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNodesStatement;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodesStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,29 +33,29 @@ import java.util.stream.Collectors;
 /**
  * Show compute nodes executor.
  */
-public final class ShowComputeNodesExecutor implements InstanceContextRequiredQueryableRALExecutor<ShowComputeNodesStatement> {
+public final class ShowComputeNodesExecutor implements DistSQLQueryExecutor<ShowComputeNodesStatement> {
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowComputeNodesStatement sqlStatement) {
         return Arrays.asList("instance_id", "instance_type", "host", "port", "status", "mode_type", "worker_id", "labels", "version");
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final InstanceContext instanceContext, final ShowComputeNodesStatement sqlStatement) {
-        String modeType = instanceContext.getModeConfiguration().getType();
+    public Collection<LocalDataQueryResultRow> getRows(final ShowComputeNodesStatement sqlStatement, final ContextManager contextManager) {
+        String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
         if ("Standalone".equals(modeType)) {
-            return Collections.singleton(buildRow(instanceContext.getInstance(), modeType));
+            return Collections.singleton(buildRow(contextManager.getInstanceContext().getInstance(), modeType));
         }
-        Collection<ComputeNodeInstance> instances = instanceContext.getAllClusterInstances();
-        return instances.isEmpty() ? Collections.emptyList() : instances.stream().map(each -> buildRow(each, modeType)).collect(Collectors.toList());
+        Collection<ComputeNodeInstance> instances = contextManager.getInstanceContext().getAllClusterInstances();
+        return instances.stream().map(each -> buildRow(each, modeType)).collect(Collectors.toList());
     }
     
     private LocalDataQueryResultRow buildRow(final ComputeNodeInstance instance, final String modeType) {
         String labels = String.join(",", instance.getLabels());
         InstanceMetaData instanceMetaData = instance.getMetaData();
-        return new LocalDataQueryResultRow(instanceMetaData.getId(), instanceMetaData.getType().name(), instanceMetaData.getIp(),
+        return new LocalDataQueryResultRow(instanceMetaData.getId(), instanceMetaData.getType(), instanceMetaData.getIp(),
                 instanceMetaData instanceof ProxyInstanceMetaData ? ((ProxyInstanceMetaData) instanceMetaData).getPort() : -1,
-                instance.getState().getCurrentState().name(), modeType, instance.getWorkerId(), labels, instanceMetaData.getVersion());
+                instance.getState().getCurrentState(), modeType, instance.getWorkerId(), labels, instanceMetaData.getVersion());
     }
     
     @Override

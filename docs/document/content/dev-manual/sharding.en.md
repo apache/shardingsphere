@@ -30,23 +30,6 @@ Sharding Algorithm definition
 | COMPLEX_INLINE           | N                    | Complex inline sharding algorithm                                       | [`org.apache.shardingsphere.sharding.algorithm.sharding.complex.ComplexInlineShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/sharding/inline/ComplexInlineShardingAlgorithm.java)                                          |
 | HINT_INLINE              | N                    | Hint inline sharding algorithm                                          | [`org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/sharding/hint/HintInlineShardingAlgorithm.java)                                                     |
 
-## KeyGenerateAlgorithm
-
-### Fully-qualified class name
-
-[`org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/api/src/main/java/org/apache/shardingsphere/sharding/spi/KeyGenerateAlgorithm.java)
-
-### Definition
-
-Distributed Key Generating Algorithm definition
-
-### Implementation classes
-
-| *Configuration Type* | *Description*                                      | *Fully-qualified class name*                                                                                                                                                                                                                                                                          |
-|----------------------|----------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| SNOWFLAKE            | Snowflake key generate algorithm                   | [`org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/keygen/SnowflakeKeyGenerateAlgorithm.java)                               |
-| UUID                 | UUID key generate algorithm                        | [`org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/keygen/UUIDKeyGenerateAlgorithm.java)                                         |
-
 ## ShardingAuditAlgorithm
 
 ### Fully-qualified class name
@@ -96,4 +79,5 @@ Row Value Expressions definition
 |----------------------|------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
 | GROOVY               | Row Value Expressions that uses the Groovy syntax                                                    | `org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser`     |
 | LITERAL              | Row Value Expressions that uses a standard list                                                      | `org.apache.shardingsphere.infra.expr.literal.LiteralInlineExpressionParser`   |
+| INTERVAL             | Row Value Expressions based on fixed interval that uses the Key-Value syntax                         | `org.apache.shardingsphere.infra.expr.interval.IntervalInlineExpressionParser` |                                                                             |
 | ESPRESSO             | Row Value Expressions that uses the Groovy syntax based on GraalVM Truffle's Espresso implementation | `org.apache.shardingsphere.infra.expr.espresso.EspressoInlineExpressionParser` |

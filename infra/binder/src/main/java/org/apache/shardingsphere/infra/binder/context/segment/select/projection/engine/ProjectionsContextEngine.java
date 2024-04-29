@@ -34,7 +34,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
@@ -55,25 +54,23 @@ public final class ProjectionsContextEngine {
     /**
      * Create projections context.
      *
-     * @param table table segment
      * @param projectionsSegment projection segments
      * @param groupByContext group by context
      * @param orderByContext order by context
      * @return projections context
      */
-    public ProjectionsContext createProjectionsContext(final TableSegment table, final ProjectionsSegment projectionsSegment,
-                                                       final GroupByContext groupByContext, final OrderByContext orderByContext) {
-        Collection<Projection> projections = getProjections(table, projectionsSegment);
+    public ProjectionsContext createProjectionsContext(final ProjectionsSegment projectionsSegment, final GroupByContext groupByContext, final OrderByContext orderByContext) {
+        Collection<Projection> projections = getProjections(projectionsSegment);
         ProjectionsContext result = new ProjectionsContext(projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections);
         result.getProjections().addAll(getDerivedGroupByColumns(groupByContext, projections));
         result.getProjections().addAll(getDerivedOrderByColumns(orderByContext, projections));
         return result;
     }
     
-    private Collection<Projection> getProjections(final TableSegment table, final ProjectionsSegment projectionsSegment) {
+    private Collection<Projection> getProjections(final ProjectionsSegment projectionsSegment) {
         Collection<Projection> result = new LinkedList<>();
         for (ProjectionSegment each : projectionsSegment.getProjections()) {
-            projectionEngine.createProjection(table, each).ifPresent(result::add);
+            projectionEngine.createProjection(each).ifPresent(result::add);
         }
         return result;
     }

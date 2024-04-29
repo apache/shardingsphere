@@ -72,7 +72,7 @@ public final class ExpressionSegmentBinder {
             return SubqueryExpressionSegmentBinder.bind((SubqueryExpressionSegment) segment, statementBinderContext, newOuterTableBinderContexts);
         }
         if (segment instanceof InExpression) {
-            return InExpressionBinder.bind((InExpression) segment, parentSegmentType, statementBinderContext, tableBinderContexts);
+            return InExpressionBinder.bind((InExpression) segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof NotExpression) {
             return NotExpressionBinder.bind((NotExpression) segment, parentSegmentType, statementBinderContext, tableBinderContexts);

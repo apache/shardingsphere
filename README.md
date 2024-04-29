@@ -58,13 +58,6 @@ For full documentation & more details, visit: [Docs](https://shardingsphere.apac
 
 For guides on how to get started and setup your environment, contributor & committer guides, visit: [Contribution Guidelines](https://shardingsphere.apache.org/community/en/involved/)
 
-Good news! We'll be taking part in [Hacktoberfest 2022](https://hacktoberfest.com) 🍻🎉 Hacktoberfest is for everyone. 
-
-Whether it's your first time, you're a seasoned PRO - it's almost time to get hacking, chase those pull/merge requests and complete your mission in supporting open source.
-
-You can find the issues we've prepared for this year's Hacktoberfest [here](https://github.com/apache/shardingsphere/issues?q=is%3Aopen+is%3Aissue+label%3Ahacktoberfest).
-
-
 ### Team
 
 <hr>
@@ -208,7 +201,7 @@ Check out [Wiki](https://github.com/apache/shardingsphere/wiki) section for deta
 
 <p align="center">
 <br/><br/>
-<img src="https://landscape.cncf.io/images/left-logo.svg" width="150"/>&nbsp;&nbsp;<img src="https://landscape.cncf.io/images/right-logo.svg" width="200"/>
+<img src="https://landscape.cncf.io/images/cncf-landscape-horizontal-color.svg" width="165"/>&nbsp;&nbsp;<img src="https://www.cncf.io/wp-content/uploads/2023/04/cncf-main-site-logo.svg" width="200"/>
 <br/><br/>
 Apache ShardingSphere enriches the <a href="https://landscape.cncf.io/?category=app-definition-and-development&grouping=category">CNCF CLOUD NATIVE Landscape</a>.
 </p>

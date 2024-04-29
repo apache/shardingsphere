@@ -29,6 +29,5 @@
     
     <modules>
         <module>native</module>
-        <module>jooq</module>
     </modules>
 </project>

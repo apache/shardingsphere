@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -34,8 +35,9 @@ public interface HBaseUpdater extends TypedSPI {
      *
      * @param operation HBase operation
      * @return affected rows
+     * @throws SQLException SQL exception
      */
-    Collection<UpdateResult> executeUpdate(HBaseOperation operation);
+    Collection<UpdateResult> executeUpdate(HBaseOperation operation) throws SQLException;
     
     @Override
     Class<? extends SQLStatement> getType();

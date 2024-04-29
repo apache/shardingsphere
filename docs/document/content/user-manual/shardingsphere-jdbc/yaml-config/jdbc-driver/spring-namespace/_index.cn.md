@@ -15,7 +15,7 @@ ShardingSphere 提供 JDBC 驱动，开发者可以在 Spring 中配置 `Shardin
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-core</artifactId>
+    <artifactId>shardingsphere-jdbc</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```

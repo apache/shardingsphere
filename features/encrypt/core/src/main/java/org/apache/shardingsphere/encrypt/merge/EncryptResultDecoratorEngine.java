@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecoratorEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 
 import java.util.Optional;
@@ -37,13 +38,13 @@ import java.util.Optional;
 public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine<EncryptRule> {
     
     @Override
-    public Optional<ResultDecorator<EncryptRule>> newInstance(final ShardingSphereDatabase database,
+    public Optional<ResultDecorator<EncryptRule>> newInstance(final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,
                                                               final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             return Optional.of(new EncryptDQLResultDecorator(database, encryptRule, (SelectStatementContext) sqlStatementContext));
         }
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
-            return Optional.of(new EncryptDALResultDecorator());
+            return Optional.of(new EncryptDALResultDecorator(globalRuleMetaData));
         }
         return Optional.empty();
     }

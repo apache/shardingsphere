@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.merge.fixture.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 
 import static org.mockito.Mockito.mock;
 
@@ -27,5 +28,10 @@ public final class MergerRuleFixture implements ShardingSphereRule {
     @Override
     public RuleConfiguration getConfiguration() {
         return mock(RuleConfiguration.class);
+    }
+    
+    @Override
+    public RuleAttributes getAttributes() {
+        return new RuleAttributes();
     }
 }

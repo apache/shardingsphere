@@ -17,7 +17,7 @@
 
 grammar MaskDistSQLStatement;
 
-import Symbol, RDLStatement, RQLStatement;
+import Symbol, RDLStatement, RQLStatement, RALStatement;
 
 execute
     : (createMaskRule
@@ -25,5 +25,6 @@ execute
     | dropMaskRule
     | showMaskRules
     | countMaskRule
+    | showMaskAlgorithmPlugins
     ) SEMI_? EOF
     ;

@@ -25,23 +25,22 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckId;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
+import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
-import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -53,18 +52,16 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class CDCImporter extends AbstractLifecycleExecutor implements Importer {
+public final class CDCImporter extends AbstractPipelineLifecycleRunnable implements Importer {
     
     @Getter
     private final String importerId = RandomStringUtils.randomAlphanumeric(8);
     
-    private final List<CDCChannelProgressPair> originalChannelProgressPairs;
+    private final List<CDCChannelProgressPair> channelProgressPairs;
     
     private final int batchSize;
     
-    private final long timeout;
-    
-    private final TimeUnit timeUnit;
+    private final long timeoutMillis;
     
     private final PipelineSink sink;
     
@@ -79,12 +76,14 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     @Override
     protected void runBlocking() {
         CDCImporterManager.putImporter(this);
-        List<CDCChannelProgressPair> channelProgressPairs = new ArrayList<>(originalChannelProgressPairs);
+        for (CDCChannelProgressPair each : channelProgressPairs) {
+            each.getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
+        }
         while (isRunning()) {
             if (needSorting) {
-                doWithSorting(channelProgressPairs);
+                doWithSorting();
             } else {
-                doWithoutSorting(channelProgressPairs);
+                doWithoutSorting();
             }
             if (channelProgressPairs.isEmpty()) {
                 break;
@@ -92,97 +91,60 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
         }
     }
     
-    private void doWithoutSorting(final List<CDCChannelProgressPair> channelProgressPairs) {
-        Iterator<CDCChannelProgressPair> channelProgressPairsIterator = channelProgressPairs.iterator();
-        while (channelProgressPairsIterator.hasNext()) {
-            CDCChannelProgressPair channelProgressPair = channelProgressPairsIterator.next();
-            PipelineChannel channel = channelProgressPair.getChannel();
-            List<Record> records = channel.fetchRecords(batchSize, timeout, timeUnit).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
-            if (records.isEmpty()) {
-                continue;
-            }
-            if (null != rateLimitAlgorithm) {
-                rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
-            }
-            String ackId = CDCAckId.build(importerId).marshal();
-            ackCache.put(ackId, Collections.singletonList(Pair.of(channelProgressPair, new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records)))));
-            sink.write(ackId, records);
-            Record lastRecord = records.get(records.size() - 1);
-            if (lastRecord instanceof FinishedRecord) {
-                channelProgressPairsIterator.remove();
-            }
-            if (lastRecord instanceof FinishedRecord && records.stream().noneMatch(DataRecord.class::isInstance)) {
-                channel.ack(records);
-                channelProgressPair.getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
-            }
-        }
-    }
-    
     @SneakyThrows(InterruptedException.class)
-    private void doWithSorting(final List<CDCChannelProgressPair> channelProgressPairs) {
+    private void doWithSorting() {
         if (null != rateLimitAlgorithm) {
-            rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
+            rateLimitAlgorithm.intercept(PipelineSQLOperationType.INSERT, 1);
         }
-        CSNRecords firstCsnRecords = null;
-        List<CSNRecords> csnRecordsList = new LinkedList<>();
-        for (int i = 0, count = channelProgressPairs.size(); i < count; i++) {
-            prepareTransactionRecords(channelProgressPairs);
-            CSNRecords csnRecords = csnRecordsQueue.peek();
-            if (null == csnRecords) {
-                continue;
-            }
-            if (null == firstCsnRecords) {
-                csnRecords = csnRecordsQueue.poll();
-                firstCsnRecords = csnRecords;
-                csnRecordsList.add(csnRecords);
-            } else if (csnRecords.getCsn() == firstCsnRecords.getCsn()) {
-                csnRecords = csnRecordsQueue.poll();
-                csnRecordsList.add(csnRecords);
-            }
-        }
+        List<CSNRecords> csnRecordsList = getCsnRecordsList();
         if (csnRecordsList.isEmpty()) {
-            timeUnit.sleep(timeout);
+            TimeUnit.MILLISECONDS.sleep(timeoutMillis);
             return;
         }
         // TODO Combine small transactions into a large transaction, to improve transformation performance.
         String ackId = CDCAckId.build(importerId).marshal();
         if (1 == csnRecordsList.size()) {
-            CSNRecords csnRecords = csnRecordsList.get(0);
-            List<Record> records = csnRecords.getRecords();
-            ackCache.put(ackId, Collections.singletonList(Pair.of(csnRecords.getChannelProgressPair(), new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records)))));
-            sink.write(ackId, filterDataRecords(records));
-            return;
+            processCSNRecords(csnRecordsList.get(0), ackId);
+        } else {
+            processCSNRecordsList(csnRecordsList, ackId);
         }
-        List<Pair<CDCChannelProgressPair, CDCAckPosition>> ackValue = csnRecordsList.stream().map(each -> Pair.of(each.getChannelProgressPair(),
-                new CDCAckPosition(each.getRecords().get(each.getRecords().size() - 1), getDataRecordsCount(each.getRecords())))).collect(Collectors.toList());
-        ackCache.put(ackId, ackValue);
-        List<Record> records = new ArrayList<>(ackValue.stream().mapToInt(each -> each.getRight().getDataRecordCount()).sum());
-        csnRecordsList.forEach(each -> records.addAll(filterDataRecords(each.getRecords())));
-        sink.write(ackId, filterDataRecords(records));
     }
     
-    private int getDataRecordsCount(final List<Record> records) {
-        return (int) records.stream().filter(DataRecord.class::isInstance).count();
-    }
-    
-    private List<Record> filterDataRecords(final List<Record> records) {
-        return records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).collect(Collectors.toList());
+    private List<CSNRecords> getCsnRecordsList() {
+        List<CSNRecords> result = new LinkedList<>();
+        CSNRecords firstRecords = null;
+        for (int i = 0, count = channelProgressPairs.size(); i < count; i++) {
+            prepareTransactionRecords();
+            CSNRecords csnRecords = csnRecordsQueue.peek();
+            if (null == csnRecords) {
+                continue;
+            }
+            if (null == firstRecords) {
+                csnRecords = csnRecordsQueue.poll();
+                firstRecords = csnRecords;
+                result.add(csnRecords);
+            } else if (csnRecords.getCsn() == firstRecords.getCsn()) {
+                csnRecords = csnRecordsQueue.poll();
+                result.add(csnRecords);
+            }
+        }
+        return result;
     }
     
     // TODO openGauss CSN should be incremented for every transaction. Currently, CSN might be duplicated in transactions.
     // TODO Use channels watermark depth to improve performance.
-    private void prepareTransactionRecords(final List<CDCChannelProgressPair> channelProgressPairs) {
+    private void prepareTransactionRecords() {
         if (csnRecordsQueue.isEmpty()) {
-            prepareWhenQueueIsEmpty(channelProgressPairs);
+            prepareWhenQueueIsEmpty();
         } else {
-            prepareWhenQueueIsNotEmpty(channelProgressPairs, csnRecordsQueue.peek().getCsn());
+            prepareWhenQueueIsNotEmpty(csnRecordsQueue.peek().getCsn());
         }
     }
     
-    private void prepareWhenQueueIsEmpty(final List<CDCChannelProgressPair> channelProgressPairs) {
+    private void prepareWhenQueueIsEmpty() {
         for (CDCChannelProgressPair each : channelProgressPairs) {
             PipelineChannel channel = each.getChannel();
-            List<Record> records = channel.pollRecords();
+            List<Record> records = channel.poll();
             if (records.isEmpty()) {
                 continue;
             }
@@ -194,6 +156,30 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
         }
     }
     
+    private void prepareWhenQueueIsNotEmpty(final long oldestCSN) {
+        for (CDCChannelProgressPair each : channelProgressPairs) {
+            PipelineChannel channel = each.getChannel();
+            List<Record> records = channel.peek();
+            if (records.isEmpty()) {
+                continue;
+            }
+            if (0 == getDataRecordsCount(records)) {
+                records = channel.poll();
+                channel.ack(records);
+                continue;
+            }
+            long csn = findFirstDataRecord(records).getCsn();
+            if (csn <= oldestCSN) {
+                records = channel.poll();
+                csnRecordsQueue.add(new CSNRecords(csn, each, records));
+            }
+        }
+    }
+    
+    private int getDataRecordsCount(final List<Record> records) {
+        return (int) records.stream().filter(DataRecord.class::isInstance).count();
+    }
+    
     private DataRecord findFirstDataRecord(final List<Record> records) {
         for (Record each : records) {
             if (each instanceof DataRecord) {
@@ -203,24 +189,52 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
         throw new IllegalStateException("No data record found");
     }
     
-    private void prepareWhenQueueIsNotEmpty(final List<CDCChannelProgressPair> channelProgressPairs, final long oldestCSN) {
+    private void processCSNRecords(final CSNRecords csnRecords, final String ackId) {
+        List<Record> records = csnRecords.getRecords();
+        ackCache.put(ackId, Collections.singletonList(Pair.of(csnRecords.getChannelProgressPair(), new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records)))));
+        sink.write(ackId, filterDataRecords(records));
+    }
+    
+    private void processCSNRecordsList(final List<CSNRecords> csnRecordsList, final String ackId) {
+        List<Pair<CDCChannelProgressPair, CDCAckPosition>> ackValue = csnRecordsList.stream().map(each -> Pair.of(each.getChannelProgressPair(),
+                new CDCAckPosition(each.getRecords().get(each.getRecords().size() - 1), getDataRecordsCount(each.getRecords())))).collect(Collectors.toList());
+        ackCache.put(ackId, ackValue);
+        Collection<Record> records = new ArrayList<>(ackValue.stream().mapToInt(each -> each.getRight().getDataRecordCount()).sum());
+        csnRecordsList.forEach(each -> records.addAll(filterDataRecords(each.getRecords())));
+        sink.write(ackId, filterDataRecords(records));
+    }
+    
+    private List<Record> filterDataRecords(final Collection<Record> records) {
+        return records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).collect(Collectors.toList());
+    }
+    
+    private void doWithoutSorting() {
         for (CDCChannelProgressPair each : channelProgressPairs) {
-            PipelineChannel channel = each.getChannel();
-            List<Record> records = channel.peekRecords();
-            if (records.isEmpty()) {
-                continue;
-            }
-            if (0 == getDataRecordsCount(records)) {
-                records = channel.pollRecords();
-                channel.ack(records);
-                continue;
-            }
-            long csn = findFirstDataRecord(records).getCsn();
-            if (csn <= oldestCSN) {
-                records = channel.pollRecords();
-                csnRecordsQueue.add(new CSNRecords(csn, each, records));
-            }
+            doWithoutSorting(each);
         }
+    }
+    
+    private void doWithoutSorting(final CDCChannelProgressPair channelProgressPair) {
+        PipelineChannel channel = channelProgressPair.getChannel();
+        List<Record> records = channel.fetch(batchSize, timeoutMillis);
+        if (records.isEmpty()) {
+            return;
+        }
+        Record lastRecord = records.get(records.size() - 1);
+        if (records.stream().noneMatch(DataRecord.class::isInstance)) {
+            channel.ack(records);
+            channelProgressPair.getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
+            if (lastRecord instanceof FinishedRecord) {
+                channelProgressPairs.remove(channelProgressPair);
+            }
+            return;
+        }
+        if (null != rateLimitAlgorithm) {
+            rateLimitAlgorithm.intercept(PipelineSQLOperationType.INSERT, 1);
+        }
+        String ackId = CDCAckId.build(importerId).marshal();
+        ackCache.put(ackId, Collections.singletonList(Pair.of(channelProgressPair, new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records)))));
+        sink.write(ackId, records);
     }
     
     /**
@@ -236,9 +250,14 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
         }
         for (Pair<CDCChannelProgressPair, CDCAckPosition> each : channelPositionPairList) {
             CDCAckPosition ackPosition = each.getRight();
-            each.getLeft().getChannel().ack(Collections.singletonList(ackPosition.getLastRecord()));
+            Record lastRecord = ackPosition.getLastRecord();
+            each.getLeft().getChannel().ack(Collections.singletonList(lastRecord));
+            if (lastRecord instanceof FinishedRecord) {
+                channelProgressPairs.remove(each.getKey());
+            }
             each.getLeft().getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(ackPosition.getDataRecordCount()));
         }
+        ackCache.invalidate(ackId);
     }
     
     @Override

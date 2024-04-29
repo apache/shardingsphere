@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorGlobalVari
 import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorLocalVariableException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.HandshakeException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.IncorrectGlobalLocalVariableException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownSystemVariableException;
@@ -71,6 +72,7 @@ class MySQLDialectExceptionMapperTest {
                     Arguments.of(DatabaseCreateExistsException.class, MySQLVendorError.ER_DB_CREATE_EXISTS_ERROR),
                     Arguments.of(DatabaseDropNotExistsException.class, MySQLVendorError.ER_DB_DROP_NOT_EXISTS_ERROR),
                     Arguments.of(TableExistsException.class, MySQLVendorError.ER_TABLE_EXISTS_ERROR),
+                    Arguments.of(DialectSQLParsingException.class, MySQLVendorError.ER_PARSE_ERROR),
                     Arguments.of(NoSuchTableException.class, MySQLVendorError.ER_NO_SUCH_TABLE),
                     Arguments.of(InsertColumnsAndValuesMismatchedException.class, MySQLVendorError.ER_WRONG_VALUE_COUNT_ON_ROW),
                     Arguments.of(TableModifyInTransactionException.class, MySQLVendorError.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE),

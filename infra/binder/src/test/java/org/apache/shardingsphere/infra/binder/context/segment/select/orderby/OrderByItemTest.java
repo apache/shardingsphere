@@ -20,13 +20,14 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.orderby;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 
 class OrderByItemTest {
     
+    @SuppressWarnings({"SimplifiableAssertion", "ConstantValue"})
     @Test
     void assertEqualsWhenObjIsNull() {
-        assertNotEquals(null, new OrderByItem(mock(OrderByItemSegment.class)));
+        assertFalse(new OrderByItem(mock(OrderByItemSegment.class)).equals(null));
     }
 }

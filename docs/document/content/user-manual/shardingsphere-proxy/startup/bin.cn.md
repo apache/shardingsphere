@@ -17,18 +17,18 @@ weight = 1
 
 在[下载页面](https://shardingsphere.apache.org/document/current/cn/downloads/)获取。
 
-2. 配置 `conf/server.yaml`
+2. 配置 `conf/global.yaml`
 
-ShardingSphere-Proxy 运行模式在 `server.yaml` 中配置，配置格式与 ShardingSphere-JDBC 一致，请参考[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/)。
+ShardingSphere-Proxy 运行模式在 `global.yaml` 中配置，配置格式与 ShardingSphere-JDBC 一致，请参考[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/)。
 
 其他配置项请参考：
 * [权限配置](/cn/user-manual/shardingsphere-proxy/yaml-config/authority/)
 * [属性配置](/cn/user-manual/shardingsphere-proxy/yaml-config/props/)
 
-3. 配置 `conf/config-*.yaml`
+3. 配置 `conf/database-*.yaml`
 
-修改 `conf` 目录下以 `config-` 前缀开头的文件，如：`conf/config-sharding.yaml` 文件，进行分片规则、读写分离规则配置。配置方式请参考[配置手册](/cn/user-manual/shardingsphere-proxy/yaml-config/)。`config-*.yaml` 文件的 `*` 部分可以任意命名。
-ShardingSphere-Proxy 支持配置多个逻辑数据源，每个以 `config-` 前缀命名的 YAML 配置文件，即为一个逻辑数据源。
+修改 `conf` 目录下以 `database-` 前缀开头的文件，如：`conf/database-sharding.yaml` 文件，进行分片规则、读写分离规则配置。配置方式请参考[配置手册](/cn/user-manual/shardingsphere-proxy/yaml-config/)。`database-*.yaml` 文件的 `*` 部分可以任意命名。
+ShardingSphere-Proxy 支持配置多个逻辑数据源，每个以 `database-` 前缀命名的 YAML 配置文件，即为一个逻辑数据源。
 
 4. （可选）引入数据库驱动
 
@@ -40,7 +40,7 @@ ShardingSphere-Proxy 支持配置多个逻辑数据源，每个以 `config-` 前
 
 ShardingSphere-Proxy 默认集成 ZooKeeper Curator 客户端，集群模式使用 ZooKeeper 无须引入其他依赖。
 
-如果集群模式使用 Etcd，需要将 Etcd 的客户端驱动程序 [jetcd-core 0.7.3](https://repo1.maven.org/maven2/io/etcd/jetcd-core/0.7.3/jetcd-core-0.7.3.jar) 复制至目录 `ext-lib`。
+如果集群模式使用 Etcd，需要将 Etcd 依赖的 [vertx-grpc 4.5.1](https://repo1.maven.org/maven2/io/vertx/vertx-grpc/4.5.1/vertx-grpc-4.5.1.jar) 和 [vertx-core 4.5.1](https://repo1.maven.org/maven2/io/vertx/vertx-core/4.5.1/vertx-core-4.5.1.jar) 复制至目录 `ext-lib`。
 
 6. （可选）引入分布式事务所需依赖
 

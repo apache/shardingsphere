@@ -16,7 +16,7 @@ weight = 1
 
 1. 获取 ShardingSphere-Proxy。详情请参见 [proxy 启动手册](/cn/user-manual/shardingsphere-proxy/startup/bin/)。
 
-2. 修改配置文件 `conf/server.yaml`，详情请参见[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/)。
+2. 修改配置文件 `conf/global.yaml`，详情请参见[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/)。
 
 目前 `mode` 必须是 `Cluster`，需要提前启动对应的注册中心。
 
@@ -37,14 +37,13 @@ mode:
 
 3. 引入 JDBC 驱动。
 
-proxy 已包含 PostgreSQL JDBC 驱动。
+proxy 已包含 PostgreSQL JDBC 和 openGauss JDBC 驱动。
 
 如果后端连接以下数据库，请下载相应 JDBC 驱动 jar 包，并将其放入 `${shardingsphere-proxy}/ext-lib` 目录。
 
-| 数据库       | JDBC 驱动                                                                                                                               | 参考                                                                                               |
-|-----------|---------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| MySQL     | [mysql-connector-java-5.1.49.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar ) | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
-| openGauss | [opengauss-jdbc-3.0.0.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/3.0.0/opengauss-jdbc-3.0.0.jar )              |                                                                                                  |
+| 数据库   | JDBC 驱动                                                                                          |
+|-------|--------------------------------------------------------------------------------------------------|
+| MySQL | [mysql-connector-j-8.3.0.jar](https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.3.0/) |
 
 如果是异构迁移，源端支持范围更广的数据库。JDBC 驱动处理方式同上。
 
@@ -134,38 +133,5 @@ NAME='MEMORY',
 PROPERTIES( -- 算法属性
 'block-queue-size'='2000' -- 属性：阻塞队列大小
 )))
-);
-```
-
-DistSQL 示例：配置 `READ` 限流。
-
-```sql
-ALTER MIGRATION RULE (
-READ(
-  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
-)
-);
-```
-
-配置读取数据限流，其它配置使用默认值。
-
-6.3. 恢复配置。
-
-如需恢复默认配置，也通过 ALTER 语句进行操作。
-
-```sql
-ALTER MIGRATION RULE (
-READ(
-  WORKER_THREAD=20,
-  BATCH_SIZE=1000,
-  SHARDING_SIZE=10000000,
-  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
-),
-WRITE(
-  WORKER_THREAD=20,
-  BATCH_SIZE=1000,
-  RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))
-),
-STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='2000')))
 );
 ```

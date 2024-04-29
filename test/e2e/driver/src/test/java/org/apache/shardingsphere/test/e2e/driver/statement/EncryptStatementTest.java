@@ -90,11 +90,11 @@ class EncryptStatementTest extends AbstractEncryptDriverTest {
     
     @Test
     void assertUpdateWithExecuteUpdate() throws SQLException {
-        int result;
+        int actual;
         try (Statement statement = getEncryptConnection().createStatement()) {
-            result = statement.executeUpdate(UPDATE_SQL);
+            actual = statement.executeUpdate(UPDATE_SQL);
         }
-        assertThat(result, is(2));
+        assertThat(actual, is(2));
         assertResultSet(2, 1, "encryptValue");
     }
     

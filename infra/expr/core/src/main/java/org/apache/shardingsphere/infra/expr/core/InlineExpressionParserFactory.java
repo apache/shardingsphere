@@ -35,6 +35,14 @@ public final class InlineExpressionParserFactory {
     private static final String TYPE_NAME_END_SYMBOL = ">";
     
     /**
+     * ShardingSphere has never directly supported the `GROOVY` implementation of Row Value Expression SPI under GraalVM Native Image.
+     * Therefore, ShardingSphere JDBC Core will directly avoid compiling `Closure` related classes under GraalVM Native Image until a new solution emerges.
+     *
+     * @see groovy.lang.Closure
+     */
+    private static final String DEFAULT_TYPE_NAME = null == System.getProperty("org.graalvm.nativeimage.imagecode") ? "GROOVY" : "LITERAL";
+    
+    /**
      * Create new instance of inline expression parser by inlineExpression.
      * And for compatibility reasons, inlineExpression allows to be null.
      *
@@ -44,11 +52,11 @@ public final class InlineExpressionParserFactory {
     public static InlineExpressionParser newInstance(final String inlineExpression) {
         Properties props = new Properties();
         if (null == inlineExpression) {
-            return TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", props);
+            return TypedSPILoader.getService(InlineExpressionParser.class, DEFAULT_TYPE_NAME, props);
         }
         if (!inlineExpression.startsWith(TYPE_NAME_BEGIN_SYMBOL)) {
             props.setProperty(InlineExpressionParser.INLINE_EXPRESSION_KEY, inlineExpression);
-            return TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", props);
+            return TypedSPILoader.getService(InlineExpressionParser.class, DEFAULT_TYPE_NAME, props);
         }
         Integer typeBeginIndex = inlineExpression.indexOf(TYPE_NAME_BEGIN_SYMBOL);
         Integer typeEndIndex = inlineExpression.indexOf(TYPE_NAME_END_SYMBOL);
@@ -57,7 +65,7 @@ public final class InlineExpressionParserFactory {
     }
     
     private static String getTypeName(final String inlineExpression, final Integer beginIndex, final Integer endIndex) {
-        return beginIndex.equals(-1) || endIndex.equals(-1) ? "GROOVY" : inlineExpression.substring(beginIndex + 1, endIndex);
+        return beginIndex.equals(-1) || endIndex.equals(-1) ? DEFAULT_TYPE_NAME : inlineExpression.substring(beginIndex + 1, endIndex);
     }
     
     private static String getExprWithoutTypeName(final String inlineExpression, final Integer beginIndex, final Integer endIndex) {

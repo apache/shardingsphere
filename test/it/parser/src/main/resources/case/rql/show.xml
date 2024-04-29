@@ -66,6 +66,15 @@
         <database name="shadow_db" start-index="29" stop-index="37" />
     </show-shadow-table-rules>
     
+    <show-shadow-table-rules sql-case-id="show-shadow-table-rule">
+        <table name="t_order" />
+    </show-shadow-table-rules>
+    
+    <show-shadow-table-rules sql-case-id="show-shadow-table-rule-from">
+        <table name="t_order" />
+        <database name="shadow_db" start-index="29" stop-index="37" />
+    </show-shadow-table-rules>
+    
     <show-shadow-algorithms sql-case-id="show-shadow-algorithms">
         <database name="shadow_db" start-index="28" stop-index="36" />
     </show-shadow-algorithms>

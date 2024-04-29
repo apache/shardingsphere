@@ -36,7 +36,7 @@ class ClusterStatusSubscriberTest {
     private ClusterPersistRepository repository;
     
     @Test
-    void updateTest() {
+    void assertUpdate() {
         ClusterStatusSubscriber clusterStatusSubscriber = new ClusterStatusSubscriber(repository, new EventBusContext());
         ClusterStatusChangedEvent event = new ClusterStatusChangedEvent(ClusterState.OK);
         clusterStatusSubscriber.update(event);

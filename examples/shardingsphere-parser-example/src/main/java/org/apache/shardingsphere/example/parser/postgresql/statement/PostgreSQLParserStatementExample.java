@@ -55,7 +55,7 @@ public final class PostgreSQLParserStatementExample {
             CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("PostgreSQL", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(sql, false);
-            SQLStatementVisitorEngine visitorEngine = new SQLStatementVisitorEngine("PostgreSQL", false);
+            SQLStatementVisitorEngine visitorEngine = new SQLStatementVisitorEngine("PostgreSQL");
             SQLStatement sqlStatement = visitorEngine.visit(parseASTNode);
             System.out.println(sqlStatement.toString());
         });

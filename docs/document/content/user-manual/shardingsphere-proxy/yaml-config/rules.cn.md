@@ -13,12 +13,11 @@ ShardingSphere-Proxy 的规则配置与 ShardingSphere-JDBC 一致，具体规�
 
 ## 注意事项
 
-与 ShardingSphere-JDBC 不同的是，以下规则需要配置在 ShardingSphere-Proxy 的 `server.yaml` 中：
+与 ShardingSphere-JDBC 不同的是，以下规则需要配置在 ShardingSphere-Proxy 的 `global.yaml` 中：
 
 * [SQL 解析](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sql-parser/)
 ```yaml
 sqlParser:
-  sqlCommentParseEnabled: true
   sqlStatementCache:
     initialCapacity: 2000
     maximumSize: 65535
@@ -37,4 +36,13 @@ transaction:
 sqlTranslator:
   type:
   useOriginalSQLWhenTranslatingFailed:
+```
+* [联邦查询](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sql-federation/)
+```yaml
+sqlFederation:
+  sqlFederationEnabled: true
+  allQueryUseSQLFederation: false
+  executionPlanCache:
+    initialCapacity: 2000
+    maximumSize: 65535
 ```

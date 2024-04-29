@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -29,7 +30,12 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatem
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableConditionalIntoSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableInsertIntoSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableInsertType;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.exec.ExecSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.hint.WithTableHintClauseAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.InsertExecClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.InsertColumnsClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.InsertValuesClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.MultiTableConditionalIntoClauseAssert;
@@ -77,6 +83,9 @@ public final class InsertStatementAssert {
         assertMultiTableInsertIntoClause(assertContext, actual, expected);
         assertMultiTableConditionalIntoClause(assertContext, actual, expected);
         assertReturningClause(assertContext, actual, expected);
+        assertInsertExecClause(assertContext, actual, expected);
+        assertWithTableHintClause(assertContext, actual, expected);
+        assertRowSetFunctionClause(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
@@ -193,6 +202,36 @@ public final class InsertStatementAssert {
         } else {
             assertTrue(returningSegment.isPresent(), assertContext.getText("Actual returning segment should exist."));
             ReturningClauseAssert.assertIs(assertContext, returningSegment.get(), expected.getReturningClause());
+        }
+    }
+    
+    private static void assertInsertExecClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        Optional<ExecSegment> execSegment = InsertStatementHandler.getExecSegment(actual);
+        if (null == expected.getExecClause()) {
+            assertFalse(execSegment.isPresent(), assertContext.getText("Actual exec segment should not exist."));
+        } else {
+            assertTrue(execSegment.isPresent(), assertContext.getText("Actual exec segment should exist."));
+            InsertExecClauseAssert.assertIs(assertContext, execSegment.get(), expected.getExecClause());
+        }
+    }
+    
+    private static void assertWithTableHintClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        Optional<WithTableHintSegment> withTableHintSegment = InsertStatementHandler.getWithTableHintSegment(actual);
+        if (null == expected.getExpectedWithTableHintClause()) {
+            assertFalse(withTableHintSegment.isPresent(), assertContext.getText("Actual with table hint should not exist."));
+        } else {
+            assertTrue(withTableHintSegment.isPresent(), assertContext.getText("Actual with table hint segment should exist."));
+            WithTableHintClauseAssert.assertIs(assertContext, withTableHintSegment.get(), expected.getExpectedWithTableHintClause());
+        }
+    }
+    
+    private static void assertRowSetFunctionClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        Optional<FunctionSegment> rowSetFunctionSegment = InsertStatementHandler.getRowSetFunctionSegment(actual);
+        if (null == expected.getExpectedRowSetFunctionClause()) {
+            assertFalse(rowSetFunctionSegment.isPresent(), assertContext.getText("Actual row set function should not exist."));
+        } else {
+            assertTrue(rowSetFunctionSegment.isPresent(), assertContext.getText("Actual row set function should exist."));
+            ExpressionAssert.assertFunction(assertContext, rowSetFunctionSegment.get(), expected.getExpectedRowSetFunctionClause());
         }
     }
 }

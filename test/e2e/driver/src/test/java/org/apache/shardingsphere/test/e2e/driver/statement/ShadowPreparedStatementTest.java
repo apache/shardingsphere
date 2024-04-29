@@ -94,7 +94,7 @@ class ShadowPreparedStatementTest extends AbstractShadowDriverTest {
     
     @Test
     void assertUpdateNativeCase() throws SQLException {
-        int result;
+        int actual;
         try (Connection connection = getShadowDataSource().getConnection()) {
             PreparedStatement insertPreparedStatement = connection.prepareStatement(INSERT_SQL);
             insertPreparedStatement.setObject(1, 2);
@@ -104,16 +104,16 @@ class ShadowPreparedStatementTest extends AbstractShadowDriverTest {
             PreparedStatement updatePreparedStatement = connection.prepareStatement(UPDATE_SQL);
             updatePreparedStatement.setString(1, "cipher_pwd");
             updatePreparedStatement.setObject(2, 2);
-            result = updatePreparedStatement.executeUpdate();
+            actual = updatePreparedStatement.executeUpdate();
         }
-        assertThat(result, is(1));
+        assertThat(actual, is(1));
         assertResultSet(true, 0, "cipher_pwd");
         assertResultSet(false, 1, "cipher_pwd");
     }
     
     @Test
     void assertUpdateShadowCase() throws SQLException {
-        int result;
+        int actual;
         try (Connection connection = getShadowDataSource().getConnection()) {
             PreparedStatement insertPreparedStatement = connection.prepareStatement(INSERT_SQL);
             insertPreparedStatement.setObject(1, 1);
@@ -123,16 +123,16 @@ class ShadowPreparedStatementTest extends AbstractShadowDriverTest {
             PreparedStatement updatePreparedStatement = connection.prepareStatement(UPDATE_SQL);
             updatePreparedStatement.setString(1, "cipher_pwd");
             updatePreparedStatement.setObject(2, 1);
-            result = updatePreparedStatement.executeUpdate();
+            actual = updatePreparedStatement.executeUpdate();
         }
-        assertThat(result, is(1));
+        assertThat(actual, is(1));
         assertResultSet(true, 1, "cipher_pwd");
         assertResultSet(false, 0, "cipher_pwd");
     }
     
     @Test
     void assertDeleteNativeCase() throws SQLException {
-        int result;
+        int actual;
         try (Connection connection = getShadowDataSource().getConnection()) {
             PreparedStatement insertPreparedStatement1 = connection.prepareStatement(INSERT_SQL);
             insertPreparedStatement1.setObject(1, 2);
@@ -146,16 +146,16 @@ class ShadowPreparedStatementTest extends AbstractShadowDriverTest {
             insertPreparedStatement2.execute();
             PreparedStatement deletePreparedStatement = connection.prepareStatement(DELETE_SQL);
             deletePreparedStatement.setObject(1, 2);
-            result = deletePreparedStatement.executeUpdate();
+            actual = deletePreparedStatement.executeUpdate();
         }
-        assertThat(result, is(1));
+        assertThat(actual, is(1));
         assertResultSet(true, 1, "cipher_pwd");
         assertResultSet(false, 0, "cipher_pwd");
     }
     
     @Test
     void assertDeleteShadowCase() throws SQLException {
-        int result;
+        int actual;
         try (Connection connection = getShadowDataSource().getConnection()) {
             PreparedStatement insertPreparedStatement1 = connection.prepareStatement(INSERT_SQL);
             insertPreparedStatement1.setObject(1, 1);
@@ -169,9 +169,9 @@ class ShadowPreparedStatementTest extends AbstractShadowDriverTest {
             insertPreparedStatement2.execute();
             PreparedStatement deletePreparedStatement = connection.prepareStatement(DELETE_SQL);
             deletePreparedStatement.setObject(1, 1);
-            result = deletePreparedStatement.executeUpdate();
+            actual = deletePreparedStatement.executeUpdate();
         }
-        assertThat(result, is(1));
+        assertThat(actual, is(1));
         assertResultSet(true, 0, "cipher_pwd");
         assertResultSet(false, 1, "cipher");
     }

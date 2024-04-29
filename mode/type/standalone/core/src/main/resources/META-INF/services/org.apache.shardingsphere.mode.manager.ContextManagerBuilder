@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder
-org.apache.shardingsphere.mode.manager.standalone.NewStandaloneContextManagerBuilder

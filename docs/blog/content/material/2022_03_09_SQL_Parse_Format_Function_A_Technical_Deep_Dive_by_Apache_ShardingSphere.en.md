@@ -117,7 +117,7 @@ public ParseContext parse(final String sql) {
 
 private ParseASTNode twoPhaseParse(final String sql) {
     DatabaseTypedSQLParserFacade sqlParserFacade = DatabaseTypedSQLParserFacadeRegistry.getFacade(databaseType);
-    SQLParser sqlParser = SQLParserFactory.newInstance(sql, sqlParserFacade.getLexerClass(), sqlParserFacade.getParserClass(), sqlCommentParseEnabled);
+    SQLParser sqlParser = SQLParserFactory.newInstance(sql, sqlParserFacade.getLexerClass(), sqlParserFacade.getParserClass());
     try {
         ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
         return (ParseASTNode) sqlParser.parse();

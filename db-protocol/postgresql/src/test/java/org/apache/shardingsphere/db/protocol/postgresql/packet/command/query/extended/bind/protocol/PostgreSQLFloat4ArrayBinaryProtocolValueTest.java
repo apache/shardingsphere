@@ -20,7 +20,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -49,8 +49,8 @@ class PostgreSQLFloat4ArrayBinaryProtocolValueTest {
         byteBuf.writeCharSequence(parameterValue, StandardCharsets.ISO_8859_1);
         byteBuf.readInt();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        Object result = newInstance().read(payload, parameterValue.length());
-        assertThat(result, is(new float[]{11.1F, 12.1F}));
+        Object actual = newInstance().read(payload, parameterValue.length());
+        assertThat(actual, is(new float[]{11.1F, 12.1F}));
         assertThat(byteBuf.readerIndex(), is(expectedLength));
     }
     

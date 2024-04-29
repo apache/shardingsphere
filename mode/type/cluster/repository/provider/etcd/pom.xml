@@ -26,10 +26,6 @@
     <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <jetcd.version>0.7.6</jetcd.version>
-    </properties>
-    
     <dependencyManagement>
         <dependencies>
             <dependency>

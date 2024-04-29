@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.H2Container;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MariaDBContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.PostgreSQLContainer;
@@ -52,6 +53,8 @@ public final class StorageContainerFactory {
                 return new OpenGaussContainer(storageContainerImage, storageContainerConfig);
             case "H2":
                 return new H2Container(storageContainerConfig);
+            case "MariaDB":
+                return new MariaDBContainer(storageContainerImage, storageContainerConfig);
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }

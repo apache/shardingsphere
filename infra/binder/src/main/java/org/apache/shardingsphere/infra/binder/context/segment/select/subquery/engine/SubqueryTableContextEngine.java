@@ -44,7 +44,7 @@ public final class SubqueryTableContextEngine {
      */
     public Map<String, SubqueryTableContext> createSubqueryTableContexts(final SelectStatementContext subqueryContext, final String aliasName) {
         Map<String, SubqueryTableContext> result = new LinkedHashMap<>();
-        TableSegment tableSegment = subqueryContext.getSqlStatement().getFrom();
+        TableSegment tableSegment = subqueryContext.getSqlStatement().getFrom().orElse(null);
         for (Projection each : subqueryContext.getProjectionsContext().getExpandProjections()) {
             if (!(each instanceof ColumnProjection)) {
                 continue;

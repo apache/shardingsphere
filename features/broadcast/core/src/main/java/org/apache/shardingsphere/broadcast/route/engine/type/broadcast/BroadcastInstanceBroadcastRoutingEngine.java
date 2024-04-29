@@ -38,7 +38,7 @@ public class BroadcastInstanceBroadcastRoutingEngine implements BroadcastRouteEn
     @Override
     public RouteContext route(final RouteContext routeContext, final BroadcastRule broadcastRule) {
         RouteContext result = new RouteContext();
-        for (String each : broadcastRule.getAvailableDataSourceNames()) {
+        for (String each : broadcastRule.getDataSourceNames()) {
             if (resourceMetaData.getAllInstanceDataSourceNames().contains(each)) {
                 result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
             }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.agent.jaeger.result;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.agent.common.result.JsonConfiguration;
+import org.apache.shardingsphere.infra.util.json.JsonConfiguration;
 
 import java.util.List;
 

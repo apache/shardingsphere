@@ -36,5 +36,7 @@
         <module>sqlserver</module>
         <module>h2</module>
         <module>sql92</module>
+        <module>clickhouse</module>
+        <module>testcontainers</module>
     </modules>
 </project>

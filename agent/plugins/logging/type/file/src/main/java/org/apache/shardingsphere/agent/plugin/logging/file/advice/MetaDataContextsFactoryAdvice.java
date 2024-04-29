@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.logging.file.advice;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.advice.AbstractStaticMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.recorder.MethodTimeRecorder;
 
 import java.lang.reflect.Method;
@@ -27,7 +27,7 @@ import java.lang.reflect.Method;
  * Meta data contexts factory advice.
  */
 @Slf4j
-public final class MetaDataContextsFactoryAdvice implements StaticMethodAdvice {
+public final class MetaDataContextsFactoryAdvice extends AbstractStaticMethodAdvice {
     
     private final MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(MetaDataContextsFactoryAdvice.class);
     

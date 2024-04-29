@@ -20,10 +20,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-it</artifactId>
+        <artifactId>shardingsphere-test-it</artifactId>
         <version>5.4.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-it-optimizer</artifactId>
+    <artifactId>shardingsphere-test-it-optimizer</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
@@ -39,7 +39,7 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-it-parser</artifactId>
+            <artifactId>shardingsphere-test-it-parser</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

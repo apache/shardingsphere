@@ -22,9 +22,10 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.ColumnIndexOutOfRangeException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.sql.SQLException;
 
@@ -63,8 +64,7 @@ public final class QueryHeaderBuilderEngine {
      */
     public QueryHeader build(final ProjectionsContext projectionsContext,
                              final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
-        ShardingSpherePreconditions.checkState(columnIndex <= projectionsContext.getExpandProjections().size(),
-                () -> new IllegalArgumentException(String.format("Column index `%d` is out of range.", columnIndex)));
+        ShardingSpherePreconditions.checkState(columnIndex <= projectionsContext.getExpandProjections().size(), () -> new ColumnIndexOutOfRangeException(columnIndex));
         Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
         return DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType).build(queryResultMetaData, database, projection.getColumnName(), projection.getColumnLabel(), columnIndex);
     }

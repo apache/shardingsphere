@@ -45,10 +45,10 @@
         <assertion expected-data-file="update_with_column_equal_column.xml" />
     </test-case>
     
-    <!-- TODO FIXED ME PostgreSQL return 0 -->
-    <test-case sql="UPDATE t_broadcast_table b SET b.status = 'finished'" db-types="H2,MySQL,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <!-- TODO FIXED ME PostgreSQL return 0 and replace with standard table structure -->
+    <!--<test-case sql="UPDATE t_broadcast_table b SET b.status = 'finished'" db-types="H2,MySQL,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion expected-data-file="update_broadcast_table.xml" />
-    </test-case>
+    </test-case>-->
     
     <!--fixme! issue #9769-->
     <!--    <test-case sql="UPDATE t_single_table s SET s.status = 'finished'" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt">-->

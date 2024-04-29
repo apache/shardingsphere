@@ -22,6 +22,8 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 
+import java.util.Properties;
+
 /**
  * SQL translator configuration for YAML.
  */
@@ -30,6 +32,8 @@ import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfi
 public final class YamlSQLTranslatorRuleConfiguration implements YamlGlobalRuleConfiguration {
     
     private String type;
+    
+    private Properties props;
     
     private boolean useOriginalSQLWhenTranslatingFailed = true;
     

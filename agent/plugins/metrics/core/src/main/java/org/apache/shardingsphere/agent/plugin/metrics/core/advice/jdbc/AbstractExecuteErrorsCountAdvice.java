@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
@@ -30,7 +30,7 @@ import java.util.Collections;
 /**
  * Abstract execute errors count advice for ShardingSphere-JDBC.
  */
-public abstract class AbstractExecuteErrorsCountAdvice implements InstanceMethodAdvice {
+public abstract class AbstractExecuteErrorsCountAdvice extends AbstractInstanceMethodAdvice {
     
     private final MetricConfiguration config = new MetricConfiguration("jdbc_statement_execute_errors_total", MetricCollectorType.COUNTER,
             "Total number of statement execute error", Collections.singletonList("statement_type"));

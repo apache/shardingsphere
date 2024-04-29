@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -40,9 +41,9 @@ class YamlTableDataConsistencyCheckResultSwapperTest {
     @Test
     void assertSwapToYamlConfigurationWithTableDataConsistencyCheckIgnoredType() {
         TableDataConsistencyCheckResult data = new TableDataConsistencyCheckResult(TableDataConsistencyCheckIgnoredType.NO_UNIQUE_KEY);
-        YamlTableDataConsistencyCheckResult result = yamlTableDataConsistencyCheckResultSwapper.swapToYamlConfiguration(data);
-        assertThat(result.getIgnoredType(), is("NO_UNIQUE_KEY"));
-        assertFalse(result.isMatched());
+        YamlTableDataConsistencyCheckResult actual = yamlTableDataConsistencyCheckResultSwapper.swapToYamlConfiguration(data);
+        assertThat(actual.getIgnoredType(), is("NO_UNIQUE_KEY"));
+        assertFalse(actual.isMatched());
     }
     
     @Test
@@ -57,9 +58,9 @@ class YamlTableDataConsistencyCheckResultSwapperTest {
     void assertSwapToObjectWithYamlTableDataConsistencyCheckResultIgnoredType() {
         YamlTableDataConsistencyCheckResult yamlConfig = new YamlTableDataConsistencyCheckResult();
         yamlConfig.setIgnoredType("NO_UNIQUE_KEY");
-        TableDataConsistencyCheckResult result = yamlTableDataConsistencyCheckResultSwapper.swapToObject(yamlConfig);
-        assertThat(result.getIgnoredType(), is(TableDataConsistencyCheckIgnoredType.NO_UNIQUE_KEY));
-        assertFalse(result.isMatched());
+        TableDataConsistencyCheckResult actual = yamlTableDataConsistencyCheckResultSwapper.swapToObject(yamlConfig);
+        assertThat(actual.getIgnoredType(), is(TableDataConsistencyCheckIgnoredType.NO_UNIQUE_KEY));
+        assertFalse(actual.isMatched());
     }
     
     @Test
@@ -95,18 +96,18 @@ class YamlTableDataConsistencyCheckResultSwapperTest {
     
     @Test
     void assertSwapToObjectWithString() {
-        TableDataConsistencyCheckResult result = yamlTableDataConsistencyCheckResultSwapper.swapToObject("ignoredType: NO_UNIQUE_KEY");
-        assertThat(result.getIgnoredType(), is(TableDataConsistencyCheckIgnoredType.NO_UNIQUE_KEY));
-        assertFalse(result.isMatched());
+        TableDataConsistencyCheckResult actual = yamlTableDataConsistencyCheckResultSwapper.swapToObject("ignoredType: NO_UNIQUE_KEY");
+        assertThat(actual.getIgnoredType(), is(TableDataConsistencyCheckIgnoredType.NO_UNIQUE_KEY));
+        assertFalse(actual.isMatched());
     }
     
     @Test
     void assertSwapToObjectWithEmptyString() {
-        assertNull(yamlTableDataConsistencyCheckResultSwapper.swapToObject(""));
+        assertNotNull(yamlTableDataConsistencyCheckResultSwapper.swapToObject(""));
     }
     
     @Test
     void assertSwapToObjectWithBlankString() {
-        assertNull(yamlTableDataConsistencyCheckResultSwapper.swapToObject(" "));
+        assertNotNull(yamlTableDataConsistencyCheckResultSwapper.swapToObject(" "));
     }
 }

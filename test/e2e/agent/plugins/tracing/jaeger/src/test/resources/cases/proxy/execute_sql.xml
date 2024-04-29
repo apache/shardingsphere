@@ -18,14 +18,14 @@
 
 <integration-test-cases>
     <test-case service-name="shardingsphere" span-name="/ShardingSphere/executeSQL/">
-        <tag-assertion key="component" value="ShardingSphere" need-assert-value="true" />
-        <tag-assertion key="span.kind" value="client" need-assert-value="true" />
-        <tag-assertion key="db.type" value="MySQL" need-assert-value="true" />
-        <tag-assertion key="peer.hostname" value="mysql.agent.proxy.jaeger.host" need-assert-value="true" />
-        <tag-assertion key="peer.port" value="3306" need-assert-value="true" />
-        <tag-assertion key="db.instance" value="ds_0" need-assert-value="true" />
-        <tag-assertion key="db.instance" value="ds_1" need-assert-value="true" />
-        <tag-assertion key="db.bind_vars" />
-        <tag-assertion key="db.statement" />
+        <tag-assertion key="component" value="ShardingSphere"/>
+        <tag-assertion key="span.kind" value="client"/>
+        <tag-assertion key="db.type" value="MySQL"/>
+        <tag-assertion key="peer.hostname" value="mysql.host"/>
+        <tag-assertion key="peer.port" value="3306"/>
+        <tag-assertion key="db.instance" value="ds_0"/>
+        <tag-assertion key="db.instance" value="ds_1"/>
+        <tag-assertion key="db.bind_vars"  need-assert-value="false" />
+        <tag-assertion key="db.statement"  need-assert-value="false" />
     </test-case>
 </integration-test-cases>

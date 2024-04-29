@@ -30,9 +30,25 @@
     <create-procedure sql-case-id="create_procedure_with_create_view_as_select_into_outfile" />
     <create-procedure sql-case-id="create_procedure_with_sqlexception_and_create_view" />
     <create-procedure sql-case-id="create_procedure_with_deterministic_create_view" />
-    <create-procedure sql-case-id="create_procedure_with_update_statement_oracle" />
+    <create-procedure sql-case-id="create_procedure_with_update_statement_oracle">
+        <procedure-name name="update_order" />
+        <sql-statements>
+            <sql-statement start-index="95" stop-index="154" statement-class-simple-name="OracleUpdateStatement" />
+        </sql-statements>
+    </create-procedure>
     <create-procedure sql-case-id="create_procedure_with_prepare_commit" />
-    <create-procedure sql-case-id="create_procedure_with_cursor_definition" />
-    <create-procedure sql-case-id="create_procedure_with_collection_type_definition" />
+    <create-procedure sql-case-id="create_procedure_with_cursor_definition">
+        <procedure-name name="my_proc" />
+        <sql-statements>
+            <sql-statement start-index="69" stop-index="94" statement-class-simple-name="OracleSelectStatement" />
+            <sql-statement start-index="143" stop-index="175" statement-class-simple-name="OracleInsertStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_collection_type_definition">
+        <procedure-name name="my_proc" />
+        <sql-statements>
+            <sql-statement start-index="100" stop-index="132" statement-class-simple-name="OracleInsertStatement" />
+        </sql-statements>
+    </create-procedure>
     <create-procedure sql-case-id="create_plsql_block" />
 </sql-parser-test-cases>

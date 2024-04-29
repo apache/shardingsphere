@@ -24,29 +24,17 @@ GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds TO test_user;
 \c encrypt_write_ds
 
 DROP TABLE IF EXISTS t_user;
-DROP TABLE IF EXISTS t_user_item;
-DROP TABLE IF EXISTS t_single_table;
-DROP TABLE IF EXISTS t_user_info;
 DROP TABLE IF EXISTS t_merchant;
 
 CREATE TABLE t_user (user_id INT NOT NULL, address_id INT NOT NULL, pwd_cipher VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
-CREATE TABLE t_user_item (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
-CREATE TABLE t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
-CREATE TABLE t_user_info (user_id INT NOT NULL, information VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_merchant (merchant_id INT PRIMARY KEY, country_id SMALLINT NOT NULL, merchant_name VARCHAR(50) NOT NULL, business_code VARCHAR(50) NOT NULL, telephone CHAR(11) NOT NULL, creation_date DATE NOT NULL);
 CREATE INDEX user_index_t_user ON t_user (user_id);
 
 \c encrypt_read_ds
 
 DROP TABLE IF EXISTS t_user;
-DROP TABLE IF EXISTS t_user_item;
-DROP TABLE IF EXISTS t_single_table;
-DROP TABLE IF EXISTS t_user_info;
 DROP TABLE IF EXISTS t_merchant;
 
 CREATE TABLE t_user (user_id INT NOT NULL, address_id INT NOT NULL, pwd_cipher VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
-CREATE TABLE t_user_item (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
-CREATE TABLE t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
-CREATE TABLE t_user_info (user_id INT NOT NULL, information VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_merchant (merchant_id INT PRIMARY KEY, country_id SMALLINT NOT NULL, merchant_name VARCHAR(50) NOT NULL, business_code VARCHAR(50) NOT NULL, telephone CHAR(11) NOT NULL, creation_date DATE NOT NULL);
 CREATE INDEX user_index_t_user ON t_user (user_id);

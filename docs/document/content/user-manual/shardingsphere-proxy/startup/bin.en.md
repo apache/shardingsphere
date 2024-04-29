@@ -17,19 +17,19 @@ Start the Proxy with a binary package requires an environment with Java JRE 8 or
 
 Obtain the binary release package of ShardingSphere-Proxy on the [download page](https://shardingsphere.apache.org/document/current/en/downloads/).
 
-2. Configure `conf/server.yaml`
+2. Configure `conf/global.yaml`
 
-ShardingSphere-Proxy's operational mode is configured on `server.yaml`, and its configuration mode is the same with that of ShardingSphere-JDBC. Refer to [mode of configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode/).
+ShardingSphere-Proxy's operational mode is configured on `global.yaml`, and its configuration mode is the same with that of ShardingSphere-JDBC. Refer to [mode of configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode/).
 
 Please refer to the following links for other configuration items:
 * [Permission configuration](/en/user-manual/shardingsphere-proxy/yaml-config/authority/)
 * [Property configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/)
 
-3. Configure `conf/config-*.yaml`
+3. Configure `conf/database-*.yaml`
 
-Modify files named with the prefix `config-` in the `conf` directory, such as `conf/config-sharding.yaml` file and configure sharding rules and read/write splitting rules. See [Confuguration Mannual](/en/user-manual/shardingsphere-proxy/yaml-config/) for configuration methods. The `*` part of the `config-*.yaml` file can be named whatever you want.
+Modify files named with the prefix `database-` in the `conf` directory, such as `conf/database-sharding.yaml` file and configure sharding rules and read/write splitting rules. See [Confuguration Mannual](/en/user-manual/shardingsphere-proxy/yaml-config/) for configuration methods. The `*` part of the `database-*.yaml` file can be named whatever you want.
 
-ShardingSphere-Proxy supports multiple logical data sources. Each YAML configuration file named with the prefix `config-` is a logical data source.
+ShardingSphere-Proxy supports multiple logical data sources. Each YAML configuration file named with the prefix `database-` is a logical data source.
 
 4. Introduce database driver (Optional)
 
@@ -41,7 +41,7 @@ If the backend is connected to a MySQL database, please download [mysql-connecto
 
 ShardingSphere-Proxy integrates the ZooKeeper Curator client by default. ZooKeeper is used in cluster mode without introducing other dependencies.
 
-If the cluster mode uses Etcd, the client drivers of Etcd [jetcd-core 0.7.3](https://repo1.maven.org/maven2/io/etcd/jetcd-core/0.7.3/jetcd-core-0.7.3.jar) need to be copied into the `ext-lib` directory.
+If the cluster mode uses Etcd, please copy [vertx-grpc 4.5.1](https://repo1.maven.org/maven2/io/vertx/vertx-grpc/4.5.1/vertx-grpc-4.5.1.jar) and [vertx-core 4.5.1](https://repo1.maven.org/maven2/io/vertx/vertx-core/4.5.1/vertx-core-4.5.1.jar) that Etcd depends on into the `ext-lib` directory.
 
 6. Introduce dependencies required by distributed transactions (Optional)
 

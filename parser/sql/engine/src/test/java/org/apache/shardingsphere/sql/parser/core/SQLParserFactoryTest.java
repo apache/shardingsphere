@@ -17,15 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.core;
 
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.fixture.LexerFixture;
 import org.apache.shardingsphere.sql.parser.fixture.ParserFixture;
 import org.junit.jupiter.api.Test;
 
-import static org.mockito.Mockito.mock;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 class SQLParserFactoryTest {
     
@@ -33,9 +31,6 @@ class SQLParserFactoryTest {
     
     @Test
     void assertNewInstance() {
-        SQLLexer sqlLexer = mock(LexerFixture.class);
-        SQLParser sqlParser = mock(ParserFixture.class);
-        SQLParser result = SQLParserFactory.newInstance(SQL, sqlLexer.getClass(), sqlParser.getClass());
-        assertThat(result, instanceOf(ParserFixture.class));
+        assertThat(SQLParserFactory.newInstance(SQL, mock(LexerFixture.class).getClass(), mock(ParserFixture.class).getClass()), instanceOf(ParserFixture.class));
     }
 }

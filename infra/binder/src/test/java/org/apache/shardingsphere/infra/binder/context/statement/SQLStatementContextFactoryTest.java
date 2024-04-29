@@ -26,11 +26,11 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -72,7 +72,7 @@ class SQLStatementContextFactoryTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, null, null));
         selectStatement.setProjections(projectionsSegment);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME).bind(selectStatement, Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(selectStatement, Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(SelectStatementContext.class));
     }
     
@@ -81,9 +81,8 @@ class SQLStatementContextFactoryTest {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         List<ColumnSegment> columnSegments = new LinkedList<>();
         columnSegments.add(new ColumnSegment(0, 0, new IdentifierValue("IdentifierValue")));
-        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columnSegments, null);
-        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0,
-                Collections.singleton(assignment)));
+        ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columnSegments, null);
+        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singleton(assignment)));
         assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(insertStatement);
     }
     
@@ -109,13 +108,13 @@ class SQLStatementContextFactoryTest {
     
     private void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME).bind(insertStatement, Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(insertStatement, Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(InsertStatementContext.class));
     }
     
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME).bind(mock(MySQLStatement.class), Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(mock(MySQLStatement.class), Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(CommonSQLStatementContext.class));
     }
     
@@ -127,25 +126,25 @@ class SQLStatementContextFactoryTest {
         when(selectStatement.getCommentSegments()).thenReturn(Collections.emptyList());
         when(cursorStatement.getSelect()).thenReturn(selectStatement);
         when(cursorStatement.getCommentSegments()).thenReturn(Collections.emptyList());
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME).bind(cursorStatement, Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(cursorStatement, Collections.emptyList());
         assertThat(actual, instanceOf(CursorStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForCloseStatement() {
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME).bind(mock(OpenGaussCloseStatement.class), Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(mock(OpenGaussCloseStatement.class), Collections.emptyList());
         assertThat(actual, instanceOf(CloseStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForMoveStatement() {
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME).bind(mock(OpenGaussMoveStatement.class), Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(mock(OpenGaussMoveStatement.class), Collections.emptyList());
         assertThat(actual, instanceOf(MoveStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForFetchStatement() {
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME).bind(mock(OpenGaussFetchStatement.class), Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(mock(OpenGaussFetchStatement.class), Collections.emptyList());
         assertThat(actual, instanceOf(FetchStatementContext.class));
     }
     
@@ -155,6 +154,8 @@ class SQLStatementContextFactoryTest {
         when(database.containsSchema("public")).thenReturn(true);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("tbl")).thenReturn(true);
         when(database.getSchema("public").containsTable("tbl")).thenReturn(true);
+        when(database.containsSchema("dbo")).thenReturn(true);
+        when(database.getSchema("dbo").containsTable("tbl")).thenReturn(true);
         Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
         return new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }

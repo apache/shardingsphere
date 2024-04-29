@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
  * Comment statement.
@@ -33,4 +34,6 @@ public abstract class CommentStatement extends AbstractSQLStatement implements D
     private SimpleTableSegment table;
     
     private ColumnSegment column;
+    
+    private IdentifierValue comment;
 }

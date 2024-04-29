@@ -17,23 +17,21 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.standard;
 
-import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Properties;
@@ -42,30 +40,40 @@ import java.util.Properties;
  * AES encrypt algorithm.
  */
 @EqualsAndHashCode
-public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm {
+public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     private static final String AES_KEY = "aes-key-value";
     
     private static final String DIGEST_ALGORITHM_NAME = "digest-algorithm-name";
     
+    @Getter
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(true, true, false, getDefaultProperties());
+    
     private byte[] secretKey;
+    
+    private Properties getDefaultProperties() {
+        Properties result = new Properties();
+        result.setProperty(DIGEST_ALGORITHM_NAME, MessageDigestAlgorithms.SHA_1);
+        return result;
+    }
     
     @Override
     public void init(final Properties props) {
-        secretKey = createSecretKey(props);
+        Properties properties = new Properties(metaData.getDefaultProps());
+        properties.putAll(props);
+        secretKey = getSecretKey(properties);
     }
     
-    private byte[] createSecretKey(final Properties props) {
+    private byte[] getSecretKey(final Properties props) {
         String aesKey = props.getProperty(AES_KEY);
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(aesKey),
-                () -> new EncryptAlgorithmInitializationException(getType(), String.format("%s can not be null or empty", AES_KEY)));
-        String digestAlgorithm = props.getProperty(DIGEST_ALGORITHM_NAME, MessageDigestAlgorithms.SHA_1);
+        ShardingSpherePreconditions.checkNotEmpty(aesKey, () -> new AlgorithmInitializationException(this, "%s can not be null or empty", AES_KEY));
+        String digestAlgorithm = props.getProperty(DIGEST_ALGORITHM_NAME);
         return Arrays.copyOf(DigestUtils.getDigest(digestAlgorithm.toUpperCase()).digest(aesKey.getBytes(StandardCharsets.UTF_8)), 16);
     }
     
     @SneakyThrows(GeneralSecurityException.class)
     @Override
-    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+    public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
         if (null == plainValue) {
             return null;
         }
@@ -75,7 +83,7 @@ public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm {
     
     @SneakyThrows(GeneralSecurityException.class)
     @Override
-    public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
+    public Object decrypt(final Object cipherValue, final AlgorithmSQLContext algorithmSQLContext) {
         if (null == cipherValue) {
             return null;
         }
@@ -83,7 +91,7 @@ public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm {
         return new String(result, StandardCharsets.UTF_8);
     }
     
-    private Cipher getCipher(final int decryptMode) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    private Cipher getCipher(final int decryptMode) throws GeneralSecurityException {
         Cipher result = Cipher.getInstance(getType());
         result.init(decryptMode, new SecretKeySpec(secretKey, getType()));
         return result;

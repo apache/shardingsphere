@@ -22,8 +22,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.hint.SQLHintUtils;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,10 +48,6 @@ public final class QueryContext {
     
     private final boolean useCache;
     
-    public QueryContext(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> params) {
-        this(sqlStatementContext, sql, params, new HintValueContext());
-    }
-    
     public QueryContext(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext) {
         this(sqlStatementContext, sql, params, hintValueContext, false);
     }
@@ -64,9 +58,7 @@ public final class QueryContext {
         parameters = params;
         databaseName = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(null) : null;
         schemaName = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().orElse(null) : null;
-        this.hintValueContext = sqlStatementContext.getSqlStatement() instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getCommentSegments().isEmpty()
-                ? SQLHintUtils.extractHint(((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getCommentSegments().iterator().next().getText()).orElse(hintValueContext)
-                : hintValueContext;
+        this.hintValueContext = hintValueContext;
         this.useCache = useCache;
     }
     

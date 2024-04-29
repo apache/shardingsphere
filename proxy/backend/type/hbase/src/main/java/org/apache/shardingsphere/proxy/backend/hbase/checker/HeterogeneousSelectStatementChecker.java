@@ -62,7 +62,7 @@ public final class HeterogeneousSelectStatementChecker extends CommonHeterogeneo
     }
     
     private void checkDoNotSupportedSegment() {
-        Preconditions.checkArgument(sqlStatement.getFrom() instanceof SimpleTableSegment, "Only supported simple table segment.");
+        Preconditions.checkArgument(sqlStatement.getFrom().isPresent() && sqlStatement.getFrom().get() instanceof SimpleTableSegment, "Only supported simple table segment.");
         Preconditions.checkArgument(!sqlStatement.getHaving().isPresent(), "Do not supported having segment.");
         Preconditions.checkArgument(!sqlStatement.getGroupBy().isPresent(), "Do not supported group by segment.");
         MySQLSelectStatement selectStatement = (MySQLSelectStatement) sqlStatement;

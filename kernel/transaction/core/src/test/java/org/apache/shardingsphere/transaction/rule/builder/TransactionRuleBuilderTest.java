@@ -35,8 +35,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
@@ -47,9 +45,9 @@ class TransactionRuleBuilderTest {
         TransactionRuleConfiguration ruleConfig = new TransactionRuleConfiguration("LOCAL", "provider", new Properties());
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_db", null, new ResourceMetaData(createDataSourceMap()),
                 new RuleMetaData(Collections.singletonList(mock(ShardingSphereRule.class))), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
-        TransactionRule rule = new TransactionRuleBuilder().build(ruleConfig, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ConfigurationProperties.class));
-        assertNotNull(rule.getConfiguration());
-        assertThat(rule.getDatabases().get("logic_db").getResourceMetaData().getStorageUnits().size(), is(2));
+        try (TransactionRule rule = new TransactionRuleBuilder().build(ruleConfig, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ConfigurationProperties.class))) {
+            assertNotNull(rule.getConfiguration());
+        }
     }
     
     private Map<String, DataSource> createDataSourceMap() {

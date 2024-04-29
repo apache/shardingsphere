@@ -23,14 +23,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class DefaultSQLParserRuleConfigurationBuilderTest {
     
     @Test
     void assertBuild() {
         SQLParserRuleConfiguration actual = new DefaultSQLParserRuleConfigurationBuilder().build();
-        assertFalse(actual.isSqlCommentParseEnabled());
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(128));
         assertThat(actual.getParseTreeCache().getMaximumSize(), is(1024L));
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(2000));

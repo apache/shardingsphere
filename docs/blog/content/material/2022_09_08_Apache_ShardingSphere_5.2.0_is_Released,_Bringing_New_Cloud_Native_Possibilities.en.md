@@ -302,7 +302,7 @@ Below are all the update logs of ShardingSphere 5.2.0. To deliver a better user 
 
 - Kernel: Add PostgreSQL Comment Statement
 
-- Kernel: Support listen statement in postgreSQL
+- Kernel: Support listen statement in PostgreSQL
 
 - Kernel: Support DECLARE cursor statement
 

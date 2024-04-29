@@ -20,9 +20,9 @@ package org.apache.shardingsphere.proxy.backend.config.checker;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.proxy.backend.exception.DuplicatedDataSourceException;
 
 import java.util.Collection;
 import java.util.Map;
@@ -41,14 +41,12 @@ public final class YamlProxyConfigurationChecker {
      * @param databaseConfigs database configurations
      */
     public static void checkDataSources(final Map<String, YamlProxyDataSourceConfiguration> globalDataSources, final Collection<YamlProxyDatabaseConfiguration> databaseConfigs) {
-        for (YamlProxyDatabaseConfiguration each : databaseConfigs) {
-            checkDataSources(globalDataSources, each.getDataSources(), each.getDatabaseName());
-        }
+        databaseConfigs.forEach(each -> checkDataSources(globalDataSources, each.getDataSources(), each.getDatabaseName()));
     }
     
-    private static void checkDataSources(final Map<String, YamlProxyDataSourceConfiguration> globalDataSources, final Map<String, YamlProxyDataSourceConfiguration> databaseDataSources,
-                                         final String databaseName) {
+    private static void checkDataSources(final Map<String, YamlProxyDataSourceConfiguration> globalDataSources,
+                                         final Map<String, YamlProxyDataSourceConfiguration> databaseDataSources, final String databaseName) {
         Collection<String> duplicatedDataSourceNames = globalDataSources.keySet().stream().filter(databaseDataSources.keySet()::contains).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicatedDataSourceException(databaseName, duplicatedDataSourceNames));
+        ShardingSpherePreconditions.checkMustEmpty(duplicatedDataSourceNames, () -> new DuplicateStorageUnitException(databaseName, duplicatedDataSourceNames));
     }
 }

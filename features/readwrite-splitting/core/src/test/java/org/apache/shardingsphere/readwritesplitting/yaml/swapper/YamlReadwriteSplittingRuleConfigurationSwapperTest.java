@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.readwritesplitting.yaml.swapper;
 
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -40,47 +40,47 @@ class YamlReadwriteSplittingRuleConfigurationSwapperTest {
     @Test
     void assertSwapToYamlConfiguration() {
         YamlReadwriteSplittingRuleConfiguration actual = getSwapper().swapToYamlConfiguration(creatReadwriteSplittingRuleConfiguration());
-        assertThat(actual.getDataSources().size(), is(1));
+        assertThat(actual.getDataSourceGroups().size(), is(1));
         assertThat(actual.getLoadBalancers().size(), is(1));
         assertReadwriteSplittingRule(actual);
     }
     
     void assertReadwriteSplittingRule(final YamlReadwriteSplittingRuleConfiguration actual) {
-        assertNotNull(actual.getDataSources().get("readwrite"));
-        YamlReadwriteSplittingDataSourceRuleConfiguration config = actual.getDataSources().get("readwrite");
+        assertNotNull(actual.getDataSourceGroups().get("readwrite"));
+        YamlReadwriteSplittingDataSourceGroupRuleConfiguration config = actual.getDataSourceGroups().get("readwrite");
         assertThat(config.getWriteDataSourceName(), is("write_ds"));
-        assertThat(actual.getDataSources().get("readwrite").getLoadBalancerName(), is("random"));
+        assertThat(actual.getDataSourceGroups().get("readwrite").getLoadBalancerName(), is("random"));
     }
     
     void assertReadwriteSplittingRule(final ReadwriteSplittingRuleConfiguration actual) {
-        ReadwriteSplittingDataSourceRuleConfiguration config = actual.getDataSources().iterator().next();
+        ReadwriteSplittingDataSourceGroupRuleConfiguration config = actual.getDataSourceGroups().iterator().next();
         assertThat(config.getName(), is("t_readwrite"));
         assertThat(config.getWriteDataSourceName(), is("write_ds"));
         assertThat(config.getLoadBalancerName(), is("random"));
     }
     
     private ReadwriteSplittingRuleConfiguration creatReadwriteSplittingRuleConfiguration() {
-        Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = Collections.singleton(
-                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random"));
+        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroupConfigs = Collections.singleton(
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random"));
         Map<String, AlgorithmConfiguration> loadBalancers = Collections.singletonMap("myLoadBalancer", new AlgorithmConfiguration("RANDOM", new Properties()));
-        return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancers);
+        return new ReadwriteSplittingRuleConfiguration(dataSourceGroupConfigs, loadBalancers);
     }
     
     @Test
     void assertSwapToObject() {
         ReadwriteSplittingRuleConfiguration actual = getSwapper().swapToObject(createYamlReadwriteSplittingRuleConfiguration());
-        assertThat(actual.getDataSources().size(), is(1));
+        assertThat(actual.getDataSourceGroups().size(), is(1));
         assertThat(actual.getLoadBalancers().size(), is(1));
         assertReadwriteSplittingRule(actual);
     }
     
     private YamlReadwriteSplittingRuleConfiguration createYamlReadwriteSplittingRuleConfiguration() {
-        YamlReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new YamlReadwriteSplittingDataSourceRuleConfiguration();
-        dataSourceRuleConfig.setReadDataSourceNames(Arrays.asList("read_ds_0", "read_ds_1"));
-        dataSourceRuleConfig.setWriteDataSourceName("write_ds");
-        dataSourceRuleConfig.setLoadBalancerName("random");
+        YamlReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupRuleConfig = new YamlReadwriteSplittingDataSourceGroupRuleConfiguration();
+        dataSourceGroupRuleConfig.setReadDataSourceNames(Arrays.asList("read_ds_0", "read_ds_1"));
+        dataSourceGroupRuleConfig.setWriteDataSourceName("write_ds");
+        dataSourceGroupRuleConfig.setLoadBalancerName("random");
         YamlReadwriteSplittingRuleConfiguration result = new YamlReadwriteSplittingRuleConfiguration();
-        result.getDataSources().put("t_readwrite", dataSourceRuleConfig);
+        result.getDataSourceGroups().put("t_readwrite", dataSourceGroupRuleConfig);
         YamlAlgorithmConfiguration algorithmConfig = new YamlAlgorithmConfiguration();
         algorithmConfig.setType("RANDOM");
         result.getLoadBalancers().put("random_loadbalancer", algorithmConfig);

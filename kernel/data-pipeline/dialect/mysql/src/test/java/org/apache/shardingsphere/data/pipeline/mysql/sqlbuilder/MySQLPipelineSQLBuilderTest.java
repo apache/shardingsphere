@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -36,13 +36,7 @@ class MySQLPipelineSQLBuilderTest {
     @Test
     void assertBuildInsertSQLOnDuplicateClause() {
         String actual = sqlBuilder.buildInsertOnDuplicateClause(mockDataRecord("t1")).orElse(null);
-        assertThat(actual, is("ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
-    }
-    
-    @Test
-    void assertBuildInsertSQLOnDuplicateClauseHasShardingColumn() {
-        String actual = sqlBuilder.buildInsertOnDuplicateClause(mockDataRecord("t2")).orElse(null);
-        assertThat(actual, is("ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
+        assertThat(actual, is("ON DUPLICATE KEY UPDATE id=VALUES(id),sc=VALUES(sc),c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
     }
     
     @Test
@@ -53,7 +47,7 @@ class MySQLPipelineSQLBuilderTest {
     }
     
     private DataRecord mockDataRecord(final String tableName) {
-        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, tableName, new PlaceholderPosition(), 4);
+        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, tableName, new IngestPlaceholderPosition(), 4);
         result.addColumn(new Column("id", "", false, true));
         result.addColumn(new Column("sc", "", false, false));
         result.addColumn(new Column("c1", "", true, false));

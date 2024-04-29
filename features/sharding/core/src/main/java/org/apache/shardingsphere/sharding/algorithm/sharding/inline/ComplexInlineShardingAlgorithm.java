@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
-import com.google.common.base.Strings;
-import groovy.lang.Closure;
-import groovy.util.Expando;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
-import org.apache.shardingsphere.sharding.exception.algorithm.sharding.MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException;
-import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
+import org.apache.shardingsphere.sharding.exception.algorithm.MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException;
 import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
 import java.util.Arrays;
@@ -65,8 +62,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     
     private String getAlgorithmExpression(final Properties props) {
         String algorithmExpression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(algorithmExpression),
-                () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression can not be null."));
+        ShardingSpherePreconditions.checkNotEmpty(algorithmExpression, () -> new AlgorithmInitializationException(this, "Inline sharding algorithm expression can not be null."));
         return InlineExpressionParserFactory.newInstance(algorithmExpression.trim()).handlePlaceHolder();
     }
     
@@ -93,12 +89,8 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     }
     
     private String doSharding(final Map<String, Comparable<?>> columnNameAndShardingValueMap) {
-        Closure<?> closure = createClosure();
-        for (Entry<String, Comparable<?>> entry : columnNameAndShardingValueMap.entrySet()) {
-            ShardingSpherePreconditions.checkNotNull(entry.getValue(), NullShardingValueException::new);
-            closure.setProperty(entry.getKey(), entry.getValue());
-        }
-        return closure.call().toString();
+        columnNameAndShardingValueMap.forEach((key, value) -> ShardingSpherePreconditions.checkNotNull(value, NullShardingValueException::new));
+        return InlineExpressionParserFactory.newInstance(algorithmExpression).evaluateWithArgs(columnNameAndShardingValueMap);
     }
     
     private Collection<Map<String, Comparable<?>>> flatten(final Map<String, Collection<Comparable<?>>> columnNameAndShardingValuesMap) {
@@ -128,12 +120,6 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
                 result.add(item);
             }
         }
-        return result;
-    }
-    
-    private Closure<?> createClosure() {
-        Closure<?> result = InlineExpressionParserFactory.newInstance(algorithmExpression).evaluateClosure().rehydrate(new Expando(), null, null);
-        result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
     }
     

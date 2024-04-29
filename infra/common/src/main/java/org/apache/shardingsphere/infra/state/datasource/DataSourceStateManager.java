@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.state.datasource.exception.UnavailableDataSourceException;
 
 import javax.sql.DataSource;
@@ -87,7 +88,7 @@ public final class DataSourceStateManager {
         try (Connection ignored = dataSource.getConnection()) {
             dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), DataSourceState.ENABLED);
         } catch (final SQLException ex) {
-            ShardingSpherePreconditions.checkState(forceStart, () -> new UnavailableDataSourceException(ex, actualDataSourceName));
+            ShardingSpherePreconditions.checkState(forceStart, () -> new UnavailableDataSourceException(actualDataSourceName, ex));
             log.error("Data source unavailable, ignored with the -f parameter.", ex);
         }
     }
@@ -96,7 +97,7 @@ public final class DataSourceStateManager {
      * Get enabled data sources.
      *
      * @param databaseName database name
-     * @param databaseConfig database config
+     * @param databaseConfig database configuration
      * @return enabled data sources
      */
     public Map<String, DataSource> getEnabledDataSources(final String databaseName, final DatabaseConfiguration databaseConfig) {
@@ -148,12 +149,11 @@ public final class DataSourceStateManager {
     /**
      * Update data source state.
      * 
-     * @param databaseName database name
-     * @param actualDataSourceName actual data source name
+     * @param qualifiedDataSource qualified data source
      * @param dataSourceState data source state
      */
-    public void updateState(final String databaseName, final String actualDataSourceName, final DataSourceState dataSourceState) {
-        dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), dataSourceState);
+    public void updateState(final QualifiedDataSource qualifiedDataSource, final DataSourceState dataSourceState) {
+        dataSourceStates.put(getCacheKey(qualifiedDataSource.getDatabaseName(), qualifiedDataSource.getDataSourceName()), dataSourceState);
     }
     
     private String getCacheKey(final String databaseName, final String dataSourceName) {

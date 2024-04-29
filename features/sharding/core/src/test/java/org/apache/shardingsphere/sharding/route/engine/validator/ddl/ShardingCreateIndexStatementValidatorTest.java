@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateIndexS
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.sharding.exception.metadata.DuplicatedIndexException;
+import org.apache.shardingsphere.sharding.exception.metadata.DuplicateIndexException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateIndexStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
@@ -86,7 +86,7 @@ class ShardingCreateIndexStatementValidatorTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(database.getSchema("public").containsIndex("t_order", "t_order_index")).thenReturn(true);
-        assertThrows(DuplicatedIndexException.class,
+        assertThrows(DuplicateIndexException.class,
                 () -> new ShardingCreateIndexStatementValidator().preValidate(
                         shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
@@ -126,7 +126,7 @@ class ShardingCreateIndexStatementValidatorTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(database.getSchema("public").containsIndex("t_order", "content_idx")).thenReturn(true);
-        assertThrows(DuplicatedIndexException.class,
+        assertThrows(DuplicateIndexException.class,
                 () -> new ShardingCreateIndexStatementValidator().preValidate(
                         shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }

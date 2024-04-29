@@ -30,6 +30,6 @@ class SQLStatementCacheBuilderTest {
     
     @Test
     void assertBuild() {
-        assertThat(SQLStatementCacheBuilder.build(TypedSPILoader.getService(DatabaseType.class, "MySQL"), new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false), isA(LoadingCache.class));
+        assertThat(SQLStatementCacheBuilder.build(TypedSPILoader.getService(DatabaseType.class, "MySQL"), new CacheOption(2000, 65535L), new CacheOption(128, 1024L)), isA(LoadingCache.class));
     }
 }

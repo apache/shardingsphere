@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.authority.rule;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -55,9 +56,9 @@ class AuthorityRuleTest {
     }
     
     private AuthorityRule createAuthorityRule() {
-        Collection<ShardingSphereUser> users = new LinkedList<>();
-        users.add(new ShardingSphereUser("root", "root", "localhost"));
-        users.add(new ShardingSphereUser("admin", "123456", "localhost"));
-        return new AuthorityRule(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null));
+        Collection<ShardingSphereUser> users = Arrays.asList(new ShardingSphereUser("root", "root", "localhost"), new ShardingSphereUser("admin", "123456", "localhost"));
+        AlgorithmConfiguration privilegeProvider = new AlgorithmConfiguration("FIXTURE", new Properties());
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, privilegeProvider, Collections.emptyMap(), null);
+        return new AuthorityRule(ruleConfig);
     }
 }

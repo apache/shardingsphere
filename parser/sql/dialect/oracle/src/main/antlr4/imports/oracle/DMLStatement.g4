@@ -136,11 +136,11 @@ select
     ;
 
 selectSubquery
-    : (queryBlock | selectCombineClause | parenthesisSelectSubquery) pivotClause? orderByClause? rowLimitingClause
+    : selectSubquery combineType selectSubquery | ((queryBlock | parenthesisSelectSubquery) pivotClause? orderByClause? rowLimitingClause)
     ;
 
-selectCombineClause
-    : ((queryBlock | parenthesisSelectSubquery) orderByClause? rowLimitingClause) ((UNION ALL? | INTERSECT | MINUS) selectSubquery)+
+combineType
+    : UNION ALL? | INTERSECT | MINUS
     ;
 
 parenthesisSelectSubquery
@@ -686,7 +686,8 @@ subquery
 modelExpr
     : (numberLiterals ASTERISK_)? ((measureColumn LBT_ (condition | expr) (COMMA_ (condition | expr))* RBT_) 
     | (aggregationFunction LBT_ (((condition | expr) (COMMA_ (condition | expr))*) | (singleColumnForLoop (COMMA_ singleColumnForLoop)*) | multiColumnForLoop) RBT_) 
-    | analyticFunction) (PLUS_ modelExpr | ASTERISK_ numberLiterals (ASTERISK_ modelExpr)?)?
+    | analyticFunction) ((PLUS_ | SLASH_) LP_? modelExpr* RP_? | ASTERISK_ numberLiterals (ASTERISK_ modelExpr)?)?
+    | expr
     ;
 
 forUpdateClause
@@ -706,7 +707,7 @@ rowLimitingClause
     ;
 
 merge
-    : MERGE hint? intoClause usingClause mergeUpdateClause? mergeInsertClause? errorLoggingClause?
+    : MERGE hint? intoClause usingClause (mergeUpdateClause? mergeInsertClause? | mergeInsertClause? mergeUpdateClause?) errorLoggingClause?
     ;
 
 hint

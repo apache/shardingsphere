@@ -169,4 +169,18 @@ public final class ProjectionsContext {
         }
         return false;
     }
+    
+    /**
+     * Find column projection.
+     * 
+     * @param columnIndex column index
+     * @return found column projection
+     */
+    public Optional<ColumnProjection> findColumnProjection(final int columnIndex) {
+        if (expandProjections.size() < columnIndex) {
+            return Optional.empty();
+        }
+        Projection projection = expandProjections.get(columnIndex - 1);
+        return projection instanceof ColumnProjection ? Optional.of((ColumnProjection) projection) : Optional.empty();
+    }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calc
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 
 import java.util.Iterator;
@@ -32,7 +31,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * Abstract streaming single table inventory calculator.
  */
 @Getter
-@Slf4j
 public abstract class AbstractStreamingSingleTableInventoryCalculator extends AbstractSingleTableInventoryCalculator {
     
     @Override

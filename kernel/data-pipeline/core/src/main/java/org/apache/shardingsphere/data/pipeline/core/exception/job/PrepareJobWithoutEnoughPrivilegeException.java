@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Collection;
@@ -25,11 +24,11 @@ import java.util.Collection;
 /**
  * Prepare job without enough privilege exception.
  */
-public final class PrepareJobWithoutEnoughPrivilegeException extends PipelineSQLException {
+public final class PrepareJobWithoutEnoughPrivilegeException extends PipelineJobException {
     
     private static final long serialVersionUID = -8462039913248251254L;
     
     public PrepareJobWithoutEnoughPrivilegeException(final Collection<String> privileges) {
-        super(XOpenSQLState.PRIVILEGE_NOT_GRANTED, 86, String.format("Source data source lacks %s privilege(s).", privileges));
+        super(XOpenSQLState.PRIVILEGE_NOT_GRANTED, 6, "Source data source lacks '%s' privilege(s).", privileges);
     }
 }

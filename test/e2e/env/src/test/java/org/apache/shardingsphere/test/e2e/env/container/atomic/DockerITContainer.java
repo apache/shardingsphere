@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.DockerHealthcheckWaitStrategy;
@@ -33,10 +34,11 @@ import java.util.stream.Collectors;
  * Docker IT container.
  */
 @Getter
+@Setter
 @Slf4j
 public abstract class DockerITContainer extends GenericContainer<DockerITContainer> implements ITContainer {
     
-    private final String name;
+    private String name;
     
     protected DockerITContainer(final String name, final String containerImage) {
         super(new RemoteDockerImage(DockerImageName.parse(containerImage)));

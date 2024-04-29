@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 225 家公司。
+共计 219 家公司。
 
 ### 基础软件
 <ul>
@@ -69,7 +69,7 @@ chapter = true
 <ul>
     <li><a href="http://www.dangdang.com/" rel="nofollow">当当</a>：<a href="https://mp.weixin.qq.com/s/Dcs_2Mkdvd49_s40rlOHvw" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">转转</a>：<a href="https://mp.weixin.qq.com/s/WftCu5oD4TZ-Xcf4uELtKA" rel="nofollow">用户案例</a></li>
-    <li><a href="https://www.dewu.com/" rel="nofollow">得物</a>：<a href="https://mp.weixin.qq.com/s/mYWKF0Ipso4GqSLmF4C3tg" rel="nofollow">用户案例 1</a> & <a href="https://mp.weixin.qq.com/s/ZyMBRJqbDQWYxjqlGAquKQ" rel="nofollow">用户案例 2</a></li>
+    <li><a href="https://www.dewu.com/" rel="nofollow">得物</a>：<a href="https://mp.weixin.qq.com/s/mYWKF0Ipso4GqSLmF4C3tg" rel="nofollow">用户案例 1</a> & <a href="https://mp.weixin.qq.com/s/ZyMBRJqbDQWYxjqlGAquKQ" rel="nofollow">用户案例 2</a> & <a href="https://mp.weixin.qq.com/s/QxtCyNSvxzvJHxwdJzQKzw" rel="nofollow">用户案例 3</a></li>
     <li><a href="http://game.163.com/" rel="nofollow">网易游戏</a></li>
     <li><a href="https://www.vip.com/" rel="nofollow">唯品会</a></li>
     <li><a href="https://www.joybuy.com/" rel="nofollow">京东商城海外站</a></li>
@@ -129,6 +129,9 @@ chapter = true
     <li><a href="https://www.wegooooo.com/" rel="nofollow">微购科技</a></li>
     <li><a href="https://www.lingxing.com/" rel="nofollow">领星</a></li>
     <li><a href="http://sz.aisino.com/" rel="nofollow">深圳航天信息</a></li>
+    <li><a href="https://studio.nsdt.cloud/" rel="nofollow">简石科技</a></li>
+    <li><a href="http://www.cictec.cn" rel="nofollow">北京中航讯科技股份有限公司</a></li>
+    <li><a href="https://www.mizarvision.com/" rel="nofollow">觅熵科技</a></li>
 </ul>
 
 ### 出行
@@ -147,7 +150,7 @@ chapter = true
 
 ### 物流
 <ul>
-    <li><a href="https://www.jdl.cn/" rel="nofollow">京东物流</a></li>
+    <li><a href="https://www.jdl.cn/" rel="nofollow">京东物流</a>：<a href="https://mp.weixin.qq.com/s/vFmBi3qnDdttUVlWA3jGXA" rel="nofollow">用户案例 1</a> & <a href="https://mp.weixin.qq.com/s/sFiLurNwC4ggBN7D-GWbYw" rel="nofollow">用户案例 2</a></li>
     <li><a href="https://www.zto.com/" rel="nofollow">中通快递</a></li>
     <li><a href="https://www.ishansong.com/" rel="nofollow">闪送</a></li>
     <li><a href="http://www.yundaex.com/cn/index.php" rel="nofollow">韵达科技</a></li>
@@ -170,6 +173,7 @@ chapter = true
     <li><a href="https://www.tujia.com/" rel="nofollow">途家民宿</a></li>
     <li><a href="https://www.fotoplace.cc/" rel="nofollow">足记</a></li>
     <li><a href="http://www.yaduo.com/" rel="nofollow">亚朵</a></li>
+    <li><a href="https://www.fangte.com/" rel="nofollow">华强方特</a></li>
 </ul>
 
 ### 互联网文娱
@@ -301,6 +305,7 @@ chapter = true
     <li><a href="https://www.ywwl.com/" rel="nofollow">遥望网络</a></li>
     <li><a href="http://www.le7soft.com/" rel="nofollow">乐奇软件</a></li>
     <li><a href="http://www.hylink.net.cn/" rel="nofollow">深圳市海邻科信息技术有限公司</a></li>
+    <li><a href="https://www.datainstack.com/" rel="nofollow">南京德映科技有限公司</a></li>
 </ul>
 
 ### 医疗与健康

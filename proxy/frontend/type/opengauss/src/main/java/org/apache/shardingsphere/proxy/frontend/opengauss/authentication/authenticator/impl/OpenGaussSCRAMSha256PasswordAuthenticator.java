@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.impl;
 
-import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.opengauss.constant.OpenGaussAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussMacCalculator;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -42,7 +41,7 @@ public final class OpenGaussSCRAMSha256PasswordAuthenticator implements OpenGaus
     }
     
     @Override
-    public AuthenticationMethod getAuthenticationMethod() {
-        return OpenGaussAuthenticationMethod.SCRAM_SHA256;
+    public String getAuthenticationMethodName() {
+        return OpenGaussAuthenticationMethod.SCRAM_SHA256.getMethodName();
     }
 }

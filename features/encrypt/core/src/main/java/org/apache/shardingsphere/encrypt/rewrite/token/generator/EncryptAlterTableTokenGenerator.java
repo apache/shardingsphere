@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.constant.EncryptColumnDataType;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptColumnAlterException;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -176,8 +176,8 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     }
     
     private void isSameEncryptColumn(final EncryptTable encryptTable, final String previousColumnName, final String columnName) {
-        Optional<StandardEncryptAlgorithm> previousEncryptor = encryptTable.findEncryptor(previousColumnName);
-        Optional<StandardEncryptAlgorithm> currentEncryptor = encryptTable.findEncryptor(columnName);
+        Optional<EncryptAlgorithm> previousEncryptor = encryptTable.findEncryptor(previousColumnName);
+        Optional<EncryptAlgorithm> currentEncryptor = encryptTable.findEncryptor(columnName);
         if (!previousEncryptor.isPresent() && !currentEncryptor.isPresent()) {
             return;
         }

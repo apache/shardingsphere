@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -177,11 +177,11 @@ class ShardingSQLFederationDeciderTest {
     private ShardingRule createShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
         when(result.getShardingLogicTableNames(Arrays.asList("t_order", "t_order_item"))).thenReturn(Arrays.asList("t_order", "t_order_item"));
-        TableRule tableRule = mock(TableRule.class);
-        when(tableRule.getActualDataNodes()).thenReturn(Arrays.asList(
+        ShardingTable shardingTable = mock(ShardingTable.class);
+        when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(
                 new DataNode("ds_0", "t_order"), new DataNode("ds_1", "t_order"),
                 new DataNode("ds_0", "t_order_item"), new DataNode("ds_1", "t_order_item")));
-        when(result.findTableRule("t_order")).thenReturn(Optional.of(tableRule));
+        when(result.findShardingTable("t_order")).thenReturn(Optional.of(shardingTable));
         BindingTableRule bindingTableRule = mock(BindingTableRule.class);
         when(bindingTableRule.hasLogicTable("t_order")).thenReturn(true);
         when(bindingTableRule.hasLogicTable("t_order_item")).thenReturn(true);

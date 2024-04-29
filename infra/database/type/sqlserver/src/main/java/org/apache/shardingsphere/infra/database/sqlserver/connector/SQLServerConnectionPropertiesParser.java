@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.connector.StandardConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.url.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.util.regex.Matcher;
@@ -34,7 +34,7 @@ public final class SQLServerConnectionPropertiesParser implements ConnectionProp
     
     private static final int DEFAULT_PORT = 1433;
     
-    private static final Pattern URL_PATTERN = Pattern.compile("jdbc:(microsoft:)?sqlserver://([\\w\\-\\.]+):?(\\d*);\\S*(DatabaseName|database)=([\\w\\-\\.]+);?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern URL_PATTERN = Pattern.compile("jdbc:(microsoft:|tc:)?sqlserver:.*//([\\w\\-\\.]+):?(\\d*);\\S*(databaseName|database)=([\\w\\-\\.]+);?", Pattern.CASE_INSENSITIVE);
     
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {

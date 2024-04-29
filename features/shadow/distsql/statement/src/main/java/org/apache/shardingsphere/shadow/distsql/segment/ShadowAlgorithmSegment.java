@@ -20,14 +20,14 @@ package org.apache.shardingsphere.shadow.distsql.segment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
 /**
  * Shadow algorithms segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShadowAlgorithmSegment implements ASTNode {
+public final class ShadowAlgorithmSegment implements DistSQLSegment {
     
     private final String algorithmName;
     

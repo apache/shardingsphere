@@ -27,8 +27,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -42,16 +41,16 @@ public final class DataSourcePoolPropertiesValidator {
      * Validate data source pool properties map.
      * 
      * @param propsMap data source pool properties map
-     * @return error messages
+     * @return data source name and exception map
      */
-    public static Collection<String> validate(final Map<String, DataSourcePoolProperties> propsMap) {
-        Collection<String> result = new LinkedList<>();
+    public static Map<String, Exception> validate(final Map<String, DataSourcePoolProperties> propsMap) {
+        Map<String, Exception> result = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             try {
                 validateProperties(entry.getKey(), entry.getValue());
                 validateConnection(entry.getKey(), entry.getValue());
             } catch (final InvalidDataSourcePoolPropertiesException ex) {
-                result.add(ex.getMessage());
+                result.put(entry.getKey(), ex);
             }
         }
         return result;

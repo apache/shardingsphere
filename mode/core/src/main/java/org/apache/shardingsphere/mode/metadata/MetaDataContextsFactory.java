@@ -54,7 +54,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Meta data contexts.
+ * Meta data contexts factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetaDataContextsFactory {
@@ -74,7 +74,7 @@ public final class MetaDataContextsFactory {
     
     /**
      * Create meta data contexts.
-     *
+     * 
      * @param persistService persist service
      * @param param context manager builder parameter
      * @param instanceContext instance context
@@ -106,7 +106,8 @@ public final class MetaDataContextsFactory {
         return result;
     }
     
-    private static Collection<String> getDatabaseNames(final InstanceContext instanceContext, final Map<String, DatabaseConfiguration> databaseConfigs, final MetaDataPersistService persistService) {
+    private static Collection<String> getDatabaseNames(final InstanceContext instanceContext,
+                                                       final Map<String, DatabaseConfiguration> databaseConfigs, final MetaDataPersistService persistService) {
         return instanceContext.getInstance().getMetaData() instanceof JDBCInstanceMetaData ? databaseConfigs.keySet() : persistService.getDatabaseMetaDataService().loadAllDatabaseNames();
     }
     
@@ -163,7 +164,7 @@ public final class MetaDataContextsFactory {
     
     private static void persistMetaData(final MetaDataContexts metaDataContexts) {
         metaDataContexts.getMetaData().getDatabases().values().forEach(each -> each.getSchemas()
-                .forEach((schemaName, schema) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persist(each.getName(), schemaName, schema)));
+                .forEach((schemaName, schema) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persistByAlterConfiguration(each.getName(), schemaName, schema)));
         metaDataContexts.getStatistics().getDatabaseData().forEach((databaseName, databaseData) -> databaseData.getSchemaData().forEach((schemaName, schemaData) -> metaDataContexts
                 .getPersistService().getShardingSphereDataPersistService().persist(databaseName, schemaName, schemaData, metaDataContexts.getMetaData().getDatabases())));
     }

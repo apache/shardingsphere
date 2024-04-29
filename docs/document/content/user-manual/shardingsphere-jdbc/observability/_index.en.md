@@ -15,7 +15,7 @@ cd shardingsphere
 mvn clean install -DskipITs -DskipTests -Prelease
 ```
 
-Artifact is distribution/agent/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz
+Agent artifact is `distribution/agent/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz`
 
 ### Directory structure
 
@@ -42,7 +42,6 @@ tree
 │       ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
 └── shardingsphere-agent-${latest.release.version}.jar
 ```
-Agent log output location is `agent/logs/stdout.log`.
 
 ### Configuration
 
@@ -103,7 +102,7 @@ OpenTelemetry can export tracing data to Jaeger, Zipkin.
 
 Parameter reference [OpenTelemetry SDK Autoconfigure](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure)
 
-## Usage in ShardingSphere-JDBC
+## Usage
 
 + 1 The `SpringBoot` project ready to integrate `ShardingSphere-JDBC`, test-project.jar
 + 2 Startup project

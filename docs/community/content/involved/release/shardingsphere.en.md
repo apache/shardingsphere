@@ -608,7 +608,9 @@ Refer to [Release Download Pages for Projects](https://infra.apache.org/release-
 
 ### 6. Add entrance of documents of the new release into home page
 
-Refer to commit: https://github.com/apache/shardingsphere-doc/commit/9fdf438d1170129d2690b5dee316403984579430
+Refer to commit:
+Update the version number of document files, including index.html, indexzh.html, learning.html, legacy.html, and legacyzh.html under the shardingsphere-doc repository to the current version. [Reference commit](https://github.com/apache/shardingsphere-doc/commit/9fdf438d1170129d2690b5dee316403984579430)
+Update language.html(docs/document/themes/hugo-theme-learn/layouts/partials/language.html) under the shardingsphere repository and add the current version number for navigation. [Reference commit](https://github.com/apache/shardingsphere/pull/29017/files)
 
 ### 7. Update Example Version
 

@@ -17,56 +17,54 @@
 
 package org.apache.shardingsphere.sqlfederation.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.queryable.ShowSQLFederationRuleStatement;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Properties;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShowSQLFederationRuleExecutorTest {
     
+    private DistSQLQueryExecuteEngine engine;
+    
+    @BeforeEach
+    void setUp() {
+        engine = new DistSQLQueryExecuteEngine(new ShowSQLFederationRuleStatement(), null, mockContextManager(), mock(DistSQLConnectionContext.class));
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        SQLFederationRule rule = mock(SQLFederationRule.class);
+        when(rule.getConfiguration()).thenReturn(new SQLFederationRuleConfiguration(true, true, new CacheOption(2000, 65535L)));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLFederationRule.class)).thenReturn(Optional.of(rule));
+        return result;
+    }
+    
     @Test
-    void assertSQLFederationRule() {
-        ShardingSphereMetaData metaData = mockMetaData();
-        ShowSQLFederationRuleExecutor executor = new ShowSQLFederationRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowSQLFederationRuleStatement.class));
+    void assertGetRows() throws SQLException {
+        engine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("true"));
-        assertThat(row.getCell(2), is("initialCapacity: 2000, maximumSize: 65535"));
-    }
-    
-    @Test
-    void assertGetColumnNames() {
-        ShowSQLFederationRuleExecutor executor = new ShowSQLFederationRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(2));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("sql_federation_enabled"));
-        assertThat(iterator.next(), is("execution_plan_cache"));
-    }
-    
-    private ShardingSphereMetaData mockMetaData() {
-        SQLFederationRule sqlFederationRule = mock(SQLFederationRule.class);
-        when(sqlFederationRule.getConfiguration()).thenReturn(new SQLFederationRuleConfiguration(true, new CacheOption(2000, 65535L)));
-        return new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ResourceMetaData.class),
-                new RuleMetaData(Collections.singleton(sqlFederationRule)), new ConfigurationProperties(new Properties()));
+        assertThat(row.getCell(2), is("true"));
+        assertThat(row.getCell(3), is("initialCapacity: 2000, maximumSize: 65535"));
     }
 }

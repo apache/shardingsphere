@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.hbase.checker;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+
 import java.util.Collection;
 import java.util.Optional;
 
@@ -50,8 +51,8 @@ public final class HeterogeneousUpdateStatementChecker extends CommonHeterogeneo
     }
     
     private void checkAssignmentIsOk() {
-        Collection<AssignmentSegment> assignmentSegments = sqlStatement.getSetAssignment().getAssignments();
-        for (AssignmentSegment assignmentSegment : assignmentSegments) {
+        Collection<ColumnAssignmentSegment> assignmentSegments = sqlStatement.getSetAssignment().getAssignments();
+        for (ColumnAssignmentSegment assignmentSegment : assignmentSegments) {
             Preconditions.checkArgument(isAllowExpressionSegment(assignmentSegment.getValue()), "Assignment must is literal or parameter marker.");
             boolean isRowKey = ALLOW_KEYS.stream().anyMatch(each -> each.equalsIgnoreCase(assignmentSegment.getColumns().iterator().next().getIdentifier().getValue()));
             Preconditions.checkArgument(!isRowKey, "Do not allow update rowKey");

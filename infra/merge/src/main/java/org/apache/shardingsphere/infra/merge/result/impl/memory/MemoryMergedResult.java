@@ -74,7 +74,7 @@ public abstract class MemoryMergedResult<T extends ShardingSphereRule> implement
     
     @Override
     public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        ShardingSpherePreconditions.checkState(!INVALID_MEMORY_TYPES.contains(type), () -> new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName())));
+        ShardingSpherePreconditions.checkNotContains(INVALID_MEMORY_TYPES, type, () -> new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName())));
         Object result = currentResultSetRow.getCell(columnIndex);
         wasNull = null == result;
         return result;

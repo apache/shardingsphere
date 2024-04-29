@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.mode.manager.standalone.yaml.StandaloneYamlPersistRepositoryConfigurationSwapper
-org.apache.shardingsphere.mode.manager.standalone.yaml.NewStandaloneYamlPersistRepositoryConfigurationSwapper

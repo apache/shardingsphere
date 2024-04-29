@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.cdc.exception;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
 
 /**
  * CDC exception wrapper.
@@ -30,11 +29,11 @@ public final class CDCExceptionWrapper extends RuntimeException {
     
     private final String requestId;
     
-    private final ShardingSphereSQLException exception;
+    private final Exception cause;
     
-    public CDCExceptionWrapper(final String requestId, final ShardingSphereSQLException exception) {
-        super(exception.getMessage());
+    public CDCExceptionWrapper(final String requestId, final Exception cause) {
+        super(cause.getMessage());
         this.requestId = requestId;
-        this.exception = exception;
+        this.cause = cause;
     }
 }

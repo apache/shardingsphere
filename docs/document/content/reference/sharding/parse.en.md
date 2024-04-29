@@ -64,13 +64,13 @@ Since V5.0.x, the architecture of the parsing engine has been restructured and a
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-sql-parser-engine</artifactId>
+    <artifactId>shardingsphere-parser-sql-engine</artifactId>
     <version>${project.version}</version>
 </dependency>
 <!-- According to the needs, introduce the parsing module of the specified dialect (take MySQL as an example), you can add all the supported dialects, or just what you need -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-sql-parser-mysql</artifactId>
+    <artifactId>shardingsphere-parser-sql-mysql</artifactId>
     <version>${project.version}</version>
 </dependency>
 ```
@@ -96,7 +96,8 @@ SQLStatement sqlStatement = sqlVisitorEngine.visit(parseASTNode);
 - SQL Formatting
 
 ```java
-new SQLFormatEngine(databaseType, cacheOption).format(sql, useCache, props);
+new SQLFormatEngine(TypedSPILoader.getService(DatabaseType.class, "Mysql"), cacheOption)
+        .format(sql, false, null);
 ```
 
 Example：

@@ -35,9 +35,9 @@ import java.util.Map;
 public final class SingleRuleBuilder implements DatabaseRuleBuilder<SingleRuleConfiguration> {
     
     @Override
-    public SingleRule build(final SingleRuleConfiguration config, final String databaseName, final DatabaseType protocolType,
+    public SingleRule build(final SingleRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType,
                             final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new SingleRule(config, databaseName, protocolType, dataSources, builtRules);
+        return new SingleRule(ruleConfig, databaseName, protocolType, dataSources, builtRules);
     }
     
     @Override

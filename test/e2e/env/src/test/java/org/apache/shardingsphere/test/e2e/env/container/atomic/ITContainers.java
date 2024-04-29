@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic;
 
 import com.google.common.base.Strings;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,7 @@ public final class ITContainers implements Startable {
     
     private final String scenario;
     
+    @Getter
     private final Network network = Network.newNetwork();
     
     private final Collection<EmbeddedITContainer> embeddedContainers = new LinkedList<>();

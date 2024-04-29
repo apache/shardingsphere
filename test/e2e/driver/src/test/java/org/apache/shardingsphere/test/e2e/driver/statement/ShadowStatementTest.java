@@ -94,12 +94,12 @@ class ShadowStatementTest extends AbstractShadowDriverTest {
     
     @Test
     void assertUpdateNativeCase() throws SQLException {
-        int result;
+        int actual;
         try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(INSERT_SQL);
-            result = statement.executeUpdate(UPDATE_SQL);
+            actual = statement.executeUpdate(UPDATE_SQL);
         }
-        assertThat(result, is(1));
+        assertThat(actual, is(1));
         assertResultSet(true, 0, "cipher_pwd");
         assertResultSet(false, 1, "cipher_pwd");
         
@@ -107,12 +107,12 @@ class ShadowStatementTest extends AbstractShadowDriverTest {
     
     @Test
     void assertUpdateShadowCase() throws SQLException {
-        int result;
+        int actual;
         try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(INSERT_SHADOW_SQL);
-            result = statement.executeUpdate(UPDATE_SHADOW_SQL);
+            actual = statement.executeUpdate(UPDATE_SHADOW_SQL);
         }
-        assertThat(result, is(1));
+        assertThat(actual, is(1));
         assertResultSet(true, 1, "cipher_pwd");
         assertResultSet(false, 0, "cipher_pwd");
     }

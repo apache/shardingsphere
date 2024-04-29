@@ -42,7 +42,7 @@ class BroadcastUnicastRoutingEngineTest {
     @BeforeEach
     void setUp() {
         broadcastRule = mock(BroadcastRule.class);
-        when(broadcastRule.getAvailableDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(broadcastRule.getDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
     }
     
     @Test

@@ -105,10 +105,9 @@ class PortalTest {
     
     @BeforeEach
     void setup() throws SQLException {
-        ContextManager contextManager = mockContextManager();
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = mockDatabase();
-        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
+        ContextManager contextManager = mockContextManager(database);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
         when(ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), anyString(), any(SQLStatement.class), eq(connectionSession), any(HintValueContext.class)))
@@ -117,10 +116,11 @@ class PortalTest {
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
     }
     
-    private ContextManager mockContextManager() {
+    private ContextManager mockContextManager(final ShardingSphereDatabase database) {
         ContextManager result = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(result.getDatabase("foo_db")).thenReturn(database);
         return result;
     }
     

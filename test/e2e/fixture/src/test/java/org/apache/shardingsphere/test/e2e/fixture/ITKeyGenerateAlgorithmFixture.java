@@ -19,9 +19,13 @@ package org.apache.shardingsphere.test.e2e.fixture;
 
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
+import java.util.Collection;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public final class ITKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm, InstanceContextAware {
     
@@ -33,8 +37,8 @@ public final class ITKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm
     }
     
     @Override
-    public Long generateKey() {
-        return 1L;
+    public Collection<Comparable<?>> generateKeys(final AlgorithmSQLContext context, final int keyGenerateCount) {
+        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 1L).collect(Collectors.toList());
     }
     
     @Override

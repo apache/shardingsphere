@@ -35,9 +35,9 @@ import java.util.Map;
 public final class BroadcastRuleBuilder implements DatabaseRuleBuilder<BroadcastRuleConfiguration> {
     
     @Override
-    public BroadcastRule build(final BroadcastRuleConfiguration config, final String databaseName, final DatabaseType protocolType,
+    public BroadcastRule build(final BroadcastRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType,
                                final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new BroadcastRule(config, databaseName, dataSources);
+        return new BroadcastRule(ruleConfig, databaseName, dataSources, builtRules);
     }
     
     @Override

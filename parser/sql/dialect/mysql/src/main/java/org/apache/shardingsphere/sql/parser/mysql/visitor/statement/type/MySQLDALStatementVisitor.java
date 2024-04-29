@@ -893,7 +893,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowProcesslist(final ShowProcesslistContext ctx) {
-        return new MySQLShowProcessListStatement();
+        return new MySQLShowProcessListStatement(null != ctx.FULL());
     }
     
     @Override

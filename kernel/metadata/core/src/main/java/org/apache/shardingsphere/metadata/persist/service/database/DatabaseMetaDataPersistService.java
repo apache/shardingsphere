@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.metadata.persist.service.database;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.database.schema.SchemaManager;
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.schema.TableMetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.schema.ViewMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
@@ -42,114 +43,68 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
     
     private final ViewMetaDataPersistService viewMetaDataPersistService;
     
-    public DatabaseMetaDataPersistService(final PersistRepository repository) {
+    private final MetaDataVersionPersistService metaDataVersionPersistService;
+    
+    public DatabaseMetaDataPersistService(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
         this.repository = repository;
-        this.tableMetaDataPersistService = new TableMetaDataPersistService(repository);
-        this.viewMetaDataPersistService = new ViewMetaDataPersistService(repository);
+        this.metaDataVersionPersistService = metaDataVersionPersistService;
+        this.tableMetaDataPersistService = new TableMetaDataPersistService(repository, metaDataVersionPersistService);
+        this.viewMetaDataPersistService = new ViewMetaDataPersistService(repository, metaDataVersionPersistService);
     }
     
-    /**
-     * Add database name.
-     * 
-     * @param databaseName database name
-     */
     @Override
     public void addDatabase(final String databaseName) {
         repository.persist(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), "");
     }
     
-    /**
-     * Drop database.
-     *
-     * @param databaseName database name to be deleted
-     */
     @Override
     public void dropDatabase(final String databaseName) {
         repository.delete(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
     }
     
-    /**
-     * Load all database names.
-     *
-     * @return all database names
-     */
     @Override
     public Collection<String> loadAllDatabaseNames() {
-        return repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataNodePath());
+        return repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataNode());
     }
     
-    /**
-     * Add schema.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     */
     @Override
     public void addSchema(final String databaseName, final String schemaName) {
         repository.persist(DatabaseMetaDataNode.getMetaDataTablesPath(databaseName, schemaName), "");
     }
     
-    /**
-     * Drop schema.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     */
     @Override
     public void dropSchema(final String databaseName, final String schemaName) {
         repository.delete(DatabaseMetaDataNode.getMetaDataSchemaPath(databaseName, schemaName));
     }
     
-    /**
-     * Compare and persist schema meta data.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param schema schema meta data
-     */
     @Override
     public void compareAndPersist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
             addSchema(databaseName, schemaName);
         }
         Map<String, ShardingSphereTable> currentTables = tableMetaDataPersistService.load(databaseName, schemaName);
-        tableMetaDataPersistService.persist(databaseName, schemaName, SchemaManager.getToBeAddedTables(schema.getTables(), currentTables));
-        SchemaManager.getToBeDeletedTables(schema.getTables(), currentTables).forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
+        tableMetaDataPersistService.persist(databaseName, schemaName, GenericSchemaManager.getToBeAddedTables(schema.getTables(), currentTables));
+        GenericSchemaManager.getToBeDeletedTables(schema.getTables(), currentTables).forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
     }
     
-    /**
-     * Persist schema meta data.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param schema schema meta data
-     */
     @Override
-    public void persist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
+    public void persistByAlterConfiguration(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
             addSchema(databaseName, schemaName);
         }
         tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
     }
     
-    /**
-     * Delete schema meta data.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param schema schema meta data
-     */
+    @Override
+    public void persistByDropConfiguration(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
+        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
+    }
+    
     @Override
     public void delete(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         schema.getTables().forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
     }
     
-    /**
-     * Load schema meta data.
-     *
-     * @param databaseName database name
-     * @return schema meta data
-     */
     @Override
     public Map<String, ShardingSphereSchema> loadSchemas(final String databaseName) {
         Collection<String> schemaNames = loadAllSchemaNames(databaseName);

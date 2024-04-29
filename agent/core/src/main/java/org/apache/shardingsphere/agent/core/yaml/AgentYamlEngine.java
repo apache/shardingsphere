@@ -54,6 +54,7 @@ public final class AgentYamlEngine {
     
     private static LoaderOptions createLoaderOptions() {
         LoaderOptions result = new LoaderOptions();
+        result.setMaxAliasesForCollections(1000);
         result.setCodePointLimit(Integer.MAX_VALUE);
         return result;
     }

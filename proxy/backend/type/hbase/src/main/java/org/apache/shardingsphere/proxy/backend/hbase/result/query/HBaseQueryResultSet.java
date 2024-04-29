@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -32,8 +33,9 @@ public interface HBaseQueryResultSet extends TypedSPI {
      * Initialize data.
      *
      * @param sqlStatementContext SQL statement context
+     * @throws SQLException SQL exception
      */
-    void init(SQLStatementContext sqlStatementContext);
+    void init(SQLStatementContext sqlStatementContext) throws SQLException;
     
     /**
      * Get result set column names.

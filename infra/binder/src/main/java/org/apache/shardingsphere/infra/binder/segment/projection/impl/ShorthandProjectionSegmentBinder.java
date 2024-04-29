@@ -59,7 +59,7 @@ public final class ShorthandProjectionSegmentBinder {
     }
     
     private static Collection<ProjectionSegment> getProjectionSegmentsByTableAliasOrName(final Map<String, TableSegmentBinderContext> tableBinderContexts, final String tableAliasOrName) {
-        ShardingSpherePreconditions.checkState(tableBinderContexts.containsKey(tableAliasOrName.toLowerCase()),
+        ShardingSpherePreconditions.checkContainsKey(tableBinderContexts, tableAliasOrName.toLowerCase(),
                 () -> new IllegalStateException(String.format("Can not find table binder context by table alias or name %s.", tableAliasOrName)));
         return tableBinderContexts.get(tableAliasOrName.toLowerCase()).getProjectionSegments();
     }

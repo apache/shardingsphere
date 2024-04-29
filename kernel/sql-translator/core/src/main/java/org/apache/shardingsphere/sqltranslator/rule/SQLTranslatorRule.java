@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sqltranslator.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
+
+import java.util.List;
 
 /**
  * SQL translator rule.
@@ -42,7 +46,7 @@ public final class SQLTranslatorRule implements GlobalRule {
     
     public SQLTranslatorRule(final SQLTranslatorRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        translator = TypedSPILoader.getService(SQLTranslator.class, ruleConfig.getType());
+        translator = TypedSPILoader.getService(SQLTranslator.class, ruleConfig.getType(), ruleConfig.getProps());
         useOriginalSQLWhenTranslatingFailed = ruleConfig.isUseOriginalSQLWhenTranslatingFailed();
     }
     
@@ -50,25 +54,31 @@ public final class SQLTranslatorRule implements GlobalRule {
      * Translate SQL.
      * 
      * @param sql to be translated SQL
-     * @param sqlStatementContext SQL statement context
+     * @param parameters to be translated parameters
+     * @param queryContext query context
      * @param storageType storage type
      * @param database database
      * @param globalRuleMetaData global rule meta data
      * @return translated SQL
      */
-    public String translate(final String sql, final SQLStatementContext sqlStatementContext, final DatabaseType storageType, final ShardingSphereDatabase database,
-                            final RuleMetaData globalRuleMetaData) {
-        DatabaseType protocolType = database.getProtocolType();
-        if (protocolType.equals(storageType) || null == storageType) {
-            return sql;
+    public SQLTranslatorContext translate(final String sql, final List<Object> parameters, final QueryContext queryContext,
+                                          final DatabaseType storageType, final ShardingSphereDatabase database, final RuleMetaData globalRuleMetaData) {
+        DatabaseType sqlParserType = queryContext.getSqlStatementContext().getDatabaseType();
+        if (sqlParserType.equals(storageType) || null == storageType) {
+            return new SQLTranslatorContext(sql, parameters);
         }
         try {
-            return translator.translate(sql, sqlStatementContext, storageType, database, globalRuleMetaData);
+            return translator.translate(sql, parameters, queryContext, storageType, database, globalRuleMetaData);
         } catch (final SQLTranslationException ex) {
             if (useOriginalSQLWhenTranslatingFailed) {
-                return sql;
+                return new SQLTranslatorContext(sql, parameters);
             }
             throw ex;
         }
+    }
+    
+    @Override
+    public RuleAttributes getAttributes() {
+        return new RuleAttributes();
     }
 }

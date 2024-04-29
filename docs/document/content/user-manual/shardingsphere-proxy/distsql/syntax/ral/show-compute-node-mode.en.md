@@ -1,6 +1,6 @@
 +++
 title = "SHOW COMPUTE NODE MODE"
-weight = 5
+weight = 6
 +++
 
 ### Description

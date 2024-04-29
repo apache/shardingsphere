@@ -37,10 +37,10 @@ import java.util.Map;
 public final class ShardingRuleBuilder implements DatabaseRuleBuilder<ShardingRuleConfiguration> {
     
     @Override
-    public ShardingRule build(final ShardingRuleConfiguration config, final String databaseName, final DatabaseType protocolType,
+    public ShardingRule build(final ShardingRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType,
                               final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        ShardingSpherePreconditions.checkState(null != dataSources && !dataSources.isEmpty(), () -> new MissingRequiredShardingConfigurationException("Data source", databaseName));
-        return new ShardingRule(config, dataSources.keySet(), instanceContext);
+        ShardingSpherePreconditions.checkNotEmpty(dataSources, () -> new MissingRequiredShardingConfigurationException("Data source", databaseName));
+        return new ShardingRule(ruleConfig, dataSources, instanceContext);
     }
     
     @Override

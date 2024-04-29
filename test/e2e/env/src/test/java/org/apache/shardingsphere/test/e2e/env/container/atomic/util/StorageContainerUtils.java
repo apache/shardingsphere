@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.util;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
 import javax.sql.DataSource;
@@ -62,6 +62,7 @@ public final class StorageContainerUtils {
         result.setPassword(password);
         result.setMaximumPoolSize(maximumPoolSize);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
+        result.setLeakDetectionThreshold(10000);
         return result;
     }
 }

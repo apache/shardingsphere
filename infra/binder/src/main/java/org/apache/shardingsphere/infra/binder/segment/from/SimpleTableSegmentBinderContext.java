@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.binder.segment.from;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -35,21 +35,21 @@ public final class SimpleTableSegmentBinderContext implements TableSegmentBinder
     private final Map<String, ProjectionSegment> columnLabelProjectionSegments;
     
     public SimpleTableSegmentBinderContext(final Collection<ProjectionSegment> projectionSegments) {
-        columnLabelProjectionSegments = new LinkedHashMap<>(projectionSegments.size(), 1F);
+        columnLabelProjectionSegments = new CaseInsensitiveMap<>(projectionSegments.size(), 1F);
         projectionSegments.forEach(each -> putColumnLabelProjectionSegments(each, columnLabelProjectionSegments));
     }
     
     private void putColumnLabelProjectionSegments(final ProjectionSegment projectionSegment, final Map<String, ProjectionSegment> columnLabelProjectionSegments) {
         if (projectionSegment instanceof ShorthandProjectionSegment) {
-            ((ShorthandProjectionSegment) projectionSegment).getActualProjectionSegments().forEach(each -> columnLabelProjectionSegments.put(each.getColumnLabel().toLowerCase(), each));
+            ((ShorthandProjectionSegment) projectionSegment).getActualProjectionSegments().forEach(each -> columnLabelProjectionSegments.put(each.getColumnLabel(), each));
         } else {
-            columnLabelProjectionSegments.put(projectionSegment.getColumnLabel().toLowerCase(), projectionSegment);
+            columnLabelProjectionSegments.put(projectionSegment.getColumnLabel(), projectionSegment);
         }
     }
     
     @Override
     public Optional<ProjectionSegment> findProjectionSegmentByColumnLabel(final String columnLabel) {
-        return Optional.ofNullable(columnLabelProjectionSegments.get(columnLabel.toLowerCase()));
+        return Optional.ofNullable(columnLabelProjectionSegments.get(columnLabel));
     }
     
     @Override

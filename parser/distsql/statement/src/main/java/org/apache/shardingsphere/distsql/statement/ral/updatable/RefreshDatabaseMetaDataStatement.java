@@ -19,7 +19,6 @@ package org.apache.shardingsphere.distsql.statement.ral.updatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.UpdatableRALStatement;
 
 import java.util.Optional;
 
@@ -31,6 +30,8 @@ import java.util.Optional;
 public final class RefreshDatabaseMetaDataStatement extends UpdatableRALStatement {
     
     private final String databaseName;
+    
+    private final boolean force;
     
     /**
      * Get database name.

@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ExportDatabaseConfigurationStatement;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportDatabaseConfigurationStatement;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -61,19 +62,14 @@ class ExportDatabaseConfigurationExecutorTest {
     private final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
     
     @Test
-    void assertGetColumns() {
-        Collection<String> columns = new ExportDatabaseConfigurationExecutor().getColumnNames();
-        assertThat(columns.size(), is(1));
-        assertThat(columns.iterator().next(), is("result"));
-    }
-    
-    @Test
     void assertExecute() {
         when(database.getName()).thenReturn("normal_db");
         Map<String, StorageUnit> storageUnits = createStorageUnits();
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
-        Collection<LocalDataQueryResultRow> actual = new ExportDatabaseConfigurationExecutor().getRows(database, new ExportDatabaseConfigurationStatement(mock(DatabaseSegment.class), null));
+        ExportDatabaseConfigurationExecutor executor = new ExportDatabaseConfigurationExecutor();
+        executor.setDatabase(database);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ExportDatabaseConfigurationStatement(mock(DatabaseSegment.class), null), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is(loadExpectedRow()));
@@ -97,7 +93,9 @@ class ExportDatabaseConfigurationExecutorTest {
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ExportDatabaseConfigurationStatement sqlStatement = new ExportDatabaseConfigurationStatement(new DatabaseSegment(0, 0, new IdentifierValue("empty_db")), null);
-        Collection<LocalDataQueryResultRow> actual = new ExportDatabaseConfigurationExecutor().getRows(database, sqlStatement);
+        ExportDatabaseConfigurationExecutor executor = new ExportDatabaseConfigurationExecutor();
+        executor.setDatabase(database);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(sqlStatement, mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("databaseName: empty_db" + System.lineSeparator()));
@@ -145,7 +143,7 @@ class ExportDatabaseConfigurationExecutorTest {
                 BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
-                if (!line.startsWith("#") && !"".equals(line.trim())) {
+                if (!line.startsWith("#") && !line.trim().isEmpty()) {
                     result.append(line).append(System.lineSeparator());
                 }
             }

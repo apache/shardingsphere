@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.sqltranslator.spi;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
+
+import java.util.List;
 
 /**
  * SQL translator.
@@ -32,13 +35,14 @@ public interface SQLTranslator extends TypedSPI {
     
     /**
      * Translate SQL.
-     * 
+     *
      * @param sql to be translated SQL
-     * @param sqlStatementContext SQL statement context
+     * @param parameters to be translated parameters
+     * @param queryContext query context
      * @param storageType storage type
      * @param database database
      * @param globalRuleMetaData global rule meta data
-     * @return translated SQL
+     * @return sql translator context
      */
-    String translate(String sql, SQLStatementContext sqlStatementContext, DatabaseType storageType, ShardingSphereDatabase database, RuleMetaData globalRuleMetaData);
+    SQLTranslatorContext translate(String sql, List<Object> parameters, QueryContext queryContext, DatabaseType storageType, ShardingSphereDatabase database, RuleMetaData globalRuleMetaData);
 }

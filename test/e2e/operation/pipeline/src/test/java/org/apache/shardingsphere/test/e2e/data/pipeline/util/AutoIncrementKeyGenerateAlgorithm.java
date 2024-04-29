@@ -17,17 +17,21 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.util;
 
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public final class AutoIncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     private final AtomicInteger idGen = new AtomicInteger(1);
     
     @Override
-    public Integer generateKey() {
-        return idGen.getAndIncrement();
+    public Collection<Integer> generateKeys(final AlgorithmSQLContext context, final int keyGenerateCount) {
+        return IntStream.range(0, keyGenerateCount).mapToObj(each -> idGen.getAndIncrement()).collect(Collectors.toList());
     }
     
     @Override

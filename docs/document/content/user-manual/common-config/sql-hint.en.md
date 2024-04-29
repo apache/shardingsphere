@@ -18,7 +18,7 @@ The SQL Hint syntax format of ShardingSphere is as follows:
 /* SHARDINGSPHERE_HINT: {key} = {value}, {key} = {value} */ SELECT * FROM t_order;
 ```
 
-To use the SQL Hint, you need to set `sqlCommentParseEnabled` in ShardingSphere SQL Parser rule to `true` to enable the SQL comment parsing. In addition, if you use the MySQL client to connect, you need to add the `-c` option to retain comments, and the client defaults to `--skip-comments` to filter comments.
+If you use the MySQL client to connect, you need to add the `-c` option to retain comments, and the client defaults to `--skip-comments` to filter comments.
 
 ## Parameters
 

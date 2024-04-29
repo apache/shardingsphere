@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapCreator;
+import org.apache.shardingsphere.infra.util.close.DataSourcesCloser;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -66,8 +67,15 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
     
     private Map<StorageNode, DataSource> getStorageNodeDataSourceMap(final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap) {
         Map<StorageNode, DataSource> result = new LinkedHashMap<>(storageUnitNodeMap.size(), 1F);
-        for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
-            result.computeIfAbsent(entry.getValue(), key -> DataSourcePoolCreator.create(entry.getKey(), dataSourcePoolPropertiesMap.get(entry.getKey()), true, result.values()));
+        try {
+            for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
+                result.computeIfAbsent(entry.getValue(), key -> DataSourcePoolCreator.create(entry.getKey(), dataSourcePoolPropertiesMap.get(entry.getKey()), true, result.values()));
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            DataSourcesCloser.close(result.values());
+            throw ex;
         }
         return result;
     }

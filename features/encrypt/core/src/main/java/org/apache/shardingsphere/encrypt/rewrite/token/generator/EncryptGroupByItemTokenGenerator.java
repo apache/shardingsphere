@@ -94,8 +94,9 @@ public final class EncryptGroupByItemTokenGenerator implements CollectionSQLToke
             int stopIndex = each.getStopIndex();
             EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnName);
             SubstitutableColumnNameToken encryptColumnNameToken = encryptColumn.getAssistedQuery()
-                    .map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(optional.getName(), each.getIdentifier().getQuoteCharacter())))
-                    .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptColumn.getCipher().getName(), each.getIdentifier().getQuoteCharacter())));
+                    .map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(optional.getName(), each.getIdentifier().getQuoteCharacter()), databaseType))
+                    .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptColumn.getCipher().getName(), each.getIdentifier().getQuoteCharacter()),
+                            databaseType));
             result.add(encryptColumnNameToken);
         }
         return result;

@@ -69,7 +69,7 @@ public final class SystemSchemaUtils {
     
     /**
      * Judge whether query is openGauss system catalog query or not.
-     * 
+     *
      * @param databaseType database type
      * @param projections projections
      * @return whether query is openGauss system catalog query or not
@@ -80,5 +80,19 @@ public final class SystemSchemaUtils {
         }
         return 1 == projections.size() && projections.iterator().next() instanceof ExpressionProjectionSegment
                 && SYSTEM_CATALOG_QUERY_EXPRESSIONS.contains(((ExpressionProjectionSegment) projections.iterator().next()).getText().toLowerCase());
+    }
+    
+    /**
+     * Judge schema is system schema or not.
+     *
+     * @param database database
+     * @return whether schema is system schema or not
+     */
+    public static boolean isSystemSchema(final ShardingSphereDatabase database) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
+        if (database.isComplete() && !dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
+            return false;
+        }
+        return new SystemDatabase(database.getProtocolType()).getSystemSchemas().contains(database.getName());
     }
 }

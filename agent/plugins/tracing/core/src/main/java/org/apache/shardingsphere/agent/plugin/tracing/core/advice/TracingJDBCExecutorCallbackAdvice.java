@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.core.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
@@ -33,7 +33,7 @@ import java.lang.reflect.Method;
  * 
  * @param <T> type of root span
  */
-public abstract class TracingJDBCExecutorCallbackAdvice<T> implements InstanceMethodAdvice {
+public abstract class TracingJDBCExecutorCallbackAdvice<T> extends AbstractInstanceMethodAdvice {
     
     protected static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     

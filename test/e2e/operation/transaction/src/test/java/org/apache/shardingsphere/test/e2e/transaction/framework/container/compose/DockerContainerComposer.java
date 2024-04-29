@@ -29,7 +29,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.Govern
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
-import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.transaction.framework.container.config.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.transaction.framework.container.config.proxy.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.transaction.framework.container.jdbc.ShardingSphereJDBCContainer;
@@ -41,8 +40,8 @@ import java.util.Objects;
 /**
  * Composed container, include governance container and database container.
  */
-@Slf4j
 @Getter
+@Slf4j
 public final class DockerContainerComposer extends BaseContainerComposer {
     
     private final DatabaseType databaseType;
@@ -86,13 +85,13 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     }
     
     private String getDefaultResource(final TransactionTestParameter testParam) {
-        return String.format("env/%s/%s/config-sharding-%s%s.yaml", testParam.getAdapter().toLowerCase(),
+        return String.format("env/%s/%s/database-sharding-%s%s.yaml", testParam.getAdapter().toLowerCase(),
                 testParam.getDatabaseType().getType().toLowerCase(), testParam.getTransactionTypes().get(0).toString().toLowerCase(),
                 getTransactionProvider(testParam.getProviders().get(0)));
     }
     
     private String getScenarioResource(final TransactionTestParameter testParam) {
-        return String.format("env/scenario/%s/%s/conf/%s/config-%s-%s%s.yaml", testParam.getScenario(), testParam.getAdapter().toLowerCase(),
+        return String.format("env/scenario/%s/%s/conf/%s/database-%s-%s%s.yaml", testParam.getScenario(), testParam.getAdapter().toLowerCase(),
                 testParam.getDatabaseType().getType().toLowerCase(), testParam.getScenario(), testParam.getTransactionTypes().get(0).toString().toLowerCase(),
                 getTransactionProvider(testParam.getProviders().get(0)));
     }
@@ -110,10 +109,5 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         if (null != jdbcContainer) {
             jdbcContainer.stop();
         }
-    }
-    
-    @Override
-    public String getProxyJdbcUrl(final String databaseName) {
-        return DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName);
     }
 }

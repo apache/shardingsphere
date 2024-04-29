@@ -13,12 +13,12 @@ weight = 3
 {{% tab name="语法" %}}
 ```sql
 DropEncryptRule ::=
-  'DROP' 'ENCRYPT' 'RULE' ifExists? encryptRuleName (',' encryptRuleName)*
+  'DROP' 'ENCRYPT' 'RULE' ifExists? ruleName (',' ruleName)*
 
 ifExists ::=
   'IF' 'EXISTS'
 
-encryptRuleName ::=
+ruleName ::=
   identifier
 ```
 {{% /tab %}}

@@ -204,7 +204,7 @@ Many metrics can be collected and analyzed using Prometheus and Grafana. By moni
 
 # Conclusion
 
-We welcome you to actively participate in enriching and improving the monitoring indicators of ShardingSphere-JDBC. If you have any questions or suggestions, please feel free to raise them in the [GitHub issue](https://github.com/apache/shardingsphere/issues) [6], or join our [Slack community](https://apacheshardingsphere.slack.com/ssb/redirect) [7] for discussions.
+We welcome you to actively participate in enriching and improving the monitoring indicators of ShardingSphere-JDBC. If you have any questions or suggestions, please feel free to raise them in the [GitHub issue](https://github.com/apache/shardingsphere/issues) [6], or join our [Slack community](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg) [7] for discussions.
 
 # Related Links
 
@@ -220,4 +220,4 @@ We welcome you to actively participate in enriching and improving the monitoring
 
 [6] [GitHub issues](https://github.com/apache/shardingsphere/issues)
 
-[7] [Slack community](https://apacheshardingsphere.slack.com/ssb/redirect)
+[7] [Slack community](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)

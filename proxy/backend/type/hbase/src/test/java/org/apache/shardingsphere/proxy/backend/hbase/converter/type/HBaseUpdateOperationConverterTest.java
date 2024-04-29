@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLSta
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,9 +53,9 @@ import static org.mockito.Mockito.when;
 class HBaseUpdateOperationConverterTest {
     
     @Test
-    void assertConvert() {
+    void assertConvert() throws SQLException {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getUpdateStatement());
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME).bind(sqlStatement, Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(sqlStatement, Collections.emptyList());
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         HBaseOperation operation = converter.convert();
         assertThat(operation.getTableName(), is(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME));
@@ -61,10 +63,10 @@ class HBaseUpdateOperationConverterTest {
     }
     
     @Test
-    void assertConvertWithIn() {
+    void assertConvertWithIn() throws SQLException {
         String sql = " update /*+ hbase */ t_test_order set age = 10 where rowKey in (1, '2')";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME).bind(sqlStatement, Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(sqlStatement, Collections.emptyList());
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         HBaseOperation operation = converter.convert();
         assertThat(operation.getTableName(), is(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME));

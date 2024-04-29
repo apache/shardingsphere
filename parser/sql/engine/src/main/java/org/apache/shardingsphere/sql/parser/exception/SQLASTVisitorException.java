@@ -19,16 +19,15 @@ package org.apache.shardingsphere.sql.parser.exception;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
 
 /**
  * SQL AST visitor exception.
  */
-public final class SQLASTVisitorException extends SyntaxSQLException {
+public final class SQLASTVisitorException extends ParseSQLException {
     
     private static final long serialVersionUID = 8597155168000874870L;
     
     public SQLASTVisitorException(final Class<? extends ParseTree> parseTreeClass) {
-        super(XOpenSQLState.SYNTAX_ERROR, 1, "Can not accept SQL type `%s`.", parseTreeClass.getSimpleName());
+        super(XOpenSQLState.SYNTAX_ERROR, 1, "Can not accept SQL type '%s'.", parseTreeClass.getSimpleName());
     }
 }

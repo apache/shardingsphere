@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerMetaData;
 
 import java.util.Map;
 
@@ -36,7 +36,7 @@ public final class OptimizerContext {
     
     private final Map<String, OptimizerParserContext> parserContexts;
     
-    private final Map<String, OptimizerPlannerContext> plannerContexts;
+    private final Map<String, OptimizerMetaData> optimizerMetaData;
     
     /**
      * Get parser context.
@@ -45,54 +45,16 @@ public final class OptimizerContext {
      * @return parser context
      */
     public OptimizerParserContext getParserContext(final String databaseName) {
-        return parserContexts.get(databaseName.toLowerCase());
+        return parserContexts.get(databaseName);
     }
     
     /**
-     * Put parser context.
+     * Get meta data.
      *
      * @param databaseName database name
-     * @param parserContext parser context
+     * @return optimizer meta data
      */
-    public void putParserContext(final String databaseName, final OptimizerParserContext parserContext) {
-        parserContexts.put(databaseName.toLowerCase(), parserContext);
-    }
-    
-    /**
-     * Remove parser context.
-     *
-     * @param databaseName database name
-     */
-    public void removeParserContext(final String databaseName) {
-        parserContexts.remove(databaseName.toLowerCase());
-    }
-    
-    /**
-     * Get planner context.
-     *
-     * @param databaseName database name
-     * @return Planner
-     */
-    public OptimizerPlannerContext getPlannerContext(final String databaseName) {
-        return plannerContexts.get(databaseName.toLowerCase());
-    }
-    
-    /**
-     * Put planner context.
-     * 
-     * @param databaseName database name
-     * @param plannerContext planner context
-     */
-    public void putPlannerContext(final String databaseName, final OptimizerPlannerContext plannerContext) {
-        plannerContexts.put(databaseName.toLowerCase(), plannerContext);
-    }
-    
-    /**
-     * Remove planner context.
-     * 
-     * @param databaseName database name
-     */
-    public void removePlannerContext(final String databaseName) {
-        plannerContexts.remove(databaseName.toLowerCase());
+    public OptimizerMetaData getMetaData(final String databaseName) {
+        return optimizerMetaData.get(databaseName);
     }
 }

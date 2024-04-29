@@ -54,22 +54,9 @@ Attributes:
 | timeToLiveSeconds | long   | Seconds of ephemeral data live | 30              |
 | connectionTimeout | long   | Seconds of connection timeout  | 30              |
 
-### Consul Repository
-
-Type: Consul
-
-Mode: Cluster
-
-Attributes:
-
-| *Name*                  | *Type* | *Description*                      | *Default Value* |
-|-------------------------|--------|------------------------------------|-----------------|
-| timeToLiveSeconds       | String | Seconds of ephemeral instance live | 30s             |
-| blockQueryTimeToSeconds | long   | Seconds of query timeout           | 60              |
-
 ## Procedure
 
-1. Configure running mode in server.yaml.
+1. Configure running mode in global.yaml.
 1. Configure metadata persistence warehouse type.
 
 ## Sample

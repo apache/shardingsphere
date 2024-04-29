@@ -43,12 +43,12 @@ jobs:
       matrix:
         database: [ mysql, postgresql ]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 11
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
@@ -60,7 +60,7 @@ jobs:
       - name: Run SQL Parser
         continue-on-error: true
         run: ./mvnw -nsu -B install -f parser/sql/dialect/${{ matrix.database }}/pom.xml -Dsql.parser.external.it.enabled=true
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: sql-report
           path: /tmp/*.csv

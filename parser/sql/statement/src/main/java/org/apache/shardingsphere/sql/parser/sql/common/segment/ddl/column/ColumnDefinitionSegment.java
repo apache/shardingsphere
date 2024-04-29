@@ -45,6 +45,9 @@ public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
     
     private final boolean primaryKey;
     
+    @Setter
+    private boolean autoIncrement;
+    
     private final boolean notNull;
     
     private final Collection<SimpleTableSegment> referencedTables = new LinkedList<>();

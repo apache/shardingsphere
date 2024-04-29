@@ -17,7 +17,7 @@
 
 grammar BaseRule;
 
-import Symbol, Keyword, MySQLKeyword, Literals;
+import Comments, Symbol, Keyword, MySQLKeyword, Literals;
 
 parameterMarker
     : QUESTION_
@@ -1017,6 +1017,7 @@ specialFunction
     | weightStringFunction
     | windowFunction
     | groupingFunction
+    | timeStampDiffFunction
     ;
     
 currentUserFunction
@@ -1025,6 +1026,10 @@ currentUserFunction
     
 groupingFunction
     : GROUPING LP_ expr (COMMA_ expr)* RP_
+    ;
+
+timeStampDiffFunction
+    : TIMESTAMPDIFF LP_ intervalUnit COMMA_ expr COMMA_ expr RP_
     ;
 
 groupConcatFunction

@@ -13,12 +13,12 @@ weight = 11
 {{% tab name="语法" %}}
 ```sql
 DropShardingAlgorithm ::=
-  'DROP' 'SHARDING' 'ALGORITHM' shardingAlgorithmName ifExists? ('FROM' databaseName)?
+  'DROP' 'SHARDING' 'ALGORITHM' algorithmName ifExists? ('FROM' databaseName)?
 
 ifExists ::=
   'IF' 'EXISTS'
 
-shardingAlgorithmName ::=
+algorithmName ::=
   identifier
 
 databaseName ::=
