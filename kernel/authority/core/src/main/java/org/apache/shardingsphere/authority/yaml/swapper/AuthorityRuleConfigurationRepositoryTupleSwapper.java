@@ -19,65 +19,36 @@ package org.apache.shardingsphere.authority.yaml.swapper;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
-import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Authority rule configuration repository tuple swapper.
  */
 public final class AuthorityRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<AuthorityRuleConfiguration> {
     
-    private final YamlUserSwapper userSwapper = new YamlUserSwapper();
-    
-    private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
+    private final YamlAuthorityRuleConfigurationSwapper ruleConfigSwapper = new YamlAuthorityRuleConfigurationSwapper();
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final AuthorityRuleConfiguration data) {
-        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
-    }
-    
-    private YamlAuthorityRuleConfiguration swapToYamlConfiguration(final AuthorityRuleConfiguration data) {
-        YamlAuthorityRuleConfiguration result = new YamlAuthorityRuleConfiguration();
-        result.setPrivilege(algorithmSwapper.swapToYamlConfiguration(data.getPrivilegeProvider()));
-        result.setUsers(data.getUsers().stream().map(userSwapper::swapToYamlConfiguration).collect(Collectors.toList()));
-        result.setDefaultAuthenticator(data.getDefaultAuthenticator());
-        data.getAuthenticators().forEach((key, value) -> result.getAuthenticators().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
-        return result;
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(ruleConfigSwapper.swapToYamlConfiguration(data))));
     }
     
     @Override
     public Optional<AuthorityRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
-                return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAuthorityRuleConfiguration.class)));
+                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAuthorityRuleConfiguration.class)));
             }
         }
         return Optional.empty();
-    }
-    
-    private AuthorityRuleConfiguration swapToObject(final YamlAuthorityRuleConfiguration yamlConfig) {
-        Collection<ShardingSphereUser> users = yamlConfig.getUsers().stream().map(userSwapper::swapToObject).collect(Collectors.toList());
-        AlgorithmConfiguration provider = algorithmSwapper.swapToObject(yamlConfig.getPrivilege());
-        if (null == provider) {
-            provider = new DefaultAuthorityRuleConfigurationBuilder().build().getPrivilegeProvider();
-        }
-        Map<String, AlgorithmConfiguration> authenticators = yamlConfig.getAuthenticators().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> algorithmSwapper.swapToObject(entry.getValue())));
-        return new AuthorityRuleConfiguration(users, provider, authenticators, yamlConfig.getDefaultAuthenticator());
     }
     
     @Override

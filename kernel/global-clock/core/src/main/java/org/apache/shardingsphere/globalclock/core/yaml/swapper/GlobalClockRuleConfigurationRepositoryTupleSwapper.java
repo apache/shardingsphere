@@ -28,39 +28,27 @@ import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Global clock rule configuration repository tuple swapper.
  */
 public final class GlobalClockRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<GlobalClockRuleConfiguration> {
     
+    private final YamlGlobalClockRuleConfigurationSwapper ruleConfigSwapper = new YamlGlobalClockRuleConfigurationSwapper();
+    
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final GlobalClockRuleConfiguration data) {
-        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
-    }
-    
-    private YamlGlobalClockRuleConfiguration swapToYamlConfiguration(final GlobalClockRuleConfiguration data) {
-        YamlGlobalClockRuleConfiguration result = new YamlGlobalClockRuleConfiguration();
-        result.setType(data.getType());
-        result.setProvider(data.getProvider());
-        result.setEnabled(data.isEnabled());
-        result.setProps(data.getProps());
-        return result;
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(ruleConfigSwapper.swapToYamlConfiguration(data))));
     }
     
     @Override
     public Optional<GlobalClockRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
-                return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlGlobalClockRuleConfiguration.class)));
+                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlGlobalClockRuleConfiguration.class)));
             }
         }
         return Optional.empty();
-    }
-    
-    private GlobalClockRuleConfiguration swapToObject(final YamlGlobalClockRuleConfiguration yamlConfig) {
-        return new GlobalClockRuleConfiguration(yamlConfig.getType(), yamlConfig.getProvider(), yamlConfig.isEnabled(), null == yamlConfig.getProps() ? new Properties() : yamlConfig.getProps());
     }
     
     @Override

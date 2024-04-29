@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.traffic.yaml.swapper;
 
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
@@ -25,11 +24,9 @@ import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.constant.TrafficOrder;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
-import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficStrategyConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -37,60 +34,21 @@ import java.util.Optional;
  */
 public final class TrafficRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<TrafficRuleConfiguration> {
     
-    private final YamlTrafficStrategyConfigurationSwapper strategySwapper = new YamlTrafficStrategyConfigurationSwapper();
-    
-    private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
+    private final YamlTrafficRuleConfigurationSwapper ruleConfigSwapper = new YamlTrafficRuleConfigurationSwapper();
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final TrafficRuleConfiguration data) {
-        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
-    }
-    
-    private YamlTrafficRuleConfiguration swapToYamlConfiguration(final TrafficRuleConfiguration data) {
-        YamlTrafficRuleConfiguration result = new YamlTrafficRuleConfiguration();
-        data.getTrafficStrategies().forEach(each -> result.getTrafficStrategies().put(each.getName(), strategySwapper.swapToYamlConfiguration(each)));
-        setYamlAlgorithms(data, result);
-        return result;
-    }
-    
-    private void setYamlAlgorithms(final TrafficRuleConfiguration data, final YamlTrafficRuleConfiguration yamlConfig) {
-        if (null != data.getTrafficAlgorithms()) {
-            data.getTrafficAlgorithms().forEach((key, value) -> yamlConfig.getTrafficAlgorithms().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
-        }
-        if (null != data.getLoadBalancers()) {
-            data.getLoadBalancers().forEach((key, value) -> yamlConfig.getLoadBalancers().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
-        }
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(ruleConfigSwapper.swapToYamlConfiguration(data))));
     }
     
     @Override
     public Optional<TrafficRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
-                return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTrafficRuleConfiguration.class)));
+                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTrafficRuleConfiguration.class)));
             }
         }
         return Optional.empty();
-    }
-    
-    private TrafficRuleConfiguration swapToObject(final YamlTrafficRuleConfiguration yamlConfig) {
-        
-        TrafficRuleConfiguration result = new TrafficRuleConfiguration();
-        for (Entry<String, YamlTrafficStrategyConfiguration> entry : yamlConfig.getTrafficStrategies().entrySet()) {
-            YamlTrafficStrategyConfiguration strategyConfig = entry.getValue();
-            strategyConfig.setName(entry.getKey());
-            result.getTrafficStrategies().add(strategySwapper.swapToObject(strategyConfig));
-        }
-        setAlgorithms(yamlConfig, result);
-        return result;
-    }
-    
-    private void setAlgorithms(final YamlTrafficRuleConfiguration yamlConfig, final TrafficRuleConfiguration ruleConfig) {
-        if (null != yamlConfig.getTrafficAlgorithms()) {
-            yamlConfig.getTrafficAlgorithms().forEach((key, value) -> ruleConfig.getTrafficAlgorithms().put(key, algorithmSwapper.swapToObject(value)));
-        }
-        if (null != yamlConfig.getLoadBalancers()) {
-            yamlConfig.getLoadBalancers().forEach((key, value) -> ruleConfig.getLoadBalancers().put(key, algorithmSwapper.swapToObject(value)));
-        }
     }
     
     @Override

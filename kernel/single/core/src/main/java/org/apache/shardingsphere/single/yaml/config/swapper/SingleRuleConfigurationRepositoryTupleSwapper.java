@@ -36,35 +36,23 @@ import java.util.stream.Collectors;
  */
 public final class SingleRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SingleRuleConfiguration> {
     
+    private final YamlSingleRuleConfigurationSwapper ruleConfigSwapper = new YamlSingleRuleConfigurationSwapper();
+    
     private final RuleNodePath singleRuleNodePath = new SingleRuleNodePathProvider().getRuleNodePath();
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final SingleRuleConfiguration data) {
-        return Collections.singletonList(new RepositoryTuple(SingleRuleNodePathProvider.TABLES, YamlEngine.marshal(swapToYamlConfiguration(data))));
-    }
-    
-    private YamlSingleRuleConfiguration swapToYamlConfiguration(final SingleRuleConfiguration data) {
-        YamlSingleRuleConfiguration result = new YamlSingleRuleConfiguration();
-        result.getTables().addAll(data.getTables());
-        data.getDefaultDataSource().ifPresent(result::setDefaultDataSource);
-        return result;
+        return Collections.singleton(new RepositoryTuple(SingleRuleNodePathProvider.TABLES, YamlEngine.marshal(ruleConfigSwapper.swapToYamlConfiguration(data))));
     }
     
     @Override
     public Optional<SingleRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples.stream().filter(each -> singleRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList())) {
             if (singleRuleNodePath.getUniqueItem(SingleRuleNodePathProvider.TABLES).isValidatedPath(each.getKey())) {
-                return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class)));
+                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class)));
             }
         }
         return Optional.empty();
-    }
-    
-    private SingleRuleConfiguration swapToObject(final YamlSingleRuleConfiguration yamlConfig) {
-        SingleRuleConfiguration result = new SingleRuleConfiguration();
-        result.getTables().addAll(yamlConfig.getTables());
-        result.setDefaultDataSource(yamlConfig.getDefaultDataSource());
-        return result;
     }
     
     @Override

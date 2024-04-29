@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.spi;
 
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
@@ -30,7 +31,7 @@ import java.util.Optional;
  * @param <T> type of swapped object
  */
 @SingletonSPI
-public interface RepositoryTupleSwapper<T> extends OrderedSPI<T> {
+public interface RepositoryTupleSwapper<T extends RuleConfiguration> extends OrderedSPI<T> {
     
     /**
     * Swap to repository tuples.

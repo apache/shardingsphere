@@ -28,38 +28,27 @@ import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConf
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Transaction rule configuration repository tuple swapper.
  */
 public final class TransactionRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<TransactionRuleConfiguration> {
     
+    private final YamlTransactionRuleConfigurationSwapper ruleConfigSwapper = new YamlTransactionRuleConfigurationSwapper();
+    
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final TransactionRuleConfiguration data) {
-        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
-    }
-    
-    private YamlTransactionRuleConfiguration swapToYamlConfiguration(final TransactionRuleConfiguration data) {
-        YamlTransactionRuleConfiguration result = new YamlTransactionRuleConfiguration();
-        result.setDefaultType(data.getDefaultType());
-        result.setProviderType(data.getProviderType());
-        result.setProps(data.getProps());
-        return result;
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(ruleConfigSwapper.swapToYamlConfiguration(data))));
     }
     
     @Override
     public Optional<TransactionRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
-                return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTransactionRuleConfiguration.class)));
+                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTransactionRuleConfiguration.class)));
             }
         }
         return Optional.empty();
-    }
-    
-    private TransactionRuleConfiguration swapToObject(final YamlTransactionRuleConfiguration yamlConfig) {
-        return new TransactionRuleConfiguration(yamlConfig.getDefaultType(), yamlConfig.getProviderType(), null == yamlConfig.getProps() ? new Properties() : yamlConfig.getProps());
     }
     
     @Override
