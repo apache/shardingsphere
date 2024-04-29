@@ -315,14 +315,6 @@ public final class ShardingRule implements DatabaseRule {
         throw new ShardingTableRuleNotFoundException(Collections.singleton(logicTableName));
     }
     
-    private ShardingTable getShardingTable(final String logicTableName, final Map<String, ShardingTable> shardingTables) {
-        ShardingTable result = shardingTables.get(logicTableName);
-        if (null != result) {
-            return result;
-        }
-        throw new ShardingTableRuleNotFoundException(Collections.singleton(logicTableName));
-    }
-    
     /**
      * Judge whether logic table is all binding tables or not.
      *
