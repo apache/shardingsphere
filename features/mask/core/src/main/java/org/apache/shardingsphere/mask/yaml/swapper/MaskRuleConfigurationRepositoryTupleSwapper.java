@@ -50,11 +50,11 @@ public final class MaskRuleConfigurationRepositoryTupleSwapper implements Reposi
     public Collection<RepositoryTuple> swapToRepositoryTuples(final MaskRuleConfiguration data) {
         Collection<RepositoryTuple> result = new LinkedList<>();
         YamlMaskRuleConfiguration yamlRuleConfig = ruleConfigSwapper.swapToYamlConfiguration(data);
-        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getMaskAlgorithms().entrySet()) {
-            result.add(new RepositoryTuple(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
-        }
         for (YamlMaskTableRuleConfiguration each : yamlRuleConfig.getTables().values()) {
             result.add(new RepositoryTuple(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getPath(each.getName()), YamlEngine.marshal(each)));
+        }
+        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getMaskAlgorithms().entrySet()) {
+            result.add(new RepositoryTuple(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
         }
         return result;
     }
@@ -65,6 +65,7 @@ public final class MaskRuleConfigurationRepositoryTupleSwapper implements Reposi
         if (validTuples.isEmpty()) {
             return Optional.empty();
         }
+        YamlMaskRuleConfiguration yamlRuleConfig = new YamlMaskRuleConfiguration();
         Map<String, YamlMaskTableRuleConfiguration> tables = new LinkedHashMap<>();
         Map<String, YamlAlgorithmConfiguration> maskAlgorithms = new LinkedHashMap<>();
         for (RepositoryTuple each : validTuples) {
@@ -73,7 +74,6 @@ public final class MaskRuleConfigurationRepositoryTupleSwapper implements Reposi
             maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getName(each.getKey())
                     .ifPresent(optional -> maskAlgorithms.put(optional, YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class)));
         }
-        YamlMaskRuleConfiguration yamlRuleConfig = new YamlMaskRuleConfiguration();
         yamlRuleConfig.setTables(tables);
         yamlRuleConfig.setMaskAlgorithms(maskAlgorithms);
         return Optional.of(ruleConfigSwapper.swapToObject(yamlRuleConfig));

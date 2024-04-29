@@ -65,6 +65,7 @@ public final class EncryptRuleConfigurationRepositoryTupleSwapper implements Rep
         if (validTuples.isEmpty()) {
             return Optional.empty();
         }
+        YamlEncryptRuleConfiguration yamlRuleConfig = new YamlEncryptRuleConfiguration();
         Map<String, YamlEncryptTableRuleConfiguration> tables = new LinkedHashMap<>();
         Map<String, YamlAlgorithmConfiguration> encryptors = new LinkedHashMap<>();
         for (RepositoryTuple each : validTuples) {
@@ -73,7 +74,6 @@ public final class EncryptRuleConfigurationRepositoryTupleSwapper implements Rep
             encryptRuleNodePath.getNamedItem(EncryptRuleNodePathProvider.ENCRYPTORS).getName(each.getKey())
                     .ifPresent(optional -> encryptors.put(optional, YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class)));
         }
-        YamlEncryptRuleConfiguration yamlRuleConfig = new YamlEncryptRuleConfiguration();
         yamlRuleConfig.setTables(tables);
         yamlRuleConfig.setEncryptors(encryptors);
         return Optional.of(ruleConfigSwapper.swapToObject(yamlRuleConfig));
