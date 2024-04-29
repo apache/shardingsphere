@@ -26,11 +26,11 @@
     </test-case>
 
     <test-case sql="SELECT 1=1, 1!=1" db-types="MySQL" scenario-types="db_tbl_sql_federation" >
-        <assertion />
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT 1=1, 1!=1, 1&gt;1, 1&lt;1, 1&gt;=1, 1&lt;=1" db-types="MySQL" scenario-types="db_tbl_sql_federation" >
-        <assertion />
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
     <test-case sql="SELECT * FROM t_order WHERE remark LIKE '%张%'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation" >
@@ -267,5 +267,13 @@
     
     <test-case sql="select * from shardingsphere.cluster_information;" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-file="select_cluster_information.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT type_datetime FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT result.max_datetime FROM (SELECT MAX(type_datetime) AS max_datetime FROM t_product_extend) result" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
 </integration-test-cases>
