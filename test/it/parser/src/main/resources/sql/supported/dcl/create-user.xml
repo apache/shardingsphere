@@ -59,4 +59,8 @@
     <sql-case id="create_azure_ad_user_with_login" value="CREATE USER [bob@contoso.com] FROM LOGIN [bob@contoso.com]" db-types="SQLServer" />
     <sql-case id="create_azure_ad_user_as_group_from_login" value="CREATE USER [AAD group] FROM LOGIN [AAD group]" db-types="SQLServer" />
     <sql-case id="create_azure_ad_user_without_login" value="CREATE USER [bob@contoso.com] FROM EXTERNAL PROVIDER" db-types="SQLServer" />
+    <sql-case id="create _user_with_option" value="CREATE USER 'jon'@'localhost' COMMENT 'Some information about Jon'" db-types="MySQL" />
+    <sql-case id="create_user_with_user_auth_option" value="CREATE USER 'mateo'@'localhost' IDENTIFIED BY 'password'
+       AND IDENTIFIED WITH authentication_ldap_simple
+       AND IDENTIFIED WITH authentication_fido" db-types="MySQL" />
 </sql-cases>
