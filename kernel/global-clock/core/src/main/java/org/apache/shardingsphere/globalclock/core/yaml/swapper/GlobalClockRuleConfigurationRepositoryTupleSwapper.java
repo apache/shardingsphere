@@ -23,7 +23,7 @@ import org.apache.shardingsphere.globalclock.core.yaml.config.YamlGlobalClockRul
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleConfigurationSwapper;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -33,7 +33,7 @@ import java.util.Properties;
 /**
  * Global clock rule configuration repository tuple swapper.
  */
-public final class GlobalClockRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleConfigurationSwapper<GlobalClockRuleConfiguration> {
+public final class GlobalClockRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<GlobalClockRuleConfiguration> {
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final GlobalClockRuleConfiguration data) {

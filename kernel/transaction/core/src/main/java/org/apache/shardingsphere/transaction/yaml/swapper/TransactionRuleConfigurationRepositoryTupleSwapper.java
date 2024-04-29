@@ -20,7 +20,7 @@ package org.apache.shardingsphere.transaction.yaml.swapper;
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleConfigurationSwapper;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.constant.TransactionOrder;
 import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
@@ -33,7 +33,7 @@ import java.util.Properties;
 /**
  * Transaction rule configuration repository tuple swapper.
  */
-public final class TransactionRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleConfigurationSwapper<TransactionRuleConfiguration> {
+public final class TransactionRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<TransactionRuleConfiguration> {
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final TransactionRuleConfiguration data) {

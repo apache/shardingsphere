@@ -19,6 +19,8 @@ package org.apache.shardingsphere.metadata.persist.service.config.global;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
+import java.util.Optional;
+
 /**
  * Global persist service.
  * 
@@ -46,7 +48,7 @@ public interface GlobalPersistService<T> {
      * @param ruleName rule name
      * @return single rule configuration
      */
-    default RuleConfiguration load(final String ruleName) {
-        return null;
+    default Optional<RuleConfiguration> load(final String ruleName) {
+        return Optional.empty();
     }
 }

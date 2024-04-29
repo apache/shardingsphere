@@ -23,7 +23,7 @@ import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePa
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleConfigurationSwapper;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.mode.path.RuleNodePath;
 
 import java.util.Collection;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * Broadcast rule configuration repository tuple swapper.
  */
-public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleConfigurationSwapper<BroadcastRuleConfiguration> {
+public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<BroadcastRuleConfiguration> {
     
     private final RuleNodePath broadcastRuleNodePath = new BroadcastRuleNodePathProvider().getRuleNodePath();
     

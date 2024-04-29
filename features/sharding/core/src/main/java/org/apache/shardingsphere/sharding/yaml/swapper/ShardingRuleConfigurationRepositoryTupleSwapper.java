@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigur
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleConfigurationSwapper;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 /**
  * Sharding rule configuration repository tuple swapper.
  */
-public final class ShardingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleConfigurationSwapper<ShardingRuleConfiguration> {
+public final class ShardingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<ShardingRuleConfiguration> {
     
     private final YamlShardingTableRuleConfigurationSwapper tableSwapper = new YamlShardingTableRuleConfigurationSwapper();
     

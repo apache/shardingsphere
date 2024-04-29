@@ -20,7 +20,7 @@ package org.apache.shardingsphere.parser.yaml.swapper;
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleConfigurationSwapper;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.constant.SQLParserOrder;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -34,7 +34,7 @@ import java.util.Optional;
 /**
  * SQL parser rule configuration repository tuple swapper.
  */
-public final class SQLParserRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleConfigurationSwapper<SQLParserRuleConfiguration> {
+public final class SQLParserRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SQLParserRuleConfiguration> {
     
     private final YamlSQLParserCacheOptionConfigurationSwapper cacheOptionSwapper = new YamlSQLParserCacheOptionConfigurationSwapper();
     

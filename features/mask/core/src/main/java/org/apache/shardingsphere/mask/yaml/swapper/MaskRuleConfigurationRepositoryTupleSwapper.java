@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigur
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleConfigurationSwapper;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.constant.MaskOrder;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * Mask rule configuration repository tuple swapper.
  */
-public final class MaskRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleConfigurationSwapper<MaskRuleConfiguration> {
+public final class MaskRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<MaskRuleConfiguration> {
     
     private final YamlMaskTableRuleConfigurationSwapper tableSwapper = new YamlMaskTableRuleConfigurationSwapper();
     

@@ -15,47 +15,51 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.swapper.rule;
+package org.apache.shardingsphere.metadata.persist.service.config;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleConfigurationSwapper;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * YAML data node rule configuration swapper engine.
+ * Repository tuple swapper engine.
  */
-public final class YamlDataNodeRuleConfigurationSwapperEngine {
+public final class RepositoryTupleSwapperEngine {
     
     /**
-     * Swap from YAML global rule configurations to rule configurations.
+     * Swap to rule configurations.
      *
      * @param repositoryTuples repository tuples
      * @return global rule configurations
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<RepositoryTuple> repositoryTuples) {
+        if (repositoryTuples.isEmpty()) {
+            return Collections.emptyList();
+        }
         Collection<RuleConfiguration> result = new LinkedList<>();
-        for (RepositoryTupleConfigurationSwapper each : OrderedSPILoader.getServices(RepositoryTupleConfigurationSwapper.class)) {
+        for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
             each.swapToObject(repositoryTuples).ifPresent(optional -> result.add((RuleConfiguration) optional));
         }
         return result;
     }
     
     /**
-     * Swap from single YAML global rule configuration to rule configurations.
+     * Swap to rule configuration.
      *
      * @param ruleName rule name
      * @param repositoryTuples repository tuples
      * @return global rule configuration
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Optional<RuleConfiguration> swapSingleRuleToRuleConfiguration(final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
-        for (RepositoryTupleConfigurationSwapper each : OrderedSPILoader.getServices(RepositoryTupleConfigurationSwapper.class)) {
+    public Optional<RuleConfiguration> swapToRuleConfiguration(final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
+        for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
             if (ruleName.equals(each.getRuleTagName().toLowerCase())) {
                 return each.swapToObject(repositoryTuples);
             }

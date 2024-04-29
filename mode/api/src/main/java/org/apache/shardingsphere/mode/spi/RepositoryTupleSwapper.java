@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.swapper;
+package org.apache.shardingsphere.mode.spi;
 
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
@@ -25,12 +25,12 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Repository tuple configuration swapper.
+ * Repository tuple swapper.
  *
  * @param <T> type of swapped object
  */
 @SingletonSPI
-public interface RepositoryTupleConfigurationSwapper<T> extends OrderedSPI<T> {
+public interface RepositoryTupleSwapper<T> extends OrderedSPI<T> {
     
     /**
     * Swap to repository tuples.

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqlfederation.yaml.swapper;
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.infra.util.yaml.swapper.RepositoryTupleConfigurationSwapper;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.constant.SQLFederationOrder;
@@ -33,7 +33,7 @@ import java.util.Optional;
 /**
  * SQL federation rule configuration repository tuple swapper.
  */
-public final class SQLFederationRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleConfigurationSwapper<SQLFederationRuleConfiguration> {
+public final class SQLFederationRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SQLFederationRuleConfiguration> {
     
     private final YamlSQLFederationExecutionPlanCacheConfigurationSwapper executionPlanCacheConfigSwapper = new YamlSQLFederationExecutionPlanCacheConfigurationSwapper();
     

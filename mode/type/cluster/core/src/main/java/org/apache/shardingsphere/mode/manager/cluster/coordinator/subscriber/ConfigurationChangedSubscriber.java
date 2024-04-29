@@ -117,8 +117,9 @@ public final class ConfigurationChangedSubscriber {
         if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.getConfigurationContextManager()
-                .alterGlobalRuleConfiguration(contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().load(event.getRuleSimpleName()));
+        contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().load(event.getRuleSimpleName())
+                .ifPresent(optional -> contextManager.getConfigurationContextManager().alterGlobalRuleConfiguration(optional));
+        
     }
     
     /**
