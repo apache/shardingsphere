@@ -153,4 +153,8 @@
     <alter-tablespace sql-case-id="alter_tablespace_with_initial_size">
         <tablespace start-index="17" stop-index="20" name="ts_1" />
     </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_with_engine_attribute">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+    </alter-tablespace>
 </sql-parser-test-cases>

@@ -66,4 +66,5 @@
         ADD DATAFILE 'data_2.dat'
         INITIAL_SIZE 48M
         ENGINE NDB" db-types="MySQL" />
+    <sql-case id="alter_tablespace_with_engine_attribute" value="ALTER TABLESPACE ts1 ENGINE_ATTRIBUTE=&apos;{&quot;key&quot;:&quot;value&quot;}&apos;" db-types="MySQL" />
 </sql-cases>
