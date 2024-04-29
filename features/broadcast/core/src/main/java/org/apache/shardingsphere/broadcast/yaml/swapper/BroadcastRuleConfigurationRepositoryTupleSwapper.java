@@ -23,8 +23,8 @@ import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePa
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.mode.path.RuleNodePath;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,19 +37,15 @@ import java.util.stream.Collectors;
  */
 public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<BroadcastRuleConfiguration> {
     
+    private final YamlBroadcastRuleConfigurationSwapper ruleConfigSwapper = new YamlBroadcastRuleConfigurationSwapper();
+    
     private final RuleNodePath broadcastRuleNodePath = new BroadcastRuleNodePathProvider().getRuleNodePath();
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final BroadcastRuleConfiguration data) {
         return data.getTables().isEmpty()
                 ? Collections.emptyList()
-                : Collections.singleton(new RepositoryTuple(BroadcastRuleNodePathProvider.TABLES, YamlEngine.marshal(swapToTablesYamlConfiguration(data))));
-    }
-    
-    private YamlBroadcastRuleConfiguration swapToTablesYamlConfiguration(final BroadcastRuleConfiguration data) {
-        YamlBroadcastRuleConfiguration result = new YamlBroadcastRuleConfiguration();
-        result.getTables().addAll(data.getTables());
-        return result;
+                : Collections.singleton(new RepositoryTuple(BroadcastRuleNodePathProvider.TABLES, YamlEngine.marshal(ruleConfigSwapper.swapToYamlConfiguration(data))));
     }
     
     @Override
@@ -57,7 +53,7 @@ public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements R
         List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         for (RepositoryTuple each : validTuples) {
             if (broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey())) {
-                return Optional.of(new BroadcastRuleConfiguration(YamlEngine.unmarshal(each.getValue(), YamlBroadcastRuleConfiguration.class).getTables()));
+                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlBroadcastRuleConfiguration.class)));
             }
         }
         return Optional.empty();

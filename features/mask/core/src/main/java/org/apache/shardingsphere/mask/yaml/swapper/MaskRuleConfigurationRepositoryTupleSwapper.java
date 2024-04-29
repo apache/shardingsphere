@@ -17,19 +17,16 @@
 
 package org.apache.shardingsphere.mask.yaml.swapper;
 
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.constant.MaskOrder;
 import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
+import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
-import org.apache.shardingsphere.mask.yaml.swapper.rule.YamlMaskTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.path.RuleNodePath;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -45,21 +42,19 @@ import java.util.stream.Collectors;
  */
 public final class MaskRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<MaskRuleConfiguration> {
     
-    private final YamlMaskTableRuleConfigurationSwapper tableSwapper = new YamlMaskTableRuleConfigurationSwapper();
-    
-    private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
+    private final YamlMaskRuleConfigurationSwapper ruleConfigSwapper = new YamlMaskRuleConfigurationSwapper();
     
     private final RuleNodePath maskRuleNodePath = new MaskRuleNodePathProvider().getRuleNodePath();
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final MaskRuleConfiguration data) {
         Collection<RepositoryTuple> result = new LinkedList<>();
-        for (Entry<String, AlgorithmConfiguration> entry : data.getMaskAlgorithms().entrySet()) {
-            result.add(new RepositoryTuple(
-                    maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getPath(entry.getKey()), YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
+        YamlMaskRuleConfiguration yamlRuleConfig = ruleConfigSwapper.swapToYamlConfiguration(data);
+        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getMaskAlgorithms().entrySet()) {
+            result.add(new RepositoryTuple(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
         }
-        for (MaskTableRuleConfiguration each : data.getTables()) {
-            result.add(new RepositoryTuple(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getPath(each.getName()), YamlEngine.marshal(tableSwapper.swapToYamlConfiguration(each))));
+        for (YamlMaskTableRuleConfiguration each : yamlRuleConfig.getTables().values()) {
+            result.add(new RepositoryTuple(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getPath(each.getName()), YamlEngine.marshal(each)));
         }
         return result;
     }
@@ -70,15 +65,18 @@ public final class MaskRuleConfigurationRepositoryTupleSwapper implements Reposi
         if (validTuples.isEmpty()) {
             return Optional.empty();
         }
-        Collection<MaskTableRuleConfiguration> tables = new LinkedList<>();
-        Map<String, AlgorithmConfiguration> algorithms = new LinkedHashMap<>();
+        Map<String, YamlMaskTableRuleConfiguration> tables = new LinkedHashMap<>();
+        Map<String, YamlAlgorithmConfiguration> maskAlgorithms = new LinkedHashMap<>();
         for (RepositoryTuple each : validTuples) {
             maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getName(each.getKey())
-                    .ifPresent(optional -> tables.add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlMaskTableRuleConfiguration.class))));
+                    .ifPresent(optional -> tables.put(optional, YamlEngine.unmarshal(each.getValue(), YamlMaskTableRuleConfiguration.class)));
             maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getName(each.getKey())
-                    .ifPresent(optional -> algorithms.put(optional, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
+                    .ifPresent(optional -> maskAlgorithms.put(optional, YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class)));
         }
-        return Optional.of(new MaskRuleConfiguration(tables, algorithms));
+        YamlMaskRuleConfiguration yamlRuleConfig = new YamlMaskRuleConfiguration();
+        yamlRuleConfig.setTables(tables);
+        yamlRuleConfig.setMaskAlgorithms(maskAlgorithms);
+        return Optional.of(ruleConfigSwapper.swapToObject(yamlRuleConfig));
     }
     
     @Override

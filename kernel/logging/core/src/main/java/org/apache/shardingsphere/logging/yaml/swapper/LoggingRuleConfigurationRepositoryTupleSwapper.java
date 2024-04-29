@@ -20,13 +20,10 @@ package org.apache.shardingsphere.logging.yaml.swapper;
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 import org.apache.shardingsphere.logging.constant.LoggingOrder;
-import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
-import org.apache.shardingsphere.logging.yaml.config.YamlAppendersConfigurationConverter;
-import org.apache.shardingsphere.logging.yaml.config.YamlLoggersConfigurationConverter;
 import org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguration;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,39 +34,21 @@ import java.util.Optional;
  */
 public final class LoggingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<LoggingRuleConfiguration> {
     
+    private final YamlLoggingRuleConfigurationSwapper ruleConfigSwapper = new YamlLoggingRuleConfigurationSwapper();
+    
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final LoggingRuleConfiguration data) {
-        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
-    }
-    
-    private YamlLoggingRuleConfiguration swapToYamlConfiguration(final LoggingRuleConfiguration data) {
-        YamlLoggingRuleConfiguration result = new YamlLoggingRuleConfiguration();
-        result.setLoggers(YamlLoggersConfigurationConverter.convertYamlLoggerConfigurations(data.getLoggers()));
-        result.setAppenders(YamlAppendersConfigurationConverter.convertYamlAppenderConfigurations(data.getAppenders()));
-        return result;
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(ruleConfigSwapper.swapToYamlConfiguration(data))));
     }
     
     @Override
     public Optional<LoggingRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
-                return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlLoggingRuleConfiguration.class)));
+                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlLoggingRuleConfiguration.class)));
             }
         }
         return Optional.empty();
-    }
-    
-    private LoggingRuleConfiguration swapToObject(final YamlLoggingRuleConfiguration yamlConfig) {
-        LoggingRuleConfiguration result = new LoggingRuleConfiguration(YamlLoggersConfigurationConverter.convertShardingSphereLogger(yamlConfig.getLoggers()),
-                YamlAppendersConfigurationConverter.convertShardingSphereAppender(yamlConfig.getAppenders()));
-        if (null == result.getLoggers()) {
-            result = getDefaultLoggingRuleConfiguration();
-        }
-        return result;
-    }
-    
-    private LoggingRuleConfiguration getDefaultLoggingRuleConfiguration() {
-        return new DefaultLoggingRuleConfigurationBuilder().build();
     }
     
     @Override

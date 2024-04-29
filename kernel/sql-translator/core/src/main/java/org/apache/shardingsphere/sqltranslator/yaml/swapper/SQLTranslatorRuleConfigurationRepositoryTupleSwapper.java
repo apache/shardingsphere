@@ -34,31 +34,21 @@ import java.util.Optional;
  */
 public final class SQLTranslatorRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SQLTranslatorRuleConfiguration> {
     
+    private final YamlSQLTranslatorRuleConfigurationSwapper ruleConfigSwapper = new YamlSQLTranslatorRuleConfigurationSwapper();
+    
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final SQLTranslatorRuleConfiguration data) {
-        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
-    }
-    
-    private YamlSQLTranslatorRuleConfiguration swapToYamlConfiguration(final SQLTranslatorRuleConfiguration data) {
-        YamlSQLTranslatorRuleConfiguration result = new YamlSQLTranslatorRuleConfiguration();
-        result.setType(data.getType());
-        result.setProps(data.getProps());
-        result.setUseOriginalSQLWhenTranslatingFailed(data.isUseOriginalSQLWhenTranslatingFailed());
-        return result;
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(ruleConfigSwapper.swapToYamlConfiguration(data))));
     }
     
     @Override
     public Optional<SQLTranslatorRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
-                return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLTranslatorRuleConfiguration.class)));
+                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLTranslatorRuleConfiguration.class)));
             }
         }
         return Optional.empty();
-    }
-    
-    private SQLTranslatorRuleConfiguration swapToObject(final YamlSQLTranslatorRuleConfiguration yamlConfig) {
-        return new SQLTranslatorRuleConfiguration(yamlConfig.getType(), yamlConfig.getProps(), yamlConfig.isUseOriginalSQLWhenTranslatingFailed());
     }
     
     @Override
