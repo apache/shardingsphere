@@ -41,14 +41,12 @@ class MaskRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapEmptyConfigurationToDataNodes() {
-        MaskRuleConfiguration config = new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
-        assertTrue(new MaskRuleConfigurationRepositoryTupleSwapper().swapToRepositoryTuples(config).isEmpty());
+        assertTrue(new MaskRuleConfigurationRepositoryTupleSwapper().swapToRepositoryTuples(new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())).isEmpty());
     }
     
     @Test
     void assertSwapFullConfigurationToDataNodes() {
-        MaskRuleConfiguration config = createMaximumMaskRule();
-        Collection<RepositoryTuple> actual = new MaskRuleConfigurationRepositoryTupleSwapper().swapToRepositoryTuples(config);
+        Collection<RepositoryTuple> actual = new MaskRuleConfigurationRepositoryTupleSwapper().swapToRepositoryTuples(createMaximumMaskRule());
         assertThat(actual.size(), is(2));
         Iterator<RepositoryTuple> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("tables/foo"));
