@@ -309,10 +309,8 @@ public final class ShardingRule implements DatabaseRule {
      */
     public ShardingTable getShardingTable(final String logicTableName) {
         Optional<ShardingTable> shardingTable = findShardingTable(logicTableName);
-        if (shardingTable.isPresent()) {
-            return shardingTable.get();
-        }
-        throw new ShardingTableRuleNotFoundException(Collections.singleton(logicTableName));
+        ShardingSpherePreconditions.checkState(shardingTable.isPresent(), () -> new ShardingTableRuleNotFoundException(Collections.singleton(logicTableName)));
+        return shardingTable.get();
     }
     
     /**
