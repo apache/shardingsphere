@@ -111,8 +111,7 @@ public final class ShardingRuleConfigurationRepositoryTupleSwapper implements Re
     }
     
     private String getBindingGroupName(final String bindingGroup) {
-        String[] values = bindingGroup.split(":");
-        return values.length > 1 ? values[0] : bindingGroup;
+        return bindingGroup.contains(":") ? bindingGroup.substring(0, bindingGroup.indexOf(":")) : bindingGroup;
     }
     
     @Override
