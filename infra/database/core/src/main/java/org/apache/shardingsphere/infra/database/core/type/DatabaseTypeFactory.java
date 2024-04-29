@@ -42,7 +42,7 @@ public final class DatabaseTypeFactory {
         Collection<DatabaseType> databaseTypes = ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().filter(each -> matchURLs(url, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkNotEmpty(databaseTypes, () -> new UnsupportedStorageTypeException(url));
         for (DatabaseType each : databaseTypes) {
-            if (each.getTrunkDatabaseType().isPresent()) {
+            if (!each.getTrunkDatabaseType().isPresent()) {
                 return each;
             }
         }
