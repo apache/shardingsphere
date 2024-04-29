@@ -91,7 +91,11 @@ grantIdentifier
     ;
 
 createUser
-    : CREATE USER ifNotExists? createUserList defaultRoleClause? requireClause? connectOptions? accountLockPasswordExpireOptions?
+    : CREATE USER ifNotExists? createUserList defaultRoleClause? requireClause? connectOptions? accountLockPasswordExpireOptions? createUserOption? (AND userAuthOption)*
+    ;
+
+createUserOption
+    : COMMENT string_ | ATTRIBUTE jsonAttribute = string_
     ;
 
 createUserEntry
@@ -223,7 +227,7 @@ identifiedBy
     ;
 
 identifiedWith
-    : IDENTIFIED WITH pluginName
+    : IDENTIFIED WITH (pluginName | authentication_fido)
     | IDENTIFIED WITH pluginName BY (string_ | RANDOM PASSWORD) (REPLACE stringLiterals)? (RETAIN CURRENT PASSWORD)?
     | IDENTIFIED WITH pluginName AS textStringHash (RETAIN CURRENT PASSWORD)?
     ;
