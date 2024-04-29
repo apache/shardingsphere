@@ -67,6 +67,7 @@ public final class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper imp
         if (validRepositoryTuples.isEmpty()) {
             return Optional.empty();
         }
+        YamlReadwriteSplittingRuleConfiguration yamlRuleConfig = new YamlReadwriteSplittingRuleConfiguration();
         Map<String, YamlReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = new LinkedHashMap<>();
         Map<String, YamlAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
         for (RepositoryTuple each : validRepositoryTuples) {
@@ -75,7 +76,6 @@ public final class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper imp
             readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS).getName(each.getKey())
                     .ifPresent(optional -> loadBalancers.put(optional, YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class)));
         }
-        YamlReadwriteSplittingRuleConfiguration yamlRuleConfig = new YamlReadwriteSplittingRuleConfiguration();
         yamlRuleConfig.setDataSourceGroups(dataSourceGroups);
         yamlRuleConfig.setLoadBalancers(loadBalancers);
         return Optional.of(ruleConfigSwapper.swapToObject(yamlRuleConfig));
