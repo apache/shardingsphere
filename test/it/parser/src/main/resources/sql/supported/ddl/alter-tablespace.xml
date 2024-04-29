@@ -62,4 +62,8 @@
     <sql-case id="alter_tablespace_add_datafile_size_m" value="ALTER TABLESPACE lmtbsb ADD DATAFILE '/u02/oracle/data/lmtbsb02.dbf' SIZE 1M" db-types="Oracle" />
     <sql-case id="alter_tablespace_nologging" value="ALTER TABLESPACE tbs_03 NOLOGGING" db-types="Oracle" />
     <sql-case id="alter_tablespace_add_tempfile_size_m_reuse" value="ALTER TABLESPACE lmtemp ADD TEMPFILE '/u02/oracle/data/lmtemp02.dbf' SIZE 18M REUSE" db-types="Oracle" />
+    <sql-case id ="alter_tablespace_with_initial_size" value="ALTER TABLESPACE ts_1
+        ADD DATAFILE 'data_2.dat'
+        INITIAL_SIZE 48M
+        ENGINE NDB" db-types="MySQL" />
 </sql-cases>
