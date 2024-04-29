@@ -377,10 +377,8 @@ alterTablespace
 
 alterTablespaceNdb
     : ALTER UNDO? TABLESPACE tablespace=identifier
-      ((ADD | DROP) DATAFILE string_)?
+      (ADD | DROP) DATAFILE string_
       (INITIAL_SIZE EQ_? fileSizeLiteral)?
-      (AUTOEXTEND_SIZE EQ_? fileSizeLiteral)?
-      (ENGINE_ATTRIBUTE EQ_? string_)?
       WAIT? (RENAME TO renameTableSpace=identifier)?
       (ENGINE EQ_? identifier)?
     ;
@@ -388,7 +386,9 @@ alterTablespaceNdb
 alterTablespaceInnodb
     : ALTER UNDO? TABLESPACE tablespace=identifier
       (SET (ACTIVE | INACTIVE))?
+      (AUTOEXTEND_SIZE EQ_? fileSizeLiteral)?
       (ENCRYPTION EQ_? y_or_n=string_)?
+      (ENGINE_ATTRIBUTE EQ_? jsonAttribute = string_)?
       (RENAME TO renameTablespace=identifier)?
       (ENGINE EQ_? identifier)?
     ;
