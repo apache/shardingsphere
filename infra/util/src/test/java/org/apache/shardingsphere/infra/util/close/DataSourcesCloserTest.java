@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verify;
 class DataSourcesCloserTest {
     
     @Test
-    void testClose() {
+    void assertClose() {
         DataSource mockDataSource = Mockito.mock(DataSource.class, Mockito.withSettings().extraInterfaces(AutoCloseable.class));
         DataSourcesCloser.close(Collections.singletonList(mockDataSource));
         assertDoesNotThrow(() -> verify((AutoCloseable) mockDataSource, times(1)).close());
