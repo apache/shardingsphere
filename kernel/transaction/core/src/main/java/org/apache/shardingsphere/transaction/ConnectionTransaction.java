@@ -40,9 +40,9 @@ public final class ConnectionTransaction {
     private final TransactionConnectionContext transactionContext;
     
     public ConnectionTransaction(final TransactionRule rule, final TransactionConnectionContext transactionContext) {
-        this.transactionType = rule.getDefaultType();
+        this.transactionType = transactionContext.getTransactionType().isPresent() ? TransactionType.valueOf(transactionContext.getTransactionType().get()) : rule.getDefaultType();
         this.transactionContext = transactionContext;
-        transactionManager = rule.getResource().getTransactionManager(transactionType);
+        transactionManager = TransactionType.LOCAL == this.transactionType ? null : rule.getResource().getTransactionManager(rule.getDefaultType());
     }
     
     /**
