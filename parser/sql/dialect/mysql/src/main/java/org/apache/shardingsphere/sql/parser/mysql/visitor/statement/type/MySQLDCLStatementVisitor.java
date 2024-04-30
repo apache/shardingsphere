@@ -110,7 +110,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.TLSOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserResourceSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserResourceSpecifiedLimitEnum;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.UserSegment;
 
 import java.util.stream.Collectors;
 
