@@ -50,8 +50,8 @@ class MaskRuleConfigurationRepositoryTupleSwapperTest {
         Collection<RepositoryTuple> actual = new MaskRuleConfigurationRepositoryTupleSwapper().swapToRepositoryTuples(createMaximumMaskRule());
         assertThat(actual.size(), is(2));
         Iterator<RepositoryTuple> iterator = actual.iterator();
-        assertThat(iterator.next().getKey(), is("tables/foo"));
         assertThat(iterator.next().getKey(), is("mask_algorithms/FIXTURE"));
+        assertThat(iterator.next().getKey(), is("tables/foo"));
     }
     
     private MaskRuleConfiguration createMaximumMaskRule() {
