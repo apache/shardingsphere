@@ -20,6 +20,8 @@ package org.apache.shardingsphere.metadata.persist.service.config;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;
@@ -44,8 +46,9 @@ public final class RepositoryTupleSwapperEngine {
             return Collections.emptyList();
         }
         Collection<RuleConfiguration> result = new LinkedList<>();
+        YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
-            each.swapToObject(repositoryTuples).ifPresent(optional -> result.add((RuleConfiguration) optional));
+            each.swapToObject0(repositoryTuples).ifPresent(optional -> result.add(yamlSwapperEngine.swapToRuleConfiguration((YamlRuleConfiguration) optional)));
         }
         return result;
     }
@@ -59,9 +62,11 @@ public final class RepositoryTupleSwapperEngine {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Optional<RuleConfiguration> swapToRuleConfiguration(final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
+        YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
             if (ruleName.equals(each.getRuleTagName().toLowerCase())) {
-                return each.swapToObject(repositoryTuples);
+                Optional<YamlRuleConfiguration> yamlRuleConfig = each.swapToObject0(repositoryTuples);
+                return yamlRuleConfig.map(yamlSwapperEngine::swapToRuleConfiguration);
             }
         }
         return Optional.empty();

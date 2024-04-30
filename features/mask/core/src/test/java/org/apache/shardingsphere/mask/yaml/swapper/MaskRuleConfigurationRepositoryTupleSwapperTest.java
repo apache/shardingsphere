@@ -64,7 +64,7 @@ class MaskRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToObjectWithEmptyTuple() {
-        assertFalse(new MaskRuleConfigurationRepositoryTupleSwapper().swapToObject(new LinkedList<>()).isPresent());
+        assertFalse(new MaskRuleConfigurationRepositoryTupleSwapper().swapToObject0(new LinkedList<>()).isPresent());
     }
     
     @Test
@@ -75,13 +75,13 @@ class MaskRuleConfigurationRepositoryTupleSwapperTest {
                 + "    maskAlgorithm: FIXTURE\n"
                 + "name: foo\n"),
                 new RepositoryTuple("/metadata/foo_db/rules/mask/mask_algorithms/FIXTURE/versions/0", "type: FIXTURE\n"));
-        Optional<MaskRuleConfiguration> actual = new MaskRuleConfigurationRepositoryTupleSwapper().swapToObject(repositoryTuples);
+        Optional<YamlMaskRuleConfiguration> actual = new MaskRuleConfigurationRepositoryTupleSwapper().swapToObject0(repositoryTuples);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getTables().size(), is(1));
-        assertThat(actual.get().getTables().iterator().next().getName(), is("foo"));
-        assertThat(actual.get().getTables().iterator().next().getColumns().size(), is(1));
-        assertThat(actual.get().getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("foo_column"));
-        assertThat(actual.get().getTables().iterator().next().getColumns().iterator().next().getMaskAlgorithm(), is("FIXTURE"));
+        assertThat(actual.get().getTables().values().iterator().next().getName(), is("foo"));
+        assertThat(actual.get().getTables().values().iterator().next().getColumns().size(), is(1));
+        assertThat(actual.get().getTables().values().iterator().next().getColumns().values().iterator().next().getLogicColumn(), is("foo_column"));
+        assertThat(actual.get().getTables().values().iterator().next().getColumns().values().iterator().next().getMaskAlgorithm(), is("FIXTURE"));
         assertThat(actual.get().getMaskAlgorithms().size(), is(1));
         assertThat(actual.get().getMaskAlgorithms().get("FIXTURE").getType(), is("FIXTURE"));
         assertTrue(actual.get().getMaskAlgorithms().get("FIXTURE").getProps().isEmpty());

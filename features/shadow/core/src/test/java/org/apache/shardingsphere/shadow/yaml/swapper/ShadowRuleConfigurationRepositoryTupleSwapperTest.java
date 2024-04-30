@@ -79,7 +79,7 @@ class ShadowRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToObjectWithEmptyTuple() {
-        assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
+        assertFalse(swapper.swapToObject0(Collections.emptyList()).isPresent());
     }
     
     @Test
@@ -92,12 +92,12 @@ class ShadowRuleConfigurationRepositoryTupleSwapperTest {
                         + "- FIXTURE\n"),
                 new RepositoryTuple("/metadata/foo_db/rules/shadow/algorithms/FIXTURE/versions/0", "type: FIXTURE\n"),
                 new RepositoryTuple("/metadata/foo_db/rules/shadow/default_algorithm_name/versions/0", "FIXTURE"));
-        Optional<ShadowRuleConfiguration> actual = swapper.swapToObject(repositoryTuples);
+        Optional<YamlShadowRuleConfiguration> actual = swapper.swapToObject0(repositoryTuples);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDataSources().size(), is(1));
-        assertThat(actual.get().getDataSources().iterator().next().getName(), is("foo_db"));
-        assertThat(actual.get().getDataSources().iterator().next().getProductionDataSourceName(), is("ds_0"));
-        assertThat(actual.get().getDataSources().iterator().next().getShadowDataSourceName(), is("ds_1"));
+        assertThat(actual.get().getDataSources().keySet().iterator().next(), is("foo_db"));
+        assertThat(actual.get().getDataSources().values().iterator().next().getProductionDataSourceName(), is("ds_0"));
+        assertThat(actual.get().getDataSources().values().iterator().next().getShadowDataSourceName(), is("ds_1"));
         assertThat(actual.get().getTables().size(), is(1));
         assertThat(actual.get().getTables().get("foo_table").getDataSourceNames().size(), is(1));
         assertThat(actual.get().getTables().get("foo_table").getDataSourceNames().iterator().next(), is("ds_0"));

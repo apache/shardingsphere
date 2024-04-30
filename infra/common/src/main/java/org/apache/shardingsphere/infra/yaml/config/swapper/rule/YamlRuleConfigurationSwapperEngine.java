@@ -57,6 +57,19 @@ public final class YamlRuleConfigurationSwapperEngine {
     }
     
     /**
+     * Swap from YAML rule configurations to rule configuration.
+     *
+     * @param yamlRuleConfig YAML rule configuration
+     * @return rule configuration
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public RuleConfiguration swapToRuleConfiguration(final YamlRuleConfiguration yamlRuleConfig) {
+        Class<?> ruleConfigType = yamlRuleConfig.getRuleConfigurationType();
+        YamlRuleConfigurationSwapper swapper = OrderedSPILoader.getServicesByClass(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfigType)).get(ruleConfigType);
+        return (RuleConfiguration) swapper.swapToObject(yamlRuleConfig);
+    }
+    
+    /**
      * Swap from YAML rule configurations to rule configurations.
      *
      * @param yamlRuleConfigs YAML rule configurations
