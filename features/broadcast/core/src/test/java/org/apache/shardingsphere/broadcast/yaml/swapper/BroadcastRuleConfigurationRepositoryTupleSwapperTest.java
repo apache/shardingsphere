@@ -31,7 +31,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BroadcastRuleConfigurationRepositoryTupleSwapperTest {
@@ -50,11 +49,6 @@ class BroadcastRuleConfigurationRepositoryTupleSwapperTest {
         assertThat(actual.size(), is(1));
         Iterator<RepositoryTuple> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("tables"));
-    }
-    
-    @Test
-    void assertSwapToObjectWithEmptyTuple() {
-        assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     
     @Test

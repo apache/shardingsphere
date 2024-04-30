@@ -62,6 +62,9 @@ public final class RepositoryTupleSwapperEngine {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Optional<RuleConfiguration> swapToRuleConfiguration(final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
+        if (repositoryTuples.isEmpty()) {
+            return Optional.empty();
+        }
         YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
             if (ruleName.equals(each.getRuleTagName().toLowerCase())) {

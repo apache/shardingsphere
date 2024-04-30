@@ -114,11 +114,6 @@ class ShardingRuleConfigurationRepositoryTupleSwapperTest {
     }
     
     @Test
-    void assertSwapToObjectWithEmptyTuple() {
-        assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
-    }
-    
-    @Test
     void assertSwapToObject() {
         Collection<RepositoryTuple> tuples = new LinkedList<>();
         tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/tables/LOGIC_TABLE/versions/0", "actualDataNodes: ds_${0..1}.table_${0..2}\n"

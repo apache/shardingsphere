@@ -38,7 +38,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShadowRuleConfigurationRepositoryTupleSwapperTest {
@@ -75,11 +74,6 @@ class ShadowRuleConfigurationRepositoryTupleSwapperTest {
         result.setShadowAlgorithms(shadowAlgorithms);
         result.setDefaultShadowAlgorithmName("FIXTURE");
         return result;
-    }
-    
-    @Test
-    void assertSwapToObjectWithEmptyTuple() {
-        assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     
     @Test

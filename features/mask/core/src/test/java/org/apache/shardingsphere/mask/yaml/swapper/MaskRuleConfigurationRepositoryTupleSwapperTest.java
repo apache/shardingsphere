@@ -30,13 +30,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MaskRuleConfigurationRepositoryTupleSwapperTest {
@@ -60,11 +58,6 @@ class MaskRuleConfigurationRepositoryTupleSwapperTest {
         Collection<MaskTableRuleConfiguration> tables = Collections.singleton(
                 new MaskTableRuleConfiguration("foo", Collections.singleton(new MaskColumnRuleConfiguration("foo_column", "FIXTURE"))));
         return new MaskRuleConfiguration(tables, Collections.singletonMap("FIXTURE", new AlgorithmConfiguration("FIXTURE", new Properties())));
-    }
-    
-    @Test
-    void assertSwapToObjectWithEmptyTuple() {
-        assertFalse(new MaskRuleConfigurationRepositoryTupleSwapper().swapToObject(new LinkedList<>()).isPresent());
     }
     
     @Test
