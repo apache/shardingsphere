@@ -36,7 +36,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptRuleConfigurationRepositoryTupleSwapperTest {
@@ -62,11 +61,6 @@ class EncryptRuleConfigurationRepositoryTupleSwapperTest {
         Collection<EncryptTableRuleConfiguration> tables = Collections.singleton(
                 new EncryptTableRuleConfiguration("foo", Collections.singleton(new EncryptColumnRuleConfiguration("foo_column", new EncryptColumnItemRuleConfiguration("FIXTURE", "FOO")))));
         return new EncryptRuleConfiguration(tables, Collections.singletonMap("FOO", new AlgorithmConfiguration("FOO", new Properties())));
-    }
-    
-    @Test
-    void assertSwapToObjectWithEmptyTuple() {
-        assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     
     @Test

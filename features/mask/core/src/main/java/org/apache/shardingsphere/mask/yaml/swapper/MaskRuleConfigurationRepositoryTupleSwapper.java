@@ -31,7 +31,6 @@ import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -42,23 +41,23 @@ import java.util.stream.Collectors;
  */
 public final class MaskRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<MaskRuleConfiguration, YamlMaskRuleConfiguration> {
     
-    private final RuleNodePath maskRuleNodePath = new MaskRuleNodePathProvider().getRuleNodePath();
+    private final RuleNodePath ruleNodePath = new MaskRuleNodePathProvider().getRuleNodePath();
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlMaskRuleConfiguration yamlRuleConfig) {
         Collection<RepositoryTuple> result = new LinkedList<>();
         for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getMaskAlgorithms().entrySet()) {
-            result.add(new RepositoryTuple(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
+            result.add(new RepositoryTuple(ruleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
         }
         for (YamlMaskTableRuleConfiguration each : yamlRuleConfig.getTables().values()) {
-            result.add(new RepositoryTuple(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getPath(each.getName()), YamlEngine.marshal(each)));
+            result.add(new RepositoryTuple(ruleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getPath(each.getName()), YamlEngine.marshal(each)));
         }
         return result;
     }
     
     @Override
     public Optional<YamlMaskRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> maskRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
+        Collection<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         if (validTuples.isEmpty()) {
             return Optional.empty();
         }
@@ -66,9 +65,9 @@ public final class MaskRuleConfigurationRepositoryTupleSwapper implements Reposi
         Map<String, YamlMaskTableRuleConfiguration> tables = new LinkedHashMap<>();
         Map<String, YamlAlgorithmConfiguration> maskAlgorithms = new LinkedHashMap<>();
         for (RepositoryTuple each : validTuples) {
-            maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getName(each.getKey())
+            ruleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getName(each.getKey())
                     .ifPresent(optional -> tables.put(optional, YamlEngine.unmarshal(each.getValue(), YamlMaskTableRuleConfiguration.class)));
-            maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getName(each.getKey())
+            ruleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getName(each.getKey())
                     .ifPresent(optional -> maskAlgorithms.put(optional, YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class)));
         }
         yamlRuleConfig.setTables(tables);

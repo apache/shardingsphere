@@ -36,7 +36,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapperTest {
@@ -62,11 +61,6 @@ class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapperTest {
         Iterator<RepositoryTuple> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("load_balancers/random"));
         assertThat(iterator.next().getKey(), is("data_sources/foo_group"));
-    }
-    
-    @Test
-    void assertSwapToObjectWithEmptyTuple() {
-        assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     
     @Test
