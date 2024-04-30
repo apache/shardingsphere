@@ -59,7 +59,7 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
         for (Entry<RuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, configs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(yamlSwapperEngine.swapToYamlRuleConfiguration(entry.getKey()));
             if (!repositoryTuples.isEmpty()) {
-                persistDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), repositoryTuples);
+                persistDataNodes(databaseName, entry.getValue().getRuleTypeName(), repositoryTuples);
             }
         }
     }
@@ -82,7 +82,7 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
         for (Entry<RuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, configs).entrySet()) {
             Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(yamlSwapperEngine.swapToYamlRuleConfiguration(entry.getKey()));
             if (!repositoryTuples.isEmpty()) {
-                result.addAll(persistDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), repositoryTuples));
+                result.addAll(persistDataNodes(databaseName, entry.getValue().getRuleTypeName(), repositoryTuples));
             }
         }
         return result;
@@ -114,7 +114,7 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
             }
             List<RepositoryTuple> newRepositoryTuples = new LinkedList<>(repositoryTuples);
             Collections.reverse(newRepositoryTuples);
-            result.addAll(deleteDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), newRepositoryTuples));
+            result.addAll(deleteDataNodes(databaseName, entry.getValue().getRuleTypeName(), newRepositoryTuples));
         }
         return result;
     }

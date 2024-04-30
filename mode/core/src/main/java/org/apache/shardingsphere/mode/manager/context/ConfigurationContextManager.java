@@ -378,7 +378,7 @@ public final class ConfigurationContextManager {
     private void closeStaleTransactionRule(final RuleConfiguration ruleConfig) {
         for (Entry<RuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(
                 RepositoryTupleSwapper.class, Collections.singleton(ruleConfig)).entrySet()) {
-            if ("transaction".equalsIgnoreCase(entry.getValue().getRuleTagName())) {
+            if ("transaction".equalsIgnoreCase(entry.getValue().getRuleTypeName())) {
                 Optional<TransactionRule> transactionRule = metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
                 if (!transactionRule.isPresent()) {
                     return;

@@ -36,13 +36,13 @@ public final class SQLFederationRuleConfigurationRepositoryTupleSwapper implemen
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlSQLFederationRuleConfiguration yamlRuleConfig) {
-        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
+        return Collections.singleton(new RepositoryTuple(getRuleTypeName(), YamlEngine.marshal(yamlRuleConfig)));
     }
     
     @Override
     public Optional<YamlSQLFederationRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
-            if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
+            if (GlobalNodePath.getVersion(getRuleTypeName(), each.getKey()).isPresent()) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlSQLFederationRuleConfiguration.class));
             }
         }
@@ -55,8 +55,8 @@ public final class SQLFederationRuleConfigurationRepositoryTupleSwapper implemen
     }
     
     @Override
-    public String getRuleTagName() {
-        return "SQL_FEDERATION";
+    public String getRuleTypeName() {
+        return "sql_federation";
     }
     
     @Override

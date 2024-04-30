@@ -64,7 +64,7 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         if (null != toBeAlteredRuleConfig && ((DatabaseRuleConfiguration) toBeAlteredRuleConfig).isEmpty()) {
             OrderedSPILoader.getServices(RepositoryTupleSwapper.class, Collections.singleton(currentRuleConfig)).values().stream().findFirst()
-                    .ifPresent(optional -> modeContextManager.removeRuleConfiguration(database.getName(), optional.getRuleTagName().toLowerCase()));
+                    .ifPresent(optional -> modeContextManager.removeRuleConfiguration(database.getName(), optional.getRuleTypeName()));
             return Collections.emptyList();
         }
         return modeContextManager.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);

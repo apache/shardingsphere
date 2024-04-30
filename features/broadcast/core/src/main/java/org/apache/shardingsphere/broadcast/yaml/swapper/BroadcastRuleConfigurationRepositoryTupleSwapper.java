@@ -68,7 +68,7 @@ public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements R
     }
     
     @Override
-    public String getRuleTagName() {
-        return "BROADCAST";
+    public String getRuleTypeName() {
+        return "broadcast";
     }
 }

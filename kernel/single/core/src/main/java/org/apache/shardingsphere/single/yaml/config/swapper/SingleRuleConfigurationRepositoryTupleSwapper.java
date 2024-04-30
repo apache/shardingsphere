@@ -59,8 +59,8 @@ public final class SingleRuleConfigurationRepositoryTupleSwapper implements Repo
     }
     
     @Override
-    public String getRuleTagName() {
-        return "SINGLE";
+    public String getRuleTypeName() {
+        return "single";
     }
     
     @Override

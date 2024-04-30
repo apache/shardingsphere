@@ -97,8 +97,8 @@ public final class ShadowRuleConfigurationRepositoryTupleSwapper implements Repo
     }
     
     @Override
-    public String getRuleTagName() {
-        return "SHADOW";
+    public String getRuleTypeName() {
+        return "shadow";
     }
     
     @Override

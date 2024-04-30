@@ -52,9 +52,9 @@ public interface RepositoryTupleSwapper<T extends RuleConfiguration, Y extends Y
     Optional<Y> swapToObject(Collection<RepositoryTuple> repositoryTuples);
     
     /**
-     * Get YAML rule tag name.
+     * Get rule type name.
      *
-     * @return YAML rule tag name
+     * @return rule type name
      */
-    String getRuleTagName();
+    String getRuleTypeName();
 }

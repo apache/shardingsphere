@@ -82,8 +82,8 @@ public final class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper imp
     }
     
     @Override
-    public String getRuleTagName() {
-        return "READWRITE_SPLITTING";
+    public String getRuleTypeName() {
+        return "readwrite_splitting";
     }
     
     @Override
