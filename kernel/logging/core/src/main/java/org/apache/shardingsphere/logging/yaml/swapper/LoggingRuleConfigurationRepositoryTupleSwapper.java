@@ -42,6 +42,16 @@ public final class LoggingRuleConfigurationRepositoryTupleSwapper implements Rep
     }
     
     @Override
+    public Optional<YamlLoggingRuleConfiguration> swapToObject0(final Collection<RepositoryTuple> repositoryTuples) {
+        for (RepositoryTuple each : repositoryTuples) {
+            if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
+                return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlLoggingRuleConfiguration.class));
+            }
+        }
+        return Optional.empty();
+    }
+    
+    @Override
     public Optional<LoggingRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {

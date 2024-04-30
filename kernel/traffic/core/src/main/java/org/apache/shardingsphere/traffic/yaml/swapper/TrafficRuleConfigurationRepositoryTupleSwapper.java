@@ -42,6 +42,16 @@ public final class TrafficRuleConfigurationRepositoryTupleSwapper implements Rep
     }
     
     @Override
+    public Optional<YamlTrafficRuleConfiguration> swapToObject0(final Collection<RepositoryTuple> repositoryTuples) {
+        for (RepositoryTuple each : repositoryTuples) {
+            if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
+                return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlTrafficRuleConfiguration.class));
+            }
+        }
+        return Optional.empty();
+    }
+    
+    @Override
     public Optional<TrafficRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {

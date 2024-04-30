@@ -114,6 +114,54 @@ public final class ShardingRuleConfigurationRepositoryTupleSwapper implements Re
     }
     
     @Override
+    public Optional<YamlShardingRuleConfiguration> swapToObject0(final Collection<RepositoryTuple> repositoryTuples) {
+        List<RepositoryTuple> validRepositoryTuples = repositoryTuples.stream().filter(each -> shardingRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
+        if (validRepositoryTuples.isEmpty()) {
+            return Optional.empty();
+        }
+        YamlShardingRuleConfiguration yamlRuleConfig = new YamlShardingRuleConfiguration();
+        Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
+        Map<String, YamlShardingAutoTableRuleConfiguration> autoTables = new LinkedHashMap<>();
+        Collection<String> bindingTables = new LinkedList<>();
+        Map<String, YamlAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
+        Map<String, YamlAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
+        Map<String, YamlAlgorithmConfiguration> auditors = new LinkedHashMap<>();
+        for (RepositoryTuple each : validRepositoryTuples) {
+            shardingRuleNodePath.getNamedItem(ShardingRuleNodePathProvider.TABLES).getName(each.getKey())
+                    .ifPresent(optional -> tables.put(optional, YamlEngine.unmarshal(each.getValue(), YamlTableRuleConfiguration.class)));
+            shardingRuleNodePath.getNamedItem(ShardingRuleNodePathProvider.AUTO_TABLES).getName(each.getKey())
+                    .ifPresent(optional -> autoTables.put(optional, YamlEngine.unmarshal(each.getValue(), YamlShardingAutoTableRuleConfiguration.class)));
+            shardingRuleNodePath.getNamedItem(ShardingRuleNodePathProvider.BINDING_TABLES).getName(each.getKey()).ifPresent(optional -> bindingTables.add(each.getValue()));
+            shardingRuleNodePath.getNamedItem(ShardingRuleNodePathProvider.ALGORITHMS).getName(each.getKey())
+                    .ifPresent(optional -> shardingAlgorithms.put(optional, YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class)));
+            shardingRuleNodePath.getNamedItem(ShardingRuleNodePathProvider.KEY_GENERATORS).getName(each.getKey())
+                    .ifPresent(optional -> keyGenerators.put(optional, YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class)));
+            shardingRuleNodePath.getNamedItem(ShardingRuleNodePathProvider.AUDITORS).getName(each.getKey())
+                    .ifPresent(optional -> auditors.put(optional, YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class)));
+            if (shardingRuleNodePath.getUniqueItem(ShardingRuleNodePathProvider.DEFAULT_DATABASE_STRATEGY).isValidatedPath(each.getKey())) {
+                yamlRuleConfig.setDefaultDatabaseStrategy(YamlEngine.unmarshal(each.getValue(), YamlShardingStrategyConfiguration.class));
+            } else if (shardingRuleNodePath.getUniqueItem(ShardingRuleNodePathProvider.DEFAULT_TABLE_STRATEGY).isValidatedPath(each.getKey())) {
+                yamlRuleConfig.setDefaultTableStrategy(YamlEngine.unmarshal(each.getValue(), YamlShardingStrategyConfiguration.class));
+            } else if (shardingRuleNodePath.getUniqueItem(ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY).isValidatedPath(each.getKey())) {
+                yamlRuleConfig.setDefaultKeyGenerateStrategy(YamlEngine.unmarshal(each.getValue(), YamlKeyGenerateStrategyConfiguration.class));
+            } else if (shardingRuleNodePath.getUniqueItem(ShardingRuleNodePathProvider.DEFAULT_AUDIT_STRATEGY).isValidatedPath(each.getKey())) {
+                yamlRuleConfig.setDefaultAuditStrategy(YamlEngine.unmarshal(each.getValue(), YamlShardingAuditStrategyConfiguration.class));
+            } else if (shardingRuleNodePath.getUniqueItem(ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN).isValidatedPath(each.getKey())) {
+                yamlRuleConfig.setDefaultShardingColumn(each.getValue());
+            } else if (shardingRuleNodePath.getUniqueItem(ShardingRuleNodePathProvider.SHARDING_CACHE).isValidatedPath(each.getKey())) {
+                yamlRuleConfig.setShardingCache(YamlEngine.unmarshal(each.getValue(), YamlShardingCacheConfiguration.class));
+            }
+        }
+        yamlRuleConfig.setTables(tables);
+        yamlRuleConfig.setAutoTables(autoTables);
+        yamlRuleConfig.setBindingTables(bindingTables);
+        yamlRuleConfig.setShardingAlgorithms(shardingAlgorithms);
+        yamlRuleConfig.setKeyGenerators(keyGenerators);
+        yamlRuleConfig.setAuditors(auditors);
+        return Optional.of(yamlRuleConfig);
+    }
+    
+    @Override
     public Optional<ShardingRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         List<RepositoryTuple> validRepositoryTuples = repositoryTuples.stream().filter(each -> shardingRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         if (validRepositoryTuples.isEmpty()) {

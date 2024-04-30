@@ -66,7 +66,7 @@ class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToObjectWithEmptyTuple() {
-        assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
+        assertFalse(swapper.swapToObject0(Collections.emptyList()).isPresent());
     }
     
     @Test
@@ -78,14 +78,14 @@ class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapperTest {
                 + "transactionalReadQueryStrategy: DYNAMIC\n"
                 + "writeDataSourceName: write_ds\n"),
                 new RepositoryTuple("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random/versions/0", "type: random\n"));
-        Optional<ReadwriteSplittingRuleConfiguration> actual = swapper.swapToObject(repositoryTuples);
+        Optional<YamlReadwriteSplittingRuleConfiguration> actual = swapper.swapToObject0(repositoryTuples);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDataSourceGroups().size(), is(1));
-        assertThat(actual.get().getDataSourceGroups().iterator().next().getName(), is("foo_group"));
-        assertThat(actual.get().getDataSourceGroups().iterator().next().getWriteDataSourceName(), is("write_ds"));
-        assertThat(actual.get().getDataSourceGroups().iterator().next().getReadDataSourceNames().size(), is(2));
-        assertThat(actual.get().getDataSourceGroups().iterator().next().getLoadBalancerName(), is("random"));
-        assertThat(actual.get().getDataSourceGroups().iterator().next().getTransactionalReadQueryStrategy(), is(TransactionalReadQueryStrategy.DYNAMIC));
+        assertThat(actual.get().getDataSourceGroups().keySet().iterator().next(), is("foo_group"));
+        assertThat(actual.get().getDataSourceGroups().values().iterator().next().getWriteDataSourceName(), is("write_ds"));
+        assertThat(actual.get().getDataSourceGroups().values().iterator().next().getReadDataSourceNames().size(), is(2));
+        assertThat(actual.get().getDataSourceGroups().values().iterator().next().getLoadBalancerName(), is("random"));
+        assertThat(actual.get().getDataSourceGroups().values().iterator().next().getTransactionalReadQueryStrategy(), is(TransactionalReadQueryStrategy.DYNAMIC.name()));
         assertThat(actual.get().getLoadBalancers().size(), is(1));
         assertThat(actual.get().getLoadBalancers().get("random").getType(), is("random"));
         assertTrue(actual.get().getLoadBalancers().get("random").getProps().isEmpty());

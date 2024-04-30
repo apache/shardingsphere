@@ -61,6 +61,26 @@ public final class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper imp
     }
     
     @Override
+    public Optional<YamlReadwriteSplittingRuleConfiguration> swapToObject0(final Collection<RepositoryTuple> repositoryTuples) {
+        List<RepositoryTuple> validRepositoryTuples = repositoryTuples.stream().filter(each -> readwriteSplittingRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
+        if (validRepositoryTuples.isEmpty()) {
+            return Optional.empty();
+        }
+        YamlReadwriteSplittingRuleConfiguration yamlRuleConfig = new YamlReadwriteSplittingRuleConfiguration();
+        Map<String, YamlReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = new LinkedHashMap<>();
+        Map<String, YamlAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
+        for (RepositoryTuple each : validRepositoryTuples) {
+            readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES).getName(each.getKey())
+                    .ifPresent(optional -> dataSourceGroups.put(optional, YamlEngine.unmarshal(each.getValue(), YamlReadwriteSplittingDataSourceGroupRuleConfiguration.class)));
+            readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS).getName(each.getKey())
+                    .ifPresent(optional -> loadBalancers.put(optional, YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class)));
+        }
+        yamlRuleConfig.setDataSourceGroups(dataSourceGroups);
+        yamlRuleConfig.setLoadBalancers(loadBalancers);
+        return Optional.of(yamlRuleConfig);
+    }
+    
+    @Override
     public Optional<ReadwriteSplittingRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         List<RepositoryTuple> validRepositoryTuples = repositoryTuples.stream().filter(each -> readwriteSplittingRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         if (validRepositoryTuples.isEmpty()) {
