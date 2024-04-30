@@ -66,22 +66,6 @@ public final class ShardingRuleConfigurationRepositoryTupleSwapper implements Re
         return result;
     }
     
-    @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final ShardingRuleConfiguration data) {
-        YamlShardingRuleConfiguration yamlRuleConfig = ruleConfigSwapper.swapToYamlConfiguration(data);
-        Collection<RepositoryTuple> result = new LinkedList<>();
-        swapAlgorithms(yamlRuleConfig, result);
-        swapStrategies(yamlRuleConfig, result);
-        if (null != yamlRuleConfig.getDefaultShardingColumn()) {
-            result.add(new RepositoryTuple(shardingRuleNodePath.getUniqueItem(ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN).getPath(), yamlRuleConfig.getDefaultShardingColumn()));
-        }
-        if (null != yamlRuleConfig.getShardingCache()) {
-            result.add(new RepositoryTuple(shardingRuleNodePath.getUniqueItem(ShardingRuleNodePathProvider.SHARDING_CACHE).getPath(), YamlEngine.marshal(yamlRuleConfig.getShardingCache())));
-        }
-        swapTableRules(yamlRuleConfig, result);
-        return result;
-    }
-    
     private void swapAlgorithms(final YamlShardingRuleConfiguration yamlRuleConfig, final Collection<RepositoryTuple> repositoryTuples) {
         for (Entry<String, YamlAlgorithmConfiguration> each : yamlRuleConfig.getShardingAlgorithms().entrySet()) {
             repositoryTuples.add(new RepositoryTuple(shardingRuleNodePath.getNamedItem(ShardingRuleNodePathProvider.ALGORITHMS).getPath(each.getKey()), YamlEngine.marshal(each.getValue())));

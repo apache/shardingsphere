@@ -67,25 +67,6 @@ public final class ShadowRuleConfigurationRepositoryTupleSwapper implements Repo
     }
     
     @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final ShadowRuleConfiguration data) {
-        Collection<RepositoryTuple> result = new LinkedList<>();
-        YamlShadowRuleConfiguration yamlRuleConfig = ruleConfigSwapper.swapToYamlConfiguration(data);
-        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getShadowAlgorithms().entrySet()) {
-            result.add(new RepositoryTuple(shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.ALGORITHMS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
-        }
-        if (!Strings.isNullOrEmpty(yamlRuleConfig.getDefaultShadowAlgorithmName())) {
-            result.add(new RepositoryTuple(shadowRuleNodePath.getUniqueItem(ShadowRuleNodePathProvider.DEFAULT_ALGORITHM).getPath(), yamlRuleConfig.getDefaultShadowAlgorithmName()));
-        }
-        for (Entry<String, YamlShadowDataSourceConfiguration> entry : yamlRuleConfig.getDataSources().entrySet()) {
-            result.add(new RepositoryTuple(shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.DATA_SOURCES).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
-        }
-        for (Entry<String, YamlShadowTableConfiguration> entry : yamlRuleConfig.getTables().entrySet()) {
-            result.add(new RepositoryTuple(shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.TABLES).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
-        }
-        return result;
-    }
-    
-    @Override
     public Optional<ShadowRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         List<RepositoryTuple> validRepositoryTuples = repositoryTuples.stream().filter(each -> shadowRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         if (validRepositoryTuples.isEmpty()) {

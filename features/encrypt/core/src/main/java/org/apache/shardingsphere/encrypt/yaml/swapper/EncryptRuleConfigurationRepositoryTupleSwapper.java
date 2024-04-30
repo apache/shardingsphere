@@ -59,19 +59,6 @@ public final class EncryptRuleConfigurationRepositoryTupleSwapper implements Rep
     }
     
     @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final EncryptRuleConfiguration data) {
-        Collection<RepositoryTuple> result = new LinkedList<>();
-        YamlEncryptRuleConfiguration yamlConfig = ruleConfigSwapper.swapToYamlConfiguration(data);
-        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlConfig.getEncryptors().entrySet()) {
-            result.add(new RepositoryTuple(encryptRuleNodePath.getNamedItem(EncryptRuleNodePathProvider.ENCRYPTORS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
-        }
-        for (YamlEncryptTableRuleConfiguration each : yamlConfig.getTables().values()) {
-            result.add(new RepositoryTuple(encryptRuleNodePath.getNamedItem(EncryptRuleNodePathProvider.TABLES).getPath(each.getName()), YamlEngine.marshal(each)));
-        }
-        return result;
-    }
-    
-    @Override
     public Optional<EncryptRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> encryptRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         if (validTuples.isEmpty()) {

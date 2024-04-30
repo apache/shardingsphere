@@ -46,11 +46,6 @@ public final class SingleRuleConfigurationRepositoryTupleSwapper implements Repo
     }
     
     @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final SingleRuleConfiguration data) {
-        return Collections.singleton(new RepositoryTuple(SingleRuleNodePathProvider.TABLES, YamlEngine.marshal(ruleConfigSwapper.swapToYamlConfiguration(data))));
-    }
-    
-    @Override
     public Optional<SingleRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples.stream().filter(each -> singleRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList())) {
             if (singleRuleNodePath.getUniqueItem(SingleRuleNodePathProvider.TABLES).isValidatedPath(each.getKey())) {
