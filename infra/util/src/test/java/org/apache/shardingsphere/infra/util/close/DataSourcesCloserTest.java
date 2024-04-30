@@ -17,22 +17,31 @@
 
 package org.apache.shardingsphere.infra.util.close;
 
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import javax.sql.DataSource;
-import java.util.Collections;
+import java.sql.SQLException;
+import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.withSettings;
 
 class DataSourcesCloserTest {
     
     @Test
-    void assertClose() {
-        DataSource mockDataSource = Mockito.mock(DataSource.class, Mockito.withSettings().extraInterfaces(AutoCloseable.class));
-        DataSourcesCloser.close(Collections.singletonList(mockDataSource));
-        assertDoesNotThrow(() -> verify((AutoCloseable) mockDataSource, times(1)).close());
+    void assertClose() throws Exception {
+        DataSource dataSource0 = mock(DataSource.class, withSettings().extraInterfaces(AutoCloseable.class));
+        DataSource dataSource1 = mock(DataSource.class, withSettings().extraInterfaces(AutoCloseable.class));
+        doThrow(new SQLException("test")).when((AutoCloseable) dataSource1).close();
+        DataSource dataSource2 = mock(DataSource.class, withSettings().extraInterfaces(AutoCloseable.class));
+        assertThrows(SQLWrapperException.class, () -> DataSourcesCloser.close(Arrays.asList(dataSource0, dataSource1, dataSource2)));
+        verify((AutoCloseable) dataSource0, times(1)).close();
+        verify((AutoCloseable) dataSource1, times(1)).close();
+        verify((AutoCloseable) dataSource2, times(1)).close();
     }
 }

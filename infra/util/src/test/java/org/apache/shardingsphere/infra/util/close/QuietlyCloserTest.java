@@ -18,18 +18,27 @@
 package org.apache.shardingsphere.infra.util.close;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+
+import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 class QuietlyCloserTest {
     
     @Test
-    void testClose() {
-        AutoCloseable mockAutoCloseable = Mockito.mock(AutoCloseable.class);
+    void assertClose() throws Exception {
+        AutoCloseable mockAutoCloseable = mock(AutoCloseable.class);
+        doThrow(new SQLException("test")).when(mockAutoCloseable).close();
         QuietlyCloser.close(mockAutoCloseable);
         assertDoesNotThrow(() -> verify(mockAutoCloseable, times(1)).close());
+    }
+    
+    @Test
+    void assertCloseWithNullResource() {
+        assertDoesNotThrow(() -> QuietlyCloser.close(null));
     }
 }
