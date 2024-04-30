@@ -61,9 +61,7 @@ class ReadwriteSplittingRuleStatementConverterTest {
         assertThat(actualRuleConfig.getLoadBalancerName(), is(expectedLoadBalancerName));
         assertThat(actualRuleConfig.getWriteDataSourceName(), is(expectedSingleReadwriteSplittingRuleSegment.getWriteDataSource()));
         assertThat(actualRuleConfig.getReadDataSourceNames(), is(expectedSingleReadwriteSplittingRuleSegment.getReadDataSources()));
-        String actualLoadBalancerName = actualSingleRuleSegmentConvertResultLoadBalancers.keySet().iterator().next();
-        assertThat(actualLoadBalancerName, is(expectedLoadBalancerName));
-        AlgorithmConfiguration actualSphereAlgorithmConfig = actualSingleRuleSegmentConvertResultLoadBalancers.get(actualLoadBalancerName);
+        AlgorithmConfiguration actualSphereAlgorithmConfig = actualSingleRuleSegmentConvertResultLoadBalancers.get(expectedLoadBalancerName);
         assertThat(actualSphereAlgorithmConfig.getType(), is(expectedSingleReadwriteSplittingRuleSegment.getLoadBalancer().getName()));
         assertThat(actualSphereAlgorithmConfig.getProps(), is(expectedSingleReadwriteSplittingRuleSegment.getLoadBalancer().getProps()));
     }
