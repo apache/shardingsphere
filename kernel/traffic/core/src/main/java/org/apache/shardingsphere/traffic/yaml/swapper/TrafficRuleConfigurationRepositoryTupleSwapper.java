@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
-import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.constant.TrafficOrder;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
 
@@ -32,7 +31,7 @@ import java.util.Optional;
 /**
  * Traffic rule configuration repository tuple swapper.
  */
-public final class TrafficRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<TrafficRuleConfiguration, YamlTrafficRuleConfiguration> {
+public final class TrafficRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlTrafficRuleConfiguration> {
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlTrafficRuleConfiguration yamlRuleConfig) {
@@ -50,8 +49,8 @@ public final class TrafficRuleConfigurationRepositoryTupleSwapper implements Rep
     }
     
     @Override
-    public Class<TrafficRuleConfiguration> getTypeClass() {
-        return TrafficRuleConfiguration.class;
+    public Class<YamlTrafficRuleConfiguration> getTypeClass() {
+        return YamlTrafficRuleConfiguration.class;
     }
     
     @Override

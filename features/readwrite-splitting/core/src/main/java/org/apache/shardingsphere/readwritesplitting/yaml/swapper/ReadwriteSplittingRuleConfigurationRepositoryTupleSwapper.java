@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingRuleNodePathProvider;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
@@ -40,7 +39,7 @@ import java.util.stream.Collectors;
 /**
  * Readwrite-splitting rule configuration repository tuple swapper.
  */
-public final class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<ReadwriteSplittingRuleConfiguration, YamlReadwriteSplittingRuleConfiguration> {
+public final class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlReadwriteSplittingRuleConfiguration> {
     
     private final RuleNodePath ruleNodePath = new ReadwriteSplittingRuleNodePathProvider().getRuleNodePath();
     
@@ -77,8 +76,8 @@ public final class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper imp
     }
     
     @Override
-    public Class<ReadwriteSplittingRuleConfiguration> getTypeClass() {
-        return ReadwriteSplittingRuleConfiguration.class;
+    public Class<YamlReadwriteSplittingRuleConfiguration> getTypeClass() {
+        return YamlReadwriteSplittingRuleConfiguration.class;
     }
     
     @Override

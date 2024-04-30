@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.globalclock.core.yaml.swapper;
 
-import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.core.rule.constant.GlobalClockOrder;
 import org.apache.shardingsphere.globalclock.core.yaml.config.YamlGlobalClockRuleConfiguration;
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
@@ -32,7 +31,7 @@ import java.util.Optional;
 /**
  * Global clock rule configuration repository tuple swapper.
  */
-public final class GlobalClockRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<GlobalClockRuleConfiguration, YamlGlobalClockRuleConfiguration> {
+public final class GlobalClockRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlGlobalClockRuleConfiguration> {
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlGlobalClockRuleConfiguration yamlRuleConfig) {
@@ -60,7 +59,7 @@ public final class GlobalClockRuleConfigurationRepositoryTupleSwapper implements
     }
     
     @Override
-    public Class<GlobalClockRuleConfiguration> getTypeClass() {
-        return GlobalClockRuleConfiguration.class;
+    public Class<YamlGlobalClockRuleConfiguration> getTypeClass() {
+        return YamlGlobalClockRuleConfiguration.class;
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.authority.yaml.swapper;
 
-import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
@@ -32,7 +31,7 @@ import java.util.Optional;
 /**
  * Authority rule configuration repository tuple swapper.
  */
-public final class AuthorityRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<AuthorityRuleConfiguration, YamlAuthorityRuleConfiguration> {
+public final class AuthorityRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlAuthorityRuleConfiguration> {
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlAuthorityRuleConfiguration yamlRuleConfig) {
@@ -50,8 +49,8 @@ public final class AuthorityRuleConfigurationRepositoryTupleSwapper implements R
     }
     
     @Override
-    public Class<AuthorityRuleConfiguration> getTypeClass() {
-        return AuthorityRuleConfiguration.class;
+    public Class<YamlAuthorityRuleConfiguration> getTypeClass() {
+        return YamlAuthorityRuleConfiguration.class;
     }
     
     @Override

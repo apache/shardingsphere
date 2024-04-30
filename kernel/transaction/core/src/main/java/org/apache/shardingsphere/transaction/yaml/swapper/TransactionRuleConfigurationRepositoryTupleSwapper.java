@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.constant.TransactionOrder;
 import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
 
@@ -32,7 +31,7 @@ import java.util.Optional;
 /**
  * Transaction rule configuration repository tuple swapper.
  */
-public final class TransactionRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<TransactionRuleConfiguration, YamlTransactionRuleConfiguration> {
+public final class TransactionRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlTransactionRuleConfiguration> {
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlTransactionRuleConfiguration yamlRuleConfig) {
@@ -50,8 +49,8 @@ public final class TransactionRuleConfigurationRepositoryTupleSwapper implements
     }
     
     @Override
-    public Class<TransactionRuleConfiguration> getTypeClass() {
-        return TransactionRuleConfiguration.class;
+    public Class<YamlTransactionRuleConfiguration> getTypeClass() {
+        return YamlTransactionRuleConfiguration.class;
     }
     
     @Override
