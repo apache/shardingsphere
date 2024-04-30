@@ -120,8 +120,8 @@ class ShardingRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        Collection<RepositoryTuple> repositoryTuples = new LinkedList<>();
-        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/tables/LOGIC_TABLE/versions/0", "actualDataNodes: ds_${0..1}.table_${0..2}\n"
+        Collection<RepositoryTuple> tuples = new LinkedList<>();
+        tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/tables/LOGIC_TABLE/versions/0", "actualDataNodes: ds_${0..1}.table_${0..2}\n"
                 + "auditStrategy:\n"
                 + "  allowHintDisable: false\n"
                 + "  auditorNames:\n"
@@ -138,7 +138,7 @@ class ShardingRuleConfigurationRepositoryTupleSwapperTest {
                 + "  standard:\n"
                 + "    shardingAlgorithmName: table_inline\n"
                 + "    shardingColumn: order_id\n"));
-        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/tables/SUB_LOGIC_TABLE/versions/0", "actualDataNodes: ds_${0..1}.sub_table_${0..2}\n"
+        tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/tables/SUB_LOGIC_TABLE/versions/0", "actualDataNodes: ds_${0..1}.sub_table_${0..2}\n"
                 + "databaseStrategy:\n"
                 + "  standard:\n"
                 + "    shardingAlgorithmName: database_inline\n"
@@ -151,7 +151,7 @@ class ShardingRuleConfigurationRepositoryTupleSwapperTest {
                 + "  standard:\n"
                 + "    shardingAlgorithmName: table_inline\n"
                 + "    shardingColumn: order_id\n"));
-        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/auto_tables/auto_table/versions/0", "actualDataSources: ds_1,ds_2\n"
+        tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/auto_tables/auto_table/versions/0", "actualDataSources: ds_1,ds_2\n"
                 + "auditStrategy:\n"
                 + "  allowHintDisable: true\n"
                 + "  auditorNames:\n"
@@ -164,28 +164,28 @@ class ShardingRuleConfigurationRepositoryTupleSwapperTest {
                 + "  standard:\n"
                 + "    shardingAlgorithmName: hash_mod\n"
                 + "    shardingColumn: user_id\n"));
-        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/binding_tables/foo/versions/0", "foo:LOGIC_TABLE,SUB_LOGIC_TABLE"));
-        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/default_strategies/default_database_strategy/versions/0", "standard:\n"
+        tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/binding_tables/foo/versions/0", "foo:LOGIC_TABLE,SUB_LOGIC_TABLE"));
+        tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/default_strategies/default_database_strategy/versions/0", "standard:\n"
                 + "  shardingAlgorithmName: standard\n"
                 + "  shardingColumn: ds_id\n"));
-        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/default_strategies/default_table_strategy/versions/0", "standard:\n"
+        tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/default_strategies/default_table_strategy/versions/0", "standard:\n"
                 + "  shardingAlgorithmName: standard\n"
                 + "  shardingColumn: table_id\n"));
-        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/default_strategies/default_key_generate_strategy/versions/0", "column: id\n"
+        tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/default_strategies/default_key_generate_strategy/versions/0", "column: id\n"
                 + "keyGeneratorName: default\n"));
-        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/default_strategies/default_audit_strategy/versions/0", "allowHintDisable: false\n"
+        tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/default_strategies/default_audit_strategy/versions/0", "allowHintDisable: false\n"
                 + "auditorNames:\n"
                 + "- audit_algorithm\n"));
-        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/algorithms/core_standard_fixture/versions/0", "type: CORE.STANDARD.FIXTURE\n"));
-        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/algorithms/hash_mod/versions/0", "props:\n"
+        tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/algorithms/core_standard_fixture/versions/0", "type: CORE.STANDARD.FIXTURE\n"));
+        tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/algorithms/hash_mod/versions/0", "props:\n"
                 + "  sharding-count: '4'\n"
                 + "type: hash_mod\n"));
-        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/key_generators/uuid/versions/0", "type: UUID\n"));
-        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/key_generators/default/versions/0", "type: UUID\n"));
-        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/key_generators/auto_increment/versions/0", "type: AUTO_INCREMENT.FIXTURE\n"));
-        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/auditors/audit_algorithm/versions/0", "type: DML_SHARDING_CONDITIONS\n"));
-        repositoryTuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/default_strategies/default_sharding_column/versions/0", "table_id"));
-        Optional<YamlShardingRuleConfiguration> yamlRuleConfig = swapper.swapToObject(repositoryTuples);
+        tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/key_generators/uuid/versions/0", "type: UUID\n"));
+        tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/key_generators/default/versions/0", "type: UUID\n"));
+        tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/key_generators/auto_increment/versions/0", "type: AUTO_INCREMENT.FIXTURE\n"));
+        tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/auditors/audit_algorithm/versions/0", "type: DML_SHARDING_CONDITIONS\n"));
+        tuples.add(new RepositoryTuple("/metadata/foo_db/rules/sharding/default_strategies/default_sharding_column/versions/0", "table_id"));
+        Optional<YamlShardingRuleConfiguration> yamlRuleConfig = swapper.swapToObject(tuples);
         assertTrue(yamlRuleConfig.isPresent());
         ShardingRuleConfiguration actual = (ShardingRuleConfiguration) new YamlRuleConfigurationSwapperEngine().swapToRuleConfiguration(yamlRuleConfig.get());
         assertThat(actual.getTables().size(), is(2));
