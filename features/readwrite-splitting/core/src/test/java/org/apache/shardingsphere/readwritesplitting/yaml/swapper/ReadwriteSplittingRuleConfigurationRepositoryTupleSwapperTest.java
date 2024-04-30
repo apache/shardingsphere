@@ -85,7 +85,7 @@ class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapperTest {
         assertThat(actual.get().getDataSourceGroups().values().iterator().next().getWriteDataSourceName(), is("write_ds"));
         assertThat(actual.get().getDataSourceGroups().values().iterator().next().getReadDataSourceNames().size(), is(2));
         assertThat(actual.get().getDataSourceGroups().values().iterator().next().getLoadBalancerName(), is("random"));
-        assertThat(actual.get().getDataSourceGroups().values().iterator().next().getTransactionalReadQueryStrategy(), is(TransactionalReadQueryStrategy.DYNAMIC));
+        assertThat(actual.get().getDataSourceGroups().values().iterator().next().getTransactionalReadQueryStrategy(), is(TransactionalReadQueryStrategy.DYNAMIC.name()));
         assertThat(actual.get().getLoadBalancers().size(), is(1));
         assertThat(actual.get().getLoadBalancers().get("random").getType(), is("random"));
         assertTrue(actual.get().getLoadBalancers().get("random").getProps().isEmpty());
