@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.globalclock.core.yaml.swapper;
 
-import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
+import org.apache.shardingsphere.globalclock.core.yaml.config.YamlGlobalClockRuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,7 +32,7 @@ class GlobalClockRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToRepositoryTuples() {
-        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(new GlobalClockRuleConfiguration("", "", false, new Properties()));
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(new YamlGlobalClockRuleConfiguration());
         assertThat(actual.iterator().next().getKey(), is("global_clock"));
     }
 }

@@ -32,9 +32,14 @@ import java.util.Optional;
 /**
  * SQL translator rule configuration repository tuple swapper.
  */
-public final class SQLTranslatorRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SQLTranslatorRuleConfiguration> {
+public final class SQLTranslatorRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SQLTranslatorRuleConfiguration, YamlSQLTranslatorRuleConfiguration> {
     
     private final YamlSQLTranslatorRuleConfigurationSwapper ruleConfigSwapper = new YamlSQLTranslatorRuleConfigurationSwapper();
+    
+    @Override
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlSQLTranslatorRuleConfiguration yamlRuleConfig) {
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
+    }
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final SQLTranslatorRuleConfiguration data) {

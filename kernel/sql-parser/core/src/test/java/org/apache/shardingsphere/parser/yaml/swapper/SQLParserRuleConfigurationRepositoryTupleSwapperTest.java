@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.parser.yaml.swapper;
 
-import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
+import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,7 +29,6 @@ class SQLParserRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToRepositoryTuples() {
-        assertThat(swapper.swapToRepositoryTuples(new SQLParserRuleConfiguration(DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION,
-                DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION)).iterator().next().getKey(), is("sql_parser"));
+        assertThat(swapper.swapToRepositoryTuples(new YamlSQLParserRuleConfiguration()).iterator().next().getKey(), is("sql_parser"));
     }
 }

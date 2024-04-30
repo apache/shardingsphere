@@ -45,11 +45,26 @@ import java.util.stream.Collectors;
 /**
  * Sharding rule configuration repository tuple swapper.
  */
-public final class ShardingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<ShardingRuleConfiguration> {
+public final class ShardingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<ShardingRuleConfiguration, YamlShardingRuleConfiguration> {
     
     private final YamlShardingRuleConfigurationSwapper ruleConfigSwapper = new YamlShardingRuleConfigurationSwapper();
     
     private final RuleNodePath shardingRuleNodePath = new ShardingRuleNodePathProvider().getRuleNodePath();
+    
+    @Override
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlShardingRuleConfiguration yamlRuleConfig) {
+        Collection<RepositoryTuple> result = new LinkedList<>();
+        swapAlgorithms(yamlRuleConfig, result);
+        swapStrategies(yamlRuleConfig, result);
+        if (null != yamlRuleConfig.getDefaultShardingColumn()) {
+            result.add(new RepositoryTuple(shardingRuleNodePath.getUniqueItem(ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN).getPath(), yamlRuleConfig.getDefaultShardingColumn()));
+        }
+        if (null != yamlRuleConfig.getShardingCache()) {
+            result.add(new RepositoryTuple(shardingRuleNodePath.getUniqueItem(ShardingRuleNodePathProvider.SHARDING_CACHE).getPath(), YamlEngine.marshal(yamlRuleConfig.getShardingCache())));
+        }
+        swapTableRules(yamlRuleConfig, result);
+        return result;
+    }
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final ShardingRuleConfiguration data) {

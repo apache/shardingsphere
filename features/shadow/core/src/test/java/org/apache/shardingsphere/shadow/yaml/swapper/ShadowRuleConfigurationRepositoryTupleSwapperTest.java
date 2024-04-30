@@ -19,9 +19,11 @@ package org.apache.shardingsphere.shadow.yaml.swapper;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -45,12 +47,13 @@ class ShadowRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToRepositoryTuplesWithEmptyRule() {
-        assertTrue(swapper.swapToRepositoryTuples(new ShadowRuleConfiguration()).isEmpty());
+        assertTrue(swapper.swapToRepositoryTuples(new YamlShadowRuleConfiguration()).isEmpty());
     }
     
     @Test
     void assertSwapToRepositoryTuples() {
-        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(createMaximumShadowRule());
+        YamlShadowRuleConfiguration yamlRuleConfig = (YamlShadowRuleConfiguration) new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(createMaximumShadowRule());
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(yamlRuleConfig);
         assertThat(actual.size(), is(4));
         Iterator<RepositoryTuple> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("algorithms/FIXTURE"));

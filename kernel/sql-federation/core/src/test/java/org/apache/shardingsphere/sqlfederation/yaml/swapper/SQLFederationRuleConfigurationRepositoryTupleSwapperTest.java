@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.yaml.swapper;
 
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
+import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,6 +29,6 @@ class SQLFederationRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToRepositoryTuples() {
-        assertThat(swapper.swapToRepositoryTuples(new SQLFederationRuleConfiguration(false, false, new CacheOption(0, 0))).iterator().next().getKey(), is("sql_federation"));
+        assertThat(swapper.swapToRepositoryTuples(new YamlSQLFederationRuleConfiguration()).iterator().next().getKey(), is("sql_federation"));
     }
 }

@@ -34,11 +34,16 @@ import java.util.stream.Collectors;
 /**
  * Single rule configuration repository tuple swapper.
  */
-public final class SingleRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SingleRuleConfiguration> {
+public final class SingleRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SingleRuleConfiguration, YamlSingleRuleConfiguration> {
     
     private final YamlSingleRuleConfigurationSwapper ruleConfigSwapper = new YamlSingleRuleConfigurationSwapper();
     
     private final RuleNodePath singleRuleNodePath = new SingleRuleNodePathProvider().getRuleNodePath();
+    
+    @Override
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlSingleRuleConfiguration yamlRuleConfig) {
+        return Collections.singleton(new RepositoryTuple(SingleRuleNodePathProvider.TABLES, YamlEngine.marshal(yamlRuleConfig)));
+    }
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final SingleRuleConfiguration data) {

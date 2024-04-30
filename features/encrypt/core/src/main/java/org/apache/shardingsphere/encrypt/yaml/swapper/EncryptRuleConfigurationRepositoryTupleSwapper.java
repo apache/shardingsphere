@@ -40,11 +40,23 @@ import java.util.stream.Collectors;
 /**
  * Encrypt rule configuration repository tuple swapper.
  */
-public final class EncryptRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<EncryptRuleConfiguration> {
+public final class EncryptRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<EncryptRuleConfiguration, YamlEncryptRuleConfiguration> {
     
     private final YamlEncryptRuleConfigurationSwapper ruleConfigSwapper = new YamlEncryptRuleConfigurationSwapper();
     
     private final RuleNodePath encryptRuleNodePath = new EncryptRuleNodePathProvider().getRuleNodePath();
+    
+    @Override
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlEncryptRuleConfiguration yamlRuleConfig) {
+        Collection<RepositoryTuple> result = new LinkedList<>();
+        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getEncryptors().entrySet()) {
+            result.add(new RepositoryTuple(encryptRuleNodePath.getNamedItem(EncryptRuleNodePathProvider.ENCRYPTORS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
+        }
+        for (YamlEncryptTableRuleConfiguration each : yamlRuleConfig.getTables().values()) {
+            result.add(new RepositoryTuple(encryptRuleNodePath.getNamedItem(EncryptRuleNodePathProvider.TABLES).getPath(each.getName()), YamlEngine.marshal(each)));
+        }
+        return result;
+    }
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final EncryptRuleConfiguration data) {

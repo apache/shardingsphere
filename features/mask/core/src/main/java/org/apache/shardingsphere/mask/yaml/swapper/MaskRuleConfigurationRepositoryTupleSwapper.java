@@ -40,11 +40,23 @@ import java.util.stream.Collectors;
 /**
  * Mask rule configuration repository tuple swapper.
  */
-public final class MaskRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<MaskRuleConfiguration> {
+public final class MaskRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<MaskRuleConfiguration, YamlMaskRuleConfiguration> {
     
     private final YamlMaskRuleConfigurationSwapper ruleConfigSwapper = new YamlMaskRuleConfigurationSwapper();
     
     private final RuleNodePath maskRuleNodePath = new MaskRuleNodePathProvider().getRuleNodePath();
+    
+    @Override
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlMaskRuleConfiguration yamlRuleConfig) {
+        Collection<RepositoryTuple> result = new LinkedList<>();
+        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getMaskAlgorithms().entrySet()) {
+            result.add(new RepositoryTuple(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
+        }
+        for (YamlMaskTableRuleConfiguration each : yamlRuleConfig.getTables().values()) {
+            result.add(new RepositoryTuple(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getPath(each.getName()), YamlEngine.marshal(each)));
+        }
+        return result;
+    }
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final MaskRuleConfiguration data) {

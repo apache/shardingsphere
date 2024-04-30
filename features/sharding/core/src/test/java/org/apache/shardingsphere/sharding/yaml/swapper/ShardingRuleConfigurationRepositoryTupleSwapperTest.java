@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -49,12 +51,13 @@ class ShardingRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToRepositoryTuplesWithEmptyRule() {
-        assertTrue(swapper.swapToRepositoryTuples(new ShardingRuleConfiguration()).isEmpty());
+        assertTrue(swapper.swapToRepositoryTuples(new YamlShardingRuleConfiguration()).isEmpty());
     }
     
     @Test
     void assertSwapToRepositoryTuples() {
-        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(createMaximumShardingRule());
+        YamlShardingRuleConfiguration yamlRuleConfig = (YamlShardingRuleConfiguration) new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(createMaximumShardingRule());
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(yamlRuleConfig);
         assertThat(actual.size(), is(15));
         Iterator<RepositoryTuple> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("algorithms/core_standard_fixture"));

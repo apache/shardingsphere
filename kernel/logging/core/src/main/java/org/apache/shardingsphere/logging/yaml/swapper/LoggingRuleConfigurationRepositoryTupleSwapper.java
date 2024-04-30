@@ -32,9 +32,14 @@ import java.util.Optional;
 /**
  * Logging rule configuration repository tuple swapper.
  */
-public final class LoggingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<LoggingRuleConfiguration> {
+public final class LoggingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<LoggingRuleConfiguration, YamlLoggingRuleConfiguration> {
     
     private final YamlLoggingRuleConfigurationSwapper ruleConfigSwapper = new YamlLoggingRuleConfigurationSwapper();
+    
+    @Override
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlLoggingRuleConfiguration yamlRuleConfig) {
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
+    }
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final LoggingRuleConfiguration data) {

@@ -32,9 +32,14 @@ import java.util.Optional;
 /**
  * Global clock rule configuration repository tuple swapper.
  */
-public final class GlobalClockRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<GlobalClockRuleConfiguration> {
+public final class GlobalClockRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<GlobalClockRuleConfiguration, YamlGlobalClockRuleConfiguration> {
     
     private final YamlGlobalClockRuleConfigurationSwapper ruleConfigSwapper = new YamlGlobalClockRuleConfigurationSwapper();
+    
+    @Override
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlGlobalClockRuleConfiguration yamlRuleConfig) {
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
+    }
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final GlobalClockRuleConfiguration data) {
