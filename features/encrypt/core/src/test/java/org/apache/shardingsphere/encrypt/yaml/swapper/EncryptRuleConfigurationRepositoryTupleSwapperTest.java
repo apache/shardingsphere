@@ -42,12 +42,12 @@ class EncryptRuleConfigurationRepositoryTupleSwapperTest {
     private final EncryptRuleConfigurationRepositoryTupleSwapper swapper = new EncryptRuleConfigurationRepositoryTupleSwapper();
     
     @Test
-    void assertSwapEmptyConfigToDataNodes() {
+    void assertSwapToRepositoryTuplesWithEmptyRule() {
         assertTrue(swapper.swapToRepositoryTuples(new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())).isEmpty());
     }
     
     @Test
-    void assertSwapFullConfigToDataNodes() {
+    void assertSwapToRepositoryTuples() {
         Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(createMaximumEncryptRule());
         assertThat(actual.size(), is(2));
         Iterator<RepositoryTuple> iterator = actual.iterator();
@@ -62,7 +62,7 @@ class EncryptRuleConfigurationRepositoryTupleSwapperTest {
     }
     
     @Test
-    void assertSwapToObjectEmpty() {
+    void assertSwapToObjectWithEmptyTuple() {
         assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     

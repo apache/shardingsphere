@@ -28,7 +28,7 @@ class LoggingRuleConfigurationRepositoryTupleSwapperTest {
     private final LoggingRuleConfigurationRepositoryTupleSwapper swapper = new LoggingRuleConfigurationRepositoryTupleSwapper();
     
     @Test
-    void assertSwapToDataNodes() {
+    void assertSwapToRepositoryTuples() {
         assertThat(swapper.swapToRepositoryTuples(new DefaultLoggingRuleConfigurationBuilder().build()).iterator().next().getKey(), is("logging"));
     }
 }

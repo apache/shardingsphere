@@ -41,7 +41,7 @@ class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapperTest {
     private final ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper swapper = new ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper();
     
     @Test
-    void assertSwapToDataNodesLoadBalancersEmpty() {
+    void assertSwapToRepositoryTuplesWithEmptyLoadBalancer() {
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceGroupRuleConfiguration("group_0",
                 "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null)), Collections.emptyMap());
         Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(ruleConfig);
@@ -50,7 +50,7 @@ class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapperTest {
     }
     
     @Test
-    void assertSwapToDataNodesLoadBalancers() {
+    void assertSwapToRepositoryTuples() {
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceGroupRuleConfiguration("group_0",
                 "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random")), Collections.singletonMap("random", new AlgorithmConfiguration("random", new Properties())));
         Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(ruleConfig);
@@ -61,7 +61,7 @@ class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapperTest {
     }
     
     @Test
-    void assertSwapToObjectEmpty() {
+    void assertSwapToObjectWithEmptyTuple() {
         assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     

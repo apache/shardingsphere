@@ -28,7 +28,7 @@ class TrafficRuleConfigurationRepositoryTupleSwapperTest {
     private final TrafficRuleConfigurationRepositoryTupleSwapper swapper = new TrafficRuleConfigurationRepositoryTupleSwapper();
     
     @Test
-    void assertSwapToDataNodes() {
+    void assertSwapToRepositoryTuples() {
         assertThat(swapper.swapToRepositoryTuples(new TrafficRuleConfiguration()).iterator().next().getKey(), is("traffic"));
     }
 }

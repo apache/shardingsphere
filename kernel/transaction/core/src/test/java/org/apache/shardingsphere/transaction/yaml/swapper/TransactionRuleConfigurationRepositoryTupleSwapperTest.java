@@ -32,7 +32,7 @@ class TransactionRuleConfigurationRepositoryTupleSwapperTest {
     private final TransactionRuleConfigurationRepositoryTupleSwapper swapper = new TransactionRuleConfigurationRepositoryTupleSwapper();
     
     @Test
-    void assertSwapToDataNodes() {
+    void assertSwapToRepositoryTuples() {
         Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(new TransactionRuleConfiguration("", "", new Properties()));
         assertThat(actual.iterator().next().getKey(), is("transaction"));
     }

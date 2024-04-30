@@ -48,12 +48,12 @@ class ShardingRuleConfigurationRepositoryTupleSwapperTest {
     private final ShardingRuleConfigurationRepositoryTupleSwapper swapper = new ShardingRuleConfigurationRepositoryTupleSwapper();
     
     @Test
-    void assertSwapEmptyConfigToDataNodes() {
+    void assertSwapToRepositoryTuplesWithEmptyRule() {
         assertTrue(swapper.swapToRepositoryTuples(new ShardingRuleConfiguration()).isEmpty());
     }
     
     @Test
-    void assertSwapFullConfigToDataNodes() {
+    void assertSwapToRepositoryTuples() {
         Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(createMaximumShardingRule());
         assertThat(actual.size(), is(15));
         Iterator<RepositoryTuple> iterator = actual.iterator();
@@ -111,7 +111,7 @@ class ShardingRuleConfigurationRepositoryTupleSwapperTest {
     }
     
     @Test
-    void assertSwapToObjectEmpty() {
+    void assertSwapToObjectWithEmptyTuple() {
         assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     

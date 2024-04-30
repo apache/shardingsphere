@@ -50,11 +50,11 @@ public final class MaskRuleConfigurationRepositoryTupleSwapper implements Reposi
     public Collection<RepositoryTuple> swapToRepositoryTuples(final MaskRuleConfiguration data) {
         Collection<RepositoryTuple> result = new LinkedList<>();
         YamlMaskRuleConfiguration yamlRuleConfig = ruleConfigSwapper.swapToYamlConfiguration(data);
-        for (YamlMaskTableRuleConfiguration each : yamlRuleConfig.getTables().values()) {
-            result.add(new RepositoryTuple(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getPath(each.getName()), YamlEngine.marshal(each)));
-        }
         for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getMaskAlgorithms().entrySet()) {
             result.add(new RepositoryTuple(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
+        }
+        for (YamlMaskTableRuleConfiguration each : yamlRuleConfig.getTables().values()) {
+            result.add(new RepositoryTuple(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getPath(each.getName()), YamlEngine.marshal(each)));
         }
         return result;
     }

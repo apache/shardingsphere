@@ -29,7 +29,7 @@ class SQLFederationRuleConfigurationRepositoryTupleSwapperTest {
     private final SQLFederationRuleConfigurationRepositoryTupleSwapper swapper = new SQLFederationRuleConfigurationRepositoryTupleSwapper();
     
     @Test
-    void assertSwapToDataNodes() {
+    void assertSwapToRepositoryTuples() {
         assertThat(swapper.swapToRepositoryTuples(new SQLFederationRuleConfiguration(false, false, new CacheOption(0, 0))).iterator().next().getKey(), is("sql_federation"));
     }
 }

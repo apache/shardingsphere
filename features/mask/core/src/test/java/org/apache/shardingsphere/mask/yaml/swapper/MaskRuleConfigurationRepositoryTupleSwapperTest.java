@@ -40,13 +40,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MaskRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
-    void assertSwapEmptyConfigurationToDataNodes() {
+    void assertSwapToRepositoryTuplesWithEmptyRule() {
         MaskRuleConfiguration ruleConfig = new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
         assertTrue(new MaskRuleConfigurationRepositoryTupleSwapper().swapToRepositoryTuples(ruleConfig).isEmpty());
     }
     
     @Test
-    void assertSwapFullConfigurationToDataNodes() {
+    void assertSwapToRepositoryTuples() {
         Collection<RepositoryTuple> actual = new MaskRuleConfigurationRepositoryTupleSwapper().swapToRepositoryTuples(createMaximumMaskRule());
         assertThat(actual.size(), is(2));
         Iterator<RepositoryTuple> iterator = actual.iterator();
@@ -61,7 +61,7 @@ class MaskRuleConfigurationRepositoryTupleSwapperTest {
     }
     
     @Test
-    void assertSwapToObjectEmpty() {
+    void assertSwapToObjectWithEmptyTuple() {
         assertFalse(new MaskRuleConfigurationRepositoryTupleSwapper().swapToObject(new LinkedList<>()).isPresent());
     }
     
