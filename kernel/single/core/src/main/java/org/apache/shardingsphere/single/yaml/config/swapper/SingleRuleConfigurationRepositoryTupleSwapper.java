@@ -19,9 +19,8 @@ package org.apache.shardingsphere.single.yaml.config.swapper;
 
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.mode.path.RuleNodePath;
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
@@ -34,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Single rule configuration repository tuple swapper.
  */
-public final class SingleRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SingleRuleConfiguration, YamlSingleRuleConfiguration> {
+public final class SingleRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlSingleRuleConfiguration> {
     
     private final RuleNodePath ruleNodePath = new SingleRuleNodePathProvider().getRuleNodePath();
     
@@ -54,8 +53,8 @@ public final class SingleRuleConfigurationRepositoryTupleSwapper implements Repo
     }
     
     @Override
-    public Class<SingleRuleConfiguration> getTypeClass() {
-        return SingleRuleConfiguration.class;
+    public Class<YamlSingleRuleConfiguration> getTypeClass() {
+        return YamlSingleRuleConfiguration.class;
     }
     
     @Override

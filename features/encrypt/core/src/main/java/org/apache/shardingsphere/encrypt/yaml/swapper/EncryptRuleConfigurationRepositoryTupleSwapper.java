@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.yaml.swapper;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathProvider;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
@@ -40,7 +39,7 @@ import java.util.stream.Collectors;
 /**
  * Encrypt rule configuration repository tuple swapper.
  */
-public final class EncryptRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<EncryptRuleConfiguration, YamlEncryptRuleConfiguration> {
+public final class EncryptRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlEncryptRuleConfiguration> {
     
     private final RuleNodePath ruleNodePath = new EncryptRuleNodePathProvider().getRuleNodePath();
     
@@ -77,8 +76,8 @@ public final class EncryptRuleConfigurationRepositoryTupleSwapper implements Rep
     }
     
     @Override
-    public Class<EncryptRuleConfiguration> getTypeClass() {
-        return EncryptRuleConfiguration.class;
+    public Class<YamlEncryptRuleConfiguration> getTypeClass() {
+        return YamlEncryptRuleConfiguration.class;
     }
     
     @Override

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.spi;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
@@ -29,11 +28,10 @@ import java.util.Optional;
 /**
  * Repository tuple swapper.
  *
- * @param <T> type of swapped object
- * @param <Y> type of swapped YAML rule configuration
+ * @param <T> type of swapped YAML rule configuration
  */
 @SingletonSPI
-public interface RepositoryTupleSwapper<T extends RuleConfiguration, Y extends YamlRuleConfiguration> extends OrderedSPI<T> {
+public interface RepositoryTupleSwapper<T extends YamlRuleConfiguration> extends OrderedSPI<T> {
     
     /**
      * Swap to repository tuples.
@@ -41,7 +39,7 @@ public interface RepositoryTupleSwapper<T extends RuleConfiguration, Y extends Y
      * @param yamlRuleConfig YAML rule configuration to be swapped
      * @return repository tuples
      */
-    Collection<RepositoryTuple> swapToRepositoryTuples(Y yamlRuleConfig);
+    Collection<RepositoryTuple> swapToRepositoryTuples(T yamlRuleConfig);
     
     /**
      * Swap from repository tuple to YAML rule configurations.
@@ -49,7 +47,7 @@ public interface RepositoryTupleSwapper<T extends RuleConfiguration, Y extends Y
      * @param repositoryTuples repository tuples
      * @return swapped YAML rule configurations
      */
-    Optional<Y> swapToObject(Collection<RepositoryTuple> repositoryTuples);
+    Optional<T> swapToObject(Collection<RepositoryTuple> repositoryTuples);
     
     /**
      * Get rule type name.

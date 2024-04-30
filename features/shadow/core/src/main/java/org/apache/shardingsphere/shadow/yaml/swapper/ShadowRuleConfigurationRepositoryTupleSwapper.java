@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
@@ -42,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Shadow rule configuration repository tuple swapper.
  */
-public final class ShadowRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<ShadowRuleConfiguration, YamlShadowRuleConfiguration> {
+public final class ShadowRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlShadowRuleConfiguration> {
     
     private final RuleNodePath ruleNodePath = new ShadowRuleNodePathProvider().getRuleNodePath();
     
@@ -92,8 +91,8 @@ public final class ShadowRuleConfigurationRepositoryTupleSwapper implements Repo
     }
     
     @Override
-    public Class<ShadowRuleConfiguration> getTypeClass() {
-        return ShadowRuleConfiguration.class;
+    public Class<YamlShadowRuleConfiguration> getTypeClass() {
+        return YamlShadowRuleConfiguration.class;
     }
     
     @Override

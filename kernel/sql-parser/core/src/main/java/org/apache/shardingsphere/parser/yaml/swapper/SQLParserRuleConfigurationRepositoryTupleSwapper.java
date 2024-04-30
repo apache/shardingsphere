@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
-import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.constant.SQLParserOrder;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
 
@@ -32,7 +31,7 @@ import java.util.Optional;
 /**
  * SQL parser rule configuration repository tuple swapper.
  */
-public final class SQLParserRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SQLParserRuleConfiguration, YamlSQLParserRuleConfiguration> {
+public final class SQLParserRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlSQLParserRuleConfiguration> {
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlSQLParserRuleConfiguration yamlRuleConfig) {
@@ -50,8 +49,8 @@ public final class SQLParserRuleConfigurationRepositoryTupleSwapper implements R
     }
     
     @Override
-    public Class<SQLParserRuleConfiguration> getTypeClass() {
-        return SQLParserRuleConfiguration.class;
+    public Class<YamlSQLParserRuleConfiguration> getTypeClass() {
+        return YamlSQLParserRuleConfiguration.class;
     }
     
     @Override

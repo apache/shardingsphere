@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
-import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.constant.SQLTranslatorOrder;
 import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
 
@@ -32,7 +31,7 @@ import java.util.Optional;
 /**
  * SQL translator rule configuration repository tuple swapper.
  */
-public final class SQLTranslatorRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SQLTranslatorRuleConfiguration, YamlSQLTranslatorRuleConfiguration> {
+public final class SQLTranslatorRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlSQLTranslatorRuleConfiguration> {
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlSQLTranslatorRuleConfiguration yamlRuleConfig) {
@@ -50,8 +49,8 @@ public final class SQLTranslatorRuleConfigurationRepositoryTupleSwapper implemen
     }
     
     @Override
-    public Class<SQLTranslatorRuleConfiguration> getTypeClass() {
-        return SQLTranslatorRuleConfiguration.class;
+    public Class<YamlSQLTranslatorRuleConfiguration> getTypeClass() {
+        return YamlSQLTranslatorRuleConfiguration.class;
     }
     
     @Override

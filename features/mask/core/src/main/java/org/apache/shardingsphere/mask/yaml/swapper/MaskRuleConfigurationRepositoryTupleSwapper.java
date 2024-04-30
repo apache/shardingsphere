@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mask.yaml.swapper;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.constant.MaskOrder;
 import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
 import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
@@ -39,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Mask rule configuration repository tuple swapper.
  */
-public final class MaskRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<MaskRuleConfiguration, YamlMaskRuleConfiguration> {
+public final class MaskRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlMaskRuleConfiguration> {
     
     private final RuleNodePath ruleNodePath = new MaskRuleNodePathProvider().getRuleNodePath();
     
@@ -76,8 +75,8 @@ public final class MaskRuleConfigurationRepositoryTupleSwapper implements Reposi
     }
     
     @Override
-    public Class<MaskRuleConfiguration> getTypeClass() {
-        return MaskRuleConfiguration.class;
+    public Class<YamlMaskRuleConfiguration> getTypeClass() {
+        return YamlMaskRuleConfiguration.class;
     }
     
     @Override

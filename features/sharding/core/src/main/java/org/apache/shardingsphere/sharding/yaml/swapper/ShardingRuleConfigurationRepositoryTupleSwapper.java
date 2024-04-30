@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -44,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * Sharding rule configuration repository tuple swapper.
  */
-public final class ShardingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<ShardingRuleConfiguration, YamlShardingRuleConfiguration> {
+public final class ShardingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlShardingRuleConfiguration> {
     
     private final RuleNodePath ruleNodePath = new ShardingRuleNodePathProvider().getRuleNodePath();
     
@@ -159,8 +158,8 @@ public final class ShardingRuleConfigurationRepositoryTupleSwapper implements Re
     }
     
     @Override
-    public Class<ShardingRuleConfiguration> getTypeClass() {
-        return ShardingRuleConfiguration.class;
+    public Class<YamlShardingRuleConfiguration> getTypeClass() {
+        return YamlShardingRuleConfiguration.class;
     }
     
     @Override

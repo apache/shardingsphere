@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.broadcast.yaml.swapper;
 
-import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePathProvider;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Broadcast rule configuration repository tuple swapper.
  */
-public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<BroadcastRuleConfiguration, YamlBroadcastRuleConfiguration> {
+public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlBroadcastRuleConfiguration> {
     
     private final RuleNodePath ruleNodePath = new BroadcastRuleNodePathProvider().getRuleNodePath();
     
@@ -58,8 +57,8 @@ public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements R
     }
     
     @Override
-    public Class<BroadcastRuleConfiguration> getTypeClass() {
-        return BroadcastRuleConfiguration.class;
+    public Class<YamlBroadcastRuleConfiguration> getTypeClass() {
+        return YamlBroadcastRuleConfiguration.class;
     }
     
     @Override

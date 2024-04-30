@@ -39,6 +39,8 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
@@ -376,15 +378,14 @@ public final class ConfigurationContextManager {
     @SuppressWarnings("rawtypes")
     @SneakyThrows(Exception.class)
     private void closeStaleTransactionRule(final RuleConfiguration ruleConfig) {
-        for (Entry<RuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(
-                RepositoryTupleSwapper.class, Collections.singleton(ruleConfig)).entrySet()) {
-            if ("transaction".equalsIgnoreCase(entry.getValue().getRuleTypeName())) {
-                Optional<TransactionRule> transactionRule = metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-                if (!transactionRule.isPresent()) {
-                    return;
-                }
-                ((AutoCloseable) transactionRule.get()).close();
-            }
+        YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(ruleConfig);
+        RepositoryTupleSwapper repositoryTupleSwapper = OrderedSPILoader.getServices(RepositoryTupleSwapper.class, Collections.singleton(yamlRuleConfig)).get(yamlRuleConfig);
+        if (!"transaction".equals(repositoryTupleSwapper.getRuleTypeName())) {
+            return;
+        }
+        Optional<TransactionRule> transactionRule = metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
+        if (transactionRule.isPresent()) {
+            ((AutoCloseable) transactionRule.get()).close();
         }
     }
     

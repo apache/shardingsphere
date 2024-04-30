@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.metadata.DatabaseRuleMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
@@ -55,9 +56,9 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
-        YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
-        for (Entry<RuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, configs).entrySet()) {
-            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(yamlSwapperEngine.swapToYamlRuleConfiguration(entry.getKey()));
+        Collection<YamlRuleConfiguration> yamlRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
+        for (Entry<YamlRuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, yamlRuleConfigs).entrySet()) {
+            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
                 persistDataNodes(databaseName, entry.getValue().getRuleTypeName(), repositoryTuples);
             }
@@ -78,9 +79,9 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     @Override
     public Collection<MetaDataVersion> persistConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
-        for (Entry<RuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, configs).entrySet()) {
-            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(yamlSwapperEngine.swapToYamlRuleConfiguration(entry.getKey()));
+        Collection<YamlRuleConfiguration> yamlRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
+        for (Entry<YamlRuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, yamlRuleConfigs).entrySet()) {
+            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
                 result.addAll(persistDataNodes(databaseName, entry.getValue().getRuleTypeName(), repositoryTuples));
             }
@@ -106,9 +107,9 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     @Override
     public Collection<MetaDataVersion> deleteConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
-        for (Entry<RuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, configs).entrySet()) {
-            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(yamlSwapperEngine.swapToYamlRuleConfiguration(entry.getKey()));
+        Collection<YamlRuleConfiguration> yamlRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
+        for (Entry<YamlRuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, yamlRuleConfigs).entrySet()) {
+            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
             if (repositoryTuples.isEmpty()) {
                 continue;
             }
