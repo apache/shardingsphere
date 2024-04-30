@@ -32,9 +32,14 @@ import java.util.Optional;
 /**
  * Transaction rule configuration repository tuple swapper.
  */
-public final class TransactionRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<TransactionRuleConfiguration> {
+public final class TransactionRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<TransactionRuleConfiguration, YamlTransactionRuleConfiguration> {
     
     private final YamlTransactionRuleConfigurationSwapper ruleConfigSwapper = new YamlTransactionRuleConfigurationSwapper();
+    
+    @Override
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlTransactionRuleConfiguration yamlRuleConfig) {
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
+    }
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final TransactionRuleConfiguration data) {

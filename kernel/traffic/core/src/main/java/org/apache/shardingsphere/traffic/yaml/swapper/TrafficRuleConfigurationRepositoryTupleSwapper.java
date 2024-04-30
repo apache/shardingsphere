@@ -32,9 +32,14 @@ import java.util.Optional;
 /**
  * Traffic rule configuration repository tuple swapper.
  */
-public final class TrafficRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<TrafficRuleConfiguration> {
+public final class TrafficRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<TrafficRuleConfiguration, YamlTrafficRuleConfiguration> {
     
     private final YamlTrafficRuleConfigurationSwapper ruleConfigSwapper = new YamlTrafficRuleConfigurationSwapper();
+    
+    @Override
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlTrafficRuleConfiguration yamlRuleConfig) {
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
+    }
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final TrafficRuleConfiguration data) {

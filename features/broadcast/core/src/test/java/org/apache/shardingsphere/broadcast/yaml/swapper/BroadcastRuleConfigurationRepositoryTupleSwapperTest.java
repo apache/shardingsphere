@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.broadcast.yaml.swapper;
 
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -38,12 +40,13 @@ class BroadcastRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToRepositoryTuplesWithEmptyRule() {
-        assertTrue(swapper.swapToRepositoryTuples(new BroadcastRuleConfiguration(Collections.emptyList())).isEmpty());
+        assertTrue(swapper.swapToRepositoryTuples(new YamlBroadcastRuleConfiguration()).isEmpty());
     }
     
     @Test
     void assertSwapToRepositoryTuples() {
-        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(new BroadcastRuleConfiguration(Arrays.asList("foo_table", "foo_table2")));
+        BroadcastRuleConfiguration ruleConfig = new BroadcastRuleConfiguration(Arrays.asList("foo_table", "foo_table2"));
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples((YamlBroadcastRuleConfiguration) new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(ruleConfig));
         assertThat(actual.size(), is(1));
         Iterator<RepositoryTuple> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("tables"));

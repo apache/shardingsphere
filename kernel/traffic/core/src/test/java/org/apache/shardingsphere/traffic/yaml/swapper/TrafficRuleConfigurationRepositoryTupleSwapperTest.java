@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.traffic.yaml.swapper;
 
-import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
+import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,6 +29,6 @@ class TrafficRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToRepositoryTuples() {
-        assertThat(swapper.swapToRepositoryTuples(new TrafficRuleConfiguration()).iterator().next().getKey(), is("traffic"));
+        assertThat(swapper.swapToRepositoryTuples(new YamlTrafficRuleConfiguration()).iterator().next().getKey(), is("traffic"));
     }
 }

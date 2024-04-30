@@ -35,11 +35,18 @@ import java.util.stream.Collectors;
 /**
  * Broadcast rule configuration repository tuple swapper.
  */
-public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<BroadcastRuleConfiguration> {
+public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<BroadcastRuleConfiguration, YamlBroadcastRuleConfiguration> {
     
     private final YamlBroadcastRuleConfigurationSwapper ruleConfigSwapper = new YamlBroadcastRuleConfigurationSwapper();
     
     private final RuleNodePath broadcastRuleNodePath = new BroadcastRuleNodePathProvider().getRuleNodePath();
+    
+    @Override
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlBroadcastRuleConfiguration yamlRuleConfig) {
+        return yamlRuleConfig.getTables().isEmpty()
+                ? Collections.emptyList()
+                : Collections.singleton(new RepositoryTuple(BroadcastRuleNodePathProvider.TABLES, YamlEngine.marshal(yamlRuleConfig)));
+    }
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final BroadcastRuleConfiguration data) {

@@ -21,8 +21,10 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -43,12 +45,13 @@ class EncryptRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToRepositoryTuplesWithEmptyRule() {
-        assertTrue(swapper.swapToRepositoryTuples(new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())).isEmpty());
+        assertTrue(swapper.swapToRepositoryTuples(new YamlEncryptRuleConfiguration()).isEmpty());
     }
     
     @Test
     void assertSwapToRepositoryTuples() {
-        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(createMaximumEncryptRule());
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(
+                (YamlEncryptRuleConfiguration) new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(createMaximumEncryptRule()));
         assertThat(actual.size(), is(2));
         Iterator<RepositoryTuple> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("encryptors/FOO"));

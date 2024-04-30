@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqltranslator.yaml.swapper;
 
-import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
+import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,6 +29,6 @@ class SQLTranslatorRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToRepositoryTuples() {
-        assertThat(swapper.swapToRepositoryTuples(new DefaultSQLTranslatorRuleConfigurationBuilder().build()).iterator().next().getKey(), is("sql_translator"));
+        assertThat(swapper.swapToRepositoryTuples(new YamlSQLTranslatorRuleConfiguration()).iterator().next().getKey(), is("sql_translator"));
     }
 }

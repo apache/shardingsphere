@@ -32,9 +32,14 @@ import java.util.Optional;
 /**
  * SQL federation rule configuration repository tuple swapper.
  */
-public final class SQLFederationRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SQLFederationRuleConfiguration> {
+public final class SQLFederationRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SQLFederationRuleConfiguration, YamlSQLFederationRuleConfiguration> {
     
     private final YamlSQLFederationRuleConfigurationSwapper ruleConfigSwapper = new YamlSQLFederationRuleConfigurationSwapper();
+    
+    @Override
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlSQLFederationRuleConfiguration yamlRuleConfig) {
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
+    }
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final SQLFederationRuleConfiguration data) {

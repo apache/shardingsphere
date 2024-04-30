@@ -32,9 +32,14 @@ import java.util.Optional;
 /**
  * Authority rule configuration repository tuple swapper.
  */
-public final class AuthorityRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<AuthorityRuleConfiguration> {
+public final class AuthorityRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<AuthorityRuleConfiguration, YamlAuthorityRuleConfiguration> {
     
     private final YamlAuthorityRuleConfigurationSwapper ruleConfigSwapper = new YamlAuthorityRuleConfigurationSwapper();
+    
+    @Override
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlAuthorityRuleConfiguration yamlRuleConfig) {
+        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
+    }
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final AuthorityRuleConfiguration data) {

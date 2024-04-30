@@ -19,9 +19,11 @@ package org.apache.shardingsphere.mask.yaml.swapper;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -41,13 +43,13 @@ class MaskRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToRepositoryTuplesWithEmptyRule() {
-        MaskRuleConfiguration ruleConfig = new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
-        assertTrue(new MaskRuleConfigurationRepositoryTupleSwapper().swapToRepositoryTuples(ruleConfig).isEmpty());
+        assertTrue(new MaskRuleConfigurationRepositoryTupleSwapper().swapToRepositoryTuples(new YamlMaskRuleConfiguration()).isEmpty());
     }
     
     @Test
     void assertSwapToRepositoryTuples() {
-        Collection<RepositoryTuple> actual = new MaskRuleConfigurationRepositoryTupleSwapper().swapToRepositoryTuples(createMaximumMaskRule());
+        YamlMaskRuleConfiguration yamlRuleConfig = (YamlMaskRuleConfiguration) new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(createMaximumMaskRule());
+        Collection<RepositoryTuple> actual = new MaskRuleConfigurationRepositoryTupleSwapper().swapToRepositoryTuples(yamlRuleConfig);
         assertThat(actual.size(), is(2));
         Iterator<RepositoryTuple> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("mask_algorithms/FIXTURE"));

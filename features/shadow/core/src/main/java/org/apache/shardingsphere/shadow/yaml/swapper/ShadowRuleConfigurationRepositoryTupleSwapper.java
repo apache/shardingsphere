@@ -42,11 +42,29 @@ import java.util.stream.Collectors;
 /**
  * Shadow rule configuration repository tuple swapper.
  */
-public final class ShadowRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<ShadowRuleConfiguration> {
+public final class ShadowRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<ShadowRuleConfiguration, YamlShadowRuleConfiguration> {
     
     private final YamlShadowRuleConfigurationSwapper ruleConfigSwapper = new YamlShadowRuleConfigurationSwapper();
     
     private final RuleNodePath shadowRuleNodePath = new ShadowRuleNodePathProvider().getRuleNodePath();
+    
+    @Override
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlShadowRuleConfiguration yamlRuleConfig) {
+        Collection<RepositoryTuple> result = new LinkedList<>();
+        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getShadowAlgorithms().entrySet()) {
+            result.add(new RepositoryTuple(shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.ALGORITHMS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
+        }
+        if (!Strings.isNullOrEmpty(yamlRuleConfig.getDefaultShadowAlgorithmName())) {
+            result.add(new RepositoryTuple(shadowRuleNodePath.getUniqueItem(ShadowRuleNodePathProvider.DEFAULT_ALGORITHM).getPath(), yamlRuleConfig.getDefaultShadowAlgorithmName()));
+        }
+        for (Entry<String, YamlShadowDataSourceConfiguration> entry : yamlRuleConfig.getDataSources().entrySet()) {
+            result.add(new RepositoryTuple(shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.DATA_SOURCES).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
+        }
+        for (Entry<String, YamlShadowTableConfiguration> entry : yamlRuleConfig.getTables().entrySet()) {
+            result.add(new RepositoryTuple(shadowRuleNodePath.getNamedItem(ShadowRuleNodePathProvider.TABLES).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
+        }
+        return result;
+    }
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final ShadowRuleConfiguration data) {

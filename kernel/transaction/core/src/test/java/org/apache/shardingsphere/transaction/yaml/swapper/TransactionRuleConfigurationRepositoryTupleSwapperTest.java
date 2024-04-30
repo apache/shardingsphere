@@ -17,12 +17,8 @@
 
 package org.apache.shardingsphere.transaction.yaml.swapper;
 
-import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collection;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,7 +29,6 @@ class TransactionRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToRepositoryTuples() {
-        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(new TransactionRuleConfiguration("", "", new Properties()));
-        assertThat(actual.iterator().next().getKey(), is("transaction"));
+        assertThat(swapper.swapToRepositoryTuples(new YamlTransactionRuleConfiguration()).iterator().next().getKey(), is("transaction"));
     }
 }

@@ -40,11 +40,25 @@ import java.util.stream.Collectors;
 /**
  * Readwrite-splitting rule configuration repository tuple swapper.
  */
-public final class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<ReadwriteSplittingRuleConfiguration> {
+public final class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<ReadwriteSplittingRuleConfiguration, YamlReadwriteSplittingRuleConfiguration> {
     
     private final YamlReadwriteSplittingRuleConfigurationSwapper ruleConfigSwapper = new YamlReadwriteSplittingRuleConfigurationSwapper();
     
     private final RuleNodePath readwriteSplittingRuleNodePath = new ReadwriteSplittingRuleNodePathProvider().getRuleNodePath();
+    
+    @Override
+    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlReadwriteSplittingRuleConfiguration yamlRuleConfig) {
+        Collection<RepositoryTuple> result = new LinkedList<>();
+        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getLoadBalancers().entrySet()) {
+            result.add(new RepositoryTuple(readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS).getPath(entry.getKey()),
+                    YamlEngine.marshal(entry.getValue())));
+        }
+        for (Entry<String, YamlReadwriteSplittingDataSourceGroupRuleConfiguration> entry : yamlRuleConfig.getDataSourceGroups().entrySet()) {
+            result.add(new RepositoryTuple(
+                    readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
+        }
+        return result;
+    }
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final ReadwriteSplittingRuleConfiguration data) {

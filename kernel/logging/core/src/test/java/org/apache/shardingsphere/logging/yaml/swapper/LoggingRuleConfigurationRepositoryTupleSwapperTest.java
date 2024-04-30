@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.logging.yaml.swapper;
 
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
+import org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,6 +31,8 @@ class LoggingRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToRepositoryTuples() {
-        assertThat(swapper.swapToRepositoryTuples(new DefaultLoggingRuleConfigurationBuilder().build()).iterator().next().getKey(), is("logging"));
+        YamlLoggingRuleConfiguration yamlRuleConfig = (YamlLoggingRuleConfiguration) new YamlRuleConfigurationSwapperEngine()
+                .swapToYamlRuleConfiguration(new DefaultLoggingRuleConfigurationBuilder().build());
+        assertThat(swapper.swapToRepositoryTuples(yamlRuleConfig).iterator().next().getKey(), is("logging"));
     }
 }

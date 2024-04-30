@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.yaml.config.swapper;
 
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,6 +29,6 @@ class SingleRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToRepositoryTuples() {
-        assertThat(swapper.swapToRepositoryTuples(new SingleRuleConfiguration()).iterator().next().getKey(), is("tables"));
+        assertThat(swapper.swapToRepositoryTuples(new YamlSingleRuleConfiguration()).iterator().next().getKey(), is("tables"));
     }
 }

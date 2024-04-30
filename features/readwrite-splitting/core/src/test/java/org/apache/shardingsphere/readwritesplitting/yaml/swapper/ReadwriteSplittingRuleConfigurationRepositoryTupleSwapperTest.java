@@ -19,9 +19,12 @@ package org.apache.shardingsphere.readwritesplitting.yaml.swapper;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -42,22 +45,23 @@ class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToRepositoryTuplesWithEmptyLoadBalancer() {
-        ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceGroupRuleConfiguration("group_0",
-                "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null)), Collections.emptyMap());
-        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(ruleConfig);
+        YamlReadwriteSplittingRuleConfiguration yamlRuleConfig = new YamlReadwriteSplittingRuleConfiguration();
+        yamlRuleConfig.setDataSourceGroups(Collections.singletonMap("foo_group", new YamlReadwriteSplittingDataSourceGroupRuleConfiguration()));
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(yamlRuleConfig);
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getKey(), is("data_sources/group_0"));
+        assertThat(actual.iterator().next().getKey(), is("data_sources/foo_group"));
     }
     
     @Test
     void assertSwapToRepositoryTuples() {
-        ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceGroupRuleConfiguration("group_0",
+        ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_group",
                 "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random")), Collections.singletonMap("random", new AlgorithmConfiguration("random", new Properties())));
-        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(ruleConfig);
+        YamlReadwriteSplittingRuleConfiguration yamlRuleConfig = (YamlReadwriteSplittingRuleConfiguration) new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(ruleConfig);
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(yamlRuleConfig);
         assertThat(actual.size(), is(2));
         Iterator<RepositoryTuple> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("load_balancers/random"));
-        assertThat(iterator.next().getKey(), is("data_sources/group_0"));
+        assertThat(iterator.next().getKey(), is("data_sources/foo_group"));
     }
     
     @Test
@@ -67,7 +71,7 @@ class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        Collection<RepositoryTuple> repositoryTuples = Arrays.asList(new RepositoryTuple("/metadata/foo_db/rules/readwrite_splitting/data_sources/group_0/versions/0", "loadBalancerName: random\n"
+        Collection<RepositoryTuple> repositoryTuples = Arrays.asList(new RepositoryTuple("/metadata/foo_db/rules/readwrite_splitting/data_sources/foo_group/versions/0", "loadBalancerName: random\n"
                 + "readDataSourceNames:\n"
                 + "- read_ds_0\n"
                 + "- read_ds_1\n"
@@ -77,7 +81,7 @@ class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapperTest {
         Optional<ReadwriteSplittingRuleConfiguration> actual = swapper.swapToObject(repositoryTuples);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDataSourceGroups().size(), is(1));
-        assertThat(actual.get().getDataSourceGroups().iterator().next().getName(), is("group_0"));
+        assertThat(actual.get().getDataSourceGroups().iterator().next().getName(), is("foo_group"));
         assertThat(actual.get().getDataSourceGroups().iterator().next().getWriteDataSourceName(), is("write_ds"));
         assertThat(actual.get().getDataSourceGroups().iterator().next().getReadDataSourceNames().size(), is(2));
         assertThat(actual.get().getDataSourceGroups().iterator().next().getLoadBalancerName(), is("random"));

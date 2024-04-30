@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -30,6 +31,18 @@ import java.util.stream.Collectors;
  * YAML rule configuration swapper engine.
  */
 public final class YamlRuleConfigurationSwapperEngine {
+    
+    /**
+     * Swap to YAML rule configuration.
+     *
+     * @param ruleConfig rule configuration
+     * @return YAML rule configuration
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public YamlRuleConfiguration swapToYamlRuleConfiguration(final RuleConfiguration ruleConfig) {
+        YamlRuleConfigurationSwapper yamlSwapper = OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        return (YamlRuleConfiguration) yamlSwapper.swapToYamlConfiguration(ruleConfig);
+    }
     
     /**
      * Swap to YAML rule configurations.

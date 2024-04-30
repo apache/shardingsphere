@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.authority.yaml.swapper;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -40,8 +42,9 @@ class AuthorityRuleConfigurationRepositoryTupleSwapperTest {
     @Test
     void assertSwapToRepositoryTuples() {
         Collection<ShardingSphereUser> users = Collections.singleton(new ShardingSphereUser("root", "", "localhost"));
-        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()),
-                Collections.singletonMap("md5", new AlgorithmConfiguration("MD5", PropertiesBuilder.build(new Property("proxy-frontend-database-protocol-type", "openGauss")))), "scram_sha256"));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()),
+                Collections.singletonMap("md5", new AlgorithmConfiguration("MD5", PropertiesBuilder.build(new Property("proxy-frontend-database-protocol-type", "openGauss")))), "scram_sha256");
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples((YamlAuthorityRuleConfiguration) new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(ruleConfig));
         RepositoryTuple repositoryTuple = actual.iterator().next();
         assertThat(repositoryTuple.getKey(), is("authority"));
         assertThat(repositoryTuple.getValue(), containsString("user: root@localhost"));
