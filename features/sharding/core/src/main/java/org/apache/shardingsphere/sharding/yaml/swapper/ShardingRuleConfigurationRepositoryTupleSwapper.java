@@ -164,8 +164,8 @@ public final class ShardingRuleConfigurationRepositoryTupleSwapper implements Re
     }
     
     @Override
-    public String getRuleTagName() {
-        return "SHARDING";
+    public String getRuleTypeName() {
+        return "sharding";
     }
     
     @Override

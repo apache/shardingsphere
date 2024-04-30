@@ -67,7 +67,7 @@ public final class RepositoryTupleSwapperEngine {
         }
         YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
-            if (ruleName.equals(each.getRuleTagName().toLowerCase())) {
+            if (ruleName.equals(each.getRuleTypeName())) {
                 Optional<YamlRuleConfiguration> yamlRuleConfig = each.swapToObject(repositoryTuples);
                 return yamlRuleConfig.map(yamlSwapperEngine::swapToRuleConfiguration);
             }

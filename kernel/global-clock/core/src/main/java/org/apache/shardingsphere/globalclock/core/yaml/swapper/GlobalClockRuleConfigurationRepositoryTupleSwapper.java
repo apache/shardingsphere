@@ -36,13 +36,13 @@ public final class GlobalClockRuleConfigurationRepositoryTupleSwapper implements
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlGlobalClockRuleConfiguration yamlRuleConfig) {
-        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
+        return Collections.singleton(new RepositoryTuple(getRuleTypeName(), YamlEngine.marshal(yamlRuleConfig)));
     }
     
     @Override
     public Optional<YamlGlobalClockRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
-            if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
+            if (GlobalNodePath.getVersion(getRuleTypeName(), each.getKey()).isPresent()) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlGlobalClockRuleConfiguration.class));
             }
         }
@@ -50,8 +50,8 @@ public final class GlobalClockRuleConfigurationRepositoryTupleSwapper implements
     }
     
     @Override
-    public String getRuleTagName() {
-        return "GLOBAL_CLOCK";
+    public String getRuleTypeName() {
+        return "global_clock";
     }
     
     @Override

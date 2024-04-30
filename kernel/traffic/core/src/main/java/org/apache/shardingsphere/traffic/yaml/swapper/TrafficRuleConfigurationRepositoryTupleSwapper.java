@@ -36,13 +36,13 @@ public final class TrafficRuleConfigurationRepositoryTupleSwapper implements Rep
     
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlTrafficRuleConfiguration yamlRuleConfig) {
-        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
+        return Collections.singleton(new RepositoryTuple(getRuleTypeName(), YamlEngine.marshal(yamlRuleConfig)));
     }
     
     @Override
     public Optional<YamlTrafficRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
-            if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
+            if (GlobalNodePath.getVersion(getRuleTypeName(), each.getKey()).isPresent()) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlTrafficRuleConfiguration.class));
             }
         }
@@ -55,8 +55,8 @@ public final class TrafficRuleConfigurationRepositoryTupleSwapper implements Rep
     }
     
     @Override
-    public String getRuleTagName() {
-        return "TRAFFIC";
+    public String getRuleTypeName() {
+        return "traffic";
     }
     
     @Override

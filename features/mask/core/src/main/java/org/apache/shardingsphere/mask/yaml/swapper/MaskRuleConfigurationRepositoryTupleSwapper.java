@@ -81,8 +81,8 @@ public final class MaskRuleConfigurationRepositoryTupleSwapper implements Reposi
     }
     
     @Override
-    public String getRuleTagName() {
-        return "MASK";
+    public String getRuleTypeName() {
+        return "mask";
     }
     
     @Override

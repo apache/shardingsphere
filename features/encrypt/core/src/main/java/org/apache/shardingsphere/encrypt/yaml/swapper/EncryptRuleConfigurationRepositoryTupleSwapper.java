@@ -82,8 +82,8 @@ public final class EncryptRuleConfigurationRepositoryTupleSwapper implements Rep
     }
     
     @Override
-    public String getRuleTagName() {
-        return "ENCRYPT";
+    public String getRuleTypeName() {
+        return "encrypt";
     }
     
     @Override
