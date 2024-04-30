@@ -49,13 +49,6 @@ public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements R
     }
     
     @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final BroadcastRuleConfiguration data) {
-        return data.getTables().isEmpty()
-                ? Collections.emptyList()
-                : Collections.singleton(new RepositoryTuple(BroadcastRuleNodePathProvider.TABLES, YamlEngine.marshal(ruleConfigSwapper.swapToYamlConfiguration(data))));
-    }
-    
-    @Override
     public Optional<BroadcastRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         for (RepositoryTuple each : validTuples) {

@@ -61,21 +61,6 @@ public final class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper imp
     }
     
     @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final ReadwriteSplittingRuleConfiguration data) {
-        Collection<RepositoryTuple> result = new LinkedList<>();
-        YamlReadwriteSplittingRuleConfiguration yamlRuleConfig = ruleConfigSwapper.swapToYamlConfiguration(data);
-        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getLoadBalancers().entrySet()) {
-            result.add(new RepositoryTuple(readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS).getPath(entry.getKey()),
-                    YamlEngine.marshal(entry.getValue())));
-        }
-        for (Entry<String, YamlReadwriteSplittingDataSourceGroupRuleConfiguration> entry : yamlRuleConfig.getDataSourceGroups().entrySet()) {
-            result.add(new RepositoryTuple(
-                    readwriteSplittingRuleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
-        }
-        return result;
-    }
-    
-    @Override
     public Optional<ReadwriteSplittingRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         List<RepositoryTuple> validRepositoryTuples = repositoryTuples.stream().filter(each -> readwriteSplittingRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         if (validRepositoryTuples.isEmpty()) {

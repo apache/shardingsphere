@@ -42,11 +42,6 @@ public final class TransactionRuleConfigurationRepositoryTupleSwapper implements
     }
     
     @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final TransactionRuleConfiguration data) {
-        return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(ruleConfigSwapper.swapToYamlConfiguration(data))));
-    }
-    
-    @Override
     public Optional<TransactionRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
