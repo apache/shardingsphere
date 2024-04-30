@@ -36,8 +36,6 @@ import java.util.stream.Collectors;
  */
 public final class SingleRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SingleRuleConfiguration, YamlSingleRuleConfiguration> {
     
-    private final YamlSingleRuleConfigurationSwapper ruleConfigSwapper = new YamlSingleRuleConfigurationSwapper();
-    
     private final RuleNodePath singleRuleNodePath = new SingleRuleNodePathProvider().getRuleNodePath();
     
     @Override
@@ -50,16 +48,6 @@ public final class SingleRuleConfigurationRepositoryTupleSwapper implements Repo
         for (RepositoryTuple each : repositoryTuples.stream().filter(each -> singleRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList())) {
             if (singleRuleNodePath.getUniqueItem(SingleRuleNodePathProvider.TABLES).isValidatedPath(each.getKey())) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class));
-            }
-        }
-        return Optional.empty();
-    }
-    
-    @Override
-    public Optional<SingleRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        for (RepositoryTuple each : repositoryTuples.stream().filter(each -> singleRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList())) {
-            if (singleRuleNodePath.getUniqueItem(SingleRuleNodePathProvider.TABLES).isValidatedPath(each.getKey())) {
-                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class)));
             }
         }
         return Optional.empty();

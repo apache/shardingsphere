@@ -34,8 +34,6 @@ import java.util.Optional;
  */
 public final class TransactionRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<TransactionRuleConfiguration, YamlTransactionRuleConfiguration> {
     
-    private final YamlTransactionRuleConfigurationSwapper ruleConfigSwapper = new YamlTransactionRuleConfigurationSwapper();
-    
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlTransactionRuleConfiguration yamlRuleConfig) {
         return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
@@ -46,16 +44,6 @@ public final class TransactionRuleConfigurationRepositoryTupleSwapper implements
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlTransactionRuleConfiguration.class));
-            }
-        }
-        return Optional.empty();
-    }
-    
-    @Override
-    public Optional<TransactionRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        for (RepositoryTuple each : repositoryTuples) {
-            if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
-                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTransactionRuleConfiguration.class)));
             }
         }
         return Optional.empty();

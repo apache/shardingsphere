@@ -34,8 +34,6 @@ import java.util.Optional;
  */
 public final class SQLFederationRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SQLFederationRuleConfiguration, YamlSQLFederationRuleConfiguration> {
     
-    private final YamlSQLFederationRuleConfigurationSwapper ruleConfigSwapper = new YamlSQLFederationRuleConfigurationSwapper();
-    
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlSQLFederationRuleConfiguration yamlRuleConfig) {
         return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
@@ -46,16 +44,6 @@ public final class SQLFederationRuleConfigurationRepositoryTupleSwapper implemen
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlSQLFederationRuleConfiguration.class));
-            }
-        }
-        return Optional.empty();
-    }
-    
-    @Override
-    public Optional<SQLFederationRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        for (RepositoryTuple each : repositoryTuples) {
-            if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
-                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLFederationRuleConfiguration.class)));
             }
         }
         return Optional.empty();

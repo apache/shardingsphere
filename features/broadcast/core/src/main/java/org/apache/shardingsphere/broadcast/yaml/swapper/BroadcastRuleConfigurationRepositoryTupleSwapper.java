@@ -37,8 +37,6 @@ import java.util.stream.Collectors;
  */
 public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<BroadcastRuleConfiguration, YamlBroadcastRuleConfiguration> {
     
-    private final YamlBroadcastRuleConfigurationSwapper ruleConfigSwapper = new YamlBroadcastRuleConfigurationSwapper();
-    
     private final RuleNodePath broadcastRuleNodePath = new BroadcastRuleNodePathProvider().getRuleNodePath();
     
     @Override
@@ -54,17 +52,6 @@ public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements R
         for (RepositoryTuple each : validTuples) {
             if (broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey())) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlBroadcastRuleConfiguration.class));
-            }
-        }
-        return Optional.empty();
-    }
-    
-    @Override
-    public Optional<BroadcastRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
-        for (RepositoryTuple each : validTuples) {
-            if (broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey())) {
-                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlBroadcastRuleConfiguration.class)));
             }
         }
         return Optional.empty();

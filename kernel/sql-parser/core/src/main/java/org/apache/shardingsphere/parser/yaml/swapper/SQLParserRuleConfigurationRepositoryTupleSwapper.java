@@ -34,8 +34,6 @@ import java.util.Optional;
  */
 public final class SQLParserRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<SQLParserRuleConfiguration, YamlSQLParserRuleConfiguration> {
     
-    private final YamlSQLParserRuleConfigurationSwapper ruleConfigSwapper = new YamlSQLParserRuleConfigurationSwapper();
-    
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlSQLParserRuleConfiguration yamlRuleConfig) {
         return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
@@ -46,16 +44,6 @@ public final class SQLParserRuleConfigurationRepositoryTupleSwapper implements R
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlSQLParserRuleConfiguration.class));
-            }
-        }
-        return Optional.empty();
-    }
-    
-    @Override
-    public Optional<SQLParserRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        for (RepositoryTuple each : repositoryTuples) {
-            if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
-                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLParserRuleConfiguration.class)));
             }
         }
         return Optional.empty();

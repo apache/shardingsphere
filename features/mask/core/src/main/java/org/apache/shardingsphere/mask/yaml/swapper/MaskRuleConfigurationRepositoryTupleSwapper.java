@@ -42,8 +42,6 @@ import java.util.stream.Collectors;
  */
 public final class MaskRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<MaskRuleConfiguration, YamlMaskRuleConfiguration> {
     
-    private final YamlMaskRuleConfigurationSwapper ruleConfigSwapper = new YamlMaskRuleConfigurationSwapper();
-    
     private final RuleNodePath maskRuleNodePath = new MaskRuleNodePathProvider().getRuleNodePath();
     
     @Override
@@ -76,26 +74,6 @@ public final class MaskRuleConfigurationRepositoryTupleSwapper implements Reposi
         yamlRuleConfig.setTables(tables);
         yamlRuleConfig.setMaskAlgorithms(maskAlgorithms);
         return Optional.of(yamlRuleConfig);
-    }
-    
-    @Override
-    public Optional<MaskRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> maskRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
-        if (validTuples.isEmpty()) {
-            return Optional.empty();
-        }
-        YamlMaskRuleConfiguration yamlRuleConfig = new YamlMaskRuleConfiguration();
-        Map<String, YamlMaskTableRuleConfiguration> tables = new LinkedHashMap<>();
-        Map<String, YamlAlgorithmConfiguration> maskAlgorithms = new LinkedHashMap<>();
-        for (RepositoryTuple each : validTuples) {
-            maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getName(each.getKey())
-                    .ifPresent(optional -> tables.put(optional, YamlEngine.unmarshal(each.getValue(), YamlMaskTableRuleConfiguration.class)));
-            maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getName(each.getKey())
-                    .ifPresent(optional -> maskAlgorithms.put(optional, YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class)));
-        }
-        yamlRuleConfig.setTables(tables);
-        yamlRuleConfig.setMaskAlgorithms(maskAlgorithms);
-        return Optional.of(ruleConfigSwapper.swapToObject(yamlRuleConfig));
     }
     
     @Override

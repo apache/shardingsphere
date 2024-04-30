@@ -34,8 +34,6 @@ import java.util.Optional;
  */
 public final class GlobalClockRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<GlobalClockRuleConfiguration, YamlGlobalClockRuleConfiguration> {
     
-    private final YamlGlobalClockRuleConfigurationSwapper ruleConfigSwapper = new YamlGlobalClockRuleConfigurationSwapper();
-    
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlGlobalClockRuleConfiguration yamlRuleConfig) {
         return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
@@ -46,16 +44,6 @@ public final class GlobalClockRuleConfigurationRepositoryTupleSwapper implements
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlGlobalClockRuleConfiguration.class));
-            }
-        }
-        return Optional.empty();
-    }
-    
-    @Override
-    public Optional<GlobalClockRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        for (RepositoryTuple each : repositoryTuples) {
-            if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
-                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlGlobalClockRuleConfiguration.class)));
             }
         }
         return Optional.empty();
