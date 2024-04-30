@@ -78,10 +78,9 @@ class MaskRuleConfigurationRepositoryTupleSwapperTest {
         Optional<YamlMaskRuleConfiguration> actual = new MaskRuleConfigurationRepositoryTupleSwapper().swapToObject0(repositoryTuples);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getTables().size(), is(1));
-        assertThat(actual.get().getTables().values().iterator().next().getName(), is("foo"));
-        assertThat(actual.get().getTables().values().iterator().next().getColumns().size(), is(1));
-        assertThat(actual.get().getTables().values().iterator().next().getColumns().values().iterator().next().getLogicColumn(), is("foo_column"));
-        assertThat(actual.get().getTables().values().iterator().next().getColumns().values().iterator().next().getMaskAlgorithm(), is("FIXTURE"));
+        assertThat(actual.get().getTables().get("foo").getColumns().size(), is(1));
+        assertThat(actual.get().getTables().get("foo").getColumns().get("foo_column").getLogicColumn(), is("foo_column"));
+        assertThat(actual.get().getTables().get("foo").getColumns().get("foo_column").getMaskAlgorithm(), is("FIXTURE"));
         assertThat(actual.get().getMaskAlgorithms().size(), is(1));
         assertThat(actual.get().getMaskAlgorithms().get("FIXTURE").getType(), is("FIXTURE"));
         assertTrue(actual.get().getMaskAlgorithms().get("FIXTURE").getProps().isEmpty());

@@ -81,11 +81,10 @@ class EncryptRuleConfigurationRepositoryTupleSwapperTest {
         Optional<YamlEncryptRuleConfiguration> actual = swapper.swapToObject0(repositoryTuples);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getTables().size(), is(1));
-        assertThat(actual.get().getTables().values().iterator().next().getName(), is("foo"));
-        assertThat(actual.get().getTables().values().iterator().next().getColumns().size(), is(1));
-        assertThat(actual.get().getTables().values().iterator().next().getColumns().values().iterator().next().getName(), is("foo_column"));
-        assertThat(actual.get().getTables().values().iterator().next().getColumns().values().iterator().next().getCipher().getName(), is("FIXTURE"));
-        assertThat(actual.get().getTables().values().iterator().next().getColumns().values().iterator().next().getCipher().getEncryptorName(), is("FOO"));
+        assertThat(actual.get().getTables().get("foo").getColumns().size(), is(1));
+        assertThat(actual.get().getTables().get("foo").getColumns().get("foo_column").getName(), is("foo_column"));
+        assertThat(actual.get().getTables().get("foo").getColumns().get("foo_column").getCipher().getName(), is("FIXTURE"));
+        assertThat(actual.get().getTables().get("foo").getColumns().get("foo_column").getCipher().getEncryptorName(), is("FOO"));
         assertThat(actual.get().getEncryptors().size(), is(1));
         assertThat(actual.get().getEncryptors().get("FOO").getType(), is("FOO"));
         assertTrue(actual.get().getEncryptors().get("FOO").getProps().isEmpty());

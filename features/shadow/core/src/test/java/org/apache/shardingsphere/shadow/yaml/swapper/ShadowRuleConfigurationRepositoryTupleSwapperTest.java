@@ -95,9 +95,8 @@ class ShadowRuleConfigurationRepositoryTupleSwapperTest {
         Optional<YamlShadowRuleConfiguration> actual = swapper.swapToObject0(repositoryTuples);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDataSources().size(), is(1));
-        assertThat(actual.get().getDataSources().keySet().iterator().next(), is("foo_db"));
-        assertThat(actual.get().getDataSources().values().iterator().next().getProductionDataSourceName(), is("ds_0"));
-        assertThat(actual.get().getDataSources().values().iterator().next().getShadowDataSourceName(), is("ds_1"));
+        assertThat(actual.get().getDataSources().get("foo_db").getProductionDataSourceName(), is("ds_0"));
+        assertThat(actual.get().getDataSources().get("foo_db").getShadowDataSourceName(), is("ds_1"));
         assertThat(actual.get().getTables().size(), is(1));
         assertThat(actual.get().getTables().get("foo_table").getDataSourceNames().size(), is(1));
         assertThat(actual.get().getTables().get("foo_table").getDataSourceNames().iterator().next(), is("ds_0"));
