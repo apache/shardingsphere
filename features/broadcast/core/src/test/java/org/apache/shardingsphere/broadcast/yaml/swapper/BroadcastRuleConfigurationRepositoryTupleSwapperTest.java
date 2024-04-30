@@ -37,24 +37,20 @@ class BroadcastRuleConfigurationRepositoryTupleSwapperTest {
     private final BroadcastRuleConfigurationRepositoryTupleSwapper swapper = new BroadcastRuleConfigurationRepositoryTupleSwapper();
     
     @Test
-    void assertSwapEmptyConfigToDataNodes() {
+    void assertSwapToRepositoryTuplesWithEmptyRule() {
         assertTrue(swapper.swapToRepositoryTuples(new BroadcastRuleConfiguration(Collections.emptyList())).isEmpty());
     }
     
     @Test
-    void assertSwapFullConfigToDataNodes() {
-        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(createMaximumBroadcastRule());
+    void assertSwapToRepositoryTuples() {
+        Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(new BroadcastRuleConfiguration(Arrays.asList("foo_table", "foo_table2")));
         assertThat(actual.size(), is(1));
         Iterator<RepositoryTuple> iterator = actual.iterator();
         assertThat(iterator.next().getKey(), is("tables"));
     }
     
-    private BroadcastRuleConfiguration createMaximumBroadcastRule() {
-        return new BroadcastRuleConfiguration(Arrays.asList("foo_table", "foo_table2"));
-    }
-    
     @Test
-    void assertSwapToObjectEmpty() {
+    void assertSwapToObjectWithEmptyTuple() {
         assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     

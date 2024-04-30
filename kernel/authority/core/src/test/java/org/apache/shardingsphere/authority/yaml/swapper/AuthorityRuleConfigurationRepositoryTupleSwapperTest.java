@@ -21,6 +21,8 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -36,10 +38,10 @@ class AuthorityRuleConfigurationRepositoryTupleSwapperTest {
     private final AuthorityRuleConfigurationRepositoryTupleSwapper swapper = new AuthorityRuleConfigurationRepositoryTupleSwapper();
     
     @Test
-    void assertSwapToDataNodes() {
+    void assertSwapToRepositoryTuples() {
         Collection<ShardingSphereUser> users = Collections.singleton(new ShardingSphereUser("root", "", "localhost"));
         Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()),
-                Collections.singletonMap("md5", new AlgorithmConfiguration("MD5", createProperties())), "scram_sha256"));
+                Collections.singletonMap("md5", new AlgorithmConfiguration("MD5", PropertiesBuilder.build(new Property("proxy-frontend-database-protocol-type", "openGauss")))), "scram_sha256"));
         RepositoryTuple repositoryTuple = actual.iterator().next();
         assertThat(repositoryTuple.getKey(), is("authority"));
         assertThat(repositoryTuple.getValue(), containsString("user: root@localhost"));
@@ -48,11 +50,5 @@ class AuthorityRuleConfigurationRepositoryTupleSwapperTest {
         assertThat(repositoryTuple.getValue(), containsString("defaultAuthenticator: scram_sha256"));
         assertThat(repositoryTuple.getValue(), containsString("type: MD5"));
         assertThat(repositoryTuple.getValue(), containsString("proxy-frontend-database-protocol-type: openGauss"));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.put("proxy-frontend-database-protocol-type", "openGauss");
-        return result;
     }
 }

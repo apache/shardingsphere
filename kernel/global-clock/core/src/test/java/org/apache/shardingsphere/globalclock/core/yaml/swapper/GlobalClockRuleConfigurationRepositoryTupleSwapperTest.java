@@ -32,7 +32,7 @@ class GlobalClockRuleConfigurationRepositoryTupleSwapperTest {
     private final GlobalClockRuleConfigurationRepositoryTupleSwapper swapper = new GlobalClockRuleConfigurationRepositoryTupleSwapper();
     
     @Test
-    void assertSwapToDataNodes() {
+    void assertSwapToRepositoryTuples() {
         Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(new GlobalClockRuleConfiguration("", "", false, new Properties()));
         assertThat(actual.iterator().next().getKey(), is("global_clock"));
     }

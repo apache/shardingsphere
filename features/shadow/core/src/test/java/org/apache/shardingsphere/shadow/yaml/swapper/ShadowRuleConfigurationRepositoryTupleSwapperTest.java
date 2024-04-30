@@ -44,12 +44,12 @@ class ShadowRuleConfigurationRepositoryTupleSwapperTest {
     private final ShadowRuleConfigurationRepositoryTupleSwapper swapper = new ShadowRuleConfigurationRepositoryTupleSwapper();
     
     @Test
-    void assertSwapEmptyConfigToDataNodes() {
+    void assertSwapToRepositoryTuplesWithEmptyRule() {
         assertTrue(swapper.swapToRepositoryTuples(new ShadowRuleConfiguration()).isEmpty());
     }
     
     @Test
-    void assertSwapFullConfigToDataNodes() {
+    void assertSwapToRepositoryTuples() {
         Collection<RepositoryTuple> actual = swapper.swapToRepositoryTuples(createMaximumShadowRule());
         assertThat(actual.size(), is(4));
         Iterator<RepositoryTuple> iterator = actual.iterator();
@@ -75,7 +75,7 @@ class ShadowRuleConfigurationRepositoryTupleSwapperTest {
     }
     
     @Test
-    void assertSwapToObjectEmpty() {
+    void assertSwapToObjectWithEmptyTuple() {
         assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     

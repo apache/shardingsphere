@@ -28,7 +28,7 @@ class SQLTranslatorRuleConfigurationRepositoryTupleSwapperTest {
     private final SQLTranslatorRuleConfigurationRepositoryTupleSwapper swapper = new SQLTranslatorRuleConfigurationRepositoryTupleSwapper();
     
     @Test
-    void assertSwapToDataNodes() {
+    void assertSwapToRepositoryTuples() {
         assertThat(swapper.swapToRepositoryTuples(new DefaultSQLTranslatorRuleConfigurationBuilder().build()).iterator().next().getKey(), is("sql_translator"));
     }
 }

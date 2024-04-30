@@ -28,7 +28,7 @@ class SingleRuleConfigurationRepositoryTupleSwapperTest {
     private final SingleRuleConfigurationRepositoryTupleSwapper swapper = new SingleRuleConfigurationRepositoryTupleSwapper();
     
     @Test
-    void assertSwapToDataNodes() {
+    void assertSwapToRepositoryTuples() {
         assertThat(swapper.swapToRepositoryTuples(new SingleRuleConfiguration()).iterator().next().getKey(), is("tables"));
     }
 }

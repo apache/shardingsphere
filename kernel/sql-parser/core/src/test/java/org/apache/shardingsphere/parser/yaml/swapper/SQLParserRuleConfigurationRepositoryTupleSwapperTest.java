@@ -29,7 +29,7 @@ class SQLParserRuleConfigurationRepositoryTupleSwapperTest {
     private final SQLParserRuleConfigurationRepositoryTupleSwapper swapper = new SQLParserRuleConfigurationRepositoryTupleSwapper();
     
     @Test
-    void assertSwapToDataNodes() {
+    void assertSwapToRepositoryTuples() {
         assertThat(swapper.swapToRepositoryTuples(new SQLParserRuleConfiguration(DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION,
                 DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION)).iterator().next().getKey(), is("sql_parser"));
     }
