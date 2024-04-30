@@ -48,7 +48,7 @@ public final class RepositoryTupleSwapperEngine {
         Collection<RuleConfiguration> result = new LinkedList<>();
         YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
-            each.swapToObject0(repositoryTuples).ifPresent(optional -> result.add(yamlSwapperEngine.swapToRuleConfiguration((YamlRuleConfiguration) optional)));
+            each.swapToObject(repositoryTuples).ifPresent(optional -> result.add(yamlSwapperEngine.swapToRuleConfiguration((YamlRuleConfiguration) optional)));
         }
         return result;
     }
@@ -65,7 +65,7 @@ public final class RepositoryTupleSwapperEngine {
         YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
             if (ruleName.equals(each.getRuleTagName().toLowerCase())) {
-                Optional<YamlRuleConfiguration> yamlRuleConfig = each.swapToObject0(repositoryTuples);
+                Optional<YamlRuleConfiguration> yamlRuleConfig = each.swapToObject(repositoryTuples);
                 return yamlRuleConfig.map(yamlSwapperEngine::swapToRuleConfiguration);
             }
         }

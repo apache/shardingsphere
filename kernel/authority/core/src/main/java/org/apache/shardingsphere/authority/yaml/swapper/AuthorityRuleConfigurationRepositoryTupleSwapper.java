@@ -40,7 +40,7 @@ public final class AuthorityRuleConfigurationRepositoryTupleSwapper implements R
     }
     
     @Override
-    public Optional<YamlAuthorityRuleConfiguration> swapToObject0(final Collection<RepositoryTuple> repositoryTuples) {
+    public Optional<YamlAuthorityRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlAuthorityRuleConfiguration.class));

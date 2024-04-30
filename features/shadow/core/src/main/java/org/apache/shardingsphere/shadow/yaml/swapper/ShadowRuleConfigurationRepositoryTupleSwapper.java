@@ -65,7 +65,7 @@ public final class ShadowRuleConfigurationRepositoryTupleSwapper implements Repo
     }
     
     @Override
-    public Optional<YamlShadowRuleConfiguration> swapToObject0(final Collection<RepositoryTuple> repositoryTuples) {
+    public Optional<YamlShadowRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         List<RepositoryTuple> validRepositoryTuples = repositoryTuples.stream().filter(each -> shadowRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         if (validRepositoryTuples.isEmpty()) {
             return Optional.empty();

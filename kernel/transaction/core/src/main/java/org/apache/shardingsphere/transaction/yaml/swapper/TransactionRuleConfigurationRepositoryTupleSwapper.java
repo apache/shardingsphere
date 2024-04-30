@@ -40,7 +40,7 @@ public final class TransactionRuleConfigurationRepositoryTupleSwapper implements
     }
     
     @Override
-    public Optional<YamlTransactionRuleConfiguration> swapToObject0(final Collection<RepositoryTuple> repositoryTuples) {
+    public Optional<YamlTransactionRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlTransactionRuleConfiguration.class));

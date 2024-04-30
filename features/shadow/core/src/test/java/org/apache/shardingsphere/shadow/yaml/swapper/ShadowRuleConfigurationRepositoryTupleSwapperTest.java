@@ -79,7 +79,7 @@ class ShadowRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToObjectWithEmptyTuple() {
-        assertFalse(swapper.swapToObject0(Collections.emptyList()).isPresent());
+        assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     
     @Test
@@ -92,7 +92,7 @@ class ShadowRuleConfigurationRepositoryTupleSwapperTest {
                         + "- FIXTURE\n"),
                 new RepositoryTuple("/metadata/foo_db/rules/shadow/algorithms/FIXTURE/versions/0", "type: FIXTURE\n"),
                 new RepositoryTuple("/metadata/foo_db/rules/shadow/default_algorithm_name/versions/0", "FIXTURE"));
-        Optional<YamlShadowRuleConfiguration> actual = swapper.swapToObject0(repositoryTuples);
+        Optional<YamlShadowRuleConfiguration> actual = swapper.swapToObject(repositoryTuples);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDataSources().size(), is(1));
         assertThat(actual.get().getDataSources().get("foo_db").getProductionDataSourceName(), is("ds_0"));

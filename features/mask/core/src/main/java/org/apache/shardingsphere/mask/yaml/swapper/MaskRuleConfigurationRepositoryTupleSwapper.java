@@ -57,7 +57,7 @@ public final class MaskRuleConfigurationRepositoryTupleSwapper implements Reposi
     }
     
     @Override
-    public Optional<YamlMaskRuleConfiguration> swapToObject0(final Collection<RepositoryTuple> repositoryTuples) {
+    public Optional<YamlMaskRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> maskRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         if (validTuples.isEmpty()) {
             return Optional.empty();

@@ -47,7 +47,7 @@ public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements R
     }
     
     @Override
-    public Optional<YamlBroadcastRuleConfiguration> swapToObject0(final Collection<RepositoryTuple> repositoryTuples) {
+    public Optional<YamlBroadcastRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         for (RepositoryTuple each : validTuples) {
             if (broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey())) {

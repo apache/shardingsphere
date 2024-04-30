@@ -112,7 +112,7 @@ public final class ShardingRuleConfigurationRepositoryTupleSwapper implements Re
     }
     
     @Override
-    public Optional<YamlShardingRuleConfiguration> swapToObject0(final Collection<RepositoryTuple> repositoryTuples) {
+    public Optional<YamlShardingRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         List<RepositoryTuple> validRepositoryTuples = repositoryTuples.stream().filter(each -> shardingRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         if (validRepositoryTuples.isEmpty()) {
             return Optional.empty();

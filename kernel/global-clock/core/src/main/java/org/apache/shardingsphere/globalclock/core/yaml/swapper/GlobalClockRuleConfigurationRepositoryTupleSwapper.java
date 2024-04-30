@@ -40,7 +40,7 @@ public final class GlobalClockRuleConfigurationRepositoryTupleSwapper implements
     }
     
     @Override
-    public Optional<YamlGlobalClockRuleConfiguration> swapToObject0(final Collection<RepositoryTuple> repositoryTuples) {
+    public Optional<YamlGlobalClockRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlGlobalClockRuleConfiguration.class));

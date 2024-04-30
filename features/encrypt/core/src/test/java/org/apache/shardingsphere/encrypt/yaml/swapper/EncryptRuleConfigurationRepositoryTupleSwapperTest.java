@@ -66,7 +66,7 @@ class EncryptRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToObjectWithEmptyTuple() {
-        assertFalse(swapper.swapToObject0(Collections.emptyList()).isPresent());
+        assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     
     @Test
@@ -78,7 +78,7 @@ class EncryptRuleConfigurationRepositoryTupleSwapperTest {
                 + "      name: FIXTURE\n"
                 + "    name: foo_column\n"
                 + "name: foo\n"), new RepositoryTuple("/metadata/foo_db/rules/encrypt/encryptors/FOO/versions/0", "type: FOO\n"));
-        Optional<YamlEncryptRuleConfiguration> actual = swapper.swapToObject0(repositoryTuples);
+        Optional<YamlEncryptRuleConfiguration> actual = swapper.swapToObject(repositoryTuples);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getTables().size(), is(1));
         assertThat(actual.get().getTables().get("foo").getColumns().size(), is(1));
