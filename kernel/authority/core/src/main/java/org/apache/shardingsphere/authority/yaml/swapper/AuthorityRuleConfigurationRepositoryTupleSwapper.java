@@ -34,8 +34,6 @@ import java.util.Optional;
  */
 public final class AuthorityRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<AuthorityRuleConfiguration, YamlAuthorityRuleConfiguration> {
     
-    private final YamlAuthorityRuleConfigurationSwapper ruleConfigSwapper = new YamlAuthorityRuleConfigurationSwapper();
-    
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlAuthorityRuleConfiguration yamlRuleConfig) {
         return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
@@ -46,16 +44,6 @@ public final class AuthorityRuleConfigurationRepositoryTupleSwapper implements R
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlAuthorityRuleConfiguration.class));
-            }
-        }
-        return Optional.empty();
-    }
-    
-    @Override
-    public Optional<AuthorityRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        for (RepositoryTuple each : repositoryTuples) {
-            if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
-                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAuthorityRuleConfiguration.class)));
             }
         }
         return Optional.empty();

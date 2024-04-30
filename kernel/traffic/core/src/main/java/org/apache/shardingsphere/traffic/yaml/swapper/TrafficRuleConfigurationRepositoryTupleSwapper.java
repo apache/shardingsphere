@@ -34,8 +34,6 @@ import java.util.Optional;
  */
 public final class TrafficRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<TrafficRuleConfiguration, YamlTrafficRuleConfiguration> {
     
-    private final YamlTrafficRuleConfigurationSwapper ruleConfigSwapper = new YamlTrafficRuleConfigurationSwapper();
-    
     @Override
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlTrafficRuleConfiguration yamlRuleConfig) {
         return Collections.singleton(new RepositoryTuple(getRuleTagName().toLowerCase(), YamlEngine.marshal(yamlRuleConfig)));
@@ -46,16 +44,6 @@ public final class TrafficRuleConfigurationRepositoryTupleSwapper implements Rep
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlTrafficRuleConfiguration.class));
-            }
-        }
-        return Optional.empty();
-    }
-    
-    @Override
-    public Optional<TrafficRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        for (RepositoryTuple each : repositoryTuples) {
-            if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
-                return Optional.of(ruleConfigSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlTrafficRuleConfiguration.class)));
             }
         }
         return Optional.empty();
