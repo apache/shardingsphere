@@ -64,7 +64,7 @@ class MaskRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToObjectWithEmptyTuple() {
-        assertFalse(new MaskRuleConfigurationRepositoryTupleSwapper().swapToObject0(new LinkedList<>()).isPresent());
+        assertFalse(new MaskRuleConfigurationRepositoryTupleSwapper().swapToObject(new LinkedList<>()).isPresent());
     }
     
     @Test
@@ -75,7 +75,7 @@ class MaskRuleConfigurationRepositoryTupleSwapperTest {
                 + "    maskAlgorithm: FIXTURE\n"
                 + "name: foo\n"),
                 new RepositoryTuple("/metadata/foo_db/rules/mask/mask_algorithms/FIXTURE/versions/0", "type: FIXTURE\n"));
-        Optional<YamlMaskRuleConfiguration> actual = new MaskRuleConfigurationRepositoryTupleSwapper().swapToObject0(repositoryTuples);
+        Optional<YamlMaskRuleConfiguration> actual = new MaskRuleConfigurationRepositoryTupleSwapper().swapToObject(repositoryTuples);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getTables().size(), is(1));
         assertThat(actual.get().getTables().get("foo").getColumns().size(), is(1));

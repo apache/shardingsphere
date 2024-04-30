@@ -59,7 +59,7 @@ public final class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper imp
     }
     
     @Override
-    public Optional<YamlReadwriteSplittingRuleConfiguration> swapToObject0(final Collection<RepositoryTuple> repositoryTuples) {
+    public Optional<YamlReadwriteSplittingRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         List<RepositoryTuple> validRepositoryTuples = repositoryTuples.stream().filter(each -> readwriteSplittingRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         if (validRepositoryTuples.isEmpty()) {
             return Optional.empty();

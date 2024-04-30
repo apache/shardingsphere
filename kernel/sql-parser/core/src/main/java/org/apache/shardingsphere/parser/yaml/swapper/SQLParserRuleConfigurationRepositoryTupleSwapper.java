@@ -40,7 +40,7 @@ public final class SQLParserRuleConfigurationRepositoryTupleSwapper implements R
     }
     
     @Override
-    public Optional<YamlSQLParserRuleConfiguration> swapToObject0(final Collection<RepositoryTuple> repositoryTuples) {
+    public Optional<YamlSQLParserRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         for (RepositoryTuple each : repositoryTuples) {
             if (GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey()).isPresent()) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlSQLParserRuleConfiguration.class));

@@ -57,7 +57,7 @@ public final class EncryptRuleConfigurationRepositoryTupleSwapper implements Rep
     }
     
     @Override
-    public Optional<YamlEncryptRuleConfiguration> swapToObject0(final Collection<RepositoryTuple> repositoryTuples) {
+    public Optional<YamlEncryptRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
         List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> encryptRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         if (validTuples.isEmpty()) {
             return Optional.empty();

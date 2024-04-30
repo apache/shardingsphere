@@ -66,7 +66,7 @@ class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToObjectWithEmptyTuple() {
-        assertFalse(swapper.swapToObject0(Collections.emptyList()).isPresent());
+        assertFalse(swapper.swapToObject(Collections.emptyList()).isPresent());
     }
     
     @Test
@@ -78,7 +78,7 @@ class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapperTest {
                 + "transactionalReadQueryStrategy: DYNAMIC\n"
                 + "writeDataSourceName: write_ds\n"),
                 new RepositoryTuple("/metadata/foo_db/rules/readwrite_splitting/load_balancers/random/versions/0", "type: random\n"));
-        Optional<YamlReadwriteSplittingRuleConfiguration> actual = swapper.swapToObject0(repositoryTuples);
+        Optional<YamlReadwriteSplittingRuleConfiguration> actual = swapper.swapToObject(repositoryTuples);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDataSourceGroups().size(), is(1));
         assertThat(actual.get().getDataSourceGroups().get("foo_group").getWriteDataSourceName(), is("write_ds"));

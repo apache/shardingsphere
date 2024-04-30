@@ -49,7 +49,7 @@ public interface RepositoryTupleSwapper<T extends RuleConfiguration, Y extends Y
      * @param repositoryTuples repository tuples
      * @return swapped YAML rule configurations
      */
-    Optional<Y> swapToObject0(Collection<RepositoryTuple> repositoryTuples);
+    Optional<Y> swapToObject(Collection<RepositoryTuple> repositoryTuples);
     
     /**
      * Get YAML rule tag name.
