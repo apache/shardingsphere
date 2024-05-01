@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,8 +45,8 @@ class AlterGlobalClockRuleExecutorTest {
         assertThat(actual.getProvider(), is("redis"));
         assertTrue(actual.isEnabled());
         assertThat(actual.getProps().size(), is(1));
-        assertEquals(GlobalClockRule.class, executor.getRuleClass());
-        assertEquals(AlterGlobalClockRuleStatement.class, executor.getType());
+        assertThat(executor.getRuleClass(), is(GlobalClockRule.class));
+        assertThat(executor.getType(), is(AlterGlobalClockRuleStatement.class));
     }
     
     private GlobalClockRuleConfiguration getSQLParserRuleConfiguration() {
