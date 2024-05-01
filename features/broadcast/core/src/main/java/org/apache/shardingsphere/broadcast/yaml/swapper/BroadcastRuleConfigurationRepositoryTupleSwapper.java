@@ -42,7 +42,7 @@ public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements R
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlBroadcastRuleConfiguration yamlRuleConfig) {
         Collection<RepositoryTuple> result = new LinkedList<>();
         if (!yamlRuleConfig.getTables().isEmpty()) {
-            result.add(new RepositoryTuple(BroadcastRuleNodePathProvider.TABLES, YamlEngine.marshal(yamlRuleConfig.getTables())));
+            result.add(new RepositoryTuple(ruleNodePath.getUniqueItem(BroadcastRuleNodePathProvider.TABLES).getPath(), YamlEngine.marshal(yamlRuleConfig.getTables())));
         }
         return result;
     }
