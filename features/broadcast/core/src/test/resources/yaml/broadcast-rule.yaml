@@ -16,6 +16,7 @@
 #
 
 rules:
-  - !BROADCAST
-    tables:
-      - t_address
+- !BROADCAST
+  tables:
+  - foo_tbl
+  - bar_tbl

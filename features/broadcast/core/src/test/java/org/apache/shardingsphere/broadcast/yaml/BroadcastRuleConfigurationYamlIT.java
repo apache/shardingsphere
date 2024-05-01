@@ -21,6 +21,8 @@ import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfigur
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
+import java.util.ArrayList;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -36,7 +38,8 @@ class BroadcastRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     }
     
     private void assertBroadcastRule(final YamlBroadcastRuleConfiguration actual) {
-        assertThat(actual.getTables().size(), is(1));
-        assertThat(actual.getTables().iterator().next(), is("t_address"));
+        assertThat(actual.getTables().size(), is(2));
+        assertThat(new ArrayList<>(actual.getTables()).get(0), is("foo_tbl"));
+        assertThat(new ArrayList<>(actual.getTables()).get(1), is("bar_tbl"));
     }
 }
