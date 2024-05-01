@@ -53,7 +53,7 @@ class BroadcastRuleConfigurationRepositoryTupleSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        RepositoryTuple repositoryTuple = new RepositoryTuple("/metadata/foo_db/rules/broadcast/tables", "tables:\n- foo_table\n- foo_table2\n");
+        RepositoryTuple repositoryTuple = new RepositoryTuple("/metadata/foo_db/rules/broadcast/tables/versions/0", "\n- foo_table\n- foo_table2\n");
         Optional<YamlBroadcastRuleConfiguration> actual = swapper.swapToObject(Collections.singleton(repositoryTuple));
         assertTrue(actual.isPresent());
         assertThat(actual.get().getTables().size(), is(2));
