@@ -53,11 +53,6 @@ public final class SingleRuleConfigurationRepositoryTupleSwapper implements Repo
     }
     
     @Override
-    public Class<YamlSingleRuleConfiguration> getTypeClass() {
-        return YamlSingleRuleConfiguration.class;
-    }
-    
-    @Override
     public String getRuleTypeName() {
         return "single";
     }
@@ -65,5 +60,10 @@ public final class SingleRuleConfigurationRepositoryTupleSwapper implements Repo
     @Override
     public int getOrder() {
         return SingleOrder.ORDER;
+    }
+    
+    @Override
+    public Class<YamlSingleRuleConfiguration> getTypeClass() {
+        return YamlSingleRuleConfiguration.class;
     }
 }

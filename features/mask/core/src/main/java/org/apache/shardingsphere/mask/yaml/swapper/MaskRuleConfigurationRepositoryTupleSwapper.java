@@ -75,11 +75,6 @@ public final class MaskRuleConfigurationRepositoryTupleSwapper implements Reposi
     }
     
     @Override
-    public Class<YamlMaskRuleConfiguration> getTypeClass() {
-        return YamlMaskRuleConfiguration.class;
-    }
-    
-    @Override
     public String getRuleTypeName() {
         return "mask";
     }
@@ -87,5 +82,10 @@ public final class MaskRuleConfigurationRepositoryTupleSwapper implements Reposi
     @Override
     public int getOrder() {
         return MaskOrder.ORDER;
+    }
+    
+    @Override
+    public Class<YamlMaskRuleConfiguration> getTypeClass() {
+        return YamlMaskRuleConfiguration.class;
     }
 }

@@ -158,11 +158,6 @@ public final class ShardingRuleConfigurationRepositoryTupleSwapper implements Re
     }
     
     @Override
-    public Class<YamlShardingRuleConfiguration> getTypeClass() {
-        return YamlShardingRuleConfiguration.class;
-    }
-    
-    @Override
     public String getRuleTypeName() {
         return "sharding";
     }
@@ -170,5 +165,10 @@ public final class ShardingRuleConfigurationRepositoryTupleSwapper implements Re
     @Override
     public int getOrder() {
         return ShardingOrder.ORDER;
+    }
+    
+    @Override
+    public Class<YamlShardingRuleConfiguration> getTypeClass() {
+        return YamlShardingRuleConfiguration.class;
     }
 }

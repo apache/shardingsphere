@@ -76,11 +76,6 @@ public final class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper imp
     }
     
     @Override
-    public Class<YamlReadwriteSplittingRuleConfiguration> getTypeClass() {
-        return YamlReadwriteSplittingRuleConfiguration.class;
-    }
-    
-    @Override
     public String getRuleTypeName() {
         return "readwrite_splitting";
     }
@@ -88,5 +83,10 @@ public final class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper imp
     @Override
     public int getOrder() {
         return ReadwriteSplittingOrder.ORDER;
+    }
+    
+    @Override
+    public Class<YamlReadwriteSplittingRuleConfiguration> getTypeClass() {
+        return YamlReadwriteSplittingRuleConfiguration.class;
     }
 }

@@ -49,11 +49,6 @@ public final class SQLTranslatorRuleConfigurationRepositoryTupleSwapper implemen
     }
     
     @Override
-    public Class<YamlSQLTranslatorRuleConfiguration> getTypeClass() {
-        return YamlSQLTranslatorRuleConfiguration.class;
-    }
-    
-    @Override
     public String getRuleTypeName() {
         return "sql_translator";
     }
@@ -61,5 +56,10 @@ public final class SQLTranslatorRuleConfigurationRepositoryTupleSwapper implemen
     @Override
     public int getOrder() {
         return SQLTranslatorOrder.ORDER;
+    }
+    
+    @Override
+    public Class<YamlSQLTranslatorRuleConfiguration> getTypeClass() {
+        return YamlSQLTranslatorRuleConfiguration.class;
     }
 }

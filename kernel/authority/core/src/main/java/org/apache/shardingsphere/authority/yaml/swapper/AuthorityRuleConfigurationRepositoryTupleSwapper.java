@@ -49,11 +49,6 @@ public final class AuthorityRuleConfigurationRepositoryTupleSwapper implements R
     }
     
     @Override
-    public Class<YamlAuthorityRuleConfiguration> getTypeClass() {
-        return YamlAuthorityRuleConfiguration.class;
-    }
-    
-    @Override
     public String getRuleTypeName() {
         return "authority";
     }
@@ -61,5 +56,10 @@ public final class AuthorityRuleConfigurationRepositoryTupleSwapper implements R
     @Override
     public int getOrder() {
         return AuthorityOrder.ORDER;
+    }
+    
+    @Override
+    public Class<YamlAuthorityRuleConfiguration> getTypeClass() {
+        return YamlAuthorityRuleConfiguration.class;
     }
 }

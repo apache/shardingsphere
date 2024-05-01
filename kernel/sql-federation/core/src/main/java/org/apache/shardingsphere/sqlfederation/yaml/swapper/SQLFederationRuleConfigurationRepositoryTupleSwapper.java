@@ -49,11 +49,6 @@ public final class SQLFederationRuleConfigurationRepositoryTupleSwapper implemen
     }
     
     @Override
-    public Class<YamlSQLFederationRuleConfiguration> getTypeClass() {
-        return YamlSQLFederationRuleConfiguration.class;
-    }
-    
-    @Override
     public String getRuleTypeName() {
         return "sql_federation";
     }
@@ -61,5 +56,10 @@ public final class SQLFederationRuleConfigurationRepositoryTupleSwapper implemen
     @Override
     public int getOrder() {
         return SQLFederationOrder.ORDER;
+    }
+    
+    @Override
+    public Class<YamlSQLFederationRuleConfiguration> getTypeClass() {
+        return YamlSQLFederationRuleConfiguration.class;
     }
 }

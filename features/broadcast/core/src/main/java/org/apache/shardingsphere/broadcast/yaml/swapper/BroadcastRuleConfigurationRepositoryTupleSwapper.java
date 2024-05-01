@@ -57,8 +57,8 @@ public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements R
     }
     
     @Override
-    public Class<YamlBroadcastRuleConfiguration> getTypeClass() {
-        return YamlBroadcastRuleConfiguration.class;
+    public String getRuleTypeName() {
+        return "broadcast";
     }
     
     @Override
@@ -67,7 +67,7 @@ public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements R
     }
     
     @Override
-    public String getRuleTypeName() {
-        return "broadcast";
+    public Class<YamlBroadcastRuleConfiguration> getTypeClass() {
+        return YamlBroadcastRuleConfiguration.class;
     }
 }

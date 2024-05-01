@@ -91,11 +91,6 @@ public final class ShadowRuleConfigurationRepositoryTupleSwapper implements Repo
     }
     
     @Override
-    public Class<YamlShadowRuleConfiguration> getTypeClass() {
-        return YamlShadowRuleConfiguration.class;
-    }
-    
-    @Override
     public String getRuleTypeName() {
         return "shadow";
     }
@@ -103,5 +98,10 @@ public final class ShadowRuleConfigurationRepositoryTupleSwapper implements Repo
     @Override
     public int getOrder() {
         return ShadowOrder.ORDER;
+    }
+    
+    @Override
+    public Class<YamlShadowRuleConfiguration> getTypeClass() {
+        return YamlShadowRuleConfiguration.class;
     }
 }

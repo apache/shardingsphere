@@ -49,11 +49,6 @@ public final class TransactionRuleConfigurationRepositoryTupleSwapper implements
     }
     
     @Override
-    public Class<YamlTransactionRuleConfiguration> getTypeClass() {
-        return YamlTransactionRuleConfiguration.class;
-    }
-    
-    @Override
     public String getRuleTypeName() {
         return "transaction";
     }
@@ -61,5 +56,10 @@ public final class TransactionRuleConfigurationRepositoryTupleSwapper implements
     @Override
     public int getOrder() {
         return TransactionOrder.ORDER;
+    }
+    
+    @Override
+    public Class<YamlTransactionRuleConfiguration> getTypeClass() {
+        return YamlTransactionRuleConfiguration.class;
     }
 }
