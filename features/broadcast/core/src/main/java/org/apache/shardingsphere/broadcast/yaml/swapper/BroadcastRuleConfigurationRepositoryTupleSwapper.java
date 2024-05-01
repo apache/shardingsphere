@@ -22,7 +22,7 @@ import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePa
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.mode.path.RuleNodePath;
+import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.yaml.swapper;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.mode.path.RuleNodePath;
+import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;

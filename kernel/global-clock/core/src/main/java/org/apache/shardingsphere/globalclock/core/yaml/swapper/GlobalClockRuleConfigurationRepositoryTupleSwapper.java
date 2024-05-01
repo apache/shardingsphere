@@ -19,7 +19,7 @@ package org.apache.shardingsphere.globalclock.core.yaml.swapper;
 
 import org.apache.shardingsphere.globalclock.core.rule.constant.GlobalClockOrder;
 import org.apache.shardingsphere.globalclock.core.yaml.config.YamlGlobalClockRuleConfiguration;
-import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
+import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;

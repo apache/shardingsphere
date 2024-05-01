@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.yaml.swapper;
 
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
-import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
+import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
