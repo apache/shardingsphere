@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -33,18 +34,25 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class MaskRuleConfigurationCheckerTest {
+class MaskRuleConfigurationCheckerTest {
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test
-    void assertValidCheck() {
-        MaskRuleConfiguration config = createValidConfiguration();
-        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        assertDoesNotThrow(() -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
-        assertTrue(checker.getTableNames(config).contains("t_mask"));
+    @SuppressWarnings("rawtypes")
+    private RuleConfigurationChecker checker;
+    
+    @BeforeEach
+    void setUp() {
+        checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(MaskRuleConfiguration.class)).get(MaskRuleConfiguration.class);
     }
     
-    private MaskRuleConfiguration createValidConfiguration() {
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertValidCheck() {
+        MaskRuleConfiguration ruleConfig = mockValidConfiguration();
+        assertDoesNotThrow(() -> checker.check("test", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
+        assertTrue(checker.getTableNames(ruleConfig).contains("t_mask"));
+    }
+    
+    private MaskRuleConfiguration mockValidConfiguration() {
         MaskRuleConfiguration result = mock(MaskRuleConfiguration.class);
         MaskTableRuleConfiguration tableRuleConfig = mock(MaskTableRuleConfiguration.class);
         when(tableRuleConfig.getName()).thenReturn("t_mask");
@@ -52,15 +60,14 @@ public class MaskRuleConfigurationCheckerTest {
         return result;
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     @Test
     void assertInvalidCheck() {
-        MaskRuleConfiguration config = createInvalidConfiguration();
-        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
+        MaskRuleConfiguration ruleConfig = mockInvalidConfiguration();
+        assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("test", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
     }
     
-    private MaskRuleConfiguration createInvalidConfiguration() {
+    private MaskRuleConfiguration mockInvalidConfiguration() {
         MaskRuleConfiguration result = mock(MaskRuleConfiguration.class);
         MaskTableRuleConfiguration tableRuleConfig = mock(MaskTableRuleConfiguration.class);
         MaskColumnRuleConfiguration columnRuleConfig = mock(MaskColumnRuleConfiguration.class);
