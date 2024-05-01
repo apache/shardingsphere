@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.it.yaml;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
@@ -28,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -38,15 +38,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RequiredArgsConstructor
 public abstract class RepositoryTupleSwapperIT {
     
-    private final String yamlFile;
+    private final File yamlFile;
     
     @SuppressWarnings("rawtypes")
     private final RepositoryTupleSwapper swapper;
     
-    private final YamlRuleConfigurationIT yamlRuleConfigIT;
+    @SuppressWarnings("rawtypes")
+    public RepositoryTupleSwapperIT(final String yamlFileName, final RepositoryTupleSwapper swapper) {
+        URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFileName);
+        assertNotNull(url);
+        yamlFile = new File(url.getFile());
+        this.swapper = swapper;
+    }
     
     @Test
     void assertSwapToRepositoryTuples() throws IOException {
@@ -55,24 +60,30 @@ public abstract class RepositoryTupleSwapperIT {
     
     @SuppressWarnings("unchecked")
     private Collection<RepositoryTuple> getRepositoryTuples() throws IOException {
-        URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFile);
-        assertNotNull(url);
-        YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
+        YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(yamlFile, YamlRootConfiguration.class);
         assertThat(yamlRootConfig.getRules().size(), is(1));
         return (Collection<RepositoryTuple>) swapper.swapToRepositoryTuples(yamlRootConfig.getRules().iterator().next());
     }
     
     protected abstract void assertRepositoryTuples(Collection<RepositoryTuple> actualRepositoryTuples);
     
-    @SuppressWarnings("unchecked")
     @Test
     void assertSwapToObject() throws IOException {
+        assertThat(getActualYamlContent(), is(getExpectedYamlContent()));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private String getActualYamlContent() throws IOException {
         Collection<RepositoryTuple> repositoryTuples = getRepositoryTuples().stream()
                 .map(each -> new RepositoryTuple(String.format("/metadata/foo_db/rules/%s/%s/versions/0", swapper.getRuleTypeName(), each.getKey()), each.getValue())).collect(Collectors.toList());
         Optional<YamlRuleConfiguration> actualYamlRuleConfig = swapper.swapToObject(repositoryTuples);
         assertTrue(actualYamlRuleConfig.isPresent());
         YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
-        yamlRootConfig.setRules(Collections.singleton(actualYamlRuleConfig.get()));
-        yamlRuleConfigIT.assertYamlRootConfiguration(yamlRootConfig);
+        yamlRootConfig.setRules(Collections.singletonList(actualYamlRuleConfig.get()));
+        return YamlEngine.marshal(yamlRootConfig);
+    }
+    
+    private String getExpectedYamlContent() throws IOException {
+        return Files.readAllLines(yamlFile.toPath()).stream().filter(each -> !each.contains("#") && !each.isEmpty()).collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator();
     }
 }

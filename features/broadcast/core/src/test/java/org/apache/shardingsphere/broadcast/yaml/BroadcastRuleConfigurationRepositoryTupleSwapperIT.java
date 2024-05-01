@@ -30,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class BroadcastRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
     
     BroadcastRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/broadcast-rule.yaml", new BroadcastRuleConfigurationRepositoryTupleSwapper(), new BroadcastRuleConfigurationYamlIT());
+        super("yaml/broadcast-rule.yaml", new BroadcastRuleConfigurationRepositoryTupleSwapper());
     }
     
     @Override
