@@ -15,20 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.yaml.swapper;
+package org.apache.shardingsphere.transaction.it;
 
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
-import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class TransactionRuleConfigurationRepositoryTupleSwapperTest {
+class TransactionRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    private final TransactionRuleConfigurationRepositoryTupleSwapper swapper = new TransactionRuleConfigurationRepositoryTupleSwapper();
+    TransactionRuleConfigurationYamlIT() {
+        super("yaml/transaction-rule.yaml");
+    }
     
-    @Test
-    void assertSwapToRepositoryTuples() {
-        assertThat(swapper.swapToRepositoryTuples(new YamlTransactionRuleConfiguration()).iterator().next().getKey(), is("transaction"));
+    @Override
+    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
+        assertSQLTranslatorRule((YamlTransactionRuleConfiguration) actual.getRules().iterator().next());
+    }
+    
+    private void assertSQLTranslatorRule(final YamlTransactionRuleConfiguration actual) {
+        assertThat(actual.getDefaultType(), is("XA"));
+        assertThat(actual.getProviderType(), is("FIXTURE"));
+        assertThat(actual.getProps().size(), is(2));
+        assertThat(actual.getProps().getProperty("foo"), is("foo_value"));
+        assertThat(actual.getProps().getProperty("bar"), is("bar_value"));
     }
 }
