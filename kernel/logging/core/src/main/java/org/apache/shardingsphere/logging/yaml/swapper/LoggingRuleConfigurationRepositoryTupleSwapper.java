@@ -49,11 +49,6 @@ public final class LoggingRuleConfigurationRepositoryTupleSwapper implements Rep
     }
     
     @Override
-    public Class<YamlLoggingRuleConfiguration> getTypeClass() {
-        return YamlLoggingRuleConfiguration.class;
-    }
-    
-    @Override
     public String getRuleTypeName() {
         return "logging";
     }
@@ -61,5 +56,10 @@ public final class LoggingRuleConfigurationRepositoryTupleSwapper implements Rep
     @Override
     public int getOrder() {
         return LoggingOrder.ORDER;
+    }
+    
+    @Override
+    public Class<YamlLoggingRuleConfiguration> getTypeClass() {
+        return YamlLoggingRuleConfiguration.class;
     }
 }

@@ -49,11 +49,6 @@ public final class TrafficRuleConfigurationRepositoryTupleSwapper implements Rep
     }
     
     @Override
-    public Class<YamlTrafficRuleConfiguration> getTypeClass() {
-        return YamlTrafficRuleConfiguration.class;
-    }
-    
-    @Override
     public String getRuleTypeName() {
         return "traffic";
     }
@@ -61,5 +56,10 @@ public final class TrafficRuleConfigurationRepositoryTupleSwapper implements Rep
     @Override
     public int getOrder() {
         return TrafficOrder.ORDER;
+    }
+    
+    @Override
+    public Class<YamlTrafficRuleConfiguration> getTypeClass() {
+        return YamlTrafficRuleConfiguration.class;
     }
 }

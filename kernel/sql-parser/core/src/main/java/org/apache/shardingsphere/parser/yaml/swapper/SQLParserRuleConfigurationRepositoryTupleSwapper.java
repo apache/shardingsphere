@@ -49,11 +49,6 @@ public final class SQLParserRuleConfigurationRepositoryTupleSwapper implements R
     }
     
     @Override
-    public Class<YamlSQLParserRuleConfiguration> getTypeClass() {
-        return YamlSQLParserRuleConfiguration.class;
-    }
-    
-    @Override
     public String getRuleTypeName() {
         return "sql_parser";
     }
@@ -61,5 +56,10 @@ public final class SQLParserRuleConfigurationRepositoryTupleSwapper implements R
     @Override
     public int getOrder() {
         return SQLParserOrder.ORDER;
+    }
+    
+    @Override
+    public Class<YamlSQLParserRuleConfiguration> getTypeClass() {
+        return YamlSQLParserRuleConfiguration.class;
     }
 }

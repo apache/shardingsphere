@@ -76,11 +76,6 @@ public final class EncryptRuleConfigurationRepositoryTupleSwapper implements Rep
     }
     
     @Override
-    public Class<YamlEncryptRuleConfiguration> getTypeClass() {
-        return YamlEncryptRuleConfiguration.class;
-    }
-    
-    @Override
     public String getRuleTypeName() {
         return "encrypt";
     }
@@ -88,5 +83,10 @@ public final class EncryptRuleConfigurationRepositoryTupleSwapper implements Rep
     @Override
     public int getOrder() {
         return EncryptOrder.ORDER;
+    }
+    
+    @Override
+    public Class<YamlEncryptRuleConfiguration> getTypeClass() {
+        return YamlEncryptRuleConfiguration.class;
     }
 }
