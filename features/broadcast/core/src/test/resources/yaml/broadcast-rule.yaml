@@ -18,4 +18,5 @@
 rules:
   - !BROADCAST
     tables:
-      - t_address
+      - foo_tbl
+      - bar_tbl
