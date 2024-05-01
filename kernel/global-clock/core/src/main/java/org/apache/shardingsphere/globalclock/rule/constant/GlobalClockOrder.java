@@ -15,12 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.type.hlc;
+package org.apache.shardingsphere.globalclock.rule.constant;
 
-import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Hybrid logical clock provider.
+ * Global clock order.
  */
-public interface HLCProvider extends GlobalClockProvider {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class GlobalClockOrder {
+    
+    /**
+     * Global clock order.
+     */
+    public static final int ORDER = 1300;
 }

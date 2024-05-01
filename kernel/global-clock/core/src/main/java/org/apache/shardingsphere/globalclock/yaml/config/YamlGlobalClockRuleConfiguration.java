@@ -15,19 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.core.rule.constant;
+package org.apache.shardingsphere.globalclock.yaml.config;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
+
+import java.util.Properties;
 
 /**
- * Global clock order.
+ * Global clock rule configuration for YAML.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GlobalClockOrder {
+@Getter
+@Setter
+public final class YamlGlobalClockRuleConfiguration implements YamlGlobalRuleConfiguration {
     
-    /**
-     * Global clock order.
-     */
-    public static final int ORDER = 1300;
+    private String type;
+    
+    private String provider;
+    
+    private boolean enabled;
+    
+    private Properties props;
+    
+    @Override
+    public Class<GlobalClockRuleConfiguration> getRuleConfigurationType() {
+        return GlobalClockRuleConfiguration.class;
+    }
 }

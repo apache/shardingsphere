@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.core.yaml.swapper;
+package org.apache.shardingsphere.globalclock.yaml.swapper;
 
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
-import org.apache.shardingsphere.globalclock.core.rule.constant.GlobalClockOrder;
-import org.apache.shardingsphere.globalclock.core.yaml.config.YamlGlobalClockRuleConfiguration;
+import org.apache.shardingsphere.globalclock.rule.constant.GlobalClockOrder;
+import org.apache.shardingsphere.globalclock.yaml.config.YamlGlobalClockRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 
 import java.util.Properties;

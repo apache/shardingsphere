@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.core.executor;
+package org.apache.shardingsphere.globalclock.executor;
 
 import java.sql.Connection;
 import java.sql.SQLException;

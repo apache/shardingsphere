@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.core.executor;
+package org.apache.shardingsphere.globalclock.executor;
 
-import org.apache.shardingsphere.globalclock.core.provider.GlobalClockProvider;
+import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;

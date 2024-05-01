@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.core.rule.builder;
+package org.apache.shardingsphere.globalclock.rule.builder;
 
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
-import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
-import org.apache.shardingsphere.globalclock.core.rule.constant.GlobalClockOrder;
+import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
+import org.apache.shardingsphere.globalclock.rule.constant.GlobalClockOrder;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;

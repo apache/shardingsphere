@@ -15,32 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.core.yaml.config;
+package org.apache.shardingsphere.globalclock.rule.builder;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
+import org.apache.shardingsphere.globalclock.rule.constant.GlobalClockOrder;
+import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder;
 
 import java.util.Properties;
 
 /**
- * Global clock rule configuration for YAML.
+ * Default global clock rule configuration builder.
  */
-@Getter
-@Setter
-public final class YamlGlobalClockRuleConfiguration implements YamlGlobalRuleConfiguration {
-    
-    private String type;
-    
-    private String provider;
-    
-    private boolean enabled;
-    
-    private Properties props;
+public final class DefaultGlobalClockRuleConfigurationBuilder implements DefaultGlobalRuleConfigurationBuilder<GlobalClockRuleConfiguration, GlobalClockRuleBuilder> {
     
     @Override
-    public Class<GlobalClockRuleConfiguration> getRuleConfigurationType() {
-        return GlobalClockRuleConfiguration.class;
+    public GlobalClockRuleConfiguration build() {
+        return new GlobalClockRuleConfiguration("TSO", "local", false, new Properties());
+    }
+    
+    @Override
+    public int getOrder() {
+        return GlobalClockOrder.ORDER;
+    }
+    
+    @Override
+    public Class<GlobalClockRuleBuilder> getTypeClass() {
+        return GlobalClockRuleBuilder.class;
     }
 }
