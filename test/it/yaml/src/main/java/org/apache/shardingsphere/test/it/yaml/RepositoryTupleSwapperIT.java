@@ -45,12 +45,15 @@ public abstract class RepositoryTupleSwapperIT {
     @SuppressWarnings("rawtypes")
     private final RepositoryTupleSwapper swapper;
     
+    private final boolean isGlobalRule;
+    
     @SuppressWarnings("rawtypes")
-    public RepositoryTupleSwapperIT(final String yamlFileName, final RepositoryTupleSwapper swapper) {
+    public RepositoryTupleSwapperIT(final String yamlFileName, final RepositoryTupleSwapper swapper, final boolean isGlobalRule) {
         URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFileName);
         assertNotNull(url);
         yamlFile = new File(url.getFile());
         this.swapper = swapper;
+        this.isGlobalRule = isGlobalRule;
     }
     
     @Test
@@ -74,13 +77,18 @@ public abstract class RepositoryTupleSwapperIT {
     
     @SuppressWarnings("unchecked")
     private String getActualYamlContent() throws IOException {
-        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuples().stream()
-                .map(each -> new RepositoryTuple(String.format("/metadata/foo_db/rules/%s/%s/versions/0", swapper.getRuleTypeName(), each.getKey()), each.getValue())).collect(Collectors.toList());
+        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuples().stream().map(each -> new RepositoryTuple(getRepositoryTupleKey(each), each.getValue())).collect(Collectors.toList());
         Optional<YamlRuleConfiguration> actualYamlRuleConfig = swapper.swapToObject(repositoryTuples);
         assertTrue(actualYamlRuleConfig.isPresent());
         YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
         yamlRootConfig.setRules(Collections.singletonList(actualYamlRuleConfig.get()));
         return YamlEngine.marshal(yamlRootConfig);
+    }
+    
+    private String getRepositoryTupleKey(final RepositoryTuple tuple) {
+        return isGlobalRule
+                ? String.format("/metadata/rules/%s/versions/0", swapper.getRuleTypeName())
+                : String.format("/metadata/foo_db/rules/%s/%s/versions/0", swapper.getRuleTypeName(), tuple.getKey());
     }
     
     private String getExpectedYamlContent() throws IOException {

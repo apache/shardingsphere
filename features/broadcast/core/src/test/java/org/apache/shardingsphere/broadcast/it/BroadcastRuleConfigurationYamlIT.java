@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.yaml;
+package org.apache.shardingsphere.broadcast.it;
 
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
