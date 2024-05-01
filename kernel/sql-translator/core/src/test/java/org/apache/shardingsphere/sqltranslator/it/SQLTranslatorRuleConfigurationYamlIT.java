@@ -39,8 +39,8 @@ class SQLTranslatorRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     private void assertSQLTranslatorRule(final YamlSQLTranslatorRuleConfiguration actual) {
         assertThat(actual.getType(), is("FIXTURE"));
         assertThat(actual.getProps().size(), is(2));
-        assertThat(actual.getProps().getProperty("foo"), is("foo_value"));
-        assertThat(actual.getProps().getProperty("bar"), is("bar_value"));
+        assertThat(actual.getProps().getProperty("k0"), is("v0"));
+        assertThat(actual.getProps().getProperty("k1"), is("v1"));
         assertTrue(actual.isUseOriginalSQLWhenTranslatingFailed());
     }
 }

@@ -41,7 +41,7 @@ class GlobalClockRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
         assertThat(actual.getProvider(), is("FIXTURE"));
         assertTrue(actual.isEnabled());
         assertThat(actual.getProps().size(), is(2));
-        assertThat(actual.getProps().getProperty("foo"), is("foo_value"));
-        assertThat(actual.getProps().getProperty("bar"), is("bar_value"));
+        assertThat(actual.getProps().getProperty("k0"), is("v0"));
+        assertThat(actual.getProps().getProperty("k1"), is("v1"));
     }
 }

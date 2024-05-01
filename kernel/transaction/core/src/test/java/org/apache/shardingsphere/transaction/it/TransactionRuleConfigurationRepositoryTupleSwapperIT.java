@@ -42,6 +42,6 @@ class TransactionRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTup
     
     private void assertSQLParser(final RepositoryTuple actual) {
         assertThat(actual.getKey(), is("transaction"));
-        assertThat(actual.getValue(), is("defaultType: XA\nprops:\n  bar: bar_value\n  foo: foo_value\nproviderType: FIXTURE\n"));
+        assertThat(actual.getValue(), is("defaultType: XA\nprops:\n  k0: v0\n  k1: v1\nproviderType: FIXTURE\n"));
     }
 }

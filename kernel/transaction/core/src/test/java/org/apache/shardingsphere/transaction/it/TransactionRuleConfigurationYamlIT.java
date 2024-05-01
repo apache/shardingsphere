@@ -39,7 +39,7 @@ class TransactionRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
         assertThat(actual.getDefaultType(), is("XA"));
         assertThat(actual.getProviderType(), is("FIXTURE"));
         assertThat(actual.getProps().size(), is(2));
-        assertThat(actual.getProps().getProperty("foo"), is("foo_value"));
-        assertThat(actual.getProps().getProperty("bar"), is("bar_value"));
+        assertThat(actual.getProps().getProperty("k0"), is("v0"));
+        assertThat(actual.getProps().getProperty("k1"), is("v1"));
     }
 }

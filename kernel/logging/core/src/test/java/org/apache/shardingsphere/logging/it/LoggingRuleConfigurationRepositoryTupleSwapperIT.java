@@ -43,6 +43,6 @@ class LoggingRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSw
     private void assertLogging(final RepositoryTuple actual) {
         assertThat(actual.getKey(), is("logging"));
         assertThat(actual.getValue(), is("appenders:\n- appenderClass: foo_appender_class\n  appenderName: foo_appender\n  file: foo_file\n  pattern: sss\n"
-                + "loggers:\n- additivity: true\n  appenderName: foo_appender\n  level: INFO\n  loggerName: foo_logger\n  props:\n    bar: bar_value\n    foo: foo_value\n"));
+                + "loggers:\n- additivity: true\n  appenderName: foo_appender\n  level: INFO\n  loggerName: foo_logger\n  props:\n    k0: v0\n    k1: v1\n"));
     }
 }

@@ -19,7 +19,7 @@ rules:
 - !GLOBAL_CLOCK
   enabled: true
   props:
-    bar: bar_value
-    foo: foo_value
+    k0: v0
+    k1: v1
   provider: FIXTURE
   type: FIXTURE

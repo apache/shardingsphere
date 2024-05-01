@@ -53,8 +53,8 @@ class LoggingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
         assertTrue(new ArrayList<>(actual).get(0).getAdditivity());
         assertThat(new ArrayList<>(actual).get(0).getAppenderName(), is("foo_appender"));
         assertThat(new ArrayList<>(actual).get(0).getProps().size(), is(2));
-        assertThat(new ArrayList<>(actual).get(0).getProps().getProperty("foo"), is("foo_value"));
-        assertThat(new ArrayList<>(actual).get(0).getProps().getProperty("bar"), is("bar_value"));
+        assertThat(new ArrayList<>(actual).get(0).getProps().getProperty("k0"), is("v0"));
+        assertThat(new ArrayList<>(actual).get(0).getProps().getProperty("k1"), is("v1"));
     }
     
     private void assertAppenders(final Collection<YamlAppenderConfiguration> actual) {

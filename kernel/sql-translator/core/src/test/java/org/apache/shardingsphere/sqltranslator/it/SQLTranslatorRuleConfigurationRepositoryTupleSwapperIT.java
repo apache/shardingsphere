@@ -42,6 +42,6 @@ class SQLTranslatorRuleConfigurationRepositoryTupleSwapperIT extends RepositoryT
     
     private void assertSQLParser(final RepositoryTuple actual) {
         assertThat(actual.getKey(), is("sql_translator"));
-        assertThat(actual.getValue(), is("props:\n  bar: bar_value\n  foo: foo_value\ntype: FIXTURE\nuseOriginalSQLWhenTranslatingFailed: true\n"));
+        assertThat(actual.getValue(), is("props:\n  k0: v0\n  k1: v1\ntype: FIXTURE\nuseOriginalSQLWhenTranslatingFailed: true\n"));
     }
 }

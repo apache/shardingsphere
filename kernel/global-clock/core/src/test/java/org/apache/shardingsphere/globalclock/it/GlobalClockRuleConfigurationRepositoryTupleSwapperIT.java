@@ -42,6 +42,6 @@ class GlobalClockRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTup
     
     private void assertGlobalClock(final RepositoryTuple actual) {
         assertThat(actual.getKey(), is("global_clock"));
-        assertThat(actual.getValue(), is("enabled: true\nprops:\n  bar: bar_value\n  foo: foo_value\nprovider: FIXTURE\ntype: FIXTURE\n"));
+        assertThat(actual.getValue(), is("enabled: true\nprops:\n  k0: v0\n  k1: v1\nprovider: FIXTURE\ntype: FIXTURE\n"));
     }
 }
