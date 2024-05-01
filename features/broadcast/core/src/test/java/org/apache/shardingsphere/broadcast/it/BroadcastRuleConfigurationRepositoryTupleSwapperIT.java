@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.yaml;
+package org.apache.shardingsphere.broadcast.it;
 
 import org.apache.shardingsphere.broadcast.yaml.swapper.BroadcastRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
@@ -30,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class BroadcastRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
     
     BroadcastRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/broadcast-rule.yaml", new BroadcastRuleConfigurationRepositoryTupleSwapper());
+        super("yaml/broadcast-rule.yaml", new BroadcastRuleConfigurationRepositoryTupleSwapper(), false);
     }
     
     @Override
