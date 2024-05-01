@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.path.root;
+package org.apache.shardingsphere.mode.path.rule.root;
 
 import lombok.Getter;
 

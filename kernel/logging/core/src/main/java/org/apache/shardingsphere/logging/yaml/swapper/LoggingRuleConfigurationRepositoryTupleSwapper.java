@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.logging.yaml.swapper;
 
-import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
+import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.logging.constant.LoggingOrder;

@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.converter;
+package org.apache.shardingsphere.mode.path;
 
-import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

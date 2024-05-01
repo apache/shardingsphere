@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.metadata.nodepath;
 
-import org.apache.shardingsphere.mode.path.RuleNodePath;
+import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
 import java.util.Arrays;

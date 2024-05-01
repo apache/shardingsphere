@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.path;
+package org.apache.shardingsphere.mode.path.rule;
 
-import org.apache.shardingsphere.mode.path.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.mode.path.item.UniqueRuleItemNodePath;
+import org.apache.shardingsphere.mode.path.rule.item.NamedRuleItemNodePath;
+import org.apache.shardingsphere.mode.path.rule.item.UniqueRuleItemNodePath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
