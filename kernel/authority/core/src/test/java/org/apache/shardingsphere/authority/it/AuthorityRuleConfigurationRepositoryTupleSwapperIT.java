@@ -43,6 +43,6 @@ class AuthorityRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTuple
     private void assertAuthority(final RepositoryTuple actual) {
         assertThat(actual.getKey(), is("authority"));
         assertThat(actual.getValue(), is("authenticators:\n  fixture:\n    type: FIXTURE\ndefaultAuthenticator: fixture\nprivilege:\n  type: ALL_PERMITTED\n"
-                + "users:\n- admin: false\n  password: root\n  user: root@%\n- admin: false\n  password: sharding\n  user: sharding@\n"));
+                + "users:\n- admin: true\n  password: root\n  user: root@%\n- admin: false\n  password: sharding\n  user: sharding@\n"));
     }
 }

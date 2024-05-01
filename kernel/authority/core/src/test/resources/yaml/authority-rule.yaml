@@ -24,7 +24,7 @@ rules:
   privilege:
     type: ALL_PERMITTED
   users:
-  - admin: false
+  - admin: true
     password: root
     user: root@%
   - admin: false
