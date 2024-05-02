@@ -15,37 +15,23 @@
 # limitations under the License.
 #
 
-dataSources:
-  write_ds_0:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-  write_ds_0_read_0:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-  write_ds_0_read_1:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-  write_ds_1:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-  write_ds_1_read_0:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-  write_ds_1_read_1:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-
 rules:
 - !READWRITE_SPLITTING
   dataSourceGroups:
     ds_0:
-      writeDataSourceName: write_ds_0
-      readDataSourceNames:
-        - write_ds_0_read_0
-        - write_ds_0_read_1
       loadBalancerName: roundRobin
-    ds_1:
-      writeDataSourceName: write_ds_1
       readDataSourceNames:
-        - write_ds_1_read_0
-        - write_ds_1_read_1
+      - write_ds_0_read_0
+      - write_ds_0_read_1
+      writeDataSourceName: write_ds_0
+    ds_1:
       loadBalancerName: random
+      readDataSourceNames:
+      - write_ds_1_read_0
+      - write_ds_1_read_1
+      writeDataSourceName: write_ds_1
   loadBalancers:
-    roundRobin:
-      type: ROUND_ROBIN
     random:
       type: RANDOM
+    roundRobin:
+      type: ROUND_ROBIN
