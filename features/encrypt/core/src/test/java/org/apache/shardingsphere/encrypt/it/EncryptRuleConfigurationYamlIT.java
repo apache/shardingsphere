@@ -15,11 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.yaml;
+package org.apache.shardingsphere.encrypt.it;
 
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
+
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,22 +40,24 @@ class EncryptRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     }
     
     private void assertEncryptRule(final YamlEncryptRuleConfiguration actual) {
-        assertColumns(actual);
-        assertEncryptAlgorithm(actual);
+        assertTables(actual.getTables());
+        assertEncryptAlgorithm(actual.getEncryptors());
     }
     
-    private void assertColumns(final YamlEncryptRuleConfiguration actual) {
-        assertThat(actual.getTables().size(), is(1));
-        assertThat(actual.getTables().get("t_user").getColumns().size(), is(1));
-        assertThat(actual.getTables().get("t_user").getColumns().get("username").getCipher().getName(), is("username_cipher"));
-        assertThat(actual.getTables().get("t_user").getColumns().get("username").getCipher().getEncryptorName(), is("aes_encryptor"));
-        assertThat(actual.getTables().get("t_user").getColumns().get("username").getAssistedQuery().getName(), is("assisted_query_username"));
-        assertThat(actual.getTables().get("t_user").getColumns().get("username").getAssistedQuery().getEncryptorName(), is("assisted_encryptor"));
+    private void assertTables(final Map<String, YamlEncryptTableRuleConfiguration> actual) {
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get("t_user").getColumns().size(), is(1));
+        assertThat(actual.get("t_user").getColumns().get("username").getCipher().getName(), is("username_cipher"));
+        assertThat(actual.get("t_user").getColumns().get("username").getCipher().getEncryptorName(), is("aes_encryptor"));
+        assertThat(actual.get("t_user").getColumns().get("username").getAssistedQuery().getName(), is("assisted_query_username"));
+        assertThat(actual.get("t_user").getColumns().get("username").getAssistedQuery().getEncryptorName(), is("assisted_encryptor"));
     }
     
-    private void assertEncryptAlgorithm(final YamlEncryptRuleConfiguration actual) {
-        assertThat(actual.getEncryptors().size(), is(2));
-        assertThat(actual.getEncryptors().get("aes_encryptor").getType(), is("AES"));
-        assertThat(actual.getEncryptors().get("aes_encryptor").getProps().get("aes-key-value"), is("123456abc"));
+    private void assertEncryptAlgorithm(final Map<String, YamlAlgorithmConfiguration> actual) {
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get("aes_encryptor").getType(), is("AES"));
+        assertThat(actual.get("aes_encryptor").getProps().get("aes-key-value"), is("123456abc"));
+        assertThat(actual.get("assisted_encryptor").getType(), is("AES"));
+        assertThat(actual.get("assisted_encryptor").getProps().get("aes-key-value"), is("123456abc"));
     }
 }

@@ -48,8 +48,8 @@ public final class MaskRuleConfigurationRepositoryTupleSwapper implements Reposi
         for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getMaskAlgorithms().entrySet()) {
             result.add(new RepositoryTuple(ruleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
         }
-        for (Entry<String, YamlMaskTableRuleConfiguration> each : yamlRuleConfig.getTables().entrySet()) {
-            result.add(new RepositoryTuple(ruleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getPath(each.getKey()), YamlEngine.marshal(each.getValue())));
+        for (Entry<String, YamlMaskTableRuleConfiguration> entry : yamlRuleConfig.getTables().entrySet()) {
+            result.add(new RepositoryTuple(ruleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
         }
         return result;
     }
