@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.globalclock.type.hlc;
 
-import org.apache.shardingsphere.globalclock.core.provider.GlobalClockProvider;
+import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 
 /**
  * Hybrid logical clock provider.
