@@ -49,8 +49,8 @@ public final class EncryptRuleConfigurationRepositoryTupleSwapper implements Rep
         for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getEncryptors().entrySet()) {
             result.add(new RepositoryTuple(ruleNodePath.getNamedItem(EncryptRuleNodePathProvider.ENCRYPTORS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
         }
-        for (YamlEncryptTableRuleConfiguration each : yamlRuleConfig.getTables().values()) {
-            result.add(new RepositoryTuple(ruleNodePath.getNamedItem(EncryptRuleNodePathProvider.TABLES).getPath(each.getName()), YamlEngine.marshal(each)));
+        for (Entry<String, YamlEncryptTableRuleConfiguration> entry : yamlRuleConfig.getTables().entrySet()) {
+            result.add(new RepositoryTuple(ruleNodePath.getNamedItem(EncryptRuleNodePathProvider.TABLES).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
         }
         return result;
     }
