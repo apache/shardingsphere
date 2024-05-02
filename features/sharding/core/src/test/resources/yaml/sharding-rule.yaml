@@ -15,14 +15,6 @@
 # limitations under the License.
 #
 
-dataSources:
-  ds_0:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-  ds_1:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-  default_ds:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-
 rules:
 - !SHARDING
   tables:
@@ -60,17 +52,21 @@ rules:
           shardingColumn: order_id
           shardingAlgorithmName: core_standard_fixture
   bindingTables:
-    - t_order, t_order_item
-  defaultDatabaseStrategy: 
+  - t_order, t_order_item
+  - foo:t_order, t_order_item
+  defaultDatabaseStrategy:
     standard:
       shardingColumn: order_id
       shardingAlgorithmName: database_inline
   defaultTableStrategy: 
     none:
   defaultShardingColumn: order_id
+  defaultKeyGenerateStrategy:
+    column: id
+    keyGeneratorName: snowflake
   defaultAuditStrategy:
     auditorNames:
-      - sharding_key_required_auditor
+    - sharding_key_required_auditor
     allowHintDisable: true
 
   shardingAlgorithms:
@@ -103,6 +99,3 @@ rules:
       initialCapacity: 65536
       maximumSize: 262144
       softValues: true
-      
-props:
-  sql-show: true

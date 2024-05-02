@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml;
+package org.apache.shardingsphere.sharding.it;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheOptionsConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -38,7 +38,6 @@ class ShardingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
     @Override
     protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
-        assertDataSourceMap(actual);
         Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream()
                 .filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(optional -> (YamlShardingRuleConfiguration) optional);
         assertTrue(shardingRuleConfig.isPresent());
@@ -49,15 +48,7 @@ class ShardingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
         assertTOrderItem(shardingRuleConfig.get());
         assertBindingTable(shardingRuleConfig.get());
         assertShardingCache(shardingRuleConfig.get());
-        assertProps(actual);
         assertThat(shardingRuleConfig.get().getDefaultShardingColumn(), is("order_id"));
-    }
-    
-    private void assertDataSourceMap(final YamlRootConfiguration actual) {
-        assertThat(actual.getDataSources().size(), is(3));
-        assertTrue(actual.getDataSources().containsKey("ds_0"));
-        assertTrue(actual.getDataSources().containsKey("ds_1"));
-        assertTrue(actual.getDataSources().containsKey("default_ds"));
     }
     
     private void assertTUser(final YamlShardingRuleConfiguration actual) {
@@ -90,8 +81,9 @@ class ShardingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     }
     
     private void assertBindingTable(final YamlShardingRuleConfiguration actual) {
-        assertThat(actual.getBindingTables().size(), is(1));
-        assertThat(actual.getBindingTables().iterator().next(), is("t_order, t_order_item"));
+        assertThat(actual.getBindingTables().size(), is(2));
+        assertThat(new ArrayList<>(actual.getBindingTables()).get(0), is("t_order, t_order_item"));
+        assertThat(new ArrayList<>(actual.getBindingTables()).get(1), is("foo:t_order, t_order_item"));
     }
     
     private void assertShardingCache(final YamlShardingRuleConfiguration actual) {
@@ -101,10 +93,5 @@ class ShardingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
         assertThat(actualRouteCacheConfig.getInitialCapacity(), is(65536));
         assertThat(actualRouteCacheConfig.getMaximumSize(), is(262144));
         assertTrue(actualRouteCacheConfig.isSoftValues());
-    }
-    
-    private void assertProps(final YamlRootConfiguration actual) {
-        assertThat(actual.getProps().size(), is(1));
-        assertTrue((boolean) actual.getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()));
     }
 }
