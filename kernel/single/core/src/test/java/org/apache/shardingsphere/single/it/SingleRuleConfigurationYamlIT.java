@@ -15,20 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.yaml.config.swapper;
+package org.apache.shardingsphere.single.it;
 
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class SingleRuleConfigurationRepositoryTupleSwapperTest {
+class SingleRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    private final SingleRuleConfigurationRepositoryTupleSwapper swapper = new SingleRuleConfigurationRepositoryTupleSwapper();
+    SingleRuleConfigurationYamlIT() {
+        super("yaml/single-rule.yaml");
+    }
     
-    @Test
-    void assertSwapToRepositoryTuples() {
-        assertThat(swapper.swapToRepositoryTuples(new YamlSingleRuleConfiguration()).iterator().next().getKey(), is("tables"));
+    @Override
+    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
+        assertSingleRule((YamlSingleRuleConfiguration) actual.getRules().iterator().next());
+    }
+    
+    private void assertSingleRule(final YamlSingleRuleConfiguration actual) {
+        assertThat(actual.getTables(), is(Collections.singletonList("foo_tbl")));
+        assertThat(actual.getDefaultDataSource(), is("foo_ds"));
     }
 }
