@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.yaml;
+package org.apache.shardingsphere.shadow.it;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
@@ -37,7 +37,6 @@ class ShadowRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
     @Override
     protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
-        assertDataSourceMap(actual);
         Optional<YamlShadowRuleConfiguration> shadowRuleConfig = actual.getRules().stream()
                 .filter(each -> each instanceof YamlShadowRuleConfiguration).findFirst().map(optional -> (YamlShadowRuleConfiguration) optional);
         assertTrue(shadowRuleConfig.isPresent());
@@ -45,17 +44,12 @@ class ShadowRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
         assertTOrder(shadowRuleConfig.get());
         assertTOrderItem(shadowRuleConfig.get());
         assertTAddress(shadowRuleConfig.get());
+        assertThat(shadowRuleConfig.get().getDefaultShadowAlgorithmName(), is("sql-hint-algorithm"));
         assertThat(shadowRuleConfig.get().getShadowAlgorithms().size(), is(4));
         assertUserIdInsertMatchAlgorithm(shadowRuleConfig.get());
         assertUserIdUpdateMatchAlgorithm(shadowRuleConfig.get());
         assertUserIdSelectMatchAlgorithm(shadowRuleConfig.get());
         assertSqlHintAlgorithm(shadowRuleConfig.get());
-    }
-    
-    private void assertDataSourceMap(final YamlRootConfiguration actual) {
-        assertThat(actual.getDataSources().size(), is(2));
-        assertTrue(actual.getDataSources().containsKey("ds"));
-        assertTrue(actual.getDataSources().containsKey("shadow_ds"));
     }
     
     private void assertTOrder(final YamlShadowRuleConfiguration actual) {

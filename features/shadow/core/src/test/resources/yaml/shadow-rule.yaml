@@ -15,60 +15,55 @@
 # limitations under the License.
 #
 
-dataSources:
-  ds:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-  shadow_ds:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-
 rules:
 - !SHADOW
   dataSources:
     shadowDataSource:
       productionDataSourceName: ds
       shadowDataSourceName: ds_shadow
-  tables:
-    t_order:
-      dataSourceNames:
-        - shadowDataSource
-      shadowAlgorithmNames:
-        - user-id-insert-match-algorithm
-        - user-id-select-match-algorithm
-    t_order_item:
-      dataSourceNames:
-        - shadowDataSource
-      shadowAlgorithmNames:
-        - user-id-insert-match-algorithm
-        - user-id-update-match-algorithm
-        - user-id-select-match-algorithm
-    t_address:
-      dataSourceNames:
-        - shadowDataSource
-      shadowAlgorithmNames:
-        - user-id-insert-match-algorithm
-        - user-id-select-match-algorithm
-        - sql-hint-algorithm
+  defaultShadowAlgorithmName: sql-hint-algorithm
   shadowAlgorithms:
     user-id-insert-match-algorithm:
-      type: REGEX_MATCH
       props:
+        regex: '[1]'
+        column: user_id
         operation: insert
-        column: user_id
-        regex: "[1]"
+      type: REGEX_MATCH
     user-id-update-match-algorithm:
-      type: REGEX_MATCH
       props:
+        regex: '[1]'
+        column: user_id
         operation: update
-        column: user_id
-        regex: "[1]"
-    user-id-select-match-algorithm:
       type: REGEX_MATCH
+    user-id-select-match-algorithm:
       props:
-        operation: select
+        regex: '[1]'
         column: user_id
-        regex: "[1]"
+        operation: select
+      type: REGEX_MATCH
     sql-hint-algorithm:
-      type: SQL_HINT
       props:
         shadow: true
         foo: bar
+      type: SQL_HINT
+  tables:
+    t_order:
+      dataSourceNames:
+      - shadowDataSource
+      shadowAlgorithmNames:
+      - user-id-insert-match-algorithm
+      - user-id-select-match-algorithm
+    t_order_item:
+      dataSourceNames:
+      - shadowDataSource
+      shadowAlgorithmNames:
+      - user-id-insert-match-algorithm
+      - user-id-update-match-algorithm
+      - user-id-select-match-algorithm
+    t_address:
+      dataSourceNames:
+      - shadowDataSource
+      shadowAlgorithmNames:
+      - user-id-insert-match-algorithm
+      - user-id-select-match-algorithm
+      - sql-hint-algorithm
