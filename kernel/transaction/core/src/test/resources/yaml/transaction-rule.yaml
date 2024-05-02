@@ -18,7 +18,7 @@
 rules:
 - !TRANSACTION
   defaultType: XA
+  providerType: FIXTURE
   props:
     k0: v0
     k1: v1
-  providerType: FIXTURE

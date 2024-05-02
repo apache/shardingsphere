@@ -19,10 +19,10 @@ package org.apache.shardingsphere.authority.it;
 
 import org.apache.shardingsphere.authority.yaml.swapper.AuthorityRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,15 +34,8 @@ class AuthorityRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTuple
     }
     
     @Override
-    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples) {
+    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        Iterator<RepositoryTuple> iterator = actualRepositoryTuples.iterator();
-        assertAuthority(iterator.next());
-    }
-    
-    private void assertAuthority(final RepositoryTuple actual) {
-        assertThat(actual.getKey(), is("authority"));
-        assertThat(actual.getValue(), is("authenticators:\n  fixture:\n    type: FIXTURE\ndefaultAuthenticator: fixture\nprivilege:\n  type: ALL_PERMITTED\n"
-                + "users:\n- admin: true\n  password: root\n  user: root@%\n- admin: false\n  password: sharding\n  user: sharding@\n"));
+        assertRepositoryTuple(actualRepositoryTuples.iterator().next(), "authority", expectedYamlRuleConfig);
     }
 }

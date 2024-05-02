@@ -17,8 +17,8 @@
 
 rules:
 - !SQL_FEDERATION
+  sqlFederationEnabled: true
   allQueryUseSQLFederation: true
   executionPlanCache:
     initialCapacity: 128
     maximumSize: 1024
-  sqlFederationEnabled: true

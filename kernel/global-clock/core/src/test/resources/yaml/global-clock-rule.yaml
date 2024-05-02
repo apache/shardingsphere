@@ -17,9 +17,9 @@
 
 rules:
 - !GLOBAL_CLOCK
+  type: FIXTURE
+  provider: FIXTURE
   enabled: true
   props:
     k0: v0
     k1: v1
-  provider: FIXTURE
-  type: FIXTURE

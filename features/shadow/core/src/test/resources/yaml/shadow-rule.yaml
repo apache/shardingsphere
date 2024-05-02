@@ -21,49 +21,49 @@ rules:
     shadowDataSource:
       productionDataSourceName: ds
       shadowDataSourceName: ds_shadow
-  defaultShadowAlgorithmName: sql-hint-algorithm
+  tables:
+    t_order:
+      dataSourceNames:
+        - shadowDataSource
+      shadowAlgorithmNames:
+        - user-id-insert-match-algorithm
+        - user-id-select-match-algorithm
+    t_order_item:
+      dataSourceNames:
+        - shadowDataSource
+      shadowAlgorithmNames:
+        - user-id-insert-match-algorithm
+        - user-id-update-match-algorithm
+        - user-id-select-match-algorithm
+    t_address:
+      dataSourceNames:
+        - shadowDataSource
+      shadowAlgorithmNames:
+        - user-id-insert-match-algorithm
+        - user-id-select-match-algorithm
+        - sql-hint-algorithm
   shadowAlgorithms:
     user-id-insert-match-algorithm:
+      type: REGEX_MATCH
       props:
         regex: '[1]'
         column: user_id
         operation: insert
-      type: REGEX_MATCH
     user-id-update-match-algorithm:
+      type: REGEX_MATCH
       props:
         regex: '[1]'
         column: user_id
         operation: update
-      type: REGEX_MATCH
     user-id-select-match-algorithm:
+      type: REGEX_MATCH
       props:
         regex: '[1]'
         column: user_id
         operation: select
-      type: REGEX_MATCH
     sql-hint-algorithm:
+      type: SQL_HINT
       props:
         shadow: true
         foo: bar
-      type: SQL_HINT
-  tables:
-    t_order:
-      dataSourceNames:
-      - shadowDataSource
-      shadowAlgorithmNames:
-      - user-id-insert-match-algorithm
-      - user-id-select-match-algorithm
-    t_order_item:
-      dataSourceNames:
-      - shadowDataSource
-      shadowAlgorithmNames:
-      - user-id-insert-match-algorithm
-      - user-id-update-match-algorithm
-      - user-id-select-match-algorithm
-    t_address:
-      dataSourceNames:
-      - shadowDataSource
-      shadowAlgorithmNames:
-      - user-id-insert-match-algorithm
-      - user-id-select-match-algorithm
-      - sql-hint-algorithm
+  defaultShadowAlgorithmName: sql-hint-algorithm

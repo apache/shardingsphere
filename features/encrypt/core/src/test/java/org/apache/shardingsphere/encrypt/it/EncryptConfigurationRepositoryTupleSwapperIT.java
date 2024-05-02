@@ -17,13 +17,18 @@
 
 package org.apache.shardingsphere.encrypt.it;
 
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationRepositoryTupleSwapper;
+import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,23 +40,19 @@ class EncryptConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwappe
     }
     
     @Override
-    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples) {
+    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(3));
         List<RepositoryTuple> actual = new ArrayList<>(actualRepositoryTuples);
-        assertEncryptor(actual.subList(0, 2));
-        assertTable(actual.get(2));
+        assertEncryptors(actual.subList(0, 2), ((YamlEncryptRuleConfiguration) expectedYamlRuleConfig).getEncryptors());
+        assertTables(actual.get(2), ((YamlEncryptRuleConfiguration) expectedYamlRuleConfig).getTables());
     }
     
-    private void assertEncryptor(final List<RepositoryTuple> actual) {
-        assertThat(actual.get(0).getKey(), is("encryptors/aes_encryptor"));
-        assertThat(actual.get(0).getValue(), is("props:\n  aes-key-value: 123456abc\ntype: AES\n"));
-        assertThat(actual.get(1).getKey(), is("encryptors/assisted_encryptor"));
-        assertThat(actual.get(1).getValue(), is("props:\n  aes-key-value: 123456abc\ntype: AES\n"));
+    private void assertEncryptors(final List<RepositoryTuple> actual, final Map<String, YamlAlgorithmConfiguration> expectedEncryptors) {
+        assertRepositoryTuple(actual.get(0), "encryptors/aes_encryptor", expectedEncryptors.get("aes_encryptor"));
+        assertRepositoryTuple(actual.get(1), "encryptors/assisted_encryptor", expectedEncryptors.get("assisted_encryptor"));
     }
     
-    private void assertTable(final RepositoryTuple actual) {
-        assertThat(actual.getKey(), is("tables/t_user"));
-        assertThat(actual.getValue(), is("columns:\n  username:\n"
-                + "    assistedQuery:\n      encryptorName: assisted_encryptor\n      name: assisted_query_username\n    cipher:\n      encryptorName: aes_encryptor\n      name: username_cipher\n"));
+    private void assertTables(final RepositoryTuple actual, final Map<String, YamlEncryptTableRuleConfiguration> expectedTables) {
+        assertRepositoryTuple(actual, "tables/t_user", expectedTables.get("t_user"));
     }
 }

@@ -17,16 +17,16 @@
 
 rules:
 - !AUTHORITY
+  users:
+    - user: root@%
+      password: root
+      admin: true
+    - user: sharding@
+      password: sharding
+      admin: false
+  privilege:
+    type: ALL_PERMITTED
   authenticators:
     fixture:
       type: FIXTURE
   defaultAuthenticator: fixture
-  privilege:
-    type: ALL_PERMITTED
-  users:
-  - admin: true
-    password: root
-    user: root@%
-  - admin: false
-    password: sharding
-    user: sharding@

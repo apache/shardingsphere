@@ -17,22 +17,22 @@
 
 rules:
 - !ENCRYPT
-  encryptors:
-    aes_encryptor:
-      props:
-        aes-key-value: 123456abc
-      type: AES
-    assisted_encryptor:
-      props:
-        aes-key-value: 123456abc
-      type: AES
   tables:
     t_user:
       columns:
         username:
-          assistedQuery:
-            encryptorName: assisted_encryptor
-            name: assisted_query_username
           cipher:
-            encryptorName: aes_encryptor
             name: username_cipher
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_username
+            encryptorName: assisted_encryptor
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+    assisted_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc

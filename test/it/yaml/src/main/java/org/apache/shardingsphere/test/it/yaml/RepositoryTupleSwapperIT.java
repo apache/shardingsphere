@@ -30,6 +30,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -56,19 +57,29 @@ public abstract class RepositoryTupleSwapperIT {
         this.isGlobalRule = isGlobalRule;
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertSwapToRepositoryTuples() throws IOException {
-        assertRepositoryTuples(getRepositoryTuples());
+        YamlRuleConfiguration yamlRuleConfig = loadYamlRuleConfiguration();
+        assertRepositoryTuples((Collection<RepositoryTuple>) swapper.swapToRepositoryTuples(yamlRuleConfig), yamlRuleConfig);
     }
     
-    @SuppressWarnings("unchecked")
-    private Collection<RepositoryTuple> getRepositoryTuples() throws IOException {
+    private YamlRuleConfiguration loadYamlRuleConfiguration() throws IOException {
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(yamlFile, YamlRootConfiguration.class);
         assertThat(yamlRootConfig.getRules().size(), is(1));
-        return (Collection<RepositoryTuple>) swapper.swapToRepositoryTuples(yamlRootConfig.getRules().iterator().next());
+        return yamlRootConfig.getRules().iterator().next();
     }
     
-    protected abstract void assertRepositoryTuples(Collection<RepositoryTuple> actualRepositoryTuples);
+    protected abstract void assertRepositoryTuples(Collection<RepositoryTuple> actualRepositoryTuples, YamlRuleConfiguration expectedYamlRuleConfig);
+    
+    protected void assertRepositoryTuple(final RepositoryTuple actual, final String expectedKey, final Object expectedValue) {
+        assertThat(actual.getKey(), is(expectedKey));
+        assertThat(actual.getValue(), is(isSimpleObject(expectedValue) ? expectedValue : YamlEngine.marshal(expectedValue)));
+    }
+    
+    private boolean isSimpleObject(final Object expectedValue) {
+        return expectedValue instanceof Boolean || expectedValue instanceof Integer || expectedValue instanceof Long || expectedValue instanceof String;
+    }
     
     @Test
     void assertSwapToObject() throws IOException {
@@ -77,7 +88,9 @@ public abstract class RepositoryTupleSwapperIT {
     
     @SuppressWarnings("unchecked")
     private String getActualYamlContent() throws IOException {
-        Collection<RepositoryTuple> repositoryTuples = getRepositoryTuples().stream().map(each -> new RepositoryTuple(getRepositoryTupleKey(each), each.getValue())).collect(Collectors.toList());
+        YamlRuleConfiguration yamlRuleConfig = loadYamlRuleConfiguration();
+        Collection<RepositoryTuple> repositoryTuples = ((Collection<RepositoryTuple>) swapper.swapToRepositoryTuples(yamlRuleConfig)).stream()
+                .map(each -> new RepositoryTuple(getRepositoryTupleKey(each), each.getValue())).collect(Collectors.toList());
         Optional<YamlRuleConfiguration> actualYamlRuleConfig = swapper.swapToObject(repositoryTuples);
         assertTrue(actualYamlRuleConfig.isPresent());
         YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
@@ -92,6 +105,8 @@ public abstract class RepositoryTupleSwapperIT {
     }
     
     private String getExpectedYamlContent() throws IOException {
-        return Files.readAllLines(yamlFile.toPath()).stream().filter(each -> !each.contains("#") && !each.isEmpty()).collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator();
+        String content = Files.readAllLines(yamlFile.toPath()).stream()
+                .filter(each -> !each.contains("#") && !each.isEmpty()).collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator();
+        return YamlEngine.marshal(YamlEngine.unmarshal(content, Map.class));
     }
 }

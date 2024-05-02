@@ -17,8 +17,8 @@
 
 rules:
 - !SQL_TRANSLATOR
+  type: FIXTURE
   props:
     k0: v0
     k1: v1
-  type: FIXTURE
   useOriginalSQLWhenTranslatingFailed: true

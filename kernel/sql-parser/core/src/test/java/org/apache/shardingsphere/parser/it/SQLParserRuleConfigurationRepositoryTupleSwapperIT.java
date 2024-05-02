@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.parser.it;
 
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.parser.yaml.swapper.SQLParserRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,14 +34,8 @@ class SQLParserRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTuple
     }
     
     @Override
-    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples) {
+    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        Iterator<RepositoryTuple> iterator = actualRepositoryTuples.iterator();
-        assertSQLParser(iterator.next());
-    }
-    
-    private void assertSQLParser(final RepositoryTuple actual) {
-        assertThat(actual.getKey(), is("sql_parser"));
-        assertThat(actual.getValue(), is("parseTreeCache:\n  initialCapacity: 128\n  maximumSize: 1024\nsqlStatementCache:\n  initialCapacity: 256\n  maximumSize: 4096\n"));
+        assertRepositoryTuple(actualRepositoryTuples.iterator().next(), "sql_parser", expectedYamlRuleConfig);
     }
 }
