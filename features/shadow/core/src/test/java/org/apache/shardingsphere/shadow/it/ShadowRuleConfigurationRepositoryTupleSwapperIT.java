@@ -17,13 +17,19 @@
 
 package org.apache.shardingsphere.shadow.it;
 
+import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,44 +41,33 @@ class ShadowRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwa
     }
     
     @Override
-    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples) {
+    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(9));
         List<RepositoryTuple> actual = new ArrayList<>(actualRepositoryTuples);
-        assertAlgorithms(actual.subList(0, 4));
-        assertDefaultAlgorithm(actual.get(4));
-        assertDataSources(actual.get(5));
-        assertTables(actual.subList(6, 9));
+        assertAlgorithms(actual.subList(0, 4), ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getShadowAlgorithms());
+        assertDefaultAlgorithm(actual.get(4), ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getDefaultShadowAlgorithmName());
+        assertDataSources(actual.get(5), ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getDataSources());
+        assertTables(actual.subList(6, 9), ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getTables());
     }
     
-    private void assertAlgorithms(final List<RepositoryTuple> actual) {
-        assertThat(actual.get(0).getKey(), is("algorithms/user-id-insert-match-algorithm"));
-        assertThat(actual.get(0).getValue(), is("props:\n  regex: '[1]'\n  column: user_id\n  operation: insert\ntype: REGEX_MATCH\n"));
-        assertThat(actual.get(1).getKey(), is("algorithms/user-id-update-match-algorithm"));
-        assertThat(actual.get(1).getValue(), is("props:\n  regex: '[1]'\n  column: user_id\n  operation: update\ntype: REGEX_MATCH\n"));
-        assertThat(actual.get(2).getKey(), is("algorithms/user-id-select-match-algorithm"));
-        assertThat(actual.get(2).getValue(), is("props:\n  regex: '[1]'\n  column: user_id\n  operation: select\ntype: REGEX_MATCH\n"));
-        assertThat(actual.get(3).getKey(), is("algorithms/sql-hint-algorithm"));
-        assertThat(actual.get(3).getValue(), is("props:\n  shadow: true\n  foo: bar\ntype: SQL_HINT\n"));
+    private void assertAlgorithms(final List<RepositoryTuple> actual, final Map<String, YamlAlgorithmConfiguration> expectedAlgorithms) {
+        assertRepositoryTuple(actual.get(0), "algorithms/user-id-insert-match-algorithm", expectedAlgorithms.get("user-id-insert-match-algorithm"));
+        assertRepositoryTuple(actual.get(1), "algorithms/user-id-update-match-algorithm", expectedAlgorithms.get("user-id-update-match-algorithm"));
+        assertRepositoryTuple(actual.get(2), "algorithms/user-id-select-match-algorithm", expectedAlgorithms.get("user-id-select-match-algorithm"));
+        assertRepositoryTuple(actual.get(3), "algorithms/sql-hint-algorithm", expectedAlgorithms.get("sql-hint-algorithm"));
     }
     
-    private void assertDefaultAlgorithm(final RepositoryTuple actual) {
-        assertThat(actual.getKey(), is("default_algorithm_name"));
-        assertThat(actual.getValue(), is("sql-hint-algorithm"));
+    private void assertDefaultAlgorithm(final RepositoryTuple actual, final String expectedDefaultShadowAlgorithmName) {
+        assertRepositoryTuple(actual, "default_algorithm_name", expectedDefaultShadowAlgorithmName);
     }
     
-    private void assertDataSources(final RepositoryTuple actual) {
-        assertThat(actual.getKey(), is("data_sources/shadowDataSource"));
-        assertThat(actual.getValue(), is("productionDataSourceName: ds\nshadowDataSourceName: ds_shadow\n"));
+    private void assertDataSources(final RepositoryTuple actual, final Map<String, YamlShadowDataSourceConfiguration> expectedDataSources) {
+        assertRepositoryTuple(actual, "data_sources/shadowDataSource", expectedDataSources.get("shadowDataSource"));
     }
     
-    private void assertTables(final List<RepositoryTuple> actual) {
-        assertThat(actual.get(0).getKey(), is("tables/t_order"));
-        assertThat(actual.get(0).getValue(), is("dataSourceNames:\n- shadowDataSource\nshadowAlgorithmNames:\n- user-id-insert-match-algorithm\n- user-id-select-match-algorithm\n"));
-        assertThat(actual.get(1).getKey(), is("tables/t_order_item"));
-        assertThat(actual.get(1).getValue(), is("dataSourceNames:\n- shadowDataSource\n"
-                + "shadowAlgorithmNames:\n- user-id-insert-match-algorithm\n- user-id-update-match-algorithm\n- user-id-select-match-algorithm\n"));
-        assertThat(actual.get(2).getKey(), is("tables/t_address"));
-        assertThat(actual.get(2).getValue(), is("dataSourceNames:\n- shadowDataSource\n"
-                + "shadowAlgorithmNames:\n- user-id-insert-match-algorithm\n- user-id-select-match-algorithm\n- sql-hint-algorithm\n"));
+    private void assertTables(final List<RepositoryTuple> actual, final Map<String, YamlShadowTableConfiguration> expectedTables) {
+        assertRepositoryTuple(actual.get(0), "tables/t_order", expectedTables.get("t_order"));
+        assertRepositoryTuple(actual.get(1), "tables/t_order_item", expectedTables.get("t_order_item"));
+        assertRepositoryTuple(actual.get(2), "tables/t_address", expectedTables.get("t_address"));
     }
 }

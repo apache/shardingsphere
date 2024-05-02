@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.traffic.it;
 
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 import org.apache.shardingsphere.traffic.yaml.swapper.TrafficRuleConfigurationRepositoryTupleSwapper;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,15 +34,8 @@ class TrafficRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSw
     }
     
     @Override
-    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples) {
+    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        Iterator<RepositoryTuple> iterator = actualRepositoryTuples.iterator();
-        assertSQLParser(iterator.next());
-    }
-    
-    private void assertSQLParser(final RepositoryTuple actual) {
-        assertThat(actual.getKey(), is("traffic"));
-        assertThat(actual.getValue(), is("loadBalancers:\n  foo_load_balancers:\n    type: LOAD_BALANCER_FIXTURE\ntrafficAlgorithms:\n  foo_traffic:\n    type: TRAFFIC_FIXTURE\n"
-                + "trafficStrategies:\n  foo_strategy:\n    algorithmName: foo_traffic\n    labels:\n    - label_0\n    - label_1\n    loadBalancerName: foo_loadbalancer\n    name: foo_strategy\n"));
+        assertRepositoryTuple(actualRepositoryTuples.iterator().next(), "traffic", expectedYamlRuleConfig);
     }
 }

@@ -19,17 +19,17 @@ rules:
 - !READWRITE_SPLITTING
   dataSourceGroups:
     ds_0:
-      loadBalancerName: roundRobin
+      writeDataSourceName: write_ds_0
       readDataSourceNames:
       - write_ds_0_read_0
       - write_ds_0_read_1
-      writeDataSourceName: write_ds_0
+      loadBalancerName: roundRobin
     ds_1:
-      loadBalancerName: random
+      writeDataSourceName: write_ds_1
       readDataSourceNames:
       - write_ds_1_read_0
       - write_ds_1_read_1
-      writeDataSourceName: write_ds_1
+      loadBalancerName: random
   loadBalancers:
     random:
       type: RANDOM

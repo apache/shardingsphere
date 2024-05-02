@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.logging.it;
 
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.logging.yaml.swapper.LoggingRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,15 +34,8 @@ class LoggingRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSw
     }
     
     @Override
-    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples) {
+    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        Iterator<RepositoryTuple> iterator = actualRepositoryTuples.iterator();
-        assertLogging(iterator.next());
-    }
-    
-    private void assertLogging(final RepositoryTuple actual) {
-        assertThat(actual.getKey(), is("logging"));
-        assertThat(actual.getValue(), is("appenders:\n- appenderClass: foo_appender_class\n  appenderName: foo_appender\n  file: foo_file\n  pattern: sss\n"
-                + "loggers:\n- additivity: true\n  appenderName: foo_appender\n  level: INFO\n  loggerName: foo_logger\n  props:\n    k0: v0\n    k1: v1\n"));
+        assertRepositoryTuple(actualRepositoryTuples.iterator().next(), "logging", expectedYamlRuleConfig);
     }
 }

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.broadcast.it;
 
+import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.yaml.swapper.BroadcastRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.Collection;
@@ -34,14 +36,13 @@ class BroadcastRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTuple
     }
     
     @Override
-    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples) {
+    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
         Iterator<RepositoryTuple> iterator = actualRepositoryTuples.iterator();
-        assertTables(iterator.next());
+        assertTables(iterator.next(), ((YamlBroadcastRuleConfiguration) expectedYamlRuleConfig).getTables());
     }
     
-    private void assertTables(final RepositoryTuple actual) {
-        assertThat(actual.getKey(), is("tables"));
-        assertThat(actual.getValue(), is("- foo_tbl\n- bar_tbl\n"));
+    private void assertTables(final RepositoryTuple actual, final Collection<String> expectedTables) {
+        assertRepositoryTuple(actual, "tables", expectedTables);
     }
 }

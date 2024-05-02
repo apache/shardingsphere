@@ -17,16 +17,16 @@
 
 rules:
 - !LOGGING
-  appenders:
-  - appenderClass: foo_appender_class
-    appenderName: foo_appender
-    file: foo_file
-    pattern: sss
   loggers:
-  - additivity: true
-    appenderName: foo_appender
+  - loggerName: foo_logger
     level: INFO
-    loggerName: foo_logger
+    additivity: true
+    appenderName: foo_appender
     props:
       k0: v0
       k1: v1
+  appenders:
+    - appenderName: foo_appender
+      appenderClass: foo_appender_class
+      pattern: sss
+      file: foo_file

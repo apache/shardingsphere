@@ -19,10 +19,10 @@ package org.apache.shardingsphere.globalclock.it;
 
 import org.apache.shardingsphere.globalclock.yaml.swapper.GlobalClockRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,14 +34,8 @@ class GlobalClockRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTup
     }
     
     @Override
-    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples) {
+    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        Iterator<RepositoryTuple> iterator = actualRepositoryTuples.iterator();
-        assertGlobalClock(iterator.next());
-    }
-    
-    private void assertGlobalClock(final RepositoryTuple actual) {
-        assertThat(actual.getKey(), is("global_clock"));
-        assertThat(actual.getValue(), is("enabled: true\nprops:\n  k0: v0\n  k1: v1\nprovider: FIXTURE\ntype: FIXTURE\n"));
+        assertRepositoryTuple(actualRepositoryTuples.iterator().next(), "global_clock", expectedYamlRuleConfig);
     }
 }

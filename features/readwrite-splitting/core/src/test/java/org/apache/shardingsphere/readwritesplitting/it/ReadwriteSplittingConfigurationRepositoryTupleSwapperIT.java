@@ -17,13 +17,18 @@
 
 package org.apache.shardingsphere.readwritesplitting.it;
 
+import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,24 +40,20 @@ class ReadwriteSplittingConfigurationRepositoryTupleSwapperIT extends Repository
     }
     
     @Override
-    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples) {
+    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(4));
         List<RepositoryTuple> actual = new ArrayList<>(actualRepositoryTuples);
-        assertLoadBalancers(actual.subList(0, 2));
-        assertDataSourceGroups(actual.subList(2, 4));
+        assertLoadBalancers(actual.subList(0, 2), ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getLoadBalancers());
+        assertDataSourceGroups(actual.subList(2, 4), ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getDataSourceGroups());
     }
     
-    private void assertLoadBalancers(final List<RepositoryTuple> actual) {
-        assertThat(actual.get(0).getKey(), is("load_balancers/random"));
-        assertThat(actual.get(0).getValue(), is("type: RANDOM\n"));
-        assertThat(actual.get(1).getKey(), is("load_balancers/roundRobin"));
-        assertThat(actual.get(1).getValue(), is("type: ROUND_ROBIN\n"));
+    private void assertLoadBalancers(final List<RepositoryTuple> actual, final Map<String, YamlAlgorithmConfiguration> expectedLoadBalancers) {
+        assertRepositoryTuple(actual.get(0), "load_balancers/random", expectedLoadBalancers.get("random"));
+        assertRepositoryTuple(actual.get(1), "load_balancers/roundRobin", expectedLoadBalancers.get("roundRobin"));
     }
     
-    private void assertDataSourceGroups(final List<RepositoryTuple> actual) {
-        assertThat(actual.get(0).getKey(), is("data_sources/ds_0"));
-        assertThat(actual.get(0).getValue(), is("loadBalancerName: roundRobin\nreadDataSourceNames:\n- write_ds_0_read_0\n- write_ds_0_read_1\nwriteDataSourceName: write_ds_0\n"));
-        assertThat(actual.get(1).getKey(), is("data_sources/ds_1"));
-        assertThat(actual.get(1).getValue(), is("loadBalancerName: random\nreadDataSourceNames:\n- write_ds_1_read_0\n- write_ds_1_read_1\nwriteDataSourceName: write_ds_1\n"));
+    private void assertDataSourceGroups(final List<RepositoryTuple> actual, final Map<String, YamlReadwriteSplittingDataSourceGroupRuleConfiguration> expectedDataSourceGroups) {
+        assertRepositoryTuple(actual.get(0), "data_sources/ds_0", expectedDataSourceGroups.get("ds_0"));
+        assertRepositoryTuple(actual.get(1), "data_sources/ds_1", expectedDataSourceGroups.get("ds_1"));
     }
 }

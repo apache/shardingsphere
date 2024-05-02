@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.sqlfederation.it;
 
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.yaml.swapper.SQLFederationRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,14 +34,8 @@ class SQLFederationRuleConfigurationRepositoryTupleSwapperIT extends RepositoryT
     }
     
     @Override
-    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples) {
+    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        Iterator<RepositoryTuple> iterator = actualRepositoryTuples.iterator();
-        assertSQLFederation(iterator.next());
-    }
-    
-    private void assertSQLFederation(final RepositoryTuple actual) {
-        assertThat(actual.getKey(), is("sql_federation"));
-        assertThat(actual.getValue(), is("allQueryUseSQLFederation: true\nexecutionPlanCache:\n  initialCapacity: 128\n  maximumSize: 1024\nsqlFederationEnabled: true\n"));
+        assertRepositoryTuple(actualRepositoryTuples.iterator().next(), "sql_federation", expectedYamlRuleConfig);
     }
 }

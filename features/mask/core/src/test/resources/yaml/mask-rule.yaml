@@ -17,15 +17,6 @@
 
 rules:
 - !MASK
-  maskAlgorithms:
-    keep_first_n_last_m_mask:
-      props:
-        first-n: 3
-        replace-char: '*'
-        last-m: 4
-      type: KEEP_FIRST_N_LAST_M
-    md5_mask:
-      type: MD5
   tables:
     t_user:
       columns:
@@ -33,3 +24,12 @@ rules:
           maskAlgorithm: keep_first_n_last_m_mask
         password:
           maskAlgorithm: md5_mask
+  maskAlgorithms:
+    keep_first_n_last_m_mask:
+      type: KEEP_FIRST_N_LAST_M
+      props:
+        first-n: 3
+        replace-char: '*'
+        last-m: 4
+    md5_mask:
+      type: MD5

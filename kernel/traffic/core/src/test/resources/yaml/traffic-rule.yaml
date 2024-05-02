@@ -17,17 +17,17 @@
 
 rules:
 - !TRAFFIC
+  trafficStrategies:
+    foo_strategy:
+      name: foo_strategy
+      labels:
+        - label_0
+        - label_1
+      algorithmName: foo_traffic
+      loadBalancerName: foo_loadbalancer
   loadBalancers:
     foo_load_balancers:
       type: LOAD_BALANCER_FIXTURE
   trafficAlgorithms:
     foo_traffic:
       type: TRAFFIC_FIXTURE
-  trafficStrategies:
-    foo_strategy:
-      algorithmName: foo_traffic
-      labels:
-      - label_0
-      - label_1
-      loadBalancerName: foo_loadbalancer
-      name: foo_strategy

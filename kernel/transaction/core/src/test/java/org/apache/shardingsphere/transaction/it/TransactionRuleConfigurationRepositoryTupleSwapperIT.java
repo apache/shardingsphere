@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.transaction.it;
 
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 import org.apache.shardingsphere.transaction.yaml.swapper.TransactionRuleConfigurationRepositoryTupleSwapper;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,14 +34,8 @@ class TransactionRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTup
     }
     
     @Override
-    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples) {
+    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        Iterator<RepositoryTuple> iterator = actualRepositoryTuples.iterator();
-        assertSQLParser(iterator.next());
-    }
-    
-    private void assertSQLParser(final RepositoryTuple actual) {
-        assertThat(actual.getKey(), is("transaction"));
-        assertThat(actual.getValue(), is("defaultType: XA\nprops:\n  k0: v0\n  k1: v1\nproviderType: FIXTURE\n"));
+        assertRepositoryTuple(actualRepositoryTuples.iterator().next(), "transaction", expectedYamlRuleConfig);
     }
 }

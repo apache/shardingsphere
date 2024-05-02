@@ -17,6 +17,6 @@
 
 rules:
 - !SINGLE
-  defaultDataSource: foo_ds
   tables:
   - foo_tbl
+  defaultDataSource: foo_ds
