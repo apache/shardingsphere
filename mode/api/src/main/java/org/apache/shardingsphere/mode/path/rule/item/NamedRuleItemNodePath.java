@@ -28,9 +28,9 @@ import java.util.regex.Pattern;
  */
 public final class NamedRuleItemNodePath {
     
-    private static final String NAME = "/(\\w+)/versions/\\d+$";
+    private static final String NAME = "/([\\w\\-]+)/versions/\\d+$";
     
-    private static final String ACTIVE_VERSION = "/(\\w+)/active_version$";
+    private static final String ACTIVE_VERSION = "/([\\w\\-]+)/active_version$";
     
     private final String type;
     
