@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 import org.apache.shardingsphere.transaction.yaml.swapper.TransactionRuleConfigurationRepositoryTupleSwapper;
 
-import java.util.Collection;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,8 +34,8 @@ class TransactionRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTup
     }
     
     @Override
-    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
+    protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        assertRepositoryTuple(actualRepositoryTuples.iterator().next(), "transaction", expectedYamlRuleConfig);
+        assertRepositoryTuple(actualRepositoryTuples.get(0), "transaction", expectedYamlRuleConfig);
     }
 }
