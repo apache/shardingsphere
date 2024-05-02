@@ -23,8 +23,7 @@ import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,13 +35,8 @@ class BroadcastRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTuple
     }
     
     @Override
-    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
+    protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        Iterator<RepositoryTuple> iterator = actualRepositoryTuples.iterator();
-        assertTables(iterator.next(), ((YamlBroadcastRuleConfiguration) expectedYamlRuleConfig).getTables());
-    }
-    
-    private void assertTables(final RepositoryTuple actual, final Collection<String> expectedTables) {
-        assertRepositoryTuple(actual, "tables", expectedTables);
+        assertRepositoryTuple(actualRepositoryTuples.get(0), "tables", ((YamlBroadcastRuleConfiguration) expectedYamlRuleConfig).getTables());
     }
 }

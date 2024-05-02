@@ -28,8 +28,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,11 +59,11 @@ public abstract class RepositoryTupleSwapperIT {
         this.isGlobalRule = isGlobalRule;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     void assertSwapToRepositoryTuples() throws IOException {
         YamlRuleConfiguration yamlRuleConfig = loadYamlRuleConfiguration();
-        assertRepositoryTuples((Collection<RepositoryTuple>) swapper.swapToRepositoryTuples(yamlRuleConfig), yamlRuleConfig);
+        assertRepositoryTuples(new ArrayList<>(swapper.swapToRepositoryTuples(yamlRuleConfig)), yamlRuleConfig);
     }
     
     private YamlRuleConfiguration loadYamlRuleConfiguration() throws IOException {
@@ -70,7 +72,7 @@ public abstract class RepositoryTupleSwapperIT {
         return yamlRootConfig.getRules().iterator().next();
     }
     
-    protected abstract void assertRepositoryTuples(Collection<RepositoryTuple> actualRepositoryTuples, YamlRuleConfiguration expectedYamlRuleConfig);
+    protected abstract void assertRepositoryTuples(List<RepositoryTuple> actualRepositoryTuples, YamlRuleConfiguration expectedYamlRuleConfig);
     
     protected void assertRepositoryTuple(final RepositoryTuple actual, final String expectedKey, final Object expectedValue) {
         assertThat(actual.getKey(), is(expectedKey));

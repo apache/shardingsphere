@@ -17,18 +17,13 @@
 
 package org.apache.shardingsphere.mask.it;
 
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
-import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.swapper.MaskRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,19 +35,11 @@ class MaskConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT
     }
     
     @Override
-    protected void assertRepositoryTuples(final Collection<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
+    protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(3));
-        List<RepositoryTuple> actual = new ArrayList<>(actualRepositoryTuples);
-        assertMaskAlgorithms(actual.subList(0, 2), ((YamlMaskRuleConfiguration) expectedYamlRuleConfig).getMaskAlgorithms());
-        assertTable(actual.get(2), ((YamlMaskRuleConfiguration) expectedYamlRuleConfig).getTables());
-    }
-    
-    private void assertMaskAlgorithms(final List<RepositoryTuple> actual, final Map<String, YamlAlgorithmConfiguration> expectedMaskAlgorithms) {
-        assertRepositoryTuple(actual.get(0), "mask_algorithms/keep_first_n_last_m_mask", expectedMaskAlgorithms.get("keep_first_n_last_m_mask"));
-        assertRepositoryTuple(actual.get(1), "mask_algorithms/md5_mask", expectedMaskAlgorithms.get("md5_mask"));
-    }
-    
-    private void assertTable(final RepositoryTuple actual, final Map<String, YamlMaskTableRuleConfiguration> expectedTables) {
-        assertRepositoryTuple(actual, "tables/t_user", expectedTables.get("t_user"));
+        assertRepositoryTuple(actualRepositoryTuples.get(0),
+                "mask_algorithms/keep_first_n_last_m_mask", ((YamlMaskRuleConfiguration) expectedYamlRuleConfig).getMaskAlgorithms().get("keep_first_n_last_m_mask"));
+        assertRepositoryTuple(actualRepositoryTuples.get(1), "mask_algorithms/md5_mask", ((YamlMaskRuleConfiguration) expectedYamlRuleConfig).getMaskAlgorithms().get("md5_mask"));
+        assertRepositoryTuple(actualRepositoryTuples.get(2), "tables/t_user", ((YamlMaskRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_user"));
     }
 }
