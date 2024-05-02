@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.yaml;
+package org.apache.shardingsphere.readwritesplitting.it;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ReadwriteSplittingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
@@ -44,16 +42,12 @@ class ReadwriteSplittingRuleConfigurationYamlIT extends YamlRuleConfigurationIT 
     }
     
     private void assertReadwriteSplittingRuleForDs0(final YamlReadwriteSplittingRuleConfiguration actual) {
-        assertNotNull(actual.getDataSourceGroups().get("ds_0"));
-        YamlReadwriteSplittingDataSourceGroupRuleConfiguration config = actual.getDataSourceGroups().get("ds_0");
-        assertThat(config.getWriteDataSourceName(), is("write_ds_0"));
+        assertThat(actual.getDataSourceGroups().get("ds_0").getWriteDataSourceName(), is("write_ds_0"));
         assertThat(actual.getDataSourceGroups().get("ds_0").getLoadBalancerName(), is("roundRobin"));
     }
     
     private void assertReadwriteSplittingRuleForDs1(final YamlReadwriteSplittingRuleConfiguration actual) {
-        assertNotNull(actual.getDataSourceGroups().get("ds_1"));
-        YamlReadwriteSplittingDataSourceGroupRuleConfiguration config = actual.getDataSourceGroups().get("ds_1");
-        assertThat(config.getWriteDataSourceName(), is("write_ds_1"));
+        assertThat(actual.getDataSourceGroups().get("ds_1").getWriteDataSourceName(), is("write_ds_1"));
         assertThat(actual.getDataSourceGroups().get("ds_1").getLoadBalancerName(), is("random"));
     }
 }
