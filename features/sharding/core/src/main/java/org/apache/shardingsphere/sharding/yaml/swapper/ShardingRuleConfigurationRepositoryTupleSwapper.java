@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfigur
 import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableReferenceRuleConfigurationConverter;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -94,11 +95,12 @@ public final class ShardingRuleConfigurationRepositoryTupleSwapper implements Re
     }
     
     private void swapTableRules(final YamlShardingRuleConfiguration yamlRuleConfig, final Collection<RepositoryTuple> repositoryTuples) {
-        for (YamlTableRuleConfiguration each : yamlRuleConfig.getTables().values()) {
-            repositoryTuples.add(new RepositoryTuple(ruleNodePath.getNamedItem(ShardingRuleNodePathProvider.TABLES).getPath(each.getLogicTable()), YamlEngine.marshal(each)));
+        for (Entry<String, YamlTableRuleConfiguration> entry : yamlRuleConfig.getTables().entrySet()) {
+            repositoryTuples.add(new RepositoryTuple(ruleNodePath.getNamedItem(ShardingRuleNodePathProvider.TABLES).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
         }
-        for (YamlShardingAutoTableRuleConfiguration each : yamlRuleConfig.getAutoTables().values()) {
-            repositoryTuples.add(new RepositoryTuple(ruleNodePath.getNamedItem(ShardingRuleNodePathProvider.AUTO_TABLES).getPath(each.getLogicTable()), YamlEngine.marshal(each)));
+        for (Entry<String, YamlShardingAutoTableRuleConfiguration> entry : yamlRuleConfig.getAutoTables().entrySet()) {
+            repositoryTuples.add(
+                    new RepositoryTuple(ruleNodePath.getNamedItem(ShardingRuleNodePathProvider.AUTO_TABLES).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
         }
         for (String each : yamlRuleConfig.getBindingTables()) {
             repositoryTuples.add(new RepositoryTuple(ruleNodePath.getNamedItem(ShardingRuleNodePathProvider.BINDING_TABLES).getPath(getBindingGroupName(each)), each));
@@ -106,7 +108,7 @@ public final class ShardingRuleConfigurationRepositoryTupleSwapper implements Re
     }
     
     private String getBindingGroupName(final String bindingGroup) {
-        return bindingGroup.contains(":") ? bindingGroup.substring(0, bindingGroup.indexOf(":")) : bindingGroup;
+        return YamlShardingTableReferenceRuleConfigurationConverter.convertToObject(bindingGroup).getName();
     }
     
     @Override
