@@ -17,30 +17,14 @@
 
 package org.apache.shardingsphere.transaction.yaml.swapper;
 
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.transaction.constant.TransactionOrder;
 import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
-
-import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Transaction rule configuration repository tuple swapper.
  */
 public final class TransactionRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlTransactionRuleConfiguration> {
-    
-    @Override
-    public Optional<YamlTransactionRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        for (RepositoryTuple each : repositoryTuples) {
-            if (GlobalNodePath.getVersion(getRuleTypeName(), each.getKey()).isPresent()) {
-                return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlTransactionRuleConfiguration.class));
-            }
-        }
-        return Optional.empty();
-    }
     
     @Override
     public String getRuleTypeName() {

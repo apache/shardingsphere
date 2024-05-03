@@ -17,82 +17,14 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
-import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
-
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Sharding rule configuration repository tuple swapper.
  */
 public final class ShardingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlShardingRuleConfiguration> {
-    
-    private final RuleNodePath ruleNodePath = new ShardingRuleNodePathProvider().getRuleNodePath();
-    
-    @Override
-    public Optional<YamlShardingRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        Collection<RepositoryTuple> validRepositoryTuples = repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
-        if (validRepositoryTuples.isEmpty()) {
-            return Optional.empty();
-        }
-        YamlShardingRuleConfiguration yamlRuleConfig = new YamlShardingRuleConfiguration();
-        Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
-        Map<String, YamlShardingAutoTableRuleConfiguration> autoTables = new LinkedHashMap<>();
-        Collection<String> bindingTables = new LinkedList<>();
-        Map<String, YamlAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
-        Map<String, YamlAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
-        Map<String, YamlAlgorithmConfiguration> auditors = new LinkedHashMap<>();
-        for (RepositoryTuple each : validRepositoryTuples) {
-            ruleNodePath.getNamedItem(ShardingRuleNodePathProvider.TABLES).getName(each.getKey())
-                    .ifPresent(optional -> tables.put(optional, YamlEngine.unmarshal(each.getValue(), YamlTableRuleConfiguration.class)));
-            ruleNodePath.getNamedItem(ShardingRuleNodePathProvider.AUTO_TABLES).getName(each.getKey())
-                    .ifPresent(optional -> autoTables.put(optional, YamlEngine.unmarshal(each.getValue(), YamlShardingAutoTableRuleConfiguration.class)));
-            ruleNodePath.getNamedItem(ShardingRuleNodePathProvider.BINDING_TABLES).getName(each.getKey()).ifPresent(optional -> bindingTables.add(each.getValue()));
-            ruleNodePath.getNamedItem(ShardingRuleNodePathProvider.ALGORITHMS).getName(each.getKey())
-                    .ifPresent(optional -> shardingAlgorithms.put(optional, YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class)));
-            ruleNodePath.getNamedItem(ShardingRuleNodePathProvider.KEY_GENERATORS).getName(each.getKey())
-                    .ifPresent(optional -> keyGenerators.put(optional, YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class)));
-            ruleNodePath.getNamedItem(ShardingRuleNodePathProvider.AUDITORS).getName(each.getKey())
-                    .ifPresent(optional -> auditors.put(optional, YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class)));
-            if (ruleNodePath.getUniqueItem(ShardingRuleNodePathProvider.DEFAULT_DATABASE_STRATEGY).isValidatedPath(each.getKey())) {
-                yamlRuleConfig.setDefaultDatabaseStrategy(YamlEngine.unmarshal(each.getValue(), YamlShardingStrategyConfiguration.class));
-            } else if (ruleNodePath.getUniqueItem(ShardingRuleNodePathProvider.DEFAULT_TABLE_STRATEGY).isValidatedPath(each.getKey())) {
-                yamlRuleConfig.setDefaultTableStrategy(YamlEngine.unmarshal(each.getValue(), YamlShardingStrategyConfiguration.class));
-            } else if (ruleNodePath.getUniqueItem(ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY).isValidatedPath(each.getKey())) {
-                yamlRuleConfig.setDefaultKeyGenerateStrategy(YamlEngine.unmarshal(each.getValue(), YamlKeyGenerateStrategyConfiguration.class));
-            } else if (ruleNodePath.getUniqueItem(ShardingRuleNodePathProvider.DEFAULT_AUDIT_STRATEGY).isValidatedPath(each.getKey())) {
-                yamlRuleConfig.setDefaultAuditStrategy(YamlEngine.unmarshal(each.getValue(), YamlShardingAuditStrategyConfiguration.class));
-            } else if (ruleNodePath.getUniqueItem(ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN).isValidatedPath(each.getKey())) {
-                yamlRuleConfig.setDefaultShardingColumn(each.getValue());
-            } else if (ruleNodePath.getUniqueItem(ShardingRuleNodePathProvider.SHARDING_CACHE).isValidatedPath(each.getKey())) {
-                yamlRuleConfig.setShardingCache(YamlEngine.unmarshal(each.getValue(), YamlShardingCacheConfiguration.class));
-            }
-        }
-        yamlRuleConfig.setTables(tables);
-        yamlRuleConfig.setAutoTables(autoTables);
-        yamlRuleConfig.setBindingTables(bindingTables);
-        yamlRuleConfig.setShardingAlgorithms(shardingAlgorithms);
-        yamlRuleConfig.setKeyGenerators(keyGenerators);
-        yamlRuleConfig.setAuditors(auditors);
-        return Optional.of(yamlRuleConfig);
-    }
     
     @Override
     public String getRuleTypeName() {

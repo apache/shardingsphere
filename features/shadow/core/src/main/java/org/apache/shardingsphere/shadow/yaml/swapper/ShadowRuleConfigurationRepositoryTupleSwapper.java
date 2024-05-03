@@ -17,57 +17,14 @@
 
 package org.apache.shardingsphere.shadow.yaml.swapper;
 
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
-import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
-
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Shadow rule configuration repository tuple swapper.
  */
 public final class ShadowRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlShadowRuleConfiguration> {
-    
-    private final RuleNodePath ruleNodePath = new ShadowRuleNodePathProvider().getRuleNodePath();
-    
-    @Override
-    public Optional<YamlShadowRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        List<RepositoryTuple> validRepositoryTuples = repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
-        if (validRepositoryTuples.isEmpty()) {
-            return Optional.empty();
-        }
-        YamlShadowRuleConfiguration yamlRuleConfig = new YamlShadowRuleConfiguration();
-        Map<String, YamlShadowDataSourceConfiguration> dataSources = new LinkedHashMap<>();
-        Map<String, YamlShadowTableConfiguration> tables = new LinkedHashMap<>();
-        Map<String, YamlAlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
-        for (RepositoryTuple each : validRepositoryTuples) {
-            ruleNodePath.getNamedItem(ShadowRuleNodePathProvider.DATA_SOURCES).getName(each.getKey())
-                    .ifPresent(optional -> dataSources.put(optional, YamlEngine.unmarshal(each.getValue(), YamlShadowDataSourceConfiguration.class)));
-            ruleNodePath.getNamedItem(ShadowRuleNodePathProvider.TABLES).getName(each.getKey())
-                    .ifPresent(optional -> tables.put(optional, YamlEngine.unmarshal(each.getValue(), YamlShadowTableConfiguration.class)));
-            ruleNodePath.getNamedItem(ShadowRuleNodePathProvider.ALGORITHMS).getName(each.getKey())
-                    .ifPresent(optional -> shadowAlgorithms.put(optional, YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class)));
-            if (ruleNodePath.getUniqueItem(ShadowRuleNodePathProvider.DEFAULT_ALGORITHM).isValidatedPath(each.getKey())) {
-                yamlRuleConfig.setDefaultShadowAlgorithmName(each.getValue());
-            }
-        }
-        yamlRuleConfig.setDataSources(dataSources);
-        yamlRuleConfig.setTables(tables);
-        yamlRuleConfig.setShadowAlgorithms(shadowAlgorithms);
-        return Optional.of(yamlRuleConfig);
-    }
     
     @Override
     public String getRuleTypeName() {

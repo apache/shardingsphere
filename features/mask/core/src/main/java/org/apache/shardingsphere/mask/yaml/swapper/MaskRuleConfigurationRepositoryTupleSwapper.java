@@ -17,48 +17,14 @@
 
 package org.apache.shardingsphere.mask.yaml.swapper;
 
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mask.constant.MaskOrder;
-import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
 import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
-import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
-import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
-
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Mask rule configuration repository tuple swapper.
  */
 public final class MaskRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlMaskRuleConfiguration> {
-    
-    private final RuleNodePath ruleNodePath = new MaskRuleNodePathProvider().getRuleNodePath();
-    
-    @Override
-    public Optional<YamlMaskRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        Collection<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
-        if (validTuples.isEmpty()) {
-            return Optional.empty();
-        }
-        YamlMaskRuleConfiguration yamlRuleConfig = new YamlMaskRuleConfiguration();
-        Map<String, YamlMaskTableRuleConfiguration> tables = new LinkedHashMap<>();
-        Map<String, YamlAlgorithmConfiguration> maskAlgorithms = new LinkedHashMap<>();
-        for (RepositoryTuple each : validTuples) {
-            ruleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getName(each.getKey())
-                    .ifPresent(optional -> tables.put(optional, YamlEngine.unmarshal(each.getValue(), YamlMaskTableRuleConfiguration.class)));
-            ruleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getName(each.getKey())
-                    .ifPresent(optional -> maskAlgorithms.put(optional, YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class)));
-        }
-        yamlRuleConfig.setTables(tables);
-        yamlRuleConfig.setMaskAlgorithms(maskAlgorithms);
-        return Optional.of(yamlRuleConfig);
-    }
     
     @Override
     public String getRuleTypeName() {

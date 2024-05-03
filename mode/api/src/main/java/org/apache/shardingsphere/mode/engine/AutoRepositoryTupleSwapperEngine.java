@@ -34,6 +34,7 @@ import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -100,10 +101,7 @@ public final class AutoRepositoryTupleSwapperEngine {
             }
             each.setAccessible(isAccessible);
         }
-        if (!result.isEmpty()) {
-            return result;
-        }
-        return Collections.emptyList();
+        return result;
     }
     
     // TODO 修改 RuleNodePathProvider 为 TypedSPI
@@ -180,8 +178,8 @@ public final class AutoRepositoryTupleSwapperEngine {
                 if (null != tupleKeyNameGenerator && fieldValue instanceof Collection) {
                     ruleNodePath.getNamedItem(persistField.value()).getName(each.getKey()).ifPresent(optional -> ((Collection) fieldValue).add(each.getValue()));
                 } else if (fieldValue instanceof Map) {
-                    ruleNodePath.getNamedItem(persistField.value()).getName(each.getKey())
-                            .ifPresent(optional -> ((Map) fieldValue).put(optional, YamlEngine.unmarshal(each.getValue(), fieldValue.getClass())));
+                    Class<?> valueClass = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[1];
+                    ruleNodePath.getNamedItem(persistField.value()).getName(each.getKey()).ifPresent(optional -> ((Map) fieldValue).put(optional, YamlEngine.unmarshal(each.getValue(), valueClass)));
                 } else if (fieldValue instanceof Collection && !((Collection) fieldValue).isEmpty()) {
                     if (ruleNodePath.getUniqueItem(persistField.value()).isValidatedPath(each.getKey())) {
                         field.set(yamlRuleConfig, each.getValue());

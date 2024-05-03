@@ -17,34 +17,14 @@
 
 package org.apache.shardingsphere.single.yaml.config.swapper;
 
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
-import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.single.constant.SingleOrder;
-import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
-
-import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Single rule configuration repository tuple swapper.
  */
 public final class SingleRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlSingleRuleConfiguration> {
-    
-    private final RuleNodePath ruleNodePath = new SingleRuleNodePathProvider().getRuleNodePath();
-    
-    @Override
-    public Optional<YamlSingleRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        for (RepositoryTuple each : repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList())) {
-            if (ruleNodePath.getUniqueItem(SingleRuleNodePathProvider.TABLES).isValidatedPath(each.getKey())) {
-                return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class));
-            }
-        }
-        return Optional.empty();
-    }
     
     @Override
     public String getRuleTypeName() {
