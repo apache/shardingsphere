@@ -19,12 +19,9 @@ package org.apache.shardingsphere.metadata.persist.service.config;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterRuleEntity;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterPersistType;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;
@@ -36,26 +33,6 @@ import java.util.Optional;
  * Repository tuple swapper engine.
  */
 public final class RepositoryTupleSwapperEngine {
-    
-    /**
-     * Swap to repository tuples.
-     *
-     * @param yamlRuleConfig YAML rule configuration to be swapped
-     * @return repository tuples
-     */
-    @SuppressWarnings("rawtypes")
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlRuleConfiguration yamlRuleConfig) {
-        RepositoryTupleSwapper repositoryTupleSwapper = OrderedSPILoader.getServices(RepositoryTupleSwapper.class, Collections.singleton(yamlRuleConfig)).get(yamlRuleConfig);
-        RegistryCenterRuleEntity entity = yamlRuleConfig.getClass().getAnnotation(RegistryCenterRuleEntity.class);
-        if (null == entity) {
-            return Collections.emptyList();
-        }
-        RegistryCenterPersistType persistType = yamlRuleConfig.getClass().getAnnotation(RegistryCenterPersistType.class);
-        if (null != persistType) {
-            return Collections.singleton(new RepositoryTuple(repositoryTupleSwapper.getRuleTypeName(), YamlEngine.marshal(yamlRuleConfig)));
-        }
-        return repositoryTupleSwapper.swapToRepositoryTuples(yamlRuleConfig);
-    }
     
     /**
      * Swap to rule configurations.

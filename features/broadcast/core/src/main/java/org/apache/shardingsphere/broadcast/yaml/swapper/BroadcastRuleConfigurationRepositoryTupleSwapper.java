@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,15 +36,6 @@ import java.util.stream.Collectors;
 public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlBroadcastRuleConfiguration> {
     
     private final RuleNodePath ruleNodePath = new BroadcastRuleNodePathProvider().getRuleNodePath();
-    
-    @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlBroadcastRuleConfiguration yamlRuleConfig) {
-        Collection<RepositoryTuple> result = new LinkedList<>();
-        if (!yamlRuleConfig.getTables().isEmpty()) {
-            result.add(new RepositoryTuple(ruleNodePath.getUniqueItem(BroadcastRuleNodePathProvider.TABLES).getPath(), YamlEngine.marshal(yamlRuleConfig.getTables())));
-        }
-        return result;
-    }
     
     @SuppressWarnings("unchecked")
     @Override

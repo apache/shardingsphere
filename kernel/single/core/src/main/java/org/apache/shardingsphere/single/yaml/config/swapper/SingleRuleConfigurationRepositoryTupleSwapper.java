@@ -26,7 +26,6 @@ import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProv
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,11 +35,6 @@ import java.util.stream.Collectors;
 public final class SingleRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlSingleRuleConfiguration> {
     
     private final RuleNodePath ruleNodePath = new SingleRuleNodePathProvider().getRuleNodePath();
-    
-    @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlSingleRuleConfiguration yamlRuleConfig) {
-        return Collections.singleton(new RepositoryTuple(SingleRuleNodePathProvider.TABLES, YamlEngine.marshal(yamlRuleConfig)));
-    }
     
     @Override
     public Optional<YamlSingleRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {

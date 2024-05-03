@@ -29,10 +29,8 @@ import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -42,18 +40,6 @@ import java.util.stream.Collectors;
 public final class EncryptRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlEncryptRuleConfiguration> {
     
     private final RuleNodePath ruleNodePath = new EncryptRuleNodePathProvider().getRuleNodePath();
-    
-    @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlEncryptRuleConfiguration yamlRuleConfig) {
-        Collection<RepositoryTuple> result = new LinkedList<>();
-        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getEncryptors().entrySet()) {
-            result.add(new RepositoryTuple(ruleNodePath.getNamedItem(EncryptRuleNodePathProvider.ENCRYPTORS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
-        }
-        for (Entry<String, YamlEncryptTableRuleConfiguration> entry : yamlRuleConfig.getTables().entrySet()) {
-            result.add(new RepositoryTuple(ruleNodePath.getNamedItem(EncryptRuleNodePathProvider.TABLES).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
-        }
-        return result;
-    }
     
     @Override
     public Optional<YamlEncryptRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {

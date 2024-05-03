@@ -29,10 +29,8 @@ import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwri
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -42,18 +40,6 @@ import java.util.stream.Collectors;
 public final class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlReadwriteSplittingRuleConfiguration> {
     
     private final RuleNodePath ruleNodePath = new ReadwriteSplittingRuleNodePathProvider().getRuleNodePath();
-    
-    @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlReadwriteSplittingRuleConfiguration yamlRuleConfig) {
-        Collection<RepositoryTuple> result = new LinkedList<>();
-        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getLoadBalancers().entrySet()) {
-            result.add(new RepositoryTuple(ruleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
-        }
-        for (Entry<String, YamlReadwriteSplittingDataSourceGroupRuleConfiguration> entry : yamlRuleConfig.getDataSourceGroups().entrySet()) {
-            result.add(new RepositoryTuple(ruleNodePath.getNamedItem(ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
-        }
-        return result;
-    }
     
     @Override
     public Optional<YamlReadwriteSplittingRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {

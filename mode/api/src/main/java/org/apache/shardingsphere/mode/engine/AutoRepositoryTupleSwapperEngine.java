@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.engine;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
-import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.Registry
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterRuleEntity;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterTupleKeyNameGenerator;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
-import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
 import java.lang.reflect.Field;
@@ -54,13 +52,11 @@ public final class AutoRepositoryTupleSwapperEngine {
      * @return repository tuples
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("rawtypes")
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlRuleConfiguration yamlRuleConfig) {
-        RepositoryTupleSwapper repositoryTupleSwapper = OrderedSPILoader.getServices(RepositoryTupleSwapper.class, Collections.singleton(yamlRuleConfig)).get(yamlRuleConfig);
         RegistryCenterRuleEntity entity = yamlRuleConfig.getClass().getAnnotation(RegistryCenterRuleEntity.class);
         if (null == entity) {
-            // TODO return Collections.emptyList();
-            return repositoryTupleSwapper.swapToRepositoryTuples(yamlRuleConfig);
+            return Collections.emptyList();
         }
         RegistryCenterPersistType persistType = yamlRuleConfig.getClass().getAnnotation(RegistryCenterPersistType.class);
         if (null != persistType) {
@@ -95,7 +91,7 @@ public final class AutoRepositoryTupleSwapperEngine {
                 result.add(new RepositoryTuple(ruleNodePath.getUniqueItem(persistField.value()).getPath(), fieldValue.toString()));
             } else if (fieldValue instanceof Boolean || fieldValue instanceof Integer || fieldValue instanceof Long) {
                 result.add(new RepositoryTuple(ruleNodePath.getUniqueItem(persistField.value()).getPath(), fieldValue.toString()));
-            } else {
+            } else if (null != fieldValue) {
                 result.add(new RepositoryTuple(ruleNodePath.getUniqueItem(persistField.value()).getPath(), YamlEngine.marshal(fieldValue)));
             }
             each.setAccessible(isAccessible);
@@ -103,7 +99,7 @@ public final class AutoRepositoryTupleSwapperEngine {
         if (!result.isEmpty()) {
             return result;
         }
-        return repositoryTupleSwapper.swapToRepositoryTuples(yamlRuleConfig);
+        return Collections.emptyList();
     }
     
     // TODO 修改 RuleNodePathProvider 为 TypedSPI

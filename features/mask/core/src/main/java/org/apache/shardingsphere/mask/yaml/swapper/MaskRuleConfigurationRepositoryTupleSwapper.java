@@ -29,9 +29,7 @@ import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -41,18 +39,6 @@ import java.util.stream.Collectors;
 public final class MaskRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlMaskRuleConfiguration> {
     
     private final RuleNodePath ruleNodePath = new MaskRuleNodePathProvider().getRuleNodePath();
-    
-    @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlMaskRuleConfiguration yamlRuleConfig) {
-        Collection<RepositoryTuple> result = new LinkedList<>();
-        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlRuleConfig.getMaskAlgorithms().entrySet()) {
-            result.add(new RepositoryTuple(ruleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
-        }
-        for (Entry<String, YamlMaskTableRuleConfiguration> entry : yamlRuleConfig.getTables().entrySet()) {
-            result.add(new RepositoryTuple(ruleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
-        }
-        return result;
-    }
     
     @Override
     public Optional<YamlMaskRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
