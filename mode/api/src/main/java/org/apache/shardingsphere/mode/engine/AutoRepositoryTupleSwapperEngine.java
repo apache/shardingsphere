@@ -71,9 +71,6 @@ public final class AutoRepositoryTupleSwapperEngine {
         RuleNodePath ruleNodePath = getRuleNodePathProvider(yamlRuleConfig).getRuleNodePath();
         for (Field each : getFields(yamlRuleConfig.getClass())) {
             RegistryCenterPersistField persistField = each.getAnnotation(RegistryCenterPersistField.class);
-            if (null == persistField) {
-                continue;
-            }
             boolean isAccessible = each.isAccessible();
             each.setAccessible(true);
             Object fieldValue = each.get(yamlRuleConfig);
@@ -168,7 +165,7 @@ public final class AutoRepositoryTupleSwapperEngine {
         for (RepositoryTuple each : validTuples) {
             for (Field field : getFields(yamlRuleConfigurationClass)) {
                 RegistryCenterPersistField persistField = field.getAnnotation(RegistryCenterPersistField.class);
-                if (null == persistField || Strings.isNullOrEmpty(each.getValue())) {
+                if (Strings.isNullOrEmpty(each.getValue())) {
                     continue;
                 }
                 final boolean isAccessible = field.isAccessible();
