@@ -20,9 +20,13 @@ package org.apache.shardingsphere.encrypt.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathProvider;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterPersistField;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterRuleEntity;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterRuleEntity.Type;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,12 +34,15 @@ import java.util.Map;
 /**
  * Encrypt rule configuration for YAML.
  */
+@RegistryCenterRuleEntity(Type.DATABASE)
 @Getter
 @Setter
 public final class YamlEncryptRuleConfiguration implements YamlRuleConfiguration {
     
+    @RegistryCenterPersistField(value = EncryptRuleNodePathProvider.TABLES, order = 100)
     private Map<String, YamlEncryptTableRuleConfiguration> tables = new LinkedHashMap<>();
     
+    @RegistryCenterPersistField(value = EncryptRuleNodePathProvider.ENCRYPTORS, order = 0)
     private Map<String, YamlAlgorithmConfiguration> encryptors = new LinkedHashMap<>();
     
     @Override

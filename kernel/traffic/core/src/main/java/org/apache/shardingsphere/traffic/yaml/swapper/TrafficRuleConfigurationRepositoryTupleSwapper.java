@@ -17,26 +17,20 @@
 
 package org.apache.shardingsphere.traffic.yaml.swapper;
 
-import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.traffic.constant.TrafficOrder;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
  * Traffic rule configuration repository tuple swapper.
  */
 public final class TrafficRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlTrafficRuleConfiguration> {
-    
-    @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlTrafficRuleConfiguration yamlRuleConfig) {
-        return Collections.singleton(new RepositoryTuple(getRuleTypeName(), YamlEngine.marshal(yamlRuleConfig)));
-    }
     
     @Override
     public Optional<YamlTrafficRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {

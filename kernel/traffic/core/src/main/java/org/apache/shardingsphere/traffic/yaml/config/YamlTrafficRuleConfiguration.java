@@ -21,14 +21,20 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterRuleEntity;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterPersistType;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterRuleEntity.Type;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+
 /**
  * Traffic rule configuration for YAML.
  */
+@RegistryCenterRuleEntity(Type.GLOBAL)
+@RegistryCenterPersistType("traffic")
 @Getter
 @Setter
 public final class YamlTrafficRuleConfiguration implements YamlGlobalRuleConfiguration {

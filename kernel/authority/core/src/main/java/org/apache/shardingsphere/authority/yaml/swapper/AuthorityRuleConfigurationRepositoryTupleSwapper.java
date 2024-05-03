@@ -19,24 +19,18 @@ package org.apache.shardingsphere.authority.yaml.swapper;
 
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
-import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
  * Authority rule configuration repository tuple swapper.
  */
 public final class AuthorityRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlAuthorityRuleConfiguration> {
-    
-    @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlAuthorityRuleConfiguration yamlRuleConfig) {
-        return Collections.singleton(new RepositoryTuple(getRuleTypeName(), YamlEngine.marshal(yamlRuleConfig)));
-    }
     
     @Override
     public Optional<YamlAuthorityRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {

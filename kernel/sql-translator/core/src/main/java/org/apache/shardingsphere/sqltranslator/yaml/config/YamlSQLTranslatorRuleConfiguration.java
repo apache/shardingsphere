@@ -20,6 +20,9 @@ package org.apache.shardingsphere.sqltranslator.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterRuleEntity;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterPersistType;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterRuleEntity.Type;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 
 import java.util.Properties;
@@ -27,6 +30,8 @@ import java.util.Properties;
 /**
  * SQL translator configuration for YAML.
  */
+@RegistryCenterRuleEntity(Type.GLOBAL)
+@RegistryCenterPersistType("sql_translator")
 @Getter
 @Setter
 public final class YamlSQLTranslatorRuleConfiguration implements YamlGlobalRuleConfiguration {

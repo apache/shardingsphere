@@ -53,12 +53,13 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
         repositoryTuplePersistService = new RepositoryTuplePersistService(repository);
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("rawtypes")
     @Override
     public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<YamlRuleConfiguration> yamlRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
+        RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
         for (Entry<YamlRuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, yamlRuleConfigs).entrySet()) {
-            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
+            Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
                 persistDataNodes(databaseName, entry.getValue().getRuleTypeName(), repositoryTuples);
             }
@@ -75,13 +76,14 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
         repository.delete(DatabaseRuleMetaDataNode.getDatabaseRuleNode(databaseName, name));
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("rawtypes")
     @Override
     public Collection<MetaDataVersion> persistConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
+        RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
         Collection<YamlRuleConfiguration> yamlRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
         for (Entry<YamlRuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, yamlRuleConfigs).entrySet()) {
-            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
+            Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
                 result.addAll(persistDataNodes(databaseName, entry.getValue().getRuleTypeName(), repositoryTuples));
             }
@@ -103,13 +105,14 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
         return result;
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("rawtypes")
     @Override
     public Collection<MetaDataVersion> deleteConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
+        RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
         Collection<YamlRuleConfiguration> yamlRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
         for (Entry<YamlRuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, yamlRuleConfigs).entrySet()) {
-            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
+            Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(entry.getKey());
             if (repositoryTuples.isEmpty()) {
                 continue;
             }

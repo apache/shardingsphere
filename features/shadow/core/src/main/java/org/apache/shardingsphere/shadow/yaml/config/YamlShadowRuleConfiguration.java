@@ -19,9 +19,13 @@ package org.apache.shardingsphere.shadow.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterPersistField;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterRuleEntity;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterRuleEntity.Type;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
 
@@ -31,16 +35,21 @@ import java.util.Map;
 /**
  * Shadow rule configuration.
  */
+@RegistryCenterRuleEntity(Type.DATABASE)
 @Getter
 @Setter
 public final class YamlShadowRuleConfiguration implements YamlRuleConfiguration {
     
+    @RegistryCenterPersistField(value = ShadowRuleNodePathProvider.DATA_SOURCES, order = 100)
     private Map<String, YamlShadowDataSourceConfiguration> dataSources = new LinkedHashMap<>();
     
+    @RegistryCenterPersistField(value = ShadowRuleNodePathProvider.TABLES, order = 101)
     private Map<String, YamlShadowTableConfiguration> tables = new LinkedHashMap<>();
     
+    @RegistryCenterPersistField(value = ShadowRuleNodePathProvider.ALGORITHMS, order = 0)
     private Map<String, YamlAlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
     
+    @RegistryCenterPersistField(value = ShadowRuleNodePathProvider.DEFAULT_ALGORITHM, order = 1)
     private String defaultShadowAlgorithmName;
     
     @Override

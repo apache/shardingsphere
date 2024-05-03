@@ -56,13 +56,14 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
         repositoryTuplePersistService = new RepositoryTuplePersistService(repository);
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("rawtypes")
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
+        RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
         Collection<YamlRuleConfiguration> yamlGlobalRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
         for (Entry<YamlRuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, yamlGlobalRuleConfigs).entrySet()) {
-            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
+            Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
                 metaDataVersions.addAll(persistTuples(repositoryTuples));
             }
