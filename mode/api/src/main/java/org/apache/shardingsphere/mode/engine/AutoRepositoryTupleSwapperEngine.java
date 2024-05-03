@@ -127,14 +127,14 @@ public final class AutoRepositoryTupleSwapperEngine {
         }
         RegistryCenterPersistType persistType = yamlRuleConfigurationClass.getAnnotation(RegistryCenterPersistType.class);
         if (null != persistType) {
-            return swapToObjectswapToObjectForTypePersist(repositoryTuples, yamlRuleConfigurationClass, persistType);
+            return swapToObjectForTypePersist(repositoryTuples, yamlRuleConfigurationClass, persistType);
         }
         return swapToObjectForFieldPersist(repositoryTuples, yamlRuleConfigurationClass);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private Optional<YamlRuleConfiguration> swapToObjectswapToObjectForTypePersist(final Collection<RepositoryTuple> repositoryTuples,
-                                                         final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass, final RegistryCenterPersistType persistType) {
+    private Optional<YamlRuleConfiguration> swapToObjectForTypePersist(final Collection<RepositoryTuple> repositoryTuples,
+                                                                       final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass, final RegistryCenterPersistType persistType) {
         if (YamlGlobalRuleConfiguration.class.isAssignableFrom(yamlRuleConfigurationClass)) {
             for (RepositoryTuple each : repositoryTuples) {
                 if (GlobalNodePath.getVersion(persistType.value(), each.getKey()).isPresent()) {
