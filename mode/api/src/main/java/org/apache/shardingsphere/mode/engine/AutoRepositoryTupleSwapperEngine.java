@@ -68,11 +68,8 @@ public final class AutoRepositoryTupleSwapperEngine {
             return Collections.singleton(new RepositoryTuple(persistType.value(), YamlEngine.marshal(yamlRuleConfig)));
         }
         Collection<RepositoryTuple> result = new LinkedList<>();
-        Collection<Field> fields = Arrays.stream(yamlRuleConfig.getClass().getDeclaredFields())
-                .filter(each -> null != each.getAnnotation(RegistryCenterPersistField.class))
-                .sorted(Comparator.comparingInt(o -> o.getAnnotation(RegistryCenterPersistField.class).order())).collect(Collectors.toList());
         RuleNodePath ruleNodePath = getRuleNodePathProvider(yamlRuleConfig).getRuleNodePath();
-        for (Field each : fields) {
+        for (Field each : getFields(yamlRuleConfig.getClass())) {
             RegistryCenterPersistField persistField = each.getAnnotation(RegistryCenterPersistField.class);
             if (null == persistField) {
                 continue;
@@ -112,6 +109,12 @@ public final class AutoRepositoryTupleSwapperEngine {
             }
         }
         throw new ServiceProviderNotFoundException(RuleNodePathProvider.class, yamlRuleConfig);
+    }
+    
+    private Collection<Field> getFields(final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass) {
+        return Arrays.stream(yamlRuleConfigurationClass.getDeclaredFields())
+                .filter(each -> null != each.getAnnotation(RegistryCenterPersistField.class))
+                .sorted(Comparator.comparingInt(o -> o.getAnnotation(RegistryCenterPersistField.class).order())).collect(Collectors.toList());
     }
     
     /**
@@ -162,11 +165,8 @@ public final class AutoRepositoryTupleSwapperEngine {
         if (validTuples.isEmpty()) {
             return Optional.empty();
         }
-        Collection<Field> fields = Arrays.stream(yamlRuleConfigurationClass.getDeclaredFields())
-                .filter(each -> null != each.getAnnotation(RegistryCenterPersistField.class))
-                .sorted(Comparator.comparingInt(o -> o.getAnnotation(RegistryCenterPersistField.class).order())).collect(Collectors.toList());
         for (RepositoryTuple each : validTuples) {
-            for (Field field : fields) {
+            for (Field field : getFields(yamlRuleConfigurationClass)) {
                 RegistryCenterPersistField persistField = field.getAnnotation(RegistryCenterPersistField.class);
                 if (null == persistField || Strings.isNullOrEmpty(each.getValue())) {
                     continue;
