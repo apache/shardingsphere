@@ -23,9 +23,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Registry center rule entity.
+ * Repository tuple entity.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RegistryCenterRuleEntity {
+public @interface RepositoryTupleEntity {
 }

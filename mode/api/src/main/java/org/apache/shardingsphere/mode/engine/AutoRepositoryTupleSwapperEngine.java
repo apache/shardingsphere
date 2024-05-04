@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfi
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterPersistField;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterPersistType;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterRuleEntity;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterTupleKeyNameGenerator;
 import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
@@ -58,7 +58,7 @@ public final class AutoRepositoryTupleSwapperEngine {
      * @return repository tuples
      */
     public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlRuleConfiguration yamlRuleConfig) {
-        if (null == yamlRuleConfig.getClass().getAnnotation(RegistryCenterRuleEntity.class)) {
+        if (null == yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)) {
             return Collections.emptyList();
         }
         RegistryCenterPersistType persistType = yamlRuleConfig.getClass().getAnnotation(RegistryCenterPersistType.class);
@@ -136,7 +136,7 @@ public final class AutoRepositoryTupleSwapperEngine {
      * @return swapped YAML rule configurations
      */
     public Optional<YamlRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples, final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass) {
-        if (null == yamlRuleConfigurationClass.getAnnotation(RegistryCenterRuleEntity.class)) {
+        if (null == yamlRuleConfigurationClass.getAnnotation(RepositoryTupleEntity.class)) {
             return Optional.empty();
         }
         RegistryCenterPersistType persistType = yamlRuleConfigurationClass.getAnnotation(RegistryCenterPersistType.class);

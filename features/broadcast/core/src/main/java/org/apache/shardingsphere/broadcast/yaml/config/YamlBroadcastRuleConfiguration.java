@@ -24,7 +24,7 @@ import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePa
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterPersistField;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterRuleEntity;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -32,7 +32,7 @@ import java.util.LinkedList;
 /**
  * Broadcast rule configuration for YAML.
  */
-@RegistryCenterRuleEntity
+@RepositoryTupleEntity
 @Getter
 @Setter
 public final class YamlBroadcastRuleConfiguration implements YamlRuleConfiguration {

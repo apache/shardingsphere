@@ -25,7 +25,7 @@ import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleCo
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterPersistField;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterRuleEntity;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * Encrypt rule configuration for YAML.
  */
-@RegistryCenterRuleEntity
+@RepositoryTupleEntity
 @Getter
 @Setter
 public final class YamlEncryptRuleConfiguration implements YamlRuleConfiguration {

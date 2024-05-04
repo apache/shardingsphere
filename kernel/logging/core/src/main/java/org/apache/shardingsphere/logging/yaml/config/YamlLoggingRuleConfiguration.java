@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterPersistType;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterRuleEntity;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 
 import java.util.Collection;
@@ -30,7 +30,7 @@ import java.util.LinkedList;
 /**
  * Logging rule configuration for YAML.
  */
-@RegistryCenterRuleEntity
+@RepositoryTupleEntity
 @RegistryCenterPersistType("logging")
 @Getter
 @Setter
