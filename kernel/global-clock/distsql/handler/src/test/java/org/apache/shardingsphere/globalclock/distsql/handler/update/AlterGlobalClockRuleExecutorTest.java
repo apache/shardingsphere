@@ -35,7 +35,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 class AlterGlobalClockRuleExecutorTest {
     
-    public DistSQLUpdateExecuteEngine engine;
+    private DistSQLUpdateExecuteEngine engine;
     
     @BeforeEach
     void setUp() {
