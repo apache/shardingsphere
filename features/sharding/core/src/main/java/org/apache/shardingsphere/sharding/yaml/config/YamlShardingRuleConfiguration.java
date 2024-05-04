@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigur
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterTupleKeyNameGenerator;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleKeyNameGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
@@ -54,7 +54,7 @@ public final class YamlShardingRuleConfiguration implements YamlRuleConfiguratio
     private Map<String, YamlShardingAutoTableRuleConfiguration> autoTables = new LinkedHashMap<>();
     
     @RepositoryTupleField(value = ShardingRuleNodePathProvider.BINDING_TABLES, order = 502)
-    @RegistryCenterTupleKeyNameGenerator(ShardingBindingTableRegistryCenterTupleKeyNameGenerator.class)
+    @RepositoryTupleKeyNameGenerator(ShardingBindingTableRegistryCenterTupleKeyNameGenerator.class)
     private Collection<String> bindingTables = new LinkedList<>();
     
     @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_DATABASE_STRATEGY, order = 100)

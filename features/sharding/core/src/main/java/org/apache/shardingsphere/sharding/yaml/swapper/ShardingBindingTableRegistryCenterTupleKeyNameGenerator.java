@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterTupleKeyNameGenerator;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleKeyNameGenerator;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableReferenceRuleConfigurationConverter;
 
 /**
  * Sharding binding table registry center tuple key name generator.
  */
-public final class ShardingBindingTableRegistryCenterTupleKeyNameGenerator implements RegistryCenterTupleKeyNameGenerator.Generator {
+public final class ShardingBindingTableRegistryCenterTupleKeyNameGenerator implements RepositoryTupleKeyNameGenerator.Generator {
     
     @Override
     public String generate(final Object tupleValue) {

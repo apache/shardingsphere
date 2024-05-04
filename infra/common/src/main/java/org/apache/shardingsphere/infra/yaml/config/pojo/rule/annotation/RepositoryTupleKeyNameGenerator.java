@@ -23,16 +23,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Registry center persist key name generator.
+ * Repository tuple key name generator.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RegistryCenterTupleKeyNameGenerator {
+public @interface RepositoryTupleKeyNameGenerator {
     
     /**
-     * Get persist path name.
+     * Get repository tuple key name generator class.
      * 
-     * @return persist path name
+     * @return repository tuple key name generator class
      */
     Class<? extends Generator> value();
     

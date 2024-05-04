@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleType;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterTupleKeyNameGenerator;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleKeyNameGenerator;
 import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
@@ -84,7 +84,7 @@ public final class AutoRepositoryTupleSwapperEngine {
             return Collections.emptyList();
         }
         RepositoryTupleField tupleField = field.getAnnotation(RepositoryTupleField.class);
-        RegistryCenterTupleKeyNameGenerator tupleKeyNameGenerator = field.getAnnotation(RegistryCenterTupleKeyNameGenerator.class);
+        RepositoryTupleKeyNameGenerator tupleKeyNameGenerator = field.getAnnotation(RepositoryTupleKeyNameGenerator.class);
         if (null != tupleKeyNameGenerator && fieldValue instanceof Collection) {
             Collection<RepositoryTuple> result = new LinkedList<>();
             for (Object value : (Collection) fieldValue) {
@@ -185,7 +185,7 @@ public final class AutoRepositoryTupleSwapperEngine {
                 final boolean isAccessible = field.isAccessible();
                 field.setAccessible(true);
                 Object fieldValue = field.get(yamlRuleConfig);
-                RegistryCenterTupleKeyNameGenerator tupleKeyNameGenerator = field.getAnnotation(RegistryCenterTupleKeyNameGenerator.class);
+                RepositoryTupleKeyNameGenerator tupleKeyNameGenerator = field.getAnnotation(RepositoryTupleKeyNameGenerator.class);
                 if (null != tupleKeyNameGenerator && fieldValue instanceof Collection) {
                     ruleNodePath.getNamedItem(tupleField.value()).getName(each.getKey()).ifPresent(optional -> ((Collection) fieldValue).add(each.getValue()));
                 } else if (fieldValue instanceof Map) {
