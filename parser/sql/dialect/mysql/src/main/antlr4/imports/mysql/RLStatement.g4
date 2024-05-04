@@ -187,7 +187,7 @@ changeReplicationSourceOption
     | SOURCE_PUBLIC_KEY_PATH EQ_ string_
     | GET_SOURCE_PUBLIC_KEY EQ_ NUMBER_
     | NETWORK_NAMESPACE EQ_ string_
-    | IGNORE_SERVER_IDS EQ_ ignoreServerIds
+    | IGNORE_SERVER_IDS EQ_ LP_ ignoreServerIds? RP_
     | GTID_ONLY EQ_ NUMBER_
     ;
 

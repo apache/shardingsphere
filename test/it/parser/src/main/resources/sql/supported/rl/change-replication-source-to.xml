@@ -18,4 +18,5 @@
 
 <sql-cases>
     <sql-case id="change_replication_source_to" value="CHANGE REPLICATION SOURCE TO SOURCE_USER = 'plug_user', SOURCE_PASSWORD = 'plug_user', SOURCE_RETRY_COUNT = 0" db-types="MySQL" />
+    <sql-case id="change_replication_ignore_server_ids" value="CHANGE REPLICATION SOURCE TO IGNORE_SERVER_IDS = ()；" db-types="MySQL"/>
 </sql-cases>
