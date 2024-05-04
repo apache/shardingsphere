@@ -27,11 +27,6 @@ import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguratio
 public final class TrafficRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlTrafficRuleConfiguration> {
     
     @Override
-    public String getRuleTypeName() {
-        return "traffic";
-    }
-    
-    @Override
     public int getOrder() {
         return TrafficOrder.ORDER;
     }

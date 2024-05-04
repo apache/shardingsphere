@@ -27,11 +27,6 @@ import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfigurat
 public final class ShardingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlShardingRuleConfiguration> {
     
     @Override
-    public String getRuleTypeName() {
-        return "sharding";
-    }
-    
-    @Override
     public int getOrder() {
         return ShardingOrder.ORDER;
     }

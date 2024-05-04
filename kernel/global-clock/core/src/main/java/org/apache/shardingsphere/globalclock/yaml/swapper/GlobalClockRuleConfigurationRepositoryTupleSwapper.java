@@ -27,11 +27,6 @@ import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 public final class GlobalClockRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlGlobalClockRuleConfiguration> {
     
     @Override
-    public String getRuleTypeName() {
-        return "global_clock";
-    }
-    
-    @Override
     public int getOrder() {
         return GlobalClockOrder.ORDER;
     }

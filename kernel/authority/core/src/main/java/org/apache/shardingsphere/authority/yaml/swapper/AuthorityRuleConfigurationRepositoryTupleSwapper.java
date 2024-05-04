@@ -27,11 +27,6 @@ import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 public final class AuthorityRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlAuthorityRuleConfiguration> {
     
     @Override
-    public String getRuleTypeName() {
-        return "authority";
-    }
-    
-    @Override
     public int getOrder() {
         return AuthorityOrder.ORDER;
     }

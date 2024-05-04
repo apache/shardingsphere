@@ -27,11 +27,6 @@ import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
 public final class ShadowRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlShadowRuleConfiguration> {
     
     @Override
-    public String getRuleTypeName() {
-        return "shadow";
-    }
-    
-    @Override
     public int getOrder() {
         return ShadowOrder.ORDER;
     }

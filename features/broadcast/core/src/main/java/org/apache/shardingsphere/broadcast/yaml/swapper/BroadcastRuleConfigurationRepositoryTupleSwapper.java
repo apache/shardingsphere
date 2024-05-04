@@ -27,11 +27,6 @@ import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 public final class BroadcastRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlBroadcastRuleConfiguration> {
     
     @Override
-    public String getRuleTypeName() {
-        return "broadcast";
-    }
-    
-    @Override
     public int getOrder() {
         return BroadcastOrder.ORDER;
     }

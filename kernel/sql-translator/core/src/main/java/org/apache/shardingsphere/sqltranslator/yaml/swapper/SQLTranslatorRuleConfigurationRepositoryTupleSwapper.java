@@ -27,11 +27,6 @@ import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRule
 public final class SQLTranslatorRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlSQLTranslatorRuleConfiguration> {
     
     @Override
-    public String getRuleTypeName() {
-        return "sql_translator";
-    }
-    
-    @Override
     public int getOrder() {
         return SQLTranslatorOrder.ORDER;
     }

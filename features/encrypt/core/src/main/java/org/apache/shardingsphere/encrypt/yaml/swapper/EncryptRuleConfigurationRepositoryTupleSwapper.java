@@ -27,11 +27,6 @@ import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 public final class EncryptRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlEncryptRuleConfiguration> {
     
     @Override
-    public String getRuleTypeName() {
-        return "encrypt";
-    }
-    
-    @Override
     public int getOrder() {
         return EncryptOrder.ORDER;
     }

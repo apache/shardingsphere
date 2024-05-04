@@ -27,11 +27,6 @@ import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 public final class LoggingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlLoggingRuleConfiguration> {
     
     @Override
-    public String getRuleTypeName() {
-        return "logging";
-    }
-    
-    @Override
     public int getOrder() {
         return LoggingOrder.ORDER;
     }
