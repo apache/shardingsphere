@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * Encrypt rule configuration for YAML.
  */
-@RepositoryTupleEntity
+@RepositoryTupleEntity("encrypt")
 @Getter
 @Setter
 public final class YamlEncryptRuleConfiguration implements YamlRuleConfiguration {

@@ -29,7 +29,7 @@ import java.util.Properties;
 /**
  * Transaction rule configuration for YAML.
  */
-@RepositoryTupleEntity
+@RepositoryTupleEntity("transaction")
 @RepositoryTupleType("transaction")
 @Getter
 @Setter

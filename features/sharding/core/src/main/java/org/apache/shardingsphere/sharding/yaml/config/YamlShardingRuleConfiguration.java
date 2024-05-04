@@ -42,7 +42,7 @@ import java.util.Map;
 /**
  * Sharding rule configuration for YAML.
  */
-@RepositoryTupleEntity
+@RepositoryTupleEntity("sharding")
 @Getter
 @Setter
 public final class YamlShardingRuleConfiguration implements YamlRuleConfiguration {

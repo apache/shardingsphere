@@ -31,7 +31,7 @@ import java.util.LinkedList;
 /**
  * Single rule configuration for YAML.
  */
-@RepositoryTupleEntity
+@RepositoryTupleEntity("single")
 @RepositoryTupleType(SingleRuleNodePathProvider.TABLES)
 @Getter
 @Setter

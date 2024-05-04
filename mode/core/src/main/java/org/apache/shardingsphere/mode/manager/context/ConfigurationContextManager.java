@@ -38,10 +38,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
@@ -58,6 +57,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
@@ -375,12 +375,10 @@ public final class ConfigurationContextManager {
     }
     
     // Optimize string comparison rule type.
-    @SuppressWarnings("rawtypes")
     @SneakyThrows(Exception.class)
     private void closeStaleTransactionRule(final RuleConfiguration ruleConfig) {
         YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(ruleConfig);
-        RepositoryTupleSwapper repositoryTupleSwapper = OrderedSPILoader.getServices(RepositoryTupleSwapper.class, Collections.singleton(yamlRuleConfig)).get(yamlRuleConfig);
-        if (!"transaction".equals(repositoryTupleSwapper.getRuleTypeName())) {
+        if (!"transaction".equals(Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value())) {
             return;
         }
         Optional<TransactionRule> transactionRule = metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);

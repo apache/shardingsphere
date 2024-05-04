@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * Mask rule configuration for YAML.
  */
-@RepositoryTupleEntity
+@RepositoryTupleEntity("mask")
 @Getter
 @Setter
 public final class YamlMaskRuleConfiguration implements YamlRuleConfiguration {

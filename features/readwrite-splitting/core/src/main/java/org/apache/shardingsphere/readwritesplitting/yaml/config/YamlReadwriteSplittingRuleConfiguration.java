@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * Readwrite-splitting rule configuration for YAML.
  */
-@RepositoryTupleEntity
+@RepositoryTupleEntity("readwrite_splitting")
 @Getter
 @Setter
 public final class YamlReadwriteSplittingRuleConfiguration implements YamlRuleConfiguration {

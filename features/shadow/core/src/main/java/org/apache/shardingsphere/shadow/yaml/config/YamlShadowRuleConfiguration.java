@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * Shadow rule configuration.
  */
-@RepositoryTupleEntity
+@RepositoryTupleEntity("shadow")
 @Getter
 @Setter
 public final class YamlShadowRuleConfiguration implements YamlRuleConfiguration {

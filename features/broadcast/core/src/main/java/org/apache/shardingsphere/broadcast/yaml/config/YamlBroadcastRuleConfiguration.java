@@ -32,7 +32,7 @@ import java.util.LinkedList;
 /**
  * Broadcast rule configuration for YAML.
  */
-@RepositoryTupleEntity
+@RepositoryTupleEntity("broadcast")
 @Getter
 @Setter
 public final class YamlBroadcastRuleConfiguration implements YamlRuleConfiguration {
