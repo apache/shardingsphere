@@ -29,7 +29,6 @@ import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-
 /**
  * Traffic rule configuration for YAML.
  */
