@@ -20,13 +20,13 @@ package org.apache.shardingsphere.broadcast.rule.changed;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePathProvider;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 /**
@@ -34,9 +34,10 @@ import java.util.LinkedList;
  */
 public final class BroadcastTableChangedProcessor implements RuleItemConfigurationChangedProcessor<BroadcastRuleConfiguration, BroadcastRuleConfiguration> {
     
+    @SuppressWarnings("unchecked")
     @Override
     public BroadcastRuleConfiguration swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
-        return new BroadcastRuleConfiguration(YamlEngine.unmarshal(yamlContent, YamlBroadcastRuleConfiguration.class).getTables());
+        return new BroadcastRuleConfiguration(YamlEngine.unmarshal(yamlContent, LinkedHashSet.class));
     }
     
     @Override
