@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sharding.metadata.nodepath;
 
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
 import java.util.Arrays;
 
@@ -64,5 +66,10 @@ public final class ShardingRuleNodePathProvider implements RuleNodePathProvider 
     @Override
     public RuleNodePath getRuleNodePath() {
         return INSTANCE;
+    }
+    
+    @Override
+    public Class<? extends RuleConfiguration> getType() {
+        return ShardingRuleConfiguration.class;
     }
 }

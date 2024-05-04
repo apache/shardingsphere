@@ -19,16 +19,15 @@ package org.apache.shardingsphere.mode.engine;
 
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleType;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleKeyNameGenerator;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleType;
 import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
@@ -66,7 +65,7 @@ public final class AutoRepositoryTupleSwapperEngine {
             return Collections.singleton(new RepositoryTuple(tupleType.value(), YamlEngine.marshal(yamlRuleConfig)));
         }
         Collection<RepositoryTuple> result = new LinkedList<>();
-        RuleNodePath ruleNodePath = getRuleNodePathProvider(yamlRuleConfig).getRuleNodePath();
+        RuleNodePath ruleNodePath = TypedSPILoader.getService(RuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getRuleNodePath();
         for (Field each : getFields(yamlRuleConfig.getClass())) {
             @SuppressWarnings("deprecation")
             boolean isAccessible = each.isAccessible();
@@ -113,16 +112,6 @@ public final class AutoRepositoryTupleSwapperEngine {
         return Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleField.value()).getPath(), YamlEngine.marshal(fieldValue)));
     }
     
-    // TODO 修改 RuleNodePathProvider 为 TypedSPI
-    private RuleNodePathProvider getRuleNodePathProvider(final YamlRuleConfiguration yamlRuleConfig) {
-        for (RuleNodePathProvider each : ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)) {
-            if (yamlRuleConfig.getRuleConfigurationType().getSimpleName().toLowerCase().contains(String.join("", each.getRuleNodePath().getRoot().getRuleType().split("_")))) {
-                return each;
-            }
-        }
-        throw new ServiceProviderNotFoundException(RuleNodePathProvider.class, yamlRuleConfig);
-    }
-    
     private Collection<Field> getFields(final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass) {
         return Arrays.stream(yamlRuleConfigurationClass.getDeclaredFields())
                 .filter(each -> null != each.getAnnotation(RepositoryTupleField.class))
@@ -158,7 +147,7 @@ public final class AutoRepositoryTupleSwapperEngine {
             return Optional.empty();
         }
         YamlRuleConfiguration yamlRuleConfig = yamlRuleConfigurationClass.getConstructor().newInstance();
-        RuleNodePath ruleNodePath = getRuleNodePathProvider(yamlRuleConfig).getRuleNodePath();
+        RuleNodePath ruleNodePath = TypedSPILoader.getService(RuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getRuleNodePath();
         for (RepositoryTuple each : repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList())) {
             if (ruleNodePath.getUniqueItem(tupleType.value()).isValidatedPath(each.getKey())) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), yamlRuleConfigurationClass));
@@ -171,7 +160,7 @@ public final class AutoRepositoryTupleSwapperEngine {
     private Optional<YamlRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples,
                                                          final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass, final Collection<Field> fields) {
         YamlRuleConfiguration yamlRuleConfig = yamlRuleConfigurationClass.getConstructor().newInstance();
-        RuleNodePath ruleNodePath = getRuleNodePathProvider(yamlRuleConfig).getRuleNodePath();
+        RuleNodePath ruleNodePath = TypedSPILoader.getService(RuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getRuleNodePath();
         List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         if (validTuples.isEmpty()) {
             return Optional.empty();

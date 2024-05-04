@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.single.metadata.nodepath;
 
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
 import java.util.Collections;
 
@@ -36,5 +38,10 @@ public final class SingleRuleNodePathProvider implements RuleNodePathProvider {
     @Override
     public RuleNodePath getRuleNodePath() {
         return INSTANCE;
+    }
+    
+    @Override
+    public Class<? extends RuleConfiguration> getType() {
+        return SingleRuleConfiguration.class;
     }
 }
