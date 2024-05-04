@@ -114,7 +114,7 @@ masterDef
     | MASTER_TLS_CIPHERSUITES EQ_ string_
     | MASTER_PUBLIC_KEY_PATH EQ_ string_
     | GET_MASTER_PUBLIC_KEY EQ_ NUMBER_
-    | IGNORE_SERVER_IDS EQ_ LP_ ignoreServerIds RP_
+    | IGNORE_SERVER_IDS EQ_ LP_ ignoreServerIds? RP_
     ;
 
 ignoreServerIds
