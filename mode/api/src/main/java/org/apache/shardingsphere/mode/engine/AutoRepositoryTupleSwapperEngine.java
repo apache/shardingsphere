@@ -191,9 +191,9 @@ public final class AutoRepositoryTupleSwapperEngine {
                 } else if (fieldValue instanceof Map) {
                     Class<?> valueClass = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[1];
                     ruleNodePath.getNamedItem(tupleField.value()).getName(each.getKey()).ifPresent(optional -> ((Map) fieldValue).put(optional, YamlEngine.unmarshal(each.getValue(), valueClass)));
-                } else if (fieldValue instanceof Collection && !((Collection) fieldValue).isEmpty()) {
+                } else if (fieldValue instanceof Collection) {
                     if (ruleNodePath.getUniqueItem(tupleField.value()).isValidatedPath(each.getKey())) {
-                        field.set(yamlRuleConfig, each.getValue());
+                        field.set(yamlRuleConfig, YamlEngine.unmarshal(each.getValue(), List.class));
                     }
                 } else if (field.getType().equals(String.class)) {
                     if (ruleNodePath.getUniqueItem(tupleField.value()).isValidatedPath(each.getKey())) {
