@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterPersistField;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterTupleKeyNameGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -47,41 +47,41 @@ import java.util.Map;
 @Setter
 public final class YamlShardingRuleConfiguration implements YamlRuleConfiguration {
     
-    @RegistryCenterPersistField(value = ShardingRuleNodePathProvider.TABLES, order = 500)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.TABLES, order = 500)
     private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
     
-    @RegistryCenterPersistField(value = ShardingRuleNodePathProvider.AUTO_TABLES, order = 501)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.AUTO_TABLES, order = 501)
     private Map<String, YamlShardingAutoTableRuleConfiguration> autoTables = new LinkedHashMap<>();
     
-    @RegistryCenterPersistField(value = ShardingRuleNodePathProvider.BINDING_TABLES, order = 502)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.BINDING_TABLES, order = 502)
     @RegistryCenterTupleKeyNameGenerator(ShardingBindingTableRegistryCenterTupleKeyNameGenerator.class)
     private Collection<String> bindingTables = new LinkedList<>();
     
-    @RegistryCenterPersistField(value = ShardingRuleNodePathProvider.DEFAULT_DATABASE_STRATEGY, order = 100)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_DATABASE_STRATEGY, order = 100)
     private YamlShardingStrategyConfiguration defaultDatabaseStrategy;
     
-    @RegistryCenterPersistField(value = ShardingRuleNodePathProvider.DEFAULT_TABLE_STRATEGY, order = 101)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_TABLE_STRATEGY, order = 101)
     private YamlShardingStrategyConfiguration defaultTableStrategy;
     
-    @RegistryCenterPersistField(value = ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY, order = 102)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY, order = 102)
     private YamlKeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
     
-    @RegistryCenterPersistField(value = ShardingRuleNodePathProvider.DEFAULT_AUDIT_STRATEGY, order = 103)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_AUDIT_STRATEGY, order = 103)
     private YamlShardingAuditStrategyConfiguration defaultAuditStrategy;
     
-    @RegistryCenterPersistField(value = ShardingRuleNodePathProvider.ALGORITHMS, order = 0)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.ALGORITHMS, order = 0)
     private Map<String, YamlAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
-    @RegistryCenterPersistField(value = ShardingRuleNodePathProvider.KEY_GENERATORS, order = 1)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.KEY_GENERATORS, order = 1)
     private Map<String, YamlAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
-    @RegistryCenterPersistField(value = ShardingRuleNodePathProvider.AUDITORS, order = 2)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.AUDITORS, order = 2)
     private Map<String, YamlAlgorithmConfiguration> auditors = new LinkedHashMap<>();
     
-    @RegistryCenterPersistField(value = ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN, order = 200)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN, order = 200)
     private String defaultShardingColumn;
     
-    @RegistryCenterPersistField(value = ShardingRuleNodePathProvider.SHARDING_CACHE, order = 201)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.SHARDING_CACHE, order = 201)
     private YamlShardingCacheConfiguration shardingCache;
     
     @Override

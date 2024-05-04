@@ -23,11 +23,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Registry center persist field.
+ * Repository tuple field.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RegistryCenterPersistField {
+public @interface RepositoryTupleField {
     
     /**
      * Get persist path name.
