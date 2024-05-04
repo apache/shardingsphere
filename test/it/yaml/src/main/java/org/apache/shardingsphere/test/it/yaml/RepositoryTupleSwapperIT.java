@@ -21,8 +21,9 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.mode.engine.AutoRepositoryTupleSwapperEngine;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -34,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -92,7 +94,8 @@ public abstract class RepositoryTupleSwapperIT {
     private String getActualYamlContent() throws IOException {
         YamlRuleConfiguration yamlRuleConfig = loadYamlRuleConfiguration();
         Collection<RepositoryTuple> repositoryTuples = new AutoRepositoryTupleSwapperEngine().swapToRepositoryTuples(yamlRuleConfig).stream()
-                .map(each -> new RepositoryTuple(getRepositoryTupleKey(each), each.getValue())).collect(Collectors.toList());
+                .map(each -> new RepositoryTuple(getRepositoryTupleKey(Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value(), each), each.getValue()))
+                .collect(Collectors.toList());
         AutoRepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new AutoRepositoryTupleSwapperEngine();
         Optional<YamlRuleConfiguration> actualYamlRuleConfig = repositoryTupleSwapperEngine.swapToObject(repositoryTuples, swapper.getTypeClass());
         assertTrue(actualYamlRuleConfig.isPresent());
@@ -101,10 +104,10 @@ public abstract class RepositoryTupleSwapperIT {
         return YamlEngine.marshal(yamlRootConfig);
     }
     
-    private String getRepositoryTupleKey(final RepositoryTuple tuple) {
+    private String getRepositoryTupleKey(final String ruleTypeName, final RepositoryTuple tuple) {
         return isGlobalRule
-                ? String.format("/metadata/rules/%s/versions/0", swapper.getRuleTypeName())
-                : String.format("/metadata/foo_db/rules/%s/%s/versions/0", swapper.getRuleTypeName(), tuple.getKey());
+                ? String.format("/metadata/rules/%s/versions/0", ruleTypeName)
+                : String.format("/metadata/foo_db/rules/%s/%s/versions/0", ruleTypeName, tuple.getKey());
     }
     
     private String getExpectedYamlContent() throws IOException {

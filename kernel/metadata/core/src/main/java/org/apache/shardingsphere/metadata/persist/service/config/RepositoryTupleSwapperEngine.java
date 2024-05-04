@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.engine.AutoRepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -71,7 +73,7 @@ public final class RepositoryTupleSwapperEngine {
         YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
         AutoRepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new AutoRepositoryTupleSwapperEngine();
         for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
-            if (ruleName.equals(each.getRuleTypeName())) {
+            if (ruleName.equals(Objects.requireNonNull((RepositoryTupleEntity) each.getTypeClass().getAnnotation(RepositoryTupleEntity.class)).value())) {
                 Optional<YamlRuleConfiguration> yamlRuleConfig = repositoryTupleSwapperEngine.swapToObject(repositoryTuples, each.getTypeClass());
                 return yamlRuleConfig.map(yamlSwapperEngine::swapToRuleConfiguration);
             }

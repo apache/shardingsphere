@@ -29,7 +29,7 @@ import java.util.Properties;
 /**
  * SQL translator configuration for YAML.
  */
-@RepositoryTupleEntity
+@RepositoryTupleEntity("sql_translator")
 @RepositoryTupleType("sql_translator")
 @Getter
 @Setter

@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * Traffic rule configuration for YAML.
  */
-@RepositoryTupleEntity
+@RepositoryTupleEntity("traffic")
 @RepositoryTupleType("traffic")
 @Getter
 @Setter
