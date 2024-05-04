@@ -28,11 +28,4 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
  */
 @SingletonSPI
 public interface RepositoryTupleSwapper<T extends YamlRuleConfiguration> extends OrderedSPI<T> {
-    
-    /**
-     * Get rule type name.
-     *
-     * @return rule type name
-     */
-    String getRuleTypeName();
 }

@@ -27,11 +27,6 @@ import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConf
 public final class TransactionRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlTransactionRuleConfiguration> {
     
     @Override
-    public String getRuleTypeName() {
-        return "transaction";
-    }
-    
-    @Override
     public int getOrder() {
         return TransactionOrder.ORDER;
     }

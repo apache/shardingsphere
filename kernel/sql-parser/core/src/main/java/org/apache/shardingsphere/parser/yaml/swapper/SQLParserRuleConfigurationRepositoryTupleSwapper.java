@@ -27,11 +27,6 @@ import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfigurati
 public final class SQLParserRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlSQLParserRuleConfiguration> {
     
     @Override
-    public String getRuleTypeName() {
-        return "sql_parser";
-    }
-    
-    @Override
     public int getOrder() {
         return SQLParserOrder.ORDER;
     }

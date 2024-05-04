@@ -27,11 +27,6 @@ import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 public final class MaskRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlMaskRuleConfiguration> {
     
     @Override
-    public String getRuleTypeName() {
-        return "mask";
-    }
-    
-    @Override
     public int getOrder() {
         return MaskOrder.ORDER;
     }

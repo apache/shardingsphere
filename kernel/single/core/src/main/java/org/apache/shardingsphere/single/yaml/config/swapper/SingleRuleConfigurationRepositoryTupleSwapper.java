@@ -27,11 +27,6 @@ import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfigura
 public final class SingleRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlSingleRuleConfiguration> {
     
     @Override
-    public String getRuleTypeName() {
-        return "single";
-    }
-    
-    @Override
     public int getOrder() {
         return SingleOrder.ORDER;
     }

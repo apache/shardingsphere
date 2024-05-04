@@ -27,11 +27,6 @@ import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSpl
 public final class ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public String getRuleTypeName() {
-        return "readwrite_splitting";
-    }
-    
-    @Override
     public int getOrder() {
         return ReadwriteSplittingOrder.ORDER;
     }

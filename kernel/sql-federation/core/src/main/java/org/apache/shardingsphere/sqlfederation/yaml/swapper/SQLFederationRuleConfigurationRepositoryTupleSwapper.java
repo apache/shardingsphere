@@ -27,11 +27,6 @@ import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationRule
 public final class SQLFederationRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlSQLFederationRuleConfiguration> {
     
     @Override
-    public String getRuleTypeName() {
-        return "sql_federation";
-    }
-    
-    @Override
     public int getOrder() {
         return SQLFederationOrder.ORDER;
     }
