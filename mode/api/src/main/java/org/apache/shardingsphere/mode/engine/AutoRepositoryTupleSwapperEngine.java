@@ -68,6 +68,7 @@ public final class AutoRepositoryTupleSwapperEngine {
         Collection<RepositoryTuple> result = new LinkedList<>();
         RuleNodePath ruleNodePath = getRuleNodePathProvider(yamlRuleConfig).getRuleNodePath();
         for (Field each : getFields(yamlRuleConfig.getClass())) {
+            @SuppressWarnings("deprecation")
             boolean isAccessible = each.isAccessible();
             each.setAccessible(true);
             result.addAll(swapToRepositoryTuples(yamlRuleConfig, ruleNodePath, each));
@@ -140,15 +141,14 @@ public final class AutoRepositoryTupleSwapperEngine {
             return Optional.empty();
         }
         RepositoryTupleType tupleType = yamlRuleConfigurationClass.getAnnotation(RepositoryTupleType.class);
-        if (null != tupleType) {
-            return swapToObjectForTypePersist(repositoryTuples, yamlRuleConfigurationClass, tupleType);
-        }
-        return swapToObjectForFieldPersist(repositoryTuples, yamlRuleConfigurationClass);
+        return null == tupleType
+                ? swapToObject(repositoryTuples, yamlRuleConfigurationClass, getFields(yamlRuleConfigurationClass))
+                : swapToObject(repositoryTuples, yamlRuleConfigurationClass, tupleType);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private Optional<YamlRuleConfiguration> swapToObjectForTypePersist(final Collection<RepositoryTuple> repositoryTuples,
-                                                                       final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass, final RepositoryTupleType tupleType) {
+    private Optional<YamlRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples,
+                                                         final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass, final RepositoryTupleType tupleType) {
         if (YamlGlobalRuleConfiguration.class.isAssignableFrom(yamlRuleConfigurationClass)) {
             for (RepositoryTuple each : repositoryTuples) {
                 if (GlobalNodePath.getVersion(tupleType.value(), each.getKey()).isPresent()) {
@@ -167,9 +167,9 @@ public final class AutoRepositoryTupleSwapperEngine {
         return Optional.empty();
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @SneakyThrows(ReflectiveOperationException.class)
-    private Optional<YamlRuleConfiguration> swapToObjectForFieldPersist(final Collection<RepositoryTuple> repositoryTuples, final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass) {
+    private Optional<YamlRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples,
+                                                         final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass, final Collection<Field> fields) {
         YamlRuleConfiguration yamlRuleConfig = yamlRuleConfigurationClass.getConstructor().newInstance();
         RuleNodePath ruleNodePath = getRuleNodePathProvider(yamlRuleConfig).getRuleNodePath();
         List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
@@ -177,48 +177,71 @@ public final class AutoRepositoryTupleSwapperEngine {
             return Optional.empty();
         }
         for (RepositoryTuple each : validTuples) {
-            for (Field field : getFields(yamlRuleConfigurationClass)) {
-                RepositoryTupleField tupleField = field.getAnnotation(RepositoryTupleField.class);
-                if (Strings.isNullOrEmpty(each.getValue())) {
-                    continue;
-                }
-                final boolean isAccessible = field.isAccessible();
-                field.setAccessible(true);
-                Object fieldValue = field.get(yamlRuleConfig);
-                RepositoryTupleKeyNameGenerator tupleKeyNameGenerator = field.getAnnotation(RepositoryTupleKeyNameGenerator.class);
-                if (null != tupleKeyNameGenerator && fieldValue instanceof Collection) {
-                    ruleNodePath.getNamedItem(tupleField.value()).getName(each.getKey()).ifPresent(optional -> ((Collection) fieldValue).add(each.getValue()));
-                } else if (fieldValue instanceof Map) {
-                    Class<?> valueClass = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[1];
-                    ruleNodePath.getNamedItem(tupleField.value()).getName(each.getKey()).ifPresent(optional -> ((Map) fieldValue).put(optional, YamlEngine.unmarshal(each.getValue(), valueClass)));
-                } else if (fieldValue instanceof Collection) {
-                    if (ruleNodePath.getUniqueItem(tupleField.value()).isValidatedPath(each.getKey())) {
-                        field.set(yamlRuleConfig, YamlEngine.unmarshal(each.getValue(), List.class));
-                    }
-                } else if (field.getType().equals(String.class)) {
-                    if (ruleNodePath.getUniqueItem(tupleField.value()).isValidatedPath(each.getKey())) {
-                        field.set(yamlRuleConfig, each.getValue());
-                    }
-                } else if (field.getType().equals(boolean.class) || field.getType().equals(Boolean.class)) {
-                    if (ruleNodePath.getUniqueItem(tupleField.value()).isValidatedPath(each.getKey())) {
-                        field.set(yamlRuleConfig, Boolean.parseBoolean(each.getValue()));
-                    }
-                } else if (field.getType().equals(int.class) || field.getType().equals(Integer.class)) {
-                    if (ruleNodePath.getUniqueItem(tupleField.value()).isValidatedPath(each.getKey())) {
-                        field.set(yamlRuleConfig, Integer.parseInt(each.getValue()));
-                    }
-                } else if (field.getType().equals(long.class) || field.getType().equals(Long.class)) {
-                    if (ruleNodePath.getUniqueItem(tupleField.value()).isValidatedPath(each.getKey())) {
-                        field.set(yamlRuleConfig, Long.parseLong(each.getValue()));
-                    }
-                } else {
-                    if (ruleNodePath.getUniqueItem(tupleField.value()).isValidatedPath(each.getKey())) {
-                        field.set(yamlRuleConfig, YamlEngine.unmarshal(each.getValue(), field.getType()));
-                    }
-                }
-                field.setAccessible(isAccessible);
+            if (!Strings.isNullOrEmpty(each.getValue())) {
+                setFieldValue(yamlRuleConfig, fields, ruleNodePath, each);
             }
         }
         return Optional.of(yamlRuleConfig);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Collection<Field> fields, final RuleNodePath ruleNodePath, final RepositoryTuple repositoryTuple) {
+        for (Field each : fields) {
+            @SuppressWarnings("deprecation")
+            boolean isAccessible = each.isAccessible();
+            each.setAccessible(true);
+            setFieldValue(yamlRuleConfig, each, ruleNodePath, repositoryTuple);
+            each.setAccessible(isAccessible);
+        }
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Field field, final RuleNodePath ruleNodePath, final RepositoryTuple repositoryTuple) throws IllegalAccessException {
+        Object fieldValue = field.get(yamlRuleConfig);
+        RepositoryTupleField tupleField = field.getAnnotation(RepositoryTupleField.class);
+        RepositoryTupleKeyNameGenerator tupleKeyNameGenerator = field.getAnnotation(RepositoryTupleKeyNameGenerator.class);
+        if (null != tupleKeyNameGenerator && fieldValue instanceof Collection) {
+            ruleNodePath.getNamedItem(tupleField.value()).getName(repositoryTuple.getKey()).ifPresent(optional -> ((Collection) fieldValue).add(repositoryTuple.getValue()));
+            return;
+        }
+        if (fieldValue instanceof Map) {
+            Class<?> valueClass = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[1];
+            ruleNodePath.getNamedItem(tupleField.value()).getName(repositoryTuple.getKey())
+                    .ifPresent(optional -> ((Map) fieldValue).put(optional, YamlEngine.unmarshal(repositoryTuple.getValue(), valueClass)));
+            return;
+        }
+        if (fieldValue instanceof Collection) {
+            if (ruleNodePath.getUniqueItem(tupleField.value()).isValidatedPath(repositoryTuple.getKey())) {
+                field.set(yamlRuleConfig, YamlEngine.unmarshal(repositoryTuple.getValue(), List.class));
+            }
+            return;
+        }
+        if (field.getType().equals(String.class)) {
+            if (ruleNodePath.getUniqueItem(tupleField.value()).isValidatedPath(repositoryTuple.getKey())) {
+                field.set(yamlRuleConfig, repositoryTuple.getValue());
+            }
+            return;
+        }
+        if (field.getType().equals(boolean.class) || field.getType().equals(Boolean.class)) {
+            if (ruleNodePath.getUniqueItem(tupleField.value()).isValidatedPath(repositoryTuple.getKey())) {
+                field.set(yamlRuleConfig, Boolean.parseBoolean(repositoryTuple.getValue()));
+            }
+            return;
+        }
+        if (field.getType().equals(int.class) || field.getType().equals(Integer.class)) {
+            if (ruleNodePath.getUniqueItem(tupleField.value()).isValidatedPath(repositoryTuple.getKey())) {
+                field.set(yamlRuleConfig, Integer.parseInt(repositoryTuple.getValue()));
+            }
+            return;
+        }
+        if (field.getType().equals(long.class) || field.getType().equals(Long.class)) {
+            if (ruleNodePath.getUniqueItem(tupleField.value()).isValidatedPath(repositoryTuple.getKey())) {
+                field.set(yamlRuleConfig, Long.parseLong(repositoryTuple.getValue()));
+            }
+            return;
+        }
+        if (ruleNodePath.getUniqueItem(tupleField.value()).isValidatedPath(repositoryTuple.getKey())) {
+            field.set(yamlRuleConfig, YamlEngine.unmarshal(repositoryTuple.getValue(), field.getType()));
+        }
     }
 }
