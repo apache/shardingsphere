@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.yaml.swapper;
+package org.apache.shardingsphere.sharding.yaml.swapper;
 
-import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
-import org.apache.shardingsphere.transaction.constant.TransactionOrder;
-import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleKeyNameGenerator;
+import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableReferenceRuleConfigurationConverter;
 
 /**
- * Transaction rule configuration repository tuple swapper.
+ * Sharding binding table registry center tuple key name generator.
  */
-public final class TransactionRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlTransactionRuleConfiguration> {
+public final class ShardingBindingTableRegistryCenterTupleKeyNameGenerator implements RepositoryTupleKeyNameGenerator.Generator {
     
     @Override
-    public String getRuleTypeName() {
-        return "transaction";
-    }
-    
-    @Override
-    public int getOrder() {
-        return TransactionOrder.ORDER;
-    }
-    
-    @Override
-    public Class<YamlTransactionRuleConfiguration> getTypeClass() {
-        return YamlTransactionRuleConfiguration.class;
+    public String generate(final Object tupleValue) {
+        return YamlShardingTableReferenceRuleConfigurationConverter.convertToObject(tupleValue.toString()).getName();
     }
 }

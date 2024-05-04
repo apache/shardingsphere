@@ -19,34 +19,12 @@ package org.apache.shardingsphere.globalclock.yaml.swapper;
 
 import org.apache.shardingsphere.globalclock.rule.constant.GlobalClockOrder;
 import org.apache.shardingsphere.globalclock.yaml.config.YamlGlobalClockRuleConfiguration;
-import org.apache.shardingsphere.mode.path.GlobalNodePath;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Global clock rule configuration repository tuple swapper.
  */
 public final class GlobalClockRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlGlobalClockRuleConfiguration> {
-    
-    @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlGlobalClockRuleConfiguration yamlRuleConfig) {
-        return Collections.singleton(new RepositoryTuple(getRuleTypeName(), YamlEngine.marshal(yamlRuleConfig)));
-    }
-    
-    @Override
-    public Optional<YamlGlobalClockRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        for (RepositoryTuple each : repositoryTuples) {
-            if (GlobalNodePath.getVersion(getRuleTypeName(), each.getKey()).isPresent()) {
-                return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlGlobalClockRuleConfiguration.class));
-            }
-        }
-        return Optional.empty();
-    }
     
     @Override
     public String getRuleTypeName() {

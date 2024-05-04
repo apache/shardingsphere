@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.yaml.swapper;
+package org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation;
 
-import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
-import org.apache.shardingsphere.transaction.constant.TransactionOrder;
-import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Transaction rule configuration repository tuple swapper.
+ * Repository tuple type.
  */
-public final class TransactionRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlTransactionRuleConfiguration> {
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RepositoryTupleType {
     
-    @Override
-    public String getRuleTypeName() {
-        return "transaction";
-    }
-    
-    @Override
-    public int getOrder() {
-        return TransactionOrder.ORDER;
-    }
-    
-    @Override
-    public Class<YamlTransactionRuleConfiguration> getTypeClass() {
-        return YamlTransactionRuleConfiguration.class;
-    }
+    /**
+     * Get persist path name.
+     *
+     * @return persist path name
+     */
+    String value();
 }

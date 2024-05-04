@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.mode.engine.AutoRepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
@@ -56,13 +57,14 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
         repositoryTuplePersistService = new RepositoryTuplePersistService(repository);
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("rawtypes")
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
+        AutoRepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new AutoRepositoryTupleSwapperEngine();
         Collection<YamlRuleConfiguration> yamlGlobalRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs);
         for (Entry<YamlRuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, yamlGlobalRuleConfigs).entrySet()) {
-            Collection<RepositoryTuple> repositoryTuples = entry.getValue().swapToRepositoryTuples(entry.getKey());
+            Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(entry.getKey());
             if (!repositoryTuples.isEmpty()) {
                 metaDataVersions.addAll(persistTuples(repositoryTuples));
             }

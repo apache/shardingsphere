@@ -20,11 +20,15 @@ package org.apache.shardingsphere.sqlfederation.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleType;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 
 /**
  * SQL federation rule configuration for YAML.
  */
+@RepositoryTupleEntity
+@RepositoryTupleType("sql_federation")
 @Getter
 @Setter
 public final class YamlSQLFederationRuleConfiguration implements YamlGlobalRuleConfiguration {

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
+import org.apache.shardingsphere.mode.engine.AutoRepositoryTupleSwapperEngine;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -59,11 +60,10 @@ public abstract class RepositoryTupleSwapperIT {
         this.isGlobalRule = isGlobalRule;
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     void assertSwapToRepositoryTuples() throws IOException {
         YamlRuleConfiguration yamlRuleConfig = loadYamlRuleConfiguration();
-        assertRepositoryTuples(new ArrayList<>(swapper.swapToRepositoryTuples(yamlRuleConfig)), yamlRuleConfig);
+        assertRepositoryTuples(new ArrayList<>(new AutoRepositoryTupleSwapperEngine().swapToRepositoryTuples(yamlRuleConfig)), yamlRuleConfig);
     }
     
     private YamlRuleConfiguration loadYamlRuleConfiguration() throws IOException {
@@ -91,9 +91,10 @@ public abstract class RepositoryTupleSwapperIT {
     @SuppressWarnings("unchecked")
     private String getActualYamlContent() throws IOException {
         YamlRuleConfiguration yamlRuleConfig = loadYamlRuleConfiguration();
-        Collection<RepositoryTuple> repositoryTuples = ((Collection<RepositoryTuple>) swapper.swapToRepositoryTuples(yamlRuleConfig)).stream()
+        Collection<RepositoryTuple> repositoryTuples = new AutoRepositoryTupleSwapperEngine().swapToRepositoryTuples(yamlRuleConfig).stream()
                 .map(each -> new RepositoryTuple(getRepositoryTupleKey(each), each.getValue())).collect(Collectors.toList());
-        Optional<YamlRuleConfiguration> actualYamlRuleConfig = swapper.swapToObject(repositoryTuples);
+        AutoRepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new AutoRepositoryTupleSwapperEngine();
+        Optional<YamlRuleConfiguration> actualYamlRuleConfig = repositoryTupleSwapperEngine.swapToObject(repositoryTuples, swapper.getTypeClass());
         assertTrue(actualYamlRuleConfig.isPresent());
         YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
         yamlRootConfig.setRules(Collections.singletonList(actualYamlRuleConfig.get()));

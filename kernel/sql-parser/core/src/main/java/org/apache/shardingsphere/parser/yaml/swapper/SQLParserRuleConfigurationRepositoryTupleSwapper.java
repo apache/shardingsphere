@@ -17,36 +17,14 @@
 
 package org.apache.shardingsphere.parser.yaml.swapper;
 
-import org.apache.shardingsphere.mode.path.GlobalNodePath;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.parser.constant.SQLParserOrder;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
 
 /**
  * SQL parser rule configuration repository tuple swapper.
  */
 public final class SQLParserRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlSQLParserRuleConfiguration> {
-    
-    @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlSQLParserRuleConfiguration yamlRuleConfig) {
-        return Collections.singleton(new RepositoryTuple(getRuleTypeName(), YamlEngine.marshal(yamlRuleConfig)));
-    }
-    
-    @Override
-    public Optional<YamlSQLParserRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        for (RepositoryTuple each : repositoryTuples) {
-            if (GlobalNodePath.getVersion(getRuleTypeName(), each.getKey()).isPresent()) {
-                return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlSQLParserRuleConfiguration.class));
-            }
-        }
-        return Optional.empty();
-    }
     
     @Override
     public String getRuleTypeName() {

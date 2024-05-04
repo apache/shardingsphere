@@ -17,36 +17,14 @@
 
 package org.apache.shardingsphere.sqltranslator.yaml.swapper;
 
-import org.apache.shardingsphere.mode.path.GlobalNodePath;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.sqltranslator.constant.SQLTranslatorOrder;
 import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
 
 /**
  * SQL translator rule configuration repository tuple swapper.
  */
 public final class SQLTranslatorRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlSQLTranslatorRuleConfiguration> {
-    
-    @Override
-    public Collection<RepositoryTuple> swapToRepositoryTuples(final YamlSQLTranslatorRuleConfiguration yamlRuleConfig) {
-        return Collections.singleton(new RepositoryTuple(getRuleTypeName(), YamlEngine.marshal(yamlRuleConfig)));
-    }
-    
-    @Override
-    public Optional<YamlSQLTranslatorRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples) {
-        for (RepositoryTuple each : repositoryTuples) {
-            if (GlobalNodePath.getVersion(getRuleTypeName(), each.getKey()).isPresent()) {
-                return Optional.of(YamlEngine.unmarshal(each.getValue(), YamlSQLTranslatorRuleConfiguration.class));
-            }
-        }
-        return Optional.empty();
-    }
     
     @Override
     public String getRuleTypeName() {

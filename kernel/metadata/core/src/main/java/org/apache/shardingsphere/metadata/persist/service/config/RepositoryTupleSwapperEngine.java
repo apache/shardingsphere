@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.mode.engine.AutoRepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;
@@ -47,8 +48,10 @@ public final class RepositoryTupleSwapperEngine {
         }
         Collection<RuleConfiguration> result = new LinkedList<>();
         YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
+        AutoRepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new AutoRepositoryTupleSwapperEngine();
         for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
-            each.swapToObject(repositoryTuples).ifPresent(optional -> result.add(yamlSwapperEngine.swapToRuleConfiguration((YamlRuleConfiguration) optional)));
+            repositoryTupleSwapperEngine
+                    .swapToObject(repositoryTuples, each.getTypeClass()).ifPresent(optional -> result.add(yamlSwapperEngine.swapToRuleConfiguration((YamlRuleConfiguration) optional)));
         }
         return result;
     }
@@ -66,9 +69,10 @@ public final class RepositoryTupleSwapperEngine {
             return Optional.empty();
         }
         YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
+        AutoRepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new AutoRepositoryTupleSwapperEngine();
         for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
             if (ruleName.equals(each.getRuleTypeName())) {
-                Optional<YamlRuleConfiguration> yamlRuleConfig = each.swapToObject(repositoryTuples);
+                Optional<YamlRuleConfiguration> yamlRuleConfig = repositoryTupleSwapperEngine.swapToObject(repositoryTuples, each.getTypeClass());
                 return yamlRuleConfig.map(yamlSwapperEngine::swapToRuleConfiguration);
             }
         }

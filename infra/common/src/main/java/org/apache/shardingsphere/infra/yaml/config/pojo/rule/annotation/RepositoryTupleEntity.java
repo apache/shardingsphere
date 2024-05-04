@@ -15,29 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.yaml.config.swapper;
+package org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation;
 
-import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
-import org.apache.shardingsphere.single.constant.SingleOrder;
-import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Single rule configuration repository tuple swapper.
+ * Repository tuple entity.
  */
-public final class SingleRuleConfigurationRepositoryTupleSwapper implements RepositoryTupleSwapper<YamlSingleRuleConfiguration> {
-    
-    @Override
-    public String getRuleTypeName() {
-        return "single";
-    }
-    
-    @Override
-    public int getOrder() {
-        return SingleOrder.ORDER;
-    }
-    
-    @Override
-    public Class<YamlSingleRuleConfiguration> getTypeClass() {
-        return YamlSingleRuleConfiguration.class;
-    }
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RepositoryTupleEntity {
 }
