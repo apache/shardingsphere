@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.metadata.nodepath;
 
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
@@ -39,5 +41,10 @@ public final class EncryptRuleNodePathProvider implements RuleNodePathProvider {
     @Override
     public RuleNodePath getRuleNodePath() {
         return INSTANCE;
+    }
+    
+    @Override
+    public Class<? extends RuleConfiguration> getType() {
+        return EncryptRuleConfiguration.class;
     }
 }

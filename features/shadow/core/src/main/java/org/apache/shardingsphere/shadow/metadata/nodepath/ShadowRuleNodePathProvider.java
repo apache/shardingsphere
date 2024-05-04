@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.shadow.metadata.nodepath;
 
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,5 +45,10 @@ public final class ShadowRuleNodePathProvider implements RuleNodePathProvider {
     @Override
     public RuleNodePath getRuleNodePath() {
         return INSTANCE;
+    }
+    
+    @Override
+    public Class<? extends RuleConfiguration> getType() {
+        return ShadowRuleConfiguration.class;
     }
 }

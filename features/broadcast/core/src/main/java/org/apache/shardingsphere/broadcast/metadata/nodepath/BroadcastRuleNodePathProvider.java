@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.broadcast.metadata.nodepath;
 
+import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
@@ -36,5 +38,10 @@ public final class BroadcastRuleNodePathProvider implements RuleNodePathProvider
     @Override
     public RuleNodePath getRuleNodePath() {
         return INSTANCE;
+    }
+    
+    @Override
+    public Class<? extends RuleConfiguration> getType() {
+        return BroadcastRuleConfiguration.class;
     }
 }
