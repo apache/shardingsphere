@@ -23,11 +23,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Registry center persist type.
+ * Repository tuple type.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RegistryCenterPersistType {
+public @interface RepositoryTupleType {
     
     /**
      * Get persist path name.

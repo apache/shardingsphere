@@ -20,7 +20,7 @@ package org.apache.shardingsphere.single.yaml.config.pojo;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterPersistType;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleType;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
@@ -32,7 +32,7 @@ import java.util.LinkedList;
  * Single rule configuration for YAML.
  */
 @RepositoryTupleEntity
-@RegistryCenterPersistType(SingleRuleNodePathProvider.TABLES)
+@RepositoryTupleType(SingleRuleNodePathProvider.TABLES)
 @Getter
 @Setter
 public final class YamlSingleRuleConfiguration implements YamlRuleConfiguration {

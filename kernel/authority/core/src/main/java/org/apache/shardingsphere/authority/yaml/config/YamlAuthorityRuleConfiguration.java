@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterPersistType;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleType;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
 
 import java.util.Collection;
@@ -34,7 +34,7 @@ import java.util.Map;
  * Authority rule configuration for YAML.
  */
 @RepositoryTupleEntity
-@RegistryCenterPersistType("authority")
+@RepositoryTupleType("authority")
 @Getter
 @Setter
 public final class YamlAuthorityRuleConfiguration implements YamlGlobalRuleConfiguration {

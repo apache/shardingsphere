@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterPersistType;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleType;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RegistryCenterTupleKeyNameGenerator;
 import org.apache.shardingsphere.mode.path.GlobalNodePath;
@@ -61,9 +61,9 @@ public final class AutoRepositoryTupleSwapperEngine {
         if (null == yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)) {
             return Collections.emptyList();
         }
-        RegistryCenterPersistType persistType = yamlRuleConfig.getClass().getAnnotation(RegistryCenterPersistType.class);
-        if (null != persistType) {
-            return Collections.singleton(new RepositoryTuple(persistType.value(), YamlEngine.marshal(yamlRuleConfig)));
+        RepositoryTupleType tupleType = yamlRuleConfig.getClass().getAnnotation(RepositoryTupleType.class);
+        if (null != tupleType) {
+            return Collections.singleton(new RepositoryTuple(tupleType.value(), YamlEngine.marshal(yamlRuleConfig)));
         }
         Collection<RepositoryTuple> result = new LinkedList<>();
         RuleNodePath ruleNodePath = getRuleNodePathProvider(yamlRuleConfig).getRuleNodePath();
@@ -139,19 +139,19 @@ public final class AutoRepositoryTupleSwapperEngine {
         if (null == yamlRuleConfigurationClass.getAnnotation(RepositoryTupleEntity.class)) {
             return Optional.empty();
         }
-        RegistryCenterPersistType persistType = yamlRuleConfigurationClass.getAnnotation(RegistryCenterPersistType.class);
-        if (null != persistType) {
-            return swapToObjectForTypePersist(repositoryTuples, yamlRuleConfigurationClass, persistType);
+        RepositoryTupleType tupleType = yamlRuleConfigurationClass.getAnnotation(RepositoryTupleType.class);
+        if (null != tupleType) {
+            return swapToObjectForTypePersist(repositoryTuples, yamlRuleConfigurationClass, tupleType);
         }
         return swapToObjectForFieldPersist(repositoryTuples, yamlRuleConfigurationClass);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private Optional<YamlRuleConfiguration> swapToObjectForTypePersist(final Collection<RepositoryTuple> repositoryTuples,
-                                                                       final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass, final RegistryCenterPersistType persistType) {
+                                                                       final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass, final RepositoryTupleType tupleType) {
         if (YamlGlobalRuleConfiguration.class.isAssignableFrom(yamlRuleConfigurationClass)) {
             for (RepositoryTuple each : repositoryTuples) {
-                if (GlobalNodePath.getVersion(persistType.value(), each.getKey()).isPresent()) {
+                if (GlobalNodePath.getVersion(tupleType.value(), each.getKey()).isPresent()) {
                     return Optional.of(YamlEngine.unmarshal(each.getValue(), yamlRuleConfigurationClass));
                 }
             }
@@ -160,7 +160,7 @@ public final class AutoRepositoryTupleSwapperEngine {
         YamlRuleConfiguration yamlRuleConfig = yamlRuleConfigurationClass.getConstructor().newInstance();
         RuleNodePath ruleNodePath = getRuleNodePathProvider(yamlRuleConfig).getRuleNodePath();
         for (RepositoryTuple each : repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList())) {
-            if (ruleNodePath.getUniqueItem(persistType.value()).isValidatedPath(each.getKey())) {
+            if (ruleNodePath.getUniqueItem(tupleType.value()).isValidatedPath(each.getKey())) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), yamlRuleConfigurationClass));
             }
         }
