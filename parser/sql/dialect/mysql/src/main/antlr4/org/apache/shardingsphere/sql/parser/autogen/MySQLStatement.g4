@@ -104,7 +104,8 @@ execute
     | setVariable
     | setCharacter
     | call
-    | change
+    | changeMasterTo
+    | changeReplicationFilter
     | checkTable
     | checksumTable
     | clone
