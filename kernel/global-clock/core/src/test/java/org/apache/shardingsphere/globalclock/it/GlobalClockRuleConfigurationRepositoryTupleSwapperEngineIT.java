@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.parser.it;
+package org.apache.shardingsphere.globalclock.it;
 
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
+import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class SQLParserRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
+class GlobalClockRuleConfigurationRepositoryTupleSwapperEngineIT extends RepositoryTupleSwapperEngineIT {
     
-    SQLParserRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/sql-parser-rule.yaml");
+    GlobalClockRuleConfigurationRepositoryTupleSwapperEngineIT() {
+        super("yaml/global-clock-rule.yaml");
     }
     
     @Override
     protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        assertRepositoryTuple(actualRepositoryTuples.get(0), "sql_parser", expectedYamlRuleConfig);
+        assertRepositoryTuple(actualRepositoryTuples.get(0), "global_clock", expectedYamlRuleConfig);
     }
 }

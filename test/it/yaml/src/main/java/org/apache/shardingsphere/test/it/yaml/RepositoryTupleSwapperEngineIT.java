@@ -44,20 +44,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public abstract class RepositoryTupleSwapperIT {
+public abstract class RepositoryTupleSwapperEngineIT {
     
     private final File yamlFile;
     
-    public RepositoryTupleSwapperIT(final String yamlFileName) {
+    private final RepositoryTupleSwapperEngine engine;
+    
+    public RepositoryTupleSwapperEngineIT(final String yamlFileName) {
         URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFileName);
         assertNotNull(url);
         yamlFile = new File(url.getFile());
+        engine = new RepositoryTupleSwapperEngine();
     }
     
     @Test
     void assertSwapToRepositoryTuples() throws IOException {
         YamlRuleConfiguration yamlRuleConfig = loadYamlRuleConfiguration();
-        assertRepositoryTuples(new ArrayList<>(new RepositoryTupleSwapperEngine().swapToRepositoryTuples(yamlRuleConfig)), yamlRuleConfig);
+        assertRepositoryTuples(new ArrayList<>(engine.swapToRepositoryTuples(yamlRuleConfig)), yamlRuleConfig);
     }
     
     private YamlRuleConfiguration loadYamlRuleConfiguration() throws IOException {
@@ -85,9 +88,9 @@ public abstract class RepositoryTupleSwapperIT {
     private String getActualYamlContent() throws IOException {
         YamlRuleConfiguration yamlRuleConfig = loadYamlRuleConfiguration();
         String ruleTypeName = Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value();
-        Collection<RepositoryTuple> repositoryTuples = new RepositoryTupleSwapperEngine().swapToRepositoryTuples(yamlRuleConfig).stream()
+        Collection<RepositoryTuple> repositoryTuples = engine.swapToRepositoryTuples(yamlRuleConfig).stream()
                 .map(each -> new RepositoryTuple(getRepositoryTupleKey(yamlRuleConfig instanceof YamlGlobalRuleConfiguration, ruleTypeName, each), each.getValue())).collect(Collectors.toList());
-        Optional<YamlRuleConfiguration> actualYamlRuleConfig = new RepositoryTupleSwapperEngine().swapToObject(repositoryTuples, yamlRuleConfig.getClass());
+        Optional<YamlRuleConfiguration> actualYamlRuleConfig = engine.swapToObject(repositoryTuples, yamlRuleConfig.getClass());
         assertTrue(actualYamlRuleConfig.isPresent());
         YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
         yamlRootConfig.setRules(Collections.singletonList(actualYamlRuleConfig.get()));

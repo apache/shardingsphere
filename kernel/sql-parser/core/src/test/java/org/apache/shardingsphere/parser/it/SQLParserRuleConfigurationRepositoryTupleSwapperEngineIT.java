@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.it;
+package org.apache.shardingsphere.parser.it;
 
-import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
+import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class BroadcastRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
+class SQLParserRuleConfigurationRepositoryTupleSwapperEngineIT extends RepositoryTupleSwapperEngineIT {
     
-    BroadcastRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/broadcast-rule.yaml");
+    SQLParserRuleConfigurationRepositoryTupleSwapperEngineIT() {
+        super("yaml/sql-parser-rule.yaml");
     }
     
     @Override
     protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        assertRepositoryTuple(actualRepositoryTuples.get(0), "tables", ((YamlBroadcastRuleConfiguration) expectedYamlRuleConfig).getTables());
+        assertRepositoryTuple(actualRepositoryTuples.get(0), "sql_parser", expectedYamlRuleConfig);
     }
 }

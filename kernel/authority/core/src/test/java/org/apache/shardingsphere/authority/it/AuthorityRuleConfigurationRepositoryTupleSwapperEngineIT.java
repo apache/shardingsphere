@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.it;
+package org.apache.shardingsphere.authority.it;
 
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
+import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class SingleRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
+class AuthorityRuleConfigurationRepositoryTupleSwapperEngineIT extends RepositoryTupleSwapperEngineIT {
     
-    SingleRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/single-rule.yaml");
+    AuthorityRuleConfigurationRepositoryTupleSwapperEngineIT() {
+        super("yaml/authority-rule.yaml");
     }
     
     @Override
     protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        assertRepositoryTuple(actualRepositoryTuples.get(0), "tables", expectedYamlRuleConfig);
+        assertRepositoryTuple(actualRepositoryTuples.get(0), "authority", expectedYamlRuleConfig);
     }
 }
