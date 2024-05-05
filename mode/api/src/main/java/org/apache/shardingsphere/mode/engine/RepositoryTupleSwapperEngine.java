@@ -163,8 +163,8 @@ public final class RepositoryTupleSwapperEngine {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private Optional<YamlRuleConfiguration> swapToYamlRuleConfiguration(final Collection<RepositoryTuple> repositoryTuples,
-                                                                        final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass, final Collection<Field> fields) {
-        YamlRuleConfiguration yamlRuleConfig = yamlRuleConfigurationClass.getConstructor().newInstance();
+                                                                        final Class<? extends YamlRuleConfiguration> toBeSwappedType, final Collection<Field> fields) {
+        YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
         RuleNodePath ruleNodePath = TypedSPILoader.getService(RuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getRuleNodePath();
         List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         if (validTuples.isEmpty()) {
