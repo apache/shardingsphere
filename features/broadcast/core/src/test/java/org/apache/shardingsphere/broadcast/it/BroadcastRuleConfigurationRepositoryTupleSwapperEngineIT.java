@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.logging.it;
+package org.apache.shardingsphere.broadcast.it;
 
+import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.logging.yaml.swapper.LoggingRuleConfigurationRepositoryTupleSwapper;
-import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
+import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class LoggingRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
+class BroadcastRuleConfigurationRepositoryTupleSwapperEngineIT extends RepositoryTupleSwapperEngineIT {
     
-    LoggingRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/logging-rule.yaml", new LoggingRuleConfigurationRepositoryTupleSwapper(), true);
+    BroadcastRuleConfigurationRepositoryTupleSwapperEngineIT() {
+        super("yaml/broadcast-rule.yaml");
     }
     
     @Override
     protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        assertRepositoryTuple(actualRepositoryTuples.get(0), "logging", expectedYamlRuleConfig);
+        assertRepositoryTuple(actualRepositoryTuples.get(0), "tables", ((YamlBroadcastRuleConfiguration) expectedYamlRuleConfig).getTables());
     }
 }

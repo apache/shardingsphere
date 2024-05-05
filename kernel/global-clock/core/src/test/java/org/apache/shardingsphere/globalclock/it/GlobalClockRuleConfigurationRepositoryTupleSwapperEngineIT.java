@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.it;
+package org.apache.shardingsphere.globalclock.it;
 
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.single.yaml.config.swapper.SingleRuleConfigurationRepositoryTupleSwapper;
-import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
+import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class SingleRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
+class GlobalClockRuleConfigurationRepositoryTupleSwapperEngineIT extends RepositoryTupleSwapperEngineIT {
     
-    SingleRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/single-rule.yaml", new SingleRuleConfigurationRepositoryTupleSwapper(), false);
+    GlobalClockRuleConfigurationRepositoryTupleSwapperEngineIT() {
+        super("yaml/global-clock-rule.yaml");
     }
     
     @Override
     protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        assertRepositoryTuple(actualRepositoryTuples.get(0), "tables", expectedYamlRuleConfig);
+        assertRepositoryTuple(actualRepositoryTuples.get(0), "global_clock", expectedYamlRuleConfig);
     }
 }

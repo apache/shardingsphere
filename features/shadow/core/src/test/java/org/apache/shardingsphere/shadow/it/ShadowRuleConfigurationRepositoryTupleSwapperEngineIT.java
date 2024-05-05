@@ -20,8 +20,7 @@ package org.apache.shardingsphere.shadow.it;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleConfigurationRepositoryTupleSwapper;
-import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
+import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperEngineIT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +28,10 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ShadowRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
+class ShadowRuleConfigurationRepositoryTupleSwapperEngineIT extends RepositoryTupleSwapperEngineIT {
     
-    ShadowRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/shadow-rule.yaml", new ShadowRuleConfigurationRepositoryTupleSwapper(), false);
+    ShadowRuleConfigurationRepositoryTupleSwapperEngineIT() {
+        super("yaml/shadow-rule.yaml");
     }
     
     @Override
