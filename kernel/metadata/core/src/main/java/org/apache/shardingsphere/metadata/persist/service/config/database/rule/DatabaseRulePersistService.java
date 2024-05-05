@@ -20,7 +20,6 @@ package org.apache.shardingsphere.metadata.persist.service.config.database.rule;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
@@ -31,13 +30,11 @@ import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuple
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
 import org.apache.shardingsphere.mode.engine.AutoRepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
-import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
@@ -56,15 +53,13 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
         repositoryTuplePersistService = new RepositoryTuplePersistService(repository);
     }
     
-    @SuppressWarnings("rawtypes")
     @Override
     public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
-        Collection<YamlRuleConfiguration> yamlRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
         AutoRepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new AutoRepositoryTupleSwapperEngine();
-        for (Entry<YamlRuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, yamlRuleConfigs).entrySet()) {
-            Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(entry.getKey());
+        for (YamlRuleConfiguration each : new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs)) {
+            Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(each);
             if (!repositoryTuples.isEmpty()) {
-                persistDataNodes(databaseName, Objects.requireNonNull(entry.getKey().getClass().getAnnotation(RepositoryTupleEntity.class)).value(), repositoryTuples);
+                persistDataNodes(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RepositoryTupleEntity.class)).value(), repositoryTuples);
             }
         }
     }
@@ -79,16 +74,15 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
         repository.delete(DatabaseRuleMetaDataNode.getDatabaseRuleNode(databaseName, name));
     }
     
-    @SuppressWarnings("rawtypes")
     @Override
     public Collection<MetaDataVersion> persistConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         AutoRepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new AutoRepositoryTupleSwapperEngine();
         Collection<YamlRuleConfiguration> yamlRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
-        for (Entry<YamlRuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, yamlRuleConfigs).entrySet()) {
-            Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(entry.getKey());
+        for (YamlRuleConfiguration each : yamlRuleConfigs) {
+            Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(each);
             if (!repositoryTuples.isEmpty()) {
-                result.addAll(persistDataNodes(databaseName, Objects.requireNonNull(entry.getKey().getClass().getAnnotation(RepositoryTupleEntity.class)).value(), repositoryTuples));
+                result.addAll(persistDataNodes(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RepositoryTupleEntity.class)).value(), repositoryTuples));
             }
         }
         return result;
@@ -108,20 +102,18 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
         return result;
     }
     
-    @SuppressWarnings("rawtypes")
     @Override
     public Collection<MetaDataVersion> deleteConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         AutoRepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new AutoRepositoryTupleSwapperEngine();
-        Collection<YamlRuleConfiguration> yamlRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
-        for (Entry<YamlRuleConfiguration, RepositoryTupleSwapper> entry : OrderedSPILoader.getServices(RepositoryTupleSwapper.class, yamlRuleConfigs).entrySet()) {
-            Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(entry.getKey());
+        for (YamlRuleConfiguration each : new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs)) {
+            Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(each);
             if (repositoryTuples.isEmpty()) {
                 continue;
             }
             List<RepositoryTuple> newRepositoryTuples = new LinkedList<>(repositoryTuples);
             Collections.reverse(newRepositoryTuples);
-            result.addAll(deleteDataNodes(databaseName, Objects.requireNonNull(entry.getKey().getClass().getAnnotation(RepositoryTupleEntity.class)).value(), newRepositoryTuples));
+            result.addAll(deleteDataNodes(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RepositoryTupleEntity.class)).value(), newRepositoryTuples));
         }
         return result;
     }
