@@ -140,7 +140,7 @@ ElasticJob 3.x 提供了官方的 Spring Boot Starter，并已经着手开发基
 
 2. HTTP 作业类型
 
-支持 HTTP 作业类型，在Script 之外提供另外的跨语言作业类型。
+支持 HTTP 作业类型，在 Script 之外提供另外的跨语言作业类型。
 
 **操作 API 标准化**
 
