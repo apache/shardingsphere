@@ -12,7 +12,7 @@ ElasticJob（ https://github.com/apache/shardingsphere-elasticjob ）是面向�
 ElasticJob 在技术选型时，选择站在了巨人的肩膀上而不是重复制造轮子的理念，将定时任务事实标准的 QuartZ 与 分布式协调的利器 ZooKeeper 完美结合，快速而稳定的搭建了全新概念的分布式调度框架。
 
 ### ElasticJob调度模型
-ElasticJob 的调度模型划分为支持线程级别调度的进程内调度 ElasticJob-Lite，和进程级别调度的ElasticJob-Cloud。
+ElasticJob 的调度模型划分为支持线程级别调度的进程内调度 ElasticJob-Lite，和进程级别调度的 ElasticJob-Cloud。
 
 **进程内调度**
 
@@ -32,7 +32,7 @@ ElasticJob-Lite 本身是无中心化架构，无需独立的中心化调度节�
 
 ElasticJob-Cloud 拥有进程内调度和进程级别调度两种方式。由于 ElasticJob-Cloud 能够对作业服务器的资源进行控制，因此其作业类型可划分为常驻任务和瞬时任务。常驻任务类似于ElasticJob-Lite，是进程内调度；瞬时任务则完全不同，它充分的利用了资源分配的削峰填谷能力，是进程级的调度，每次任务的会启动全新的进程处理。
 
-ElasticJob-Cloud 需要通过 Mesos 对资源进行控制，并且通过部署在 Mesos Master的调度器进行任务和资源的分配。Cloud采用中心化架构，将调度中心的高可用交由 Mesos管理。
+ElasticJob-Cloud 需要通过 Mesos 对资源进行控制，并且通过部署在 Mesos Master 的调度器进行任务和资源的分配。Cloud 采用中心化架构，将调度中心的高可用交由 Mesos管理。
 
 它的架构图如下：
 
@@ -76,9 +76,9 @@ ElasticJob 中任务分片项的概念，使得任务可以在分布式的环境
 
 **API 变更**
 
-1. 将 Maven 坐标的 groupId 变更为org.apache.shardingsphere.elasticjob
+1. 将 Maven 坐标的 groupId 变更为 org.apache.shardingsphere.elasticjob
 
-2. 将包名称变更为org.apache.shardingsphere.elasticjob
+2. 将包名称变更为 org.apache.shardingsphere.elasticjob
 
 3. 将 Spring 命名空间名称变更为 http://shardingsphere.apache.org/schema/elasticjob
 
@@ -92,7 +92,7 @@ ElasticJob 中任务分片项的概念，使得任务可以在分布式的环境
 
 1. 调度器多元化，增加一次性任务调度器
 
-2. 提供ElasticJob-Lite 项目的 官方 Spring Boot Starter
+2. 提供 ElasticJob-Lite 项目的 官方 Spring Boot Starter
 
 3. 支持使用多种数据库类型存储作业历史轨迹数据
 
@@ -102,7 +102,7 @@ ElasticJob 中任务分片项的概念，使得任务可以在分布式的环境
 
 ### 3.x版本设计解读
 
-通过Release Notes能够看出，ElasticJob 3.x 并非 2.x 的修补版本，而是通过革新的设计理念践行的一套新产品。
+通过 Release Notes 能够看出，ElasticJob 3.x 并非 2.x 的修补版本，而是通过革新的设计理念践行的一套新产品。
 
 ElasticJob 3.x 最直观的变化是将原有的个位数的模块数量拆分为数十个职责清理的微模块。
 
@@ -110,27 +110,27 @@ ElasticJob 3.x 最直观的变化是将原有的个位数的模块数量拆分�
 
 **微内核**
 
-ElasticJob 3.x 抽象了 API 和基础设施模块，并且将注册中心、历史执行轨迹、控制台、作业执行器、Lite和Cloud等模块全数分离。
+ElasticJob 3.x 抽象了 API 和基础设施模块，并且将注册中心、历史执行轨迹、控制台、作业执行器、Lite 和 Cloud 等模块全数分离。
 
 内核模块高度可扩展，但不依赖于可扩展模块本身的实现。它继承了 ElasticJob 之前的能力，在继续为开发者提供分布式服务的工具包的同时，向开发者开放可自由定制化扩展的脚手架。
 
 **可扩展**
 
-ElasticJob 3.x在微内核的基础上定义了丰富的可扩展接口，包括作业类型、配置策略、历史执行轨迹存储端以及将要做的注册中心存储端等可扩展接口。
+ElasticJob 3.x 在微内核的基础上定义了丰富的可扩展接口，包括作业类型、配置策略、历史执行轨迹存储端以及将要做的注册中心存储端等可扩展接口。
 
 开发者可以在不修改 ElasticJob 源码的情况下织入定制化功能，真正做到对修改关闭，对扩展开放。
 
 **生态对接**
 
-ElasticJob 3.x 提供了官方的Spring Boot Starter，并已经着手开发基于 Apache SkyWalking 的自动探针，使其能更加便捷的融入现有的技术体系。
+ElasticJob 3.x 提供了官方的 Spring Boot Starter，并已经着手开发基于 Apache SkyWalking 的自动探针，使其能更加便捷的融入现有的技术体系。
 
-另外，从Release Notes中可以解读到的是，ElasticJob 3.x 并未对 Cloud进行大幅更新，其主要改动均集中在内核以及Lite模块。
+另外，从 Release Notes中可以解读到的是，ElasticJob 3.x 并未对 Cloud 进行大幅更新，其主要改动均集中在内核以及 Lite 模块。
 
-对于部署复杂且逐渐不再流行的 Mesos，ElasticJob 的 3.x 将渐渐弱化对它的依赖，并计划在未来提供更加泛化资源隔离 API，使 Cloud 产品线可对接Mesos，Kubernetes 甚至无依赖的独立部署使用。
+对于部署复杂且逐渐不再流行的 Mesos，ElasticJob 的 3.x 将渐渐弱化对它的依赖，并计划在未来提供更加泛化资源隔离 API，使 Cloud 产品线可对接 Mesos，Kubernetes 甚至无依赖的独立部署使用。
 
 ### 3.0.0-beta 功能预告
 
-在调整完项目和包结构之后，ElasticJob 3.0.0-beta版本将工作重点放在新功能开发和操作 API 标准化这两个方面。
+在调整完项目和包结构之后，ElasticJob 3.0.0-beta 版本将工作重点放在新功能开发和操作 API 标准化这两个方面。
 
 **新功能预告**
 
@@ -140,7 +140,7 @@ ElasticJob 3.x 提供了官方的Spring Boot Starter，并已经着手开发基�
 
 2. HTTP 作业类型
 
-支持HTTP作业类型，在Script 之外提供另外的跨语言作业类型。
+支持 HTTP 作业类型，在 Script 之外提供另外的跨语言作业类型。
 
 **操作 API 标准化**
 
@@ -162,7 +162,7 @@ ElasticJob 3.x 提供了官方的Spring Boot Starter，并已经着手开发基�
 
 **可插拔生态**
 
-与 Apache ShardingSphere 一脉相承，ElasticJob 也将提供更加可插拔和模块化架构，为开发者提供基础设施。方便开发者基于 ElasticJob 二次开发，添加各种定制化功能，包括但不限于作业类型（如：大数据作业、HTTP作业等）、注册中心类型（如：Eureka等）、执行轨迹存储介质（如其他数据库类型）等。
+与 Apache ShardingSphere 一脉相承，ElasticJob 也将提供更加可插拔和模块化架构，为开发者提供基础设施。方便开发者基于 ElasticJob 二次开发，添加各种定制化功能，包括但不限于作业类型（如：大数据作业、HTTP 作业等）、注册中心类型（如：Eureka 等）、执行轨迹存储介质（如其他数据库类型）等。
 
 
 ElasticJob 最终会将 Lite 和 Cloud 以更贴近的方式供开发工程师和运维工程师使用，共享其调度、执行和作业库。整体规划如下：
@@ -173,7 +173,7 @@ ElasticJob 最终会将 Lite 和 Cloud 以更贴近的方式供开发工程师�
 
 ElasticJob 社区在之前的几年处于停滞状况，主要原因是作者精力有限，分身乏术。在接收到了作为 Apache ShardingSphere 弹性迁移的调度基础设施的需求之后，本就一脉相承的 ElasticJob 社区决定重启，并且作为 Apache ShardingSphere 的子项目继续发光发热。目前的 ElasticJob 已正式将项目源码迁入 Apache 的 GitHub 仓库，并且在重启的几个月来十分活跃，在GitHub 周和月度趋势排名中榜上有名。
 
-ElasticJob 是Apache ShardingSphere（ https://github.com/apache/shardingsphere ）的子项目，目标是成为独立的 Apache 顶级项目，以及为 Apache ShardingSphere 的弹性迁移提供数据调度的基石。
+ElasticJob 是 Apache ShardingSphere（ https://github.com/apache/shardingsphere ）的子项目，目标是成为独立的 Apache 顶级项目，以及为 Apache ShardingSphere 的弹性迁移提供数据调度的基石。
 
 ### 作者简介
 
@@ -183,7 +183,7 @@ ElasticJob 是Apache ShardingSphere（ https://github.com/apache/shardingsphere 
 
 目前主要精力投入在将分布式数据库中间件 Apache ShardingSphere 打造为业界一流的金融级数据解决方案之上。
 
-Apache ShardingSphere( https://github.com/apache/shardingsphere )是京东主导的首个 Apache 软件基金会顶级项目，也是 Apache 软件基金会首个分布式数据库中间件。
+Apache ShardingSphere ( https://github.com/apache/shardingsphere )是京东主导的首个 Apache 软件基金会顶级项目，也是 Apache 软件基金会首个分布式数据库中间件。
 
 曾出版书籍《未来架构——从服务化到云原生》。
 

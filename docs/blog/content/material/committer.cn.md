@@ -4,7 +4,7 @@ weight = 5
 chapter = true
 +++
 
-### 什么是Apache软件基金会？
+### 什么是 Apache 软件基金会？
 
 Apache 软件基金会（Apache Software Foundation），是当今最具影响力的非盈利性开源软件项目组织，正式成立于 1999 年，主要由开发者与用户的团体组成。在 Apache 软件基金会主导下，已有 350 多个顶级开源项目毕业，包括全球最著名的网络服务器软件 Apache HTTP Server。秉持着“开放、创新、社区”的精神，很多 Apache 项目已经建立起强大成功的生态圈，社区充满活力。
 
@@ -12,7 +12,7 @@ Apache 软件基金会（Apache Software Foundation），是当今最具影响�
 
 Apache 软件基金会如今已成为现代开源软件生态系统的基石。
 
-### 为什么要成为Apache committer？
+### 为什么要成为 Apache committer？
 
 说了这么多，不管大家之前对 Apache 软件基金会了解到了什么程度，都可以看出，这是一个极具影响力的组织，在业内广受认可。
 
@@ -31,7 +31,7 @@ Apache 软件基金会如今已成为现代开源软件生态系统的基石。
 
 ![](https://shardingsphere.apache.org/blog/img/committer1.jpg)
 
-### 如何成为官方认可的 committer？
+### 如何成为官方认可的 committer ？
 
 下面就是本篇文章的重点啦，需要做些什么，才会成为一名官方认可的 committer 呢？
 
