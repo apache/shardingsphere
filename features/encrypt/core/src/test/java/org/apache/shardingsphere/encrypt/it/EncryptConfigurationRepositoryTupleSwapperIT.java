@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.it;
 
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
@@ -31,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class EncryptConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
     
     EncryptConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/encrypt-rule.yaml", new EncryptRuleConfigurationRepositoryTupleSwapper(), false);
+        super("yaml/encrypt-rule.yaml");
     }
     
     @Override

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.parser.it;
 
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.parser.yaml.swapper.SQLParserRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.List;
@@ -30,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class SQLParserRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
     
     SQLParserRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/sql-parser-rule.yaml", new SQLParserRuleConfigurationRepositoryTupleSwapper(), true);
+        super("yaml/sql-parser-rule.yaml");
     }
     
     @Override

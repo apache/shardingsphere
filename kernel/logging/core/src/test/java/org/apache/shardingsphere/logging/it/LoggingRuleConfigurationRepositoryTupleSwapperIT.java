@@ -19,7 +19,6 @@ package org.apache.shardingsphere.logging.it;
 
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.logging.yaml.swapper.LoggingRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.List;
@@ -30,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class LoggingRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
     
     LoggingRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/logging-rule.yaml", new LoggingRuleConfigurationRepositoryTupleSwapper(), true);
+        super("yaml/logging-rule.yaml");
     }
     
     @Override

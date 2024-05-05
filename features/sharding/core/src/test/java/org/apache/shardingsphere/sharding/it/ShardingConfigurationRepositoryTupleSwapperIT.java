@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.it;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class ShardingConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
     
     ShardingConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/sharding-rule.yaml", new ShardingRuleConfigurationRepositoryTupleSwapper(), false);
+        super("yaml/sharding-rule.yaml");
     }
     
     @Override

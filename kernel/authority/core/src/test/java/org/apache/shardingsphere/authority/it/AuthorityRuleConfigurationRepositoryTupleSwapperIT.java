@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.authority.it;
 
-import org.apache.shardingsphere.authority.yaml.swapper.AuthorityRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
@@ -30,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class AuthorityRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
     
     AuthorityRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/authority-rule.yaml", new AuthorityRuleConfigurationRepositoryTupleSwapper(), true);
+        super("yaml/authority-rule.yaml");
     }
     
     @Override

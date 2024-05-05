@@ -20,10 +20,10 @@ package org.apache.shardingsphere.test.it.yaml;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.mode.engine.RepositoryTupleSwapperEngine;
-import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -48,18 +48,10 @@ public abstract class RepositoryTupleSwapperIT {
     
     private final File yamlFile;
     
-    @SuppressWarnings("rawtypes")
-    private final RepositoryTupleSwapper swapper;
-    
-    private final boolean isGlobalRule;
-    
-    @SuppressWarnings("rawtypes")
-    public RepositoryTupleSwapperIT(final String yamlFileName, final RepositoryTupleSwapper swapper, final boolean isGlobalRule) {
+    public RepositoryTupleSwapperIT(final String yamlFileName) {
         URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFileName);
         assertNotNull(url);
         yamlFile = new File(url.getFile());
-        this.swapper = swapper;
-        this.isGlobalRule = isGlobalRule;
     }
     
     @Test
@@ -90,20 +82,19 @@ public abstract class RepositoryTupleSwapperIT {
         assertThat(getActualYamlContent(), is(getExpectedYamlContent()));
     }
     
-    @SuppressWarnings("unchecked")
     private String getActualYamlContent() throws IOException {
         YamlRuleConfiguration yamlRuleConfig = loadYamlRuleConfiguration();
         String ruleTypeName = Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value();
         Collection<RepositoryTuple> repositoryTuples = new RepositoryTupleSwapperEngine().swapToRepositoryTuples(yamlRuleConfig).stream()
-                .map(each -> new RepositoryTuple(getRepositoryTupleKey(ruleTypeName, each), each.getValue())).collect(Collectors.toList());
-        Optional<YamlRuleConfiguration> actualYamlRuleConfig = new RepositoryTupleSwapperEngine().swapToObject(repositoryTuples, swapper.getTypeClass());
+                .map(each -> new RepositoryTuple(getRepositoryTupleKey(yamlRuleConfig instanceof YamlGlobalRuleConfiguration, ruleTypeName, each), each.getValue())).collect(Collectors.toList());
+        Optional<YamlRuleConfiguration> actualYamlRuleConfig = new RepositoryTupleSwapperEngine().swapToObject(repositoryTuples, yamlRuleConfig.getClass());
         assertTrue(actualYamlRuleConfig.isPresent());
         YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
         yamlRootConfig.setRules(Collections.singletonList(actualYamlRuleConfig.get()));
         return YamlEngine.marshal(yamlRootConfig);
     }
     
-    private String getRepositoryTupleKey(final String ruleTypeName, final RepositoryTuple tuple) {
+    private String getRepositoryTupleKey(final boolean isGlobalRule, final String ruleTypeName, final RepositoryTuple tuple) {
         return isGlobalRule
                 ? String.format("/metadata/rules/%s/versions/0", ruleTypeName)
                 : String.format("/metadata/foo_db/rules/%s/%s/versions/0", ruleTypeName, tuple.getKey());

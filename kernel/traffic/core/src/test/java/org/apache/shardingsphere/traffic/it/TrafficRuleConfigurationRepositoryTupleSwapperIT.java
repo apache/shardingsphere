@@ -20,7 +20,6 @@ package org.apache.shardingsphere.traffic.it;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
-import org.apache.shardingsphere.traffic.yaml.swapper.TrafficRuleConfigurationRepositoryTupleSwapper;
 
 import java.util.List;
 
@@ -30,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class TrafficRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
     
     TrafficRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/traffic-rule.yaml", new TrafficRuleConfigurationRepositoryTupleSwapper(), true);
+        super("yaml/traffic-rule.yaml");
     }
     
     @Override

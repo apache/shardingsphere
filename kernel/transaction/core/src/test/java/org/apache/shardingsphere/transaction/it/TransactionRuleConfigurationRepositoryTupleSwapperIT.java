@@ -20,7 +20,6 @@ package org.apache.shardingsphere.transaction.it;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
-import org.apache.shardingsphere.transaction.yaml.swapper.TransactionRuleConfigurationRepositoryTupleSwapper;
 
 import java.util.List;
 
@@ -30,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class TransactionRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
     
     TransactionRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/transaction-rule.yaml", new TransactionRuleConfigurationRepositoryTupleSwapper(), true);
+        super("yaml/transaction-rule.yaml");
     }
     
     @Override

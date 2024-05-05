@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.globalclock.it;
 
-import org.apache.shardingsphere.globalclock.yaml.swapper.GlobalClockRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
@@ -30,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class GlobalClockRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
     
     GlobalClockRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/global-clock-rule.yaml", new GlobalClockRuleConfigurationRepositoryTupleSwapper(), true);
+        super("yaml/global-clock-rule.yaml");
     }
     
     @Override

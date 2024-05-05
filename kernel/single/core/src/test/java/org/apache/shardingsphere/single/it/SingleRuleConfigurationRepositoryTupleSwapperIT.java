@@ -19,7 +19,6 @@ package org.apache.shardingsphere.single.it;
 
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.single.yaml.config.swapper.SingleRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.List;
@@ -30,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class SingleRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
     
     SingleRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/single-rule.yaml", new SingleRuleConfigurationRepositoryTupleSwapper(), false);
+        super("yaml/single-rule.yaml");
     }
     
     @Override

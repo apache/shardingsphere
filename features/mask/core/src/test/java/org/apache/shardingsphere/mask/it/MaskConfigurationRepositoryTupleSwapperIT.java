@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mask.it;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
-import org.apache.shardingsphere.mask.yaml.swapper.MaskRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.List;
@@ -31,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class MaskConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
     
     MaskConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/mask-rule.yaml", new MaskRuleConfigurationRepositoryTupleSwapper(), false);
+        super("yaml/mask-rule.yaml");
     }
     
     @Override

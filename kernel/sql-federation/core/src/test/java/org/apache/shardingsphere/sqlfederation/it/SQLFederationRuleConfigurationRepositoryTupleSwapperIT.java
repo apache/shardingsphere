@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sqlfederation.it;
 
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.yaml.swapper.SQLFederationRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.List;
@@ -30,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class SQLFederationRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
     
     SQLFederationRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/sql-federation-rule.yaml", new SQLFederationRuleConfigurationRepositoryTupleSwapper(), true);
+        super("yaml/sql-federation-rule.yaml");
     }
     
     @Override

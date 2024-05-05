@@ -20,7 +20,6 @@ package org.apache.shardingsphere.readwritesplitting.it;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.swapper.ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
 
 import java.util.List;
@@ -31,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class ReadwriteSplittingConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
     
     ReadwriteSplittingConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/readwrite-splitting-rule.yaml", new ReadwriteSplittingRuleConfigurationRepositoryTupleSwapper(), false);
+        super("yaml/readwrite-splitting-rule.yaml");
     }
     
     @Override
