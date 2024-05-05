@@ -15,31 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.it;
+package org.apache.shardingsphere.parser.it;
 
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
-import org.apache.shardingsphere.mask.yaml.swapper.MaskRuleConfigurationRepositoryTupleSwapper;
-import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
+import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MaskConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
+class SQLParserRuleConfigurationRepositoryTupleSwapperEngineIT extends RepositoryTupleSwapperEngineIT {
     
-    MaskConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/mask-rule.yaml", new MaskRuleConfigurationRepositoryTupleSwapper(), false);
+    SQLParserRuleConfigurationRepositoryTupleSwapperEngineIT() {
+        super("yaml/sql-parser-rule.yaml");
     }
     
     @Override
     protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
-        assertThat(actualRepositoryTuples.size(), is(3));
-        assertRepositoryTuple(actualRepositoryTuples.get(0),
-                "mask_algorithms/keep_first_n_last_m_mask", ((YamlMaskRuleConfiguration) expectedYamlRuleConfig).getMaskAlgorithms().get("keep_first_n_last_m_mask"));
-        assertRepositoryTuple(actualRepositoryTuples.get(1), "mask_algorithms/md5_mask", ((YamlMaskRuleConfiguration) expectedYamlRuleConfig).getMaskAlgorithms().get("md5_mask"));
-        assertRepositoryTuple(actualRepositoryTuples.get(2), "tables/t_user", ((YamlMaskRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_user"));
+        assertThat(actualRepositoryTuples.size(), is(1));
+        assertRepositoryTuple(actualRepositoryTuples.get(0), "sql_parser", expectedYamlRuleConfig);
     }
 }

@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.it;
+package org.apache.shardingsphere.single.it;
 
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.sqltranslator.yaml.swapper.SQLTranslatorRuleConfigurationRepositoryTupleSwapper;
-import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
+import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class SQLTranslatorRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
+class SingleRuleConfigurationRepositoryTupleSwapperEngineIT extends RepositoryTupleSwapperEngineIT {
     
-    SQLTranslatorRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/sql-translator-rule.yaml", new SQLTranslatorRuleConfigurationRepositoryTupleSwapper(), true);
+    SingleRuleConfigurationRepositoryTupleSwapperEngineIT() {
+        super("yaml/single-rule.yaml");
     }
     
     @Override
     protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        assertRepositoryTuple(actualRepositoryTuples.get(0), "sql_translator", expectedYamlRuleConfig);
+        assertRepositoryTuple(actualRepositoryTuples.get(0), "tables", expectedYamlRuleConfig);
     }
 }

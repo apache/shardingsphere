@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.parser.it;
+package org.apache.shardingsphere.encrypt.it;
 
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.parser.yaml.swapper.SQLParserRuleConfigurationRepositoryTupleSwapper;
-import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperIT;
+import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class SQLParserRuleConfigurationRepositoryTupleSwapperIT extends RepositoryTupleSwapperIT {
+class EncryptConfigurationRepositoryTupleSwapperEngineIT extends RepositoryTupleSwapperEngineIT {
     
-    SQLParserRuleConfigurationRepositoryTupleSwapperIT() {
-        super("yaml/sql-parser-rule.yaml", new SQLParserRuleConfigurationRepositoryTupleSwapper(), true);
+    EncryptConfigurationRepositoryTupleSwapperEngineIT() {
+        super("yaml/encrypt-rule.yaml");
     }
     
     @Override
     protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
-        assertThat(actualRepositoryTuples.size(), is(1));
-        assertRepositoryTuple(actualRepositoryTuples.get(0), "sql_parser", expectedYamlRuleConfig);
+        assertThat(actualRepositoryTuples.size(), is(3));
+        assertRepositoryTuple(actualRepositoryTuples.get(0), "encryptors/aes_encryptor", ((YamlEncryptRuleConfiguration) expectedYamlRuleConfig).getEncryptors().get("aes_encryptor"));
+        assertRepositoryTuple(actualRepositoryTuples.get(1), "encryptors/assisted_encryptor", ((YamlEncryptRuleConfiguration) expectedYamlRuleConfig).getEncryptors().get("assisted_encryptor"));
+        assertRepositoryTuple(actualRepositoryTuples.get(2), "tables/t_user", ((YamlEncryptRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_user"));
     }
 }
