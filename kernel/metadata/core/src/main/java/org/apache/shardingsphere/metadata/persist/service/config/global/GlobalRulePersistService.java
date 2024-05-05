@@ -25,9 +25,8 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.engine.AutoRepositoryTupleSwapperEngine;
+import org.apache.shardingsphere.mode.engine.RepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
@@ -57,7 +56,7 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
-        AutoRepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new AutoRepositoryTupleSwapperEngine();
+        RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
         for (YamlRuleConfiguration each : new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)) {
             Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(each);
             if (!repositoryTuples.isEmpty()) {

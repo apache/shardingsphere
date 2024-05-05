@@ -26,9 +26,8 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.Reposito
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.metadata.DatabaseRuleMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
-import org.apache.shardingsphere.mode.engine.AutoRepositoryTupleSwapperEngine;
+import org.apache.shardingsphere.mode.engine.RepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
@@ -55,7 +54,7 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     
     @Override
     public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
-        AutoRepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new AutoRepositoryTupleSwapperEngine();
+        RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
         for (YamlRuleConfiguration each : new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs)) {
             Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(each);
             if (!repositoryTuples.isEmpty()) {
@@ -77,7 +76,7 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     @Override
     public Collection<MetaDataVersion> persistConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        AutoRepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new AutoRepositoryTupleSwapperEngine();
+        RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
         Collection<YamlRuleConfiguration> yamlRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
         for (YamlRuleConfiguration each : yamlRuleConfigs) {
             Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(each);
@@ -105,7 +104,7 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     @Override
     public Collection<MetaDataVersion> deleteConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        AutoRepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new AutoRepositoryTupleSwapperEngine();
+        RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
         for (YamlRuleConfiguration each : new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs)) {
             Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(each);
             if (repositoryTuples.isEmpty()) {

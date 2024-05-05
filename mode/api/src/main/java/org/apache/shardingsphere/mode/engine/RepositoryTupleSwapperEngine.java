@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mode.engine;
 
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
@@ -28,8 +30,10 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.Reposito
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleKeyNameGenerator;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleType;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
+import org.apache.shardingsphere.mode.spi.RepositoryTupleSwapper;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
 import java.lang.reflect.Field;
@@ -42,13 +46,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Auto repository tuple swapper engine.
+ * Repository tuple swapper engine.
  */
-public final class AutoRepositoryTupleSwapperEngine {
+public final class RepositoryTupleSwapperEngine {
     
     /**
      * Swap to repository tuples.
@@ -232,5 +237,46 @@ public final class AutoRepositoryTupleSwapperEngine {
         if (ruleNodePath.getUniqueItem(tupleField.value()).isValidatedPath(repositoryTuple.getKey())) {
             field.set(yamlRuleConfig, YamlEngine.unmarshal(repositoryTuple.getValue(), field.getType()));
         }
+    }
+    
+    /**
+     * Swap to rule configurations.
+     *
+     * @param repositoryTuples repository tuples
+     * @return global rule configurations
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<RepositoryTuple> repositoryTuples) {
+        if (repositoryTuples.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Collection<RuleConfiguration> result = new LinkedList<>();
+        YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
+        for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
+            swapToObject(repositoryTuples, each.getTypeClass()).ifPresent(optional -> result.add(yamlSwapperEngine.swapToRuleConfiguration((YamlRuleConfiguration) optional)));
+        }
+        return result;
+    }
+    
+    /**
+     * Swap to rule configuration.
+     *
+     * @param ruleTypeName rule type name
+     * @param repositoryTuples repository tuples
+     * @return global rule configuration
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Optional<RuleConfiguration> swapToRuleConfiguration(final String ruleTypeName, final Collection<RepositoryTuple> repositoryTuples) {
+        if (repositoryTuples.isEmpty()) {
+            return Optional.empty();
+        }
+        YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
+        for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
+            if (ruleTypeName.equals(Objects.requireNonNull((RepositoryTupleEntity) each.getTypeClass().getAnnotation(RepositoryTupleEntity.class)).value())) {
+                Optional<YamlRuleConfiguration> yamlRuleConfig = swapToObject(repositoryTuples, each.getTypeClass());
+                return yamlRuleConfig.map(yamlSwapperEngine::swapToRuleConfiguration);
+            }
+        }
+        return Optional.empty();
     }
 }
