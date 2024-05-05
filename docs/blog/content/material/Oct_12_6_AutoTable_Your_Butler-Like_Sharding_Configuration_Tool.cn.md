@@ -116,7 +116,7 @@ SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=10))
 DROP SHARDING TABLE RULE t_order;
 ~~~
 
-**注：**若规则修改影响到存量数据，ShardingSphere 还将提供“弹性扩缩容”的功能用作数据迁移，帮助用户方便快捷的管理分布式数据。有关“弹性扩缩容”的具体细节，请关注后续推送。
+**注：** 若规则修改影响到存量数据，ShardingSphere 还将提供“弹性扩缩容”的功能用作数据迁移，帮助用户方便快捷的管理分布式数据。有关“弹性扩缩容”的具体细节，请关注后续推送。
 
 ### FAQ
 
