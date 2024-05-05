@@ -127,44 +127,44 @@ public final class RepositoryTupleSwapperEngine {
      * Swap from repository tuple to YAML rule configurations.
      *
      * @param repositoryTuples repository tuples
-     * @param yamlRuleConfigurationClass YAML rule configuration class
+     * @param toBeSwappedType to be swapped type YAML rule configuration class type
      * @return swapped YAML rule configurations
      */
-    public Optional<YamlRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples, final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass) {
-        if (null == yamlRuleConfigurationClass.getAnnotation(RepositoryTupleEntity.class)) {
+    public Optional<YamlRuleConfiguration> swapToYamlRuleConfiguration(final Collection<RepositoryTuple> repositoryTuples, final Class<? extends YamlRuleConfiguration> toBeSwappedType) {
+        if (null == toBeSwappedType.getAnnotation(RepositoryTupleEntity.class)) {
             return Optional.empty();
         }
-        RepositoryTupleType tupleType = yamlRuleConfigurationClass.getAnnotation(RepositoryTupleType.class);
+        RepositoryTupleType tupleType = toBeSwappedType.getAnnotation(RepositoryTupleType.class);
         return null == tupleType
-                ? swapToObject(repositoryTuples, yamlRuleConfigurationClass, getFields(yamlRuleConfigurationClass))
-                : swapToObject(repositoryTuples, yamlRuleConfigurationClass, tupleType);
+                ? swapToYamlRuleConfiguration(repositoryTuples, toBeSwappedType, getFields(toBeSwappedType))
+                : swapToYamlRuleConfiguration(repositoryTuples, toBeSwappedType, tupleType);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private Optional<YamlRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples,
-                                                         final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass, final RepositoryTupleType tupleType) {
-        if (YamlGlobalRuleConfiguration.class.isAssignableFrom(yamlRuleConfigurationClass)) {
+    private Optional<YamlRuleConfiguration> swapToYamlRuleConfiguration(final Collection<RepositoryTuple> repositoryTuples,
+                                                                        final Class<? extends YamlRuleConfiguration> toBeSwappedType, final RepositoryTupleType tupleType) {
+        if (YamlGlobalRuleConfiguration.class.isAssignableFrom(toBeSwappedType)) {
             for (RepositoryTuple each : repositoryTuples) {
                 if (GlobalNodePath.getVersion(tupleType.value(), each.getKey()).isPresent()) {
-                    return Optional.of(YamlEngine.unmarshal(each.getValue(), yamlRuleConfigurationClass));
+                    return Optional.of(YamlEngine.unmarshal(each.getValue(), toBeSwappedType));
                 }
             }
             return Optional.empty();
         }
-        YamlRuleConfiguration yamlRuleConfig = yamlRuleConfigurationClass.getConstructor().newInstance();
+        YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
         RuleNodePath ruleNodePath = TypedSPILoader.getService(RuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getRuleNodePath();
         for (RepositoryTuple each : repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList())) {
             if (ruleNodePath.getUniqueItem(tupleType.value()).isValidatedPath(each.getKey())) {
-                return Optional.of(YamlEngine.unmarshal(each.getValue(), yamlRuleConfigurationClass));
+                return Optional.of(YamlEngine.unmarshal(each.getValue(), toBeSwappedType));
             }
         }
         return Optional.empty();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private Optional<YamlRuleConfiguration> swapToObject(final Collection<RepositoryTuple> repositoryTuples,
-                                                         final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass, final Collection<Field> fields) {
-        YamlRuleConfiguration yamlRuleConfig = yamlRuleConfigurationClass.getConstructor().newInstance();
+    private Optional<YamlRuleConfiguration> swapToYamlRuleConfiguration(final Collection<RepositoryTuple> repositoryTuples,
+                                                                        final Class<? extends YamlRuleConfiguration> toBeSwappedType, final Collection<Field> fields) {
+        YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
         RuleNodePath ruleNodePath = TypedSPILoader.getService(RuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getRuleNodePath();
         List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         if (validTuples.isEmpty()) {
@@ -253,7 +253,7 @@ public final class RepositoryTupleSwapperEngine {
         Collection<RuleConfiguration> result = new LinkedList<>();
         YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
-            swapToObject(repositoryTuples, each.getTypeClass()).ifPresent(optional -> result.add(yamlSwapperEngine.swapToRuleConfiguration((YamlRuleConfiguration) optional)));
+            swapToYamlRuleConfiguration(repositoryTuples, each.getTypeClass()).ifPresent(optional -> result.add(yamlSwapperEngine.swapToRuleConfiguration((YamlRuleConfiguration) optional)));
         }
         return result;
     }
@@ -273,7 +273,7 @@ public final class RepositoryTupleSwapperEngine {
         YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (RepositoryTupleSwapper each : OrderedSPILoader.getServices(RepositoryTupleSwapper.class)) {
             if (ruleTypeName.equals(Objects.requireNonNull((RepositoryTupleEntity) each.getTypeClass().getAnnotation(RepositoryTupleEntity.class)).value())) {
-                Optional<YamlRuleConfiguration> yamlRuleConfig = swapToObject(repositoryTuples, each.getTypeClass());
+                Optional<YamlRuleConfiguration> yamlRuleConfig = swapToYamlRuleConfiguration(repositoryTuples, each.getTypeClass());
                 return yamlRuleConfig.map(yamlSwapperEngine::swapToRuleConfiguration);
             }
         }
