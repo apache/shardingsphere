@@ -93,11 +93,10 @@ public abstract class RepositoryTupleSwapperIT {
     @SuppressWarnings("unchecked")
     private String getActualYamlContent() throws IOException {
         YamlRuleConfiguration yamlRuleConfig = loadYamlRuleConfiguration();
+        String ruleTypeName = Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value();
         Collection<RepositoryTuple> repositoryTuples = new RepositoryTupleSwapperEngine().swapToRepositoryTuples(yamlRuleConfig).stream()
-                .map(each -> new RepositoryTuple(getRepositoryTupleKey(Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value(), each), each.getValue()))
-                .collect(Collectors.toList());
-        RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
-        Optional<YamlRuleConfiguration> actualYamlRuleConfig = repositoryTupleSwapperEngine.swapToObject(repositoryTuples, swapper.getTypeClass());
+                .map(each -> new RepositoryTuple(getRepositoryTupleKey(ruleTypeName, each), each.getValue())).collect(Collectors.toList());
+        Optional<YamlRuleConfiguration> actualYamlRuleConfig = new RepositoryTupleSwapperEngine().swapToObject(repositoryTuples, swapper.getTypeClass());
         assertTrue(actualYamlRuleConfig.isPresent());
         YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
         yamlRootConfig.setRules(Collections.singletonList(actualYamlRuleConfig.get()));
