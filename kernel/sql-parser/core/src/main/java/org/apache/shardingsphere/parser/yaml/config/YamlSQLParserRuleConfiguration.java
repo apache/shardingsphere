@@ -27,7 +27,7 @@ import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 /**
  * SQL parser configuration for YAML.
  */
-@RepositoryTupleEntity("sql_parser")
+@RepositoryTupleEntity(value = "sql_parser", leaf = true)
 @RepositoryTupleType("sql_parser")
 @Getter
 @Setter

@@ -30,7 +30,7 @@ import java.util.LinkedList;
 /**
  * Logging rule configuration for YAML.
  */
-@RepositoryTupleEntity("logging")
+@RepositoryTupleEntity(value = "logging", leaf = true)
 @RepositoryTupleType("logging")
 @Getter
 @Setter

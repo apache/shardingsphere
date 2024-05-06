@@ -29,7 +29,7 @@ import java.util.Properties;
 /**
  * Global clock rule configuration for YAML.
  */
-@RepositoryTupleEntity("global_clock")
+@RepositoryTupleEntity(value = "global_clock", leaf = true)
 @RepositoryTupleType("global_clock")
 @Getter
 @Setter

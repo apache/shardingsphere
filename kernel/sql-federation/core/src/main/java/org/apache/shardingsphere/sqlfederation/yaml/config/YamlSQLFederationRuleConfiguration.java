@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfi
 /**
  * SQL federation rule configuration for YAML.
  */
-@RepositoryTupleEntity("sql_federation")
+@RepositoryTupleEntity(value = "sql_federation", leaf = true)
 @RepositoryTupleType("sql_federation")
 @Getter
 @Setter

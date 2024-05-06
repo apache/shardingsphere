@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * Authority rule configuration for YAML.
  */
-@RepositoryTupleEntity("authority")
+@RepositoryTupleEntity(value = "authority", leaf = true)
 @RepositoryTupleType("authority")
 @Getter
 @Setter
