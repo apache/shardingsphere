@@ -30,8 +30,6 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
  */
 public final class DefaultShadowAlgorithmNameChangedProcessor implements RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, String> {
     
-    public static final String TYPE = "Shadow.DefaultShadowAlgorithmName";
-    
     @Override
     public String swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
         return yamlContent;

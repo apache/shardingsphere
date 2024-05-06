@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.single.rule.changed.SingleTableChangedProcessor
+org.apache.shardingsphere.single.rule.changed.DefaultDataSourceChangedProcessor
