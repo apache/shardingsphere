@@ -335,7 +335,7 @@ vcpuSpec
 
 createResourceGroup
     : CREATE RESOURCE GROUP groupName TYPE EQ_ (SYSTEM | USER) (VCPU EQ_? vcpuSpec (COMMA_ vcpuSpec)*)?
-    (THREAD_PRIORITY EQ_? NUMBER_)? (ENABLE | DISABLE)?
+    (THREAD_PRIORITY EQ_? numberLiterals)? (ENABLE | DISABLE)?
     ;
 
 dropResourceGroup

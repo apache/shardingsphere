@@ -18,4 +18,5 @@
 
 <sql-cases>
     <sql-case id="create_resource_group" value="CREATE RESOURCE GROUP rg type = user" db-types="MySQL" />
+    <sql-case id="create_resource_group_with_system_type_and_thread_priority" value="CREATE RESOURCE GROUP rg2 TYPE = SYSTEM THREAD_PRIORITY = -20 DISABLE" db-types="MySQL"/>
 </sql-cases>
