@@ -63,7 +63,11 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     public ASTNode visitCall(final CallContext ctx) {
         List<ExpressionSegment> params = new ArrayList<>();
         ctx.expr().forEach(each -> params.add((ExpressionSegment) visit(each)));
-        return new MySQLCallStatement(ctx.identifier().getText(), params);
+        String procedureName = ctx.identifier().getText();
+        if (null != ctx.owner()) {
+            procedureName = ctx.owner().getText().concat(".").concat(procedureName);
+        }
+        return new MySQLCallStatement(procedureName, params);
     }
     
     @Override
