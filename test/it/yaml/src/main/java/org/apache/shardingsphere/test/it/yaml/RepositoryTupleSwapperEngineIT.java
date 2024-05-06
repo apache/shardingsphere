@@ -50,7 +50,7 @@ public abstract class RepositoryTupleSwapperEngineIT {
     
     private final RepositoryTupleSwapperEngine engine;
     
-    public RepositoryTupleSwapperEngineIT(final String yamlFileName) {
+    protected RepositoryTupleSwapperEngineIT(final String yamlFileName) {
         URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFileName);
         assertNotNull(url);
         yamlFile = new File(url.getFile());
@@ -81,7 +81,7 @@ public abstract class RepositoryTupleSwapperEngineIT {
     }
     
     @Test
-    void assertSwapToObject() throws IOException {
+    void assertSwapToYamlRuleConfiguration() throws IOException {
         assertThat(getActualYamlContent(), is(getExpectedYamlContent()));
     }
     
