@@ -143,4 +143,14 @@
             <common-expression literal-text="1.0/0.1" start-index="7" stop-index="13" />
         </procedure-parameter>
     </call>
+
+    <call sql-case-id="call_with_mysql_firewall_group_enlist">
+        <procedure-name name="mysql.sp_firewall_group_enlist"/>
+        <procedure-parameter>
+            <literal-expression value="fwgrp" start-index="36" stop-index="42"/>
+        </procedure-parameter>
+        <procedure-parameter>
+            <literal-expression value="member2@localhost" start-index="45" stop-index="63"/>
+        </procedure-parameter>
+    </call>
 </sql-parser-test-cases>

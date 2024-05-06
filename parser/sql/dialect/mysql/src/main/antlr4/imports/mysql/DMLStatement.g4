@@ -163,7 +163,7 @@ querySpecification
     ;
 
 call
-    : CALL identifier (LP_ (expr (COMMA_ expr)*)? RP_)?
+    : CALL (owner DOT_)? identifier (LP_ (expr (COMMA_ expr)*)? RP_)?
     ;
 
 doStatement

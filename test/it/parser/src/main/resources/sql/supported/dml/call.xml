@@ -29,4 +29,5 @@
     <sql-case id="call_with_mixed_notation_with_apos" value="CALL p(10, b =&gt; &apos;Hello&apos;);" db-types="PostgreSQL" />
     <sql-case id="call_with_named_notation_with_apos" value="CALL p(b =&gt; &apos;Hello&apos;, a =&gt; 10);" db-types="PostgreSQL" />
     <sql-case id="call_with_positional_notation_with_expression" value="CALL p(1.0/0.1);" db-types="PostgreSQL" />
+    <sql-case id="call_with_mysql_firewall_group_enlist" value="CALL mysql.sp_firewall_group_enlist('fwgrp', 'member2@localhost')" db-types="MySQL"/>
 </sql-cases>
