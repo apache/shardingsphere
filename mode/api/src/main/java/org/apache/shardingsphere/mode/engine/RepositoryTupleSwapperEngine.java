@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfi
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleKeyNameGenerator;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleKeyListNameGenerator;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleType;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
@@ -90,11 +90,11 @@ public final class RepositoryTupleSwapperEngine {
             return Collections.emptyList();
         }
         RepositoryTupleField tupleField = field.getAnnotation(RepositoryTupleField.class);
-        RepositoryTupleKeyNameGenerator tupleKeyNameGenerator = field.getAnnotation(RepositoryTupleKeyNameGenerator.class);
-        if (null != tupleKeyNameGenerator && fieldValue instanceof Collection) {
+        RepositoryTupleKeyListNameGenerator tupleKeyListNameGenerator = field.getAnnotation(RepositoryTupleKeyListNameGenerator.class);
+        if (null != tupleKeyListNameGenerator && fieldValue instanceof Collection) {
             Collection<RepositoryTuple> result = new LinkedList<>();
             for (Object value : (Collection) fieldValue) {
-                String tupleKeyName = tupleKeyNameGenerator.value().getConstructor().newInstance().generate(value);
+                String tupleKeyName = tupleKeyListNameGenerator.value().getConstructor().newInstance().generate(value);
                 result.add(new RepositoryTuple(ruleNodePath.getNamedItem(tupleField.value()).getPath(tupleKeyName), value.toString()));
             }
             return result;
@@ -194,8 +194,8 @@ public final class RepositoryTupleSwapperEngine {
     private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Field field, final RuleNodePath ruleNodePath, final RepositoryTuple repositoryTuple) throws IllegalAccessException {
         Object fieldValue = field.get(yamlRuleConfig);
         RepositoryTupleField tupleField = field.getAnnotation(RepositoryTupleField.class);
-        RepositoryTupleKeyNameGenerator tupleKeyNameGenerator = field.getAnnotation(RepositoryTupleKeyNameGenerator.class);
-        if (null != tupleKeyNameGenerator && fieldValue instanceof Collection) {
+        RepositoryTupleKeyListNameGenerator tupleKeyListNameGenerator = field.getAnnotation(RepositoryTupleKeyListNameGenerator.class);
+        if (null != tupleKeyListNameGenerator && fieldValue instanceof Collection) {
             ruleNodePath.getNamedItem(tupleField.value()).getName(repositoryTuple.getKey()).ifPresent(optional -> ((Collection) fieldValue).add(repositoryTuple.getValue()));
             return;
         }
