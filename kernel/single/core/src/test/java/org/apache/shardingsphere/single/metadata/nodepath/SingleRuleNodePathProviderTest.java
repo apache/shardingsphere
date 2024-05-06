@@ -32,8 +32,9 @@ class SingleRuleNodePathProviderTest {
         RuleNodePathProvider ruleNodePathProvider = new SingleRuleNodePathProvider();
         RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
         assertTrue(actualRuleNodePath.getNamedItems().isEmpty());
-        assertThat(actualRuleNodePath.getUniqueItems().size(), is(1));
+        assertThat(actualRuleNodePath.getUniqueItems().size(), is(2));
         assertTrue(actualRuleNodePath.getUniqueItems().containsKey(SingleRuleNodePathProvider.TABLES));
+        assertTrue(actualRuleNodePath.getUniqueItems().containsKey(SingleRuleNodePathProvider.DEFAULT_DATA_SOURCE));
         assertThat(actualRuleNodePath.getRoot().getRuleType(), is(SingleRuleNodePathProvider.RULE_TYPE));
     }
 }
