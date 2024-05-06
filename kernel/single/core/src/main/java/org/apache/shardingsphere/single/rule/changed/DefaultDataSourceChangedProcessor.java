@@ -31,17 +31,17 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 public final class DefaultDataSourceChangedProcessor implements RuleItemConfigurationChangedProcessor<SingleRuleConfiguration, String> {
     
     @Override
-    public String swapRuleItemConfiguration(AlterRuleItemEvent event, String yamlContent) {
+    public String swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
         return yamlContent;
     }
     
     @Override
-    public SingleRuleConfiguration findRuleConfiguration(ShardingSphereDatabase database) {
+    public SingleRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(SingleRule.class).map(SingleRule::getConfiguration).orElseGet(SingleRuleConfiguration::new);
     }
     
     @Override
-    public void changeRuleItemConfiguration(AlterRuleItemEvent event, SingleRuleConfiguration currentRuleConfig, String toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig, final String toBeChangedItemConfig) {
         currentRuleConfig.setDefaultDataSource(toBeChangedItemConfig);
     }
     
