@@ -48,13 +48,13 @@ import java.util.Map;
 @Setter
 public final class YamlShardingRuleConfiguration implements YamlRuleConfiguration {
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.TABLES, type = Type.ALGORITHM)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.TABLES, type = Type.TABLE)
     private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.AUTO_TABLES, type = Type.ALGORITHM)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.AUTO_TABLES, type = Type.TABLE)
     private Map<String, YamlShardingAutoTableRuleConfiguration> autoTables = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.BINDING_TABLES, type = Type.ALGORITHM)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.BINDING_TABLES, type = Type.TABLE)
     @RepositoryTupleKeyListNameGenerator(ShardingBindingTableRepositoryTupleKeyListNameGenerator.class)
     private Collection<String> bindingTables = new LinkedList<>();
     
