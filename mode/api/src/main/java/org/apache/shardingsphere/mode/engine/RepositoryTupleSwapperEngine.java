@@ -121,7 +121,7 @@ public final class RepositoryTupleSwapperEngine {
     private Collection<Field> getFields(final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass) {
         return Arrays.stream(yamlRuleConfigurationClass.getDeclaredFields())
                 .filter(each -> null != each.getAnnotation(RepositoryTupleField.class))
-                .sorted(Comparator.comparingInt(o -> o.getAnnotation(RepositoryTupleField.class).order())).collect(Collectors.toList());
+                .sorted(Comparator.comparingInt(o -> o.getAnnotation(RepositoryTupleField.class).type().ordinal())).collect(Collectors.toList());
     }
     
     /**

@@ -21,8 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField.Type;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
@@ -38,10 +39,10 @@ import java.util.Map;
 @Setter
 public final class YamlMaskRuleConfiguration implements YamlRuleConfiguration {
     
-    @RepositoryTupleField(value = MaskRuleNodePathProvider.TABLES, order = 100)
+    @RepositoryTupleField(value = MaskRuleNodePathProvider.TABLES, type = Type.TABLE)
     private Map<String, YamlMaskTableRuleConfiguration> tables = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = MaskRuleNodePathProvider.MASK_ALGORITHMS, order = 0)
+    @RepositoryTupleField(value = MaskRuleNodePathProvider.MASK_ALGORITHMS, type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> maskAlgorithms = new LinkedHashMap<>();
     
     @Override
