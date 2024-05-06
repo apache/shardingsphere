@@ -20,7 +20,6 @@ package org.apache.shardingsphere.transaction.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleType;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
@@ -30,7 +29,6 @@ import java.util.Properties;
  * Transaction rule configuration for YAML.
  */
 @RepositoryTupleEntity(value = "transaction", leaf = true)
-@RepositoryTupleType("transaction")
 @Getter
 @Setter
 public final class YamlTransactionRuleConfiguration implements YamlGlobalRuleConfiguration {

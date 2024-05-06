@@ -20,8 +20,8 @@ package org.apache.shardingsphere.single.yaml.config.pojo;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleType;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
 
@@ -31,14 +31,15 @@ import java.util.LinkedList;
 /**
  * Single rule configuration for YAML.
  */
-@RepositoryTupleEntity(value = "single", leaf = true)
-@RepositoryTupleType(SingleRuleNodePathProvider.TABLES)
+@RepositoryTupleEntity(value = "single")
 @Getter
 @Setter
 public final class YamlSingleRuleConfiguration implements YamlRuleConfiguration {
     
+    @RepositoryTupleField(value = SingleRuleNodePathProvider.TABLES, order = 1)
     private Collection<String> tables = new LinkedList<>();
     
+    @RepositoryTupleField(value = SingleRuleNodePathProvider.DEFAULT_DATA_SOURCE, order = 0)
     private String defaultDataSource;
     
     @Override
