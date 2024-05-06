@@ -95,7 +95,7 @@ jobs:
       - name: Setup JDK 8 for Test
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: 'zulu'
           java-version: 8
       - name: Run Tests with JDK 8
         run: ./mvnw test -B -ntp -fae -T1C
