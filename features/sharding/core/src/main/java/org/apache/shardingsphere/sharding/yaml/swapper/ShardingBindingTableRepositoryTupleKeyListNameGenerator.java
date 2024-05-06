@@ -15,35 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation;
+package org.apache.shardingsphere.sharding.yaml.swapper;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleKeyListNameGenerator;
+import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableReferenceRuleConfigurationConverter;
 
 /**
- * Repository tuple key name generator.
+ * Sharding binding table repository tuple key list name generator.
  */
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface RepositoryTupleKeyNameGenerator {
+public final class ShardingBindingTableRepositoryTupleKeyListNameGenerator implements RepositoryTupleKeyListNameGenerator.Generator {
     
-    /**
-     * Get repository tuple key name generator class.
-     * 
-     * @return repository tuple key name generator class
-     */
-    Class<? extends Generator> value();
-    
-    interface Generator {
-        
-        /**
-         * Generate name of tuple key.
-         * 
-         * @param tupleValue tuple value
-         * @return generated name
-         */
-        String generate(Object tupleValue);
+    @Override
+    public String generate(final Object tupleValue) {
+        return YamlShardingTableReferenceRuleConfigurationConverter.convertToObject(tupleValue.toString()).getName();
     }
 }

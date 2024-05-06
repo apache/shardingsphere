@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigur
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleKeyNameGenerator;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleKeyListNameGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfigur
 import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.ShardingBindingTableRegistryCenterTupleKeyNameGenerator;
+import org.apache.shardingsphere.sharding.yaml.swapper.ShardingBindingTableRepositoryTupleKeyListNameGenerator;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -54,7 +54,7 @@ public final class YamlShardingRuleConfiguration implements YamlRuleConfiguratio
     private Map<String, YamlShardingAutoTableRuleConfiguration> autoTables = new LinkedHashMap<>();
     
     @RepositoryTupleField(value = ShardingRuleNodePathProvider.BINDING_TABLES, order = 502)
-    @RepositoryTupleKeyNameGenerator(ShardingBindingTableRegistryCenterTupleKeyNameGenerator.class)
+    @RepositoryTupleKeyListNameGenerator(ShardingBindingTableRepositoryTupleKeyListNameGenerator.class)
     private Collection<String> bindingTables = new LinkedList<>();
     
     @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_DATABASE_STRATEGY, order = 100)
