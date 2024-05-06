@@ -48,7 +48,7 @@ insertSelectClause
     ;
 
 onDuplicateKeyClause
-    : (AS identifier)? ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
+    : (AS identifier derivedColumns?)?  ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
     ;
 
 valueReference
