@@ -1745,7 +1745,7 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "spool")
     private final List<SpoolStatementTestCase> oracleSpoolStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-loadable-function")
     private final List<CreateLoadableFunctionTestCase> createLoadableFunctionTestCases = new LinkedList<>();
     
