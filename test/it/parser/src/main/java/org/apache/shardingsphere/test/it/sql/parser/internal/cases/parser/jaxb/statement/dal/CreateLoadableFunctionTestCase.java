@@ -22,5 +22,5 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.S
 /**
  * Create loadable function test case.
  */
-public class CreateLoadableFunctionTestCase extends SQLParserTestCase {
+public final class CreateLoadableFunctionTestCase extends SQLParserTestCase {
 }
