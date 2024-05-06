@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigur
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField.Type;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,10 +39,10 @@ import java.util.Map;
 @Setter
 public final class YamlEncryptRuleConfiguration implements YamlRuleConfiguration {
     
-    @RepositoryTupleField(value = EncryptRuleNodePathProvider.TABLES, order = 100)
+    @RepositoryTupleField(value = EncryptRuleNodePathProvider.TABLES, type = Type.TABLE)
     private Map<String, YamlEncryptTableRuleConfiguration> tables = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = EncryptRuleNodePathProvider.ENCRYPTORS, order = 0)
+    @RepositoryTupleField(value = EncryptRuleNodePathProvider.ENCRYPTORS, type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> encryptors = new LinkedHashMap<>();
     
     @Override

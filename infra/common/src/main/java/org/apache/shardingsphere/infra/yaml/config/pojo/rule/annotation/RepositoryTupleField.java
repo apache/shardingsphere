@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation;
 
+import lombok.RequiredArgsConstructor;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -37,9 +39,15 @@ public @interface RepositoryTupleField {
     String value();
     
     /**
-     * Get persist order.
+     * Get type.
      * 
-     * @return persist order
+     * @return type
      */
-    int order();
+    Type type();
+    
+    @RequiredArgsConstructor
+    enum Type implements Comparable<Type> {
+        
+        ALGORITHM, DEFAULT_ALGORITHM, STRATEGY, DEFAULT_STRATEGY, DATA_SOURCE, TABLE, OTHER
+    }
 }
