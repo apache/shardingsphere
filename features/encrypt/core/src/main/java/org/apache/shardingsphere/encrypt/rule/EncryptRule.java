@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -25,27 +26,31 @@ import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFound
 import org.apache.shardingsphere.encrypt.exception.metadata.MismatchedEncryptAlgorithmTypeException;
 import org.apache.shardingsphere.encrypt.rule.attribute.EncryptTableMapperRuleAttribute;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
  * Encrypt rule.
  */
-public final class EncryptRule implements DatabaseRule {
+public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupported<EncryptRuleConfiguration> {
     
     private final String databaseName;
     
-    @Getter
-    private final EncryptRuleConfiguration configuration;
+    private final AtomicReference<EncryptRuleConfiguration> ruleConfig = new AtomicReference<>();
     
     private final Map<String, EncryptTable> tables;
     
@@ -54,8 +59,8 @@ public final class EncryptRule implements DatabaseRule {
     
     public EncryptRule(final String databaseName, final EncryptRuleConfiguration ruleConfig) {
         this.databaseName = databaseName;
-        configuration = ruleConfig;
-        tables = new LinkedHashMap<>();
+        this.ruleConfig.set(ruleConfig);
+        tables = new ConcurrentHashMap<>();
         Map<String, EncryptAlgorithm> encryptors = ruleConfig.getEncryptors().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> TypedSPILoader.getService(EncryptAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps())));
         for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
@@ -106,5 +111,61 @@ public final class EncryptRule implements DatabaseRule {
         Optional<EncryptTable> encryptTable = findEncryptTable(tableName);
         ShardingSpherePreconditions.checkState(encryptTable.isPresent(), () -> new EncryptTableNotFoundException(tableName));
         return encryptTable.get();
+    }
+    
+    @Override
+    public EncryptRuleConfiguration getConfiguration() {
+        return ruleConfig.get();
+    }
+    
+    @Override
+    public void updateConfiguration(final EncryptRuleConfiguration toBeUpdatedRuleConfig) {
+        ruleConfig.set(toBeUpdatedRuleConfig);
+    }
+    
+    @Override
+    public boolean partialUpdateRule(final EncryptRuleConfiguration toBeUpdatedRuleConfig) {
+        Collection<String> toBeAddedTableNames = toBeUpdatedRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
+        toBeAddedTableNames.removeAll(tables.keySet());
+        if (!toBeAddedTableNames.isEmpty()) {
+            for (String each : toBeAddedTableNames) {
+                EncryptTableRuleConfiguration tableRuleConfig = getEncryptTableRuleConfiguration(each, toBeUpdatedRuleConfig);
+                Map<String, AlgorithmConfiguration> encryptorConfigs = getEncryptorConfigurations(tableRuleConfig, toBeUpdatedRuleConfig.getEncryptors());
+                Map<String, EncryptAlgorithm> encryptors = encryptorConfigs.entrySet().stream()
+                        .collect(Collectors.toMap(Entry::getKey, entry -> TypedSPILoader.getService(EncryptAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps())));
+                tableRuleConfig.getColumns().forEach(columnRuleConfig -> checkEncryptorType(columnRuleConfig, encryptors));
+                tables.put(each.toLowerCase(), new EncryptTable(tableRuleConfig, encryptors));
+            }
+            return true;
+        }
+        Collection<String> toBeRemovedTableNames = new HashSet<>(tables.keySet());
+        toBeRemovedTableNames.removeAll(toBeUpdatedRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList()));
+        if (!toBeRemovedTableNames.isEmpty()) {
+            toBeRemovedTableNames.stream().map(String::toLowerCase).forEach(tables::remove);
+            return true;
+        }
+        // TODO Process update table
+        // TODO Process update encryptors
+        return false;
+    }
+    
+    private EncryptTableRuleConfiguration getEncryptTableRuleConfiguration(final String tableName, final EncryptRuleConfiguration toBeUpdatedRuleConfig) {
+        Optional<EncryptTableRuleConfiguration> result = toBeUpdatedRuleConfig.getTables().stream().filter(table -> table.getName().equals(tableName)).findFirst();
+        Preconditions.checkState(result.isPresent());
+        return result.get();
+    }
+    
+    private Map<String, AlgorithmConfiguration> getEncryptorConfigurations(final EncryptTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> encryptors) {
+        Map<String, AlgorithmConfiguration> result = new HashMap<>(encryptors.size(), 1F);
+        for (EncryptColumnRuleConfiguration each : tableRuleConfig.getColumns()) {
+            result.put(each.getCipher().getEncryptorName(), encryptors.get(each.getCipher().getEncryptorName()));
+            if (each.getAssistedQuery().isPresent()) {
+                result.put(each.getAssistedQuery().get().getEncryptorName(), encryptors.get(each.getAssistedQuery().get().getEncryptorName()));
+            }
+            if (each.getLikeQuery().isPresent()) {
+                result.put(each.getLikeQuery().get().getEncryptorName(), encryptors.get(each.getLikeQuery().get().getEncryptorName()));
+            }
+        }
+        return result;
     }
 }
