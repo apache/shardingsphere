@@ -15,12 +15,6 @@
 # limitations under the License.
 #
 
-dataSources:
-  ds:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-  shadow_ds:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-
 rules:
 - !SHADOW
   dataSources:
@@ -52,23 +46,24 @@ rules:
     user-id-insert-match-algorithm:
       type: REGEX_MATCH
       props:
-        operation: insert
+        regex: '[1]'
         column: user_id
-        regex: "[1]"
+        operation: insert
     user-id-update-match-algorithm:
       type: REGEX_MATCH
       props:
-        operation: update
+        regex: '[1]'
         column: user_id
-        regex: "[1]"
+        operation: update
     user-id-select-match-algorithm:
       type: REGEX_MATCH
       props:
-        operation: select
+        regex: '[1]'
         column: user_id
-        regex: "[1]"
+        operation: select
     sql-hint-algorithm:
       type: SQL_HINT
       props:
         shadow: true
         foo: bar
+  defaultShadowAlgorithmName: sql-hint-algorithm

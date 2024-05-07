@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.globalclock.core.yaml.swapper.YamlGlobalClockRuleConfigurationSwapper
+org.apache.shardingsphere.globalclock.yaml.swapper.YamlGlobalClockRuleConfigurationSwapper

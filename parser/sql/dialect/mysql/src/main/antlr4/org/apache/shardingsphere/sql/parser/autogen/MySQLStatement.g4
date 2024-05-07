@@ -104,7 +104,8 @@ execute
     | setVariable
     | setCharacter
     | call
-    | change
+    | changeMasterTo
+    | changeReplicationFilter
     | checkTable
     | checksumTable
     | clone
@@ -126,6 +127,7 @@ execute
     | alterTablespace
     | dropTablespace
     | delimiter
+    | startReplica
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

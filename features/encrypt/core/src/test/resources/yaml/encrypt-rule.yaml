@@ -21,10 +21,10 @@ rules:
     t_user:
       columns:
         username:
-          cipher: 
+          cipher:
             name: username_cipher
             encryptorName: aes_encryptor
-          assistedQuery: 
+          assistedQuery:
             name: assisted_query_username
             encryptorName: assisted_encryptor
   encryptors:

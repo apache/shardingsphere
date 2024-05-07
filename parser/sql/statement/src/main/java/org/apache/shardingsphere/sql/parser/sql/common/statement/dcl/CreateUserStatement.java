@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.UserSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;

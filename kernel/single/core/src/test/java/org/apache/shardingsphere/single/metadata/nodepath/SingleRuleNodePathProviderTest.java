@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.metadata.nodepath;
 
-import org.apache.shardingsphere.mode.path.RuleNodePath;
+import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 import org.junit.jupiter.api.Test;
 
@@ -32,8 +32,9 @@ class SingleRuleNodePathProviderTest {
         RuleNodePathProvider ruleNodePathProvider = new SingleRuleNodePathProvider();
         RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
         assertTrue(actualRuleNodePath.getNamedItems().isEmpty());
-        assertThat(actualRuleNodePath.getUniqueItems().size(), is(1));
+        assertThat(actualRuleNodePath.getUniqueItems().size(), is(2));
         assertTrue(actualRuleNodePath.getUniqueItems().containsKey(SingleRuleNodePathProvider.TABLES));
+        assertTrue(actualRuleNodePath.getUniqueItems().containsKey(SingleRuleNodePathProvider.DEFAULT_DATA_SOURCE));
         assertThat(actualRuleNodePath.getRoot().getRuleType(), is(SingleRuleNodePathProvider.RULE_TYPE));
     }
 }

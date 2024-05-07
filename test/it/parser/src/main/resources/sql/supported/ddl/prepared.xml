@@ -24,4 +24,5 @@
     <sql-case id="execute_with_statement_and_using" value="EXECUTE stmt USING @a, @b" db-types="MySQL" />
     <sql-case id="deallocate_statement" value="DEALLOCATE PREPARE stmt1" db-types="MySQL" />
     <sql-case id="drop_statement" value="DROP PREPARE stmt1" db-types="MySQL" />
+    <sql-case id="execute_stmt_with_using" value="EXECUTE STMT USING @skip, @numrows" db-types="MySQL"/>
 </sql-cases>

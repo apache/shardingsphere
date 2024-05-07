@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -30,6 +31,18 @@ import java.util.stream.Collectors;
  * YAML rule configuration swapper engine.
  */
 public final class YamlRuleConfigurationSwapperEngine {
+    
+    /**
+     * Swap to YAML rule configuration.
+     *
+     * @param ruleConfig rule configuration
+     * @return YAML rule configuration
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public YamlRuleConfiguration swapToYamlRuleConfiguration(final RuleConfiguration ruleConfig) {
+        YamlRuleConfigurationSwapper yamlSwapper = OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        return (YamlRuleConfiguration) yamlSwapper.swapToYamlConfiguration(ruleConfig);
+    }
     
     /**
      * Swap to YAML rule configurations.
@@ -41,6 +54,19 @@ public final class YamlRuleConfigurationSwapperEngine {
     public Collection<YamlRuleConfiguration> swapToYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
         return OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, ruleConfigs).entrySet().stream()
                 .map(entry -> (YamlRuleConfiguration) entry.getValue().swapToYamlConfiguration(entry.getKey())).collect(Collectors.toList());
+    }
+    
+    /**
+     * Swap from YAML rule configurations to rule configuration.
+     *
+     * @param yamlRuleConfig YAML rule configuration
+     * @return rule configuration
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public RuleConfiguration swapToRuleConfiguration(final YamlRuleConfiguration yamlRuleConfig) {
+        Class<?> ruleConfigType = yamlRuleConfig.getRuleConfigurationType();
+        YamlRuleConfigurationSwapper swapper = OrderedSPILoader.getServicesByClass(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfigType)).get(ruleConfigType);
+        return (RuleConfiguration) swapper.swapToObject(yamlRuleConfig);
     }
     
     /**

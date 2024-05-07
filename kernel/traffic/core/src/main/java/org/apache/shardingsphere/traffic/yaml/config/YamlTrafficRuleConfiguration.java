@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 
 import java.util.LinkedHashMap;
@@ -29,6 +30,7 @@ import java.util.Map;
 /**
  * Traffic rule configuration for YAML.
  */
+@RepositoryTupleEntity(value = "traffic", leaf = true)
 @Getter
 @Setter
 public final class YamlTrafficRuleConfiguration implements YamlGlobalRuleConfiguration {

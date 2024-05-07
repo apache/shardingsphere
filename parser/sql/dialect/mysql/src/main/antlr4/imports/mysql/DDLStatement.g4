@@ -345,30 +345,29 @@ dropView
     ;
 
 createTablespace
-    : createTablespaceInnodb | createTablespaceNdb
+    : CREATE UNDO? TABLESPACE identifier (createTablespaceInnodb | createTablespaceNdb | createTablespaceInnodbAndNdb)*
     ;
 
 createTablespaceInnodb
-    : CREATE (UNDO)? TABLESPACE identifier
-      ADD DATAFILE string_
-      (FILE_BLOCK_SIZE EQ_ fileSizeLiteral)?
-      (ENCRYPTION EQ_ y_or_n=string_)?
-      (ENGINE EQ_? engineRef)?
-      (COMMENT EQ_? string_)?
+    : FILE_BLOCK_SIZE EQ_ fileSizeLiteral
+    | ENCRYPTION EQ_ y_or_n=string_
+    | ENGINE_ATTRIBUTE EQ_? jsonAttribute = string_
     ;
 
 createTablespaceNdb
-    : CREATE ( UNDO )? TABLESPACE identifier
-      ADD DATAFILE string_
-      USE LOGFILE GROUP identifier
-      (EXTENT_SIZE EQ_? fileSizeLiteral)?
-      (INITIAL_SIZE EQ_? fileSizeLiteral)?
-      (AUTOEXTEND_SIZE EQ_? fileSizeLiteral)?
-      (MAX_SIZE EQ_? fileSizeLiteral)?
-      (NODEGROUP EQ_? identifier)?
-      WAIT?
-      (COMMENT EQ_? string_)?
-      (ENGINE EQ_? engineRef)?
+    : USE LOGFILE GROUP identifier
+    | EXTENT_SIZE EQ_? fileSizeLiteral
+    | INITIAL_SIZE EQ_? fileSizeLiteral
+    | MAX_SIZE EQ_? fileSizeLiteral
+    | NODEGROUP EQ_? identifier
+    | WAIT
+    | COMMENT EQ_? string_
+    ;
+
+createTablespaceInnodbAndNdb
+    : ADD DATAFILE string_
+    | AUTOEXTEND_SIZE EQ_? fileSizeLiteral
+    | ENGINE EQ_? engineRef
     ;
 
 alterTablespace
@@ -462,6 +461,7 @@ columnAttribute
     | constraintClause? checkConstraint
     | constraintEnforcement
     | visibility
+    | value = ENGINE_ATTRIBUTE EQ_? jsonAttribute = string_
     ;
 
 checkConstraint
@@ -521,6 +521,7 @@ commonIndexOption
     : KEY_BLOCK_SIZE EQ_? NUMBER_
     | COMMENT stringLiterals
     | visibility
+    | ENGINE_ATTRIBUTE EQ_? jsonAttribute = string_
     ;
 
 visibility
@@ -567,6 +568,7 @@ createTableOption
     | option = KEY_BLOCK_SIZE EQ_? NUMBER_
     | option = ENGINE_ATTRIBUTE EQ_? jsonAttribute = string_
     | option = SECONDARY_ENGINE_ATTRIBUTE EQ_ jsonAttribute = string_
+    | option = AUTOEXTEND_SIZE EQ_? fileSizeLiteral
     ;
 
 createSRSStatement

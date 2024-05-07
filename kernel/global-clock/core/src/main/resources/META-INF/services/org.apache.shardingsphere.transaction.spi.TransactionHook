@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.globalclock.core.executor.GlobalClockTransactionHook
+org.apache.shardingsphere.globalclock.executor.GlobalClockTransactionHook

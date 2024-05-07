@@ -98,13 +98,13 @@ ShardingSphere-JDBC 示例模块，展示 ShardingSphere-JDBC 的功能特性和
 
 展示 ShardingSphere-JDBC 在分布式治理方面的应用，包含了分库分表、读写分离、数据加密、影子库等特性与分布式治理相结合的应用场景。
 
-**注意：**分布式治理 example 依赖 Apache ZooKeeper，请自行部署。
+**注意：** 分布式治理 example 依赖 Apache ZooKeeper，请自行部署。
 
 **（3）transaction-example**
 
 展示 ShardingSphere-JDBC 支持的多种分布式事务管理方式，用户可以根据应用场景选择适合的分布式事务管理器进行使用。鉴于分布式事务的特殊性，本模块的示例都是基于分库、分表或分库+分表的场景设计的。
 
-**注意：**Seata 事务管理器需要自行部署。
+**注意：** Seata 事务管理器需要自行部署。
 
 **（4）other-feature-example**
 
@@ -291,7 +291,7 @@ https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere
 
 此时即可通过日志中的「Logic SQL」和「Actual SQL」观察每一条 SQL 语句的路由情况，理解读写分离的运行机制。
 
-**注意：**如果主从数据库无法正常同步，将会发生查询异常。
+**注意：** 如果主从数据库无法正常同步，将会发生查询异常。
 
 * **custom-sharding-algortihm-example「自定义算法场景」**
 

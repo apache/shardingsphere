@@ -48,7 +48,7 @@ insertSelectClause
     ;
 
 onDuplicateKeyClause
-    : (AS identifier)? ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
+    : (AS identifier derivedColumns?)?  ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
     ;
 
 valueReference
@@ -163,7 +163,7 @@ querySpecification
     ;
 
 call
-    : CALL identifier (LP_ (expr (COMMA_ expr)*)? RP_)?
+    : CALL (owner DOT_)? identifier (LP_ (expr (COMMA_ expr)*)? RP_)?
     ;
 
 doStatement
@@ -288,7 +288,11 @@ tableReference
     ;
 
 tableFactor
-    : tableName partitionNames? (AS? alias)? indexHintList? | subquery AS? alias (LP_ columnNames RP_)? | LATERAL subquery AS? alias (LP_ columnNames RP_)? | LP_ tableReferences RP_
+    : tableName partitionNames? (AS? alias)? indexHintList?
+    | subquery AS? alias (LP_ columnNames RP_)?
+    | expr (AS? alias)?
+    | LATERAL subquery AS? alias (LP_ columnNames RP_)?
+    | LP_ tableReferences RP_
     ;
 
 partitionNames

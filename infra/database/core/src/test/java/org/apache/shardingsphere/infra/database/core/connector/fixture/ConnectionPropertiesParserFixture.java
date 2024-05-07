@@ -19,8 +19,7 @@ package org.apache.shardingsphere.infra.database.core.connector.fixture;
 
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -31,7 +30,7 @@ public final class ConnectionPropertiesParserFixture implements ConnectionProper
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
         ConnectionProperties result = mock(ConnectionProperties.class, RETURNS_DEEP_STUBS);
-        when(result.getQueryProperties()).thenReturn(new Properties());
+        when(result.getQueryProperties()).thenReturn(new StandardJdbcUrlParser().parse(url).getQueryProperties());
         return result;
     }
     

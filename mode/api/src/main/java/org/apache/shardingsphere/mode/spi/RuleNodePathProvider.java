@@ -17,14 +17,16 @@
 
 package org.apache.shardingsphere.mode.spi;
 
-import org.apache.shardingsphere.mode.path.RuleNodePath;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 
 /**
  * Rule node path provider.
  */
 @SingletonSPI
-public interface RuleNodePathProvider {
+public interface RuleNodePathProvider extends TypedSPI {
     
     /**
      * Get rule node path.
@@ -32,4 +34,7 @@ public interface RuleNodePathProvider {
      * @return got rule node path
      */
     RuleNodePath getRuleNodePath();
+    
+    @Override
+    Class<? extends RuleConfiguration> getType();
 }

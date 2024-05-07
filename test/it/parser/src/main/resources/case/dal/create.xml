@@ -20,4 +20,7 @@
     <create-resource-group sql-case-id="create_resource_group">
         <group name="rg" start-index="23" stop-index="24" />
     </create-resource-group>
+    <create-resource-group sql-case-id="create_resource_group_with_system_type_and_thread_priority">
+        <group name="rg2" start-index="23" stop-index="25"/>
+    </create-resource-group>
 </sql-parser-test-cases>

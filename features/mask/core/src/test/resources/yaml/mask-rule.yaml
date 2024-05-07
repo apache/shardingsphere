@@ -16,20 +16,20 @@
 #
 
 rules:
-  - !MASK
-    tables:
-      t_user:
-        columns:
-          telephone :
-            maskAlgorithm: keep_first_n_last_m_mask
-          password :
-            maskAlgorithm: md5_mask
-    maskAlgorithms:
-      keep_first_n_last_m_mask:
-        type: KEEP_FIRST_N_LAST_M
-        props:
-          first-n: 3
-          last-m: 4
-          replace-char: '*'
-      md5_mask:
-        type: MD5
+- !MASK
+  tables:
+    t_user:
+      columns:
+        telephone:
+          maskAlgorithm: keep_first_n_last_m_mask
+        password:
+          maskAlgorithm: md5_mask
+  maskAlgorithms:
+    keep_first_n_last_m_mask:
+      type: KEEP_FIRST_N_LAST_M
+      props:
+        first-n: 3
+        replace-char: '*'
+        last-m: 4
+    md5_mask:
+      type: MD5

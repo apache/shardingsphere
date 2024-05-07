@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mode.metadata.builder;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.mode.path.RuleNodePath;
-import org.apache.shardingsphere.mode.path.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.mode.path.item.UniqueRuleItemNodePath;
+import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
+import org.apache.shardingsphere.mode.path.rule.item.NamedRuleItemNodePath;
+import org.apache.shardingsphere.mode.path.rule.item.UniqueRuleItemNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;

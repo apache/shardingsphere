@@ -4156,4 +4156,38 @@
         </values>
         <on-duplicate-key-columns start-index="42" stop-index="73"/>
     </insert>
+
+    <insert sql-case-id="insert_on_duplicate_key_with_column_aliases">
+        <table name="t" start-index="12" stop-index="12"/>
+        <set start-index="14" stop-index="24">
+            <assignment>
+                <column name="a" start-index="18" stop-index="18" />
+                <assignment-value>
+                    <literal-expression value="9" literal-start-index="20" literal-stop-index="20" />
+                </assignment-value>
+            </assignment>
+            <assignment>
+                <column name="b" start-index="22" stop-index="22"/>
+                <assignment-value>
+                    <literal-expression value="5" start-index="24" stop-index="24"/>
+                </assignment-value>
+            </assignment>
+        </set>
+        <on-duplicate-key-columns start-index="26" stop-index="66">
+            <assignment start-index="62" stop-index="66">
+                <column name="a" start-index="62" stop-index="62"  />
+                <assignment-value>
+                    <binary-operation-expression start-index="64" stop-index="66">
+                        <operator>+</operator>
+                        <left>
+                            <column name="m" start-index="64" stop-index="64"/>
+                        </left>
+                        <right>
+                            <column name="n" start-index="66" stop-index="66"/>
+                        </right>
+                    </binary-operation-expression>
+                </assignment-value>
+            </assignment>
+        </on-duplicate-key-columns>
+    </insert>
 </sql-parser-test-cases>

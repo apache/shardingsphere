@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.single.metadata.nodepath;
 
-import org.apache.shardingsphere.mode.path.RuleNodePath;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -31,10 +34,17 @@ public final class SingleRuleNodePathProvider implements RuleNodePathProvider {
     
     public static final String TABLES = "tables";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Collections.emptyList(), Collections.singleton(TABLES));
+    public static final String DEFAULT_DATA_SOURCE = "default_data_source";
+    
+    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Collections.emptyList(), Arrays.asList(TABLES, DEFAULT_DATA_SOURCE));
     
     @Override
     public RuleNodePath getRuleNodePath() {
         return INSTANCE;
+    }
+    
+    @Override
+    public Class<? extends RuleConfiguration> getType() {
+        return SingleRuleConfiguration.class;
     }
 }
