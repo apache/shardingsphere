@@ -63,7 +63,7 @@ class AlterEncryptRuleExecutorTest {
     @Test
     void assertCheckSQLStatementWithoutToBeAlteredEncryptors() {
         EncryptRule rule = mock(EncryptRule.class);
-        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        when(rule.getAllTableNames()).thenReturn(Collections.singleton("t_encrypt"));
         executor.setRule(rule);
         assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(createSQLStatement("INVALID_TYPE")));
     }
@@ -71,7 +71,7 @@ class AlterEncryptRuleExecutorTest {
     @Test
     void assertCheckSQLStatementWithConflictColumnNames() {
         EncryptRule rule = mock(EncryptRule.class);
-        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        when(rule.getAllTableNames()).thenReturn(Collections.singleton("t_encrypt"));
         executor.setRule(rule);
         assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(createConflictColumnNameSQLStatement()));
     }
