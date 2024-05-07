@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation;
+package org.apache.shardingsphere.mode.tuple.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,27 +23,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Repository tuple key list name generator.
+ * Repository tuple entity.
  */
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RepositoryTupleKeyListNameGenerator {
+public @interface RepositoryTupleEntity {
     
     /**
-     * Get repository tuple key list name generator class.
+     * Get rule type name.
      * 
-     * @return repository tuple key list name generator class
+     * @return rule type name
      */
-    Class<? extends Generator> value();
-    
-    interface Generator {
-        
-        /**
-         * Generate name of tuple key.
-         * 
-         * @param tupleValue tuple value
-         * @return generated name
-         */
-        String generate(Object tupleValue);
-    }
+    String value();
 }
