@@ -268,7 +268,7 @@ cloneAction
     ;
 
 createLoadableFunction
-    : CREATE AGGREGATE? FUNCTION functionName RETURNS (STRING | INTEGER | REAL | DECIMAL) SONAME shardLibraryName
+    : CREATE AGGREGATE? FUNCTION functionName RETURNS (STRING | INTEGER | INT | REAL | DECIMAL | DEC) SONAME shardLibraryName
     ;
 
 install

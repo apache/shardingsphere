@@ -28,6 +28,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CheckTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ChecksumTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CloneStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CreateLoadableFunctionTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CreateResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DelimiterStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DropResourceGroupStatementTestCase;
@@ -1744,6 +1745,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "spool")
     private final List<SpoolStatementTestCase> oracleSpoolStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-loadable-function")
+    private final List<CreateLoadableFunctionTestCase> createLoadableFunctionTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
