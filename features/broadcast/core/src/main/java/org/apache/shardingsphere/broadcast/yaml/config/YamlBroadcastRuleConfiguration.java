@@ -38,7 +38,7 @@ import java.util.LinkedList;
 @Setter
 public final class YamlBroadcastRuleConfiguration implements YamlRuleConfiguration {
     
-    @RepositoryTupleField(value = BroadcastRuleNodePathProvider.TABLES, type = Type.ALGORITHM)
+    @RepositoryTupleField(value = BroadcastRuleNodePathProvider.TABLES, type = Type.TABLE)
     private Collection<String> tables = new LinkedList<>();
     
     @Override
