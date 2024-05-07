@@ -155,7 +155,7 @@ public final class ConfigurationContextManager {
      * @param ruleConfig rule configurations
      */
     public synchronized void alterRuleConfiguration(final String databaseName, final RuleConfiguration ruleConfig) {
-        // TODO add feature for partly refresh 
+        // TODO add feature for partly refresh
         // 1. Judge if impl partly interface
         // 2. compare diff with current and ruleConfig
         // 3. Do partly refresh
@@ -181,7 +181,7 @@ public final class ConfigurationContextManager {
      * @param ruleConfig rule configurations
      */
     public synchronized void dropRuleConfiguration(final String databaseName, final RuleConfiguration ruleConfig) {
-        // TODO add feature for partly refresh 
+        // TODO add feature for partly refresh
         // 1. Judge if impl partly interface
         // 2. compare diff with current and ruleConfig
         // 3. Remove to be removed partial config
