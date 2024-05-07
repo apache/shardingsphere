@@ -15,28 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.watcher;
 
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.config.global.AlterPropertiesEvent;
+import org.apache.shardingsphere.mode.event.config.global.AlterGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Properties changed watcher.
+ * Global rule changed watcher.
  */
-public final class PropertiesChangedWatcher implements GovernanceWatcher<AlterPropertiesEvent> {
+public final class GlobalRuleChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
     public Collection<String> getWatchingKeys(final String databaseName) {
-        return Collections.singleton(GlobalNode.getPropsRootNode());
+        return Collections.singleton(GlobalNode.getGlobalRuleRootNode());
     }
     
     @Override
@@ -45,9 +46,9 @@ public final class PropertiesChangedWatcher implements GovernanceWatcher<AlterPr
     }
     
     @Override
-    public Optional<AlterPropertiesEvent> createGovernanceEvent(final DataChangedEvent event) {
-        if (GlobalNodePath.isPropsActiveVersionPath(event.getKey())) {
-            return Optional.of(new AlterPropertiesEvent(event.getKey(), event.getValue()));
+    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+        if (GlobalNodePath.isRuleActiveVersionPath(event.getKey())) {
+            return GlobalNodePath.getRuleName(event.getKey()).map(optional -> new AlterGlobalRuleConfigurationEvent(optional, event.getKey(), event.getValue()));
         }
         return Optional.empty();
     }

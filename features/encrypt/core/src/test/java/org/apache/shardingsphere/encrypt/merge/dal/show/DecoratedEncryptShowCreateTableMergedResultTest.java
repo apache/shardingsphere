@@ -99,16 +99,14 @@ class DecoratedEncryptShowCreateTableMergedResultTest {
     @Test
     void assertGetValueWhenConfigLikeQueryColumn() throws SQLException {
         when(mergedResult.next()).thenReturn(true).thenReturn(false);
-        when(mergedResult.getValue(2, String.class)).thenReturn(
-                "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
-                        + "`user_id_like` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+        when(mergedResult.getValue(2, String.class)).thenReturn("CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
+                + "`user_id_like` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_id_cipher", "foo_encryptor"));
         columnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("user_id_like", "foo_like_encryptor"));
         DecoratedEncryptShowCreateTableMergedResult actual = createDecoratedEncryptShowCreateTableMergedResult(mergedResult, mockEncryptRule(Collections.singleton(columnRuleConfig)));
         assertTrue(actual.next());
         assertThat(actual.getValue(2, String.class),
-                is("CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL,"
-                        + " PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"));
+                is("CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"));
     }
     
     private EncryptRule mockEncryptRule(final Collection<EncryptColumnRuleConfiguration> encryptColumnRuleConfigs) {
