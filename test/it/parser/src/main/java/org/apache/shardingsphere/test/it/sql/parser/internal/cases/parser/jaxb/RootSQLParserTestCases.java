@@ -392,6 +392,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding.DropShardingTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.single.SetDefaultSingleTableStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rl.ChangeReplicationSourceToStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rl.StartReplicaStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.authority.ShowAuthorityRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.broadcast.CountBroadcastRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.encrypt.CountEncryptRuleStatementTestCase;
@@ -1748,6 +1749,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "create-loadable-function")
     private final List<CreateLoadableFunctionTestCase> createLoadableFunctionTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "start-replica")
+    private final List<StartReplicaStatementTestCase> startReplicaStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
