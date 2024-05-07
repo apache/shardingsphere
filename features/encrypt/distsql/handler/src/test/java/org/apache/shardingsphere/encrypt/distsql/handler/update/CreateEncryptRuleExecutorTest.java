@@ -35,6 +35,7 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,7 +60,7 @@ class CreateEncryptRuleExecutorTest {
     @Test
     void assertCheckSQLStatementWithDuplicateEncryptRule() {
         EncryptRule rule = mock(EncryptRule.class);
-        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfiguration());
+        when(rule.getAllTableNames()).thenReturn(Arrays.asList("t_user", "t_order"));
         executor.setRule(rule);
         assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "MD5")));
     }
