@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.data
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.statement.AlterEncryptRuleStatement;
@@ -62,11 +61,8 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     }
     
     private void checkToBeAlteredRules(final AlterEncryptRuleStatement sqlStatement) {
-        Collection<String> currentEncryptTableNames = rule.getConfiguration().getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
-        Collection<String> notExistEncryptTableNames = getToBeAlteredEncryptTableNames(sqlStatement).stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
-        if (!notExistEncryptTableNames.isEmpty()) {
-            throw new MissingRequiredRuleException("Encrypt", database.getName(), notExistEncryptTableNames);
-        }
+        Collection<String> notExistEncryptTableNames = getToBeAlteredEncryptTableNames(sqlStatement).stream().filter(each -> !rule.getAllTableNames().contains(each)).collect(Collectors.toList());
+        ShardingSpherePreconditions.checkMustEmpty(notExistEncryptTableNames, () -> new MissingRequiredRuleException("Encrypt", database.getName(), notExistEncryptTableNames));
     }
     
     private Collection<String> getToBeAlteredEncryptTableNames(final AlterEncryptRuleStatement sqlStatement) {
