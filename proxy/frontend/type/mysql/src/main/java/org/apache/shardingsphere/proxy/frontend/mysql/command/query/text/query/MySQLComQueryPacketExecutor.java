@@ -61,7 +61,8 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     public MySQLComQueryPacketExecutor(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         this.connectionSession = connectionSession;
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        SQLStatement sqlStatement = ProxySQLComQueryParser.parse(packet.getSQL(), databaseType, connectionSession);
+        // TODO Multi statements should be identified by SQL Parser instead of checking if sql contains ";".
+        SQLStatement sqlStatement = ProxySQLComQueryParser.parse(null != packet.getSQL() ? packet.getSQL().split(";")[0] : "", databaseType, connectionSession);
         proxyBackendHandler = areMultiStatements(connectionSession, sqlStatement, packet.getSQL()) ? new MySQLMultiStatementsHandler(connectionSession, sqlStatement, packet.getSQL())
                 : ProxyBackendHandlerFactory.newInstance(databaseType, packet.getSQL(), sqlStatement, connectionSession, packet.getHintValueContext());
         characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
