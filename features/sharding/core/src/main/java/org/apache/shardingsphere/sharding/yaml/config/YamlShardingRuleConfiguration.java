@@ -48,41 +48,41 @@ import java.util.Map;
 @Setter
 public final class YamlShardingRuleConfiguration implements YamlRuleConfiguration {
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.TABLES, type = Type.TABLE)
+    @RepositoryTupleField(type = Type.TABLE)
     private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.AUTO_TABLES, type = Type.TABLE)
+    @RepositoryTupleField(type = Type.TABLE)
     private Map<String, YamlShardingAutoTableRuleConfiguration> autoTables = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.BINDING_TABLES, type = Type.TABLE)
+    @RepositoryTupleField(type = Type.TABLE)
     @RepositoryTupleKeyListNameGenerator(ShardingBindingTableRepositoryTupleKeyListNameGenerator.class)
     private Collection<String> bindingTables = new LinkedList<>();
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_DATABASE_STRATEGY, type = Type.DEFAULT_STRATEGY)
+    @RepositoryTupleField(type = Type.DEFAULT_STRATEGY)
     private YamlShardingStrategyConfiguration defaultDatabaseStrategy;
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_TABLE_STRATEGY, type = Type.DEFAULT_STRATEGY)
+    @RepositoryTupleField(type = Type.DEFAULT_STRATEGY)
     private YamlShardingStrategyConfiguration defaultTableStrategy;
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY, type = Type.DEFAULT_STRATEGY)
+    @RepositoryTupleField(type = Type.DEFAULT_STRATEGY)
     private YamlKeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_AUDIT_STRATEGY, type = Type.DEFAULT_STRATEGY)
+    @RepositoryTupleField(type = Type.DEFAULT_STRATEGY)
     private YamlShardingAuditStrategyConfiguration defaultAuditStrategy;
     
     @RepositoryTupleField(value = ShardingRuleNodePathProvider.ALGORITHMS, type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.KEY_GENERATORS, type = Type.ALGORITHM)
+    @RepositoryTupleField(type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.AUDITORS, type = Type.ALGORITHM)
+    @RepositoryTupleField(type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> auditors = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN, type = Type.OTHER)
+    @RepositoryTupleField(type = Type.OTHER)
     private String defaultShardingColumn;
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.SHARDING_CACHE, type = Type.OTHER)
+    @RepositoryTupleField(type = Type.OTHER)
     private YamlShardingCacheConfiguration shardingCache;
     
     @Override

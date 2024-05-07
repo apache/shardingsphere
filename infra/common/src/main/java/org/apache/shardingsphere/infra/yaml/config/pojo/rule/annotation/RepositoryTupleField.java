@@ -36,7 +36,7 @@ public @interface RepositoryTupleField {
      * 
      * @return persist path name
      */
-    String value();
+    String value() default "";
     
     /**
      * Get type.

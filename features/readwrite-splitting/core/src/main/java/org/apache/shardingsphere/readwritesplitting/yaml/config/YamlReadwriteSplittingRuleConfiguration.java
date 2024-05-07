@@ -42,7 +42,7 @@ public final class YamlReadwriteSplittingRuleConfiguration implements YamlRuleCo
     @RepositoryTupleField(value = ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES, type = Type.DATA_SOURCE)
     private Map<String, YamlReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS, type = Type.ALGORITHM)
+    @RepositoryTupleField(type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
     
     @Override
