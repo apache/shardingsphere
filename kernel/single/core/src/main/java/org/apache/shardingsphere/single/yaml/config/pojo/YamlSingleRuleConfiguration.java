@@ -30,7 +30,7 @@ import java.util.LinkedList;
 /**
  * Single rule configuration for YAML.
  */
-@RepositoryTupleEntity("single")
+@RepositoryTupleEntity(value = "single")
 @Getter
 @Setter
 public final class YamlSingleRuleConfiguration implements YamlRuleConfiguration {

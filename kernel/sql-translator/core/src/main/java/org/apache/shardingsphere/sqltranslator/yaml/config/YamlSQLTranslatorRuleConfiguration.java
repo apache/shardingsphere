@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sqltranslator.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleType;
 import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 
@@ -29,8 +28,7 @@ import java.util.Properties;
 /**
  * SQL translator configuration for YAML.
  */
-@RepositoryTupleEntity("sql_translator")
-@RepositoryTupleType("sql_translator")
+@RepositoryTupleEntity(value = "sql_translator", leaf = true)
 @Getter
 @Setter
 public final class YamlSQLTranslatorRuleConfiguration implements YamlGlobalRuleConfiguration {

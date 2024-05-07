@@ -20,9 +20,8 @@ package org.apache.shardingsphere.logging.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleType;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -30,8 +29,7 @@ import java.util.LinkedList;
 /**
  * Logging rule configuration for YAML.
  */
-@RepositoryTupleEntity("logging")
-@RepositoryTupleType("logging")
+@RepositoryTupleEntity(value = "logging", leaf = true)
 @Getter
 @Setter
 public final class YamlLoggingRuleConfiguration implements YamlGlobalRuleConfiguration {
