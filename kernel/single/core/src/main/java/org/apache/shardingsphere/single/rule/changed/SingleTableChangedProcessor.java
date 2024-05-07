@@ -25,17 +25,18 @@ import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
-import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfigurationSwapper;
+
+import java.util.LinkedHashSet;
 
 /**
  * Single table changed processor.
  */
 public final class SingleTableChangedProcessor implements RuleItemConfigurationChangedProcessor<SingleRuleConfiguration, SingleRuleConfiguration> {
     
+    @SuppressWarnings("unchecked")
     @Override
     public SingleRuleConfiguration swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
-        return new YamlSingleRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlSingleRuleConfiguration.class));
+        return new SingleRuleConfiguration(YamlEngine.unmarshal(yamlContent, LinkedHashSet.class), null);
     }
     
     @Override
@@ -47,13 +48,11 @@ public final class SingleTableChangedProcessor implements RuleItemConfigurationC
     public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeChangedItemConfig) {
         currentRuleConfig.getTables().clear();
         currentRuleConfig.getTables().addAll(toBeChangedItemConfig.getTables());
-        toBeChangedItemConfig.getDefaultDataSource().ifPresent(optional -> currentRuleConfig.setDefaultDataSource(toBeChangedItemConfig.getDefaultDataSource().get()));
     }
     
     @Override
     public void dropRuleItemConfiguration(final DropRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getTables().clear();
-        currentRuleConfig.setDefaultDataSource(null);
     }
     
     @Override

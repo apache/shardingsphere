@@ -15,35 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rl;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Repository tuple key name generator.
+ * Start replica test case.
  */
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface RepositoryTupleKeyNameGenerator {
-    
-    /**
-     * Get repository tuple key name generator class.
-     * 
-     * @return repository tuple key name generator class
-     */
-    Class<? extends Generator> value();
-    
-    interface Generator {
-        
-        /**
-         * Generate name of tuple key.
-         * 
-         * @param tupleValue tuple value
-         * @return generated name
-         */
-        String generate(Object tupleValue);
-    }
+public final class StartReplicaStatementTestCase extends SQLParserTestCase {
 }

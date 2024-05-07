@@ -24,4 +24,5 @@
     <prepared sql-case-id="execute_with_statement_and_using" />
     <prepared sql-case-id="deallocate_statement" />
     <prepared sql-case-id="drop_statement" />
+    <prepared sql-case-id="execute_stmt_with_using"/>
 </sql-parser-test-cases>

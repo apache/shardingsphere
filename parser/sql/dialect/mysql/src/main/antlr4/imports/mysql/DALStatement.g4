@@ -268,7 +268,7 @@ cloneAction
     ;
 
 createLoadableFunction
-    : CREATE AGGREGATE? FUNCTION functionName RETURNS (STRING | INTEGER | REAL | DECIMAL) SONAME shardLibraryName
+    : CREATE AGGREGATE? FUNCTION functionName RETURNS (STRING | INTEGER | INT | REAL | DECIMAL | DEC) SONAME shardLibraryName
     ;
 
 install
@@ -335,7 +335,7 @@ vcpuSpec
 
 createResourceGroup
     : CREATE RESOURCE GROUP groupName TYPE EQ_ (SYSTEM | USER) (VCPU EQ_? vcpuSpec (COMMA_ vcpuSpec)*)?
-    (THREAD_PRIORITY EQ_? NUMBER_)? (ENABLE | DISABLE)?
+    (THREAD_PRIORITY EQ_? numberLiterals)? (ENABLE | DISABLE)?
     ;
 
 dropResourceGroup

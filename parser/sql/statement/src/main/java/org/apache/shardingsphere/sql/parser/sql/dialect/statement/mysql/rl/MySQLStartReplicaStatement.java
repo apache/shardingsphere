@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.datanode;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.RLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Repository tuple.
+ * MySQL start replica statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class RepositoryTuple {
-    
-    private final String key;
-    
-    private final String value;
+public final class MySQLStartReplicaStatement extends AbstractSQLStatement implements RLStatement, MySQLStatement {
 }

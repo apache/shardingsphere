@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.metadata.persist.service.config;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;

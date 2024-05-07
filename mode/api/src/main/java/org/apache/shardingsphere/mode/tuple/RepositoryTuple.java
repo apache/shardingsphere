@@ -15,34 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.yaml.config;
+package org.apache.shardingsphere.mode.tuple;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
-
-import java.util.Properties;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Global clock rule configuration for YAML.
+ * Repository tuple.
  */
-@RepositoryTupleEntity(value = "global_clock", leaf = true)
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlGlobalClockRuleConfiguration implements YamlGlobalRuleConfiguration {
+public final class RepositoryTuple {
     
-    private String type;
+    private final String key;
     
-    private String provider;
-    
-    private boolean enabled;
-    
-    private Properties props;
-    
-    @Override
-    public Class<GlobalClockRuleConfiguration> getRuleConfigurationType() {
-        return GlobalClockRuleConfiguration.class;
-    }
+    private final String value;
 }

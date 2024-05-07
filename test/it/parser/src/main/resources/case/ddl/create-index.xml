@@ -269,4 +269,12 @@
         </table>
         <column start-index="58" stop-index="66" name="is_active" />
     </create-index>
+
+    <create-index sql-case-id="create_index_with_engine_attribute">
+        <index name="i1" start-index="13" stop-index="14"/>
+        <table>
+            <simple-table name="t1" start-index="19" stop-index="20"/>
+        </table>
+        <column name="c1" start-index="23" stop-index="24"/>
+    </create-index>
 </sql-parser-test-cases>

@@ -15,32 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.yaml.config;
+package org.apache.shardingsphere.mode.tuple.annotation;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Properties;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Transaction rule configuration for YAML.
+ * Repository tuple field.
  */
-@RepositoryTupleEntity(value = "transaction", leaf = true)
-@Getter
-@Setter
-public final class YamlTransactionRuleConfiguration implements YamlGlobalRuleConfiguration {
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RepositoryTupleField {
     
-    private String defaultType;
+    /**
+     * Get persist path name.
+     * 
+     * @return persist path name
+     */
+    String value() default "";
     
-    private String providerType;
+    /**
+     * Get type.
+     * 
+     * @return type
+     */
+    Type type();
     
-    private Properties props;
-    
-    @Override
-    public Class<TransactionRuleConfiguration> getRuleConfigurationType() {
-        return TransactionRuleConfiguration.class;
+    @RequiredArgsConstructor
+    enum Type implements Comparable<Type> {
+        
+        ALGORITHM, DEFAULT_ALGORITHM, STRATEGY, DEFAULT_STRATEGY, DATA_SOURCE, TABLE, OTHER
     }
 }

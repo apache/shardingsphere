@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rule.changed;
+package org.apache.shardingsphere.single.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
+import org.apache.shardingsphere.single.rule.SingleRule;
 
 /**
- * Default shadow algorithm name changed processor.
+ * Default data source changed processor.
  */
-public final class DefaultShadowAlgorithmNameChangedProcessor implements RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, String> {
+public final class DefaultDataSourceChangedProcessor implements RuleItemConfigurationChangedProcessor<SingleRuleConfiguration, String> {
     
     @Override
     public String swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
@@ -36,22 +36,22 @@ public final class DefaultShadowAlgorithmNameChangedProcessor implements RuleIte
     }
     
     @Override
-    public ShadowRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findSingleRule(ShadowRule.class).map(ShadowRule::getConfiguration).orElseGet(ShadowRuleConfiguration::new);
+    public SingleRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
+        return database.getRuleMetaData().findSingleRule(SingleRule.class).map(SingleRule::getConfiguration).orElseGet(SingleRuleConfiguration::new);
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig, final String toBeChangedItemConfig) {
-        currentRuleConfig.setDefaultShadowAlgorithmName(toBeChangedItemConfig);
+    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig, final String toBeChangedItemConfig) {
+        currentRuleConfig.setDefaultDataSource(toBeChangedItemConfig);
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.setDefaultShadowAlgorithmName(null);
+    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.setDefaultDataSource(null);
     }
     
     @Override
     public String getType() {
-        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.DEFAULT_ALGORITHM;
+        return SingleRuleNodePathProvider.RULE_TYPE + "." + SingleRuleNodePathProvider.DEFAULT_DATA_SOURCE;
     }
 }

@@ -15,34 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.yaml.config;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
+package org.apache.shardingsphere.infra.util.props;
 
 import java.util.Properties;
 
 /**
- * Global clock rule configuration for YAML.
+ * Multi source properties.
  */
-@RepositoryTupleEntity(value = "global_clock", leaf = true)
-@Getter
-@Setter
-public final class YamlGlobalClockRuleConfiguration implements YamlGlobalRuleConfiguration {
+public final class MultiSourceProperties extends Properties {
     
-    private String type;
+    private final Properties[] defaults;
     
-    private String provider;
-    
-    private boolean enabled;
-    
-    private Properties props;
+    public MultiSourceProperties(final Properties... defaults) {
+        this.defaults = defaults;
+    }
     
     @Override
-    public Class<GlobalClockRuleConfiguration> getRuleConfigurationType() {
-        return GlobalClockRuleConfiguration.class;
+    public String getProperty(final String key) {
+        String value = super.getProperty(key);
+        if (null != value) {
+            return value;
+        }
+        for (Properties each : defaults) {
+            value = each.getProperty(key);
+            if (null != value) {
+                return value;
+            }
+        }
+        return null;
+    }
+    
+    @Override
+    public String getProperty(final String key, final String defaultValue) {
+        String value = this.getProperty(key);
+        return (null == value) ? defaultValue : value;
     }
 }
