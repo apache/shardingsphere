@@ -40,10 +40,10 @@ import java.util.Map;
 @Setter
 public final class YamlShadowRuleConfiguration implements YamlRuleConfiguration {
     
-    @RepositoryTupleField(value = ShadowRuleNodePathProvider.DATA_SOURCES, type = Type.DATA_SOURCE)
+    @RepositoryTupleField(type = Type.DATA_SOURCE)
     private Map<String, YamlShadowDataSourceConfiguration> dataSources = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ShadowRuleNodePathProvider.TABLES, type = Type.TABLE)
+    @RepositoryTupleField(type = Type.TABLE)
     private Map<String, YamlShadowTableConfiguration> tables = new LinkedHashMap<>();
     
     @RepositoryTupleField(value = ShadowRuleNodePathProvider.ALGORITHMS, type = Type.ALGORITHM)
