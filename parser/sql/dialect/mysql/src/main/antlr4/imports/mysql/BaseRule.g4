@@ -442,7 +442,7 @@ identifierKeywordsUnambiguous
     | SERVER
     | SHARE
     | SIMPLE
-//    | SKIP
+    | SKIP_SYMBOL
     | SLOW
     | SNAPSHOT
     | SOCKET
@@ -1334,7 +1334,7 @@ collateClause
     ;
     
 fieldOrVarSpec
-    : LP_ (identifier (COMMA_ identifier)*)? RP_
+    : LP_ (userVariable (COMMA_ userVariable)*)? RP_
     ;
     
 ifNotExists
