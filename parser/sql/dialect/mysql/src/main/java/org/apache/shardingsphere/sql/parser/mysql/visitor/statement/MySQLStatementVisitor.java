@@ -146,6 +146,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ViewNam
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightStringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WithClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JsonTableFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
@@ -215,6 +216,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.Parenthes
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.IndexHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -931,10 +933,21 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         } else if (null != ctx.JSON_SEPARATOR()) {
             functionName = ctx.JSON_SEPARATOR().getText();
             result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName, getOriginalText(ctx));
-        } else {
+        } else if (null != ctx.JSON_UNQUOTED_SEPARATOR()) {
             functionName = ctx.JSON_UNQUOTED_SEPARATOR().getText();
             result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName, getOriginalText(ctx));
+        } else {
+            result = (FunctionSegment) visitJsonTableFunction(ctx.jsonTableFunction());
         }
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitJsonTableFunction(final JsonTableFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.JSON_TABLE().getText(), ctx.getText());
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        result.getParameters().add(new LiteralExpressionSegment(ctx.path().getStart().getStartIndex(), ctx.path().getStop().getStopIndex(), ctx.path().getText()));
+        result.getParameters().add(new LiteralExpressionSegment(ctx.jsonTableColumns().getStart().getStartIndex(), ctx.jsonTableColumns().getStop().getStopIndex(), ctx.jsonTableColumns().getText()));
         return result;
     }
     
@@ -1843,6 +1856,14 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             }
             if (null != ctx.indexHintList()) {
                 ctx.indexHintList().indexHint().forEach(each -> result.getIndexHintSegments().add((IndexHintSegment) visit(each)));
+            }
+            return result;
+        }
+        if (null != ctx.expr()) {
+            ExpressionSegment exprSegment = (ExpressionSegment) visit(ctx.expr());
+            FunctionTableSegment result = new FunctionTableSegment(exprSegment.getStartIndex(), exprSegment.getStopIndex(), exprSegment);
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
             }
             return result;
         }
