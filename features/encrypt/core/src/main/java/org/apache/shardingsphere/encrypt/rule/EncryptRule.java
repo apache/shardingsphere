@@ -27,7 +27,6 @@ import org.apache.shardingsphere.encrypt.exception.metadata.MismatchedEncryptAlg
 import org.apache.shardingsphere.encrypt.rule.attribute.EncryptTableMapperRuleAttribute;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
@@ -115,7 +114,7 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
     }
     
     @Override
-    public RuleConfiguration getConfiguration() {
+    public EncryptRuleConfiguration getConfiguration() {
         return ruleConfig.get();
     }
     
