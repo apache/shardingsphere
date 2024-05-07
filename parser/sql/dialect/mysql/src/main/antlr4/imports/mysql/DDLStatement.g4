@@ -462,6 +462,7 @@ columnAttribute
     | constraintClause? checkConstraint
     | constraintEnforcement
     | visibility
+    | value = ENGINE_ATTRIBUTE EQ_? jsonAttribute = string_
     ;
 
 checkConstraint
@@ -521,6 +522,7 @@ commonIndexOption
     : KEY_BLOCK_SIZE EQ_? NUMBER_
     | COMMENT stringLiterals
     | visibility
+    | ENGINE_ATTRIBUTE EQ_? jsonAttribute = string_
     ;
 
 visibility
