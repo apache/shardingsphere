@@ -959,16 +959,33 @@ aggregationFunction
     ;
 
 jsonFunction
-    : columnRef (JSON_SEPARATOR | JSON_UNQUOTED_SEPARATOR) path
+    : jsonTableFunction
     | jsonFunctionName LP_ (expr? | expr (COMMA_ expr)*) RP_
+    | columnRef (JSON_SEPARATOR | JSON_UNQUOTED_SEPARATOR) path
     ;
+
+jsonTableFunction
+    : JSON_TABLE LP_ expr COMMA_ path jsonTableColumns RP_
+    ;
+
+jsonTableColumns
+    : COLUMNS LP_ jsonTableColumn (COMMA_ jsonTableColumn)* RP_
+    ;
+
+jsonTableColumn
+    : name FOR ORDINALITY
+    | name dataType PATH path (NULL | DEFAULT string_ | ERROR) ON (EMPTY | ERROR)
+    | name dataType EXISTS PATH string_ path
+    | NESTED PATH? path COLUMNS
+    ;
+
 
 jsonFunctionName
     : JSON_ARRAY | JSON_ARRAY_APPEND |  JSON_ARRAY_INSERT |  JSON_CONTAINS
     | JSON_CONTAINS_PATH | JSON_DEPTH | JSON_EXTRACT | JSON_INSERT | JSON_KEYS | JSON_LENGTH | JSON_MERGE | JSON_MERGE_PATCH
     | JSON_MERGE_PRESERVE | JSON_OBJECT | JSON_OVERLAPS | JSON_PRETTY | JSON_QUOTE | JSON_REMOVE | JSON_REPLACE
     | JSON_SCHEMA_VALID | JSON_SCHEMA_VALIDATION_REPORT | JSON_SEARCH | JSON_SET | JSON_STORAGE_FREE | JSON_STORAGE_SIZE
-    | JSON_TABLE | JSON_TYPE | JSON_UNQUOTE | JSON_VALID | JSON_VALUE | MEMBER OF
+    | JSON_TYPE | JSON_UNQUOTE | JSON_VALID | JSON_VALUE | MEMBER OF
     ;
 
 aggregationFunctionName
