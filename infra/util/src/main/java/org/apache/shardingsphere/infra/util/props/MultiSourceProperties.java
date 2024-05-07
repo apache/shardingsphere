@@ -15,34 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.yaml.config;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleType;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+package org.apache.shardingsphere.infra.util.props;
 
 import java.util.Properties;
 
 /**
- * Transaction rule configuration for YAML.
+ * Multi source properties.
  */
-@RepositoryTupleEntity("transaction")
-@RepositoryTupleType("transaction")
-@Getter
-@Setter
-public final class YamlTransactionRuleConfiguration implements YamlGlobalRuleConfiguration {
+public final class MultiSourceProperties extends Properties {
     
-    private String defaultType;
+    private final Properties[] defaults;
     
-    private String providerType;
-    
-    private Properties props;
+    public MultiSourceProperties(final Properties... defaults) {
+        this.defaults = defaults;
+    }
     
     @Override
-    public Class<TransactionRuleConfiguration> getRuleConfigurationType() {
-        return TransactionRuleConfiguration.class;
+    public String getProperty(final String key) {
+        String value = super.getProperty(key);
+        if (null != value) {
+            return value;
+        }
+        for (Properties each : defaults) {
+            value = each.getProperty(key);
+            if (null != value) {
+                return value;
+            }
+        }
+        return null;
+    }
+    
+    @Override
+    public String getProperty(final String key, final String defaultValue) {
+        String value = this.getProperty(key);
+        return (null == value) ? defaultValue : value;
     }
 }

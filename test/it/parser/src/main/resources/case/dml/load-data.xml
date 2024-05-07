@@ -34,4 +34,10 @@
     <load-data sql-case-id="load_data_into_table_with_ignore_lines">
         <table name="t_order" start-index="44" stop-index="50" />
     </load-data>
+    <load-data sql-case-id="load_data_into_table_with_at_01">
+        <table name="t1" start-index="39" stop-index="40"/>
+    </load-data>
+    <load-data sql-case-id="load_data_into_table_with_at_02">
+        <table name="t1" start-index="39" stop-index="40"/>
+    </load-data>
 </sql-parser-test-cases>

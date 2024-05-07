@@ -21,9 +21,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleKeyListNameGenerator;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleField;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleField.Type;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleKeyListNameGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
@@ -47,41 +48,41 @@ import java.util.Map;
 @Setter
 public final class YamlShardingRuleConfiguration implements YamlRuleConfiguration {
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.TABLES, order = 500)
+    @RepositoryTupleField(type = Type.TABLE)
     private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.AUTO_TABLES, order = 501)
+    @RepositoryTupleField(type = Type.TABLE)
     private Map<String, YamlShardingAutoTableRuleConfiguration> autoTables = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.BINDING_TABLES, order = 502)
+    @RepositoryTupleField(type = Type.TABLE)
     @RepositoryTupleKeyListNameGenerator(ShardingBindingTableRepositoryTupleKeyListNameGenerator.class)
     private Collection<String> bindingTables = new LinkedList<>();
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_DATABASE_STRATEGY, order = 100)
+    @RepositoryTupleField(type = Type.DEFAULT_STRATEGY)
     private YamlShardingStrategyConfiguration defaultDatabaseStrategy;
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_TABLE_STRATEGY, order = 101)
+    @RepositoryTupleField(type = Type.DEFAULT_STRATEGY)
     private YamlShardingStrategyConfiguration defaultTableStrategy;
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY, order = 102)
+    @RepositoryTupleField(type = Type.DEFAULT_STRATEGY)
     private YamlKeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_AUDIT_STRATEGY, order = 103)
+    @RepositoryTupleField(type = Type.DEFAULT_STRATEGY)
     private YamlShardingAuditStrategyConfiguration defaultAuditStrategy;
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.ALGORITHMS, order = 0)
+    @RepositoryTupleField(value = ShardingRuleNodePathProvider.ALGORITHMS, type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.KEY_GENERATORS, order = 1)
+    @RepositoryTupleField(type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.AUDITORS, order = 2)
+    @RepositoryTupleField(type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> auditors = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN, order = 200)
+    @RepositoryTupleField(type = Type.OTHER)
     private String defaultShardingColumn;
     
-    @RepositoryTupleField(value = ShardingRuleNodePathProvider.SHARDING_CACHE, order = 201)
+    @RepositoryTupleField(type = Type.OTHER)
     private YamlShardingCacheConfiguration shardingCache;
     
     @Override

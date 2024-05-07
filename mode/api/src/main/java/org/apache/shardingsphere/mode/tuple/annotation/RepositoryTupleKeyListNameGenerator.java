@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation;
+package org.apache.shardingsphere.mode.tuple.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

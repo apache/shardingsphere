@@ -100,4 +100,7 @@
     <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace_retention_guarantee" />
     <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace_retention_noguarantee" />
     <create-tablespace sql-case-id="create_tablespace_with_relative_location" />
+    <create-tablespace sql-case-id="create_tablespace_with_autoextend_size"/>
+    <create-tablespace sql-case-id="create_tablespace_with_engine_attribute"/>
+    <create-tablespace sql-case-id="create_tablespace_with_extent_size"/>
 </sql-parser-test-cases>

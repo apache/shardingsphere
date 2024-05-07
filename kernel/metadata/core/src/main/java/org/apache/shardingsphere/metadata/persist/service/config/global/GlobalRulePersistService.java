@@ -20,13 +20,13 @@ package org.apache.shardingsphere.metadata.persist.service.config.global;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
+import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.engine.RepositoryTupleSwapperEngine;
+import org.apache.shardingsphere.mode.tuple.RepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;

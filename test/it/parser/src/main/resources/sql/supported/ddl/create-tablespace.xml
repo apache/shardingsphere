@@ -109,4 +109,7 @@
     <sql-case id="create_tablespace_with_undo_tablespace_retention_guarantee" value="CREATE UNDO TABLESPACE tablespaceName RETENTION GUARANTEE" db-types="Oracle" />
     <sql-case id="create_tablespace_with_undo_tablespace_retention_noguarantee" value="CREATE UNDO TABLESPACE tablespaceName RETENTION NOGUARANTEE" db-types="Oracle" />
     <sql-case id="create_tablespace_with_relative_location" value="CREATE TABLESPACE example2 RELATIVE LOCATION 'tablespace2/tablespace_2'" db-types="openGauss" />
+    <sql-case id="create_tablespace_with_extent_size" value="CREATE TABLESPACE TS1 ADD DATAFILE 'data1.dat' EXTENT_SIZE 8M INITIAL_SIZE 2G ENGINE NDBCLUSTER" db-types="MySQL"/>
+    <sql-case id="create_tablespace_with_engine_attribute" value="CREATE TABLESPACE ts1 ENGINE_ATTRIBUTE='{&quot;key&quot;:&quot;value&quot;}'" db-types="MySQL"/>
+    <sql-case id="create_tablespace_with_autoextend_size" value="CREATE TABLESPACE ts1 AUTOEXTEND_SIZE = 4M" db-types="MySQL"/>
 </sql-cases>

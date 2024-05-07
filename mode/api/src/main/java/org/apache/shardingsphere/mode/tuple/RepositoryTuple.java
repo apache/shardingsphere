@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.swapper;
+package org.apache.shardingsphere.mode.tuple;
 
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleKeyListNameGenerator;
-import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableReferenceRuleConfigurationConverter;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Sharding binding table repository tuple key list name generator.
+ * Repository tuple.
  */
-public final class ShardingBindingTableRepositoryTupleKeyListNameGenerator implements RepositoryTupleKeyListNameGenerator.Generator {
+@RequiredArgsConstructor
+@Getter
+public final class RepositoryTuple {
     
-    @Override
-    public String generate(final Object tupleValue) {
-        return YamlShardingTableReferenceRuleConfigurationConverter.convertToObject(tupleValue.toString()).getName();
-    }
+    private final String key;
+    
+    private final String value;
 }

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.props.MultiSourceProperties;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -59,9 +60,8 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     @Override
     public void init(final Properties props) {
-        Properties properties = new Properties(metaData.getDefaultProps());
-        properties.putAll(props);
-        secretKey = getSecretKey(properties);
+        Properties multiSourceProperties = new MultiSourceProperties(props, metaData.getDefaultProps());
+        secretKey = getSecretKey(multiSourceProperties);
     }
     
     private byte[] getSecretKey(final Properties props) {

@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rl;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Repository tuple entity.
+ * Start replica test case.
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface RepositoryTupleEntity {
-    
-    /**
-     * Get rule type name.
-     * 
-     * @return rule type name
-     */
-    String value();
+public final class StartReplicaStatementTestCase extends SQLParserTestCase {
 }

@@ -15,24 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.RLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Repository tuple type.
+ * MySQL start replica statement.
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface RepositoryTupleType {
-    
-    /**
-     * Get persist path name.
-     *
-     * @return persist path name
-     */
-    String value();
+public final class MySQLStartReplicaStatement extends AbstractSQLStatement implements RLStatement, MySQLStatement {
 }

@@ -43,6 +43,10 @@ stopSlave
     : STOP SLAVE threadTypes channelOption*
     ;
 
+startReplica
+    : START REPLICA threadTypes? utilOption? connectionOptions? channelOption?
+    ;
+
 groupReplication
     : startGroupReplication | stopGroupReplication
     ;

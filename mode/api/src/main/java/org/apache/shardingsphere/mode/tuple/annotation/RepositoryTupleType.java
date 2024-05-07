@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.datanode;
+package org.apache.shardingsphere.mode.tuple.annotation;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Repository tuple.
+ * Repository tuple type.
  */
-@RequiredArgsConstructor
-@Getter
-public final class RepositoryTuple {
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RepositoryTupleType {
     
-    private final String key;
-    
-    private final String value;
+    /**
+     * Get persist path name.
+     *
+     * @return persist path name
+     */
+    String value();
 }

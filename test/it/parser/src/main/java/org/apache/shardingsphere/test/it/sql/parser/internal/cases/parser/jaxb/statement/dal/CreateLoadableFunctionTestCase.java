@@ -15,31 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Repository tuple field.
+ * Create loadable function test case.
  */
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface RepositoryTupleField {
-    
-    /**
-     * Get persist path name.
-     * 
-     * @return persist path name
-     */
-    String value();
-    
-    /**
-     * Get persist order.
-     * 
-     * @return persist order
-     */
-    int order();
+public final class CreateLoadableFunctionTestCase extends SQLParserTestCase {
 }
