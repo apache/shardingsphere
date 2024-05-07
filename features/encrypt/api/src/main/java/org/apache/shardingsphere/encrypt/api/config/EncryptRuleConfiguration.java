@@ -50,6 +50,7 @@ public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration
     private Map<String, AlgorithmConfiguration> rebuildEncryptorsWithDefaultProperties(final Map<String, AlgorithmConfiguration> encryptors) {
         Map<String, AlgorithmConfiguration> result = new HashMap<>();
         for (Entry<String, AlgorithmConfiguration> entry : encryptors.entrySet()) {
+            // todo Replace with MultiSourceProperties, MultiSourceProperties need support marshal.
             Properties props = new Properties();
             props.putAll(entry.getValue().getProps());
             Properties defaultProps = TypedSPILoader.findUninitedService(EncryptAlgorithm.class, entry.getValue().getType()).map(EncryptAlgorithm::getMetaData)
