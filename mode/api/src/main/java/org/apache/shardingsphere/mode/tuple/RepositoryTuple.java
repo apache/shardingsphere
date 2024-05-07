@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation;
+package org.apache.shardingsphere.mode.tuple;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Repository tuple type.
+ * Repository tuple.
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface RepositoryTupleType {
+@RequiredArgsConstructor
+@Getter
+public final class RepositoryTuple {
     
-    /**
-     * Get persist path name.
-     *
-     * @return persist path name
-     */
-    String value();
+    private final String key;
+    
+    private final String value;
 }

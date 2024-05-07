@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.engine;
+package org.apache.shardingsphere.mode.tuple;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Strings;
@@ -25,13 +25,12 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.datanode.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleField;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleKeyListNameGenerator;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.annotation.RepositoryTupleType;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleField;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleKeyListNameGenerator;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleType;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.path.GlobalNodePath;

@@ -15,19 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.datanode;
+package org.apache.shardingsphere.mode.tuple.annotation;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
- * Repository tuple.
+ * Repository tuple field.
  */
-@RequiredArgsConstructor
-@Getter
-public final class RepositoryTuple {
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RepositoryTupleField {
     
-    private final String key;
+    /**
+     * Get persist path name.
+     * 
+     * @return persist path name
+     */
+    String value() default "";
     
-    private final String value;
+    /**
+     * Get type.
+     * 
+     * @return type
+     */
+    Type type();
+    
+    @RequiredArgsConstructor
+    enum Type implements Comparable<Type> {
+        
+        ALGORITHM, DEFAULT_ALGORITHM, STRATEGY, DEFAULT_STRATEGY, DATA_SOURCE, TABLE, OTHER
+    }
 }
