@@ -115,6 +115,9 @@ public final class RepositoryTupleSwapperEngine {
         if (fieldValue instanceof Boolean || fieldValue instanceof Integer || fieldValue instanceof Long) {
             return Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleField.value()).getPath(), fieldValue.toString()));
         }
+        if (fieldValue instanceof Enum) {
+            return Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleField.value()).getPath(), ((Enum) fieldValue).name()));
+        }
         return Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleField.value()).getPath(), YamlEngine.marshal(fieldValue)));
     }
     
