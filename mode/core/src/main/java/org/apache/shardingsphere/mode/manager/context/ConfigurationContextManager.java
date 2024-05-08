@@ -160,11 +160,9 @@ public final class ConfigurationContextManager {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
         Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
         Optional<ShardingSphereRule> toBeChangedRule = rules.stream().filter(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass())).findFirst();
-        if (toBeChangedRule.isPresent() && toBeChangedRule.get() instanceof PartialRuleUpdateSupported) {
-            if (((PartialRuleUpdateSupported) toBeChangedRule.get()).partialUpdateRule(ruleConfig)) {
-                ((PartialRuleUpdateSupported) toBeChangedRule.get()).updateConfiguration(ruleConfig);
-                return;
-            }
+        if (toBeChangedRule.isPresent() && toBeChangedRule.get() instanceof PartialRuleUpdateSupported && ((PartialRuleUpdateSupported) toBeChangedRule.get()).partialUpdateRule(ruleConfig)) {
+            ((PartialRuleUpdateSupported) toBeChangedRule.get()).updateConfiguration(ruleConfig);
+            return;
         }
         try {
             rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
@@ -189,11 +187,9 @@ public final class ConfigurationContextManager {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
         Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
         Optional<ShardingSphereRule> toBeChangedRule = rules.stream().filter(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass())).findFirst();
-        if (toBeChangedRule.isPresent() && toBeChangedRule.get() instanceof PartialRuleUpdateSupported) {
-            if (((PartialRuleUpdateSupported) toBeChangedRule.get()).partialUpdateRule(ruleConfig)) {
-                ((PartialRuleUpdateSupported) toBeChangedRule.get()).updateConfiguration(ruleConfig);
-                return;
-            }
+        if (toBeChangedRule.isPresent() && toBeChangedRule.get() instanceof PartialRuleUpdateSupported && ((PartialRuleUpdateSupported) toBeChangedRule.get()).partialUpdateRule(ruleConfig)) {
+            ((PartialRuleUpdateSupported) toBeChangedRule.get()).updateConfiguration(ruleConfig);
+            return;
         }
         try {
             rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));

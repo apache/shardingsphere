@@ -46,7 +46,7 @@ public @interface RepositoryTupleField {
     Type type();
     
     @RequiredArgsConstructor
-    enum Type implements Comparable<Type> {
+    enum Type {
         
         ALGORITHM, DEFAULT_ALGORITHM, STRATEGY, DEFAULT_STRATEGY, DATA_SOURCE, TABLE, OTHER
     }
