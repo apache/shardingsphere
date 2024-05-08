@@ -56,6 +56,19 @@
                 <parameter>
                     <function function-name="CAST" start-index="15" stop-index="53" text="CAST((MID(UUID(),20,64)) AS BINARY(55))">
                         <parameter>
+                            <function function-name="MID" start-index="21" stop-index="37" text="MID(UUID(),20,64)">
+                                <parameter>
+                                    <function function-name="UUID" start-index="25" stop-index="30" text="UUID()" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="20" start-index="32" stop-index="33" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="64" start-index="35" stop-index="36" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                        <parameter>
                             <data-type start-index="43" stop-index="52" value="BINARY"  />
                         </parameter>
                     </function>
@@ -70,6 +83,16 @@
             <function function-name="FROM_BASE64" start-index="3" stop-index="45" text="FROM_BASE64(CAST(RIGHT(11,1)AS BINARY(24)))">
                 <parameter>
                     <function function-name="CAST" start-index="15" stop-index="44" text="CAST(RIGHT(11,1)AS BINARY(24))">
+                        <parameter>
+                            <function function-name="RIGHT" start-index="20" stop-index="30" text="RIGHT(11,1)">
+                                <parameter>
+                                    <literal-expression value="11" start-index="26" stop-index="27" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="1" start-index="29" stop-index="29" />
+                                </parameter>
+                            </function>
+                        </parameter>
                         <parameter>
                             <data-type start-index="34" stop-index="43" value="BINARY"  />
                         </parameter>

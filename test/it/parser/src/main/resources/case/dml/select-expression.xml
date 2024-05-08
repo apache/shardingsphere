@@ -48,7 +48,11 @@
                     <right>
                         <binary-operation-expression start-index="114" stop-index="165">
                             <left>
-                                <function function-name="CONVERT" start-index="114" stop-index="146" text="CONVERT(VARIABLE_VALUE, UNSIGNED)" />
+                                <function function-name="CONVERT" start-index="114" stop-index="146" text="CONVERT(VARIABLE_VALUE, UNSIGNED)">
+                                    <parameter>
+                                        <column name="VARIABLE_VALUE" start-index="122" stop-index="135" />
+                                    </parameter>
+                                </function>
                             </left>
                             <operator>&gt;</operator>
                             <right>
