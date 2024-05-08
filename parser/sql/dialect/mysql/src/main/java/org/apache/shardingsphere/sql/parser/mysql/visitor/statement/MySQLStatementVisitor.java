@@ -1039,15 +1039,10 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
-        calculateParameterCount(ctx.expr());
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
         for (ExprContext each : ctx.expr()) {
             ASTNode expr = visit(each);
-            if (expr instanceof ColumnSegment) {
-                result.getParameters().add((ColumnSegment) expr);
-            } else if (expr instanceof LiteralExpressionSegment) {
-                result.getParameters().add((LiteralExpressionSegment) expr);
-            }
+            result.getParameters().add((ExpressionSegment) expr);
         }
         if (null != ctx.castType()) {
             result.getParameters().add((DataTypeSegment) visit(ctx.castType()));
@@ -1084,8 +1079,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public final ASTNode visitConvertFunction(final ConvertFunctionContext ctx) {
-        calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CONVERT().getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CONVERT().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        return result;
     }
     
     @Override

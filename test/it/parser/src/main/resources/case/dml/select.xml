@@ -495,7 +495,11 @@
         <projections start-index="7" stop-index="59">
             <expression-projection text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" start-index="7" stop-index="59">
                 <expr>
-                    <function start-index="7" stop-index="59" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" function-name="CONVERT" />
+                    <function start-index="7" stop-index="59" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" function-name="CONVERT">
+                        <parameter>
+                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -505,7 +509,11 @@
         <projections start-index="7" stop-index="57">
             <expression-projection text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, BINARY(4))" start-index="7" stop-index="57">
                 <expr>
-                    <function start-index="7" stop-index="57" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, BINARY(4))" function-name="CONVERT" />
+                    <function start-index="7" stop-index="57" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, BINARY(4))" function-name="CONVERT" >
+                        <parameter>
+                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" function-name="GROUPING(f1)" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -515,7 +523,11 @@
         <projections start-index="7" stop-index="55">
             <expression-projection text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR(4))" start-index="7" stop-index="55">
                 <expr>
-                    <function start-index="7" stop-index="55" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR(4))" function-name="CONVERT" />
+                    <function start-index="7" stop-index="55" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR(4))" function-name="CONVERT">
+                        <parameter>
+                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -525,7 +537,11 @@
         <projections start-index="7" stop-index="52">
             <expression-projection text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR)" start-index="7" stop-index="52">
                 <expr>
-                    <function start-index="7" stop-index="52" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR)" function-name="CONVERT" />
+                    <function start-index="7" stop-index="52" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR)" function-name="CONVERT">
+                        <parameter>
+                            <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -3805,7 +3821,18 @@
         <projections start-index="7" stop-index="63">
             <expression-projection text="CONVERT(SUBSTRING(content, 5) , SIGNED)" alias="signed_content" start-index="7" stop-index="63">
                 <expr>
-                    <function function-name="CONVERT" start-index="7" stop-index="45" text="CONVERT(SUBSTRING(content, 5) , SIGNED)" />
+                    <function function-name="CONVERT" start-index="7" stop-index="45" text="CONVERT(SUBSTRING(content, 5) , SIGNED)">
+                        <parameter>
+                            <function function-name="SUBSTRING" start-index="15" stop-index="35" text="SUBSTRING(content, 5)">
+                                <parameter>
+                                    <column name="content" start-index="25" stop-index="31" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="5" start-index="34" stop-index="34" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>

@@ -130,7 +130,11 @@
         <projections start-index="7" stop-index="33">
             <expression-projection text="CONVERT('2020-10-01', DATE)" start-index="7" stop-index="33">
                 <expr>
-                    <function function-name="CONVERT" start-index="7" stop-index="33" text="CONVERT('2020-10-01', DATE)" />
+                    <function function-name="CONVERT" start-index="7" stop-index="33" text="CONVERT('2020-10-01', DATE)">
+                        <parameter>
+                            <literal-expression value="2020-10-01" start-index="15" stop-index="26" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>

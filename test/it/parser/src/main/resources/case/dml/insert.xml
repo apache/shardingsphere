@@ -1486,7 +1486,23 @@
             <assignment start-index="51" stop-index="111" literal-stop-index="116">
                 <column name="status" start-index="51" stop-index="56" />
                 <assignment-value>
-                    <function function-name="convert" text="convert(to_base64(aes_encrypt(?, 'key')) USING utf8)" literal-text="convert(to_base64(aes_encrypt('init', 'key')) USING utf8)" start-index="60" stop-index="111" literal-start-index="60" literal-stop-index="116" />
+                    <function function-name="convert" text="convert(to_base64(aes_encrypt(?, 'key')) USING utf8)" literal-text="convert(to_base64(aes_encrypt('init', 'key')) USING utf8)" start-index="60" stop-index="111" literal-start-index="60" literal-stop-index="116">
+                        <parameter>
+                            <function function-name="to_base64" text="to_base64(aes_encrypt(?, 'key'))" literal-text="to_base64(aes_encrypt('init', 'key'))" start-index="68" stop-index="99" literal-start-index="68" literal-stop-index="104">
+                                <parameter>
+                                    <function function-name="aes_encrypt" text="aes_encrypt(?, 'key')" literal-text="aes_encrypt('init', 'key')" start-index="78" stop-index="98" literal-start-index="78" literal-stop-index="103">
+                                        <parameter>
+                                            <literal-expression value="init" start-index="85" stop-index="90" literal-start-index="90" literal-stop-index="95" />
+                                            <parameter-marker-expression parameter-index="2" start-index="90" stop-index="90" />
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression value="key" start-index="93" stop-index="97" literal-start-index="98" literal-stop-index="102" />
+                                        </parameter>
+                                    </function>
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
                 </assignment-value>
             </assignment>
         </set>
