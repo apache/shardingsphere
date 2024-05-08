@@ -34,7 +34,6 @@ import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -54,6 +53,8 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
     
     private final Map<String, EncryptTable> tables;
     
+    private final ConcurrentHashMap<String, EncryptAlgorithm> encryptors;
+    
     @Getter
     private final RuleAttributes attributes;
     
@@ -61,16 +62,24 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
         this.databaseName = databaseName;
         this.ruleConfig.set(ruleConfig);
         tables = new ConcurrentHashMap<>();
-        Map<String, EncryptAlgorithm> encryptors = ruleConfig.getEncryptors().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> TypedSPILoader.getService(EncryptAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps())));
+        encryptors = createEncryptors(ruleConfig);
         for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
-            each.getColumns().forEach(columnRuleConfig -> checkEncryptorType(columnRuleConfig, encryptors));
+            each.getColumns().forEach(this::checkEncryptorType);
             tables.put(each.getName().toLowerCase(), new EncryptTable(each, encryptors));
         }
         attributes = new RuleAttributes(new EncryptTableMapperRuleAttribute(ruleConfig.getTables()));
     }
     
-    private void checkEncryptorType(final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, EncryptAlgorithm> encryptors) {
+    private ConcurrentHashMap<String, EncryptAlgorithm> createEncryptors(final EncryptRuleConfiguration ruleConfig) {
+        ConcurrentHashMap<String, EncryptAlgorithm> result = new ConcurrentHashMap<>(ruleConfig.getEncryptors().size(), 1F);
+        for (Entry<String, AlgorithmConfiguration> entry : ruleConfig.getEncryptors().entrySet()) {
+            result.put(entry.getKey(), TypedSPILoader.getService(EncryptAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps()));
+        }
+        return result;
+    }
+    
+    // TODO How to process changed encryptors and tables if check failed? It should check before rule change
+    private void checkEncryptorType(final EncryptColumnRuleConfiguration columnRuleConfig) {
         ShardingSpherePreconditions.checkState(encryptors.containsKey(columnRuleConfig.getCipher().getEncryptorName())
                 && encryptors.get(columnRuleConfig.getCipher().getEncryptorName()).getMetaData().isSupportDecrypt(),
                 () -> new MismatchedEncryptAlgorithmTypeException(databaseName, "Cipher", columnRuleConfig.getCipher().getEncryptorName(), "decrypt"));
@@ -128,20 +137,14 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
         Collection<String> toBeAddedTableNames = toBeUpdatedRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         toBeAddedTableNames.removeAll(tables.keySet());
         if (!toBeAddedTableNames.isEmpty()) {
-            for (String each : toBeAddedTableNames) {
-                EncryptTableRuleConfiguration tableRuleConfig = getEncryptTableRuleConfiguration(each, toBeUpdatedRuleConfig);
-                Map<String, AlgorithmConfiguration> encryptorConfigs = getEncryptorConfigurations(tableRuleConfig, toBeUpdatedRuleConfig.getEncryptors());
-                Map<String, EncryptAlgorithm> encryptors = encryptorConfigs.entrySet().stream()
-                        .collect(Collectors.toMap(Entry::getKey, entry -> TypedSPILoader.getService(EncryptAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps())));
-                tableRuleConfig.getColumns().forEach(columnRuleConfig -> checkEncryptorType(columnRuleConfig, encryptors));
-                tables.put(each.toLowerCase(), new EncryptTable(tableRuleConfig, encryptors));
-            }
+            toBeAddedTableNames.forEach(each -> addTableRule(each, toBeUpdatedRuleConfig));
             return true;
         }
         Collection<String> toBeRemovedTableNames = new HashSet<>(tables.keySet());
         toBeRemovedTableNames.removeAll(toBeUpdatedRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList()));
         if (!toBeRemovedTableNames.isEmpty()) {
             toBeRemovedTableNames.stream().map(String::toLowerCase).forEach(tables::remove);
+            // TODO check and remove unused encryptors
             return true;
         }
         // TODO Process update table
@@ -149,23 +152,18 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
         return false;
     }
     
-    private EncryptTableRuleConfiguration getEncryptTableRuleConfiguration(final String tableName, final EncryptRuleConfiguration toBeUpdatedRuleConfig) {
+    private void addTableRule(final String tableName, final EncryptRuleConfiguration toBeUpdatedRuleConfig) {
+        EncryptTableRuleConfiguration tableRuleConfig = getTableRuleConfiguration(tableName, toBeUpdatedRuleConfig);
+        for (Entry<String, AlgorithmConfiguration> entry : toBeUpdatedRuleConfig.getEncryptors().entrySet()) {
+            encryptors.computeIfAbsent(entry.getKey(), key -> TypedSPILoader.getService(EncryptAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps()));
+        }
+        tableRuleConfig.getColumns().forEach(this::checkEncryptorType);
+        tables.put(tableName.toLowerCase(), new EncryptTable(tableRuleConfig, encryptors));
+    }
+    
+    private EncryptTableRuleConfiguration getTableRuleConfiguration(final String tableName, final EncryptRuleConfiguration toBeUpdatedRuleConfig) {
         Optional<EncryptTableRuleConfiguration> result = toBeUpdatedRuleConfig.getTables().stream().filter(table -> table.getName().equals(tableName)).findFirst();
         Preconditions.checkState(result.isPresent());
         return result.get();
-    }
-    
-    private Map<String, AlgorithmConfiguration> getEncryptorConfigurations(final EncryptTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> encryptors) {
-        Map<String, AlgorithmConfiguration> result = new HashMap<>(encryptors.size(), 1F);
-        for (EncryptColumnRuleConfiguration each : tableRuleConfig.getColumns()) {
-            result.put(each.getCipher().getEncryptorName(), encryptors.get(each.getCipher().getEncryptorName()));
-            if (each.getAssistedQuery().isPresent()) {
-                result.put(each.getAssistedQuery().get().getEncryptorName(), encryptors.get(each.getAssistedQuery().get().getEncryptorName()));
-            }
-            if (each.getLikeQuery().isPresent()) {
-                result.put(each.getLikeQuery().get().getEncryptorName(), encryptors.get(each.getLikeQuery().get().getEncryptorName()));
-            }
-        }
-        return result;
     }
 }
