@@ -24,10 +24,12 @@ import java.util.Properties;
  */
 public final class MultiSourceProperties extends Properties {
     
-    private final Properties[] defaults;
+    private static final long serialVersionUID = 4196837300230442865L;
     
-    public MultiSourceProperties(final Properties... defaults) {
-        this.defaults = defaults;
+    private final Properties[] multiProps;
+    
+    public MultiSourceProperties(final Properties... multiProps) {
+        this.multiProps = multiProps;
     }
     
     @Override
@@ -36,7 +38,7 @@ public final class MultiSourceProperties extends Properties {
         if (null != value) {
             return value;
         }
-        for (Properties each : defaults) {
+        for (Properties each : multiProps) {
             value = each.getProperty(key);
             if (null != value) {
                 return value;
@@ -47,7 +49,7 @@ public final class MultiSourceProperties extends Properties {
     
     @Override
     public String getProperty(final String key, final String defaultValue) {
-        String value = this.getProperty(key);
-        return (null == value) ? defaultValue : value;
+        String value = getProperty(key);
+        return null == value ? defaultValue : value;
     }
 }
