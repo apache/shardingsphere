@@ -35,7 +35,8 @@ class SeataTest {
     private TestShardingService testShardingService;
     
     /**
-     * Further processing of `/health` awaits <a href="https://github.com/apache/incubator-seata/pull/6356">apache/incubator-seata#6356</a>.
+     * TODO Since Seata Client 1.8.0 does not provide the function of defining `service.default.grouplist` through Java API, we need to use a hard-defined host port `39567` here.
+     * TODO Further processing of `/health` awaits <a href="https://github.com/apache/incubator-seata/pull/6356">apache/incubator-seata#6356</a>.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     @SuppressWarnings({"resource", "deprecation"})

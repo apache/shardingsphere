@@ -27,8 +27,8 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <!--Before merging https://github.com/apache/incubator-seata/pull/5234,
-using Seata Client under GraalVM Native Image requires using the version released under its 1.x branch-->
+        <!--Before merging https://github.com/apache/incubator-seata/pull/6386,
+using Seata Client under GraalVM Native Image requires using the version released under its 1.x.x release-->
         <seata.version>1.8.0</seata.version>
     </properties>
     
