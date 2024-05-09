@@ -112,12 +112,12 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
             }
             List<RepositoryTuple> newRepositoryTuples = new LinkedList<>(repositoryTuples);
             Collections.reverse(newRepositoryTuples);
-            result.addAll(deleteDataNodes(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RepositoryTupleEntity.class)).value(), newRepositoryTuples));
+            result.addAll(deleteRepositoryTuples(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RepositoryTupleEntity.class)).value(), newRepositoryTuples));
         }
         return result;
     }
     
-    private Collection<MetaDataVersion> deleteDataNodes(final String databaseName, final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
+    private Collection<MetaDataVersion> deleteRepositoryTuples(final String databaseName, final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
             String delKey = DatabaseRuleMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey());
