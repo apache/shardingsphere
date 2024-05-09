@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.datasource.qualified;
+package org.apache.shardingsphere.mode.event.node;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 
 /**
- * Qualified data source deleted event.
+ * Compute node status changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class QualifiedDataSourceDeletedEvent {
+public final class ComputeNodeStatusChangedEvent {
     
-    private final QualifiedDataSource qualifiedDataSource;
+    private final String instanceId;
+    
+    private final InstanceState state;
 }

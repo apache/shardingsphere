@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.statement.ral.updatable.SetInstanceStat
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
-import org.apache.shardingsphere.mode.event.compute.ComputeNodeStatusChangedEvent;
+import org.apache.shardingsphere.mode.event.node.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
