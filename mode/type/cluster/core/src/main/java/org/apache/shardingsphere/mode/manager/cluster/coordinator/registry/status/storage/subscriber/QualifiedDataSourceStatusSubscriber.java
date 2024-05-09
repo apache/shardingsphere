@@ -19,29 +19,29 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceDeletedEvent;
+import org.apache.shardingsphere.mode.event.datasource.qualified.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.storage.node.StorageNode;
+import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
 
 /**
- * Storage node status subscriber.
+ * Qualified data source status subscriber.
  */
-public final class StorageNodeStatusSubscriber {
+public final class QualifiedDataSourceStatusSubscriber {
     
     private final ClusterPersistRepository repository;
     
-    public StorageNodeStatusSubscriber(final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
+    public QualifiedDataSourceStatusSubscriber(final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
         this.repository = repository;
         eventBusContext.register(this);
     }
     
     /**
-     * Delete storage node data source.
+     * Delete qualified data source.
      *
-     * @param event storage node data source deleted event
+     * @param event qualified data source deleted event
      */
     @Subscribe
-    public void delete(final StorageNodeDataSourceDeletedEvent event) {
-        repository.delete(StorageNode.getStorageNodeDataSourcePath(event.getQualifiedDataSource()));
+    public void delete(final QualifiedDataSourceDeletedEvent event) {
+        repository.delete(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(event.getQualifiedDataSource()));
     }
 }

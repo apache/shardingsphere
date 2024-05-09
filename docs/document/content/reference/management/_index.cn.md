@@ -91,9 +91,9 @@ namespace
    ├    ├     ├──labels                      
    ├    ├     ├     ├──UUID
    ├    ├     ├     ├──....               
-   ├    ├──storage_nodes                       
-   ├    ├     ├──${databaseName.groupName.ds} 
-   ├    ├     ├──${databaseName.groupName.ds}
+   ├    ├──qualified_data_sources                       
+   ├    ├     ├──${databaseName.groupName.dataSourceName} 
+   ├    ├     ├──${databaseName.groupName.dataSourceName}
    ├──statistics
    ├    ├──shardingsphere
    ├    ├     ├──schemas
@@ -219,6 +219,6 @@ indexs:                                   # 索引
 运行实例标识均为临时节点，当实例上线时注册，下线时自动清理。
 注册中心监控这些节点的变化来治理运行中实例对数据库的访问等。
 
-### /nodes/storage_nodes
+### /nodes/qualified_data_sources
 
-可以治理读写分离从库，可动态添加删除以及禁用。
+可以治理读写分离从库，可动态禁用。

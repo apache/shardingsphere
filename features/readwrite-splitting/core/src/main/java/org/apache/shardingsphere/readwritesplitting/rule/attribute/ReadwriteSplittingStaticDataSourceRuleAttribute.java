@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceDeletedEvent;
+import org.apache.shardingsphere.mode.event.datasource.qualified.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.readwritesplitting.exception.logic.ReadwriteSplittingDataSourceRuleNotFoundException;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 
@@ -73,7 +73,7 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
     
     private void deleteStorageNodeDataSources(final ReadwriteSplittingDataSourceGroupRule rule) {
         rule.getReadwriteSplittingGroup().getReadDataSources()
-                .forEach(each -> instanceContext.getEventBusContext().post(new StorageNodeDataSourceDeletedEvent(new QualifiedDataSource(databaseName, rule.getName(), each))));
+                .forEach(each -> instanceContext.getEventBusContext().post(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource(databaseName, rule.getName(), each))));
     }
     
     @Override
@@ -82,5 +82,4 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
             deleteStorageNodeDataSources(entry.getValue());
         }
     }
-    
 }

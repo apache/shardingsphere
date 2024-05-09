@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.storage.StorageNodeDataSource.Role;
-import org.apache.shardingsphere.mode.storage.node.StorageNode;
+import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
 import org.apache.shardingsphere.mode.storage.yaml.YamlStorageNodeDataSource;
 import org.apache.shardingsphere.mode.storage.yaml.YamlStorageNodeDataSourceSwapper;
 
@@ -47,10 +47,10 @@ public final class StorageNodeStatusService {
      * @return loaded storage node names
      */
     public Map<String, StorageNodeDataSource> loadStorageNodes() {
-        Collection<String> storageNodes = repository.getChildrenKeys(StorageNode.getRootPath());
-        Map<String, StorageNodeDataSource> result = new HashMap<>(storageNodes.size(), 1F);
-        storageNodes.forEach(each -> {
-            String yamlContent = repository.getDirectly(StorageNode.getStorageNodesDataSourcePath(each));
+        Collection<String> qualifiedDataSourceNodes = repository.getChildrenKeys(QualifiedDataSourceNode.getRootPath());
+        Map<String, StorageNodeDataSource> result = new HashMap<>(qualifiedDataSourceNodes.size(), 1F);
+        qualifiedDataSourceNodes.forEach(each -> {
+            String yamlContent = repository.getDirectly(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(each));
             if (!Strings.isNullOrEmpty(yamlContent)) {
                 result.put(each, new YamlStorageNodeDataSourceSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlStorageNodeDataSource.class)));
             }
@@ -59,16 +59,16 @@ public final class StorageNodeStatusService {
     }
     
     /**
-     * Change member storage node status.
+     * Change member qualified data source status.
      *
      * @param databaseName database name
      * @param groupName group name
      * @param storageUnitName storage unit name
      * @param dataSourceState data source state
      */
-    public void changeMemberStorageNodeStatus(final String databaseName, final String groupName, final String storageUnitName, final DataSourceState dataSourceState) {
+    public void changeMemberQualifiedDataSourceStatus(final String databaseName, final String groupName, final String storageUnitName, final DataSourceState dataSourceState) {
         StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(Role.MEMBER, dataSourceState);
-        repository.persist(StorageNode.getStorageNodeDataSourcePath(new QualifiedDataSource(databaseName, groupName, storageUnitName)),
+        repository.persist(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(new QualifiedDataSource(databaseName, groupName, storageUnitName)),
                 YamlEngine.marshal(new YamlStorageNodeDataSourceSwapper().swapToYamlConfiguration(storageNodeDataSource)));
     }
 }

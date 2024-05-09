@@ -26,48 +26,48 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Storage node.
+ * Qualified data source node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StorageNode {
+public final class QualifiedDataSourceNode {
     
-    public static final String ROOT_NODE = "nodes";
+    private static final String ROOT_NODE = "nodes";
     
-    private static final String STORAGE_NODES = "storage_nodes";
+    private static final String QUALIFIED_DATA_SOURCES = "qualified_data_sources";
     
     /**
-     * Get storage node root path.
+     * Get qualified data source root path.
      *
-     * @return root path of storage node
+     * @return root path of qualified data source
      */
     public static String getRootPath() {
-        return String.join("/", "", ROOT_NODE, STORAGE_NODES);
+        return String.join("/", "", ROOT_NODE, QUALIFIED_DATA_SOURCES);
     }
     
     /**
-     * Get storage node data source path.
+     * Get qualified data source path.
      *
      * @param dataSourcePath data source path
-     * @return data source path of storage node
+     * @return qualified data source path
      */
-    public static String getStorageNodesDataSourcePath(final String dataSourcePath) {
+    public static String getQualifiedDataSourceNodePath(final String dataSourcePath) {
         return String.join("/", getRootPath(), dataSourcePath);
     }
     
     /**
-     * Get storage node data source path.
+     * Get qualified data source path.
      *
      * @param qualifiedDataSource qualified data source
-     * @return status path of storage node
+     * @return qualified data source path
      */
-    public static String getStorageNodeDataSourcePath(final QualifiedDataSource qualifiedDataSource) {
+    public static String getQualifiedDataSourceNodePath(final QualifiedDataSource qualifiedDataSource) {
         return String.join("/", getRootPath(), qualifiedDataSource.toString());
     }
     
     /**
      * Extract qualified data source.
      *
-     * @param storageNodePath storage node path
+     * @param storageNodePath qualified data source path
      * @return extracted qualified data source
      */
     public static Optional<QualifiedDataSource> extractQualifiedDataSource(final String storageNodePath) {
