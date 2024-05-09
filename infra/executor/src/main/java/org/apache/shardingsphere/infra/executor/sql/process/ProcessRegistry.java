@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.exception.kernel.connection.SQLExecutionI
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Process registry.
@@ -48,12 +50,13 @@ public final class ProcessRegistry {
     
     /**
      * Put process.
-     *
+     * 
      * @param process process
      */
     public void add(final Process process) {
         if (isSameExecutionProcess(process)) {
             Process oldProcess = processes.get(process.getId());
+            ShardingSpherePreconditions.checkState(!oldProcess.isInterrupted(), SQLExecutionInterruptedException::new);
             merge(oldProcess, process);
             return;
         }
@@ -64,17 +67,16 @@ public final class ProcessRegistry {
         return !Strings.isNullOrEmpty(process.getSql()) && processes.containsKey(process.getId()) && processes.get(process.getId()).getSql().equalsIgnoreCase(process.getSql());
     }
     
-    private Process merge(final Process oldProcess, final Process newProcess) {
-        if (Strings.isNullOrEmpty(newProcess.getSql()) || !newProcess.getSql().equalsIgnoreCase(oldProcess.getSql())) {
-            return newProcess;
-        }
-        ShardingSpherePreconditions.checkState(!oldProcess.isInterrupted(), SQLExecutionInterruptedException::new);
-        oldProcess.getTotalUnitCount().addAndGet(newProcess.getTotalUnitCount().get());
-        oldProcess.getCompletedUnitCount().addAndGet(newProcess.getCompletedUnitCount().get());
-        oldProcess.getIdle().set(newProcess.getIdle().get());
-        oldProcess.getInterrupted().compareAndSet(false, newProcess.getInterrupted().get());
-        oldProcess.getProcessStatements().putAll(newProcess.getProcessStatements());
-        return oldProcess;
+    private void merge(final Process oldProcess, final Process newProcess) {
+        int totalUnitCount = oldProcess.getTotalUnitCount() + newProcess.getTotalUnitCount();
+        int completedUnitCount = oldProcess.getCompletedUnitCount() + newProcess.getCompletedUnitCount();
+        boolean idle = oldProcess.isIdle() || newProcess.isIdle();
+        boolean interrupted = oldProcess.isInterrupted() || newProcess.isInterrupted();
+        Process process = new Process(oldProcess.getId(), oldProcess.getStartMillis(), oldProcess.getSql(), oldProcess.getDatabaseName(),
+                oldProcess.getUsername(), oldProcess.getHostname(), totalUnitCount, new AtomicInteger(completedUnitCount), idle, new AtomicBoolean(interrupted));
+        oldProcess.getProcessStatements().forEach(process::putProcessStatement);
+        newProcess.getProcessStatements().forEach(process::putProcessStatement);
+        processes.put(process.getId(), process);
     }
     
     /**

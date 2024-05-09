@@ -100,9 +100,9 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         if (process.isIdle()) {
             rowValues.add("");
         } else {
-            int processDoneCount = process.getCompletedUnitCount().get();
+            int processDoneCount = process.getCompletedUnitCount();
             String statePrefix = "Executing ";
-            rowValues.add(statePrefix + processDoneCount + "/" + process.getTotalUnitCount().get());
+            rowValues.add(statePrefix + processDoneCount + "/" + process.getTotalUnitCount());
             sql = process.getSql();
         }
         if (null != sql && sql.length() > 100 && !showFullProcesslist) {

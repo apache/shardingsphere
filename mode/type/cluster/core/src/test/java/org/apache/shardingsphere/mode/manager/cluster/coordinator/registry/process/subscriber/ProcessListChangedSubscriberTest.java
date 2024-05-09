@@ -58,7 +58,6 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -111,9 +110,6 @@ class ProcessListChangedSubscriberTest {
         String processId = "foo_id";
         when(process.getId()).thenReturn(processId);
         when(process.isInterrupted()).thenReturn(false);
-        when(process.isIdle()).thenReturn(false);
-        when(process.getCompletedUnitCount()).thenReturn(new AtomicInteger(0));
-        when(process.getTotalUnitCount()).thenReturn(new AtomicInteger(0));
         ProcessRegistry.getInstance().add(process);
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         subscriber.reportLocalProcesses(new ReportLocalProcessesEvent(instanceId, processId));
