@@ -36,7 +36,7 @@ class QualifiedDataSourceChangedWatcherTest {
     @Test
     void assertCreateEnabledQualifiedDataSourceChangedEvent() {
         Optional<GovernanceEvent> actual = new QualifiedDataSourceChangedWatcher().createGovernanceEvent(
-                new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: MEMBER\nstatus: ENABLED\n", Type.ADDED));
+                new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "status: ENABLED\n", Type.ADDED));
         assertTrue(actual.isPresent());
         StorageNodeChangedEvent actualEvent = (StorageNodeChangedEvent) actual.get();
         assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
@@ -48,7 +48,7 @@ class QualifiedDataSourceChangedWatcherTest {
     @Test
     void assertCreateDisabledQualifiedDataSourceChangedEvent() {
         Optional<GovernanceEvent> actual = new QualifiedDataSourceChangedWatcher().createGovernanceEvent(
-                new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: MEMBER\nstatus: DISABLED\n", Type.DELETED));
+                new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "status: DISABLED\n", Type.DELETED));
         assertTrue(actual.isPresent());
         StorageNodeChangedEvent actualEvent = (StorageNodeChangedEvent) actual.get();
         assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
@@ -60,7 +60,7 @@ class QualifiedDataSourceChangedWatcherTest {
     @Test
     void assertCreateEmptyEvent() {
         Optional<GovernanceEvent> actual = new QualifiedDataSourceChangedWatcher().createGovernanceEvent(
-                new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "", Type.ADDED));
+                new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "", Type.ADDED));
         assertFalse(actual.isPresent());
     }
 }
