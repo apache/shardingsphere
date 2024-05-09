@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.event.schema.table.CreateOrAlterTableEvent;
 import org.apache.shardingsphere.mode.event.schema.table.DropTableEvent;
-import org.apache.shardingsphere.mode.event.schema.view.AlterViewEvent;
+import org.apache.shardingsphere.mode.event.schema.view.CreateOrAlterViewEvent;
 import org.apache.shardingsphere.mode.event.schema.view.DropViewEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
@@ -113,10 +113,10 @@ public final class ResourceMetaDataChangedSubscriber {
     /**
      * Renew view.
      *
-     * @param event alter view event
+     * @param event create or alter view event
      */
     @Subscribe
-    public synchronized void renew(final AlterViewEvent event) {
+    public synchronized void renew(final CreateOrAlterViewEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
