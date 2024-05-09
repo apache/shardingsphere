@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.storage.QualifiedDataSourceStatus;
-import org.apache.shardingsphere.mode.storage.QualifiedDataSourceStatus.Role;
 import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
 import org.apache.shardingsphere.mode.storage.yaml.YamlQualifiedDataSourceStatus;
 import org.apache.shardingsphere.mode.storage.yaml.YamlQualifiedDataSourceStatusSwapper;
@@ -67,7 +66,7 @@ public final class QualifiedDataSourceStatusService {
      * @param dataSourceState data source state
      */
     public void changeMemberQualifiedDataSourceStatus(final String databaseName, final String groupName, final String storageUnitName, final DataSourceState dataSourceState) {
-        QualifiedDataSourceStatus status = new QualifiedDataSourceStatus(Role.MEMBER, dataSourceState);
+        QualifiedDataSourceStatus status = new QualifiedDataSourceStatus(dataSourceState);
         repository.persist(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(new QualifiedDataSource(databaseName, groupName, storageUnitName)),
                 YamlEngine.marshal(new YamlQualifiedDataSourceStatusSwapper().swapToYamlConfiguration(status)));
     }

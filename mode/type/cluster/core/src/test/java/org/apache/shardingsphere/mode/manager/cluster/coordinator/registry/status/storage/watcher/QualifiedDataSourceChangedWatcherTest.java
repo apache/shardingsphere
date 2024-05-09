@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
-import org.apache.shardingsphere.mode.storage.QualifiedDataSourceStatus.Role;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -43,7 +42,6 @@ class QualifiedDataSourceChangedWatcherTest {
         assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
         assertThat(actualEvent.getQualifiedDataSource().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedDataSource().getDataSourceName(), is("replica_ds_0"));
-        assertThat(actualEvent.getStatus().getRole(), is(Role.MEMBER));
         assertThat(actualEvent.getStatus().getStatus(), is(DataSourceState.ENABLED));
     }
     
@@ -56,7 +54,6 @@ class QualifiedDataSourceChangedWatcherTest {
         assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
         assertThat(actualEvent.getQualifiedDataSource().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedDataSource().getDataSourceName(), is("replica_ds_0"));
-        assertThat(actualEvent.getStatus().getRole(), is(Role.MEMBER));
         assertThat(actualEvent.getStatus().getStatus(), is(DataSourceState.DISABLED));
     }
     

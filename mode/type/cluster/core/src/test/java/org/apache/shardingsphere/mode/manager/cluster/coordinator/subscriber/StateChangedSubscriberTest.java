@@ -49,7 +49,6 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.storage.QualifiedDataSourceStatus;
-import org.apache.shardingsphere.mode.storage.QualifiedDataSourceStatus.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -114,7 +113,7 @@ class StateChangedSubscriberTest {
     void assertRenewForDisableStateChanged() {
         StaticDataSourceRuleAttribute ruleAttribute = mock(StaticDataSourceRuleAttribute.class);
         when(database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
-        StorageNodeChangedEvent event = new StorageNodeChangedEvent(new QualifiedDataSource("db.readwrite_ds.ds_0"), new QualifiedDataSourceStatus(Role.MEMBER, DataSourceState.DISABLED));
+        StorageNodeChangedEvent event = new StorageNodeChangedEvent(new QualifiedDataSource("db.readwrite_ds.ds_0"), new QualifiedDataSourceStatus(DataSourceState.DISABLED));
         subscriber.renew(event);
         verify(ruleAttribute).updateStatus(
                 argThat(qualifiedDataSource -> Objects.equals(event.getQualifiedDataSource(), qualifiedDataSource)),

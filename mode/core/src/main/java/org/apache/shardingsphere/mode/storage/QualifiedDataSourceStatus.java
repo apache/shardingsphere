@@ -28,15 +28,5 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 @Getter
 public final class QualifiedDataSourceStatus {
     
-    private final Role role;
-    
     private final DataSourceState status;
-    
-    /**
-     * Storage node role.
-     */
-    public enum Role {
-        
-        PRIMARY, MEMBER
-    }
 }
