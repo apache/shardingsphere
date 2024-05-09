@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.storage.QualifiedDataSourceStatus;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 
 import javax.sql.DataSource;
@@ -78,17 +78,17 @@ public final class MetaDataContextsFactory {
      * @param persistService persist service
      * @param param context manager builder parameter
      * @param instanceContext instance context
-     * @param storageNodes storage nodes
+     * @param statusMap qualified data source status map
      * @return meta data contexts
      * @throws SQLException SQL exception
      */
     public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
-                                          final InstanceContext instanceContext, final Map<String, StorageNodeDataSource> storageNodes) throws SQLException {
+                                          final InstanceContext instanceContext, final Map<String, QualifiedDataSourceStatus> statusMap) throws SQLException {
         boolean isDatabaseMetaDataExisted = !persistService.getDatabaseMetaDataService().loadAllDatabaseNames().isEmpty();
         Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = isDatabaseMetaDataExisted
                 ? createEffectiveDatabaseConfigurations(getDatabaseNames(instanceContext, param.getDatabaseConfigs(), persistService), param.getDatabaseConfigs(), persistService)
                 : param.getDatabaseConfigs();
-        checkDataSourceStates(effectiveDatabaseConfigs, storageNodes, param.isForce());
+        checkDataSourceStates(effectiveDatabaseConfigs, statusMap, param.isForce());
         // TODO load global data sources from persist service
         Map<String, DataSource> globalDataSources = param.getGlobalDataSources();
         Collection<RuleConfiguration> globalRuleConfigs = isDatabaseMetaDataExisted ? persistService.getGlobalRuleService().load() : param.getGlobalRuleConfigs();
@@ -130,8 +130,8 @@ public final class MetaDataContextsFactory {
         }
     }
     
-    private static void checkDataSourceStates(final Map<String, DatabaseConfiguration> databaseConfigs, final Map<String, StorageNodeDataSource> storageNodes, final boolean force) {
-        Map<String, DataSourceState> storageDataSourceStates = getStorageDataSourceStates(storageNodes);
+    private static void checkDataSourceStates(final Map<String, DatabaseConfiguration> databaseConfigs, final Map<String, QualifiedDataSourceStatus> statusMap, final boolean force) {
+        Map<String, DataSourceState> storageDataSourceStates = getStorageDataSourceStates(statusMap);
         databaseConfigs.forEach((key, value) -> {
             if (!value.getStorageUnits().isEmpty()) {
                 DataSourceStateManager.getInstance().initStates(key, value.getStorageUnits(), storageDataSourceStates, force);
@@ -139,9 +139,9 @@ public final class MetaDataContextsFactory {
         });
     }
     
-    private static Map<String, DataSourceState> getStorageDataSourceStates(final Map<String, StorageNodeDataSource> storageDataSourceStates) {
-        Map<String, DataSourceState> result = new HashMap<>(storageDataSourceStates.size(), 1F);
-        storageDataSourceStates.forEach((key, value) -> {
+    private static Map<String, DataSourceState> getStorageDataSourceStates(final Map<String, QualifiedDataSourceStatus> statusMap) {
+        Map<String, DataSourceState> result = new HashMap<>(statusMap.size(), 1F);
+        statusMap.forEach((key, value) -> {
             List<String> values = Splitter.on(".").splitToList(key);
             Preconditions.checkArgument(3 == values.size(), "Illegal data source of storage node.");
             String databaseName = values.get(0);

@@ -41,6 +41,6 @@ class StorageNodeStatusServiceTest {
     void assertLoadDisabledDataSources() {
         List<String> disabledDataSources = Arrays.asList("replica_query_db.readwrite_ds.replica_ds_0", "other_schema.other_ds.other_ds0");
         when(repository.getChildrenKeys(anyString())).thenReturn(disabledDataSources);
-        assertDoesNotThrow(() -> new StorageNodeStatusService(repository).loadStorageNodes());
+        assertDoesNotThrow(() -> new StorageNodeStatusService(repository).loadQualifiedDataSourceStatus());
     }
 }
