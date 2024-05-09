@@ -31,6 +31,4 @@ public final class YamlQualifiedDataSourceStatus implements YamlConfiguration {
     private String role;
     
     private String status;
-    
-    private long replicationDelayMilliseconds;
 }
