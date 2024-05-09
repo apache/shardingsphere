@@ -45,7 +45,7 @@ public final class QualifiedDataSourceStatusService {
      *
      * @return qualified data source status
      */
-    public Map<String, QualifiedDataSourceStatus> loadQualifiedDataSourceStatus() {
+    public Map<String, QualifiedDataSourceStatus> loadStatus() {
         Collection<String> qualifiedDataSourceNodes = repository.getChildrenKeys(QualifiedDataSourceNode.getRootPath());
         Map<String, QualifiedDataSourceStatus> result = new HashMap<>(qualifiedDataSourceNodes.size(), 1F);
         qualifiedDataSourceNodes.forEach(each -> {
@@ -58,16 +58,16 @@ public final class QualifiedDataSourceStatusService {
     }
     
     /**
-     * Change member qualified data source status.
+     * Change qualified data source status.
      *
      * @param databaseName database name
      * @param groupName group name
      * @param storageUnitName storage unit name
      * @param dataSourceState data source state
      */
-    public void changeMemberQualifiedDataSourceStatus(final String databaseName, final String groupName, final String storageUnitName, final DataSourceState dataSourceState) {
+    public void changeStatus(final String databaseName, final String groupName, final String storageUnitName, final DataSourceState dataSourceState) {
         QualifiedDataSourceStatus status = new QualifiedDataSourceStatus(dataSourceState);
-        repository.persist(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(new QualifiedDataSource(databaseName, groupName, storageUnitName)),
-                YamlEngine.marshal(new YamlQualifiedDataSourceStatusSwapper().swapToYamlConfiguration(status)));
+        repository.persist(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(
+                new QualifiedDataSource(databaseName, groupName, storageUnitName)), YamlEngine.marshal(new YamlQualifiedDataSourceStatusSwapper().swapToYamlConfiguration(status)));
     }
 }
