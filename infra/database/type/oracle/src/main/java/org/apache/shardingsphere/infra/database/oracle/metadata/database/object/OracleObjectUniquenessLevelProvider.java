@@ -15,32 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.metadata.reviser;
+package org.apache.shardingsphere.infra.database.oracle.metadata.database.object;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
-import org.apache.shardingsphere.single.constant.SingleOrder;
-import org.apache.shardingsphere.single.metadata.reviser.constraint.SingleConstraintReviser;
-import org.apache.shardingsphere.single.rule.SingleRule;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.database.core.metadata.database.object.DialectObjectUniquenessLevelProvider;
 
 /**
- * Single meta data revise entry.
+ * Oracle object uniqueness level provider.
  */
-public final class SingleMetaDataReviseEntry implements MetaDataReviseEntry<SingleRule> {
+public class OracleObjectUniquenessLevelProvider implements DialectObjectUniquenessLevelProvider {
     
     @Override
-    public Optional<SingleConstraintReviser> getConstraintReviser(final SingleRule rule, final String tableName) {
-        return Optional.of(new SingleConstraintReviser());
+    public UniquenessLevel getIndexUniquenessLevel() {
+        return UniquenessLevel.SCHEMA_LEVEL;
     }
     
     @Override
-    public int getOrder() {
-        return SingleOrder.ORDER;
-    }
-    
-    @Override
-    public Class<SingleRule> getTypeClass() {
-        return SingleRule.class;
+    public String getDatabaseType() {
+        return "Oracle";
     }
 }

@@ -20,11 +20,15 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
+import org.apache.shardingsphere.infra.database.core.metadata.database.object.DialectObjectUniquenessLevelProvider;
+import org.apache.shardingsphere.infra.database.core.metadata.database.object.DialectObjectUniquenessLevelProvider.UniquenessLevel;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.IndexToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
@@ -48,7 +52,11 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<SQ
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof IndexAvailable && !((IndexAvailable) sqlStatementContext).getIndexes().isEmpty();
+        return sqlStatementContext instanceof IndexAvailable && !((IndexAvailable) sqlStatementContext).getIndexes().isEmpty() && isSchemaUniquenessLevelIndex(sqlStatementContext.getDatabaseType());
+    }
+    
+    private boolean isSchemaUniquenessLevelIndex(final DatabaseType databaseType) {
+        return TypedSPILoader.findService(DialectObjectUniquenessLevelProvider.class, databaseType).map(optional -> UniquenessLevel.SCHEMA_LEVEL == optional.getIndexUniquenessLevel()).orElse(false);
     }
     
     @Override
