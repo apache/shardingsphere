@@ -40,8 +40,8 @@ public final class MetaDataVersion {
     
     public MetaDataVersion(final String key) {
         this.key = key;
-        this.currentActiveVersion = "";
-        this.nextActiveVersion = "";
+        currentActiveVersion = "";
+        nextActiveVersion = "";
     }
     
     /**
