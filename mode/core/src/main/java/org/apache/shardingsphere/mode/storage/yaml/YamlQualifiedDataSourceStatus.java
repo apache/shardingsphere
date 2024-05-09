@@ -28,7 +28,5 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlQualifiedDataSourceStatus implements YamlConfiguration {
     
-    private String role;
-    
     private String status;
 }
