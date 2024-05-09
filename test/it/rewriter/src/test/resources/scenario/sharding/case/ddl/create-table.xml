@@ -59,11 +59,11 @@
     </rewrite-assertion>
     <rewrite-assertion id="create_table_with_broadcast_table_with_add_foreign_constraint" db-types="MySQL,PostgreSQL,openGauss">
         <input sql="CREATE TABLE t_config_new(order_id INT PRIMARY KEY, CONSTRAINT t_config_new_fk FOREIGN KEY (order_id) REFERENCES t_order_new_type (order_id))" />
-        <output sql="CREATE TABLE t_config_new(order_id INT PRIMARY KEY, CONSTRAINT t_config_new_fk_t_config_new FOREIGN KEY (order_id) REFERENCES t_order_new_type (order_id))" />
+        <output sql="CREATE TABLE t_config_new(order_id INT PRIMARY KEY, CONSTRAINT t_config_new_fk FOREIGN KEY (order_id) REFERENCES t_order_new_type (order_id))" />
     </rewrite-assertion>
     <rewrite-assertion id="create_table_with_broadcast_and_single_table_with_add_foreign_constraint" db-types="MySQL,PostgreSQL,openGauss">
         <input sql="CREATE TABLE t_config_new(order_id INT PRIMARY KEY, CONSTRAINT t_config_new_fk FOREIGN KEY (order_id) REFERENCES t_single_new (order_id))" />
-        <output sql="CREATE TABLE t_config_new(order_id INT PRIMARY KEY, CONSTRAINT t_config_new_fk_t_config_new FOREIGN KEY (order_id) REFERENCES t_single_new (order_id))" />
+        <output sql="CREATE TABLE t_config_new(order_id INT PRIMARY KEY, CONSTRAINT t_config_new_fk FOREIGN KEY (order_id) REFERENCES t_single_new (order_id))" />
     </rewrite-assertion>
     <rewrite-assertion id="create_table_with_single_and_single_data_node_table_with_add_foreign_constraint" db-types="MySQL,PostgreSQL,openGauss">
         <input sql="CREATE TABLE t_single_new(order_id INT PRIMARY KEY, CONSTRAINT t_single_new_fk FOREIGN KEY (order_id) REFERENCES t_order_new (order_id))" />
@@ -76,7 +76,7 @@
     <!--    </rewrite-assertion>-->
     <rewrite-assertion id="create_table_with_single_table_with_add_foreign_constraint" db-types="MySQL,PostgreSQL,openGauss">
         <input sql="CREATE TABLE t_single_new(order_id INT PRIMARY KEY, CONSTRAINT t_single_new_fk FOREIGN KEY (order_id) REFERENCES t_single_extend (order_id))" />
-        <output sql="CREATE TABLE t_single_new(order_id INT PRIMARY KEY, CONSTRAINT t_single_new_fk_t_single_new FOREIGN KEY (order_id) REFERENCES t_single_extend (order_id))" />
+        <output sql="CREATE TABLE t_single_new(order_id INT PRIMARY KEY, CONSTRAINT t_single_new_fk FOREIGN KEY (order_id) REFERENCES t_single_extend (order_id))" />
     </rewrite-assertion>
     <rewrite-assertion id="create_table_with_multi_data_node_with_storage_parameter" db-types="openGauss">
         <input sql="CREATE TABLE t_account_detail_new (order_id INT,account_id INT) WITH (FILLFACTOR = 80, ORIENTATION=ROW)" />
