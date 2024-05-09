@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.storage;
+package org.apache.shardingsphere.mode.storage;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 
 /**
- * Data source of storage node.
+ * Storage node data source.
  */
 @RequiredArgsConstructor
 @Getter
 public final class StorageNodeDataSource {
     
-    private final StorageNodeRole role;
+    private final Role role;
     
     private final DataSourceState status;
+    
+    /**
+     * Storage node role.
+     */
+    public enum Role {
+        
+        PRIMARY, MEMBER
+    }
 }

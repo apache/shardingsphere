@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.storage.node.StorageNode;
 import org.apache.shardingsphere.mode.storage.yaml.YamlStorageNodeDataSource;
 import org.apache.shardingsphere.mode.storage.yaml.YamlStorageNodeDataSourceSwapper;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 

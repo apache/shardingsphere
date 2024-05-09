@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 
 import javax.sql.DataSource;

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.watcher;
 
-import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
+import org.apache.shardingsphere.mode.storage.StorageNodeDataSource.Role;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -43,7 +43,7 @@ class StorageNodeStateChangedWatcherTest {
         assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
         assertThat(actualEvent.getQualifiedDataSource().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedDataSource().getDataSourceName(), is("replica_ds_0"));
-        assertThat(actualEvent.getDataSource().getRole(), is(StorageNodeRole.MEMBER));
+        assertThat(actualEvent.getDataSource().getRole(), is(Role.MEMBER));
         assertThat(actualEvent.getDataSource().getStatus(), is(DataSourceState.ENABLED));
     }
     
@@ -56,7 +56,7 @@ class StorageNodeStateChangedWatcherTest {
         assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
         assertThat(actualEvent.getQualifiedDataSource().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedDataSource().getDataSourceName(), is("replica_ds_0"));
-        assertThat(actualEvent.getDataSource().getRole(), is(StorageNodeRole.MEMBER));
+        assertThat(actualEvent.getDataSource().getRole(), is(Role.MEMBER));
         assertThat(actualEvent.getDataSource().getStatus(), is(DataSourceState.DISABLED));
     }
     
