@@ -54,14 +54,14 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
         if (!executor.hasAnyOneToBeDropped(sqlStatement)) {
             return Collections.emptyList();
         }
-        ModeContextManager modeContextManager = contextManager.getInstanceContext().getModeContextManager();
-        RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
         if (sqlStatement instanceof StaticDataSourceContainedRuleAwareStatement) {
             for (StaticDataSourceRuleAttribute each : database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)) {
                 ((StaticDataSourceContainedRuleAwareStatement) sqlStatement).getNames().forEach(each::cleanStorageNodeDataSource);
             }
             // TODO refactor to new metadata refresh way
         }
+        ModeContextManager modeContextManager = contextManager.getInstanceContext().getModeContextManager();
+        RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
         modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         if (null != toBeAlteredRuleConfig && ((DatabaseRuleConfiguration) toBeAlteredRuleConfig).isEmpty()) {

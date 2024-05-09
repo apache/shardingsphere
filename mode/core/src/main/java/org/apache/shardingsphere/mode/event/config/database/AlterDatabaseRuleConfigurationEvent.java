@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 /**
  * Alter database rule configuration changed event.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class AlterDatabaseRuleConfigurationEvent {
     
     private final String databaseName;

@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 /**
  * Drop database rule configuration changed event.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class DropDatabaseRuleConfigurationEvent {
     
     private final String databaseName;
