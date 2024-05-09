@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 /**
  * Add data source node event.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class RegisterStorageNodeEvent implements GovernanceEvent {
     
     private final String databaseName;

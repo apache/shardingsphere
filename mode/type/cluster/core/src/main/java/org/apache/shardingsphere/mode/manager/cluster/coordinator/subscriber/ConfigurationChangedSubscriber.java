@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.mode.event.config.AlterDatabaseRuleConfigurationEvent;
-import org.apache.shardingsphere.mode.event.config.DropDatabaseRuleConfigurationEvent;
+import org.apache.shardingsphere.mode.event.config.database.AlterDatabaseRuleConfigurationEvent;
+import org.apache.shardingsphere.mode.event.config.database.DropDatabaseRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.event.config.global.AlterGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.event.config.global.AlterPropertiesEvent;
 import org.apache.shardingsphere.mode.event.datasource.unit.AlterStorageUnitEvent;

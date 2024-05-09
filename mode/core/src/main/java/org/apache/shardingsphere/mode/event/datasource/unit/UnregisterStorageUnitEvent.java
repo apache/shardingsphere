@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 /**
  * Add data source unit event.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class UnregisterStorageUnitEvent implements GovernanceEvent {
     
     private final String databaseName;

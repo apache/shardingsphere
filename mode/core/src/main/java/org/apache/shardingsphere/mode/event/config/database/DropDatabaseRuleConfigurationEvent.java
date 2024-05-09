@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.config;
+package org.apache.shardingsphere.mode.event.config.database;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
 /**
- * Alter database rule configuration changed event.
+ * Drop database rule configuration changed event.
  */
 @Getter
 @RequiredArgsConstructor
-public final class AlterDatabaseRuleConfigurationEvent {
+public final class DropDatabaseRuleConfigurationEvent {
     
     private final String databaseName;
     
