@@ -47,16 +47,6 @@ public final class QualifiedDataSourceNode {
     /**
      * Get qualified data source path.
      *
-     * @param dataSourcePath data source path
-     * @return qualified data source path
-     */
-    public static String getQualifiedDataSourceNodePath(final String dataSourcePath) {
-        return String.join("/", getRootPath(), dataSourcePath);
-    }
-    
-    /**
-     * Get qualified data source path.
-     *
      * @param qualifiedDataSource qualified data source
      * @return qualified data source path
      */
@@ -67,12 +57,12 @@ public final class QualifiedDataSourceNode {
     /**
      * Extract qualified data source.
      *
-     * @param storageNodePath qualified data source path
+     * @param qualifiedDataSourcePath qualified data source path
      * @return extracted qualified data source
      */
-    public static Optional<QualifiedDataSource> extractQualifiedDataSource(final String storageNodePath) {
+    public static Optional<QualifiedDataSource> extractQualifiedDataSource(final String qualifiedDataSourcePath) {
         Pattern pattern = Pattern.compile(getRootPath() + "/(\\S+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(storageNodePath);
+        Matcher matcher = pattern.matcher(qualifiedDataSourcePath);
         return matcher.find() ? Optional.of(new QualifiedDataSource(matcher.group(1))) : Optional.empty();
     }
 }
