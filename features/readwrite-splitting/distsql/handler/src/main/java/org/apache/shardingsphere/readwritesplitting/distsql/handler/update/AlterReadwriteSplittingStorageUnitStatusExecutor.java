@@ -78,7 +78,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor
     private void updateStatus(final ContextManager contextManager, final AlterReadwriteSplittingStorageUnitStatusStatement sqlStatement) {
         DataSourceState status = sqlStatement.isEnable() ? DataSourceState.ENABLED : DataSourceState.DISABLED;
         new QualifiedDataSourceStatusService(contextManager.getMetaDataContexts().getPersistService().getRepository())
-                .changeMemberQualifiedDataSourceStatus(database.getName(), sqlStatement.getRuleName(), sqlStatement.getStorageUnitName(), status);
+                .changeStatus(database.getName(), sqlStatement.getRuleName(), sqlStatement.getStorageUnitName(), status);
     }
     
     @Override
