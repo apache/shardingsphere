@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
-import org.apache.shardingsphere.mode.storage.node.StorageNode;
+import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -27,21 +27,21 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class StorageNodeTest {
+class QualifiedDataSourceNodeTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(StorageNode.getRootPath(), is("/nodes/storage_nodes"));
+        assertThat(QualifiedDataSourceNode.getRootPath(), is("/nodes/storage_nodes"));
     }
     
     @Test
-    void assertGetStorageNodesDataSourcePath() {
-        assertThat(StorageNode.getStorageNodesDataSourcePath("replica_query_db.readwrite_ds.replica_ds_0"), is("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0"));
+    void assertGetQualifiedDataSourceNodePath() {
+        assertThat(QualifiedDataSourceNode.getQualifiedDataSourceNodePath("replica_query_db.readwrite_ds.replica_ds_0"), is("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0"));
     }
     
     @Test
     void assertExtractQualifiedDataSource() {
-        Optional<QualifiedDataSource> actual = StorageNode.extractQualifiedDataSource("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0");
+        Optional<QualifiedDataSource> actual = QualifiedDataSourceNode.extractQualifiedDataSource("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDatabaseName(), is("replica_query_db"));
         assertThat(actual.get().getGroupName(), is("readwrite_ds"));

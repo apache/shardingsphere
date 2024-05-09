@@ -91,9 +91,9 @@ namespace
    ├    ├     ├──labels                      
    ├    ├     ├     ├──UUID
    ├    ├     ├     ├──....               
-   ├    ├──storage_nodes                       
-   ├    ├     ├──${databaseName.groupName.ds} 
-   ├    ├     ├──${databaseName.groupName.ds}
+   ├    ├──qualified_data_sources                       
+   ├    ├     ├──${databaseName.groupName.dataSourceName}
+   ├    ├     ├──${databaseName.groupName.dataSourceName}
    ├──statistics
    ├    ├──shardingsphere
    ├    ├     ├──schemas
@@ -220,6 +220,6 @@ It includes running instance information of database access object, with sub-nod
 
 The identifiers are temporary nodes, which are registered when instances are online and cleared when instances are offline. The registry center monitors the change of those nodes to govern the database access of running instances and other things.
 
-### /nodes/storage_nodes
+### /nodes/qualified_data_sources
 
-It can orchestrate a replica database, and delete or disable data dynamically.
+It can orchestrate a replica database on readwrite-splitting feature, disable data dynamically.
