@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.storage.yaml;
 
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
+import org.apache.shardingsphere.mode.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.storage.StorageNodeDataSource.Role;
 
 /**
  * YAML storage node data source swapper.
@@ -37,6 +37,6 @@ public final class YamlStorageNodeDataSourceSwapper implements YamlConfiguration
     
     @Override
     public StorageNodeDataSource swapToObject(final YamlStorageNodeDataSource yamlConfig) {
-        return new StorageNodeDataSource(StorageNodeRole.valueOf(yamlConfig.getRole()), DataSourceState.valueOf(yamlConfig.getStatus()));
+        return new StorageNodeDataSource(Role.valueOf(yamlConfig.getRole()), DataSourceState.valueOf(yamlConfig.getStatus()));
     }
 }
