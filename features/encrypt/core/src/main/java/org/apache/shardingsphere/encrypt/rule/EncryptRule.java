@@ -148,7 +148,7 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
         if (!toBeRemovedTableNames.isEmpty()) {
             toBeRemovedTableNames.stream().map(String::toLowerCase).forEach(tables::remove);
             attributes.set(new RuleAttributes(new EncryptTableMapperRuleAttribute(tables.keySet())));
-            // TODO check and remove unused encryptors
+            // TODO check and remove unused INLINE encryptors
             return true;
         }
         // TODO Process update table

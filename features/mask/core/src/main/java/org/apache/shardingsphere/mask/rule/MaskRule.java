@@ -99,7 +99,7 @@ public final class MaskRule implements DatabaseRule, PartialRuleUpdateSupported<
         if (!toBeRemovedTableNames.isEmpty()) {
             toBeRemovedTableNames.stream().map(String::toLowerCase).forEach(tables::remove);
             attributes.set(new RuleAttributes(new MaskTableMapperRuleAttribute(tables.keySet())));
-            // TODO check and remove unused mask algorithms
+            // TODO check and remove unused INLINE mask algorithms
             return true;
         }
         // TODO Process update table
