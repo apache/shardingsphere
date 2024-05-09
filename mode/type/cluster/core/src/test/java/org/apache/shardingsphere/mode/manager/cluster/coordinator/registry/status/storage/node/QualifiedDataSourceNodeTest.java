@@ -36,7 +36,8 @@ class QualifiedDataSourceNodeTest {
     
     @Test
     void assertGetQualifiedDataSourceNodePath() {
-        assertThat(QualifiedDataSourceNode.getQualifiedDataSourceNodePath("replica_query_db.readwrite_ds.replica_ds_0"), is("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0"));
+        assertThat(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(new QualifiedDataSource("replica_query_db.readwrite_ds.replica_ds_0")),
+                is("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0"));
     }
     
     @Test
