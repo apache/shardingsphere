@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mode.event.datasource.nodes.UnregisterStorageNo
 import org.apache.shardingsphere.mode.event.datasource.unit.AlterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.datasource.unit.RegisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.datasource.unit.UnregisterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.schema.table.AlterTableEvent;
+import org.apache.shardingsphere.mode.event.schema.table.CreateOrAlterTableEvent;
 import org.apache.shardingsphere.mode.event.schema.table.DropTableEvent;
 import org.apache.shardingsphere.mode.event.schema.view.AlterViewEvent;
 import org.apache.shardingsphere.mode.event.schema.view.DropViewEvent;
@@ -124,7 +124,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && TableMetaDataNode.isTableActiveVersionNode(event.getKey())) {
             Optional<String> tableName = TableMetaDataNode.getTableNameByActiveVersionNode(event.getKey());
             Preconditions.checkState(tableName.isPresent(), "Not found table name.");
-            return Optional.of(new AlterTableEvent(databaseName, schemaName, tableName.get(), event.getKey(), event.getValue()));
+            return Optional.of(new CreateOrAlterTableEvent(databaseName, schemaName, tableName.get(), event.getKey(), event.getValue()));
         }
         return Optional.empty();
     }

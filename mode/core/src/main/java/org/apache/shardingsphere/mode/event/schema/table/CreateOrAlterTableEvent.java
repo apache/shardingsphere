@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Alter table event.
+ * Create or alter table event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterTableEvent implements GovernanceEvent {
+public final class CreateOrAlterTableEvent implements GovernanceEvent {
     
     private final String databaseName;
     
