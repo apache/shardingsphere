@@ -19,24 +19,24 @@ package org.apache.shardingsphere.mode.storage.yaml;
 
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.mode.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.storage.StorageNodeDataSource.Role;
+import org.apache.shardingsphere.mode.storage.QualifiedDataSourceStatus;
+import org.apache.shardingsphere.mode.storage.QualifiedDataSourceStatus.Role;
 
 /**
- * YAML storage node data source swapper.
+ * YAML qualified data source status swapper.
  */
-public final class YamlStorageNodeDataSourceSwapper implements YamlConfigurationSwapper<YamlStorageNodeDataSource, StorageNodeDataSource> {
+public final class YamlQualifiedDataSourceStatusSwapper implements YamlConfigurationSwapper<YamlQualifiedDataSourceStatus, QualifiedDataSourceStatus> {
     
     @Override
-    public YamlStorageNodeDataSource swapToYamlConfiguration(final StorageNodeDataSource data) {
-        YamlStorageNodeDataSource result = new YamlStorageNodeDataSource();
+    public YamlQualifiedDataSourceStatus swapToYamlConfiguration(final QualifiedDataSourceStatus data) {
+        YamlQualifiedDataSourceStatus result = new YamlQualifiedDataSourceStatus();
         result.setRole(data.getRole().name());
         result.setStatus(data.getStatus().name());
         return result;
     }
     
     @Override
-    public StorageNodeDataSource swapToObject(final YamlStorageNodeDataSource yamlConfig) {
-        return new StorageNodeDataSource(Role.valueOf(yamlConfig.getRole()), DataSourceState.valueOf(yamlConfig.getStatus()));
+    public QualifiedDataSourceStatus swapToObject(final YamlQualifiedDataSourceStatus yamlConfig) {
+        return new QualifiedDataSourceStatus(Role.valueOf(yamlConfig.getRole()), DataSourceState.valueOf(yamlConfig.getStatus()));
     }
 }

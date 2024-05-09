@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
-import org.apache.shardingsphere.mode.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.storage.QualifiedDataSourceStatus;
 
 /**
  * Storage node changed event.
@@ -32,5 +32,5 @@ public final class StorageNodeChangedEvent implements GovernanceEvent {
     
     private final QualifiedDataSource qualifiedDataSource;
     
-    private final StorageNodeDataSource dataSource;
+    private final QualifiedDataSourceStatus status;
 }

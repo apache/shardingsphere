@@ -54,7 +54,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
             ((InstanceContextAware) registryCenter.getRepository()).setInstanceContext(instanceContext);
         }
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, instanceContext, registryCenter.getStorageNodeStatusService().loadStorageNodes());
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(
+                persistService, param, instanceContext, registryCenter.getQualifiedDataSourceStatusService().loadQualifiedDataSourceStatus());
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         setContextManagerAware(result);
         registerOnline(registryCenter, param, result);

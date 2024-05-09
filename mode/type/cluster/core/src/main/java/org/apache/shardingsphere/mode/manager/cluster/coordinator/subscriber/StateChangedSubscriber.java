@@ -63,10 +63,10 @@ public final class StateChangedSubscriber {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(qualifiedDataSource.getDatabaseName())) {
             return;
         }
-        DataSourceStateManager.getInstance().updateState(qualifiedDataSource, DataSourceState.valueOf(event.getDataSource().getStatus().name()));
+        DataSourceStateManager.getInstance().updateState(qualifiedDataSource, DataSourceState.valueOf(event.getStatus().getStatus().name()));
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDataSource.getDatabaseName());
         for (StaticDataSourceRuleAttribute each : database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)) {
-            each.updateStatus(qualifiedDataSource, event.getDataSource().getStatus());
+            each.updateStatus(qualifiedDataSource, event.getStatus().getStatus());
         }
     }
     

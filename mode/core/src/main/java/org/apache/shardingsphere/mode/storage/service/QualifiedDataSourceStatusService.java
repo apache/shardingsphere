@@ -23,36 +23,36 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSou
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
-import org.apache.shardingsphere.mode.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.storage.StorageNodeDataSource.Role;
+import org.apache.shardingsphere.mode.storage.QualifiedDataSourceStatus;
+import org.apache.shardingsphere.mode.storage.QualifiedDataSourceStatus.Role;
 import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
-import org.apache.shardingsphere.mode.storage.yaml.YamlStorageNodeDataSource;
-import org.apache.shardingsphere.mode.storage.yaml.YamlStorageNodeDataSourceSwapper;
+import org.apache.shardingsphere.mode.storage.yaml.YamlQualifiedDataSourceStatus;
+import org.apache.shardingsphere.mode.storage.yaml.YamlQualifiedDataSourceStatusSwapper;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Storage node status service.
+ * Qualified data source status service.
  */
 @RequiredArgsConstructor
-public final class StorageNodeStatusService {
+public final class QualifiedDataSourceStatusService {
     
     private final PersistRepository repository;
     
     /**
-     * Load storage node names.
+     * Load qualified data source status.
      *
-     * @return loaded storage node names
+     * @return qualified data source status
      */
-    public Map<String, StorageNodeDataSource> loadStorageNodes() {
+    public Map<String, QualifiedDataSourceStatus> loadQualifiedDataSourceStatus() {
         Collection<String> qualifiedDataSourceNodes = repository.getChildrenKeys(QualifiedDataSourceNode.getRootPath());
-        Map<String, StorageNodeDataSource> result = new HashMap<>(qualifiedDataSourceNodes.size(), 1F);
+        Map<String, QualifiedDataSourceStatus> result = new HashMap<>(qualifiedDataSourceNodes.size(), 1F);
         qualifiedDataSourceNodes.forEach(each -> {
             String yamlContent = repository.getDirectly(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(new QualifiedDataSource(each)));
             if (!Strings.isNullOrEmpty(yamlContent)) {
-                result.put(each, new YamlStorageNodeDataSourceSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlStorageNodeDataSource.class)));
+                result.put(each, new YamlQualifiedDataSourceStatusSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlQualifiedDataSourceStatus.class)));
             }
         });
         return result;
@@ -67,8 +67,8 @@ public final class StorageNodeStatusService {
      * @param dataSourceState data source state
      */
     public void changeMemberQualifiedDataSourceStatus(final String databaseName, final String groupName, final String storageUnitName, final DataSourceState dataSourceState) {
-        StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(Role.MEMBER, dataSourceState);
+        QualifiedDataSourceStatus status = new QualifiedDataSourceStatus(Role.MEMBER, dataSourceState);
         repository.persist(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(new QualifiedDataSource(databaseName, groupName, storageUnitName)),
-                YamlEngine.marshal(new YamlStorageNodeDataSourceSwapper().swapToYamlConfiguration(storageNodeDataSource)));
+                YamlEngine.marshal(new YamlQualifiedDataSourceStatusSwapper().swapToYamlConfiguration(status)));
     }
 }

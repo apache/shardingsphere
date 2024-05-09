@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingReq
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.storage.service.StorageNodeStatusService;
+import org.apache.shardingsphere.mode.storage.service.QualifiedDataSourceStatusService;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
@@ -77,7 +77,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor
     
     private void updateStatus(final ContextManager contextManager, final AlterReadwriteSplittingStorageUnitStatusStatement sqlStatement) {
         DataSourceState status = sqlStatement.isEnable() ? DataSourceState.ENABLED : DataSourceState.DISABLED;
-        new StorageNodeStatusService(contextManager.getMetaDataContexts().getPersistService().getRepository())
+        new QualifiedDataSourceStatusService(contextManager.getMetaDataContexts().getPersistService().getRepository())
                 .changeMemberQualifiedDataSourceStatus(database.getName(), sqlStatement.getRuleName(), sqlStatement.getStorageUnitName(), status);
     }
     

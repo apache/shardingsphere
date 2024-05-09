@@ -15,22 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.storage.yaml;
+package org.apache.shardingsphere.mode.storage;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 
 /**
- * YAML storage node data source.
+ * Qualified data source status.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlStorageNodeDataSource implements YamlConfiguration {
+public final class QualifiedDataSourceStatus {
     
-    private String role;
+    private final Role role;
     
-    private String status;
+    private final DataSourceState status;
     
-    private long replicationDelayMilliseconds;
+    /**
+     * Storage node role.
+     */
+    public enum Role {
+        
+        PRIMARY, MEMBER
+    }
 }

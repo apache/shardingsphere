@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service;
 
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.storage.service.StorageNodeStatusService;
+import org.apache.shardingsphere.mode.storage.service.QualifiedDataSourceStatusService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -32,7 +32,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class StorageNodeStatusServiceTest {
+class QualifiedDataSourceStatusServiceTest {
     
     @Mock
     private ClusterPersistRepository repository;
@@ -41,6 +41,6 @@ class StorageNodeStatusServiceTest {
     void assertLoadDisabledDataSources() {
         List<String> disabledDataSources = Arrays.asList("replica_query_db.readwrite_ds.replica_ds_0", "other_schema.other_ds.other_ds0");
         when(repository.getChildrenKeys(anyString())).thenReturn(disabledDataSources);
-        assertDoesNotThrow(() -> new StorageNodeStatusService(repository).loadStorageNodes());
+        assertDoesNotThrow(() -> new QualifiedDataSourceStatusService(repository).loadQualifiedDataSourceStatus());
     }
 }
