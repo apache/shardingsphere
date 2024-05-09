@@ -65,8 +65,8 @@ class YamlProcessSwapperTest {
         assertThat(actual.getDatabaseName(), is("foo_db"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getHostname(), is("localhost"));
-        assertThat(actual.getTotalUnitCount(), is(10));
-        assertThat(actual.getCompletedUnitCount(), is(5));
+        assertThat(actual.getTotalUnitCount().get(), is(10));
+        assertThat(actual.getCompletedUnitCount().get(), is(5));
         assertTrue(actual.isIdle());
     }
     

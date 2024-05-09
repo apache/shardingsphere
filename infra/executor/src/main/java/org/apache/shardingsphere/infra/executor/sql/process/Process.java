@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 public final class Process {
     
-    private final Map<ExecutionUnit, Statement> processStatements = new ConcurrentHashMap<>();
+    private final Map<Integer, Statement> processStatements = new ConcurrentHashMap<>();
     
     private final String id;
     
@@ -54,11 +54,11 @@ public final class Process {
     
     private final String hostname;
     
-    private final int totalUnitCount;
+    private final AtomicInteger totalUnitCount;
     
     private final AtomicInteger completedUnitCount;
     
-    private final boolean idle;
+    private final AtomicBoolean idle;
     
     private final AtomicBoolean interrupted;
     
@@ -78,10 +78,10 @@ public final class Process {
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
         username = null == grantee ? "" : grantee.getUsername();
         hostname = null == grantee ? "" : grantee.getHostname();
-        totalUnitCount = getTotalUnitCount(executionGroupContext);
+        totalUnitCount = new AtomicInteger(getTotalUnitCount(executionGroupContext));
         processStatements.putAll(createProcessStatements(executionGroupContext));
         completedUnitCount = new AtomicInteger(0);
-        this.idle = idle;
+        this.idle = new AtomicBoolean(idle);
         interrupted = new AtomicBoolean();
     }
     
@@ -93,13 +93,13 @@ public final class Process {
         return result;
     }
     
-    private Map<ExecutionUnit, Statement> createProcessStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        Map<ExecutionUnit, Statement> result = new LinkedHashMap<>();
+    private Map<Integer, Statement> createProcessStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        Map<Integer, Statement> result = new LinkedHashMap<>();
         for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (SQLExecutionUnit executionUnit : each.getInputs()) {
                 if (executionUnit instanceof JDBCExecutionUnit) {
                     JDBCExecutionUnit jdbcExecutionUnit = (JDBCExecutionUnit) executionUnit;
-                    result.put(jdbcExecutionUnit.getExecutionUnit(), jdbcExecutionUnit.getStorageResource());
+                    result.put(System.identityHashCode(jdbcExecutionUnit.getExecutionUnit()), jdbcExecutionUnit.getStorageResource());
                 }
             }
         }
@@ -111,15 +111,6 @@ public final class Process {
      */
     public void completeExecutionUnit() {
         completedUnitCount.incrementAndGet();
-    }
-    
-    /**
-     * Get completed unit count.
-     *
-     * @return completed unit count
-     */
-    public int getCompletedUnitCount() {
-        return completedUnitCount.get();
     }
     
     /**
@@ -141,13 +132,32 @@ public final class Process {
     }
     
     /**
+     * Is idle.
+     *
+     * @return idle
+     */
+    public boolean isIdle() {
+        return idle.get();
+    }
+    
+    /**
      * Put process statement.
      *
      * @param executionUnit execution unit
      * @param statement statement
      */
     public void putProcessStatement(final ExecutionUnit executionUnit, final Statement statement) {
-        processStatements.put(executionUnit, statement);
+        putProcessStatement(System.identityHashCode(executionUnit), statement);
+    }
+    
+    /**
+     * Put process statement.
+     *
+     * @param executionUnitIdentityHashCode execution unit identity hash code
+     * @param statement statement
+     */
+    public void putProcessStatement(final Integer executionUnitIdentityHashCode, final Statement statement) {
+        processStatements.put(executionUnitIdentityHashCode, statement);
     }
     
     /**
@@ -156,6 +166,6 @@ public final class Process {
      * @param executionUnit execution unit
      */
     public void removeProcessStatement(final ExecutionUnit executionUnit) {
-        processStatements.remove(executionUnit);
+        processStatements.remove(System.identityHashCode(executionUnit));
     }
 }
