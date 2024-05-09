@@ -40,5 +40,5 @@ public interface PartialRuleUpdateSupported<T extends RuleConfiguration> {
      * @return update success or not
      */
     // TODO remove return value when support alter
-    boolean partialUpdateRule(T toBeUpdatedRuleConfig);
+    boolean partialUpdate(T toBeUpdatedRuleConfig);
 }
