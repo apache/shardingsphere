@@ -60,7 +60,7 @@ class SingleMetaDataReviseEngineTest {
         Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, false, false, true, false, true),
                 new ColumnMetaData("name", Types.VARCHAR, false, false, false, true, false, false),
                 new ColumnMetaData("doc", Types.LONGVARCHAR, false, false, false, true, false, false));
-        Collection<IndexMetaData> indexMetaDataList = Arrays.asList(new IndexMetaData("id_" + TABLE_NAME), new IndexMetaData("idx_name_" + TABLE_NAME));
+        Collection<IndexMetaData> indexMetaDataList = Arrays.asList(new IndexMetaData("id"), new IndexMetaData("idx_name"));
         return new TableMetaData(TABLE_NAME, columns, indexMetaDataList, Collections.emptyList());
     }
 }
