@@ -34,10 +34,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Storage node status service.
+ * Qualified data source status service.
  */
 @RequiredArgsConstructor
-public final class StorageNodeStatusService {
+public final class QualifiedDataSourceStatusService {
     
     private final PersistRepository repository;
     

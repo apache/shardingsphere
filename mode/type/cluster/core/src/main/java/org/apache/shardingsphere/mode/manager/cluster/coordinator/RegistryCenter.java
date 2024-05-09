@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.subscriber.ClusterStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.subscriber.ComputeNodeStatusSubscriber;
-import org.apache.shardingsphere.mode.storage.service.StorageNodeStatusService;
+import org.apache.shardingsphere.mode.storage.service.QualifiedDataSourceStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber.QualifiedDataSourceStatusSubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
@@ -52,7 +52,7 @@ public final class RegistryCenter {
     private final ClusterPersistRepository repository;
     
     @Getter
-    private final StorageNodeStatusService storageNodeStatusService;
+    private final QualifiedDataSourceStatusService qualifiedDataSourceStatusService;
     
     @Getter
     private final ClusterStatusService clusterStatusService;
@@ -78,7 +78,7 @@ public final class RegistryCenter {
         this.eventBusContext = eventBusContext;
         this.instanceMetaData = instanceMetaData;
         this.databaseConfigs = databaseConfigs;
-        storageNodeStatusService = new StorageNodeStatusService(repository);
+        qualifiedDataSourceStatusService = new QualifiedDataSourceStatusService(repository);
         clusterStatusService = new ClusterStatusService(repository);
         computeNodeStatusService = new ComputeNodeStatusService(repository);
         globalLockPersistService = new GlobalLockPersistService(initDistributedLockHolder(repository));
