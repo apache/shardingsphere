@@ -72,7 +72,7 @@ public final class ContextManager implements AutoCloseable {
     
     private final ExecutorEngine executorEngine;
     
-    private final ClusterStateContext clusterStateContext = new ClusterStateContext();
+    private final ClusterStateContext clusterStateContext;
     
     public ContextManager(final MetaDataContexts metaDataContexts, final InstanceContext instanceContext) {
         this.metaDataContexts = new AtomicReference<>(metaDataContexts);
@@ -81,6 +81,7 @@ public final class ContextManager implements AutoCloseable {
         configurationContextManager = new ConfigurationContextManager(this.metaDataContexts, instanceContext);
         resourceMetaDataContextManager = new ResourceMetaDataContextManager(this.metaDataContexts);
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
+        clusterStateContext = new ClusterStateContext();
     }
     
     /**
@@ -97,7 +98,7 @@ public final class ContextManager implements AutoCloseable {
      * 
      * @param metaDataContexts meta data contexts
      */
-    public synchronized void renewMetaDataContexts(final MetaDataContexts metaDataContexts) {
+    public void renewMetaDataContexts(final MetaDataContexts metaDataContexts) {
         this.metaDataContexts.set(metaDataContexts);
     }
     
