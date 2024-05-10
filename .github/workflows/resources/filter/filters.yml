@@ -60,3 +60,4 @@ transaction:
   - 'test/e2e/fixture/**'
   - 'test/e2e/env/**'
   - 'test/e2e/operation/transaction/**'
+  - 'features/sharding/**/src/main/**'
