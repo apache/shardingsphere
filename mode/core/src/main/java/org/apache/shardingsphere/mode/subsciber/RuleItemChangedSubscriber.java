@@ -52,14 +52,7 @@ public final class RuleItemChangedSubscriber {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.changeRuleItemConfiguration(event, currentRuleConfig, processor.swapRuleItemConfiguration(event, yamlContent));
-            // TODO Remove isCluster judgment
-            if (contextManager.getInstanceContext().isCluster()) {
-                if (contextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName)) {
-                    contextManager.getConfigurationContextManager().alterRuleConfiguration(databaseName, currentRuleConfig);
-                }
-            } else {
-                contextManager.getConfigurationContextManager().alterRuleConfiguration(databaseName, currentRuleConfig);
-            }
+            contextManager.getConfigurationContextManager().alterRuleConfiguration(databaseName, currentRuleConfig);
         }
     }
     
@@ -79,14 +72,7 @@ public final class RuleItemChangedSubscriber {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.dropRuleItemConfiguration(event, currentRuleConfig);
-            // TODO Remove isCluster judgment
-            if (contextManager.getInstanceContext().isCluster()) {
-                if (contextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName)) {
-                    contextManager.getConfigurationContextManager().dropRuleConfiguration(databaseName, currentRuleConfig);
-                }
-            } else {
-                contextManager.getConfigurationContextManager().dropRuleConfiguration(databaseName, currentRuleConfig);
-            }
+            contextManager.getConfigurationContextManager().dropRuleConfiguration(databaseName, currentRuleConfig);
         }
     }
 }
