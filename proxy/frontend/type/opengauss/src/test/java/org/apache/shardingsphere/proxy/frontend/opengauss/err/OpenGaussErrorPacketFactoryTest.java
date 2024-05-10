@@ -42,7 +42,7 @@ class OpenGaussErrorPacketFactoryTest {
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_SEVERITY), is("FATAL"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_CODE), is("3D000"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_MESSAGE), is("database \"test\" does not exist"));
-        assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_ERRORCODE), is("-1"));
+        assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_ERROR_CODE), is("-1"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_DETAIL), is("detail"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_HINT), is("hint"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_POSITION), is("1"));
@@ -63,7 +63,7 @@ class OpenGaussErrorPacketFactoryTest {
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_SEVERITY), is("ERROR"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_CODE), is("3D000"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_MESSAGE), is("database \"test\" does not exist"));
-        assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_ERRORCODE), is("0"));
+        assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_ERROR_CODE), is("0"));
     }
     
     @Test
@@ -75,7 +75,7 @@ class OpenGaussErrorPacketFactoryTest {
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_SEVERITY), is("ERROR"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_CODE), is("58000"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_MESSAGE), is("Unknown exception." + System.lineSeparator() + "More details: No reason"));
-        assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_ERRORCODE), is("0"));
+        assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_ERROR_CODE), is("0"));
     }
     
     @SuppressWarnings("unchecked")

@@ -41,7 +41,7 @@ class OpenGaussErrorResponsePacketTest {
         verify(payload).writeStringNul("3D000");
         verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_MESSAGE);
         verify(payload).writeStringNul("database \"test\" does not exist");
-        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_ERRORCODE);
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_ERROR_CODE);
         verify(payload).writeStringNul("-1");
         verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_DETAIL);
         verify(payload).writeStringNul("detail");
@@ -76,7 +76,7 @@ class OpenGaussErrorResponsePacketTest {
         verify(payload).writeStringNul("3D000");
         verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_MESSAGE);
         verify(payload).writeStringNul("database \"test\" does not exist");
-        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_ERRORCODE);
+        verify(payload).writeInt1(OpenGaussErrorResponsePacket.FIELD_TYPE_ERROR_CODE);
         verify(payload).writeStringNul("0");
     }
 }

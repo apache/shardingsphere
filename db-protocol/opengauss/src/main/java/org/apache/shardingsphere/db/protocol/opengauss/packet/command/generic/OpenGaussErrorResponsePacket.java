@@ -56,7 +56,7 @@ public final class OpenGaussErrorResponsePacket extends PostgreSQLIdentifierPack
     
     public static final char FIELD_TYPE_ROUTINE = 'R';
     
-    public static final char FIELD_TYPE_ERRORCODE = 'c';
+    public static final char FIELD_TYPE_ERROR_CODE = 'c';
     
     private final Map<Character, String> fields;
     
@@ -85,7 +85,7 @@ public final class OpenGaussErrorResponsePacket extends PostgreSQLIdentifierPack
             fields.put(FIELD_TYPE_MESSAGE, serverErrorMessage.getMessage());
         }
         if (null != serverErrorMessage.getERRORCODE()) {
-            fields.put(FIELD_TYPE_ERRORCODE, serverErrorMessage.getERRORCODE());
+            fields.put(FIELD_TYPE_ERROR_CODE, serverErrorMessage.getERRORCODE());
         }
         if (null != serverErrorMessage.getDetail()) {
             fields.put(FIELD_TYPE_DETAIL, serverErrorMessage.getDetail());
@@ -117,7 +117,7 @@ public final class OpenGaussErrorResponsePacket extends PostgreSQLIdentifierPack
     }
     
     private void fillRequiredFieldsIfNecessary() {
-        fields.putIfAbsent(FIELD_TYPE_ERRORCODE, "0");
+        fields.putIfAbsent(FIELD_TYPE_ERROR_CODE, "0");
     }
     
     @Override
