@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  * Text bit utility class of PostgreSQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostgreSQLTextBitUtils {
+public final class PostgreSQLTextBitUtils {
     
     /**
      * Get bit Text value in PostgreSQL text format.
