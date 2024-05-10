@@ -17,68 +17,20 @@
 
 package org.apache.shardingsphere.mode.manager;
 
-import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ContextManagerBuilderParameterTest {
-    
-    @Test
-    void assertIsEmptyWithoutAllParameters() {
-        assertTrue(new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null, false).isEmpty());
-    }
-    
-    @Test
-    void assertIsEmptyWithDatabaseAndWithoutConfigurations() {
-        assertTrue(new ContextManagerBuilderParameter(null, mockDatabaseConfigurations(true, true), Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null, false).isEmpty());
-    }
-    
-    @Test
-    void assertIsNotEmptyWhenGlobalRuleIsNotEmpty() {
-        assertFalse(new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.emptyMap(), Collections.singleton(mock(RuleConfiguration.class)),
-                new Properties(), null, null, false).isEmpty());
-    }
-    
-    @Test
-    void assertIsNotEmptyWhenPropsIsNotEmpty() {
-        assertFalse(new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), PropertiesBuilder.build(new Property("foo", "foo_value")),
-                null, null, false).isEmpty());
-    }
-    
-    @Test
-    void assertIsEmptyWhenDataSourceIsNotEmpty() {
-        assertFalse(new ContextManagerBuilderParameter(null, mockDatabaseConfigurations(false, true), Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null, false).isEmpty());
-    }
-    
-    @Test
-    void assertIsEmptyWhenDatabaseRuleIsNotEmpty() {
-        assertFalse(new ContextManagerBuilderParameter(null, mockDatabaseConfigurations(true, false), Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null, false).isEmpty());
-    }
-    
-    private Map<String, DatabaseConfiguration> mockDatabaseConfigurations(final boolean isEmptyStorageUnits, final boolean isEmptyRuleConfigs) {
-        DatabaseConfiguration databaseConfig = mock(DatabaseConfiguration.class, RETURNS_DEEP_STUBS);
-        when(databaseConfig.getStorageUnits().isEmpty()).thenReturn(isEmptyStorageUnits);
-        when(databaseConfig.getRuleConfigurations().isEmpty()).thenReturn(isEmptyRuleConfigs);
-        return Collections.singletonMap("foo_ds", databaseConfig);
-    }
     
     @Test
     void assertGetDefaultModeConfiguration() {
