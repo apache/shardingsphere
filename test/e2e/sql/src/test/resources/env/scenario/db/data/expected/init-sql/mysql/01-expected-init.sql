@@ -30,4 +30,4 @@ CREATE TABLE expected_dataset.t_product_detail (detail_id INT PRIMARY KEY, produ
 CREATE TABLE expected_dataset.t_product_category (category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level TINYINT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE expected_dataset.t_country (country_id SMALLINT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
 
-CREATE INDEX order_index_t_order ON expected_dataset.t_order (order_id);
+CREATE INDEX order_index ON expected_dataset.t_order (order_id);
