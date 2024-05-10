@@ -2024,7 +2024,14 @@
         </projections>
         <where start-index="22" stop-index="44">
             <expr>
-                <function function-name="-&gt;" text="order_id -&gt;&quot;$[1]&quot;" start-index="28" stop-index="44"/>
+                <function function-name="-&gt;" text="order_id -&gt;&quot;$[1]&quot;" start-index="28" stop-index="44">
+                    <parameter>
+                        <column name="order_id" start-index="28" stop-index="35" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="&quot;$[1]&quot;" start-index="39" stop-index="44" />
+                    </parameter>
+                </function>
             </expr>
         </where>
     </select>
@@ -2060,7 +2067,14 @@
         </projections>
         <where start-index="22" stop-index="46">
             <expr>
-                <function function-name="-&gt;&gt;" text="order_id -&gt;&gt; &quot;$[1]&quot;" start-index="28" stop-index="46" />
+                <function function-name="-&gt;&gt;" text="order_id -&gt;&gt; &quot;$[1]&quot;" start-index="28" stop-index="46">
+                    <parameter>
+                        <column name="order_id" start-index="28" stop-index="35" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="&quot;$[1]&quot;" start-index="41" stop-index="46" />
+                    </parameter>
+                </function>
             </expr>
         </where>
     </select>
@@ -2076,7 +2090,14 @@
             <expr>
                 <function function-name="JSON_CONTAINS" text="JSON_CONTAINS(order_msg -> '$[*].code', 'x', '$')" start-index="28" stop-index="76" >
                     <parameter>
-                        <function start-index="42" stop-index="65" function-name="->" text="order_msg -> '$[*].code'" />
+                        <function start-index="42" stop-index="65" function-name="->" text="order_msg -> '$[*].code'">
+                            <parameter>
+                                <column start-index="42" stop-index="50" name="order_msg" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression start-index="55" stop-index="65" value="'$[*].code'" />
+                            </parameter>
+                        </function>
                     </parameter>
                     <parameter>
                         <literal-expression start-index="68" stop-index="70" value="x" />
