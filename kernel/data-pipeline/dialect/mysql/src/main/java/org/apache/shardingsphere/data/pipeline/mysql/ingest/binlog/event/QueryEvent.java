@@ -28,8 +28,8 @@ import lombok.RequiredArgsConstructor;
  *
  * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_replication_binlog_event.html#sect_protocol_replication_event_query">QUERY_EVENT</a>
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class QueryEvent extends AbstractBinlogEvent {
     
     private final long threadId;

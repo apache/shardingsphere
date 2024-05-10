@@ -20,12 +20,9 @@ package org.apache.shardingsphere.mode.subsciber;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.event.config.database.AlterDatabaseRuleConfigurationEvent;
-import org.apache.shardingsphere.mode.event.config.database.DropDatabaseRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 
@@ -51,16 +48,18 @@ public final class RuleItemChangedSubscriber {
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
         String yamlContent =
                 contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getVersionPathByActiveVersion(event.getActiveVersionKey(), event.getActiveVersion());
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(event.getDatabaseName());
-        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(database);
+        String databaseName = event.getDatabaseName();
+        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.changeRuleItemConfiguration(event, currentRuleConfig, processor.swapRuleItemConfiguration(event, yamlContent));
             // TODO Remove isCluster judgment
             if (contextManager.getInstanceContext().isCluster()) {
-                contextManager.getInstanceContext().getEventBusContext().post(new AlterDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
-                return;
+                if (contextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName)) {
+                    contextManager.getConfigurationContextManager().alterRuleConfiguration(databaseName, currentRuleConfig);
+                }
+            } else {
+                contextManager.getConfigurationContextManager().alterRuleConfiguration(databaseName, currentRuleConfig);
             }
-            contextManager.getConfigurationContextManager().alterRuleConfiguration(event.getDatabaseName(), currentRuleConfig);
         }
     }
     
@@ -72,20 +71,22 @@ public final class RuleItemChangedSubscriber {
     @SuppressWarnings({"rawtypes", "unchecked", "unused"})
     @Subscribe
     public void renew(final DropRuleItemEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+        String databaseName = event.getDatabaseName();
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName)) {
             return;
         }
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(event.getDatabaseName());
-        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(database);
+        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.dropRuleItemConfiguration(event, currentRuleConfig);
             // TODO Remove isCluster judgment
             if (contextManager.getInstanceContext().isCluster()) {
-                contextManager.getInstanceContext().getEventBusContext().post(new DropDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
-                return;
+                if (contextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName)) {
+                    contextManager.getConfigurationContextManager().dropRuleConfiguration(databaseName, currentRuleConfig);
+                }
+            } else {
+                contextManager.getConfigurationContextManager().dropRuleConfiguration(databaseName, currentRuleConfig);
             }
-            contextManager.getConfigurationContextManager().dropRuleConfiguration(event.getDatabaseName(), currentRuleConfig);
         }
     }
 }
