@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rule.attribute;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 
 import java.util.Collection;
@@ -31,9 +30,8 @@ public final class EncryptTableMapperRuleAttribute implements TableMapperRuleAtt
     
     private final CaseInsensitiveSet<String> logicalTableMapper;
     
-    public EncryptTableMapperRuleAttribute(final Collection<EncryptTableRuleConfiguration> tables) {
-        logicalTableMapper = new CaseInsensitiveSet<>();
-        tables.stream().map(EncryptTableRuleConfiguration::getName).forEach(logicalTableMapper::add);
+    public EncryptTableMapperRuleAttribute(final Collection<String> encryptTableNames) {
+        logicalTableMapper = new CaseInsensitiveSet<>(encryptTableNames);
     }
     
     @Override

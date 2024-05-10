@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mask.rule.attribute;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,9 +30,8 @@ public final class MaskTableMapperRuleAttribute implements TableMapperRuleAttrib
     
     private final CaseInsensitiveSet<String> logicalTableMapper;
     
-    public MaskTableMapperRuleAttribute(final Collection<MaskTableRuleConfiguration> tables) {
-        logicalTableMapper = new CaseInsensitiveSet<>();
-        tables.stream().map(MaskTableRuleConfiguration::getName).forEach(logicalTableMapper::add);
+    public MaskTableMapperRuleAttribute(final Collection<String> maskTableNames) {
+        logicalTableMapper = new CaseInsensitiveSet<>(maskTableNames);
     }
     
     @Override

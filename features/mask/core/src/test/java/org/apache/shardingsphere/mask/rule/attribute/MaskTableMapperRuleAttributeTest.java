@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mask.rule.attribute;
 
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -28,7 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class MaskTableMapperRuleAttributeTest {
     
-    private final MaskTableMapperRuleAttribute ruleAttribute = new MaskTableMapperRuleAttribute(Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList())));
+    private final MaskTableMapperRuleAttribute ruleAttribute = new MaskTableMapperRuleAttribute(Collections.singleton("foo_tbl"));
     
     @Test
     void assertGetLogicTableMapper() {

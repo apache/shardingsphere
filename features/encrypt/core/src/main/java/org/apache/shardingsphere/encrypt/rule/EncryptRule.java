@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,12 +49,11 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
     
     private final AtomicReference<EncryptRuleConfiguration> ruleConfig = new AtomicReference<>();
     
-    private final Map<String, EncryptTable> tables;
-    
     private final ConcurrentHashMap<String, EncryptAlgorithm> encryptors;
     
-    @Getter
-    private final RuleAttributes attributes;
+    private final ConcurrentHashMap<String, EncryptTable> tables;
+    
+    private final AtomicReference<RuleAttributes> attributes = new AtomicReference<>();
     
     public EncryptRule(final String databaseName, final EncryptRuleConfiguration ruleConfig) {
         this.databaseName = databaseName;
@@ -67,7 +64,7 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
             each.getColumns().forEach(this::checkEncryptorType);
             tables.put(each.getName().toLowerCase(), new EncryptTable(each, encryptors));
         }
-        attributes = new RuleAttributes(new EncryptTableMapperRuleAttribute(ruleConfig.getTables()));
+        attributes.set(new RuleAttributes(new EncryptTableMapperRuleAttribute(tables.keySet())));
     }
     
     private ConcurrentHashMap<String, EncryptAlgorithm> createEncryptors(final EncryptRuleConfiguration ruleConfig) {
@@ -123,6 +120,11 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
     }
     
     @Override
+    public RuleAttributes getAttributes() {
+        return attributes.get();
+    }
+    
+    @Override
     public EncryptRuleConfiguration getConfiguration() {
         return ruleConfig.get();
     }
@@ -133,22 +135,24 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
     }
     
     @Override
-    public boolean partialUpdateRule(final EncryptRuleConfiguration toBeUpdatedRuleConfig) {
+    public boolean partialUpdate(final EncryptRuleConfiguration toBeUpdatedRuleConfig) {
         Collection<String> toBeAddedTableNames = toBeUpdatedRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         toBeAddedTableNames.removeAll(tables.keySet());
         if (!toBeAddedTableNames.isEmpty()) {
             toBeAddedTableNames.forEach(each -> addTableRule(each, toBeUpdatedRuleConfig));
+            attributes.set(new RuleAttributes(new EncryptTableMapperRuleAttribute(tables.keySet())));
             return true;
         }
         Collection<String> toBeRemovedTableNames = new HashSet<>(tables.keySet());
         toBeRemovedTableNames.removeAll(toBeUpdatedRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList()));
         if (!toBeRemovedTableNames.isEmpty()) {
             toBeRemovedTableNames.stream().map(String::toLowerCase).forEach(tables::remove);
-            // TODO check and remove unused encryptors
+            attributes.set(new RuleAttributes(new EncryptTableMapperRuleAttribute(tables.keySet())));
+            // TODO check and remove unused INLINE encryptors
             return true;
         }
         // TODO Process update table
-        // TODO Process update encryptors
+        // TODO Process CRUD encryptors
         return false;
     }
     
