@@ -125,7 +125,7 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     void assertExceptionHandle() {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
-        advice.onThrowing(targetObject, null, new Object[]{executionUnit, false}, new IOException(), "OpenTelemetry");
+        advice.onThrowing(targetObject, null, new Object[]{executionUnit, false}, new IOException(""), "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertCommonData(spanItems);
         assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.ERROR));

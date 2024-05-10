@@ -245,7 +245,7 @@ public final class BatchPreparedStatementExecutor {
                 return each.getParameterSets();
             }
         }
-        throw new IllegalStateException();
+        throw new IllegalStateException("Can not get value from parameter sets.");
     }
     
     /**

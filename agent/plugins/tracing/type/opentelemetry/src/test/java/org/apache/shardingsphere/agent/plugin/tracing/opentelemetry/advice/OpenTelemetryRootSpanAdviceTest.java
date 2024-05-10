@@ -79,7 +79,7 @@ class OpenTelemetryRootSpanAdviceTest {
     void assertExceptionHandle() {
         OpenTelemetryRootSpanAdvice advice = new OpenTelemetryRootSpanAdvice();
         advice.beforeMethod(new TargetAdviceObjectFixture(), null, new Object[]{}, "OpenTelemetry");
-        advice.onThrowing(new TargetAdviceObjectFixture(), null, new Object[]{}, new IOException(), "OpenTelemetry");
+        advice.onThrowing(new TargetAdviceObjectFixture(), null, new Object[]{}, new IOException(""), "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertCommonData(spanItems);
         assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.ERROR));

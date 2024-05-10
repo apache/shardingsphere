@@ -76,7 +76,7 @@ class AgentYamlEngineTest {
         assertNull(actual.getPassword());
         assertThat(actual.getPort(), is(8080));
         assertThat(actual.getProps().size(), is(1));
-        assertThat(actual.getProps().get("key"), is("value"));
+        assertThat(actual.getProps().getProperty("key"), is("value"));
     }
     
     private void assertMetricsPluginConfiguration(final PluginConfiguration actual) {
@@ -84,7 +84,7 @@ class AgentYamlEngineTest {
         assertThat(actual.getPassword(), is("random"));
         assertThat(actual.getPort(), is(8081));
         assertThat(actual.getProps().size(), is(1));
-        assertThat(actual.getProps().get("key"), is("value"));
+        assertThat(actual.getProps().getProperty("key"), is("value"));
     }
     
     private void assertTracingPluginConfiguration(final PluginConfiguration actual) {
@@ -92,7 +92,7 @@ class AgentYamlEngineTest {
         assertThat(actual.getPassword(), is("random"));
         assertThat(actual.getPort(), is(8082));
         assertThat(actual.getProps().size(), is(1));
-        assertThat(actual.getProps().get("key"), is("value"));
+        assertThat(actual.getProps().getProperty("key"), is("value"));
     }
     
     private void assertYamlAdvisorConfiguration(final YamlAdvisorConfiguration actual) {
