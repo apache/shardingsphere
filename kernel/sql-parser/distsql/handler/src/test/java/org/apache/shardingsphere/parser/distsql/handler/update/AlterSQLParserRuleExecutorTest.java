@@ -20,7 +20,6 @@ package org.apache.shardingsphere.parser.distsql.handler.update;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -63,12 +62,8 @@ class AlterSQLParserRuleExecutorTest {
         SQLParserRule rule = mock(SQLParserRule.class);
         GlobalRuleDefinitionExecutor executor = mock(GlobalRuleDefinitionExecutor.class);
         when(executor.getRuleClass()).thenReturn(SQLParserRule.class);
-        when(rule.getConfiguration()).thenReturn(getSQLParserRuleConfiguration());
+        when(rule.getConfiguration()).thenReturn(new DefaultSQLParserRuleConfigurationBuilder().build());
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
         return result;
-    }
-    
-    private SQLParserRuleConfiguration getSQLParserRuleConfiguration() {
-        return new DefaultSQLParserRuleConfigurationBuilder().build();
     }
 }
