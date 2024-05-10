@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  * Text Bool utility class of PostgreSQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostgreSQLTextBoolUtils {
+public final class PostgreSQLTextBoolUtils {
     
     /**
      * Get Boolean Text value in PostgreSQL text format.
