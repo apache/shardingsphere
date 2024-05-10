@@ -55,6 +55,7 @@ class IndexTokenGeneratorTest {
         when(alterIndexStatementContext.getIndexes()).thenReturn(indexSegments);
         assertFalse(generator.isGenerateSQLToken(alterIndexStatementContext));
         indexSegments.add(mock(IndexSegment.class));
+        when(alterIndexStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         assertTrue(generator.isGenerateSQLToken(alterIndexStatementContext));
     }
     

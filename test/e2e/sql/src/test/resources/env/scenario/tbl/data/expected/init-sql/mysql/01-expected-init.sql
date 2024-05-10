@@ -25,4 +25,4 @@ CREATE TABLE expected_dataset.t_order(order_id BIGINT PRIMARY KEY, user_id INT N
 CREATE TABLE expected_dataset.t_order_item(item_id BIGINT PRIMARY KEY, order_id BIGINT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE expected_dataset.t_product (product_id INT PRIMARY KEY, product_name VARCHAR(50) NOT NULL, category_id INT NOT NULL, price DECIMAL NOT NULL, status VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 
-CREATE INDEX order_index_t_order ON expected_dataset.t_order (order_id);
+CREATE INDEX order_index ON expected_dataset.t_order (order_id);

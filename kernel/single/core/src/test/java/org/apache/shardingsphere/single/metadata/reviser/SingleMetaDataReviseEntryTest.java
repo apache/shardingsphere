@@ -19,7 +19,6 @@ package org.apache.shardingsphere.single.metadata.reviser;
 
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.metadata.reviser.constraint.SingleConstraintReviser;
-import org.apache.shardingsphere.single.metadata.reviser.index.SingleIndexReviser;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
 
@@ -34,16 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SingleMetaDataReviseEntryTest {
     
     private final SingleMetaDataReviseEntry reviseEntry = new SingleMetaDataReviseEntry();
-    
-    @Test
-    void assertGetIndexReviser() {
-        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
-        SingleRule rule = new SingleRule(ruleConfig, "test_database", null, new HashMap<>(), Collections.emptyList());
-        String tableName = "test_table";
-        Optional<SingleIndexReviser> indexReviser = reviseEntry.getIndexReviser(rule, tableName);
-        assertTrue(indexReviser.isPresent());
-        assertThat(indexReviser.get().getClass(), is(SingleIndexReviser.class));
-    }
     
     @Test
     void assertGetConstraintReviser() {
