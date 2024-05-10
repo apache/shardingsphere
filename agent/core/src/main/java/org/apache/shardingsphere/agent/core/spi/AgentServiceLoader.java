@@ -40,7 +40,7 @@ public final class AgentServiceLoader<T> {
     
     private AgentServiceLoader(final Class<T> service) {
         AgentPreconditions.checkArgument(service.isInterface(), String.format("SPI class `%s` is not interface.", service));
-        this.services = load(service);
+        services = load(service);
     }
     
     private Collection<T> load(final Class<T> service) {

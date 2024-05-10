@@ -93,7 +93,7 @@ class DriverDatabaseConnectionManagerTest {
         Map<String, StorageUnit> result = new HashMap<>(2, 1F);
         result.put("ds", mockStorageUnit(new MockedDataSource()));
         DataSource invalidDataSource = mock(DataSource.class);
-        when(invalidDataSource.getConnection()).thenThrow(new SQLException());
+        when(invalidDataSource.getConnection()).thenThrow(new SQLException(""));
         result.put("invalid_ds", mockStorageUnit(invalidDataSource));
         return result;
     }

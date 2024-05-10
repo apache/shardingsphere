@@ -80,7 +80,7 @@ class OpenTelemetrySQLParserEngineAdviceTest {
         TargetAdviceObjectFixture adviceObjectFixture = new TargetAdviceObjectFixture();
         OpenTelemetrySQLParserEngineAdvice advice = new OpenTelemetrySQLParserEngineAdvice();
         advice.beforeMethod(adviceObjectFixture, null, new Object[]{SQL, true}, "OpenTelemetry");
-        advice.onThrowing(adviceObjectFixture, null, new Object[]{SQL, true}, new IOException(), "OpenTelemetry");
+        advice.onThrowing(adviceObjectFixture, null, new Object[]{SQL, true}, new IOException(""), "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertCommonData(spanItems);
         assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.ERROR));
