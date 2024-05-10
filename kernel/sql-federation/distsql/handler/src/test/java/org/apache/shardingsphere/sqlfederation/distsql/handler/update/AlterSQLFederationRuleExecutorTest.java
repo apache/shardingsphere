@@ -43,14 +43,14 @@ class AlterSQLFederationRuleExecutorTest {
     }
     
     @Test
-    void testExecuteWithNullStatement() {
+    void assertExecuteWithNullStatement() {
         AlterSQLFederationRuleStatement sqlStatement = new AlterSQLFederationRuleStatement(null, null, null);
         engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
         assertDoesNotThrow(() -> engine.executeUpdate());
     }
     
     @Test
-    void testExecuteWithNullCacheOptionSegment() {
+    void assertExecuteWithNullCacheOptionSegment() {
         AlterSQLFederationRuleStatement sqlStatement = new AlterSQLFederationRuleStatement(null, null, new CacheOptionSegment(null, null));
         engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
         assertDoesNotThrow(() -> engine.executeUpdate());
