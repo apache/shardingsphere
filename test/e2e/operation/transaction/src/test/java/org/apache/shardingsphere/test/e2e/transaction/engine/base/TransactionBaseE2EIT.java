@@ -163,7 +163,7 @@ public abstract class TransactionBaseE2EIT {
             if (!Arrays.asList(each.getAnnotation(TransactionTestCase.class).transactionTypes()).contains(transactionType)) {
                 continue;
             }
-            log.info("Call transaction IT {} -> {} -> {} -> {} test begin.", testParam, transactionType, provider, each.getSimpleName());
+            log.info("Call transaction IT {} -> {} -> {} -> {} test beginfefefefefefefef.", testParam, transactionType, provider, each.getSimpleName());
             try {
                 each.getConstructor(TransactionTestCaseParameter.class).newInstance(new TransactionTestCaseParameter(this, containerComposer.getDataSource(), transactionType))
                         .execute(containerComposer);
