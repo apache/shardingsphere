@@ -57,11 +57,11 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
         }
         sqlRewriteContext.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(shardingRule, routeContext, sqlStatementContext).getSQLTokenGenerators());
     }
-
+    
     private boolean isAlterOrDropIndexStatement(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof AlterIndexStatementContext || sqlStatementContext instanceof DropIndexStatementContext;
     }
-
+    
     private boolean isCursorAvailableStatement(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof CursorAvailable;
     }
