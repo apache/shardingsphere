@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.mode.event.config.database.AlterDatabaseRuleConfigurationEvent;
-import org.apache.shardingsphere.mode.event.config.database.DropDatabaseRuleConfigurationEvent;
-import org.apache.shardingsphere.mode.event.config.global.AlterGlobalRuleConfigurationEvent;
-import org.apache.shardingsphere.mode.event.config.global.AlterPropertiesEvent;
+import org.apache.shardingsphere.mode.event.config.AlterGlobalRuleConfigurationEvent;
+import org.apache.shardingsphere.mode.event.config.AlterPropertiesEvent;
 import org.apache.shardingsphere.mode.event.datasource.unit.AlterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.datasource.unit.RegisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.datasource.unit.UnregisterStorageUnitEvent;
@@ -79,32 +77,6 @@ public final class ConfigurationChangedSubscriber {
             return;
         }
         contextManager.getConfigurationContextManager().unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
-    }
-    
-    /**
-     * Renew for database rule configuration.
-     *
-     * @param event database rule changed event
-     */
-    @Subscribe
-    public synchronized void renew(final AlterDatabaseRuleConfigurationEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
-            return;
-        }
-        contextManager.getConfigurationContextManager().alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfig());
-    }
-    
-    /**
-     * Renew for database rule configuration.
-     *
-     * @param event database rule changed event
-     */
-    @Subscribe
-    public synchronized void renew(final DropDatabaseRuleConfigurationEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
-            return;
-        }
-        contextManager.getConfigurationContextManager().dropRuleConfiguration(event.getDatabaseName(), event.getRuleConfig());
     }
     
     /**
