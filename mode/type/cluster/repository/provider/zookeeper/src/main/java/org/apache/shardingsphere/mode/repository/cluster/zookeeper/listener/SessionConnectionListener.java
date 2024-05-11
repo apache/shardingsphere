@@ -39,7 +39,7 @@ import java.util.Properties;
 @Slf4j
 public final class SessionConnectionListener implements ConnectionStateListener {
     
-    private static final int RECONNECT_INTERVAL_SECONDS = 5;
+    private static final long RECONNECT_INTERVAL_SECONDS = 5L;
     
     private final InstanceContext instanceContext;
     

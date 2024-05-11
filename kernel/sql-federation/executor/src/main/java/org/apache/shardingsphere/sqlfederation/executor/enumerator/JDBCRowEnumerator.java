@@ -69,7 +69,7 @@ public final class JDBCRowEnumerator implements Enumerator<Object> {
         for (int i = 0; i < metaData.getColumnCount(); i++) {
             rowValues[i] = getValue(i);
         }
-        this.currentRow = 1 == metaData.getColumnCount() ? rowValues[0] : rowValues;
+        currentRow = 1 == metaData.getColumnCount() ? rowValues[0] : rowValues;
     }
     
     private Object getValue(final int index) throws SQLException {

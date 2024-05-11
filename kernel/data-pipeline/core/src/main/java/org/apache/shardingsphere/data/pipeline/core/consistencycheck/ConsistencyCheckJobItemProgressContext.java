@@ -48,7 +48,7 @@ public final class ConsistencyCheckJobItemProgressContext implements PipelineJob
     
     private volatile long recordsCount;
     
-    private final AtomicLong checkedRecordsCount = new AtomicLong(0);
+    private final AtomicLong checkedRecordsCount = new AtomicLong(0L);
     
     private final long checkBeginTimeMillis = System.currentTimeMillis();
     

@@ -35,7 +35,7 @@ class JobDataNodeLineConvertUtilsTest {
     
     @Test
     void assertConvertDataNodesToLines() {
-        Map<String, List<DataNode>> mockDataNodes = new LinkedHashMap<>();
+        Map<String, List<DataNode>> mockDataNodes = new LinkedHashMap<>(2, 1F);
         List<DataNode> dataNodes = Arrays.asList(new DataNode("ds_0", "t_order_0"), new DataNode("ds_0", "t_order_1"));
         List<DataNode> itemDataNodes = Collections.singletonList(new DataNode("ds_0", "t_order_item_0"));
         mockDataNodes.put("t_order", dataNodes);
@@ -51,10 +51,8 @@ class JobDataNodeLineConvertUtilsTest {
     
     @Test
     void assertConvertDataNodesToLinesWithMultipleDataSource() {
-        Map<String, List<DataNode>> mockDataNodes = new LinkedHashMap<>();
         List<DataNode> dataNodes = Arrays.asList(new DataNode("ds_0", "t_order_0"), new DataNode("ds_0", "t_order_2"), new DataNode("ds_1", "t_order_1"), new DataNode("ds_1", "t_order_3"));
-        mockDataNodes.put("t_order", dataNodes);
-        List<JobDataNodeLine> jobDataNodeLines = JobDataNodeLineConvertUtils.convertDataNodesToLines(mockDataNodes);
+        List<JobDataNodeLine> jobDataNodeLines = JobDataNodeLineConvertUtils.convertDataNodesToLines(Collections.singletonMap("t_order", dataNodes));
         assertThat(jobDataNodeLines.size(), is(2));
         JobDataNodeEntry jobDataNodeEntry = jobDataNodeLines.get(0).getEntries().iterator().next();
         assertThat(jobDataNodeEntry.getDataNodes().stream().map(DataNode::getTableName).collect(Collectors.toList()), is(Arrays.asList("t_order_0", "t_order_2")));

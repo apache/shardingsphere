@@ -243,8 +243,8 @@ public final class ConsistencyCheckJobAPI {
             result.setDurationSeconds(duration.getSeconds());
             result.setCheckEndTime(DateTimeFormatterFactory.getLongMillsFormatter().format(checkEndTime));
             result.setInventoryRemainingSeconds(0L);
-        } else if (0 != recordsCount && 0 != checkedRecordsCount) {
-            result.setInventoryFinishedPercentage((int) (checkedRecordsCount * 100 / recordsCount));
+        } else if (0L != recordsCount && 0L != checkedRecordsCount) {
+            result.setInventoryFinishedPercentage((int) (checkedRecordsCount * 100L / recordsCount));
             LocalDateTime stopTime = jobConfigPOJO.isDisabled() ? LocalDateTime.from(DateTimeFormatterFactory.getStandardFormatter().parse(jobConfigPOJO.getProps().getProperty("stop_time")))
                     : null;
             long durationMillis = (null != stopTime ? Timestamp.valueOf(stopTime).getTime() : System.currentTimeMillis()) - jobItemProgress.getCheckBeginTimeMillis();
@@ -252,8 +252,8 @@ public final class ConsistencyCheckJobAPI {
             if (null != stopTime) {
                 result.setCheckEndTime(jobConfigPOJO.getProps().getProperty("stop_time"));
             }
-            long remainingMills = Math.max(0, (long) ((recordsCount - checkedRecordsCount) * 1.0D / checkedRecordsCount * durationMillis));
-            result.setInventoryRemainingSeconds(remainingMills / 1000);
+            long remainingMills = Math.max(0L, (long) ((recordsCount - checkedRecordsCount) * 1.0D / checkedRecordsCount * durationMillis));
+            result.setInventoryRemainingSeconds(remainingMills / 1000L);
         }
     }
     

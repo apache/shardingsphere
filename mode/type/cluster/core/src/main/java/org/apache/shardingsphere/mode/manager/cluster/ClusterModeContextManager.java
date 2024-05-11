@@ -109,7 +109,7 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
     }
     
     private Map<String, DataSourcePoolProperties> getToBeDroppedDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> propsMap, final Collection<String> toBeDroppedResourceNames) {
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>();
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(toBeDroppedResourceNames.size(), 1F);
         for (String each : toBeDroppedResourceNames) {
             if (propsMap.containsKey(each)) {
                 result.put(each, propsMap.get(each));

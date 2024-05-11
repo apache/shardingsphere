@@ -42,7 +42,7 @@ public final class SQLParserDistSQLStatementVisitor extends SQLParserDistSQLStat
     
     @Override
     public ASTNode visitAlterSQLParserRule(final AlterSQLParserRuleContext ctx) {
-        return super.visit(ctx.sqlParserRuleDefinition());
+        return visit(ctx.sqlParserRuleDefinition());
     }
     
     @Override

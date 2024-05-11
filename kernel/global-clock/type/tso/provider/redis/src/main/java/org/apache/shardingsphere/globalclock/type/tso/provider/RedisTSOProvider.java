@@ -32,7 +32,7 @@ public final class RedisTSOProvider implements TSOProvider {
     
     private static final String CSN_KEY = "csn";
     
-    private static final long ERROR_CSN = 0;
+    private static final long ERROR_CSN = 0L;
     
     private static final long INIT_CSN = Integer.MAX_VALUE;
     

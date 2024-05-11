@@ -34,7 +34,7 @@ class SQLParserRuleTest {
     
     @BeforeEach
     void setup() {
-        sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(2, 4), new CacheOption(3, 7)));
+        sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(2, 4L), new CacheOption(3, 7L)));
     }
     
     @Test

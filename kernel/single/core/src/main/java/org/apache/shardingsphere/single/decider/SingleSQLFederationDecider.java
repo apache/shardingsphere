@@ -66,7 +66,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
     }
     
     private Collection<DataNode> getTableDataNodes(final SingleRule rule, final Collection<QualifiedTable> singleTables) {
-        Collection<DataNode> result = new HashSet<>();
+        Collection<DataNode> result = new HashSet<>(singleTables.size(), 1F);
         for (QualifiedTable each : singleTables) {
             rule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(result::add);
         }

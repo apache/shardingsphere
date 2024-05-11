@@ -117,7 +117,7 @@ class StateChangedSubscriberTest {
         subscriber.renew(event);
         verify(ruleAttribute).updateStatus(
                 argThat(qualifiedDataSource -> Objects.equals(event.getQualifiedDataSource(), qualifiedDataSource)),
-                argThat(dataSourceState -> Objects.equals(event.getStatus().getStatus(), dataSourceState)));
+                argThat(dataSourceState -> event.getStatus().getStatus() == dataSourceState));
     }
     
     @Test

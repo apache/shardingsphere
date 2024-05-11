@@ -53,7 +53,7 @@ public final class PipelineJobProgressPersistService {
     private static final long DELAY_SECONDS = 1L;
     
     static {
-        JOB_PERSIST_EXECUTOR.scheduleWithFixedDelay(new PersistJobContextRunnable(), 0, DELAY_SECONDS, TimeUnit.SECONDS);
+        JOB_PERSIST_EXECUTOR.scheduleWithFixedDelay(new PersistJobContextRunnable(), 0L, DELAY_SECONDS, TimeUnit.SECONDS);
     }
     
     /**
@@ -126,8 +126,8 @@ public final class PipelineJobProgressPersistService {
         
         private static void persist0(final String jobId, final int shardingItem, final PipelineJobProgressPersistContext persistContext) {
             long currentUnhandledEventCount = persistContext.getUnhandledEventCount().get();
-            ShardingSpherePreconditions.checkState(currentUnhandledEventCount >= 0, () -> new IllegalStateException("Current unhandled event count must be greater than or equal to 0"));
-            if (0 == currentUnhandledEventCount) {
+            ShardingSpherePreconditions.checkState(currentUnhandledEventCount >= 0L, () -> new IllegalStateException("Current unhandled event count must be greater than or equal to 0"));
+            if (0L == currentUnhandledEventCount) {
                 return;
             }
             Optional<PipelineJobItemContext> jobItemContext = PipelineJobRegistry.getItemContext(jobId, shardingItem);

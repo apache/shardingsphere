@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -37,7 +36,7 @@ class PipelineMetaDataNodeTest {
     
     @Test
     void assertGetMetaDataDataSourcesPath() {
-        MatcherAssert.assertThat(PipelineMetaDataNode.getMetaDataDataSourcesPath("FIXTURE"), is(migrationMetaDataRootPath + "/data_sources"));
+        assertThat(PipelineMetaDataNode.getMetaDataDataSourcesPath("FIXTURE"), is(migrationMetaDataRootPath + "/data_sources"));
     }
     
     @Test

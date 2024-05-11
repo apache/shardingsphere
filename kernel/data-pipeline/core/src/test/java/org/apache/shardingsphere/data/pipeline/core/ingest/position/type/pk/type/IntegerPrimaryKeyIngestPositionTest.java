@@ -34,6 +34,6 @@ class IntegerPrimaryKeyIngestPositionTest {
     
     @Test
     void assertToString() {
-        assertThat(new IntegerPrimaryKeyIngestPosition(1, 100).toString(), is("i,1,100"));
+        assertThat(new IntegerPrimaryKeyIngestPosition(1L, 100L).toString(), is("i,1,100"));
     }
 }

@@ -89,7 +89,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
                 tableNames.add(tableName);
             }
         }
-        Map<CaseInsensitiveIdentifier, PipelineTableMetaData> result = new LinkedHashMap<>();
+        Map<CaseInsensitiveIdentifier, PipelineTableMetaData> result = new LinkedHashMap<>(tableNames.size(), 1F);
         for (String each : tableNames) {
             Set<String> primaryKeys = loadPrimaryKeys(connection, schemaName, each);
             Map<String, Collection<String>> uniqueKeys = loadUniqueIndexesOfTable(connection, schemaName, each);

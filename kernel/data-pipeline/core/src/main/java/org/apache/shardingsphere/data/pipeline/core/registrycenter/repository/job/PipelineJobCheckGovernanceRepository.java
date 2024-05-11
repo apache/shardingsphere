@@ -125,7 +125,7 @@ public final class PipelineJobCheckGovernanceRepository {
         if (null == checkResultMap) {
             return;
         }
-        Map<String, String> yamlCheckResultMap = new LinkedHashMap<>();
+        Map<String, String> yamlCheckResultMap = new LinkedHashMap<>(checkResultMap.size(), 1F);
         for (Entry<String, TableDataConsistencyCheckResult> entry : checkResultMap.entrySet()) {
             YamlTableDataConsistencyCheckResult yamlCheckResult = new YamlTableDataConsistencyCheckResultSwapper().swapToYamlConfiguration(entry.getValue());
             yamlCheckResultMap.put(entry.getKey(), YamlEngine.marshal(yamlCheckResult));

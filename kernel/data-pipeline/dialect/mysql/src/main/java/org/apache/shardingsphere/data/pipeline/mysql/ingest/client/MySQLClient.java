@@ -361,7 +361,7 @@ public final class MySQLClient {
         private void reconnect() throws ExecutionException, InterruptedException, TimeoutException {
             Optional<ChannelFuture> future = closeChannel();
             if (future.isPresent()) {
-                future.get().get(1, TimeUnit.SECONDS);
+                future.get().get(1L, TimeUnit.SECONDS);
             }
             if (reconnectTimes.incrementAndGet() > 3) {
                 log.warn("Exceeds the maximum number of retry times, last binlog event:{}", lastBinlogEvent);

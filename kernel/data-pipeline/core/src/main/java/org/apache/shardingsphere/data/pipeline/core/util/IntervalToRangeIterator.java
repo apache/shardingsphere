@@ -40,12 +40,12 @@ public final class IntervalToRangeIterator implements Iterator<Range<Long>> {
         if (minimum > maximum) {
             throw new IllegalArgumentException("minimum greater than maximum");
         }
-        if (interval < 0) {
+        if (interval < 0L) {
             throw new IllegalArgumentException("interval is less than zero");
         }
         this.maximum = maximum;
         this.interval = interval;
-        this.current = minimum;
+        current = minimum;
     }
     
     @Override
@@ -56,11 +56,11 @@ public final class IntervalToRangeIterator implements Iterator<Range<Long>> {
     @Override
     public Range<Long> next() {
         if (!hasNext()) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("");
         }
         long upperLimit = Math.min(maximum, current + interval);
         Range<Long> result = Range.between(current, upperLimit);
-        current = upperLimit + 1;
+        current = upperLimit + 1L;
         return result;
     }
 }

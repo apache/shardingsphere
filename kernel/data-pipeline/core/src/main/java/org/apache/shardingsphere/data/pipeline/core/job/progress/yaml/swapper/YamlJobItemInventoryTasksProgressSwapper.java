@@ -75,7 +75,7 @@ public final class YamlJobItemInventoryTasksProgressSwapper {
         if (null == yamlProgress) {
             return new JobItemInventoryTasksProgress(Collections.emptyMap());
         }
-        Map<String, InventoryTaskProgress> taskProgressMap = new LinkedHashMap<>();
+        Map<String, InventoryTaskProgress> taskProgressMap = new LinkedHashMap<>(yamlProgress.getFinished().length + yamlProgress.getUnfinished().size(), 1F);
         taskProgressMap.putAll(Arrays.stream(yamlProgress.getFinished()).collect(Collectors.toMap(key -> key, value -> new InventoryTaskProgress(new IngestFinishedPosition()))));
         taskProgressMap.putAll(yamlProgress.getUnfinished().entrySet().stream().collect(Collectors.toMap(Entry::getKey, getInventoryTaskProgressFunction())));
         return new JobItemInventoryTasksProgress(taskProgressMap);

@@ -48,7 +48,7 @@ public final class LogicalScan extends TableScan {
     }
     
     private void resetRowType(final RelNode relNode) {
-        this.rowType = relNode.getRowType();
+        rowType = relNode.getRowType();
     }
     
     /**

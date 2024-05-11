@@ -85,7 +85,7 @@ public final class PostgreSQLWALDumper extends AbstractPipelineLifecycleRunnable
         this.channel = channel;
         walEventConverter = new WALEventConverter(dumperContext, metaDataLoader);
         logicalReplication = new PostgreSQLLogicalReplication();
-        this.decodeWithTX = dumperContext.isDecodeWithTX();
+        decodeWithTX = dumperContext.isDecodeWithTX();
     }
     
     @SneakyThrows(InterruptedException.class)
@@ -100,7 +100,7 @@ public final class PostgreSQLWALDumper extends AbstractPipelineLifecycleRunnable
                 int times = reconnectTimes.incrementAndGet();
                 log.error("Connect failed, reconnect times={}", times, ex);
                 if (isRunning()) {
-                    Thread.sleep(5000);
+                    Thread.sleep(5000L);
                 }
                 if (times >= 5) {
                     throw new IngestException(ex);

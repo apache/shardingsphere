@@ -67,9 +67,9 @@ public final class MigrationJobItemContext implements TransmissionJobItemContext
     
     private final Collection<PipelineTask> incrementalTasks = new LinkedList<>();
     
-    private final AtomicLong processedRecordsCount = new AtomicLong(0);
+    private final AtomicLong processedRecordsCount = new AtomicLong(0L);
     
-    private final AtomicLong inventoryRecordsCount = new AtomicLong(0);
+    private final AtomicLong inventoryRecordsCount = new AtomicLong(0L);
     
     private final MigrationJobConfiguration jobConfig;
     
@@ -98,7 +98,7 @@ public final class MigrationJobItemContext implements TransmissionJobItemContext
         this.jobConfig = jobConfig;
         jobId = jobConfig.getJobId();
         this.shardingItem = shardingItem;
-        this.dataSourceName = taskConfig.getDataSourceName();
+        dataSourceName = taskConfig.getDataSourceName();
         this.initProgress = initProgress;
         if (null != initProgress) {
             processedRecordsCount.set(initProgress.getProcessedRecordsCount());

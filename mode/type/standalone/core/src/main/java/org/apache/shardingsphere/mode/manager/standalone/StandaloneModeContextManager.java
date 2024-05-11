@@ -177,7 +177,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     @Override
     public void dropSchema(final String databaseName, final Collection<String> schemaNames) {
         Collection<String> tobeRemovedTables = new LinkedHashSet<>();
-        Collection<String> tobeRemovedSchemas = new LinkedHashSet<>();
+        Collection<String> tobeRemovedSchemas = new LinkedHashSet<>(schemaNames.size(), 1F);
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         for (String each : schemaNames) {

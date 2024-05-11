@@ -117,7 +117,7 @@ public final class ResourceSwitchManager {
     }
     
     private Map<StorageNode, DataSource> getToBeRemovedStaleDataSource(final ResourceMetaData resourceMetaData, final Collection<String> storageUnitNames) {
-        Map<StorageNode, DataSource> result = new LinkedHashMap<>();
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>(storageUnitNames.size(), 1F);
         for (String each : storageUnitNames) {
             if (!resourceMetaData.getStorageUnits().containsKey(each)) {
                 return Collections.emptyMap();

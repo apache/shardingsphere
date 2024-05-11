@@ -259,6 +259,6 @@ public final class SQLFederationPlannerUtils {
      * @return rel opt cluster
      */
     public static RelOptCluster createRelOptCluster(final RelDataTypeFactory relDataTypeFactory) {
-        return RelOptCluster.create(SQLFederationPlannerUtils.createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
+        return RelOptCluster.create(createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
     }
 }

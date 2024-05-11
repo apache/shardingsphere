@@ -57,7 +57,7 @@ public final class MemoryPipelineChannel implements PipelineChannel {
         long startMillis = System.currentTimeMillis();
         int recordsCount = 0;
         do {
-            List<Record> records = queue.poll(Math.max(0, timeoutMillis - (System.currentTimeMillis() - startMillis)), TimeUnit.MILLISECONDS);
+            List<Record> records = queue.poll(Math.max(0L, timeoutMillis - (System.currentTimeMillis() - startMillis)), TimeUnit.MILLISECONDS);
             if (null == records || records.isEmpty()) {
                 continue;
             }

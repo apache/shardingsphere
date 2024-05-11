@@ -127,7 +127,7 @@ class ResourceMetaDataChangedSubscriberTest {
     @Test
     void assertRenewForSchemaAdded() {
         subscriber.renew(new SchemaAddedEvent("db", "foo_schema"));
-        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).addSchema(argThat(argument -> argument.equals("foo_schema")), any(ShardingSphereSchema.class));
+        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).addSchema(argThat("foo_schema"::equals), any(ShardingSphereSchema.class));
     }
     
     @Test
