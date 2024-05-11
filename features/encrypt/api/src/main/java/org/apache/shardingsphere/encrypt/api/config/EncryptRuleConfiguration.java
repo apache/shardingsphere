@@ -48,7 +48,7 @@ public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration
     }
     
     private Map<String, AlgorithmConfiguration> rebuildEncryptorsWithDefaultProperties(final Map<String, AlgorithmConfiguration> encryptors) {
-        Map<String, AlgorithmConfiguration> result = new HashMap<>();
+        Map<String, AlgorithmConfiguration> result = new HashMap<>(encryptors.size(), 1F);
         for (Entry<String, AlgorithmConfiguration> entry : encryptors.entrySet()) {
             // todo Replace with MultiSourceProperties, MultiSourceProperties need support marshal.
             Properties props = new Properties();

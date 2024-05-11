@@ -29,8 +29,7 @@ import org.apache.shardingsphere.sharding.exception.algorithm.MismatchedInlineSh
 import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -68,10 +67,8 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         ShardingSpherePreconditions.checkNotNull(shardingValue.getValue(), NullShardingValueException::new);
         String columnName = shardingValue.getColumnName();
         ShardingSpherePreconditions.checkState(algorithmExpression.contains(columnName), () -> new MismatchedInlineShardingAlgorithmExpressionAndColumnException(algorithmExpression, columnName));
-        Map<String, Comparable<?>> map = new LinkedHashMap<>();
-        map.put(columnName, shardingValue.getValue());
         try {
-            return InlineExpressionParserFactory.newInstance(algorithmExpression).evaluateWithArgs(map);
+            return InlineExpressionParserFactory.newInstance(algorithmExpression).evaluateWithArgs(Collections.singletonMap(columnName, shardingValue.getValue()));
         } catch (final MissingMethodException ignored) {
             throw new MismatchedInlineShardingAlgorithmExpressionAndColumnException(algorithmExpression, columnName);
         }

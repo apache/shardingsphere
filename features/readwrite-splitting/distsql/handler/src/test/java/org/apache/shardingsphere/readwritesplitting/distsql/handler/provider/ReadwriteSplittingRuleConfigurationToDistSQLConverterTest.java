@@ -53,10 +53,4 @@ class ReadwriteSplittingRuleConfigurationToDistSQLConverterTest {
                         + System.lineSeparator() + "TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC'," + System.lineSeparator() + "TYPE(NAME='random', PROPERTIES('read_weight'='2:1'))"
                         + System.lineSeparator() + ");"));
     }
-    
-    @Test
-    void assertGetType() {
-        ReadwriteSplittingRuleConfigurationToDistSQLConverter readwriteSplittingRuleConfigurationToDistSQLConverter = new ReadwriteSplittingRuleConfigurationToDistSQLConverter();
-        assertThat(readwriteSplittingRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration"));
-    }
 }

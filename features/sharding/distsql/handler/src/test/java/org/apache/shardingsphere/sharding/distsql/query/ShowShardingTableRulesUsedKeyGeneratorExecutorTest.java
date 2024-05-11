@@ -49,8 +49,6 @@ import static org.mockito.Mockito.when;
 
 class ShowShardingTableRulesUsedKeyGeneratorExecutorTest {
     
-    private DistSQLQueryExecuteEngine engine;
-    
     DistSQLQueryExecuteEngine setUp(final ShowShardingTableRulesUsedKeyGeneratorStatement statement, final String keyGeneratorName) {
         when(statement.getKeyGeneratorName()).thenReturn(Optional.of(keyGeneratorName));
         return new DistSQLQueryExecuteEngine(statement, "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
@@ -68,7 +66,7 @@ class ShowShardingTableRulesUsedKeyGeneratorExecutorTest {
     
     @Test
     void assertGetRowData() throws SQLException {
-        engine = setUp(mock(ShowShardingTableRulesUsedKeyGeneratorStatement.class), "snowflake");
+        DistSQLQueryExecuteEngine engine = setUp(mock(ShowShardingTableRulesUsedKeyGeneratorStatement.class), "snowflake");
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(2));

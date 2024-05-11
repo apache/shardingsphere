@@ -92,7 +92,7 @@ public final class BindingTableRule {
      * @return logic and actual tables
      */
     public Map<String, String> getLogicAndActualTables(final String dataSource, final String logicTable, final String actualTable, final Collection<String> availableLogicBindingTables) {
-        Map<String, String> result = new LinkedHashMap<>();
+        Map<String, String> result = new LinkedHashMap<>(availableLogicBindingTables.size(), 1F);
         for (String each : availableLogicBindingTables) {
             if (!each.equalsIgnoreCase(logicTable) && hasLogicTable(each)) {
                 result.put(each, getBindingActualTable(dataSource, each, logicTable, actualTable));

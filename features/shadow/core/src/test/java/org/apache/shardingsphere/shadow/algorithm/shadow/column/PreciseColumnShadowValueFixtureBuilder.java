@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.LinkedList;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-class PreciseColumnShadowValueFixtureBuilder {
+final class PreciseColumnShadowValueFixtureBuilder {
     
     static Collection<PreciseColumnShadowValue<Comparable<?>>> createTrueCase(final String shadowTable, final String shadowColumn) {
         Collection<PreciseColumnShadowValue<Comparable<?>>> result = new LinkedList<>();

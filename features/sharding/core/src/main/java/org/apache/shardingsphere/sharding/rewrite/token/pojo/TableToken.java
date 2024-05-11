@@ -43,7 +43,7 @@ public final class TableToken extends SQLToken implements Substitutable, RouteUn
     public TableToken(final int startIndex, final int stopIndex, final IdentifierValue tableSegment, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.tableName = tableSegment;
+        tableName = tableSegment;
         this.sqlStatementContext = sqlStatementContext;
         this.shardingRule = shardingRule;
     }

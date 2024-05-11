@@ -71,7 +71,7 @@ class ShardingDropTableStatementValidatorTest {
     
     @BeforeEach
     void init() {
-        Map<String, ShardingTable> shardingTables = new LinkedHashMap<>();
+        Map<String, ShardingTable> shardingTables = new LinkedHashMap<>(2, 1F);
         shardingTables.put("t_order_item", createShardingTable("t_order_item"));
         shardingTables.put("t_order", createShardingTable("t_order"));
         when(shardingRule.getShardingTables()).thenReturn(shardingTables);

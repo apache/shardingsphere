@@ -36,8 +36,6 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
  */
 public final class ShadowAlgorithmChangedProcessor implements RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, AlgorithmConfiguration> {
     
-    public static final String TYPE = "Shadow.Algorithm";
-    
     @Override
     public AlgorithmConfiguration swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
         return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));

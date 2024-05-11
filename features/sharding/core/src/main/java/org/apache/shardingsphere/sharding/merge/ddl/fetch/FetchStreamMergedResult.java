@@ -125,7 +125,7 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
     }
     
     private List<FetchGroup> createFetchOrderByValueGroups(final int queryResultSize) {
-        List<FetchGroup> result = new ArrayList<>();
+        List<FetchGroup> result = new ArrayList<>(queryResultSize);
         for (int index = 0; index < queryResultSize; index++) {
             result.add(new FetchOrderByValueGroup());
         }

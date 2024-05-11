@@ -46,7 +46,7 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
     
     @Override
     public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>();
+        Map<String, Collection<String>> result = new HashMap<>(dataSourceGroupRules.size(), 1F);
         for (Entry<String, ReadwriteSplittingDataSourceGroupRule> entry : dataSourceGroupRules.entrySet()) {
             result.put(entry.getValue().getName(), entry.getValue().getReadwriteSplittingGroup().getAllDataSources());
         }

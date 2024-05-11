@@ -112,6 +112,6 @@ class ShadowRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
         Properties props = actual.getShadowAlgorithms().get("sql-hint-algorithm").getProps();
         assertThat(props.size(), is(2));
         assertTrue((boolean) props.get("shadow"));
-        assertThat(props.get("foo"), is("bar"));
+        assertThat(props.getProperty("foo"), is("bar"));
     }
 }

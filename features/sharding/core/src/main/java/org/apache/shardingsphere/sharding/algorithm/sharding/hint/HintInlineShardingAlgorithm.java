@@ -25,8 +25,7 @@ import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -61,9 +60,7 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     
     private String doSharding(final Comparable<?> shardingValue) {
         ShardingSpherePreconditions.checkNotNull(shardingValue, NullShardingValueException::new);
-        Map<String, Comparable<?>> map = new LinkedHashMap<>();
-        map.put(HINT_INLINE_VALUE_PROPERTY_NAME, shardingValue);
-        return InlineExpressionParserFactory.newInstance(algorithmExpression).evaluateWithArgs(map);
+        return InlineExpressionParserFactory.newInstance(algorithmExpression).evaluateWithArgs(Collections.singletonMap(HINT_INLINE_VALUE_PROPERTY_NAME, shardingValue));
     }
     
     @Override

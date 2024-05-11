@@ -69,7 +69,7 @@ public final class EncryptPredicateRightValueTokenGenerator implements Collectio
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Collection<SQLToken> result = new LinkedHashSet<>();
+        Collection<SQLToken> result = new LinkedHashSet<>(encryptConditions.size(), 1F);
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
         for (EncryptCondition each : encryptConditions) {
             encryptRule.findEncryptTable(each.getTableName()).ifPresent(optional -> result.add(generateSQLToken(schemaName, optional, each)));
@@ -109,7 +109,7 @@ public final class EncryptPredicateRightValueTokenGenerator implements Collectio
     }
     
     private Map<Integer, Object> getPositionValues(final Collection<Integer> valuePositions, final List<Object> encryptValues) {
-        Map<Integer, Object> result = new LinkedHashMap<>();
+        Map<Integer, Object> result = new LinkedHashMap<>(valuePositions.size(), 1F);
         for (int each : valuePositions) {
             result.put(each, encryptValues.get(each));
         }

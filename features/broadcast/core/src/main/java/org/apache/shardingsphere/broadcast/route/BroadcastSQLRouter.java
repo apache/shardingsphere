@@ -121,8 +121,9 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
     }
     
     private Collection<String> getTableNames(final TableAvailable sqlStatementContext) {
-        Collection<String> result = new LinkedHashSet<>();
-        for (SimpleTableSegment each : sqlStatementContext.getAllTables()) {
+        Collection<SimpleTableSegment> tableSegments = sqlStatementContext.getAllTables();
+        Collection<String> result = new LinkedHashSet<>(tableSegments.size());
+        for (SimpleTableSegment each : tableSegments) {
             result.add(each.getTableName().getIdentifier().getValue());
         }
         return result;

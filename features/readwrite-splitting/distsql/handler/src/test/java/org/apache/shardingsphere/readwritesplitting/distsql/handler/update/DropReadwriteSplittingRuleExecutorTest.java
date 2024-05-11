@@ -39,7 +39,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -132,16 +131,14 @@ class DropReadwriteSplittingRuleExecutorTest {
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {
         ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite_ds",
                 "", Collections.emptyList(), "readwrite_ds");
-        Map<String, AlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
-        loadBalancers.put("readwrite_ds", new AlgorithmConfiguration("TEST", new Properties()));
+        Map<String, AlgorithmConfiguration> loadBalancers = Collections.singletonMap("readwrite_ds", new AlgorithmConfiguration("TEST", new Properties()));
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceGroupConfig)), loadBalancers);
     }
     
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfigurationWithoutLoadBalancerName() {
         ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite_ds",
                 "", new LinkedList<>(), null);
-        Map<String, AlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
-        loadBalancers.put("readwrite_ds", new AlgorithmConfiguration("TEST", new Properties()));
+        Map<String, AlgorithmConfiguration> loadBalancers = Collections.singletonMap("readwrite_ds", new AlgorithmConfiguration("TEST", new Properties()));
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceGroupConfig)), loadBalancers);
     }
     
@@ -150,8 +147,7 @@ class DropReadwriteSplittingRuleExecutorTest {
                 "foo_ds", "", new LinkedList<>(), "TEST");
         ReadwriteSplittingDataSourceGroupRuleConfiguration barDataSourceGroupConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "bar_ds", "", new LinkedList<>(), "TEST");
-        Map<String, AlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
-        loadBalancers.put("TEST", new AlgorithmConfiguration("TEST", new Properties()));
+        Map<String, AlgorithmConfiguration> loadBalancers = Collections.singletonMap("TEST", new AlgorithmConfiguration("TEST", new Properties()));
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Arrays.asList(fooDataSourceGroupConfig, barDataSourceGroupConfig)), loadBalancers);
     }
 }

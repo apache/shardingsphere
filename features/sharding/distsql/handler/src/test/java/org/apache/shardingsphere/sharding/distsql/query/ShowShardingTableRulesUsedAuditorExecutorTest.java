@@ -50,8 +50,6 @@ import static org.mockito.Mockito.when;
 
 class ShowShardingTableRulesUsedAuditorExecutorTest {
     
-    private DistSQLQueryExecuteEngine engine;
-    
     DistSQLQueryExecuteEngine setUp(final ShowShardingTableRulesUsedAuditorStatement statement, final String auditorName) {
         when(statement.getAuditorName()).thenReturn(Optional.of(auditorName));
         return new DistSQLQueryExecuteEngine(statement, "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
@@ -69,7 +67,7 @@ class ShowShardingTableRulesUsedAuditorExecutorTest {
     
     @Test
     void assertGetRowData() throws SQLException {
-        engine = setUp(mock(ShowShardingTableRulesUsedAuditorStatement.class), "shardingKeyAudit");
+        DistSQLQueryExecuteEngine engine = setUp(mock(ShowShardingTableRulesUsedAuditorStatement.class), "shardingKeyAudit");
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(2));

@@ -65,7 +65,7 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     }
     
     private Map<String, String> getTableAliasNameMappings(final Collection<SimpleTableSegment> tableSegments) {
-        Map<String, String> result = new LinkedHashMap<>();
+        Map<String, String> result = new LinkedHashMap<>(tableSegments.size(), 1F);
         for (SimpleTableSegment each : tableSegments) {
             String tableName = each.getTableName().getIdentifier().getValue();
             String alias = each.getAliasName().isPresent() ? each.getAliasName().get() : tableName;

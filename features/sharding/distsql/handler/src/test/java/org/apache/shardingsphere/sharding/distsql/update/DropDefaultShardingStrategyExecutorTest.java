@@ -28,8 +28,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -107,9 +106,7 @@ class DropDefaultShardingStrategyExecutorTest {
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "algorithm_name"));
-        Map<String, AlgorithmConfiguration> stringAlgorithms = new LinkedHashMap<>();
-        stringAlgorithms.put("algorithm_name", new AlgorithmConfiguration("INLINE", new Properties()));
-        result.setShardingAlgorithms(stringAlgorithms);
+        result.setShardingAlgorithms(Collections.singletonMap("algorithm_name", new AlgorithmConfiguration("INLINE", new Properties())));
         return result;
     }
 }
