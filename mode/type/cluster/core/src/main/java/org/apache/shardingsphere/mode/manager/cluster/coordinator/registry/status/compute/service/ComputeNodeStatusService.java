@@ -172,8 +172,8 @@ public final class ComputeNodeStatusService {
      * @return assigned worker ids
      */
     public Collection<Integer> getAssignedWorkerIds() {
-        Collection<Integer> result = new LinkedHashSet<>();
         Collection<String> childrenKeys = repository.getChildrenKeys(ComputeNode.getInstanceWorkerIdRootNodePath());
+        Collection<Integer> result = new LinkedHashSet<>(childrenKeys.size(), 1F);
         for (String each : childrenKeys) {
             String workerId = repository.getDirectly(ComputeNode.getInstanceWorkerIdNodePath(each));
             if (null != workerId) {

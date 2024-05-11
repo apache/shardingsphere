@@ -53,7 +53,7 @@ public final class MetaDataContexts implements AutoCloseable {
     public MetaDataContexts(final MetaDataBasedPersistService persistService, final ShardingSphereMetaData metaData) {
         this.persistService = persistService;
         this.metaData = metaData;
-        this.statistics = initStatistics(metaData);
+        statistics = initStatistics(metaData);
     }
     
     private ShardingSphereStatistics initStatistics(final ShardingSphereMetaData metaData) {
