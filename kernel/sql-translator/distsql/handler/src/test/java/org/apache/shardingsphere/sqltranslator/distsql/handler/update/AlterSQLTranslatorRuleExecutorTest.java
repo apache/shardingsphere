@@ -37,20 +37,18 @@ import static org.mockito.Mockito.when;
 
 class AlterSQLTranslatorRuleExecutorTest {
     
-    private DistSQLUpdateExecuteEngine engine;
-    
     @Test
     void assertExecute() {
-        AlterSQLTranslatorRuleStatement sqlStatement = new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("Native", PropertiesBuilder.build(new Property("foo", "bar"))), Boolean.TRUE);
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
-        assertDoesNotThrow(() -> engine.executeUpdate());
+        AlterSQLTranslatorRuleStatement sqlStatement = new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("Native", PropertiesBuilder.build(new Property("foo", "bar"))), true);
+        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
+        assertDoesNotThrow(engine::executeUpdate);
     }
     
     @Test
     void assertExecuteWithNullOriginalSQLWhenTranslatingFailed() {
         AlterSQLTranslatorRuleStatement sqlStatement = new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("Native", PropertiesBuilder.build(new Property("foo", "bar"))), null);
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
-        assertDoesNotThrow(() -> engine.executeUpdate());
+        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
+        assertDoesNotThrow(engine::executeUpdate);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -59,12 +57,8 @@ class AlterSQLTranslatorRuleExecutorTest {
         SQLTranslatorRule rule = mock(SQLTranslatorRule.class);
         GlobalRuleDefinitionExecutor executor = mock(GlobalRuleDefinitionExecutor.class);
         when(executor.getRuleClass()).thenReturn(SQLTranslatorRule.class);
-        when(rule.getConfiguration()).thenReturn(createSQLTranslatorRuleConfiguration());
+        when(rule.getConfiguration()).thenReturn(new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
         return result;
-    }
-    
-    private SQLTranslatorRuleConfiguration createSQLTranslatorRuleConfiguration() {
-        return new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true);
     }
 }

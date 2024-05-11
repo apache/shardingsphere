@@ -86,7 +86,7 @@ class UnsupportedOperationPreparedStatementTest {
     
     @Test
     void assertSetNClobForReaderAndLength() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setNClob(1, new StringReader(""), 1));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setNClob(1, new StringReader(""), 1L));
     }
     
     @Test
@@ -96,7 +96,7 @@ class UnsupportedOperationPreparedStatementTest {
     
     @Test
     void assertSetNCharacterStreamWithLength() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setNCharacterStream(1, new StringReader(""), 1));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setNCharacterStream(1, new StringReader(""), 1L));
     }
     
     @Test
