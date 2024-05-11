@@ -56,8 +56,8 @@ class EncryptRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     private void assertEncryptAlgorithm(final Map<String, YamlAlgorithmConfiguration> actual) {
         assertThat(actual.size(), is(2));
         assertThat(actual.get("aes_encryptor").getType(), is("AES"));
-        assertThat(actual.get("aes_encryptor").getProps().get("aes-key-value"), is("123456abc"));
+        assertThat(actual.get("aes_encryptor").getProps().getProperty("aes-key-value"), is("123456abc"));
         assertThat(actual.get("assisted_encryptor").getType(), is("AES"));
-        assertThat(actual.get("assisted_encryptor").getProps().get("aes-key-value"), is("123456abc"));
+        assertThat(actual.get("assisted_encryptor").getProps().getProperty("aes-key-value"), is("123456abc"));
     }
 }

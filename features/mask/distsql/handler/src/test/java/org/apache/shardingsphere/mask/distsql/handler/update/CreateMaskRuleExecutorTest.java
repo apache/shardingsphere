@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
 
@@ -120,6 +119,6 @@ class CreateMaskRuleExecutorTest {
         Collection<MaskTableRuleConfiguration> rules = new LinkedList<>();
         rules.add(new MaskTableRuleConfiguration("t_mask", Collections.emptyList()));
         rules.add(new MaskTableRuleConfiguration("t_order", Collections.emptyList()));
-        return new MaskRuleConfiguration(rules, new HashMap<>());
+        return new MaskRuleConfiguration(rules, Collections.emptyMap());
     }
 }

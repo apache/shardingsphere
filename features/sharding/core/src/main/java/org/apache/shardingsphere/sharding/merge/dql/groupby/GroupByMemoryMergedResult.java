@@ -117,9 +117,10 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     }
     
     private List<Boolean> getValueCaseSensitive(final QueryResult queryResult, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
-        List<Boolean> result = new ArrayList<>();
+        int columnCount = queryResult.getMetaData().getColumnCount();
+        List<Boolean> result = new ArrayList<>(columnCount + 1);
         result.add(false);
-        for (int columnIndex = 1; columnIndex <= queryResult.getMetaData().getColumnCount(); columnIndex++) {
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             result.add(getValueCaseSensitiveFromTables(queryResult, selectStatementContext, schema, columnIndex));
         }
         return result;

@@ -103,31 +103,31 @@ class GroupByRowComparatorTest {
     }
     
     @Test
-    void assertCompareToForDecsWithOrderByItemsForMySQL() throws SQLException {
-        assertCompareToForDecsWithOrderByItems(new MySQLSelectStatement());
+    void assertCompareToForDescWithOrderByItemsForMySQL() throws SQLException {
+        assertCompareToForDescWithOrderByItems(new MySQLSelectStatement());
     }
     
     @Test
-    void assertCompareToForDecsWithOrderByItemsForOracle() throws SQLException {
-        assertCompareToForDecsWithOrderByItems(new OracleSelectStatement());
+    void assertCompareToForDescWithOrderByItemsForOracle() throws SQLException {
+        assertCompareToForDescWithOrderByItems(new OracleSelectStatement());
     }
     
     @Test
-    void assertCompareToForDecsWithOrderByItemsForPostgreSQL() throws SQLException {
-        assertCompareToForDecsWithOrderByItems(new PostgreSQLSelectStatement());
+    void assertCompareToForDescWithOrderByItemsForPostgreSQL() throws SQLException {
+        assertCompareToForDescWithOrderByItems(new PostgreSQLSelectStatement());
     }
     
     @Test
-    void assertCompareToForDecsWithOrderByItemsForSQL92() throws SQLException {
-        assertCompareToForDecsWithOrderByItems(new SQL92SelectStatement());
+    void assertCompareToForDescWithOrderByItemsForSQL92() throws SQLException {
+        assertCompareToForDescWithOrderByItems(new SQL92SelectStatement());
     }
     
     @Test
-    void assertCompareToForDecsWithOrderByItemsForSQLServer() throws SQLException {
-        assertCompareToForDecsWithOrderByItems(new SQLServerSelectStatement());
+    void assertCompareToForDescWithOrderByItemsForSQLServer() throws SQLException {
+        assertCompareToForDescWithOrderByItems(new SQLServerSelectStatement());
     }
     
-    private void assertCompareToForDecsWithOrderByItems(final SelectStatement selectStatement) throws SQLException {
+    private void assertCompareToForDescWithOrderByItems(final SelectStatement selectStatement) throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Arrays.asList(

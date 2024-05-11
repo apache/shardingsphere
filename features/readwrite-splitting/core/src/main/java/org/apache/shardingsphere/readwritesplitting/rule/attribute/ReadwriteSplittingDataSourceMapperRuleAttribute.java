@@ -35,7 +35,7 @@ public final class ReadwriteSplittingDataSourceMapperRuleAttribute implements Da
     
     @Override
     public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>();
+        Map<String, Collection<String>> result = new HashMap<>(dataSourceGroupRules.size(), 1F);
         for (ReadwriteSplittingDataSourceGroupRule each : dataSourceGroupRules) {
             result.put(each.getName(), each.getReadwriteSplittingGroup().getAllDataSources());
         }

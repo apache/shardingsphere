@@ -708,12 +708,10 @@ class ShardingRuleTest {
     
     @Test
     void assertIsAllTablesInSameDataSource() {
-        Collection<String> logicTableNames = new LinkedHashSet<>();
-        logicTableNames.add("logic_Table");
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getTables().add(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds_${0}.table_${0..2}"));
         ShardingRule shardingRule = new ShardingRule(ruleConfig, Maps.of("resource0", new MockedDataSource()), mock(InstanceContext.class));
-        assertTrue(shardingRule.isAllTablesInSameDataSource(logicTableNames));
+        assertTrue(shardingRule.isAllTablesInSameDataSource(Collections.singleton("logic_Table")));
     }
     
     private BinaryOperationExpression createBinaryOperationExpression(final ExpressionSegment left, final ExpressionSegment right, final String operator) {

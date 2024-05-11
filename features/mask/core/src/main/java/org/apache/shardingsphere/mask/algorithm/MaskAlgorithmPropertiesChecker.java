@@ -52,7 +52,7 @@ public final class MaskAlgorithmPropertiesChecker {
      */
     public static void checkAtLeastOneChar(final Properties props, final String propKey, final MaskAlgorithm<?, ?> algorithm) {
         checkRequired(props, propKey, algorithm);
-        ShardingSpherePreconditions.checkState(props.getProperty(propKey).length() > 0, () -> new AlgorithmInitializationException(algorithm, "%s's length must be at least one", propKey));
+        ShardingSpherePreconditions.checkNotEmpty(props.getProperty(propKey), () -> new AlgorithmInitializationException(algorithm, "%s's length must be at least one", propKey));
     }
     
     /**

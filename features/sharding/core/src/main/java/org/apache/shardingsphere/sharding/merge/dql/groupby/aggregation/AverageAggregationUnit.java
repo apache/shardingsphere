@@ -50,7 +50,7 @@ public final class AverageAggregationUnit implements AggregationUnit {
     
     @Override
     public Comparable<?> getResult() {
-        if (null == count || BigDecimal.ZERO.equals(count)) {
+        if (null == count || BigDecimal.ZERO.compareTo(count) == 0) {
             return count;
         }
         // TODO use metadata to fetch float number precise for database field

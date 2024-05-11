@@ -120,7 +120,7 @@ public final class ShardingConditions {
     private boolean isSubqueryContainsShardingCondition(final List<ShardingCondition> conditions, final SQLStatementContext sqlStatementContext) {
         Collection<SelectStatement> selectStatements = getSelectStatements(sqlStatementContext);
         if (selectStatements.size() > 1) {
-            Map<Integer, List<ShardingCondition>> startIndexShardingConditions = new HashMap<>();
+            Map<Integer, List<ShardingCondition>> startIndexShardingConditions = new HashMap<>(conditions.size(), 1F);
             for (ShardingCondition each : conditions) {
                 startIndexShardingConditions.computeIfAbsent(each.getStartIndex(), unused -> new LinkedList<>()).add(each);
             }
@@ -183,7 +183,7 @@ public final class ShardingConditions {
     }
     
     private Collection<String> findHintStrategyTables(final SQLStatementContext sqlStatementContext) {
-        Collection<String> result = new HashSet<>();
+        Collection<String> result = new HashSet<>(sqlStatementContext.getTablesContext().getTableNames().size(), 1F);
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             Optional<ShardingTable> shardingTable = rule.findShardingTable(each);
             if (!shardingTable.isPresent()) {

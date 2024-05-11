@@ -31,7 +31,7 @@ class EncryptPredicateInRightValueTokenTest {
     
     @Test
     void assertToStringWithoutPlaceholderWithoutTableOwnerWithIn() {
-        Map<Integer, Object> indexValues = new LinkedHashMap<>();
+        Map<Integer, Object> indexValues = new LinkedHashMap<>(2, 1F);
         indexValues.put(0, "a");
         indexValues.put(1, "b");
         EncryptPredicateInRightValueToken actual = new EncryptPredicateInRightValueToken(0, 0, indexValues, Collections.emptyList());

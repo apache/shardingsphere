@@ -25,12 +25,12 @@ import java.util.Optional;
 public enum ShadowOperationType {
     
     /**
-     * The shadow operation is insert.
+     * Insert shadow operation.
      */
     INSERT,
     
     /**
-     * The shadow operation is delete.
+     * Delete shadow operation.
      */
     DELETE,
     
@@ -40,12 +40,12 @@ public enum ShadowOperationType {
     UPDATE,
     
     /**
-     * The shadow operation is select.
+     * Select shadow operation.
      */
     SELECT,
     
     /**
-     * The shadow operation is SQL hint match.
+     * SQL hint match shadow operation.
      */
     HINT_MATCH;
     
@@ -56,17 +56,17 @@ public enum ShadowOperationType {
      * @return shadow operation type
      */
     public static Optional<ShadowOperationType> contains(final String operationType) {
-        if (ShadowOperationType.INSERT.name().equalsIgnoreCase(operationType)) {
-            return Optional.of(ShadowOperationType.INSERT);
+        if (INSERT.name().equalsIgnoreCase(operationType)) {
+            return Optional.of(INSERT);
         }
-        if (ShadowOperationType.DELETE.name().equalsIgnoreCase(operationType)) {
-            return Optional.of(ShadowOperationType.DELETE);
+        if (DELETE.name().equalsIgnoreCase(operationType)) {
+            return Optional.of(DELETE);
         }
-        if (ShadowOperationType.UPDATE.name().equalsIgnoreCase(operationType)) {
-            return Optional.of(ShadowOperationType.UPDATE);
+        if (UPDATE.name().equalsIgnoreCase(operationType)) {
+            return Optional.of(UPDATE);
         }
-        if (ShadowOperationType.SELECT.name().equalsIgnoreCase(operationType)) {
-            return Optional.of(ShadowOperationType.SELECT);
+        if (SELECT.name().equalsIgnoreCase(operationType)) {
+            return Optional.of(SELECT);
         }
         return Optional.empty();
     }

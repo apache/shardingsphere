@@ -51,14 +51,13 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
     
     private final ConcurrentHashMap<String, EncryptAlgorithm> encryptors;
     
-    private final ConcurrentHashMap<String, EncryptTable> tables;
+    private final ConcurrentHashMap<String, EncryptTable> tables = new ConcurrentHashMap<>();
     
     private final AtomicReference<RuleAttributes> attributes = new AtomicReference<>();
     
     public EncryptRule(final String databaseName, final EncryptRuleConfiguration ruleConfig) {
         this.databaseName = databaseName;
         this.ruleConfig.set(ruleConfig);
-        tables = new ConcurrentHashMap<>();
         encryptors = createEncryptors(ruleConfig);
         for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
             each.getColumns().forEach(this::checkEncryptorType);

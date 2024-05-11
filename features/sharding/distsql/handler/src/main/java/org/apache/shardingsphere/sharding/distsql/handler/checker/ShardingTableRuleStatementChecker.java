@@ -191,7 +191,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static Collection<String> getDataSourceNames(final Collection<String> actualDataNodes) {
-        Collection<String> result = new LinkedHashSet<>();
+        Collection<String> result = new LinkedHashSet<>(actualDataNodes.size(), 1F);
         for (String each : actualDataNodes) {
             result.add(isValidDataNode(each) ? new DataNode(each).getDataSourceName() : each);
         }
@@ -469,7 +469,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static Collection<String> getTableNames(final Collection<String> actualDataNodes) {
-        Collection<String> result = new HashSet<>();
+        Collection<String> result = new HashSet<>(actualDataNodes.size(), 1F);
         for (String each : actualDataNodes) {
             result.add(isValidDataNode(each) ? new DataNode(each).getTableName() : each);
         }

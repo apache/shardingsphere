@@ -76,7 +76,7 @@ public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<Al
                 .flatMap(each -> each.getColumns().stream()).collect(Collectors.toList());
         columns.addAll(toBeAlteredRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).collect(Collectors.toList()));
         Collection<String> inUsedAlgorithmNames = columns.stream().map(MaskColumnRuleConfiguration::getMaskAlgorithm).collect(Collectors.toSet());
-        Map<String, AlgorithmConfiguration> toBeDroppedAlgorithms = new HashMap<>();
+        Map<String, AlgorithmConfiguration> toBeDroppedAlgorithms = new HashMap<>(rule.getConfiguration().getMaskAlgorithms().size(), 1F);
         for (String each : rule.getConfiguration().getMaskAlgorithms().keySet()) {
             if (!inUsedAlgorithmNames.contains(each)) {
                 toBeDroppedAlgorithms.put(each, rule.getConfiguration().getMaskAlgorithms().get(each));

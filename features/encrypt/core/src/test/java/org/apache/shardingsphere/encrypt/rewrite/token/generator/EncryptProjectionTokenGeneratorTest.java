@@ -182,7 +182,7 @@ class EncryptProjectionTokenGeneratorTest {
         merchantNameColumn.setOriginalColumn(new IdentifierValue("merchant_name"));
         SelectStatementContext rightSelectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(rightSelectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Arrays.asList(merchantIdColumn, merchantNameColumn));
-        Map<Integer, SelectStatementContext> subqueryContexts = new LinkedHashMap<>();
+        Map<Integer, SelectStatementContext> subqueryContexts = new LinkedHashMap<>(2, 1F);
         subqueryContexts.put(0, leftSelectStatementContext);
         subqueryContexts.put(1, rightSelectStatementContext);
         when(sqlStatementContext.getSubqueryContexts()).thenReturn(subqueryContexts);

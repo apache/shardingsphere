@@ -21,8 +21,6 @@ import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateEqua
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,9 +29,7 @@ class EncryptPredicateEqualRightValueTokenTest {
     
     @Test
     void assertToStringWithoutPlaceholderWithoutTableOwnerWithEqual() {
-        Map<Integer, Object> indexValues = new LinkedHashMap<>();
-        indexValues.put(0, "a");
-        EncryptPredicateEqualRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, indexValues, Collections.emptyList());
+        EncryptPredicateEqualRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, Collections.singletonMap(0, "a"), Collections.emptyList());
         assertThat(actual.toString(), is("'a'"));
     }
     
