@@ -49,7 +49,9 @@
     {"excludeClasses": "org.postgresql.**"},
     {"excludeClasses": "org.robolectric.**"},
     {"excludeClasses": "org.slf4j.**"},
-    {"excludeClasses": "org.testcontainers.**"}
+    {"excludeClasses": "org.testcontainers.**"},
+
+    {"excludeClasses": "org.apache.shardingsphere.test.natived.**"}
   ],
   "regexRules": [
   ]
