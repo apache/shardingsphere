@@ -40,7 +40,7 @@ public final class IndexMetaDataLoader {
     
     /**
      * Load index meta data list.
-     * In a few jdbc implementation(eg. oracle), return value of getIndexInfo contains a statistics record that not a index itself and INDEX_NAME is null.
+     * In a few jdbc implementation(eg. oracle), return value of getIndexInfo contains a statistics record that not an index itself and INDEX_NAME is null.
      * 
      * @param connection connection
      * @param table table name

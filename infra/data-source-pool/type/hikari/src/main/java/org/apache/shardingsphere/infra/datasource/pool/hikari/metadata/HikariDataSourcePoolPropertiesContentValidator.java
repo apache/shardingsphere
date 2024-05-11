@@ -56,7 +56,7 @@ public final class HikariDataSourcePoolPropertiesContentValidator implements Dat
     private void validateIdleTimeout(final Map<String, Object> allLocalProps) {
         if (isExisted(allLocalProps, "idleTimeout")) {
             long idleTimeout = Long.parseLong(allLocalProps.get("idleTimeout").toString());
-            Preconditions.checkState(idleTimeout >= 0, "idleTimeout can not be negative.");
+            Preconditions.checkState(idleTimeout >= 0L, "idleTimeout can not be negative.");
         }
     }
     
@@ -85,7 +85,7 @@ public final class HikariDataSourcePoolPropertiesContentValidator implements Dat
         if (!isExisted(allLocalProps, "keepaliveTime")) {
             return;
         }
-        int keepAliveTime = Integer.parseInt(allLocalProps.get("keepaliveTime").toString());
+        long keepAliveTime = Long.parseLong(allLocalProps.get("keepaliveTime").toString());
         if (0 == keepAliveTime) {
             return;
         }

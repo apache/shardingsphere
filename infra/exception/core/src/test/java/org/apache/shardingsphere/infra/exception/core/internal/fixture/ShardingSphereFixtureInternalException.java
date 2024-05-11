@@ -21,19 +21,19 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.internal.ShardingSphereInternalException;
 
 @NoArgsConstructor
-public final class ShardingSphereInternalExceptionFixture extends ShardingSphereInternalException {
+public final class ShardingSphereFixtureInternalException extends ShardingSphereInternalException {
     
     private static final long serialVersionUID = 3759417279204541147L;
     
-    public ShardingSphereInternalExceptionFixture(final String message) {
+    public ShardingSphereFixtureInternalException(final String message) {
         super("Fixture error message: %s", message);
     }
     
-    public ShardingSphereInternalExceptionFixture(final String message, final Exception cause) {
+    public ShardingSphereFixtureInternalException(final String message, final Exception cause) {
         super(message, cause);
     }
     
-    public ShardingSphereInternalExceptionFixture(final Exception cause) {
+    public ShardingSphereFixtureInternalException(final Exception cause) {
         super(cause);
     }
 }

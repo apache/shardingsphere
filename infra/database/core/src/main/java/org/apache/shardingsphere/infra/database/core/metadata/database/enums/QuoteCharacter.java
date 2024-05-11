@@ -43,7 +43,7 @@ public enum QuoteCharacter {
     
     NONE("", "");
     
-    private static final Map<Character, QuoteCharacter> BY_FIRST_CHAR = new HashMap<>(QuoteCharacter.values().length - 1, 1L);
+    private static final Map<Character, QuoteCharacter> BY_FIRST_CHAR = new HashMap<>(values().length - 1, 1F);
     
     static {
         for (QuoteCharacter each : values()) {

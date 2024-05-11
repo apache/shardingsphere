@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.exception.core.external;
 
-import org.apache.shardingsphere.infra.exception.core.external.fixture.ShardingSphereExternalExceptionFixture;
+import org.apache.shardingsphere.infra.exception.core.external.fixture.ShardingSphereFixtureExternalException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,17 +28,17 @@ class ShardingSphereExternalExceptionTest {
     
     @Test
     void assertGetMessageWithNoArgsConstructor() {
-        assertNull(new ShardingSphereExternalExceptionFixture().getMessage());
+        assertNull(new ShardingSphereFixtureExternalException().getMessage());
     }
     
     @Test
     void assertGetMessage() {
-        assertThat(new ShardingSphereExternalExceptionFixture("Test").getMessage(), is("Test"));
+        assertThat(new ShardingSphereFixtureExternalException("Test").getMessage(), is("Test"));
     }
     
     @Test
     void assertGetCauseWithMessage() {
         RuntimeException cause = new RuntimeException("Test");
-        assertThat(new ShardingSphereExternalExceptionFixture("Test", cause).getCause(), is(cause));
+        assertThat(new ShardingSphereFixtureExternalException("Test", cause).getCause(), is(cause));
     }
 }

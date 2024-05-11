@@ -45,7 +45,7 @@ public final class LiteralInlineExpressionParser implements InlineExpressionPars
     }
     
     private List<String> split(final String inlineExpression) {
-        List<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<>(inlineExpression.length());
         StringBuilder segment = new StringBuilder();
         for (int i = 0; i < inlineExpression.length(); i++) {
             char each = inlineExpression.charAt(i);

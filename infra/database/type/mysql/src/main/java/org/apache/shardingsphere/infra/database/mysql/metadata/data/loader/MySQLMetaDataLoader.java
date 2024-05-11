@@ -181,18 +181,18 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
                         tableToIndex.put(tableName, new HashMap<>());
                     }
                     Map<String, IndexMetaData> indexMap = tableToIndex.get(tableName);
-                    if (!indexMap.containsKey(indexName)) {
+                    if (indexMap.containsKey(indexName)) {
+                        indexMap.get(indexName).getColumns().add(resultSet.getString("COLUMN_NAME"));
+                    } else {
                         IndexMetaData indexMetaData = new IndexMetaData(indexName);
                         indexMetaData.getColumns().add(resultSet.getString("COLUMN_NAME"));
                         indexMetaData.setUnique("0".equals(resultSet.getString("NON_UNIQUE")));
                         indexMap.put(indexName, indexMetaData);
-                    } else {
-                        indexMap.get(indexName).getColumns().add(resultSet.getString("COLUMN_NAME"));
                     }
                 }
             }
         }
-        Map<String, Collection<IndexMetaData>> result = new HashMap<>(tableToIndex.size(), 1);
+        Map<String, Collection<IndexMetaData>> result = new HashMap<>(tableToIndex.size(), 1F);
         for (Entry<String, Map<String, IndexMetaData>> entry : tableToIndex.entrySet()) {
             result.put(entry.getKey(), entry.getValue().values());
         }

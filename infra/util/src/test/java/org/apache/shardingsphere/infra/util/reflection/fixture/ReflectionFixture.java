@@ -22,7 +22,7 @@ import lombok.Getter;
 @Getter
 public final class ReflectionFixture {
     
-    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    @SuppressWarnings("FieldMayBeFinal")
     @Getter
     private static String staticValue = "static_value";
     

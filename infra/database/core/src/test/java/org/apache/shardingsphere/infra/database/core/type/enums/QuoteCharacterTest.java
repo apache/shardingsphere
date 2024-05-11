@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.database.core.type.enums;
 
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,37 +29,37 @@ class QuoteCharacterTest {
     
     @Test
     void assertGetQuoteCharacterWithNullValue() {
-        assertThat(QuoteCharacter.getQuoteCharacter(null), CoreMatchers.is(QuoteCharacter.NONE));
+        assertThat(QuoteCharacter.getQuoteCharacter(null), is(QuoteCharacter.NONE));
     }
     
     @Test
     void assertGetQuoteCharacterWithEmptyValue() {
-        assertThat(QuoteCharacter.getQuoteCharacter(""), CoreMatchers.is(QuoteCharacter.NONE));
+        assertThat(QuoteCharacter.getQuoteCharacter(""), is(QuoteCharacter.NONE));
     }
     
     @Test
     void assertGetQuoteCharacterWithNone() {
-        assertThat(QuoteCharacter.getQuoteCharacter("tbl"), CoreMatchers.is(QuoteCharacter.NONE));
+        assertThat(QuoteCharacter.getQuoteCharacter("tbl"), is(QuoteCharacter.NONE));
     }
     
     @Test
     void assertGetQuoteCharacterWithBackQuote() {
-        assertThat(QuoteCharacter.getQuoteCharacter("`tbl`"), CoreMatchers.is(QuoteCharacter.BACK_QUOTE));
+        assertThat(QuoteCharacter.getQuoteCharacter("`tbl`"), is(QuoteCharacter.BACK_QUOTE));
     }
     
     @Test
     void assertGetQuoteCharacterWithSingleQuote() {
-        assertThat(QuoteCharacter.getQuoteCharacter("'tbl'"), CoreMatchers.is(QuoteCharacter.SINGLE_QUOTE));
+        assertThat(QuoteCharacter.getQuoteCharacter("'tbl'"), is(QuoteCharacter.SINGLE_QUOTE));
     }
     
     @Test
     void assertGetQuoteCharacterWithQuote() {
-        assertThat(QuoteCharacter.getQuoteCharacter("\"tbl\""), CoreMatchers.is(QuoteCharacter.QUOTE));
+        assertThat(QuoteCharacter.getQuoteCharacter("\"tbl\""), is(QuoteCharacter.QUOTE));
     }
     
     @Test
     void assertGetQuoteCharacterWithBrackets() {
-        assertThat(QuoteCharacter.getQuoteCharacter("[tbl]"), CoreMatchers.is(QuoteCharacter.BRACKETS));
+        assertThat(QuoteCharacter.getQuoteCharacter("[tbl]"), is(QuoteCharacter.BRACKETS));
     }
     
     @Test

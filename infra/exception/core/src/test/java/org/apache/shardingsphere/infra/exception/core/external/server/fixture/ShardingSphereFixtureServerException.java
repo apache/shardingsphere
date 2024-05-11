@@ -19,15 +19,15 @@ package org.apache.shardingsphere.infra.exception.core.external.server.fixture;
 
 import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
 
-public final class ShardingSphereServerExceptionFixture extends ShardingSphereServerException {
+public final class ShardingSphereFixtureServerException extends ShardingSphereServerException {
     
     private static final long serialVersionUID = 4263474713534006256L;
     
-    public ShardingSphereServerExceptionFixture() {
+    public ShardingSphereFixtureServerException() {
         super("FIXTURE", 1, "Fixture error message");
     }
     
-    public ShardingSphereServerExceptionFixture(final Exception cause) {
+    public ShardingSphereFixtureServerException(final Exception cause) {
         super("FIXTURE", 1, "Fixture error message.", cause);
     }
 }

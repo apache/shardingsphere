@@ -44,7 +44,7 @@ public final class DataSourcePoolPropertiesValidator {
      * @return data source name and exception map
      */
     public static Map<String, Exception> validate(final Map<String, DataSourcePoolProperties> propsMap) {
-        Map<String, Exception> result = new LinkedHashMap<>();
+        Map<String, Exception> result = new LinkedHashMap<>(propsMap.size(), 1F);
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             try {
                 validateProperties(entry.getKey(), entry.getValue());

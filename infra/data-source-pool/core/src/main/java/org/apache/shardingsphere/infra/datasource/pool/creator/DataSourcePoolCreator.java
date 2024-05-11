@@ -50,7 +50,7 @@ public final class DataSourcePoolCreator {
      * @return created data sources
      */
     public static Map<String, DataSource> create(final Map<String, DataSourcePoolProperties> propsMap, final boolean cacheEnabled) {
-        Map<String, DataSource> result = new LinkedHashMap<>();
+        Map<String, DataSource> result = new LinkedHashMap<>(propsMap.size(), 1F);
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             result.put(entry.getKey(), create(entry.getKey(), entry.getValue(), cacheEnabled, result.values()));
         }

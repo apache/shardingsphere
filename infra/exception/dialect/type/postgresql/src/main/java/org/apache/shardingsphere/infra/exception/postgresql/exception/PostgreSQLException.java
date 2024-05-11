@@ -36,7 +36,7 @@ public final class PostgreSQLException extends SQLException {
     
     public PostgreSQLException(final String msg, final String state) {
         super(msg, state);
-        this.serverErrorMessage = null;
+        serverErrorMessage = null;
     }
     
     public PostgreSQLException(final ServerErrorMessage serverErrorMessage) {
@@ -57,8 +57,8 @@ public final class PostgreSQLException extends SQLException {
         
         public ServerErrorMessage(final String severity, final VendorError vendorError, final Object... reasonArgs) {
             this.severity = severity;
-            this.sqlState = vendorError.getSqlState().getValue();
-            this.message = String.format(vendorError.getReason(), reasonArgs);
+            sqlState = vendorError.getSqlState().getValue();
+            message = String.format(vendorError.getReason(), reasonArgs);
         }
         
         @Override
