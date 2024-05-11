@@ -71,7 +71,7 @@ public final class ProjectionsSegmentBinder {
             return ShorthandProjectionSegmentBinder.bind((ShorthandProjectionSegment) projectionSegment, boundedTableSegment, tableBinderContexts);
         }
         if (projectionSegment instanceof SubqueryProjectionSegment) {
-            Map<String, TableSegmentBinderContext> newOuterTableBinderContexts = new LinkedHashMap<>();
+            Map<String, TableSegmentBinderContext> newOuterTableBinderContexts = new LinkedHashMap<>(outerTableBinderContexts.size() + tableBinderContexts.size(), 1F);
             newOuterTableBinderContexts.putAll(outerTableBinderContexts);
             newOuterTableBinderContexts.putAll(tableBinderContexts);
             return SubqueryProjectionSegmentBinder.bind((SubqueryProjectionSegment) projectionSegment, statementBinderContext, newOuterTableBinderContexts);

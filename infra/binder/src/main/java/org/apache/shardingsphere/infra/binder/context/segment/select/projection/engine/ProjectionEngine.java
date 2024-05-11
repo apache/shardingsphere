@@ -100,7 +100,7 @@ public final class ProjectionEngine {
     
     private ShorthandProjection createProjection(final ShorthandProjectionSegment projectionSegment) {
         IdentifierValue owner = projectionSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null);
-        Collection<Projection> projections = new LinkedHashSet<>();
+        Collection<Projection> projections = new LinkedHashSet<>(projectionSegment.getActualProjectionSegments().size(), 1F);
         projectionSegment.getActualProjectionSegments().forEach(each -> createProjection(each).ifPresent(projections::add));
         return new ShorthandProjection(owner, projections);
     }
