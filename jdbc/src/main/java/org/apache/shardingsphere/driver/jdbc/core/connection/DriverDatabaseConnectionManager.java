@@ -122,7 +122,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
     
     private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap(final Collection<InstanceMetaData> instances, final Collection<ShardingSphereUser> users,
                                                                                     final DataSourcePoolProperties propsSample, final String schema) {
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>();
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(instances.size(), 1F);
         for (InstanceMetaData each : instances) {
             result.put(each.getId(), createDataSourcePoolProperties((ProxyInstanceMetaData) each, users, propsSample, schema));
         }

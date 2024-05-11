@@ -171,7 +171,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     private int accumulate() throws SQLException {
-        long result = 0;
+        long result = 0L;
         boolean hasResult = false;
         for (Statement each : getRoutedStatements()) {
             int updateCount = each.getUpdateCount();

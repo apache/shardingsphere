@@ -42,7 +42,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -71,11 +71,9 @@ class DriverStateContextTest {
     }
     
     private Map<String, ShardingSphereDatabase> mockDatabases() {
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS);
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        result.put(DefaultDatabase.LOGIC_NAME, database);
-        return result;
+        return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
     }
     
     @Test

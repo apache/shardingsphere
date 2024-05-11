@@ -191,15 +191,15 @@ class ResultSetGetterAdapterTest {
     @Test
     void assertGetBytesForColumnIndex() throws SQLException {
         MergedResult mergedResult = mock(MergedResult.class);
-        when(mergedResult.getValue(1, byte[].class)).thenReturn(new byte[]{1});
-        assertThat(mockShardingSphereResultSet(mergedResult).getBytes(1), is(new byte[]{1}));
+        when(mergedResult.getValue(1, byte[].class)).thenReturn(new byte[]{(byte) 1});
+        assertThat(mockShardingSphereResultSet(mergedResult).getBytes(1), is(new byte[]{(byte) 1}));
     }
     
     @Test
     void assertGetBytesForColumnLabel() throws SQLException {
         MergedResult mergedResult = mock(MergedResult.class);
-        when(mergedResult.getValue(1, byte[].class)).thenReturn(new byte[]{1});
-        assertThat(mockShardingSphereResultSet(mergedResult).getBytes("col"), is(new byte[]{1}));
+        when(mergedResult.getValue(1, byte[].class)).thenReturn(new byte[]{(byte) 1});
+        assertThat(mockShardingSphereResultSet(mergedResult).getBytes("col"), is(new byte[]{(byte) 1}));
     }
     
     @Test

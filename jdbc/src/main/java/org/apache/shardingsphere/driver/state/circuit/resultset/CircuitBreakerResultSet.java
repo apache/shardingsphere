@@ -117,32 +117,32 @@ public final class CircuitBreakerResultSet extends AbstractUnsupportedOperationR
     
     @Override
     public long getLong(final int columnIndex) {
-        return 0;
+        return 0L;
     }
     
     @Override
     public long getLong(final String columnLabel) {
-        return 0;
+        return 0L;
     }
     
     @Override
     public float getFloat(final int columnIndex) {
-        return 0;
+        return 0F;
     }
     
     @Override
     public float getFloat(final String columnLabel) {
-        return 0;
+        return 0F;
     }
     
     @Override
     public double getDouble(final int columnIndex) {
-        return 0;
+        return 0D;
     }
     
     @Override
     public double getDouble(final String columnLabel) {
-        return 0;
+        return 0D;
     }
     
     @Override
