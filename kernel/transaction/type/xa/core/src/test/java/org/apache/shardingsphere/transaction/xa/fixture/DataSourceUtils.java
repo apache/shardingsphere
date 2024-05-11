@@ -61,8 +61,8 @@ public final class DataSourceUtils {
         result.setPassword("root");
         result.setMaximumPoolSize(10);
         result.setMinimumIdle(2);
-        result.setConnectionTimeout(15 * 1000L);
-        result.setIdleTimeout(40 * 1000L);
+        result.setConnectionTimeout(15L * 1000L);
+        result.setIdleTimeout(40L * 1000L);
         return result;
     }
     

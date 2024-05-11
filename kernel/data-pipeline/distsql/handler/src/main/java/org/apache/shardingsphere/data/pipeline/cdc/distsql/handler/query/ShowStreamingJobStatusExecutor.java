@@ -67,7 +67,7 @@ public final class ShowStreamingJobStatusExecutor implements DistSQLQueryExecuto
     }
     
     private static Optional<Long> getIncrementalIdleSeconds(final TransmissionJobItemProgress jobItemProgress, final TransmissionJobItemInfo transmissionJobItemInfo, final long currentTimeMillis) {
-        if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
+        if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0L) {
             long latestActiveTimeMillis = Math.max(transmissionJobItemInfo.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
             return Optional.of(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
         }

@@ -126,6 +126,6 @@ public final class DataConsistencyCheckUtils {
                 decimalTwo = another;
             }
         }
-        return decimalOne.equals(decimalTwo);
+        return 0 == decimalOne.compareTo(decimalTwo);
     }
 }

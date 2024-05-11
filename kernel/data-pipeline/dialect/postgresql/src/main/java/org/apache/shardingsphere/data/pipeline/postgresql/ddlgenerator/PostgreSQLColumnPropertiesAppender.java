@@ -221,7 +221,7 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
             name = name.substring(1, name.length() - 1);
         }
         Integer typmod = (Integer) column.get("atttypmod");
-        String length = -1 != typmod ? checkTypmod(typmod, name) : "";
+        String length = -1 == typmod ? "" : checkTypmod(typmod, name);
         return getFullTypeValue(name, schema, length, numdims == 1 ? "[]" : "");
     }
     

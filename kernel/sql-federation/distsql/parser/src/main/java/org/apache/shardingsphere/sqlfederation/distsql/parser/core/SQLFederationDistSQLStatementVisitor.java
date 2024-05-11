@@ -42,7 +42,7 @@ public final class SQLFederationDistSQLStatementVisitor extends SQLFederationDis
     
     @Override
     public ASTNode visitAlterSQLFederationRule(final AlterSQLFederationRuleContext ctx) {
-        return super.visit(ctx.sqlFederationRuleDefinition());
+        return visit(ctx.sqlFederationRuleDefinition());
     }
     
     @Override

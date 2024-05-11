@@ -72,7 +72,7 @@ public final class CDCJobType implements PipelineJobType {
     @Override
     public PipelineDataConsistencyChecker buildDataConsistencyChecker(final PipelineJobConfiguration jobConfig, final TransmissionProcessContext processContext,
                                                                       final ConsistencyCheckJobItemProgressContext progressContext) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("");
     }
     
     @Override

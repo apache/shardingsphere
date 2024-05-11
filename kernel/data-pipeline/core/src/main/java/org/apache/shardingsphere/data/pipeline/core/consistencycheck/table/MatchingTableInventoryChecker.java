@@ -62,7 +62,7 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
     @Override
     public TableDataConsistencyCheckResult checkSingleTableInventoryData() {
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(param.getJobId()) + "-matching-check-%d");
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60L, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         try {
             return checkSingleTableInventoryData(param, executor);
         } finally {

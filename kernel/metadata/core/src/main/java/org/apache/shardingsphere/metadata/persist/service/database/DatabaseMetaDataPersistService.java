@@ -48,8 +48,8 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
     public DatabaseMetaDataPersistService(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
         this.repository = repository;
         this.metaDataVersionPersistService = metaDataVersionPersistService;
-        this.tableMetaDataPersistService = new TableMetaDataPersistService(repository, metaDataVersionPersistService);
-        this.viewMetaDataPersistService = new ViewMetaDataPersistService(repository, metaDataVersionPersistService);
+        tableMetaDataPersistService = new TableMetaDataPersistService(repository, metaDataVersionPersistService);
+        viewMetaDataPersistService = new ViewMetaDataPersistService(repository, metaDataVersionPersistService);
     }
     
     @Override

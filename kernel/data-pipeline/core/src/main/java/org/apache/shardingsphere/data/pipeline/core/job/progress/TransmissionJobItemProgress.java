@@ -70,7 +70,7 @@ public final class TransmissionJobItemProgress implements PipelineJobItemProgres
     }
     
     private JobItemInventoryTasksProgress getInventoryTasksProgress(final Collection<PipelineTask> inventoryTasks) {
-        Map<String, InventoryTaskProgress> inventoryTaskProgressMap = new HashMap<>();
+        Map<String, InventoryTaskProgress> inventoryTaskProgressMap = new HashMap<>(inventoryTasks.size(), 1F);
         for (PipelineTask each : inventoryTasks) {
             inventoryTaskProgressMap.put(each.getTaskId(), (InventoryTaskProgress) each.getTaskProgress());
         }

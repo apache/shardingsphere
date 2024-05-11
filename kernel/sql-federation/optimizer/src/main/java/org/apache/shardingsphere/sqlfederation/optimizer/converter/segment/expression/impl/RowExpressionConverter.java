@@ -43,7 +43,7 @@ public final class RowExpressionConverter {
      * @return sql node
      */
     public static Optional<SqlNode> convert(final RowExpression segment) {
-        List<SqlNode> sqlNodes = new ArrayList<>();
+        List<SqlNode> sqlNodes = new ArrayList<>(segment.getItems().size());
         for (ExpressionSegment each : segment.getItems()) {
             ExpressionConverter.convert(each).ifPresent(sqlNodes::add);
         }

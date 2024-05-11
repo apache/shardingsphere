@@ -34,7 +34,7 @@ public final class PipelineJobProgressPersistContext {
     
     private final int shardingItem;
     
-    private final AtomicLong unhandledEventCount = new AtomicLong(0);
+    private final AtomicLong unhandledEventCount = new AtomicLong(0L);
     
     private final AtomicBoolean firstExceptionLogged = new AtomicBoolean(false);
 }

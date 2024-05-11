@@ -81,8 +81,8 @@ public final class TransmissionJobManager {
         if (JobStatus.EXECUTE_INCREMENTAL_TASK == jobItemProgress.getStatus() || JobStatus.FINISHED == jobItemProgress.getStatus()) {
             return 100;
         }
-        if (0 != jobItemProgress.getProcessedRecordsCount() && 0 != jobItemProgress.getInventoryRecordsCount()) {
-            return (int) Math.min(100, jobItemProgress.getProcessedRecordsCount() * 100 / jobItemProgress.getInventoryRecordsCount());
+        if (0L != jobItemProgress.getProcessedRecordsCount() && 0L != jobItemProgress.getInventoryRecordsCount()) {
+            return (int) Math.min(100L, jobItemProgress.getProcessedRecordsCount() * 100L / jobItemProgress.getInventoryRecordsCount());
         }
         return 0;
     }

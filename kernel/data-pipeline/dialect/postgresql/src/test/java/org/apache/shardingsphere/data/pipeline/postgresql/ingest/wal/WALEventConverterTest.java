@@ -153,7 +153,7 @@ class WALEventConverterTest {
     
     @Test
     void assertConvertCommitTXEvent() {
-        CommitTXEvent commitTXEvent = new CommitTXEvent(1, 3468L);
+        CommitTXEvent commitTXEvent = new CommitTXEvent(1L, 3468L);
         commitTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
         Record record = walEventConverter.convert(commitTXEvent);
         assertInstanceOf(PlaceholderRecord.class, record);

@@ -33,7 +33,7 @@ public final class ConsistencyCheckDataBuilder {
      * @return built record
      */
     public static Map<String, Object> buildFixedFullTypeRecord(final int id) {
-        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Object> result = new LinkedHashMap<>(15, 1F);
         result.put("id", id);
         result.put("c_bool", true);
         result.put("c_int1", Byte.MAX_VALUE);
@@ -97,13 +97,13 @@ public final class ConsistencyCheckDataBuilder {
             return value + "-";
         }
         if (value instanceof Time) {
-            return new Time(((Time) value).getTime() - 1);
+            return new Time(((Time) value).getTime() - 1L);
         }
         if (value instanceof Date) {
-            return new Date(((Date) value).getTime() - 1);
+            return new Date(((Date) value).getTime() - 1L);
         }
         if (value instanceof Timestamp) {
-            return new Timestamp(((Timestamp) value).getTime() - 1);
+            return new Timestamp(((Timestamp) value).getTime() - 1L);
         }
         if (value instanceof int[]) {
             int[] result = ((int[]) value).clone();

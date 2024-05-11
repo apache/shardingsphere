@@ -71,7 +71,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     
     private final PriorityQueue<CSNRecords> csnRecordsQueue = new PriorityQueue<>(new CSNRecordsComparator());
     
-    private final Cache<String, List<Pair<CDCChannelProgressPair, CDCAckPosition>>> ackCache = Caffeine.newBuilder().maximumSize(10000).expireAfterAccess(5, TimeUnit.MINUTES).build();
+    private final Cache<String, List<Pair<CDCChannelProgressPair, CDCAckPosition>>> ackCache = Caffeine.newBuilder().maximumSize(10000L).expireAfterAccess(5L, TimeUnit.MINUTES).build();
     
     @Override
     protected void runBlocking() {

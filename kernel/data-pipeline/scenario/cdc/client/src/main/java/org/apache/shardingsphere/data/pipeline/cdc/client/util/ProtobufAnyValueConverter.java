@@ -98,7 +98,7 @@ public final class ProtobufAnyValueConverter {
     }
     
     private static Timestamp converProtobufTimestamp(final com.google.protobuf.Timestamp timestamp) {
-        Timestamp result = new Timestamp(timestamp.getSeconds() * 1000);
+        Timestamp result = new Timestamp(timestamp.getSeconds() * 1000L);
         result.setNanos(timestamp.getNanos());
         return result;
     }

@@ -217,7 +217,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
         if (null == paramIndexes) {
             return Collections.emptyList();
         }
-        List<Object> result = new ArrayList<>();
+        List<Object> result = new ArrayList<>(paramIndexes.length);
         for (int each : paramIndexes) {
             result.add(federationContext.getQueryContext().getParameters().get(each));
         }

@@ -101,7 +101,7 @@ public final class PipelineJobIdUtils {
      * @return ElasticJob configuration POJO
      */
     public static JobConfigurationPOJO getElasticJobConfigurationPOJO(final String jobId) {
-        JobConfigurationPOJO result = PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobConfiguration(jobId);
+        JobConfigurationPOJO result = PipelineAPIFactory.getJobConfigurationAPI(parseContextKey(jobId)).getJobConfiguration(jobId);
         ShardingSpherePreconditions.checkNotNull(result, () -> new PipelineJobNotFoundException(jobId));
         return result;
     }

@@ -68,7 +68,7 @@ class SQLStatementCompilerIT {
     
     @BeforeEach
     void init() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>();
+        Map<String, ShardingSphereTable> tables = new HashMap<>(12, 1F);
         tables.put("t_order_federate", createOrderFederationTableMetaData());
         tables.put("t_user_info", createUserInfoTableMetaData());
         tables.put("t_order", createTOrderTableMetaData());

@@ -95,7 +95,7 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
         this.channel = channel;
         walEventConverter = new WALEventConverter(dumperContext, metaDataLoader);
         logicalReplication = new OpenGaussLogicalReplication();
-        this.decodeWithTX = dumperContext.isDecodeWithTX();
+        decodeWithTX = dumperContext.isDecodeWithTX();
     }
     
     @SneakyThrows(InterruptedException.class)

@@ -143,7 +143,7 @@ public final class SingleTableLoadUtils {
      * @return data nodes
      */
     public static Collection<DataNode> convertToDataNodes(final String databaseName, final DatabaseType databaseType, final Collection<String> tables) {
-        Collection<DataNode> result = new LinkedHashSet<>();
+        Collection<DataNode> result = new LinkedHashSet<>(tables.size(), 1F);
         for (String each : tables) {
             result.add(new DataNode(databaseName, databaseType, each));
         }

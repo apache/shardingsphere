@@ -54,7 +54,7 @@ public final class CDCDataNodeUtils {
         Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         Optional<SingleRule> singleRule = database.getRuleMetaData().findSingleRule(SingleRule.class);
         Optional<BroadcastRule> broadcastRule = database.getRuleMetaData().findSingleRule(BroadcastRule.class);
-        Map<String, List<DataNode>> result = new HashMap<>();
+        Map<String, List<DataNode>> result = new HashMap<>(tableNames.size(), 1F);
         // TODO support virtual data source name
         for (String each : tableNames) {
             if (singleRule.isPresent() && singleRule.get().getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().containsKey(each)) {

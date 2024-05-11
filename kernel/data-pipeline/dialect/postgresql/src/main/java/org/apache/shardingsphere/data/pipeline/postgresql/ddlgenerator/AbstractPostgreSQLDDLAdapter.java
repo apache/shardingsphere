@@ -65,8 +65,9 @@ public abstract class AbstractPostgreSQLDDLAdapter {
         ResultSetMetaData metaData = resultSet.getMetaData();
         Collection<Map<String, Object>> result = new LinkedList<>();
         while (resultSet.next()) {
-            Map<String, Object> row = new LinkedHashMap<>();
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            int columnCount = metaData.getColumnCount();
+            Map<String, Object> row = new LinkedHashMap<>(columnCount);
+            for (int i = 1; i <= columnCount; i++) {
                 row.put(metaData.getColumnName(i), resultSet.getObject(i));
             }
             result.add(row);
@@ -86,9 +87,10 @@ public abstract class AbstractPostgreSQLDDLAdapter {
     
     private Map<String, Object> getSingleRow(final ResultSet resultSet) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
-        Map<String, Object> result = new LinkedHashMap<>();
+        int columnCount = metaData.getColumnCount();
+        Map<String, Object> result = new LinkedHashMap<>(columnCount);
         if (resultSet.next()) {
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            for (int i = 1; i <= columnCount; i++) {
                 result.put(metaData.getColumnName(i), resultSet.getObject(i));
             }
         }
@@ -102,7 +104,7 @@ public abstract class AbstractPostgreSQLDDLAdapter {
         Collection<Map<String, String>> formatLabels = new LinkedList<>();
         Collection<String> securityLabels = Arrays.stream((String[]) ((Array) data.get("seclabels")).getArray()).collect(Collectors.toList());
         for (String each : securityLabels) {
-            Map<String, String> securityLabel = new LinkedHashMap<>();
+            Map<String, String> securityLabel = new LinkedHashMap<>(2, 1F);
             securityLabel.put("provider", each.substring(0, each.indexOf(SECURITY_LABEL_SPLIT)));
             securityLabel.put("label", each.substring(each.indexOf(SECURITY_LABEL_SPLIT) + 1));
             formatLabels.add(securityLabel);

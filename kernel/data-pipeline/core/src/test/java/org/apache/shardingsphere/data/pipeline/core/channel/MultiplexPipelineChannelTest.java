@@ -84,7 +84,7 @@ class MultiplexPipelineChannelTest {
         MultiplexPipelineChannel channel = new MultiplexPipelineChannel(CHANNEL_NUMBER, TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY"), 10000, ackCallback);
         fetchWithMultiThreads(channel, countDownLatch);
         channel.push(Arrays.asList(records));
-        boolean awaitResult = countDownLatch.await(10, TimeUnit.SECONDS);
+        boolean awaitResult = countDownLatch.await(10L, TimeUnit.SECONDS);
         assertTrue(awaitResult, "await failed");
     }
     

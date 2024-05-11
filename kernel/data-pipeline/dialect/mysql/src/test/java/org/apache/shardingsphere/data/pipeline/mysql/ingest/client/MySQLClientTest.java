@@ -100,7 +100,7 @@ class MySQLClientTest {
     
     @Test
     void assertExecuteUpdate() throws ReflectiveOperationException {
-        MySQLOKPacket expected = new MySQLOKPacket(10, 0, 0);
+        MySQLOKPacket expected = new MySQLOKPacket(10L, 0L, 0);
         Plugins.getMemberAccessor().set(MySQLOKPacket.class.getDeclaredField("affectedRows"), expected, 10L);
         mockChannelResponse(expected);
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);

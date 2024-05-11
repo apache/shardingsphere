@@ -40,6 +40,6 @@ public final class GlobalTableMapEventMapping {
      * @return table map event map
      */
     public static Map<Long, MySQLBinlogTableMapEventPacket> getTableMapEventMap(final String databaseURL) {
-        return TABLE_MAP_EVENT_MAPPING.computeIfAbsent(databaseURL, k -> new ConcurrentHashMap<>());
+        return TABLE_MAP_EVENT_MAPPING.computeIfAbsent(databaseURL, key -> new ConcurrentHashMap<>());
     }
 }

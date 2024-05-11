@@ -42,7 +42,7 @@ class MySQLIngestPositionManagerTest {
     
     private static final long LOG_POSITION = 4L;
     
-    private static final long SERVER_ID = 555555;
+    private static final long SERVER_ID = 555555L;
     
     @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
