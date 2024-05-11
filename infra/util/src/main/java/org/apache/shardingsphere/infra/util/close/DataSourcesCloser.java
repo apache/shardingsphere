@@ -56,7 +56,7 @@ public final class DataSourcesCloser {
     }
     
     private static void throwException(final Collection<Exception> causes) {
-        SQLException sqlException = new SQLException();
+        SQLException sqlException = new SQLException("");
         for (Exception each : causes) {
             sqlException.setNextException(new SQLException(each));
         }

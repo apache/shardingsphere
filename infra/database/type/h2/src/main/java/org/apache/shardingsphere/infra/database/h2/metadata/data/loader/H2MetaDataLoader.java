@@ -158,7 +158,7 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
                 while (resultSet.next()) {
                     String indexName = resultSet.getString("INDEX_NAME");
                     String tableName = resultSet.getString("TABLE_NAME");
-                    result.computeIfAbsent(tableName, k -> new LinkedList<>()).add(indexName);
+                    result.computeIfAbsent(tableName, key -> new LinkedList<>()).add(indexName);
                 }
             }
         }
@@ -180,7 +180,7 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
                     String columnName = resultSet.getString("COLUMN_NAME");
                     String tableName = resultSet.getString("TABLE_NAME");
                     boolean generated = resultSet.getBoolean("IS_GENERATED");
-                    result.computeIfAbsent(tableName, k -> new HashMap<>()).put(columnName, generated);
+                    result.computeIfAbsent(tableName, key -> new HashMap<>()).put(columnName, generated);
                 }
             }
         }

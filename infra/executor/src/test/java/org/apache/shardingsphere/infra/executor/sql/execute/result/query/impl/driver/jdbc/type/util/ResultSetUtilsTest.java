@@ -133,7 +133,7 @@ class ResultSetUtilsTest {
     void assertConvertByteArrayValueSuccess() throws SQLException {
         byte[] bytesValue = {};
         assertThat(ResultSetUtils.convertValue(bytesValue, byte.class), is(bytesValue));
-        assertThat(ResultSetUtils.convertValue(new byte[]{1}, byte.class), is((byte) 1));
+        assertThat(ResultSetUtils.convertValue(new byte[]{(byte) 1}, byte.class), is((byte) 1));
         assertThat(ResultSetUtils.convertValue(Shorts.toByteArray((short) 1), short.class), is((short) 1));
         assertThat(ResultSetUtils.convertValue(Ints.toByteArray(1), int.class), is(1));
         assertThat(ResultSetUtils.convertValue(Longs.toByteArray(1L), long.class), is(1L));
@@ -159,7 +159,7 @@ class ResultSetUtilsTest {
     @Test
     void assertConvertBigDecimalValue() {
         BigDecimal bigDecimal = (BigDecimal) ResultSetUtils.convertBigDecimalValue("12", false, 0);
-        assertThat(bigDecimal, is(BigDecimal.valueOf(12)));
+        assertThat(bigDecimal, is(BigDecimal.valueOf(12L)));
     }
     
     @Test

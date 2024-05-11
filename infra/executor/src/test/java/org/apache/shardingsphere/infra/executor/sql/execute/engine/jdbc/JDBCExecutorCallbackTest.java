@@ -75,7 +75,7 @@ class JDBCExecutorCallbackTest {
                     
                     @Override
                     protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
-                        throw new SQLException();
+                        throw new SQLException("");
                     }
                     
                     @Override
@@ -97,7 +97,7 @@ class JDBCExecutorCallbackTest {
                     
                     @Override
                     protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
-                        throw new SQLException();
+                        throw new SQLException("");
                     }
                     
                     @Override

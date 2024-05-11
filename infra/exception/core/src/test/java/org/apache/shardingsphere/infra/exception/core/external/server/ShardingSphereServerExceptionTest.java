@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.exception.core.external.server;
 
-import org.apache.shardingsphere.infra.exception.core.external.server.fixture.ShardingSphereServerExceptionFixture;
+import org.apache.shardingsphere.infra.exception.core.external.server.fixture.ShardingSphereFixtureServerException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,12 +27,12 @@ class ShardingSphereServerExceptionTest {
     
     @Test
     void assertGetMessage() {
-        assertThat(new ShardingSphereServerExceptionFixture().getMessage(), is("FIXTURE-00001: Fixture error message"));
+        assertThat(new ShardingSphereFixtureServerException().getMessage(), is("FIXTURE-00001: Fixture error message"));
     }
     
     @Test
     void assertGetCause() {
         RuntimeException cause = new RuntimeException("Test");
-        assertThat(new ShardingSphereServerExceptionFixture(cause).getCause(), is(cause));
+        assertThat(new ShardingSphereFixtureServerException(cause).getCause(), is(cause));
     }
 }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -101,12 +102,12 @@ class DataSourcePoolPropertiesTest {
     @SuppressWarnings({"SimplifiableAssertion", "ConstantValue"})
     @Test
     void assertNotEqualsWithNullValue() {
-        assertFalse(new DataSourcePoolProperties(MockedDataSource.class.getName(), new HashMap<>()).equals(null));
+        assertFalse(new DataSourcePoolProperties(MockedDataSource.class.getName(), Collections.emptyMap()).equals(null));
     }
     
     @Test
     void assertNotEqualsWithDifferentDataSourceClassName() {
-        assertThat(new DataSourcePoolProperties("FooDataSourceClass", new HashMap<>()), not(new DataSourcePoolProperties("BarDataSourceClass", new HashMap<>())));
+        assertThat(new DataSourcePoolProperties("FooDataSourceClass", Collections.emptyMap()), not(new DataSourcePoolProperties("BarDataSourceClass", Collections.emptyMap())));
     }
     
     @Test

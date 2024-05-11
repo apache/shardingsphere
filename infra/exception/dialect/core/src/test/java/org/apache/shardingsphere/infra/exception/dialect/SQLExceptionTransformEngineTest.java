@@ -38,14 +38,14 @@ class SQLExceptionTransformEngineTest {
     
     @Test
     void assertToSQLExceptionWithSQLException() {
-        SQLException cause = new SQLException();
+        SQLException cause = new SQLException("");
         assertThat(SQLExceptionTransformEngine.toSQLException(cause, databaseType), is(cause));
     }
     
     @Test
     void assertToSQLExceptionWithShardingSphereSQLException() {
         ShardingSphereSQLException cause = mock(ShardingSphereSQLException.class);
-        SQLException expected = new SQLException();
+        SQLException expected = new SQLException("");
         when(cause.toSQLException()).thenReturn(expected);
         assertThat(SQLExceptionTransformEngine.toSQLException(cause, databaseType), is(expected));
     }

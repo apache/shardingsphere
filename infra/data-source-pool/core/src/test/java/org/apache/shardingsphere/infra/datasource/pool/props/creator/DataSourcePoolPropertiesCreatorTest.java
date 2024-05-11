@@ -116,7 +116,7 @@ class DataSourcePoolPropertiesCreatorTest {
     }
     
     private Map<String, Object> createProperties() {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(5, 1F);
         result.put("driverClassName", MockedDataSource.class.getName());
         result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("username", "root");
@@ -130,8 +130,8 @@ class DataSourcePoolPropertiesCreatorTest {
         assertThat(actual.getMaxLifetimeMilliseconds(), is(180000L));
         assertThat(actual.getMaxPoolSize(), is(30));
         assertThat(actual.getMinPoolSize(), is(10));
-        assertThat(actual.getCustomProperties().get("driverClassName"), is(MockedDataSource.class.getName()));
-        assertThat(actual.getCustomProperties().get("url"), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getCustomProperties().get("maximumPoolSize"), is("-1"));
+        assertThat(actual.getCustomProperties().getProperty("driverClassName"), is(MockedDataSource.class.getName()));
+        assertThat(actual.getCustomProperties().getProperty("url"), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.getCustomProperties().getProperty("maximumPoolSize"), is("-1"));
     }
 }

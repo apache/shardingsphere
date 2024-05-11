@@ -46,7 +46,7 @@ class ShardingSphereURLTest {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            Map<String, String> multiParams = new HashMap<>();
+            Map<String, String> multiParams = new HashMap<>(2, 1F);
             multiParams.put("databaseName", "sharding_db");
             multiParams.put("placeholder-type", "none");
             return Stream.of(Arguments.of("absolutepath:/Users/shardingsphere/config.yaml", "absolutepath:", "/Users/shardingsphere/config.yaml", Collections.emptyMap()),

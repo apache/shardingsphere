@@ -46,7 +46,7 @@ public final class TableMetaData {
     
     public TableMetaData(final String name, final Collection<ColumnMetaData> columns, final Collection<IndexMetaData> indexes, final Collection<ConstraintMetaData> constraints) {
         this.name = name;
-        this.type = TableType.TABLE;
+        type = TableType.TABLE;
         this.columns = columns;
         this.indexes = indexes;
         this.constraints = constraints;

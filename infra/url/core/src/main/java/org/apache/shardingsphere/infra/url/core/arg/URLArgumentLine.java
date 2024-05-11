@@ -48,7 +48,7 @@ public final class URLArgumentLine {
      * @return parsed URL argument line
      */
     public static Optional<URLArgumentLine> parse(final String line) {
-        Matcher matcher = URLArgumentLine.PLACEHOLDER_PATTERN.matcher(line);
+        Matcher matcher = PLACEHOLDER_PATTERN.matcher(line);
         if (!matcher.find()) {
             return Optional.empty();
         }

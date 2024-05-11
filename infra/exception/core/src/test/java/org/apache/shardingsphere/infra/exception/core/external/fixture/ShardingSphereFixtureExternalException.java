@@ -21,15 +21,15 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 
 @NoArgsConstructor
-public final class ShardingSphereExternalExceptionFixture extends ShardingSphereExternalException {
+public final class ShardingSphereFixtureExternalException extends ShardingSphereExternalException {
     
     private static final long serialVersionUID = 4889629532793812626L;
     
-    public ShardingSphereExternalExceptionFixture(final String reason) {
+    public ShardingSphereFixtureExternalException(final String reason) {
         super(reason);
     }
     
-    public ShardingSphereExternalExceptionFixture(final String reason, final Exception cause) {
+    public ShardingSphereFixtureExternalException(final String reason, final Exception cause) {
         super(reason, cause);
     }
 }

@@ -43,7 +43,7 @@ class HikariDataSourcePoolCreatorTest {
     }
     
     private Map<String, Object> createDataSourcePoolProperties() {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(5, 1F);
         result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("driverClassName", MockedDataSource.class.getName());
         result.put("username", "root");

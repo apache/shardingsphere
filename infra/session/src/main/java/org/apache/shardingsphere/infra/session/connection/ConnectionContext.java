@@ -59,7 +59,7 @@ public final class ConnectionContext implements AutoCloseable {
      * @return used data source names
      */
     public Collection<String> getUsedDataSourceNames() {
-        Collection<String> result = new HashSet<>(usedDataSourceProvider.getNames().size(), 1L);
+        Collection<String> result = new HashSet<>(usedDataSourceProvider.getNames().size(), 1F);
         for (String each : usedDataSourceProvider.getNames()) {
             result.add(each.contains(".") ? each.split("\\.")[1] : each);
         }

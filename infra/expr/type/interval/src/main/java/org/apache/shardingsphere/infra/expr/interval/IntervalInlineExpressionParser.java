@@ -99,8 +99,7 @@ public class IntervalInlineExpressionParser implements InlineExpressionParser {
     @Override
     public void init(final Properties props) {
         inlineExpression = props.getProperty(INLINE_EXPRESSION_KEY);
-        Map<String, String> propsMap = Arrays.stream(inlineExpression.split(";"))
-                .collect(Collectors.toMap(string -> string.split("=")[0], string -> string.split("=")[1]));
+        Map<String, String> propsMap = Arrays.stream(inlineExpression.split(";")).collect(Collectors.toMap(key -> key.split("=")[0], value -> value.split("=")[1]));
         prefix = getPrefix(propsMap);
         dateTimeFormatterForSuffixPattern = getSuffixPattern(propsMap);
         startTime = getDateTimeLower(propsMap);
@@ -191,8 +190,8 @@ public class IntervalInlineExpressionParser implements InlineExpressionParser {
     private List<String> convertStringFromMonth() {
         Month startTimeAsMonth = startTime.query(Month::from);
         Month endTimeAsMonth = endTime.query(Month::from);
-        return LongStream.iterate(0, x -> x + stepAmount)
-                .limit((endTimeAsMonth.getValue() - startTimeAsMonth.getValue()) / stepAmount + 1L)
+        return LongStream.iterate(0L, x -> x + stepAmount)
+                .limit(((endTimeAsMonth.getValue() - startTimeAsMonth.getValue()) / stepAmount) + 1L)
                 .parallel()
                 .boxed()
                 .map(startTimeAsMonth::plus)
@@ -202,8 +201,8 @@ public class IntervalInlineExpressionParser implements InlineExpressionParser {
     }
     
     private List<String> convertStringFromTemporal(final Temporal startTimeAsTemporal, final Temporal endTimeAsTemporal) {
-        return LongStream.iterate(0, x -> x + stepAmount)
-                .limit(stepUnit.between(startTimeAsTemporal, endTimeAsTemporal) / stepAmount + 1)
+        return LongStream.iterate(0L, x -> x + stepAmount)
+                .limit(stepUnit.between(startTimeAsTemporal, endTimeAsTemporal) / stepAmount + 1L)
                 .parallel()
                 .boxed()
                 .map(arithmeticSequence -> startTimeAsTemporal.plus(arithmeticSequence, stepUnit))

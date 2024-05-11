@@ -45,9 +45,9 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     private static void buildDefaultProperties() {
-        DEFAULT_PROPS.put("connectionTimeout", 30 * 1000L);
-        DEFAULT_PROPS.put("idleTimeout", 60 * 1000L);
-        DEFAULT_PROPS.put("maxLifetime", 30 * 70 * 1000L);
+        DEFAULT_PROPS.put("connectionTimeout", 30L * 1000L);
+        DEFAULT_PROPS.put("idleTimeout", 60L * 1000L);
+        DEFAULT_PROPS.put("maxLifetime", 30L * 70L * 1000L);
         DEFAULT_PROPS.put("maximumPoolSize", 50);
         DEFAULT_PROPS.put("minimumIdle", 1);
         DEFAULT_PROPS.put("readOnly", false);
