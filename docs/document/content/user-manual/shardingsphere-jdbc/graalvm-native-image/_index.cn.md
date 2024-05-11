@@ -292,25 +292,27 @@ cd ./shardingsphere/
 https://github.com/oracle/graalvm-reachability-metadata 打开新的 issue， 并提交包含依赖的第三方库缺失的 GraalVM Reachability
 Metadata 的 PR。ShardingSphere 在 `shardingsphere-infra-reachability-metadata` 子模块主动托管了部分第三方库的 GraalVM Reachability Metadata。
 
-如果 nativeTest 执行失败， 应为单元测试生成初步的 GraalVM Reachability Metadata，并手动调整以修复 nativeTest。
+如果 nativeTest 执行失败， 应为单元测试生成初步的 GraalVM Reachability Metadata，
+并手动调整 `shardingsphere-infra-reachability-metadata` 子模块的 classpath 的 `META-INF/native-image/org.apache.shardingsphere/shardingsphere-infra-reachability-metadata` 文件夹下的内容以修复 nativeTest。
 如有需要，请使用 `org.junit.jupiter.api.condition.DisabledInNativeImage` 注解或 `org.graalvm.nativeimage.imagecode` 的
 System Property 屏蔽部分单元测试在 GraalVM Native Image 下运行。
 
-ShardingSphere 定义了 `generateMetadata` 的 Maven Profile 用于在 GraalVM JIT Compiler 下携带 GraalVM Tracing Agent 执行单元测试，并在特定目录下生成或合并
-已有的 GraalVM Reachability Metadata 文件。可通过如下 bash 命令简单处理此流程。贡献者仍可能需要手动调整具体的 JSON 条目，并在适当的时候
-调整 Maven Profile 和 GraalVM Tracing Agent 的 Filter 链。
+ShardingSphere 定义了 `generateMetadata` 的 Maven Profile 用于在 GraalVM JIT Compiler 下携带 GraalVM Tracing Agent 执行单元测试，
+并在 `shardingsphere-infra-reachability-metadata` 子模块的 classpath 的 `META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/` 文件夹下，
+生成或覆盖已有的 GraalVM Reachability Metadata 文件。可通过如下 bash 命令简单处理此流程。
+贡献者仍可能需要手动调整具体的 JSON 条目，并适时调整 Maven Profile 和 GraalVM Tracing Agent 的 Filter 链。
+针对 `shardingsphere-infra-reachability-metadata` 子模块，
+手动增删改动的 JSON 条目应位于 `META-INF/native-image/org.apache.shardingsphere/shardingsphere-infra-reachability-metadata/` 文件夹下，
+而 `META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/` 中的条目仅应由 `generateMetadata` 的 Maven Profile 生成。
 
 以下命令仅为 `shardingsphere-test-native` 生成 Conditional 形态的 GraalVM Reachability Metadata 的一个举例。生成的 GraalVM
 Reachability Metadata 位于 `shardingsphere-infra-reachability-metadata` 子模块下。
 
-对于测试类和测试文件独立使用的 GraalVM Reachability Metadata，贡献者应该放置到
-`${user.dir}/test/natived/src/test/resources/META-INF/native-image/shardingsphere-test-native-test-metadata/`
-文件夹下。`${}` 内为相关子模块对应的 POM 4.0 的常规系统变量，自行替换。
+对于测试类和测试文件独立使用的 GraalVM Reachability Metadata，贡献者应该放置到 `shardingsphere-test-native` 子模块的 classpath 的
+`META-INF/native-image/shardingsphere-test-native-test-metadata/` 下。
 
 ```bash
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
 ./mvnw -PgenerateMetadata -DskipNativeTests -e -T1C clean test native:metadata-copy
 ```
-
-请手动删除无任何具体条目的 JSON 文件。

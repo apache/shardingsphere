@@ -50,7 +50,7 @@
     "pattern":"\\Qtest-native/yaml/transactions/base/seata.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"},
-    "pattern":"\\Qfile.conf\\E"
+    "pattern":"\\Qseata-script-client-conf-file.conf\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"},
     "pattern":"\\Qregistry.conf\\E"
