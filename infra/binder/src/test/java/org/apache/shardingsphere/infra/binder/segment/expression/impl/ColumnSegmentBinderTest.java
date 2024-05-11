@@ -45,7 +45,7 @@ class ColumnSegmentBinderTest {
     
     @Test
     void assertBindWithMultiTablesJoinAndNoOwner() {
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
+        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>(2, 1F);
         ColumnSegment boundedOrderIdColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         boundedOrderIdColumn.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
                 new IdentifierValue("t_order"), new IdentifierValue("order_id")));
@@ -68,7 +68,7 @@ class ColumnSegmentBinderTest {
     
     @Test
     void assertBindFromOuterTable() {
-        Map<String, TableSegmentBinderContext> outerTableBinderContexts = new LinkedHashMap<>();
+        Map<String, TableSegmentBinderContext> outerTableBinderContexts = new LinkedHashMap<>(2, 1F);
         ColumnSegment boundedOrderStatusColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
         boundedOrderStatusColumn.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
                 new IdentifierValue("t_order"), new IdentifierValue("status")));

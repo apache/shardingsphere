@@ -37,7 +37,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -51,10 +50,10 @@ class ShorthandProjectionSegmentBinderTest {
     void assertBindWithOwner() {
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
         shorthandProjectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("o")));
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         ColumnProjectionSegment invisibleColumn = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
         invisibleColumn.setVisible(false);
-        tableBinderContexts.put("o", new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
+        Map<String, TableSegmentBinderContext> tableBinderContexts = Collections.singletonMap(
+                "o", new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
         ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(shorthandProjectionSegment, mock(TableSegment.class), tableBinderContexts);
         assertThat(actual.getActualProjectionSegments().size(), is(1));
         ProjectionSegment visibleColumn = actual.getActualProjectionSegments().iterator().next();
@@ -64,10 +63,10 @@ class ShorthandProjectionSegmentBinderTest {
     
     @Test
     void assertBindWithoutOwnerForSimpleTableSegment() {
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         ColumnProjectionSegment invisibleColumn = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
         invisibleColumn.setVisible(false);
-        tableBinderContexts.put("o", new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
+        Map<String, TableSegmentBinderContext> tableBinderContexts = Collections.singletonMap(
+                "o", new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
         SimpleTableSegment boundedTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         boundedTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
         ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(new ShorthandProjectionSegment(0, 0), boundedTableSegment, tableBinderContexts);
@@ -79,10 +78,10 @@ class ShorthandProjectionSegmentBinderTest {
     
     @Test
     void assertBindWithoutOwnerForSubqueryTableSegment() {
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         ColumnProjectionSegment invisibleColumn = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
         invisibleColumn.setVisible(false);
-        tableBinderContexts.put("o", new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
+        Map<String, TableSegmentBinderContext> tableBinderContexts = Collections.singletonMap(
+                "o", new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
         SubqueryTableSegment boundedTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, mock(MySQLSelectStatement.class), ""));
         boundedTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
         ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(new ShorthandProjectionSegment(0, 0), boundedTableSegment, tableBinderContexts);

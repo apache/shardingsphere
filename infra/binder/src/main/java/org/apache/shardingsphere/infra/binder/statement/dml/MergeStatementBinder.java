@@ -184,7 +184,7 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
                 statementBinderContext.getDatabaseType(), statementBinderContext.getVariableNames());
         updateStatementBinderContext.getExternalTableBinderContexts().putAll(statementBinderContext.getExternalTableBinderContexts());
         updateStatementBinderContext.getExternalTableBinderContexts().putAll(sourceTableBinderContexts);
-        Map<ParameterMarkerSegment, ColumnSegmentBoundedInfo> parameterMarkerSegmentBoundedInfos = new LinkedHashMap<>();
+        Map<ParameterMarkerSegment, ColumnSegmentBoundedInfo> parameterMarkerSegmentBoundedInfos = new LinkedHashMap<>(sqlStatement.getSetAssignment().getAssignments().size(), 1F);
         for (ColumnAssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
             List<ColumnSegment> columnSegments = new ArrayList<>(each.getColumns().size());
             each.getColumns().forEach(column -> columnSegments.add(

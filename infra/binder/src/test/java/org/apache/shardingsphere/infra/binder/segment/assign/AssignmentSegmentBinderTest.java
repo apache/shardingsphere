@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -46,14 +45,14 @@ class AssignmentSegmentBinderTest {
     @Test
     void assertBindAssignmentSegment() {
         Collection<ColumnAssignmentSegment> assignments = new LinkedList<>();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         ColumnSegment boundedOrderIdColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         boundedOrderIdColumn.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
                 new IdentifierValue("t_order"), new IdentifierValue("order_id")));
-        tableBinderContexts.put("t_order", new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundedOrderIdColumn))));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         assignments.add(new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new LiteralExpressionSegment(0, 0, 1)));
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);
+        Map<String, TableSegmentBinderContext> tableBinderContexts = Collections.singletonMap(
+                "t_order", new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundedOrderIdColumn))));
         SetAssignmentSegment actual = AssignmentSegmentBinder.bind(setAssignmentSegment, mock(SQLStatementBinderContext.class), tableBinderContexts, Collections.emptyMap());
         assertThat(actual, not(setAssignmentSegment));
         assertThat(actual.getAssignments().iterator().next(), not(setAssignmentSegment.getAssignments().iterator().next()));
