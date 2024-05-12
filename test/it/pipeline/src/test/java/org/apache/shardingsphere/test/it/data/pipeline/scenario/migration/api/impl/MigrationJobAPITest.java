@@ -331,8 +331,8 @@ class MigrationJobAPITest {
         YamlTransmissionJobItemProgress yamlJobItemProgress = new YamlTransmissionJobItemProgress();
         yamlJobItemProgress.setSourceDatabaseType("MySQL");
         yamlJobItemProgress.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK.name());
-        yamlJobItemProgress.setProcessedRecordsCount(100);
-        yamlJobItemProgress.setInventoryRecordsCount(50);
+        yamlJobItemProgress.setProcessedRecordsCount(100L);
+        yamlJobItemProgress.setInventoryRecordsCount(50L);
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey()).getJobItemFacade().getProcess().persist(jobConfig.getJobId(), 0, YamlEngine.marshal(yamlJobItemProgress));
         Collection<TransmissionJobItemInfo> jobItemInfos = transmissionJobManager.getJobItemInfos(jobConfig.getJobId());
         TransmissionJobItemInfo jobItemInfo = jobItemInfos.stream().iterator().next();

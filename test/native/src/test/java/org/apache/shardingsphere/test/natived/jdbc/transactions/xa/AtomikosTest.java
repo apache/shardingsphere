@@ -36,7 +36,7 @@ class AtomikosTest {
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/transactions/xa/atomikos.yaml");
         DataSource dataSource = new HikariDataSource(config);
         testShardingService = new TestShardingService(dataSource);
-        this.initEnvironment();
+        initEnvironment();
         testShardingService.processSuccess();
         testShardingService.cleanEnvironment();
     }

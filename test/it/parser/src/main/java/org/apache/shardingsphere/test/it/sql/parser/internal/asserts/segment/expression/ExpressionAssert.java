@@ -342,7 +342,7 @@ public final class ExpressionAssert {
         Iterator<ExpectedExpression> expectedIterator = expected.getParameters().iterator();
         Iterator<ExpressionSegment> actualIterator = actual.getParameters().iterator();
         while (expectedIterator.hasNext()) {
-            ExpressionAssert.assertExpression(assertContext, actualIterator.next(), expectedIterator.next());
+            assertExpression(assertContext, actualIterator.next(), expectedIterator.next());
         }
         if (null != expected.getOwner()) {
             OwnerAssert.assertIs(assertContext, actual.getOwner(), expected.getOwner());
@@ -583,7 +583,7 @@ public final class ExpressionAssert {
         Iterator<ExpectedExpression> expectedIterator = expected.getParameters().iterator();
         Iterator<ExpressionSegment> actualIterator = actual.getParameters().iterator();
         while (expectedIterator.hasNext()) {
-            ExpressionAssert.assertExpression(assertContext, actualIterator.next(), expectedIterator.next());
+            assertExpression(assertContext, actualIterator.next(), expectedIterator.next());
         }
     }
     

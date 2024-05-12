@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Insert execute clause assert.
  **/
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class InsertExecClauseAssert {
+public final class InsertExecClauseAssert {
     
     /**
      *  Assert actual execute segment is correct with expected execute clause.

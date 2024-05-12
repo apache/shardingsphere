@@ -30,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class YamlMigrationJobConfigurationSwapperTest {
     
     @Test
-    void assertMarsharlUnmarshal() {
+    void assertMarshalUnmarshal() {
         YamlMigrationJobConfiguration yamlJobConfig = JobConfigurationBuilder.createYamlMigrationJobConfiguration();
         YamlMigrationJobConfigurationSwapper swapper = new YamlMigrationJobConfigurationSwapper();
         MigrationJobConfiguration jobConfig = swapper.swapToObject(yamlJobConfig);

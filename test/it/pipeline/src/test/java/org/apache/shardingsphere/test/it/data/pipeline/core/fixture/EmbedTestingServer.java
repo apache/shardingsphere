@@ -69,10 +69,10 @@ public final class EmbedTestingServer {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            if (!isIgnoredException(ex)) {
-                throw new RuntimeException(ex);
-            } else {
+            if (isIgnoredException(ex)) {
                 log.warn("Start embed zookeeper server got exception: {}", ex.getMessage());
+            } else {
+                throw new RuntimeException(ex);
             }
         } finally {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {

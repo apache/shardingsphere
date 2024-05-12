@@ -175,7 +175,7 @@ Connection failed.
 
 We see that it’s actually due to the authentication protocol.
 
-The psql client requires md5 protocol authentication by default, but because Proxy requires the scram-sha-256 under the openGuass protocol, the negotiation fails and an exception is thrown.
+The psql client requires md5 protocol authentication by default, but because Proxy requires the scram-sha-256 under the openGauss protocol, the negotiation fails and an exception is thrown.
 
 ## Following Steps
 
@@ -229,7 +229,7 @@ Connection succeeded.
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md8.jpeg)
 
-Now we see that `psql` has successfully connected to ShardingSphere-Proxy under the openGuass protocol.
+Now we see that `psql` has successfully connected to ShardingSphere-Proxy under the openGauss protocol.
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md9.jpeg)
 

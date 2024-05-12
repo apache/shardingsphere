@@ -39,9 +39,9 @@ public final class OkHttpUtils {
     
     private OkHttpUtils() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(10, TimeUnit.SECONDS);
-        builder.readTimeout(10, TimeUnit.SECONDS);
-        builder.writeTimeout(10, TimeUnit.SECONDS);
+        builder.connectTimeout(10L, TimeUnit.SECONDS);
+        builder.readTimeout(10L, TimeUnit.SECONDS);
+        builder.writeTimeout(10L, TimeUnit.SECONDS);
         client = builder.build();
     }
     

@@ -53,13 +53,12 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
     
     private final DataSource dataSource;
     
-    private final Map<String, PipelineTableMetaData> tableMetaDataMap;
-    
     private final StandardPipelineTableMetaDataLoader loader;
+    
+    private final Map<String, PipelineTableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
     
     public DataSourceRecordConsumer(final DataSource dataSource, final DatabaseType databaseType) {
         this.dataSource = dataSource;
-        tableMetaDataMap = new ConcurrentHashMap<>();
         loader = new StandardPipelineTableMetaDataLoader(new PipelineDataSourceWrapper(dataSource, databaseType));
     }
     
@@ -79,7 +78,7 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
     private void processRecords(final List<Record> records, final Connection connection) throws SQLException {
         long insertCount = records.stream().filter(each -> DataChangeType.INSERT == each.getDataChangeType()).count();
         if (insertCount == records.size()) {
-            Map<String, List<Record>> recordsMap = new HashMap<>();
+            Map<String, List<Record>> recordsMap = new HashMap<>(records.size(), 1F);
             for (Record each : records) {
                 String key = buildTableNameWithSchema(each.getMetaData().getTable(), each.getMetaData().getSchema());
                 recordsMap.computeIfAbsent(key, ignored -> new LinkedList<>()).add(each);
@@ -182,7 +181,7 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
             case DELETE:
                 return SQLBuilderUtils.buildDeleteSQL(tableName, "order_id");
             default:
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("");
         }
     }
     

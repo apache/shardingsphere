@@ -90,7 +90,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             String schemaTableName = String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME);
             containerComposer.startIncrementTask(new E2EIncrementalTask(containerComposer.getSourceDataSource(), schemaTableName, new SnowflakeKeyGenerateAlgorithm(),
                     containerComposer.getDatabaseType(), 20));
-            TimeUnit.SECONDS.timedJoin(containerComposer.getIncreaseTaskThread(), 30);
+            TimeUnit.SECONDS.timedJoin(containerComposer.getIncreaseTaskThread(), 30L);
             containerComposer.sourceExecuteWithLog(String.format("INSERT INTO %s (order_id, user_id, status) VALUES (10000, 1, 'OK')", schemaTableName));
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
             containerComposer.assertOrderRecordExist(jdbcDataSource, schemaTableName, 10000);

@@ -46,7 +46,7 @@ public class StorageContainerConfiguration {
                                          final Map<String, DatabaseType> databaseTypes, final Map<String, DatabaseType> expectedDatabaseTypes) {
         this.databaseTypes = databaseTypes;
         this.expectedDatabaseTypes = expectedDatabaseTypes;
-        this.scenario = null;
+        scenario = null;
         this.containerCommand = containerCommand;
         this.containerEnvironments = containerEnvironments;
         this.mountedResources = mountedResources;

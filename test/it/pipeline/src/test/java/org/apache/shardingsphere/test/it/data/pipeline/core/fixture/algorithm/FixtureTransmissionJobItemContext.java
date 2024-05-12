@@ -67,7 +67,7 @@ public final class FixtureTransmissionJobItemContext implements TransmissionJobI
     
     @Override
     public long getProcessedRecordsCount() {
-        return 0;
+        return 0L;
     }
     
     @Override
@@ -76,7 +76,7 @@ public final class FixtureTransmissionJobItemContext implements TransmissionJobI
     
     @Override
     public long getInventoryRecordsCount() {
-        return 0;
+        return 0L;
     }
     
     @Override

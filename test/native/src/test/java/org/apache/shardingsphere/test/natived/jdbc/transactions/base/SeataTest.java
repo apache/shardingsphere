@@ -51,7 +51,7 @@ class SeataTest {
             container.start();
             DataSource dataSource = createDataSource();
             testShardingService = new TestShardingService(dataSource);
-            this.initEnvironment();
+            initEnvironment();
             testShardingService.processSuccess();
             testShardingService.cleanEnvironment();
         }

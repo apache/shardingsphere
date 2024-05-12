@@ -258,7 +258,7 @@
 1. Kernel:  Fix use Consul in cluster mode start up failure
 1. DB Discovery: Close heartbeat job when drop discovery rule
 1. Kernel: Fix wrong decide result when execute same sharding condition subquery with SQL federation
-1. Kernel:  Fix priority problem of UNION, INTERSECT, EXCEPT set operation in SQL Federation for PostgreSQL and openGuass dialect
+1. Kernel:  Fix priority problem of UNION, INTERSECT, EXCEPT set operation in SQL Federation for PostgreSQL and openGauss dialect
 1. Kernel:  Fix create view index out of range exception when view contains set operator
 1. Kernel: Add XA resource exceeds length check
 1. Kernel:  Fix transaction support for spring requires_new
