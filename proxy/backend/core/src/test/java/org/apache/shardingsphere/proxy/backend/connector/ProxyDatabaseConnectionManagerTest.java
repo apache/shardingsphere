@@ -255,7 +255,7 @@ class ProxyDatabaseConnectionManagerTest {
     void assertGetConnectionsAndFailedToReplaySessionVariables() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
         Connection connection = null;
-        SQLException expectedException = new SQLException();
+        SQLException expectedException = new SQLException("");
         try {
             connection = mock(Connection.class, RETURNS_DEEP_STUBS);
             when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
@@ -437,7 +437,7 @@ class ProxyDatabaseConnectionManagerTest {
     void assertCloseConnectionsAndFailedToGetDatabaseType() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "default");
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        SQLException expectedException = new SQLException();
+        SQLException expectedException = new SQLException("");
         when(connection.getMetaData().getDatabaseProductName()).thenThrow(expectedException);
         databaseConnectionManager.getCachedConnections().put("", connection);
         Collection<SQLException> actualExceptions = databaseConnectionManager.closeConnections(false);
@@ -449,7 +449,7 @@ class ProxyDatabaseConnectionManagerTest {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "default");
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
-        SQLException expectedException = new SQLException();
+        SQLException expectedException = new SQLException("");
         when(connection.createStatement()).thenThrow(expectedException);
         databaseConnectionManager.getCachedConnections().put("", connection);
         Collection<SQLException> actualExceptions = databaseConnectionManager.closeConnections(false);

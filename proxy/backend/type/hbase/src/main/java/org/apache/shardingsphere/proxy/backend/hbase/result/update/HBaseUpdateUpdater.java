@@ -37,10 +37,10 @@ public final class HBaseUpdateUpdater implements HBaseUpdater {
     public Collection<UpdateResult> executeUpdate(final HBaseOperation operation) throws SQLException {
         if (operation.getOperation() instanceof HBaseUpdateOperation) {
             HBaseExecutor.executeUpdate(operation.getTableName(), table -> table.put(((HBaseUpdateOperation) operation.getOperation()).getPuts()));
-            return Collections.singleton(new UpdateResult(((HBaseUpdateOperation) operation.getOperation()).getPuts().size(), 0));
+            return Collections.singleton(new UpdateResult(((HBaseUpdateOperation) operation.getOperation()).getPuts().size(), 0L));
         }
         HBaseExecutor.executeUpdate(operation.getTableName(), table -> table.put((Put) operation.getOperation()));
-        return Collections.singleton(new UpdateResult(1, 0));
+        return Collections.singleton(new UpdateResult(1, 0L));
     }
     
     @Override

@@ -79,7 +79,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     public void writeQueryData(final ChannelHandlerContext context,
                                final ProxyDatabaseConnectionManager databaseConnectionManager, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
         if (ResponseType.QUERY == queryCommandExecutor.getResponseType() && !context.channel().isActive()) {
-            context.write(new PostgreSQLCommandCompletePacket(PostgreSQLCommand.SELECT.name(), 0));
+            context.write(new PostgreSQLCommandCompletePacket(PostgreSQLCommand.SELECT.name(), 0L));
             return;
         }
         processSimpleQuery(context, databaseConnectionManager, queryCommandExecutor);
@@ -102,7 +102,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     private long writeDataPackets(final ChannelHandlerContext context, final ProxyDatabaseConnectionManager databaseConnectionManager,
                                   final QueryCommandExecutor queryCommandExecutor) throws SQLException {
-        long dataRows = 0;
+        long dataRows = 0L;
         int flushCount = 0;
         int proxyFrontendFlushThreshold = ProxyContext.getInstance()
                 .getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);

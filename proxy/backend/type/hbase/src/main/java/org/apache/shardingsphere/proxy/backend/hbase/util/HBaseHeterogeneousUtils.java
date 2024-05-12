@@ -73,7 +73,7 @@ public final class HBaseHeterogeneousUtils {
     }
     
     /**
-     * Return true if use * in SELECT statement.
+     * Return true if using * in SELECT statement.
      * 
      * @param statementContext select statement context
      * @return is use shorthand projection

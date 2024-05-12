@@ -48,7 +48,7 @@ public final class HBaseRegionReloadUpdater implements HBaseUpdater {
                 HBaseRegionWarmUpContext.getInstance().loadRegionInfo(each, HBaseContext.getInstance().getConnection(each));
             }
         }
-        return Collections.singleton(new UpdateResult(updateCount.get(), 0));
+        return Collections.singleton(new UpdateResult(updateCount.get(), 0L));
     }
     
     private void checkTableExists(final String tableName) {

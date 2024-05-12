@@ -47,7 +47,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -93,11 +92,9 @@ class QueryableRALBackendHandlerTest {
     }
     
     private Map<String, ShardingSphereTable> createTableMap() {
-        Map<String, ShardingSphereTable> result = new HashMap<>();
         Collection<ShardingSphereColumn> columns = Collections.singletonList(new ShardingSphereColumn("order_id", 0, false, false, false, true, false, false));
         Collection<ShardingSphereIndex> indexes = Collections.singletonList(new ShardingSphereIndex("primary"));
-        result.put("t_order", new ShardingSphereTable("t_order", columns, indexes, Collections.emptyList()));
-        return result;
+        return Collections.singletonMap("t_order", new ShardingSphereTable("t_order", columns, indexes, Collections.emptyList()));
     }
     
     private ShowTableMetaDataStatement createSqlStatement() {
