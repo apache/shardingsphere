@@ -78,6 +78,6 @@ public final class ReadwriteSplittingDataSourceChangedProcessor
     
     @Override
     public String getType() {
-        return ReadwriteSplittingRuleNodePathProvider.RULE_TYPE + "." + ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES;
+        return ReadwriteSplittingRuleNodePathProvider.RULE_TYPE + "." + ReadwriteSplittingRuleNodePathProvider.DATA_SOURCE_GROUPS;
     }
 }

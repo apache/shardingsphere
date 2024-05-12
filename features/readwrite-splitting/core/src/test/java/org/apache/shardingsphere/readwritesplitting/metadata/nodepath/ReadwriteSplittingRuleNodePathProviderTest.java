@@ -32,7 +32,7 @@ class ReadwriteSplittingRuleNodePathProviderTest {
         RuleNodePathProvider ruleNodePathProvider = new ReadwriteSplittingRuleNodePathProvider();
         RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
         assertThat(actualRuleNodePath.getNamedItems().size(), is(2));
-        assertTrue(actualRuleNodePath.getNamedItems().containsKey(ReadwriteSplittingRuleNodePathProvider.DATA_SOURCES));
+        assertTrue(actualRuleNodePath.getNamedItems().containsKey(ReadwriteSplittingRuleNodePathProvider.DATA_SOURCE_GROUPS));
         assertTrue(actualRuleNodePath.getNamedItems().containsKey(ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS));
         assertTrue(actualRuleNodePath.getUniqueItems().isEmpty());
         assertThat(actualRuleNodePath.getRoot().getRuleType(), is(ReadwriteSplittingRuleNodePathProvider.RULE_TYPE));
