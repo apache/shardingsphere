@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.traffic.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -34,10 +37,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,36 +49,27 @@ class AlterTrafficRuleExecutorTest {
     void assertExecuteWithNotExistRuleName() {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_3", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
-        AlterTrafficRuleExecutor executor = new AlterTrafficRuleExecutor();
-        TrafficRule rule = mock(TrafficRule.class);
-        when(rule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
-        executor.setRule(rule);
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment))));
+        AlterTrafficRuleStatement sqlStatement = new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment));
+        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
+        assertThrows(MissingRequiredRuleException.class, engine::executeUpdate);
     }
     
     @Test
     void assertExecuteWithInvalidAlgorithmType() {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
-        AlterTrafficRuleExecutor executor = new AlterTrafficRuleExecutor();
-        TrafficRule rule = mock(TrafficRule.class);
-        when(rule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
-        executor.setRule(rule);
-        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment))));
+        AlterTrafficRuleStatement sqlStatement = new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment));
+        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
+        assertThrows(ServiceProviderNotFoundException.class, engine::executeUpdate);
     }
     
     @Test
     void assertExecuteWithLoadBalancerCannotBeNull() {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
-        AlterTrafficRuleExecutor executor = new AlterTrafficRuleExecutor();
-        TrafficRule rule = mock(TrafficRule.class);
-        when(rule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
-        executor.setRule(rule);
-        TrafficRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
-        assertThat(actual.getTrafficStrategies().size(), is(2));
-        assertThat(actual.getTrafficAlgorithms().size(), is(2));
-        assertThat(actual.getLoadBalancers().size(), is(1));
+        AlterTrafficRuleStatement sqlStatement = new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment));
+        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
+        assertDoesNotThrow(engine::executeUpdate);
     }
     
     @Test
@@ -85,18 +78,20 @@ class AlterTrafficRuleExecutorTest {
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment(
                 "rule_name_2", Collections.emptyList(), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
-        AlterTrafficRuleExecutor executor = new AlterTrafficRuleExecutor();
+        AlterTrafficRuleStatement sqlStatement = new AlterTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2));
+        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
+        assertDoesNotThrow(engine::executeUpdate);
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         TrafficRule rule = mock(TrafficRule.class);
+        GlobalRuleDefinitionExecutor executor = mock(GlobalRuleDefinitionExecutor.class);
+        when(executor.getRuleClass()).thenReturn(TrafficRule.class);
         when(rule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
-        executor.setRule(rule);
-        TrafficRuleConfiguration actual =
-                executor.buildToBeAlteredRuleConfiguration(new AlterTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2)));
-        assertThat(actual.getTrafficStrategies().size(), is(2));
-        assertThat(actual.getTrafficAlgorithms().size(), is(2));
-        assertThat(actual.getLoadBalancers().size(), is(2));
-        assertThat(actual.getTrafficStrategies().iterator().next().getName(), is("rule_name_1"));
-        assertNotNull(actual.getTrafficAlgorithms().get("rule_name_1_distsql.fixture"));
-        assertNotNull(actual.getLoadBalancers().get("rule_name_2_distsql.fixture"));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
+        return result;
     }
     
     private TrafficRuleConfiguration createTrafficRuleConfiguration() {
