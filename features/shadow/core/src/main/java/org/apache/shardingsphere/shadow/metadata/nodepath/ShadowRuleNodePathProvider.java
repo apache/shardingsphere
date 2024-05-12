@@ -38,9 +38,10 @@ public final class ShadowRuleNodePathProvider implements RuleNodePathProvider {
     
     public static final String SHADOW_ALGORITHMS = "shadow_algorithms";
     
-    public static final String DEFAULT_ALGORITHM = "default_shadow_algorithm_name";
+    public static final String DEFAULT_SHADOW_ALGORITHM_NAME = "default_shadow_algorithm_name";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Arrays.asList(DATA_SOURCES, TABLES, SHADOW_ALGORITHMS), Collections.singleton(DEFAULT_ALGORITHM));
+    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Arrays.asList(DATA_SOURCES, TABLES, SHADOW_ALGORITHMS),
+            Collections.singleton(DEFAULT_SHADOW_ALGORITHM_NAME));
     
     @Override
     public RuleNodePath getRuleNodePath() {
