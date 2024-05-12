@@ -21,15 +21,15 @@ import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAl
 
 import java.util.List;
 
-public class DistSQLLoadBalanceAlgorithmFixture implements LoadBalanceAlgorithm {
-    
-    @Override
-    public String getType() {
-        return "DISTSQL.FIXTURE";
-    }
+public final class DistSQLLoadBalanceAlgorithmFixture implements LoadBalanceAlgorithm {
     
     @Override
     public String getTargetName(final String groupName, final List<String> availableTargetNames) {
         return "Load Balance Algorithm Fixture";
+    }
+    
+    @Override
+    public String getType() {
+        return "DISTSQL.FIXTURE";
     }
 }
