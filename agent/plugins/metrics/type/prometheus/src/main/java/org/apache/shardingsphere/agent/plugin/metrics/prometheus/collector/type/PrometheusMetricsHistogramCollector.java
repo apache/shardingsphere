@@ -60,13 +60,13 @@ public final class PrometheusMetricsHistogramCollector implements HistogramMetri
             return;
         }
         if (EXP_TYPE_KEY.equals(buckets.get(TYPE_KEY))) {
-            double start = null == buckets.get(START_KEY) ? 1 : Double.parseDouble(buckets.get(START_KEY).toString());
-            double factor = null == buckets.get(FACTOR_KEY) ? 1 : Double.parseDouble(buckets.get(FACTOR_KEY).toString());
+            double start = null == buckets.get(START_KEY) ? 1D : Double.parseDouble(buckets.get(START_KEY).toString());
+            double factor = null == buckets.get(FACTOR_KEY) ? 1D : Double.parseDouble(buckets.get(FACTOR_KEY).toString());
             int count = null == buckets.get(COUNT_KEY) ? 1 : (int) buckets.get(COUNT_KEY);
             builder.exponentialBuckets(start, factor, count);
         } else if (LINEAR_TYPE_KEY.equals(buckets.get(TYPE_KEY))) {
-            double start = null == buckets.get(START_KEY) ? 1 : Double.parseDouble(buckets.get(START_KEY).toString());
-            double width = null == buckets.get(WIDTH_KEY) ? 1 : Double.parseDouble(buckets.get(WIDTH_KEY).toString());
+            double start = null == buckets.get(START_KEY) ? 1D : Double.parseDouble(buckets.get(START_KEY).toString());
+            double width = null == buckets.get(WIDTH_KEY) ? 1D : Double.parseDouble(buckets.get(WIDTH_KEY).toString());
             int count = null == buckets.get(COUNT_KEY) ? 1 : (int) buckets.get(COUNT_KEY);
             builder.linearBuckets(start, width, count);
         }

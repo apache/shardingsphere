@@ -66,7 +66,7 @@ class MySQLTextResultSetRowPacketTest {
     
     @Test
     void assertTimestampWithoutNanos() {
-        long now = System.currentTimeMillis() / 1000 * 1000;
+        long now = System.currentTimeMillis() / 1000L * 1000L;
         Timestamp timestamp = new Timestamp(now);
         MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(Arrays.asList(null, "value", BigDecimal.ONE, new byte[]{}, timestamp));
         actual.write(payload);

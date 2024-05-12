@@ -74,6 +74,6 @@ public final class PostgreSQLBinaryTimestampUtils {
     }
     
     private static long convertToJulianSeconds(final long seconds) {
-        return seconds - TimeUnit.DAYS.toSeconds(10);
+        return seconds - TimeUnit.DAYS.toSeconds(10L);
     }
 }

@@ -37,7 +37,7 @@ class PostgreSQLCommandCompletePacketTest {
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertReadWrite(final String sqlCommand, final String expectedDelimiter) {
-        long rowCount = 1;
+        long rowCount = 1L;
         String expectedString = sqlCommand + expectedDelimiter + rowCount;
         int expectedStringLength = expectedString.length();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufTestUtils.createByteBuf(expectedStringLength + 1), StandardCharsets.ISO_8859_1);

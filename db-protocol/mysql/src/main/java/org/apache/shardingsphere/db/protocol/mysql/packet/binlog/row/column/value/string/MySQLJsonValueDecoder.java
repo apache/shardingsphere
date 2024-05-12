@@ -99,7 +99,7 @@ public final class MySQLJsonValueDecoder {
     
     private static BigInteger readUnsignedLongLE(final ByteBuf byteBuf) {
         long value = byteBuf.readLongLE();
-        return 0 <= value ? BigInteger.valueOf(value) : MAX_BIG_INTEGER_VALUE.add(BigInteger.valueOf(1 + value));
+        return 0L <= value ? BigInteger.valueOf(value) : MAX_BIG_INTEGER_VALUE.add(BigInteger.valueOf(1L + value));
     }
     
     private static void decodeJsonObject(final boolean isSmall, final ByteBuf byteBuf, final StringBuilder stringBuilder) {

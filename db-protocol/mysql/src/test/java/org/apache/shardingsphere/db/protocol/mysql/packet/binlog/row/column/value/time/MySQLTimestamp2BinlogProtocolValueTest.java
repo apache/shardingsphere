@@ -52,7 +52,7 @@ class MySQLTimestamp2BinlogProtocolValueTest {
     
     @Test
     void assertReadWithoutFraction() {
-        int currentSeconds = Long.valueOf(System.currentTimeMillis() / 1000).intValue();
+        int currentSeconds = Long.valueOf(System.currentTimeMillis() / 1000L).intValue();
         when(byteBuf.readInt()).thenReturn(currentSeconds);
         assertThat(new MySQLTimestamp2BinlogProtocolValue().read(columnDef, payload), is(new Timestamp(currentSeconds * 1000L)));
     }
@@ -61,8 +61,8 @@ class MySQLTimestamp2BinlogProtocolValueTest {
     void assertReadWithFraction() {
         columnDef.setColumnMeta(1);
         long currentTimeMillis = 1678795614082L;
-        int currentSeconds = Long.valueOf(currentTimeMillis / 1000).intValue();
-        int currentMilliseconds = Long.valueOf(currentTimeMillis % 100).intValue();
+        int currentSeconds = Long.valueOf(currentTimeMillis / 1000L).intValue();
+        int currentMilliseconds = Long.valueOf(currentTimeMillis % 100L).intValue();
         when(payload.readInt1()).thenReturn(currentMilliseconds);
         when(byteBuf.readInt()).thenReturn(currentSeconds);
         assertThat("currentTimeMillis:" + currentTimeMillis, new MySQLTimestamp2BinlogProtocolValue().read(columnDef, payload), is(new Timestamp(currentSeconds * 1000L + currentMilliseconds * 10L)));

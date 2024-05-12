@@ -46,7 +46,7 @@ class MySQLTimeBinaryProtocolValueTest {
     
     @Test
     void assertReadWithZeroByte() throws SQLException {
-        assertThat(new MySQLTimeBinaryProtocolValue().read(payload, false), is(new Timestamp(0)));
+        assertThat(new MySQLTimeBinaryProtocolValue().read(payload, false), is(new Timestamp(0L)));
     }
     
     @Test
