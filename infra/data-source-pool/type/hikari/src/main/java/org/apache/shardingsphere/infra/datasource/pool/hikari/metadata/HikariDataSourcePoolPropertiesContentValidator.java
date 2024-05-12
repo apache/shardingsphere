@@ -86,7 +86,7 @@ public final class HikariDataSourcePoolPropertiesContentValidator implements Dat
             return;
         }
         long keepAliveTime = Long.parseLong(allLocalProps.get("keepaliveTime").toString());
-        if (0 == keepAliveTime) {
+        if (0L == keepAliveTime) {
             return;
         }
         Preconditions.checkState(keepAliveTime >= MIN_KEEP_ALIVE_TIME_MILLISECONDS, "keepaliveTime can not be less than %s ms.", MIN_KEEP_ALIVE_TIME_MILLISECONDS);
