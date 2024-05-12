@@ -150,7 +150,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
-        setLastMillis(algorithm, timeService.getCurrentMillis() + 2);
+        setLastMillis(algorithm, timeService.getCurrentMillis() + 2L);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L, 20971521L, 25165825L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
         actual.addAll(algorithm.generateKeys(mock(AlgorithmSQLContext.class), DEFAULT_KEY_AMOUNT));
@@ -165,7 +165,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
-        setLastMillis(algorithm, timeService.getCurrentMillis() + 2);
+        setLastMillis(algorithm, timeService.getCurrentMillis() + 2L);
         assertThrows(AlgorithmExecuteException.class, () -> batchGenerate(algorithm));
     }
     
@@ -182,7 +182,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
         setLastMillis(algorithm, timeService.getCurrentMillis());
-        setSequence(algorithm, (1 << DEFAULT_SEQUENCE_BITS) - 1L);
+        setSequence(algorithm, (1L << DEFAULT_SEQUENCE_BITS) - 1L);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 4194305L, 4194306L, 8388608L, 8388609L, 8388610L, 12582913L, 12582914L, 12582915L, 16777216L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
         actual.addAll(algorithm.generateKeys(mock(AlgorithmSQLContext.class), DEFAULT_KEY_AMOUNT));
