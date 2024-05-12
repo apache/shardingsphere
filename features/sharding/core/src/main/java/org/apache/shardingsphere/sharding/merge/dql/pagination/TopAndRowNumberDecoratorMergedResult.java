@@ -42,12 +42,12 @@ public final class TopAndRowNumberDecoratorMergedResult extends DecoratorMergedR
     
     private boolean skipOffset() throws SQLException {
         long end = paginationContext.getActualOffset();
-        for (int i = 0; i < end; i++) {
+        for (long count = 0L; count < end; count++) {
             if (!getMergedResult().next()) {
                 return true;
             }
         }
-        rowNumber = end + 1;
+        rowNumber = end + 1L;
         return false;
     }
     

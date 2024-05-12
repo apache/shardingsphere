@@ -120,7 +120,7 @@ class RowNumberDecoratorMergedResultTest {
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
         TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
         when(topProjectionSegment.getAlias()).thenReturn("row_id");
-        when(topProjectionSegment.getTop()).thenReturn(new NumberLiteralRowNumberValueSegment(0, 0, 4, false));
+        when(topProjectionSegment.getTop()).thenReturn(new NumberLiteralRowNumberValueSegment(0, 0, 4L, false));
         when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
@@ -154,7 +154,7 @@ class RowNumberDecoratorMergedResultTest {
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
         TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
         when(topProjectionSegment.getAlias()).thenReturn("row_id");
-        when(topProjectionSegment.getTop()).thenReturn(new NumberLiteralRowNumberValueSegment(0, 0, 4, true));
+        when(topProjectionSegment.getTop()).thenReturn(new NumberLiteralRowNumberValueSegment(0, 0, 4L, true));
         when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);

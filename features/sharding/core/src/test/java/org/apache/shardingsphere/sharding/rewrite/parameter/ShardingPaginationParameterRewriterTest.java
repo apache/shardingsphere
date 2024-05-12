@@ -44,9 +44,9 @@ class ShardingPaginationParameterRewriterTest {
     
     private static final int TEST_ROW_COUNT_PARAMETER_INDEX = 5;
     
-    private static final long TEST_REVISED_OFFSET = 4;
+    private static final long TEST_REVISED_OFFSET = 4L;
     
-    private static final long TEST_REVISED_ROW_COUNT = 6;
+    private static final long TEST_REVISED_ROW_COUNT = 6L;
     
     private static boolean addOffsetParametersFlag = Boolean.FALSE;
     
