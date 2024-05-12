@@ -625,7 +625,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         }
         if (null != ctx.columnName()) {
             return null == ctx.joinOperator() ? visit(ctx.columnName())
-                    : new OuterJoinExpression(startIndex, stopIndex, (ColumnSegment) visitColumnName(ctx.columnName()), ctx.joinOperator().getText());
+                    : new OuterJoinExpression(startIndex, stopIndex, (ColumnSegment) visitColumnName(ctx.columnName()), ctx.joinOperator().getText(), getOriginalText(ctx));
         }
         if (null != ctx.privateExprOfDb()) {
             return visit(ctx.privateExprOfDb());

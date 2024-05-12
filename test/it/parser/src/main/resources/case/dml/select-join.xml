@@ -574,7 +574,7 @@
             <expr>
                 <binary-operation-expression start-index="47" stop-index="72">
                     <left>
-                        <outer-join-expression start-index="47" stop-index="48">
+                        <outer-join-expression start-index="47" stop-index="59" text="o.order_id(+)">
                             <column name="order_id" start-index="47" stop-index="56">
                                 <owner name="o" start-index="47" stop-index="47" />
                             </column>

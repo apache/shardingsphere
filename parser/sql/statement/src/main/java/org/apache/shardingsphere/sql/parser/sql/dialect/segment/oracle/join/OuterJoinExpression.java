@@ -37,8 +37,10 @@ public class OuterJoinExpression implements ExpressionSegment {
     
     private final String joinOperator;
     
+    private final String text;
+    
     @Override
     public String getText() {
-        return getColumnName().toString();
+        return text;
     }
 }
