@@ -29,7 +29,7 @@ public class DistSQLLoadBalanceAlgorithmFixture implements LoadBalanceAlgorithm 
     }
     
     @Override
-    public String getTargetName(String groupName, List<String> availableTargetNames) {
+    public String getTargetName(final String groupName, final List<String> availableTargetNames) {
         return "Load Balance Algorithm Fixture";
     }
 }
