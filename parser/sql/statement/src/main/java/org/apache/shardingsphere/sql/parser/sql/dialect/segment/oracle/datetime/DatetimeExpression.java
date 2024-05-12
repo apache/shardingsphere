@@ -50,7 +50,7 @@ public final class DatetimeExpression implements ExpressionSegment {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.left = left;
-        this.right = null;
+        right = null;
         this.text = text;
     }
 }

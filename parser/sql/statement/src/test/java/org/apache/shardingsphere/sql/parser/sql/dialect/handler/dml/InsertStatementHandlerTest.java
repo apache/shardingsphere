@@ -46,6 +46,7 @@ class InsertStatementHandlerTest {
         insertStatement.setOnDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.emptyList()));
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement);
         assertTrue(onDuplicateKeyColumnsSegment.isPresent());
+        assertTrue(insertStatement.getOnDuplicateKeyColumns().isPresent());
         assertThat(onDuplicateKeyColumnsSegment.get(), is(insertStatement.getOnDuplicateKeyColumns().get()));
         assertFalse(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(new MySQLInsertStatement()).isPresent());
     }
@@ -56,6 +57,7 @@ class InsertStatementHandlerTest {
         insertStatement.setOnDuplicateKeyColumnsSegment(new OnDuplicateKeyColumnsSegment(0, 0, Collections.emptyList()));
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement);
         assertTrue(onDuplicateKeyColumnsSegment.isPresent());
+        assertTrue(insertStatement.getOnDuplicateKeyColumns().isPresent());
         assertThat(onDuplicateKeyColumnsSegment.get(), is(insertStatement.getOnDuplicateKeyColumns().get()));
         assertFalse(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(new OpenGaussInsertStatement()).isPresent());
     }
@@ -66,6 +68,7 @@ class InsertStatementHandlerTest {
         insertStatement.setOnDuplicateKeyColumnsSegment(new OnDuplicateKeyColumnsSegment(0, 0, Collections.emptyList()));
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement);
         assertTrue(onDuplicateKeyColumnsSegment.isPresent());
+        assertTrue(insertStatement.getOnDuplicateKeyColumns().isPresent());
         assertThat(onDuplicateKeyColumnsSegment.get(), is(insertStatement.getOnDuplicateKeyColumns().get()));
         assertFalse(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(new PostgreSQLInsertStatement()).isPresent());
     }
@@ -83,6 +86,7 @@ class InsertStatementHandlerTest {
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
         Optional<SetAssignmentSegment> setAssignmentSegment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
         assertTrue(setAssignmentSegment.isPresent());
+        assertTrue(insertStatement.getSetAssignment().isPresent());
         assertThat(setAssignmentSegment.get(), is(insertStatement.getSetAssignment().get()));
         assertFalse(InsertStatementHandler.getSetAssignmentSegment(new MySQLInsertStatement()).isPresent());
     }
@@ -102,6 +106,7 @@ class InsertStatementHandlerTest {
         insertStatement.setWithSegment(new WithSegment(0, 0, Collections.emptyList()));
         Optional<WithSegment> withSegment = InsertStatementHandler.getWithSegment(insertStatement);
         assertTrue(withSegment.isPresent());
+        assertTrue(insertStatement.getWithSegment().isPresent());
         assertThat(withSegment.get(), is(insertStatement.getWithSegment().get()));
         assertFalse(InsertStatementHandler.getWithSegment(new PostgreSQLInsertStatement()).isPresent());
     }
@@ -112,6 +117,7 @@ class InsertStatementHandlerTest {
         insertStatement.setWithSegment(new WithSegment(0, 0, Collections.emptyList()));
         Optional<WithSegment> withSegment = InsertStatementHandler.getWithSegment(insertStatement);
         assertTrue(withSegment.isPresent());
+        assertTrue(insertStatement.getWithSegment().isPresent());
         assertThat(withSegment.get(), is(insertStatement.getWithSegment().get()));
         assertFalse(InsertStatementHandler.getWithSegment(new SQLServerInsertStatement()).isPresent());
     }
@@ -122,6 +128,7 @@ class InsertStatementHandlerTest {
         insertStatement.setWithSegment(new WithSegment(0, 0, Collections.emptyList()));
         Optional<WithSegment> withSegment = InsertStatementHandler.getWithSegment(insertStatement);
         assertTrue(withSegment.isPresent());
+        assertTrue(insertStatement.getWithSegment().isPresent());
         assertThat(withSegment.get(), is(insertStatement.getWithSegment().get()));
         assertFalse(InsertStatementHandler.getWithSegment(new OpenGaussInsertStatement()).isPresent());
     }
@@ -139,6 +146,7 @@ class InsertStatementHandlerTest {
         insertStatement.setOutputSegment(new OutputSegment(0, 0));
         Optional<OutputSegment> outputSegment = InsertStatementHandler.getOutputSegment(insertStatement);
         assertTrue(outputSegment.isPresent());
+        assertTrue(insertStatement.getOutputSegment().isPresent());
         assertThat(outputSegment.get(), is(insertStatement.getOutputSegment().get()));
         assertFalse(InsertStatementHandler.getOutputSegment(new SQLServerInsertStatement()).isPresent());
     }
@@ -158,6 +166,7 @@ class InsertStatementHandlerTest {
         insertStatement.setMultiTableInsertIntoSegment(new MultiTableInsertIntoSegment(0, 0));
         Optional<MultiTableInsertIntoSegment> insertMultiTableElementSegment = InsertStatementHandler.getMultiTableInsertIntoSegment(insertStatement);
         assertTrue(insertMultiTableElementSegment.isPresent());
+        assertTrue(insertStatement.getMultiTableInsertIntoSegment().isPresent());
         assertThat(insertMultiTableElementSegment.get(), is(insertStatement.getMultiTableInsertIntoSegment().get()));
         assertFalse(InsertStatementHandler.getMultiTableInsertIntoSegment(new SQLServerInsertStatement()).isPresent());
     }

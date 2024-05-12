@@ -48,6 +48,6 @@ public final class ProcedureCallNameSegment implements SQLSegment {
     
     @Override
     public String toString() {
-        return getPackageSegment().map(s -> s.getIdentifier().getValueWithQuoteCharacters() + ".").orElse("") + identifier.getValueWithQuoteCharacters();
+        return getPackageSegment().map(optional -> optional.getIdentifier().getValueWithQuoteCharacters() + ".").orElse("") + identifier.getValueWithQuoteCharacters();
     }
 }

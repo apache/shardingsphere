@@ -48,8 +48,8 @@ class SQLUtilsTest {
     void assertGetExactlyNumberForBigInteger() {
         assertThat(SQLUtils.getExactlyNumber("10000000000000000000", 10), is(new BigInteger("10000000000000000000")));
         assertThat(SQLUtils.getExactlyNumber("10000000000000000000", 16), is(new BigInteger("75557863725914323419136")));
-        assertThat(SQLUtils.getExactlyNumber(String.valueOf(Long.MIN_VALUE + 1), 10), is(Long.MIN_VALUE + 1));
-        assertThat(SQLUtils.getExactlyNumber(String.valueOf(Long.MAX_VALUE - 1), 10), is(Long.MAX_VALUE - 1));
+        assertThat(SQLUtils.getExactlyNumber(String.valueOf(Long.MIN_VALUE + 1L), 10), is(Long.MIN_VALUE + 1L));
+        assertThat(SQLUtils.getExactlyNumber(String.valueOf(Long.MAX_VALUE - 1L), 10), is(Long.MAX_VALUE - 1L));
     }
     
     @Test

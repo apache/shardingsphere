@@ -102,7 +102,7 @@ public final class ColumnExtractor {
     
     private static void extractColumnSegments(final Collection<ColumnSegment> columnSegments, final AndPredicate andPredicate) {
         for (ExpressionSegment each : andPredicate.getPredicates()) {
-            columnSegments.addAll(ColumnExtractor.extract(each));
+            columnSegments.addAll(extract(each));
         }
     }
     

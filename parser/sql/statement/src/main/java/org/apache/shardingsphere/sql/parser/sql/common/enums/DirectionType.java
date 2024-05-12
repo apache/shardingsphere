@@ -60,9 +60,9 @@ public enum DirectionType {
     
     private static final Collection<DirectionType> ALL_DIRECTION_TYPES = EnumSet.of(ALL, FORWARD_ALL, BACKWARD_ALL);
     
-    private static final Collection<DirectionType> FORWARD_COUNT_DIRECTION_TYPES = EnumSet.of(DirectionType.NEXT, DirectionType.COUNT, DirectionType.FORWARD, DirectionType.FORWARD_COUNT);
+    private static final Collection<DirectionType> FORWARD_COUNT_DIRECTION_TYPES = EnumSet.of(NEXT, COUNT, FORWARD, FORWARD_COUNT);
     
-    private static final Collection<DirectionType> BACKWARD_COUNT_DIRECTION_TYPES = EnumSet.of(DirectionType.PRIOR, DirectionType.BACKWARD, DirectionType.BACKWARD_COUNT);
+    private static final Collection<DirectionType> BACKWARD_COUNT_DIRECTION_TYPES = EnumSet.of(PRIOR, BACKWARD, BACKWARD_COUNT);
     
     private final String name;
     

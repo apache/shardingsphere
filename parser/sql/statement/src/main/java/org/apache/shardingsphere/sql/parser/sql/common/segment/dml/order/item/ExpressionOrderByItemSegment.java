@@ -35,7 +35,7 @@ public final class ExpressionOrderByItemSegment extends TextOrderByItemSegment {
     public ExpressionOrderByItemSegment(final int startIndex, final int stopIndex, final String expression, final OrderDirection orderDirection, final NullsOrderType nullsOrderType) {
         super(startIndex, stopIndex, orderDirection, nullsOrderType);
         this.expression = expression;
-        this.expr = null;
+        expr = null;
     }
     
     public ExpressionOrderByItemSegment(final int startIndex, final int stopIndex, final String expression, final OrderDirection orderDirection, final NullsOrderType nullsOrderType,

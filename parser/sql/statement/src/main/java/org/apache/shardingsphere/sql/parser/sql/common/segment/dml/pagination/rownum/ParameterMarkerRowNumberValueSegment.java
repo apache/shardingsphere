@@ -40,7 +40,7 @@ public final class ParameterMarkerRowNumberValueSegment extends RowNumberValueSe
     
     public ParameterMarkerRowNumberValueSegment(final int startIndex, final int stopIndex, final int paramIndex, final boolean boundOpened) {
         super(startIndex, stopIndex, boundOpened);
-        this.parameterIndex = paramIndex;
+        parameterIndex = paramIndex;
     }
     
     @Override

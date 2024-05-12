@@ -37,7 +37,7 @@ class SQLParserEngineTest {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class);
         when(sqlParserExecutor.parse("")).thenReturn(mock(ParseASTNode.class));
         LoadingCache<String, ParseASTNode> parseTreeCache = Caffeine.newBuilder().softValues()
-                .initialCapacity(128).maximumSize(1024).build(new CacheLoader<String, ParseASTNode>() {
+                .initialCapacity(128).maximumSize(1024L).build(new CacheLoader<String, ParseASTNode>() {
                     
                     @ParametersAreNonnullByDefault
                     @Override

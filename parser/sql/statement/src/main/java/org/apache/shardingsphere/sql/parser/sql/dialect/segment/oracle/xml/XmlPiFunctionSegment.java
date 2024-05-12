@@ -48,7 +48,7 @@ public final class XmlPiFunctionSegment implements ComplexExpressionSegment, Pro
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.functionName = functionName;
-        this.evalNameValueExpr = null;
+        evalNameValueExpr = null;
         this.identifier = identifier;
         this.valueExpr = valueExpr;
         this.text = text;
@@ -58,7 +58,7 @@ public final class XmlPiFunctionSegment implements ComplexExpressionSegment, Pro
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.functionName = functionName;
-        this.identifier = null;
+        identifier = null;
         this.evalNameValueExpr = evalNameValueExpr;
         this.valueExpr = valueExpr;
         this.text = text;

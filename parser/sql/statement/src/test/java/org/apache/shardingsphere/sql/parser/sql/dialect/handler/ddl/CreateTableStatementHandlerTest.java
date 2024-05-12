@@ -58,6 +58,7 @@ class CreateTableStatementHandlerTest {
         sqlServerCreateTableStatement.setSelectStatement(new SQLServerSelectStatement());
         Optional<SelectStatement> actual = CreateTableStatementHandler.getSelectStatement(sqlServerCreateTableStatement);
         assertTrue(actual.isPresent());
+        assertTrue(sqlServerCreateTableStatement.getSelectStatement().isPresent());
         assertThat(actual.get(), is(sqlServerCreateTableStatement.getSelectStatement().get()));
         assertFalse(CreateTableStatementHandler.getSelectStatement(new MySQLCreateTableStatement(false)).isPresent());
         assertFalse(CreateTableStatementHandler.getSelectStatement(new OpenGaussCreateTableStatement(false)).isPresent());

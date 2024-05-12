@@ -57,7 +57,7 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.parameterMarkerIndex = parameterMarkerIndex;
-        this.parameterMarkerType = ParameterMarkerType.QUESTION;
+        parameterMarkerType = ParameterMarkerType.QUESTION;
     }
     
     @Override

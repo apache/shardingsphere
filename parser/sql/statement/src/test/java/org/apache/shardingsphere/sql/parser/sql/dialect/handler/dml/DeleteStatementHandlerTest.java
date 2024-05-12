@@ -46,6 +46,7 @@ class DeleteStatementHandlerTest {
         deleteStatement.setOrderBy(new OrderBySegment(0, 0, Collections.emptyList()));
         Optional<OrderBySegment> orderBySegment = DeleteStatementHandler.getOrderBySegment(deleteStatement);
         assertTrue(orderBySegment.isPresent());
+        assertTrue(deleteStatement.getOrderBy().isPresent());
         assertThat(orderBySegment.get(), is(deleteStatement.getOrderBy().get()));
         assertFalse(DeleteStatementHandler.getOrderBySegment(new MySQLDeleteStatement()).isPresent());
     }
@@ -65,6 +66,7 @@ class DeleteStatementHandlerTest {
         deleteStatement.setLimit(new LimitSegment(0, 0, null, null));
         Optional<LimitSegment> limitSegment = DeleteStatementHandler.getLimitSegment(deleteStatement);
         assertTrue(limitSegment.isPresent());
+        assertTrue(deleteStatement.getLimit().isPresent());
         assertThat(limitSegment.get(), is(deleteStatement.getLimit().get()));
         assertFalse(DeleteStatementHandler.getLimitSegment(new MySQLDeleteStatement()).isPresent());
     }
@@ -84,6 +86,7 @@ class DeleteStatementHandlerTest {
         deleteStatement.setOutputSegment(new OutputSegment(0, 0));
         Optional<OutputSegment> outputSegment = DeleteStatementHandler.getOutputSegment(deleteStatement);
         assertTrue(outputSegment.isPresent());
+        assertTrue(deleteStatement.getOutputSegment().isPresent());
         assertThat(outputSegment.get(), is(deleteStatement.getOutputSegment().get()));
         assertFalse(DeleteStatementHandler.getOutputSegment(new SQLServerDeleteStatement()).isPresent());
     }
@@ -103,6 +106,7 @@ class DeleteStatementHandlerTest {
         deleteStatement.setWithSegment(new WithSegment(0, 0, new LinkedList<>()));
         Optional<WithSegment> withSegment = DeleteStatementHandler.getWithSegment(deleteStatement);
         assertTrue(withSegment.isPresent());
+        assertTrue(deleteStatement.getWithSegment().isPresent());
         assertThat(withSegment.get(), is(deleteStatement.getWithSegment().get()));
         assertFalse(DeleteStatementHandler.getWithSegment(new SQLServerDeleteStatement()).isPresent());
     }
