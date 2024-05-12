@@ -42,8 +42,7 @@ public final class ContextManagerSubscriberRegister {
                 new DatabaseChangedSubscriber(contextManager),
                 new StateChangedSubscriber(contextManager, registryCenter),
                 new ProcessListChangedSubscriber(contextManager, registryCenter),
-                new CacheEvictedSubscriber()
-        );
+                new CacheEvictedSubscriber());
     }
     
     /**
