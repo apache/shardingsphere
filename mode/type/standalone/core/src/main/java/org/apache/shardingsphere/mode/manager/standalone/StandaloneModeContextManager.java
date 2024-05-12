@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.standalone;
 
 import com.google.common.base.Strings;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.connection.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -59,6 +60,7 @@ import java.util.stream.Collectors;
 /**
  * Standalone mode context manager.
  */
+@Setter
 public final class StandaloneModeContextManager implements ModeContextManager, ContextManagerAware {
     
     private final RuleConfigurationEventBuilder ruleConfigurationEventBuilder = new RuleConfigurationEventBuilder();
@@ -317,10 +319,5 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     
     private void clearServiceCache() {
         OrderedServicesCache.clearCache();
-    }
-    
-    @Override
-    public void setContextManagerAware(final ContextManager contextManager) {
-        this.contextManager = contextManager;
     }
 }
