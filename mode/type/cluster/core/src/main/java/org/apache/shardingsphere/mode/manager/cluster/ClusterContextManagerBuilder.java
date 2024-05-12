@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator.ClusterWorkerIdGenerator;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.ContextManagerSubscriberFacade;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.ContextManagerSubscriberRegister;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -84,7 +84,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
         contextManager.getInstanceContext().getAllClusterInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
         contextManager.getInstanceContext().getEventBusContext().register(new RuleItemChangedSubscriber(contextManager));
-        new ContextManagerSubscriberFacade(registryCenter, contextManager);
+        new ContextManagerSubscriberRegister(registryCenter, contextManager).register();
     }
     
     private void loadClusterStatus(final RegistryCenter registryCenter, final ContextManager contextManager) {

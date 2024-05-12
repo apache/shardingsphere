@@ -22,18 +22,34 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessListChangedSubscriber;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
- * Context manager subscriber facade.
+ * Context manager subscriber register.
  */
-public final class ContextManagerSubscriberFacade {
+public final class ContextManagerSubscriberRegister {
     
-    public ContextManagerSubscriberFacade(final RegistryCenter registryCenter, final ContextManager contextManager) {
-        EventBusContext eventBusContext = contextManager.getInstanceContext().getEventBusContext();
-        eventBusContext.register(new ConfigurationChangedSubscriber(contextManager));
-        eventBusContext.register(new ResourceMetaDataChangedSubscriber(contextManager));
-        eventBusContext.register(new DatabaseChangedSubscriber(contextManager));
-        eventBusContext.register(new StateChangedSubscriber(contextManager, registryCenter));
-        eventBusContext.register(new ProcessListChangedSubscriber(contextManager, registryCenter));
-        eventBusContext.register(new CacheEvictedSubscriber());
+    private final EventBusContext eventBusContext;
+    
+    private final Collection<Object> subscribers;
+    
+    public ContextManagerSubscriberRegister(final RegistryCenter registryCenter, final ContextManager contextManager) {
+        eventBusContext = contextManager.getInstanceContext().getEventBusContext();
+        subscribers = Arrays.asList(
+                new ConfigurationChangedSubscriber(contextManager),
+                new ResourceMetaDataChangedSubscriber(contextManager),
+                new DatabaseChangedSubscriber(contextManager),
+                new StateChangedSubscriber(contextManager, registryCenter),
+                new ProcessListChangedSubscriber(contextManager, registryCenter),
+                new CacheEvictedSubscriber()
+        );
+    }
+    
+    /**
+     * Register subscribers.
+     */
+    public void register() {
+        subscribers.forEach(eventBusContext::register);
     }
 }
