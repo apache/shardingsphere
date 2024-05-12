@@ -51,7 +51,7 @@ public final class PivotSegment implements SQLSegment {
         this.stopIndex = stopIndex;
         this.pivotForColumn = pivotForColumn;
         this.pivotInColumns = pivotInColumns;
-        this.isUnPivot = false;
+        isUnPivot = false;
     }
     
     /**

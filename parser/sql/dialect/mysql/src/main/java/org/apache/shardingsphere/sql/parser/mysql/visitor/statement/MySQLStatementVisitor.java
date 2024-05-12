@@ -442,8 +442,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             // TODO optimize operatorToken
             String rightText = "";
             if (null != ctx.NOT()) {
-                rightText = rightText.concat(ctx.start.getInputStream().getText(new Interval(ctx.NOT().getSymbol().getStartIndex(),
-                        ctx.NOT().getSymbol().getStopIndex()))).concat(" ");
+                rightText = rightText + ctx.start.getInputStream().getText(new Interval(ctx.NOT().getSymbol().getStartIndex(), ctx.NOT().getSymbol().getStopIndex())) + " ";
             }
             Token operatorToken = null;
             if (null != ctx.NULL()) {
@@ -456,7 +455,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
                 operatorToken = ctx.FALSE().getSymbol();
             }
             int startIndex = null == operatorToken ? ctx.IS().getSymbol().getStopIndex() + 2 : operatorToken.getStartIndex();
-            rightText = rightText.concat(ctx.start.getInputStream().getText(new Interval(startIndex, ctx.stop.getStopIndex())));
+            rightText = rightText + ctx.start.getInputStream().getText(new Interval(startIndex, ctx.stop.getStopIndex()));
             ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 2, ctx.stop.getStopIndex(), rightText);
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
             ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
@@ -656,7 +655,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             ExpressionSegment left = (ExpressionSegment) visit(ctx.simpleExpr(0));
             ExpressionSegment right = (ExpressionSegment) visit(ctx.simpleExpr(1));
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, ctx.VERTICAL_BAR_(0).getText().concat(ctx.VERTICAL_BAR_(1).getText()), text);
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, ctx.VERTICAL_BAR_(0).getText() + ctx.VERTICAL_BAR_(1).getText(), text);
         }
         return visitRemainSimpleExpr(ctx);
     }

@@ -49,7 +49,7 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.text = SQLUtils.getExpressionWithoutOutsideParentheses(text);
-        this.expr = null;
+        expr = null;
     }
     
     public ExpressionProjectionSegment(final int startIndex, final int stopIndex, final String text, final ExpressionSegment expr) {

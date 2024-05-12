@@ -31,7 +31,7 @@ class ParseTreeCacheBuilderTest {
     
     @Test
     void assertParseTreeCacheBuild() {
-        LoadingCache<String, ParseASTNode> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        LoadingCache<String, ParseASTNode> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10L), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         assertThat(cache, isA(LoadingCache.class));
     }
 }

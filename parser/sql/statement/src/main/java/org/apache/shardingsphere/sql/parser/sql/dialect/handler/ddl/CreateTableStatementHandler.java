@@ -71,7 +71,7 @@ public final class CreateTableStatementHandler implements SQLStatementHandler {
      */
     public static Optional<SelectStatement> getSelectStatement(final CreateTableStatement createTableStatement) {
         if (createTableStatement instanceof SQLServerStatement) {
-            return ((SQLServerCreateTableStatement) createTableStatement).getSelectStatement();
+            return createTableStatement.getSelectStatement();
         }
         return Optional.empty();
     }

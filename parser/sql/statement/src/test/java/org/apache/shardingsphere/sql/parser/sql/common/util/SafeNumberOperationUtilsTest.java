@@ -194,7 +194,7 @@ class SafeNumberOperationUtilsTest {
     @Test
     void assertSafeCollectionEqualsForBigInteger() {
         List<Comparable<?>> sources = Arrays.asList(10, 12);
-        List<Comparable<?>> targets = Arrays.asList(BigInteger.valueOf(10), BigInteger.valueOf(12L));
+        List<Comparable<?>> targets = Arrays.asList(BigInteger.valueOf(10L), BigInteger.valueOf(12L));
         assertTrue(SafeNumberOperationUtils.safeCollectionEquals(sources, targets));
     }
     
