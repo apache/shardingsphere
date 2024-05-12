@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.event.schema.table.CreateOrAlterTableEvent;
@@ -35,15 +36,11 @@ import java.util.Map;
 /**
  * Resource meta data changed subscriber.
  */
+@RequiredArgsConstructor
 @SuppressWarnings("unused")
 public final class ResourceMetaDataChangedSubscriber {
     
     private final ContextManager contextManager;
-    
-    public ResourceMetaDataChangedSubscriber(final ContextManager contextManager) {
-        this.contextManager = contextManager;
-        contextManager.getInstanceContext().getEventBusContext().register(this);
-    }
     
     /**
      * Renew to persist meta data.

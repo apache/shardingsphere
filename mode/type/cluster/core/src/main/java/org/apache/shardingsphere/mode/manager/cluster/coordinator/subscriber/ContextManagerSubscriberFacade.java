@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessListChangedSubscriber;
@@ -27,11 +28,12 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proce
 public final class ContextManagerSubscriberFacade {
     
     public ContextManagerSubscriberFacade(final RegistryCenter registryCenter, final ContextManager contextManager) {
-        new ConfigurationChangedSubscriber(contextManager);
-        new ResourceMetaDataChangedSubscriber(contextManager);
-        new DatabaseChangedSubscriber(contextManager);
-        new StateChangedSubscriber(registryCenter, contextManager);
-        new ProcessListChangedSubscriber(registryCenter, contextManager);
-        new CacheEvictedSubscriber(contextManager.getInstanceContext().getEventBusContext());
+        EventBusContext eventBusContext = contextManager.getInstanceContext().getEventBusContext();
+        eventBusContext.register(new ConfigurationChangedSubscriber(contextManager));
+        eventBusContext.register(new ResourceMetaDataChangedSubscriber(contextManager));
+        eventBusContext.register(new DatabaseChangedSubscriber(contextManager));
+        eventBusContext.register(new StateChangedSubscriber(contextManager, registryCenter));
+        eventBusContext.register(new ProcessListChangedSubscriber(contextManager, registryCenter));
+        eventBusContext.register(new CacheEvictedSubscriber());
     }
 }
