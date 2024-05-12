@@ -148,7 +148,7 @@ class DecoratedEncryptShowCreateTableMergedResultTest {
         when(sqlStatementContext.getAllTables()).thenReturn(Collections.singleton(simpleTableSegment));
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
-        when(ruleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(128, 1024), new CacheOption(2000, 65535))));
+        when(ruleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(2000, 65535L))));
         return new DecoratedEncryptShowCreateTableMergedResult(ruleMetaData, mergedResult, sqlStatementContext, encryptRule);
     }
 }

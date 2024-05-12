@@ -60,7 +60,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private static final long WORKER_ID_BITS = 10L;
     
-    private static final long SEQUENCE_MASK = (1 << SEQUENCE_BITS) - 1L;
+    private static final long SEQUENCE_MASK = (1L << SEQUENCE_BITS) - 1L;
     
     private static final long WORKER_ID_LEFT_SHIFT_BITS = SEQUENCE_BITS;
     

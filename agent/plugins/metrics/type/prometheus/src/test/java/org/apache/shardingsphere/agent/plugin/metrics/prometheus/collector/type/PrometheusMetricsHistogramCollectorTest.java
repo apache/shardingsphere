@@ -34,7 +34,7 @@ class PrometheusMetricsHistogramCollectorTest {
     void assertCreate() throws ReflectiveOperationException {
         PrometheusMetricsHistogramCollector collector = new PrometheusMetricsHistogramCollector(new MetricConfiguration("foo_histogram",
                 MetricCollectorType.HISTOGRAM, "foo_help", Collections.emptyList(), Collections.emptyMap()));
-        collector.observe(1);
+        collector.observe(1D);
         Histogram histogram = (Histogram) Plugins.getMemberAccessor().get(PrometheusMetricsHistogramCollector.class.getDeclaredField("histogram"), collector);
         assertThat(histogram.collect().size(), is(1));
     }

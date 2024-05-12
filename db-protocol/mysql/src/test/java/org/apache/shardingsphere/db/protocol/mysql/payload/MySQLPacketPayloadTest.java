@@ -151,23 +151,23 @@ class MySQLPacketPayloadTest {
     
     @Test
     void assertWriteIntLenencWithTwoBytes() {
-        new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(Double.valueOf(Math.pow(2, 16)).longValue() - 1);
+        new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(Double.valueOf(Math.pow(2D, 16D)).longValue() - 1L);
         verify(byteBuf).writeByte(0xfc);
-        verify(byteBuf).writeShortLE(Double.valueOf(Math.pow(2, 16)).intValue() - 1);
+        verify(byteBuf).writeShortLE(Double.valueOf(Math.pow(2D, 16D)).intValue() - 1);
     }
     
     @Test
     void assertWriteIntLenencWithThreeBytes() {
-        new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(Double.valueOf(Math.pow(2, 24)).longValue() - 1);
+        new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(Double.valueOf(Math.pow(2D, 24D)).longValue() - 1L);
         verify(byteBuf).writeByte(0xfd);
-        verify(byteBuf).writeMediumLE(Double.valueOf(Math.pow(2, 24)).intValue() - 1);
+        verify(byteBuf).writeMediumLE(Double.valueOf(Math.pow(2D, 24D)).intValue() - 1);
     }
     
     @Test
     void assertWriteIntLenencWithFourBytes() {
-        new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(Double.valueOf(Math.pow(2, 25)).longValue() - 1);
+        new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(Double.valueOf(Math.pow(2D, 25D)).longValue() - 1L);
         verify(byteBuf).writeByte(0xfe);
-        verify(byteBuf).writeLongLE(Double.valueOf(Math.pow(2, 25)).intValue() - 1);
+        verify(byteBuf).writeLongLE(Double.valueOf(Math.pow(2D, 25D)).intValue() - 1L);
     }
     
     @Test

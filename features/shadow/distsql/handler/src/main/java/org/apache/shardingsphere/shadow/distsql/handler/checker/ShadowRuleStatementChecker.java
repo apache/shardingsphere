@@ -87,7 +87,7 @@ public final class ShadowRuleStatementChecker {
     
     private static Collection<String> getDuplicated(final Collection<String> names) {
         return names.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
-                .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
+                .filter(each -> each.getValue() > 1L).map(Entry::getKey).collect(Collectors.toSet());
     }
     
     private static Collection<String> getDuplicated(final Collection<String> required, final Collection<String> current) {

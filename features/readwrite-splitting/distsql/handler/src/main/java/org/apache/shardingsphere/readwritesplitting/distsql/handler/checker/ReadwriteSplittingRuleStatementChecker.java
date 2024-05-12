@@ -113,7 +113,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
     
     private static Collection<String> getDuplicated(final Collection<String> required) {
         return required.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
-                .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
+                .filter(each -> each.getValue() > 1L).map(Entry::getKey).collect(Collectors.toSet());
     }
     
     private static void checkDuplicateRuleNamesWithExistsDataSources(final ShardingSphereDatabase database, final Collection<ReadwriteSplittingRuleSegment> segments) {

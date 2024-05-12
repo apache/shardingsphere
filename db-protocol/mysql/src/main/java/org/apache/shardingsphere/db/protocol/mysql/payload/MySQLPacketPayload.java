@@ -116,7 +116,7 @@ public final class MySQLPacketPayload implements PacketPayload {
      * @return 6 byte fixed length integer
      */
     public long readInt6() {
-        long result = 0;
+        long result = 0L;
         for (int i = 0; i < 6; i++) {
             result |= ((long) (0xff & byteBuf.readByte())) << (8 * i);
         }
@@ -161,7 +161,7 @@ public final class MySQLPacketPayload implements PacketPayload {
             return firstByte;
         }
         if (0xfb == firstByte) {
-            return 0;
+            return 0L;
         }
         if (0xfc == firstByte) {
             return readInt2();
@@ -182,12 +182,12 @@ public final class MySQLPacketPayload implements PacketPayload {
             byteBuf.writeByte((int) value);
             return;
         }
-        if (value < Math.pow(2, 16)) {
+        if (value < Math.pow(2D, 16D)) {
             byteBuf.writeByte(0xfc);
             byteBuf.writeShortLE((int) value);
             return;
         }
-        if (value < Math.pow(2, 24)) {
+        if (value < Math.pow(2D, 24D)) {
             byteBuf.writeByte(0xfd);
             byteBuf.writeMediumLE((int) value);
             return;
@@ -203,7 +203,7 @@ public final class MySQLPacketPayload implements PacketPayload {
      * @return fixed length long
      */
     public long readLong(final int length) {
-        long result = 0;
+        long result = 0L;
         for (int i = 0; i < length; i++) {
             result = result << 8 | readInt1();
         }

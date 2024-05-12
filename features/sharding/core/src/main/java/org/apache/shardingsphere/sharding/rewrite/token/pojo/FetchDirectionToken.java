@@ -51,7 +51,7 @@ public final class FetchDirectionToken extends SQLToken implements Substitutable
     
     @Override
     public String toString() {
-        long actualFetchCount = Math.max(fetchCount - connectionContext.getCursorContext().getMinGroupRowCounts().getOrDefault(cursorName, 0L), 0);
+        long actualFetchCount = Math.max(fetchCount - connectionContext.getCursorContext().getMinGroupRowCounts().getOrDefault(cursorName, 0L), 0L);
         if (DirectionType.isForwardCountDirectionType(directionType)) {
             return " FORWARD " + actualFetchCount + " ";
         }

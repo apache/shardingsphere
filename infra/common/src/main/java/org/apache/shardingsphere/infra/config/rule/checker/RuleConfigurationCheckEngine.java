@@ -71,7 +71,7 @@ public final class RuleConfigurationCheckEngine {
     
     private static void checkTablesNotDuplicated(final RuleConfiguration ruleConfig, final String databaseName, final Collection<String> tableNames) {
         Collection<String> duplicatedTables = tableNames.stream()
-                .collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream().filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
+                .collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream().filter(each -> each.getValue() > 1L).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkMustEmpty(duplicatedTables, () -> new DuplicateRuleException(getRuleType(ruleConfig), databaseName, duplicatedTables));
     }
     

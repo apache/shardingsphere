@@ -37,15 +37,15 @@ public final class MySQLDatetimeBinlogProtocolValue implements MySQLBinlogProtoc
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         long datetime = payload.readInt8();
-        return 0 == datetime ? MySQLTimeValueUtils.DATETIME_OF_ZERO : readDateTime(datetime);
+        return 0L == datetime ? MySQLTimeValueUtils.DATETIME_OF_ZERO : readDateTime(datetime);
     }
     
     private Date readDateTime(final long datetime) {
-        int date = (int) (datetime / 1000000);
+        int date = (int) (datetime / 1000000L);
         int year = date / 10000;
         int month = (date % 10000) / 100;
         int day = date % 100;
-        int time = (int) (datetime % 1000000);
+        int time = (int) (datetime % 1000000L);
         int hour = time / 10000;
         int minute = (time % 10000) / 100;
         int second = time % 100;

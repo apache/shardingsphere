@@ -64,7 +64,7 @@ class OffsetTokenGeneratorTest {
         when(paginationValueSegment.getStopIndex()).thenReturn(testStopIndex);
         PaginationContext paginationContext = mock(PaginationContext.class);
         when(paginationContext.getOffsetSegment()).thenReturn(Optional.of(paginationValueSegment));
-        final long testRevisedOffset = 2;
+        final long testRevisedOffset = 2L;
         when(paginationContext.getRevisedOffset()).thenReturn(testRevisedOffset);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getPaginationContext()).thenReturn(paginationContext);

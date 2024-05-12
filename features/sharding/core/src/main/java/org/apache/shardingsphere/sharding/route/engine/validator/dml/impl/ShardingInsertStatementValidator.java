@@ -84,7 +84,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     }
     
     private boolean isAllSameTables(final Collection<String> tableNames) {
-        return 1 == tableNames.stream().distinct().count();
+        return 1L == tableNames.stream().distinct().count();
     }
     
     @Override

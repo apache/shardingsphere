@@ -64,7 +64,7 @@ public class ShardingRuleChecker {
     }
     
     private void checkUniqueActualDataNodesInTableRules() {
-        Set<DataNode> uniqueActualDataNodes = new HashSet<>(shardingRule.getShardingTables().size(), 1L);
+        Set<DataNode> uniqueActualDataNodes = new HashSet<>(shardingRule.getShardingTables().size(), 1F);
         shardingRule.getShardingTables().forEach((key, value) -> {
             DataNode sampleActualDataNode = value.getActualDataNodes().iterator().next();
             ShardingSpherePreconditions.checkState(!uniqueActualDataNodes.contains(sampleActualDataNode),

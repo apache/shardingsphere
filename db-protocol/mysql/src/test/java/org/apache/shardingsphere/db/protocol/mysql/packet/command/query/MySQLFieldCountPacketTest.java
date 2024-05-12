@@ -40,6 +40,6 @@ class MySQLFieldCountPacketTest {
         MySQLFieldCountPacket actual = new MySQLFieldCountPacket(payload);
         assertThat(actual.getColumnCount(), is(3));
         actual.write(payload);
-        verify(payload).writeIntLenenc(3);
+        verify(payload).writeIntLenenc(3L);
     }
 }

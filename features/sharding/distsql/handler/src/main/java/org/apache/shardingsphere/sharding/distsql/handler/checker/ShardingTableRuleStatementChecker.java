@@ -362,7 +362,7 @@ public final class ShardingTableRuleStatementChecker {
     
     private static Collection<String> getDuplicatedRuleNames(final Collection<String> collection) {
         Collection<String> duplicatedNames = collection.stream().collect(Collectors.groupingBy(String::toLowerCase, Collectors.counting())).entrySet().stream()
-                .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toCollection(CaseInsensitiveSet::new));
+                .filter(each -> each.getValue() > 1L).map(Entry::getKey).collect(Collectors.toCollection(CaseInsensitiveSet::new));
         return collection.stream().filter(duplicatedNames::contains).collect(Collectors.toSet());
     }
     

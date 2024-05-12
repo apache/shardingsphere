@@ -106,11 +106,11 @@ class PaginationContextTest {
     }
     
     private PaginationValueSegment getOffsetSegmentWithNumberLiteralPaginationValueSegment() {
-        return new NumberLiteralLimitValueSegment(28, 30, 30);
+        return new NumberLiteralLimitValueSegment(28, 30, 30L);
     }
     
     private PaginationValueSegment getRowCountSegmentWithNumberLiteralPaginationValueSegment() {
-        return new NumberLiteralLimitValueSegment(32, 34, 20);
+        return new NumberLiteralLimitValueSegment(32, 34, 20L);
     }
     
     @Test
