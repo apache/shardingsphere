@@ -31,7 +31,7 @@ class CacheEvictedSubscriberTest {
     @Test
     void assertOnGovernanceEvent() {
         EventBusContext eventBusContext = new EventBusContext();
-        new CacheEvictedSubscriber(eventBusContext);
+        eventBusContext.register(new CacheEvictedSubscriber());
         OrderedServicesCache.cacheServices(getClass(), Collections.emptyList(), Collections.emptyMap());
         eventBusContext.post(new DatabaseDeletedEvent("db"));
         assertFalse(OrderedServicesCache.findCachedServices(getClass(), Collections.emptyList()).isPresent());
