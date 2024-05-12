@@ -127,8 +127,7 @@ public final class RepositoryTupleSwapperEngine {
     }
     
     private String getTupleName(final Field field) {
-        RepositoryTupleField tupleField = field.getAnnotation(RepositoryTupleField.class);
-        return "".equals(tupleField.value()) ? CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName()) : tupleField.value();
+        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
     }
     
     /**

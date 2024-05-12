@@ -32,11 +32,11 @@ public final class ReadwriteSplittingRuleNodePathProvider implements RuleNodePat
     
     public static final String RULE_TYPE = "readwrite_splitting";
     
-    public static final String DATA_SOURCES = "data_sources";
+    public static final String DATA_SOURCE_GROUPS = "data_source_groups";
     
     public static final String LOAD_BALANCERS = "load_balancers";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Arrays.asList(DATA_SOURCES, LOAD_BALANCERS), Collections.emptyList());
+    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Arrays.asList(DATA_SOURCE_GROUPS, LOAD_BALANCERS), Collections.emptyList());
     
     @Override
     public RuleNodePath getRuleNodePath() {
