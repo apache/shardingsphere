@@ -23,9 +23,9 @@ package org.apache.shardingsphere.mode.manager;
 public interface ContextManagerAware {
     
     /**
-     * Set context manager aware.
+     * Set context manager.
      *
      * @param contextManager context manager
      */
-    void setContextManagerAware(ContextManager contextManager);
+    void setContextManager(ContextManager contextManager);
 }

@@ -75,7 +75,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void setContextManagerAware(final ContextManager contextManager) {
-        ((ContextManagerAware) contextManager.getInstanceContext().getModeContextManager()).setContextManagerAware(contextManager);
+        ((ContextManagerAware) contextManager.getInstanceContext().getModeContextManager()).setContextManager(contextManager);
     }
     
     private void registerOnline(final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {

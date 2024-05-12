@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster;
 
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 /**
  * Cluster mode context manager.
  */
+@Setter
 public final class ClusterModeContextManager implements ModeContextManager, ContextManagerAware {
     
     private ContextManager contextManager;
@@ -153,10 +155,5 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
     @Override
     public void alterProperties(final Properties props) {
         contextManager.getMetaDataContexts().getPersistService().getPropsService().persist(props);
-    }
-    
-    @Override
-    public void setContextManagerAware(final ContextManager contextManager) {
-        this.contextManager = contextManager;
     }
 }

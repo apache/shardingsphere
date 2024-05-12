@@ -67,7 +67,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     }
     
     private void setContextManagerAware(final ContextManager contextManager) {
-        ((StandaloneModeContextManager) contextManager.getInstanceContext().getModeContextManager()).setContextManagerAware(contextManager);
+        ((StandaloneModeContextManager) contextManager.getInstanceContext().getModeContextManager()).setContextManager(contextManager);
     }
     
     @Override
