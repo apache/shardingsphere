@@ -40,7 +40,7 @@ import java.util.List;
  * CDC server.
  */
 @RequiredArgsConstructor
-public final class CDCServer extends Thread {
+public final class CDCServer implements Runnable {
     
     private final List<String> addressed;
     
@@ -76,7 +76,7 @@ public final class CDCServer extends Thread {
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new CDCServerHandlerInitializer());
-        List<ChannelFuture> result = new ArrayList<>();
+        List<ChannelFuture> result = new ArrayList<>(addresses.size());
         for (String each : addresses) {
             result.add(bootstrap.bind(each, port).sync());
         }

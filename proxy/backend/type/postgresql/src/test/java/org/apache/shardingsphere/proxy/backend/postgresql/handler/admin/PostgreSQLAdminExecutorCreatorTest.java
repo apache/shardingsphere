@@ -132,7 +132,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     }
     
     private SQLStatement parseSQL(final String sql) {
-        CacheOption cacheOption = new CacheOption(0, 0);
+        CacheOption cacheOption = new CacheOption(0, 0L);
         SQLParserRule sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(cacheOption, cacheOption));
         return sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).parse(sql, false);
     }

@@ -38,7 +38,7 @@ public final class HBaseInsertUpdater implements HBaseUpdater {
     public Collection<UpdateResult> executeUpdate(final HBaseOperation operation) throws SQLException {
         List<Put> puts = ((HBaseInsertOperation) operation.getOperation()).getPuts();
         HBaseExecutor.executeUpdate(operation.getTableName(), table -> table.put(puts));
-        return Collections.singleton(new UpdateResult(puts.size(), 0));
+        return Collections.singleton(new UpdateResult(puts.size(), 0L));
     }
     
     @Override

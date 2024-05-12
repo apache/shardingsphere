@@ -38,10 +38,10 @@ public final class HBaseDeleteUpdater implements HBaseUpdater {
         if (operation.getOperation() instanceof HBaseDeleteOperation) {
             int deleteAffectedSize = ((HBaseDeleteOperation) operation.getOperation()).getDeletes().size();
             HBaseExecutor.executeUpdate(operation.getTableName(), table -> table.delete(((HBaseDeleteOperation) operation.getOperation()).getDeletes()));
-            return Collections.singleton(new UpdateResult(deleteAffectedSize, 0));
+            return Collections.singleton(new UpdateResult(deleteAffectedSize, 0L));
         }
         HBaseExecutor.executeUpdate(operation.getTableName(), table -> table.delete((Delete) operation.getOperation()));
-        return Collections.singleton(new UpdateResult(1, 0));
+        return Collections.singleton(new UpdateResult(1, 0L));
     }
     
     @Override

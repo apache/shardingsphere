@@ -159,7 +159,7 @@ public final class Portal {
     
     private List<PostgreSQLPacket> createParameterStatusResponse(final SetStatement sqlStatement) {
         List<PostgreSQLPacket> result = new ArrayList<>(2);
-        result.add(new PostgreSQLCommandCompletePacket("SET", 0));
+        result.add(new PostgreSQLCommandCompletePacket("SET", 0L));
         for (VariableAssignSegment each : sqlStatement.getVariableAssigns()) {
             result.add(new PostgreSQLParameterStatusPacket(each.getVariable().getVariable(), IdentifierValue.getQuotedContent(each.getAssignValue())));
         }
@@ -220,7 +220,7 @@ public final class Portal {
     }
     
     private long getUpdateCount() {
-        return responseHeader instanceof UpdateResponseHeader ? ((UpdateResponseHeader) responseHeader).getUpdateCount() : 0;
+        return responseHeader instanceof UpdateResponseHeader ? ((UpdateResponseHeader) responseHeader).getUpdateCount() : 0L;
     }
     
     /**

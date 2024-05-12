@@ -103,7 +103,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
     }
     
     private void initResultNum(final SQLStatementContext sqlStatementContext) {
-        resultNum = 0;
+        resultNum = 0L;
         maxLimitResultSize = HBaseContext.getInstance().getProps().<Long>getValue(HBasePropertyKey.MAX_SCAN_LIMIT_SIZE);
         Optional<PaginationValueSegment> paginationSegment = ((MySQLSelectStatement) sqlStatementContext.getSqlStatement()).getLimit().flatMap(LimitSegment::getRowCount);
         paginationSegment.ifPresent(optional -> maxLimitResultSize = Math.min(maxLimitResultSize, ((NumberLiteralLimitValueSegment) optional).getValue()));

@@ -104,7 +104,7 @@ public final class ShardingSphereProxy {
     private List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
         ServerBootstrap bootstrap = new ServerBootstrap();
         initServerBootstrap(bootstrap);
-        List<ChannelFuture> result = new ArrayList<>();
+        List<ChannelFuture> result = new ArrayList<>(addresses.size());
         for (String each : addresses) {
             result.add(bootstrap.bind(each, port).sync());
         }

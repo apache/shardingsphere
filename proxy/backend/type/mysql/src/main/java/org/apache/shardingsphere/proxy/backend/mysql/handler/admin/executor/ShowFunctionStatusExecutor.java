@@ -59,7 +59,7 @@ public final class ShowFunctionStatusExecutor implements DatabaseAdminQueryExecu
     }
     
     private QueryResultMetaData createQueryResultMetaData() {
-        List<RawQueryResultColumnMetaData> columns = new ArrayList<>();
+        List<RawQueryResultColumnMetaData> columns = new ArrayList<>(11);
         columns.add(new RawQueryResultColumnMetaData("", "Db", "Db", Types.VARCHAR, "VARCHAR", 255, 0));
         columns.add(new RawQueryResultColumnMetaData("", "Name", "Name", Types.VARCHAR, "VARCHAR", 255, 0));
         columns.add(new RawQueryResultColumnMetaData("", "Type", "Type", Types.VARCHAR, "VARCHAR", 64, 0));

@@ -39,7 +39,7 @@ class HBaseBackendUpdateHandlerTest {
     @Test
     void assertExecuteDeleteStatement() throws SQLException {
         HBaseDeleteUpdater updater = mock(HBaseDeleteUpdater.class);
-        when(updater.executeUpdate(any())).thenReturn(Collections.singletonList(new UpdateResult(1, 0)));
+        when(updater.executeUpdate(any())).thenReturn(Collections.singletonList(new UpdateResult(1, 0L)));
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getDeleteStatement());
         HBaseBackendUpdateHandler handler = new HBaseBackendUpdateHandler(sqlStatement, updater);
         assertUpdateResponseHeader(sqlStatement, handler.execute());
@@ -48,7 +48,7 @@ class HBaseBackendUpdateHandlerTest {
     @Test
     void assertExecuteUpdateStatement() throws SQLException {
         HBaseUpdateUpdater updater = mock(HBaseUpdateUpdater.class);
-        when(updater.executeUpdate(any())).thenReturn(Collections.singletonList(new UpdateResult(1, 0)));
+        when(updater.executeUpdate(any())).thenReturn(Collections.singletonList(new UpdateResult(1, 0L)));
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getUpdateStatement());
         HBaseBackendUpdateHandler handler = new HBaseBackendUpdateHandler(sqlStatement, updater);
         assertUpdateResponseHeader(sqlStatement, handler.execute());
@@ -57,7 +57,7 @@ class HBaseBackendUpdateHandlerTest {
     @Test
     void assertFlushTableStatement() throws SQLException {
         HBaseRegionReloadUpdater updater = mock(HBaseRegionReloadUpdater.class);
-        when(updater.executeUpdate(any())).thenReturn(Collections.singletonList(new UpdateResult(1, 0)));
+        when(updater.executeUpdate(any())).thenReturn(Collections.singletonList(new UpdateResult(1, 0L)));
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getFlushTablesStatement());
         HBaseBackendUpdateHandler handler = new HBaseBackendUpdateHandler(sqlStatement, updater);
         assertUpdateResponseHeader(sqlStatement, handler.execute());

@@ -60,7 +60,7 @@ public final class MySQLDialectSaneQueryResultEngine implements DialectSaneQuery
             return Optional.of(createQueryResult());
         }
         if (sqlStatement instanceof MySQLSetStatement) {
-            return Optional.of(new UpdateResult(0, 0));
+            return Optional.of(new UpdateResult(0, 0L));
         }
         return Optional.empty();
     }

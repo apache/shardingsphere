@@ -112,7 +112,7 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     
     private Collection<DatabasePacket> createParameterStatusResponse(final SetStatement sqlStatement) {
         Collection<DatabasePacket> result = new ArrayList<>(2);
-        result.add(new PostgreSQLCommandCompletePacket("SET", 0));
+        result.add(new PostgreSQLCommandCompletePacket("SET", 0L));
         for (VariableAssignSegment each : sqlStatement.getVariableAssigns()) {
             result.add(new PostgreSQLParameterStatusPacket(each.getVariable().getVariable(), IdentifierValue.getQuotedContent(each.getAssignValue())));
         }

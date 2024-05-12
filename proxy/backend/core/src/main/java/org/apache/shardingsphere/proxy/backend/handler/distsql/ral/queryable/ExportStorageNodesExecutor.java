@@ -89,7 +89,7 @@ public final class ExportStorageNodesExecutor implements DistSQLQueryExecutor<Ex
     }
     
     private Map<String, Collection<ExportedStorageNode>> generateDatabaseExportStorageNodesData(final ShardingSphereDatabase database) {
-        Map<String, ExportedStorageNode> storageNodes = new LinkedHashMap<>();
+        Map<String, ExportedStorageNode> storageNodes = new LinkedHashMap<>(database.getResourceMetaData().getStorageUnits().size(), 1F);
         for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnits().entrySet()) {
             ConnectionProperties connectionProps = database.getResourceMetaData().getStorageUnits().get(entry.getKey()).getConnectionProperties();
             String databaseInstanceIp = getDatabaseInstanceIp(connectionProps);
