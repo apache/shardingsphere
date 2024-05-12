@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  * It represents a class to be tested for transaction integration.
  */
 @Target(ElementType.TYPE)
-@Retention(value = RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface TransactionTestCase {
     
     /**

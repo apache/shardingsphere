@@ -67,7 +67,7 @@ class IncrementalTaskTest {
     @Test
     @Disabled("H2 doesn't support incremental")
     void assertStart() throws ExecutionException, InterruptedException, TimeoutException {
-        CompletableFuture.allOf(incrementalTask.start().toArray(new CompletableFuture[0])).get(10, TimeUnit.SECONDS);
+        CompletableFuture.allOf(incrementalTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS);
         assertThat(incrementalTask.getTaskId(), is("ds_0"));
         assertThat(incrementalTask.getTaskProgress().getPosition(), instanceOf(IngestPlaceholderPosition.class));
     }

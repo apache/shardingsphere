@@ -36,7 +36,7 @@ class ShardingTest {
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/features/sharding.yaml");
         DataSource dataSource = new HikariDataSource(config);
         testShardingService = new TestShardingService(dataSource);
-        this.initEnvironment();
+        initEnvironment();
         testShardingService.processSuccess();
         testShardingService.cleanEnvironment();
     }

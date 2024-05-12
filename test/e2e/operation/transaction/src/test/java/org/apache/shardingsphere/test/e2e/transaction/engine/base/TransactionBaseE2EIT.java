@@ -109,11 +109,11 @@ public abstract class TransactionBaseE2EIT {
     private void callTestCases(final TransactionTestParameter testParam, final TransactionContainerComposer containerComposer) throws SQLException {
         if (AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter())) {
             for (TransactionType each : testParam.getTransactionTypes()) {
-                if (TransactionType.LOCAL.equals(each)) {
+                if (TransactionType.LOCAL == each) {
                     log.info("Call transaction IT {}, alter transaction rule {}.", testParam, "");
                     alterTransactionRule(each, "", containerComposer);
                     doCallTestCases(testParam, each, "", containerComposer);
-                } else if (TransactionType.XA.equals(each)) {
+                } else if (TransactionType.XA == each) {
                     for (String eachProvider : testParam.getProviders()) {
                         log.info("Call transaction IT {}, alter transaction rule {}.", testParam, eachProvider);
                         alterTransactionRule(each, eachProvider, containerComposer);
@@ -135,9 +135,9 @@ public abstract class TransactionBaseE2EIT {
     }
     
     private void alterTransactionRule(final TransactionType transactionType, final String providerType, final TransactionContainerComposer containerComposer) throws SQLException {
-        if (Objects.equals(transactionType, TransactionType.LOCAL)) {
+        if (transactionType == TransactionType.LOCAL) {
             alterLocalTransactionRule(containerComposer);
-        } else if (Objects.equals(transactionType, TransactionType.XA)) {
+        } else if (transactionType == TransactionType.XA) {
             alterXaTransactionRule(providerType, containerComposer);
         }
     }
@@ -415,11 +415,11 @@ public abstract class TransactionBaseE2EIT {
         
         private void setTestParameters(final Map<String, TransactionTestParameter> testParams, final TransactionTestCaseRegistry registry, final String databaseVersion,
                                        final TransactionType transactionType, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
-            if (TransactionType.LOCAL.equals(transactionType)) {
+            if (TransactionType.LOCAL == transactionType) {
                 setTestParameters(testParams, registry, databaseVersion, Collections.singletonList(transactionType), Collections.singletonList(""), scenario, caseClass);
                 return;
             }
-            if (TransactionType.XA.equals(transactionType)) {
+            if (TransactionType.XA == transactionType) {
                 for (String each : ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders()) {
                     setTestParameters(testParams, registry, databaseVersion, Collections.singletonList(transactionType), Collections.singletonList(each), scenario, caseClass);
                 }

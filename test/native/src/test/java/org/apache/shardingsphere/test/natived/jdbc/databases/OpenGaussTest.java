@@ -63,7 +63,7 @@ class OpenGaussTest {
             jdbcUrlPrefix = "jdbc:opengauss://localhost:" + openGaussContainer.getMappedPort(5432) + "/";
             DataSource dataSource = createDataSource();
             testShardingService = new TestShardingService(dataSource);
-            this.initEnvironment();
+            initEnvironment();
             testShardingService.processSuccess();
             testShardingService.cleanEnvironment();
         }
@@ -87,7 +87,7 @@ class OpenGaussTest {
     
     @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
     private DataSource createDataSource() {
-        Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptions().until(() -> {
+        Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {
             openConnection().close();
             return true;
         });

@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -76,11 +77,11 @@ public final class TestShardingService {
         assertThat(orderItems.stream().map(OrderItem::getStatus).collect(Collectors.toList()),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
         assertThat(addressRepository.selectAll(),
-                equalTo(LongStream.range(1, 11).mapToObj(i -> new Address(i, "address_test_" + i)).collect(Collectors.toList())));
+                equalTo(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toList())));
         deleteData(orderIds);
-        assertThat(orderRepository.selectAll(), equalTo(new ArrayList<>()));
-        assertThat(orderItemRepository.selectAll(), equalTo(new ArrayList<>()));
-        assertThat(addressRepository.selectAll(), equalTo(new ArrayList<>()));
+        assertThat(orderRepository.selectAll(), equalTo(Collections.emptyList()));
+        assertThat(orderItemRepository.selectAll(), equalTo(Collections.emptyList()));
+        assertThat(addressRepository.selectAll(), equalTo(Collections.emptyList()));
         orderItemRepository.assertRollbackWithTransactions();
     }
     
@@ -119,7 +120,7 @@ public final class TestShardingService {
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public void deleteData(final Collection<Long> orderIds) throws SQLException {
-        long count = 1;
+        long count = 1L;
         for (Long each : orderIds) {
             orderRepository.delete(each);
             orderItemRepository.delete(each);

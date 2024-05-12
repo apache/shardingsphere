@@ -52,9 +52,9 @@ class ReadWriteSplittingTest {
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);
         addressRepository = new AddressRepository(dataSource);
-        this.initEnvironment();
-        this.processSuccess();
-        this.cleanEnvironment();
+        initEnvironment();
+        processSuccess();
+        cleanEnvironment();
     }
     
     private void initEnvironment() throws SQLException {

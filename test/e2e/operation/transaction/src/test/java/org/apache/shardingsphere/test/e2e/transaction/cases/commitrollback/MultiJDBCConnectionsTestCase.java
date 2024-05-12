@@ -42,8 +42,8 @@ public final class MultiJDBCConnectionsTestCase extends BaseTransactionTestCase 
         try (Connection connection = getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement("insert into account(id, balance, transaction_id) values(?, ?, ?)");
             connection.setAutoCommit(false);
-            statement.setLong(1, 1);
-            statement.setFloat(2, 1);
+            statement.setLong(1, 1L);
+            statement.setFloat(2, 1F);
             statement.setInt(3, 1);
             statement.execute();
             try (Connection connection2 = getDataSource().getConnection()) {

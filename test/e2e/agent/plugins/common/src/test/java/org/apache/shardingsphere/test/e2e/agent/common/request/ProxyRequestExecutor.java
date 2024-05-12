@@ -72,7 +72,7 @@ public final class ProxyRequestExecutor implements Runnable {
             JDBCAgentTestUtils.insertOrder(orderEntity, connection);
             results.add(orderEntity.getOrderId());
         }
-        OrderEntity orderEntity = new OrderEntity(1000, 1000, "ROLL_BACK");
+        OrderEntity orderEntity = new OrderEntity(1000L, 1000, "ROLL_BACK");
         JDBCAgentTestUtils.insertOrderRollback(orderEntity, connection);
         JDBCAgentTestUtils.updateOrderStatus(orderEntity, connection);
         JDBCAgentTestUtils.selectAllOrders(connection);

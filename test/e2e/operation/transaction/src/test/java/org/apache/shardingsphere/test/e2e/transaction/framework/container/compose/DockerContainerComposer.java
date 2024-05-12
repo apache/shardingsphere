@@ -56,7 +56,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     
     public DockerContainerComposer(final TransactionTestParameter testParam) {
         super(testParam.getScenario());
-        this.databaseType = testParam.getDatabaseType();
+        databaseType = testParam.getDatabaseType();
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, testParam.getStorageContainerImage(),
                 StorageContainerConfigurationFactory.newInstance(databaseType, testParam.getScenario())));

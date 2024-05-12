@@ -37,7 +37,7 @@ public final class AuthorityEnvironment {
      * Get init SQLs of this database type.
      *
      * @param databaseType database type
-     * @return init SQLs of this data base type
+     * @return init SQLs of this database type
      */
     public Collection<String> getInitSQLs(final DatabaseType databaseType) {
         Collection<String> result = new LinkedList<>();

@@ -57,7 +57,7 @@ class DataRecordResultConvertUtilsTest {
     void assertConvertDataRecordToRecord() throws InvalidProtocolBufferException, SQLException {
         DataRecord dataRecord = new DataRecord(PipelineSQLOperationType.INSERT, "t_order", new IntegerPrimaryKeyIngestPosition(0L, 1L), 2);
         dataRecord.addColumn(new Column("order_id", BigInteger.ONE, false, true));
-        dataRecord.addColumn(new Column("price", BigDecimal.valueOf(123), false, false));
+        dataRecord.addColumn(new Column("price", BigDecimal.valueOf(123L), false, false));
         dataRecord.addColumn(new Column("user_id", Long.MAX_VALUE, false, false));
         dataRecord.addColumn(new Column("item_id", Integer.MAX_VALUE, false, false));
         dataRecord.addColumn(new Column("create_date", LocalDate.now(), false, false));

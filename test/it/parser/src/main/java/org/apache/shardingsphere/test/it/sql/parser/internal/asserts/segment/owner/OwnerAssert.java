@@ -48,7 +48,7 @@ public final class OwnerAssert {
             assertFalse(actual.getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));
         } else {
             assertTrue(actual.getOwner().isPresent(), assertContext.getText("Actual owner should exist."));
-            OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
+            assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
         }
     }
 }

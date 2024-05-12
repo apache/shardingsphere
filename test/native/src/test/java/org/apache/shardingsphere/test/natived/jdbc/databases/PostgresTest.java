@@ -38,7 +38,7 @@ class PostgresTest {
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/databases/postgresql.yaml");
         DataSource dataSource = new HikariDataSource(config);
         testShardingService = new TestShardingService(dataSource);
-        this.initEnvironment();
+        initEnvironment();
         testShardingService.processSuccess();
         testShardingService.cleanEnvironment();
     }

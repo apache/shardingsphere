@@ -76,7 +76,7 @@ public final class TransactionE2EEnvironment {
     }
     
     private Map<String, TransactionTestCaseRegistry> initTransactionTestCaseRegistryMap() {
-        Map<String, TransactionTestCaseRegistry> result = new HashMap<>(TransactionTestCaseRegistry.values().length, 1);
+        Map<String, TransactionTestCaseRegistry> result = new HashMap<>(TransactionTestCaseRegistry.values().length, 1F);
         for (TransactionTestCaseRegistry each : TransactionTestCaseRegistry.values()) {
             result.put(each.getTestCaseClass().getName(), each);
         }

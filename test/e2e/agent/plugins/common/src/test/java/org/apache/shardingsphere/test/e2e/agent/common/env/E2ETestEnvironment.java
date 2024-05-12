@@ -136,8 +136,8 @@ public final class E2ETestEnvironment {
             createJDBCEnvironment();
         }
         log.info("Waiting to collect data ...");
-        if (0 < collectDataWaitSeconds) {
-            Awaitility.await().ignoreExceptions().atMost(Duration.ofSeconds(collectDataWaitSeconds + 1)).pollDelay(collectDataWaitSeconds, TimeUnit.SECONDS).until(() -> true);
+        if (0L < collectDataWaitSeconds) {
+            Awaitility.await().ignoreExceptions().atMost(Duration.ofSeconds(collectDataWaitSeconds + 1L)).pollDelay(collectDataWaitSeconds, TimeUnit.SECONDS).until(() -> true);
         }
         initialized = true;
     }

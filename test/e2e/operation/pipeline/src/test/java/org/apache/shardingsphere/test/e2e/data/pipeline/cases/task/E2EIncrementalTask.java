@@ -106,7 +106,7 @@ public final class E2EIncrementalTask implements Runnable {
         } else if (databaseType instanceof OpenGaussDatabaseType) {
             sql = SQLBuilderUtils.buildInsertSQL(OPENGAUSS_COLUMN_NAMES, orderTableName);
         } else {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("");
         }
         DataSourceExecuteUtils.execute(dataSource, sql, orderInsertData);
     }
@@ -124,7 +124,7 @@ public final class E2EIncrementalTask implements Runnable {
                     deleteOrderById(orderId);
                     break;
                 default:
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException("");
             }
         }
     }

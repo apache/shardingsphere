@@ -245,7 +245,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
                 .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, true));
         proxyExecuteWithLog(registerStorageUnitTemplate, 0);
         int timeout = databaseType instanceof OpenGaussDatabaseType ? 60 : 10;
-        Awaitility.await().ignoreExceptions().atMost(timeout, TimeUnit.SECONDS).pollInterval(3, TimeUnit.SECONDS).until(() -> showStorageUnitsName().contains(storageUnitName));
+        Awaitility.await().ignoreExceptions().atMost(timeout, TimeUnit.SECONDS).pollInterval(3L, TimeUnit.SECONDS).until(() -> showStorageUnitsName().contains(storageUnitName));
     }
     
     /**
@@ -473,11 +473,11 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     public List<Map<String, Object>> transformResultSetToList(final ResultSet resultSet) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        int columns = resultSetMetaData.getColumnCount();
+        int columnCount = resultSetMetaData.getColumnCount();
         List<Map<String, Object>> result = new ArrayList<>();
         while (resultSet.next()) {
-            Map<String, Object> row = new HashMap<>();
-            for (int i = 1; i <= columns; i++) {
+            Map<String, Object> row = new HashMap<>(columnCount, 1F);
+            for (int i = 1; i <= columnCount; i++) {
                 row.put(resultSetMetaData.getColumnLabel(i).toLowerCase(), resultSet.getObject(i));
             }
             result.add(row);
@@ -506,7 +506,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
         for (int i = 0; i < 10; i++) {
             List<Map<String, Object>> listJobStatus = queryForListWithLog(distSQL);
             log.info("show status result: {}", listJobStatus);
-            Set<String> actualStatus = new HashSet<>();
+            Set<String> actualStatus = new HashSet<>(listJobStatus.size(), 1F);
             Collection<Integer> incrementalIdleSecondsList = new LinkedList<>();
             for (Map<String, Object> each : listJobStatus) {
                 assertTrue(Strings.isNullOrEmpty((String) each.get("error_message")), "error_message: `" + each.get("error_message") + "`");

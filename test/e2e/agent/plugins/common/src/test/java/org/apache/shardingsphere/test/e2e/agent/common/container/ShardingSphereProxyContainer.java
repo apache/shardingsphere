@@ -71,7 +71,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer {
     }
     
     private Map<String, String> createResourceMappingForProxy() {
-        Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new HashMap<>(3, 1F);
         result.put("/env/proxy/conf/global.yaml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
         result.put("/env/proxy/conf/database-db.yaml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "database-db.yaml");
         if (!Strings.isNullOrEmpty(plugin)) {
