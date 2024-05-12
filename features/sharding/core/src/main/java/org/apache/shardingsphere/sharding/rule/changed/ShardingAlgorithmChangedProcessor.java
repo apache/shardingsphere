@@ -58,6 +58,6 @@ public final class ShardingAlgorithmChangedProcessor implements RuleItemConfigur
     
     @Override
     public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.ALGORITHMS;
+        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.SHARDING_ALGORITHMS;
     }
 }

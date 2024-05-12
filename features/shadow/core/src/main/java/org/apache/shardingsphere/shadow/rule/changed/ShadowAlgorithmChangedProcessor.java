@@ -58,6 +58,6 @@ public final class ShadowAlgorithmChangedProcessor implements RuleItemConfigurat
     
     @Override
     public String getType() {
-        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.ALGORITHMS;
+        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.SHADOW_ALGORITHMS;
     }
 }

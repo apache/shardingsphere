@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleField;
 import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleField.Type;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
 
@@ -46,10 +45,10 @@ public final class YamlShadowRuleConfiguration implements YamlRuleConfiguration 
     @RepositoryTupleField(type = Type.TABLE)
     private Map<String, YamlShadowTableConfiguration> tables = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ShadowRuleNodePathProvider.ALGORITHMS, type = Type.ALGORITHM)
+    @RepositoryTupleField(type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
     
-    @RepositoryTupleField(value = ShadowRuleNodePathProvider.DEFAULT_ALGORITHM, type = Type.DEFAULT_ALGORITHM)
+    @RepositoryTupleField(type = Type.DEFAULT_ALGORITHM)
     private String defaultShadowAlgorithmName;
     
     @Override
