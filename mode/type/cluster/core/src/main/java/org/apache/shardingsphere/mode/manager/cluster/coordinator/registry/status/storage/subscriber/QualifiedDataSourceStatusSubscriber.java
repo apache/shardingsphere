@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.event.node.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
 /**
  * Qualified data source status subscriber.
  */
-public final class QualifiedDataSourceStatusSubscriber {
+public final class QualifiedDataSourceStatusSubscriber implements EventSubscriber {
     
     private final ClusterPersistRepository repository;
     

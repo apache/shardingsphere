@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.me
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -45,7 +46,7 @@ import java.util.stream.Collectors;
 /**
  * Show process list executor.
  */
-public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor {
+public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor, EventSubscriber {
     
     private final boolean showFullProcesslist;
     

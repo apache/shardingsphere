@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
@@ -41,7 +42,7 @@ import java.util.stream.Stream;
 /**
  * Cluster process subscriber.
  */
-public final class ClusterProcessSubscriber implements ProcessSubscriber {
+public final class ClusterProcessSubscriber implements ProcessSubscriber, EventSubscriber {
     
     private final PersistRepository repository;
     

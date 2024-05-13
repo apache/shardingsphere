@@ -15,26 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
-
-import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
+package org.apache.shardingsphere.infra.util.eventbus;
 
 /**
- * Cache evicted subscriber.
+ * Event subscriber.
  */
-@SuppressWarnings("unused")
-public final class CacheEvictedSubscriber implements EventSubscriber {
-    
-    /**
-     * Callback of any {@link GovernanceEvent}.
-     *
-     * @param ignored unused
-     */
-    @Subscribe
-    public void onGovernanceEvent(final GovernanceEvent ignored) {
-        OrderedServicesCache.clearCache();
-    }
+public interface EventSubscriber {
 }

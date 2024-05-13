@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.eventbus;
 
-import org.apache.shardingsphere.infra.util.eventbus.fixture.EventListenerFixture;
+import org.apache.shardingsphere.infra.util.eventbus.fixture.EventSubscriberFixture;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,7 +28,7 @@ class EventBusContextTest {
     @Test
     void assertEventBusContextTest() {
         EventBusContext eventBusContext = new EventBusContext();
-        EventListenerFixture listener = new EventListenerFixture();
+        EventSubscriberFixture listener = new EventSubscriberFixture();
         eventBusContext.register(listener);
         eventBusContext.post("foo_event");
         assertThat(listener.getEvents().size(), is(1));

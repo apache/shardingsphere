@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
@@ -43,7 +44,7 @@ import java.util.Collection;
  */
 @SuppressWarnings("unused")
 @RequiredArgsConstructor
-public final class ProcessListChangedSubscriber {
+public final class ProcessListChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
     

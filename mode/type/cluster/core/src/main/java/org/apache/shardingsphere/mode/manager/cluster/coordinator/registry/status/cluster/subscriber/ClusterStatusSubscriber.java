@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStatusChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 /**
  * Cluster status subscriber.
  */
-public final class ClusterStatusSubscriber {
+public final class ClusterStatusSubscriber implements EventSubscriber {
     
     private final ClusterPersistRepository repository;
     

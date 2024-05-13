@@ -33,12 +33,12 @@ public final class EventBusContext {
     }
     
     /**
-     * Register object.
+     * Register event subscriber.
      * 
-     * @param object object
+     * @param subscriber event subscriber
      */
-    public void register(final Object object) {
-        eventBus.register(object);
+    public void register(final EventSubscriber subscriber) {
+        eventBus.register(subscriber);
     }
     
     /**
