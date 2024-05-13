@@ -19,12 +19,13 @@ package org.apache.shardingsphere.infra.util.eventbus.fixture;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 
 import java.util.LinkedList;
 import java.util.List;
 
 @Getter
-public final class EventListenerFixture {
+public final class EventSubscriberFixture implements EventSubscriber {
     
     private final List<String> events = new LinkedList<>();
     

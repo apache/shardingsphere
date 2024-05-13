@@ -21,6 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.event.schema.table.CreateOrAlterTableEvent;
 import org.apache.shardingsphere.mode.event.schema.table.DropTableEvent;
 import org.apache.shardingsphere.mode.event.schema.view.CreateOrAlterViewEvent;
@@ -38,7 +39,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @SuppressWarnings("unused")
-public final class ResourceMetaDataChangedSubscriber {
+public final class ResourceMetaDataChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
     

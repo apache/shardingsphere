@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 
@@ -30,7 +31,7 @@ import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
  * Rule item changed subscriber.
  */
 @RequiredArgsConstructor
-public final class RuleItemChangedSubscriber {
+public final class RuleItemChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
     

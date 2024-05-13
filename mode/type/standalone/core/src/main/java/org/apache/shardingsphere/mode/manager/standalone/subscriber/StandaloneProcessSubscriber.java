@@ -21,6 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.process.ProcessSubscriber;
 import org.apache.shardingsphere.mode.process.event.KillProcessRequestEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
@@ -32,7 +33,7 @@ import java.sql.Statement;
 /**
  * Standalone process subscriber.
  */
-public final class StandaloneProcessSubscriber implements ProcessSubscriber {
+public final class StandaloneProcessSubscriber implements ProcessSubscriber, EventSubscriber {
     
     private final EventBusContext eventBusContext;
     

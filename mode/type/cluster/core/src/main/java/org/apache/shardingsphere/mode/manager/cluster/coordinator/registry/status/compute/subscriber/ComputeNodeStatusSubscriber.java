@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.node.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
@@ -29,7 +30,7 @@ import java.util.Collections;
 /**
  * Compute node status subscriber.
  */
-public final class ComputeNodeStatusSubscriber {
+public final class ComputeNodeStatusSubscriber implements EventSubscriber {
     
     private final RegistryCenter registryCenter;
     

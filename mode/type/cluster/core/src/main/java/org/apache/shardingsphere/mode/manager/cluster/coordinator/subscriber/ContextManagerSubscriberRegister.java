@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessListChangedSubscriber;
@@ -28,11 +29,11 @@ import java.util.Collection;
 /**
  * Context manager subscriber register.
  */
-public final class ContextManagerSubscriberRegister {
+public final class ContextManagerSubscriberRegister implements EventSubscriber {
     
     private final EventBusContext eventBusContext;
     
-    private final Collection<Object> subscribers;
+    private final Collection<EventSubscriber> subscribers;
     
     public ContextManagerSubscriberRegister(final RegistryCenter registryCenter, final ContextManager contextManager) {
         eventBusContext = contextManager.getInstanceContext().getEventBusContext();

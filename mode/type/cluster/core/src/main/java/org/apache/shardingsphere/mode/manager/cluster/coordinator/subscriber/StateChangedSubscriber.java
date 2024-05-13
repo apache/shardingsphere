@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSou
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterLockDeletedEvent;
@@ -42,7 +43,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
  */
 @RequiredArgsConstructor
 @SuppressWarnings("unused")
-public final class StateChangedSubscriber {
+public final class StateChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
     
