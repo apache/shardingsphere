@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
@@ -40,19 +41,15 @@ import java.util.Collection;
  * TODO replace the old ProcessListChangedSubscriber after meta data refactor completed
  * New process list changed subscriber.
  */
+@SuppressWarnings("unused")
+@RequiredArgsConstructor
 public final class ProcessListChangedSubscriber {
-    
-    private final RegistryCenter registryCenter;
     
     private final ContextManager contextManager;
     
-    private final YamlProcessListSwapper swapper = new YamlProcessListSwapper();
+    private final RegistryCenter registryCenter;
     
-    public ProcessListChangedSubscriber(final RegistryCenter registryCenter, final ContextManager contextManager) {
-        this.registryCenter = registryCenter;
-        this.contextManager = contextManager;
-        contextManager.getInstanceContext().getEventBusContext().register(this);
-    }
+    private final YamlProcessListSwapper swapper = new YamlProcessListSwapper();
     
     /**
      * Report local processes.

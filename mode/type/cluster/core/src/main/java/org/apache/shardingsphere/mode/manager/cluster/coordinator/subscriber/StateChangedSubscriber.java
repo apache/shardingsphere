@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
@@ -39,18 +40,13 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 /**
  * State changed subscriber.
  */
+@RequiredArgsConstructor
 @SuppressWarnings("unused")
 public final class StateChangedSubscriber {
     
-    private final RegistryCenter registryCenter;
-    
     private final ContextManager contextManager;
     
-    public StateChangedSubscriber(final RegistryCenter registryCenter, final ContextManager contextManager) {
-        this.registryCenter = registryCenter;
-        this.contextManager = contextManager;
-        contextManager.getInstanceContext().getEventBusContext().register(this);
-    }
+    private final RegistryCenter registryCenter;
     
     /**
      * Renew disabled data source names.

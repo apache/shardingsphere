@@ -86,7 +86,7 @@ class ProcessListChangedSubscriberTest {
                 contextManager.getMetaDataContexts().getMetaData().getGlobalResourceMetaData(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
                 new ConfigurationProperties(new Properties()))));
         registryCenter = new RegistryCenter(mock(ClusterPersistRepository.class), new EventBusContext(), mock(ProxyInstanceMetaData.class), null);
-        subscriber = new ProcessListChangedSubscriber(registryCenter, contextManager);
+        subscriber = new ProcessListChangedSubscriber(contextManager, registryCenter);
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {

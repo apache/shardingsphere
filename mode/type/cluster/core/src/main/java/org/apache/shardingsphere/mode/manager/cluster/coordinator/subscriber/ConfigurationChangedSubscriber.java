@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.config.AlterGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.event.config.AlterPropertiesEvent;
 import org.apache.shardingsphere.mode.event.datasource.unit.AlterStorageUnitEvent;
@@ -28,15 +29,11 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 /**
  * Configuration changed subscriber.
  */
+@RequiredArgsConstructor
 @SuppressWarnings("unused")
 public final class ConfigurationChangedSubscriber {
     
     private final ContextManager contextManager;
-    
-    public ConfigurationChangedSubscriber(final ContextManager contextManager) {
-        this.contextManager = contextManager;
-        contextManager.getInstanceContext().getEventBusContext().register(this);
-    }
     
     /**
      * Renew for register storage unit.
