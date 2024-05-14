@@ -17,34 +17,18 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.subscriber;
 
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.subsciber.EventSubscriberRegistry;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscriber;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 /**
- * Standalone event subscriber register.
+ * Standalone event subscriber registry.
  */
-public final class StandaloneEventSubscriberRegister {
+public final class StandaloneEventSubscriberRegistry extends EventSubscriberRegistry {
     
-    private final EventBusContext eventBusContext;
-    
-    private final Collection<EventSubscriber> subscribers;
-    
-    public StandaloneEventSubscriberRegister(final ContextManager contextManager) {
-        eventBusContext = contextManager.getInstanceContext().getEventBusContext();
-        subscribers = Arrays.asList(
-                new StandaloneProcessSubscriber(eventBusContext), 
+    public StandaloneEventSubscriberRegistry(final ContextManager contextManager) {
+        super(contextManager, 
+                new StandaloneProcessSubscriber(contextManager.getInstanceContext().getEventBusContext()),
                 new RuleItemChangedSubscriber(contextManager));
-    }
-    
-    /**
-     * Register subscribers.
-     */
-    public void register() {
-        subscribers.forEach(eventBusContext::register);
     }
 }

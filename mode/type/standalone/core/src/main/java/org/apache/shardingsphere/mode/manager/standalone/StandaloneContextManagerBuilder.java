@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.manager.standalone.subscriber.StandaloneEventSubscriberRegister;
+import org.apache.shardingsphere.mode.manager.standalone.subscriber.StandaloneEventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
@@ -50,7 +50,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         InstanceContext instanceContext = buildInstanceContext(param);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, instanceContext);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
-        new StandaloneEventSubscriberRegister(result).register();
+        new StandaloneEventSubscriberRegistry(result).register();
         setContextManagerAware(result);
         return result;
     }
