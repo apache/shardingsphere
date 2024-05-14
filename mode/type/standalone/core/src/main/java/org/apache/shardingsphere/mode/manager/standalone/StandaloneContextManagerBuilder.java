@@ -27,12 +27,11 @@ import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.manager.standalone.subscriber.StandaloneProcessSubscriber;
+import org.apache.shardingsphere.mode.manager.standalone.subscriber.StandaloneEventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
-import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscriber;
 
 import java.sql.SQLException;
 import java.util.Properties;
@@ -49,10 +48,9 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         InstanceContext instanceContext = buildInstanceContext(param);
-        new StandaloneProcessSubscriber(instanceContext.getEventBusContext());
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, instanceContext);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
-        registerSubscriber(result);
+        new StandaloneEventSubscriberRegistry(result).register();
         setContextManagerAware(result);
         return result;
     }
@@ -60,10 +58,6 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter param) {
         return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()),
                 new StandaloneWorkerIdGenerator(), param.getModeConfiguration(), new StandaloneModeContextManager(), new GlobalLockContext(null), new EventBusContext());
-    }
-    
-    private void registerSubscriber(final ContextManager contextManager) {
-        contextManager.getInstanceContext().getEventBusContext().register(new RuleItemChangedSubscriber(contextManager));
     }
     
     private void setContextManagerAware(final ContextManager contextManager) {

@@ -17,39 +17,23 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessListChangedSubscriber;
-
-import java.util.Arrays;
-import java.util.Collection;
+import org.apache.shardingsphere.mode.subsciber.EventSubscriberRegistry;
 
 /**
- * Context manager subscriber register.
+ * Cluster event subscriber registry.
  */
-public final class ContextManagerSubscriberRegister implements EventSubscriber {
+public final class ClusterEventSubscriberRegistry extends EventSubscriberRegistry {
     
-    private final EventBusContext eventBusContext;
-    
-    private final Collection<EventSubscriber> subscribers;
-    
-    public ContextManagerSubscriberRegister(final RegistryCenter registryCenter, final ContextManager contextManager) {
-        eventBusContext = contextManager.getInstanceContext().getEventBusContext();
-        subscribers = Arrays.asList(
+    public ClusterEventSubscriberRegistry(final ContextManager contextManager, final RegistryCenter registryCenter) {
+        super(contextManager, new ConfigurationChangedSubscriber(contextManager),
                 new ConfigurationChangedSubscriber(contextManager),
                 new ResourceMetaDataChangedSubscriber(contextManager),
                 new DatabaseChangedSubscriber(contextManager),
                 new StateChangedSubscriber(contextManager, registryCenter),
                 new ProcessListChangedSubscriber(contextManager, registryCenter),
                 new CacheEvictedSubscriber());
-    }
-    
-    /**
-     * Register subscribers.
-     */
-    public void register() {
-        subscribers.forEach(eventBusContext::register);
     }
 }
