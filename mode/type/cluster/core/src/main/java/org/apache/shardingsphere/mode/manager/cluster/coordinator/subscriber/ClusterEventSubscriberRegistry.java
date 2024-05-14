@@ -36,4 +36,4 @@ public final class ClusterEventSubscriberRegistry extends EventSubscriberRegistr
                 new ProcessListChangedSubscriber(contextManager, registryCenter),
                 new CacheEvictedSubscriber());
     }
-}
+} 
