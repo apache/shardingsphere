@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.standalone.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -33,14 +34,10 @@ import java.sql.Statement;
 /**
  * Standalone process subscriber.
  */
+@RequiredArgsConstructor
 public final class StandaloneProcessSubscriber implements ProcessSubscriber, EventSubscriber {
     
     private final EventBusContext eventBusContext;
-    
-    public StandaloneProcessSubscriber(final EventBusContext eventBusContext) {
-        this.eventBusContext = eventBusContext;
-        eventBusContext.register(this);
-    }
     
     @Override
     @Subscribe

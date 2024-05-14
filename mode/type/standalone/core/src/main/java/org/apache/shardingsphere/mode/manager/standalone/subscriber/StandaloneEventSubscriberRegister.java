@@ -15,35 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
+package org.apache.shardingsphere.mode.manager.standalone.subscriber;
 
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessListChangedSubscriber;
+import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscriber;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Context manager subscriber register.
+ * Standalone event subscriber register.
  */
-public final class ContextManagerSubscriberRegister implements EventSubscriber {
+public final class StandaloneEventSubscriberRegister {
     
     private final EventBusContext eventBusContext;
     
     private final Collection<EventSubscriber> subscribers;
     
-    public ContextManagerSubscriberRegister(final RegistryCenter registryCenter, final ContextManager contextManager) {
+    public StandaloneEventSubscriberRegister(final ContextManager contextManager) {
         eventBusContext = contextManager.getInstanceContext().getEventBusContext();
         subscribers = Arrays.asList(
-                new ConfigurationChangedSubscriber(contextManager),
-                new ResourceMetaDataChangedSubscriber(contextManager),
-                new DatabaseChangedSubscriber(contextManager),
-                new StateChangedSubscriber(contextManager, registryCenter),
-                new ProcessListChangedSubscriber(contextManager, registryCenter),
-                new CacheEvictedSubscriber());
+                new StandaloneProcessSubscriber(eventBusContext), 
+                new RuleItemChangedSubscriber(contextManager));
     }
     
     /**
