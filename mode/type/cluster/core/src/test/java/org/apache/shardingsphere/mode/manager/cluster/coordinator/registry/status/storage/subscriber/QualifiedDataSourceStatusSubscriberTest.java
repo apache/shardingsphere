@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.event.node.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
@@ -35,15 +34,13 @@ class QualifiedDataSourceStatusSubscriberTest {
     @Mock
     private ClusterPersistRepository repository;
     
-    private final EventBusContext eventBusContext = new EventBusContext();
-    
     @Test
     void assertDeleteStorageNodeDataSourceDataSourceState() {
         String databaseName = "replica_query_db";
         String groupName = "readwrite_ds";
         String dataSourceName = "replica_ds_0";
         QualifiedDataSourceDeletedEvent event = new QualifiedDataSourceDeletedEvent(new QualifiedDataSource(databaseName, groupName, dataSourceName));
-        new QualifiedDataSourceStatusSubscriber(repository, eventBusContext).delete(event);
+        new QualifiedDataSourceStatusSubscriber(repository).delete(event);
         verify(repository).delete(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(new QualifiedDataSource(databaseName, groupName, dataSourceName)));
     }
 }
