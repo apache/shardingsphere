@@ -49,10 +49,10 @@ import java.util.Properties;
 public final class RegistryCenter {
     
     @Getter
-    private final ClusterPersistRepository repository;
+    private final EventBusContext eventBusContext;
     
     @Getter
-    private final EventBusContext eventBusContext;
+    private final ClusterPersistRepository repository;
     
     private final InstanceMetaData instanceMetaData;
     
@@ -72,10 +72,9 @@ public final class RegistryCenter {
     
     private final GovernanceWatcherFactory listenerFactory;
     
-    public RegistryCenter(final ClusterPersistRepository repository, final EventBusContext eventBusContext,
-                          final InstanceMetaData instanceMetaData, final Map<String, DatabaseConfiguration> databaseConfigs) {
+    public RegistryCenter(final ClusterPersistRepository repository, final InstanceMetaData instanceMetaData, final Map<String, DatabaseConfiguration> databaseConfigs) {
+        eventBusContext = new EventBusContext();
         this.repository = repository;
-        this.eventBusContext = eventBusContext;
         this.instanceMetaData = instanceMetaData;
         this.databaseConfigs = databaseConfigs;
         clusterStatusService = new ClusterStatusService(repository);

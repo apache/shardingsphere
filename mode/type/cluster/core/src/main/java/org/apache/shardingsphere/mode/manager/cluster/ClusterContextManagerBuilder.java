@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
@@ -48,14 +47,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     @Override
     public ContextManager build(final ContextManagerBuilderParameter param) throws SQLException {
         ClusterPersistRepository repository = getClusterPersistRepository((ClusterPersistRepositoryConfiguration) param.getModeConfiguration().getRepository());
-        RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext(), param.getInstanceMetaData(), param.getDatabaseConfigs());
+        RegistryCenter registryCenter = new RegistryCenter(repository, param.getInstanceMetaData(), param.getDatabaseConfigs());
         InstanceContext instanceContext = buildInstanceContext(registryCenter, param);
         if (registryCenter.getRepository() instanceof InstanceContextAware) {
             ((InstanceContextAware) registryCenter.getRepository()).setInstanceContext(instanceContext);
         }
-        MetaDataPersistService persistService = new MetaDataPersistService(repository);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(
-                persistService, param, instanceContext, registryCenter.getQualifiedDataSourceStatusService().loadStatus());
+        MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, instanceContext, registryCenter.getQualifiedDataSourceStatusService().loadStatus());
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         setContextManagerAware(result);
         registerOnline(registryCenter, param, result);
@@ -63,7 +61,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private ClusterPersistRepository getClusterPersistRepository(final ClusterPersistRepositoryConfiguration config) {
-        Preconditions.checkNotNull(config, "Cluster persist repository configuration cannot be null.");
+        Preconditions.checkNotNull(config, "Cluster persist repository configuration can not be null.");
         ClusterPersistRepository result = TypedSPILoader.getService(ClusterPersistRepository.class, config.getType(), config.getProps());
         result.init(config);
         return result;
