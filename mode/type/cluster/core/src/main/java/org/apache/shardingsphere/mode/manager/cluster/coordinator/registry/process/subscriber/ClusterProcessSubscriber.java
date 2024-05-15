@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
@@ -42,20 +43,14 @@ import java.util.stream.Stream;
 /**
  * Cluster process subscriber.
  */
+@RequiredArgsConstructor
 public final class ClusterProcessSubscriber implements ProcessSubscriber, EventSubscriber {
     
     private final PersistRepository repository;
     
     private final EventBusContext eventBusContext;
     
-    private final YamlProcessListSwapper swapper;
-    
-    public ClusterProcessSubscriber(final PersistRepository repository, final EventBusContext eventBusContext) {
-        this.repository = repository;
-        this.eventBusContext = eventBusContext;
-        swapper = new YamlProcessListSwapper();
-        eventBusContext.register(this);
-    }
+    private final YamlProcessListSwapper swapper = new YamlProcessListSwapper();
     
     @Override
     @Subscribe

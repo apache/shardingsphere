@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.subscriber;
 
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStatusChangedEvent;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStatusChangedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.verify;
@@ -37,7 +36,7 @@ class ClusterStatusSubscriberTest {
     
     @Test
     void assertUpdate() {
-        ClusterStatusSubscriber clusterStatusSubscriber = new ClusterStatusSubscriber(repository, new EventBusContext());
+        ClusterStatusSubscriber clusterStatusSubscriber = new ClusterStatusSubscriber(repository);
         ClusterStatusChangedEvent event = new ClusterStatusChangedEvent(ClusterState.OK);
         clusterStatusSubscriber.update(event);
         verify(repository).persist(ComputeNode.getClusterStatusNodePath(), ClusterState.OK.name());
