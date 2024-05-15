@@ -25,9 +25,7 @@ import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * @author zzypersonally@gmail.com
- * @description
- * @since 2024/5/7 15:59
+ * ClickHouse parser.
  */
 public final class ClickHouseParser extends ClickHouseStatementParser implements SQLParser {
     

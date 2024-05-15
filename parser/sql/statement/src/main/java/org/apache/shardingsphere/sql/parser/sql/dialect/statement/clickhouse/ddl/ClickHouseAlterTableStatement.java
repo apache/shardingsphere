@@ -20,5 +20,8 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.clickhouse.dd
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.clickhouse.ClickHouseStatement;
 
+/**
+ * ClickHouse AlterTable Statement.
+ */
 public final class ClickHouseAlterTableStatement extends AlterTableStatement implements ClickHouseStatement {
 }

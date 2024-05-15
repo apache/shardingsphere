@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.spi.DialectSQLParserFacade;
 
 /**
- * SQL parser facade for MySQL.
+ * SQL parser facade for ClickHouse.
  */
 public final class ClickHouseParserFacade implements DialectSQLParserFacade {
     

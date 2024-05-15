@@ -21,9 +21,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.clickhouse.ClickHouseStatement;
 
 /**
- * @author zzypersonally@gmail.com
- * @description
- * @since 2024/5/13 17:22
+ * ClickHouse select statement.
  */
 public class ClickHouseSelectStatement extends SelectStatement implements ClickHouseStatement {
 }

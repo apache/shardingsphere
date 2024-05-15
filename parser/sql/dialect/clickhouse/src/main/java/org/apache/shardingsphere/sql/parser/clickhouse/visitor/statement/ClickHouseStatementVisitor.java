@@ -30,7 +30,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.*;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -53,7 +59,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.keyword.KeywordValue;
-import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.*;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NullLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
 
@@ -64,14 +74,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @author zzypersonally@gmail.com
- * @description   基础segment访问器
- * @since 2024/5/7 16:03
+ * ClickHouse Statement visitor.
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBaseVisitor<ASTNode> {
     
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
+    
     @Override
     public final ASTNode visitParameterMarker(final ClickHouseStatementParser.ParameterMarkerContext ctx) {
         return new ParameterMarkerValue(parameterMarkerSegments.size(), ParameterMarkerType.QUESTION);

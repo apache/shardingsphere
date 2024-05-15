@@ -24,13 +24,18 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.clickhouse.ClickHouseStatement;
 
+/**
+ * ClickHouse Create Table Statement.
+ */
 @RequiredArgsConstructor
 @Getter
 @Setter
 public final class ClickHouseCreateTableStatement extends CreateTableStatement implements ClickHouseStatement {
     
     private SimpleTableSegment uuidClause;
+    
     private SimpleTableSegment clusterClause;
+    
     private SimpleTableSegment tableSchemaClause;
     
 }

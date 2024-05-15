@@ -21,9 +21,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatem
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitor;
 
 /**
- * @author zzypersonally@gmail.com
- * @description
- * @since 2024/5/9 15:41
+ * ClickHouse DAL statement visitor.
  */
 public class ClickHouseDALStatementVisitor extends ClickHouseStatementVisitor implements DALStatementVisitor {
 }

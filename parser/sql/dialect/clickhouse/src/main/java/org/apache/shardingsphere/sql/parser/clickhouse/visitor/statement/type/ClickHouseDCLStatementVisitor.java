@@ -21,9 +21,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatem
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitor;
 
 /**
- * @author zzypersonally@gmail.com
- * @description
- * @since 2024/5/9 15:40
+ * ClickHouse DCL statement visitor.
  */
 public class ClickHouseDCLStatementVisitor extends ClickHouseStatementVisitor implements DCLStatementVisitor {
 }

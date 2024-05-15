@@ -22,9 +22,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * @author zzypersonally@gmail.com
- * @description ClickHouseStatement
- * @since 2024/5/11 11:38
+ * ClickHouse statement.
  */
 public interface ClickHouseStatement extends SQLStatement {
     
