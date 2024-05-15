@@ -52,23 +52,23 @@ public final class RegistryCenter {
     private final ClusterPersistRepository repository;
     
     @Getter
-    private final QualifiedDataSourceStatusService qualifiedDataSourceStatusService;
+    private final EventBusContext eventBusContext;
+    
+    private final InstanceMetaData instanceMetaData;
+    
+    private final Map<String, DatabaseConfiguration> databaseConfigs;
     
     @Getter
     private final ClusterStatusService clusterStatusService;
+    
+    @Getter
+    private final QualifiedDataSourceStatusService qualifiedDataSourceStatusService;
     
     @Getter
     private final ComputeNodeStatusService computeNodeStatusService;
     
     @Getter
     private final GlobalLockPersistService globalLockPersistService;
-    
-    @Getter
-    private final EventBusContext eventBusContext;
-    
-    private final InstanceMetaData instanceMetaData;
-    
-    private final Map<String, DatabaseConfiguration> databaseConfigs;
     
     private final GovernanceWatcherFactory listenerFactory;
     
@@ -78,8 +78,8 @@ public final class RegistryCenter {
         this.eventBusContext = eventBusContext;
         this.instanceMetaData = instanceMetaData;
         this.databaseConfigs = databaseConfigs;
-        qualifiedDataSourceStatusService = new QualifiedDataSourceStatusService(repository);
         clusterStatusService = new ClusterStatusService(repository);
+        qualifiedDataSourceStatusService = new QualifiedDataSourceStatusService(repository);
         computeNodeStatusService = new ComputeNodeStatusService(repository);
         globalLockPersistService = new GlobalLockPersistService(initDistributedLockHolder(repository));
         listenerFactory = new GovernanceWatcherFactory(repository, eventBusContext, getJDBCDatabaseName());
