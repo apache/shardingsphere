@@ -35,7 +35,6 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscriber;
 
 import java.sql.SQLException;
 
@@ -81,7 +80,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         loadClusterStatus(registryCenter, contextManager);
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
         contextManager.getInstanceContext().getAllClusterInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
-        contextManager.getInstanceContext().getEventBusContext().register(new RuleItemChangedSubscriber(contextManager));
         new ClusterEventSubscriberRegistry(contextManager, registryCenter).register();
     }
     

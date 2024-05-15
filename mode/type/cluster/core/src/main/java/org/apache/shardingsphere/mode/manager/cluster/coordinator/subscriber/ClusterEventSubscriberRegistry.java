@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessListChangedSubscriber;
 import org.apache.shardingsphere.mode.subsciber.EventSubscriberRegistry;
+import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscriber;
 
 /**
  * Cluster event subscriber registry.
@@ -28,7 +29,9 @@ import org.apache.shardingsphere.mode.subsciber.EventSubscriberRegistry;
 public final class ClusterEventSubscriberRegistry extends EventSubscriberRegistry {
     
     public ClusterEventSubscriberRegistry(final ContextManager contextManager, final RegistryCenter registryCenter) {
-        super(contextManager, new ConfigurationChangedSubscriber(contextManager),
+        super(contextManager,
+                new RuleItemChangedSubscriber(contextManager),
+                new ConfigurationChangedSubscriber(contextManager),
                 new ConfigurationChangedSubscriber(contextManager),
                 new ResourceMetaDataChangedSubscriber(contextManager),
                 new DatabaseChangedSubscriber(contextManager),
