@@ -3726,6 +3726,11 @@
                 <binary-operation-expression start-index="33" stop-index="116" literal-stop-index="123">
                     <left>
                         <match-expression start-index="33" stop-index="106">
+                            <columns>
+                                <column name="description" start-index="39" stop-index="62">
+                                    <owner name="t_order" start-index="39" stop-index="50" />
+                                </column>
+                            </columns>
                             <expr>
                                 <literal-expression value="hello" start-index="74" stop-index="80" />
                                 <parameter-marker-expression parameter-index="0" start-index="74" stop-index="74" />

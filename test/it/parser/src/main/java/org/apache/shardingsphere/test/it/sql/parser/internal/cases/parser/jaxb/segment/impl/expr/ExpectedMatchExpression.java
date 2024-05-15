@@ -20,8 +20,11 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Expected match expression.
@@ -29,6 +32,9 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public class ExpectedMatchExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+    
+    @XmlElement
+    private final List<ExpectedColumn> columns = new LinkedList<>();
     
     @XmlElement
     private ExpectedExpression expr;

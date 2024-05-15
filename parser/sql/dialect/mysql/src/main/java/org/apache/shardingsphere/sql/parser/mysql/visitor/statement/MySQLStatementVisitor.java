@@ -1283,9 +1283,13 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public final ASTNode visitMatchExpression(final MatchExpressionContext ctx) {
-        ColumnSegment columnSegment = (ColumnSegment) visit(ctx.columnRefList().columnRef(0));
         ExpressionSegment expressionSegment = (ExpressionSegment) visit(ctx.expr());
-        return new MatchAgainstExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegment, expressionSegment, getOriginalText(ctx.matchSearchModifier()), getOriginalText(ctx));
+        MatchAgainstExpression result = new MatchAgainstExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), expressionSegment, getOriginalText(ctx.matchSearchModifier()),
+                getOriginalText(ctx));
+        for (ColumnRefContext each : ctx.columnRefList().columnRef()) {
+            result.getColumns().add((ColumnSegment) visit(each));
+        }
+        return result;
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date
