@@ -5,7 +5,7 @@ weight = 1
 
 ### 描述
 
-`SHOW SHARDING TABLE RULE` 语法用于查询指定逻辑库中的分片规则。
+`SHOW SHARDING TABLE RULES` 语法用于查询指定逻辑库中的分片规则。
 
 ### 语法
 
