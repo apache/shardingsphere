@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement;
 
 import lombok.AccessLevel;
@@ -46,7 +63,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 /**
  * @author zzypersonally@gmail.com
  * @description   基础segment访问器
@@ -54,13 +70,13 @@ import java.util.stream.Collectors;
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBaseVisitor<ASTNode> {
-
+    
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     @Override
     public final ASTNode visitParameterMarker(final ClickHouseStatementParser.ParameterMarkerContext ctx) {
         return new ParameterMarkerValue(parameterMarkerSegments.size(), ParameterMarkerType.QUESTION);
     }
-
+    
     @Override
     public final ASTNode visitLiterals(final ClickHouseStatementParser.LiteralsContext ctx) {
         if (null != ctx.stringLiterals()) {
@@ -83,57 +99,56 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, boolean or null.");
     }
-
+    
     @Override
     public final ASTNode visitStringLiterals(final ClickHouseStatementParser.StringLiteralsContext ctx) {
         return new StringLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitNumberLiterals(final ClickHouseStatementParser.NumberLiteralsContext ctx) {
         return new NumberLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitHexadecimalLiterals(final ClickHouseStatementParser.HexadecimalLiteralsContext ctx) {
         // TODO deal with hexadecimalLiterals
         return new OtherLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitBitValueLiterals(final ClickHouseStatementParser.BitValueLiteralsContext ctx) {
         // TODO deal with bitValueLiterals
         return new OtherLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitBooleanLiterals(final ClickHouseStatementParser.BooleanLiteralsContext ctx) {
-
-
+        
         return new BooleanLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitNullValueLiterals(final ClickHouseStatementParser.NullValueLiteralsContext ctx) {
         return new NullLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitIdentifier(final ClickHouseStatementParser.IdentifierContext ctx) {
         ClickHouseStatementParser.UnreservedWordContext unreservedWord = ctx.unreservedWord();
         return null == unreservedWord ? new IdentifierValue(ctx.getText()) : visit(unreservedWord);
     }
-
+    
     @Override
     public final ASTNode visitUnreservedWord(final ClickHouseStatementParser.UnreservedWordContext ctx) {
         return new IdentifierValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitSchemaName(final ClickHouseStatementParser.SchemaNameContext ctx) {
         return visit(ctx.identifier());
     }
-
+    
     @Override
     public final ASTNode visitTableName(final ClickHouseStatementParser.TableNameContext ctx) {
         SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(), ctx.name().getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));
@@ -143,7 +158,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitColumnName(final ClickHouseStatementParser.ColumnNameContext ctx) {
         ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
@@ -153,7 +168,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitTableNames(final ClickHouseStatementParser.TableNamesContext ctx) {
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
@@ -162,7 +177,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitColumnNames(final ClickHouseStatementParser.ColumnNamesContext ctx) {
         CollectionValue<ColumnSegment> result = new CollectionValue<>();
@@ -171,7 +186,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitExpr(final ClickHouseStatementParser.ExprContext ctx) {
         if (null != ctx.booleanPrimary()) {
@@ -188,14 +203,14 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false);
     }
-
+    
     private ASTNode createBinaryOperationExpression(final ClickHouseStatementParser.ExprContext ctx, final String operator) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.expr(0));
         ExpressionSegment right = (ExpressionSegment) visit(ctx.expr(1));
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
-
+    
     @Override
     public final ASTNode visitBooleanPrimary(final ClickHouseStatementParser.BooleanPrimaryContext ctx) {
         if (null != ctx.IS()) {
@@ -227,7 +242,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return visit(ctx.predicate());
     }
-
+    
     private ASTNode createCompareSegment(final ClickHouseStatementParser.BooleanPrimaryContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
         ExpressionSegment right;
@@ -240,7 +255,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
-
+    
     @Override
     public final ASTNode visitPredicate(final ClickHouseStatementParser.PredicateContext ctx) {
         if (null != ctx.IN()) {
@@ -254,7 +269,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return visit(ctx.bitExpr(0));
     }
-
+    
     private BinaryOperationExpression createBinaryOperationExpressionFromLike(final ClickHouseStatementParser.PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ListExpression right = new ListExpression(ctx.simpleExpr(0).start.getStartIndex(), ctx.simpleExpr().get(ctx.simpleExpr().size() - 1).stop.getStopIndex());
@@ -265,7 +280,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
-
+    
     private InExpression createInSegment(final ClickHouseStatementParser.PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right;
@@ -282,7 +297,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         boolean not = null != ctx.NOT();
         return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
     }
-
+    
     private BetweenExpression createBetweenSegment(final ClickHouseStatementParser.PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
@@ -290,7 +305,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         boolean not = null != ctx.NOT();
         return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
     }
-
+    
     @Override
     public final ASTNode visitBitExpr(final ClickHouseStatementParser.BitExprContext ctx) {
         if (null != ctx.simpleExpr()) {
@@ -302,7 +317,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
-
+    
     private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {
         if (astNode instanceof StringLiteralValue) {
             return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((StringLiteralValue) astNode).getValue());
@@ -328,7 +343,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return astNode;
     }
-
+    
     @Override
     public final ASTNode visitSimpleExpr(final ClickHouseStatementParser.SimpleExprContext ctx) {
         int startIndex = ctx.getStart().getStartIndex();
@@ -353,13 +368,13 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitIntervalExpression(final ClickHouseStatementParser.IntervalExpressionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
     }
-
+    
     @Override
     public final ASTNode visitFunctionCall(final ClickHouseStatementParser.FunctionCallContext ctx) {
         if (null != ctx.aggregationFunction()) {
@@ -373,7 +388,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction or specialFunction.");
     }
-
+    
     @Override
     public final ASTNode visitAggregationFunction(final ClickHouseStatementParser.AggregationFunctionContext ctx) {
         String aggregationType = ctx.aggregationFunctionName().getText();
@@ -381,7 +396,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
                 ? createAggregationSegment(ctx, aggregationType)
                 : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
     }
-
+    
     private ASTNode createAggregationSegment(final ClickHouseStatementParser.AggregationFunctionContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         if (null != ctx.distinct()) {
@@ -394,7 +409,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         result.getParameters().addAll(getExpressions(ctx));
         return result;
     }
-
+    
     private Collection<ExpressionSegment> getExpressions(final ClickHouseStatementParser.AggregationFunctionContext ctx) {
         if (null == ctx.expr()) {
             return Collections.emptyList();
@@ -405,7 +420,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return result;
     }
-
+    
     private String getDistinctExpression(final ClickHouseStatementParser.AggregationFunctionContext ctx) {
         StringBuilder result = new StringBuilder();
         for (int i = 3; i < ctx.getChildCount() - 1; i++) {
@@ -413,7 +428,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return result.toString();
     }
-
+    
     @Override
     public final ASTNode visitSpecialFunction(final ClickHouseStatementParser.SpecialFunctionContext ctx) {
         if (null != ctx.castFunction()) {
@@ -421,7 +436,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
-
+    
     @Override
     public final ASTNode visitCastFunction(final ClickHouseStatementParser.CastFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
@@ -435,7 +450,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
         return result;
     }
-
+    
     @Override
     public final ASTNode visitRegularFunction(final ClickHouseStatementParser.RegularFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx));
@@ -443,7 +458,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         result.getParameters().addAll(expressionSegments);
         return result;
     }
-
+    
     @Override
     public final ASTNode visitDataTypeName(final ClickHouseStatementParser.DataTypeNameContext ctx) {
         Collection<String> dataTypeNames = new LinkedList<>();
@@ -452,14 +467,14 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return new KeywordValue(String.join(" ", dataTypeNames));
     }
-
+    
     // TODO :FIXME, sql case id: insert_with_str_to_date
     private void calculateParameterCount(final Collection<ClickHouseStatementParser.ExprContext> exprContexts) {
         for (ClickHouseStatementParser.ExprContext each : exprContexts) {
             visit(each);
         }
     }
-
+    
     @Override
     public final ASTNode visitOrderByClause(final ClickHouseStatementParser.OrderByClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
@@ -468,7 +483,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return new OrderBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
     }
-
+    
     @Override
     public final ASTNode visitOrderByItem(final ClickHouseStatementParser.OrderByItemContext ctx) {
         OrderDirection orderDirection = null == ctx.DESC() ? OrderDirection.ASC : OrderDirection.DESC;
@@ -479,7 +494,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
                 SQLUtils.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, null);
     }
-
+    
     @Override
     public final ASTNode visitDataType(final ClickHouseStatementParser.DataTypeContext ctx) {
         DataTypeSegment result = new DataTypeSegment();
@@ -492,7 +507,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitDataTypeLength(final ClickHouseStatementParser.DataTypeLengthContext ctx) {
         DataTypeLengthSegment result = new DataTypeLengthSegment();
@@ -508,7 +523,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         }
         return result;
     }
-
+    
     /**
      * Get original text.
      *
@@ -518,7 +533,5 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     protected String getOriginalText(final ParserRuleContext ctx) {
         return ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
     }
-
-
-
+    
 }

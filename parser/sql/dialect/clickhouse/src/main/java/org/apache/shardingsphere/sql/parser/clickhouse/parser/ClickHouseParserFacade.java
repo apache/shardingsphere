@@ -25,13 +25,12 @@ import org.apache.shardingsphere.sql.parser.spi.DialectSQLParserFacade;
  * SQL parser facade for MySQL.
  */
 public final class ClickHouseParserFacade implements DialectSQLParserFacade {
-
-
+    
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
         return ClickHouseLexer.class;
     }
-
+    
     @Override
     public Class<? extends SQLParser> getParserClass() {
         return ClickHouseParser.class;

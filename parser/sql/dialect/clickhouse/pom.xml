@@ -25,11 +25,11 @@
     </parent>
     <artifactId>shardingsphere-parser-sql-clickhouse</artifactId>
     <name>${project.artifactId}</name>
-
+    
     <properties>
         <dialect.parser>clickhouse</dialect.parser>
     </properties>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

@@ -27,11 +27,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.clickhouse.Cli
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class  ClickHouseCreateTableStatement extends CreateTableStatement implements ClickHouseStatement {
-
+public final class ClickHouseCreateTableStatement extends CreateTableStatement implements ClickHouseStatement {
+    
     private SimpleTableSegment uuidClause;
     private SimpleTableSegment clusterClause;
     private SimpleTableSegment tableSchemaClause;
-
-
+    
 }
