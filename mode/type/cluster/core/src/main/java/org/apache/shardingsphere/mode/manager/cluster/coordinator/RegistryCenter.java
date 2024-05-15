@@ -95,11 +95,11 @@ public final class RegistryCenter {
     }
     
     private void createSubscribers(final ClusterPersistRepository repository) {
-        new ComputeNodeStatusSubscriber(this, repository);
-        new ClusterStatusSubscriber(repository, eventBusContext);
-        new QualifiedDataSourceStatusSubscriber(repository, eventBusContext);
-        new ClusterProcessSubscriber(repository, eventBusContext);
-        new ShardingSphereSchemaDataRegistrySubscriber(repository, eventBusContext);
+        eventBusContext.register(new ComputeNodeStatusSubscriber(this, repository));
+        eventBusContext.register(new ClusterStatusSubscriber(repository));
+        eventBusContext.register(new QualifiedDataSourceStatusSubscriber(repository));
+        eventBusContext.register(new ClusterProcessSubscriber(repository, eventBusContext));
+        eventBusContext.register(new ShardingSphereSchemaDataRegistrySubscriber(repository));
     }
     
     /**

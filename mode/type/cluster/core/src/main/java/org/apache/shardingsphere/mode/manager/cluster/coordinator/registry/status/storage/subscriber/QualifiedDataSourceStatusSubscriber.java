@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.event.node.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -27,14 +27,10 @@ import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
 /**
  * Qualified data source status subscriber.
  */
+@RequiredArgsConstructor
 public final class QualifiedDataSourceStatusSubscriber implements EventSubscriber {
     
     private final ClusterPersistRepository repository;
-    
-    public QualifiedDataSourceStatusSubscriber(final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
-        this.repository = repository;
-        eventBusContext.register(this);
-    }
     
     /**
      * Delete qualified data source.

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.ShardingSphereSchemaDataAlteredEvent;
@@ -31,9 +30,8 @@ public final class ShardingSphereSchemaDataRegistrySubscriber implements EventSu
     
     private final ShardingSphereDataPersistService persistService;
     
-    public ShardingSphereSchemaDataRegistrySubscriber(final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
+    public ShardingSphereSchemaDataRegistrySubscriber(final ClusterPersistRepository repository) {
         persistService = new ShardingSphereDataPersistService(repository);
-        eventBusContext.register(this);
     }
     
     /**
