@@ -49,13 +49,20 @@ import java.util.Properties;
 public final class RegistryCenter {
     
     @Getter
-    private final ClusterPersistRepository repository;
+    private final EventBusContext eventBusContext;
     
     @Getter
-    private final QualifiedDataSourceStatusService qualifiedDataSourceStatusService;
+    private final ClusterPersistRepository repository;
+    
+    private final InstanceMetaData instanceMetaData;
+    
+    private final Map<String, DatabaseConfiguration> databaseConfigs;
     
     @Getter
     private final ClusterStatusService clusterStatusService;
+    
+    @Getter
+    private final QualifiedDataSourceStatusService qualifiedDataSourceStatusService;
     
     @Getter
     private final ComputeNodeStatusService computeNodeStatusService;
@@ -63,23 +70,15 @@ public final class RegistryCenter {
     @Getter
     private final GlobalLockPersistService globalLockPersistService;
     
-    @Getter
-    private final EventBusContext eventBusContext;
-    
-    private final InstanceMetaData instanceMetaData;
-    
-    private final Map<String, DatabaseConfiguration> databaseConfigs;
-    
     private final GovernanceWatcherFactory listenerFactory;
     
-    public RegistryCenter(final ClusterPersistRepository repository, final EventBusContext eventBusContext,
-                          final InstanceMetaData instanceMetaData, final Map<String, DatabaseConfiguration> databaseConfigs) {
+    public RegistryCenter(final ClusterPersistRepository repository, final InstanceMetaData instanceMetaData, final Map<String, DatabaseConfiguration> databaseConfigs) {
+        eventBusContext = new EventBusContext();
         this.repository = repository;
-        this.eventBusContext = eventBusContext;
         this.instanceMetaData = instanceMetaData;
         this.databaseConfigs = databaseConfigs;
-        qualifiedDataSourceStatusService = new QualifiedDataSourceStatusService(repository);
         clusterStatusService = new ClusterStatusService(repository);
+        qualifiedDataSourceStatusService = new QualifiedDataSourceStatusService(repository);
         computeNodeStatusService = new ComputeNodeStatusService(repository);
         globalLockPersistService = new GlobalLockPersistService(initDistributedLockHolder(repository));
         listenerFactory = new GovernanceWatcherFactory(repository, eventBusContext, getJDBCDatabaseName());
