@@ -23,6 +23,9 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
  * Match against expression.
  */
@@ -35,7 +38,7 @@ public final class MatchAgainstExpression implements ExpressionSegment {
     
     private final int stopIndex;
     
-    private final ColumnSegment columnName;
+    private final Collection<ColumnSegment> columns = new LinkedList<>();
     
     private final ExpressionSegment expr;
     

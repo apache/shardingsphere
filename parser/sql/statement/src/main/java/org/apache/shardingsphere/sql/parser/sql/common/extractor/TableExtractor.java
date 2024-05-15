@@ -58,6 +58,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.mysql.match.MatchAgainstExpression;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -159,6 +160,11 @@ public final class TableExtractor {
         if (expressionSegment instanceof BinaryOperationExpression) {
             extractTablesFromExpression(((BinaryOperationExpression) expressionSegment).getLeft());
             extractTablesFromExpression(((BinaryOperationExpression) expressionSegment).getRight());
+        }
+        if (expressionSegment instanceof MatchAgainstExpression) {
+            for (ColumnSegment each : ((MatchAgainstExpression) expressionSegment).getColumns()) {
+                extractTablesFromExpression(each);
+            }
         }
         if (expressionSegment instanceof FunctionSegment) {
             for (ExpressionSegment each : ((FunctionSegment) expressionSegment).getParameters()) {

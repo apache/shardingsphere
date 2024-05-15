@@ -220,7 +220,7 @@ public final class ExpressionExtractUtils {
             }
         }
         if (expression instanceof MatchAgainstExpression) {
-            result.add(((MatchAgainstExpression) expression).getColumnName());
+            result.addAll(((MatchAgainstExpression) expression).getColumns());
             result.addAll(extractColumns(((MatchAgainstExpression) expression).getExpr(), containsSubQuery));
         }
         if (expression instanceof MultisetExpression) {

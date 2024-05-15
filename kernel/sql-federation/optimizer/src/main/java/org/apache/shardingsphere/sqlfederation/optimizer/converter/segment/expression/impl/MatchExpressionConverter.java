@@ -24,6 +24,7 @@ import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.mysql.match.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.operator.common.SQLExtensionOperatorTable;
@@ -49,10 +50,12 @@ public final class MatchExpressionConverter {
     public static Optional<SqlNode> convert(final MatchAgainstExpression segment) {
         List<SqlNode> sqlNodes = new LinkedList<>();
         List<String> names = new ArrayList<>();
-        if (segment.getColumnName().getOwner().isPresent()) {
-            addOwnerNames(names, segment.getColumnName().getOwner().get());
+        for (ColumnSegment each : segment.getColumns()) {
+            if (each.getOwner().isPresent()) {
+                addOwnerNames(names, each.getOwner().get());
+            }
+            names.add(each.getIdentifier().getValue());
         }
-        names.add(segment.getColumnName().getIdentifier().getValue());
         sqlNodes.add(new SqlIdentifier(names, SqlParserPos.ZERO));
         ExpressionConverter.convert(segment.getExpr()).ifPresent(sqlNodes::add);
         SqlNode searchModifier = SqlLiteral.createCharString(segment.getSearchModifier(), SqlParserPos.ZERO);

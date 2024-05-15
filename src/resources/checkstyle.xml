@@ -29,7 +29,9 @@
     <module name="FileTabCharacter">
         <property name="eachLine" value="true" />
     </module>
-    <module name="FileLength" />
+    <module name="FileLength">
+        <property name="max" value="3000" />
+    </module>
     <module name="LineLength">
         <property name="fileExtensions" value="java" />
         <property name="max" value="200" />
