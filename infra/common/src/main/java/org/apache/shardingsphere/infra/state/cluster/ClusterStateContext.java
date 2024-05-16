@@ -22,9 +22,9 @@ import lombok.Getter;
 /**
  * Cluster state context.
  */
+@Getter
 public final class ClusterStateContext {
     
-    @Getter
     private ClusterState currentState = ClusterState.OK;
     
     /**
