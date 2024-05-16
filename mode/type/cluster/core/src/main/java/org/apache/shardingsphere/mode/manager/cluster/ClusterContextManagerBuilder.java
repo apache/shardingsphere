@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
@@ -43,6 +44,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Cluster context manager builder.
@@ -63,6 +65,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         setContextManagerAware(result);
         createSubscribers(eventBusContext, repository);
         registerOnline(registryCenter, param, result);
+        setClusterStatus(registryCenter, result);
         return result;
     }
     
@@ -93,15 +96,18 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void registerOnline(final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
         registryCenter.onlineInstance(contextManager.getInstanceContext().getInstance());
-        loadClusterStatus(registryCenter, contextManager);
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
         contextManager.getInstanceContext().getAllClusterInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
         new ClusterEventSubscriberRegistry(contextManager, registryCenter).register();
     }
     
-    private void loadClusterStatus(final RegistryCenter registryCenter, final ContextManager contextManager) {
-        registryCenter.getClusterStatusService().persistClusterState(contextManager.getClusterStateContext().getCurrentState());
-        contextManager.updateClusterState(registryCenter.getClusterStatusService().loadClusterStatus());
+    private void setClusterStatus(final RegistryCenter registryCenter, final ContextManager contextManager) {
+        Optional<ClusterState> clusterState = registryCenter.getClusterStatusService().load();
+        if (clusterState.isPresent()) {
+            contextManager.updateClusterState(clusterState.get());
+        } else {
+            registryCenter.getClusterStatusService().persist(ClusterState.OK);
+        }
     }
     
     @Override

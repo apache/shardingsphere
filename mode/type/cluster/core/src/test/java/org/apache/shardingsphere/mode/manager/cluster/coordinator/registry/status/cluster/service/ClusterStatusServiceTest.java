@@ -38,7 +38,7 @@ class ClusterStatusServiceTest {
     @Test
     void assertPersistClusterStateWithoutPath() {
         ClusterStatusService clusterStatusService = new ClusterStatusService(repository);
-        clusterStatusService.persistClusterState(ClusterState.OK);
+        clusterStatusService.persist(ClusterState.OK);
         verify(repository).persist(ComputeNode.getClusterStatusNodePath(), ClusterState.OK.name());
     }
     
@@ -46,13 +46,13 @@ class ClusterStatusServiceTest {
     void assertPersistClusterStateWithPath() {
         ClusterStatusService clusterStatusService = new ClusterStatusService(repository);
         when(repository.getDirectly("/nodes/compute_nodes/status")).thenReturn(ClusterState.OK.name());
-        clusterStatusService.persistClusterState(ClusterState.OK);
+        clusterStatusService.persist(ClusterState.OK);
         verify(repository, times(0)).persist(ComputeNode.getClusterStatusNodePath(), ClusterState.OK.name());
     }
     
     @Test
     void assertLoadClusterStatus() {
-        new ClusterStatusService(repository).loadClusterStatus();
+        new ClusterStatusService(repository).load();
         verify(repository).getDirectly(ComputeNode.getClusterStatusNodePath());
     }
 }
