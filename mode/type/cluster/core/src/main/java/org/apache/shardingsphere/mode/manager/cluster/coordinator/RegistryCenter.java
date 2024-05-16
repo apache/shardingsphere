@@ -95,7 +95,7 @@ public final class RegistryCenter {
     }
     
     private void createSubscribers(final ClusterPersistRepository repository) {
-        eventBusContext.register(new ComputeNodeStatusSubscriber(this, repository));
+        eventBusContext.register(new ComputeNodeStatusSubscriber(repository));
         eventBusContext.register(new ClusterStatusSubscriber(repository));
         eventBusContext.register(new QualifiedDataSourceStatusSubscriber(repository));
         eventBusContext.register(new ClusterProcessSubscriber(repository, eventBusContext));
