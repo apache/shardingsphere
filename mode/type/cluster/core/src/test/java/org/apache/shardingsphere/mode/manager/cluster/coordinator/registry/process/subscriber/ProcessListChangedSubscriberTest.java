@@ -70,7 +70,7 @@ import static org.mockito.Mockito.when;
 class ProcessListChangedSubscriberTest {
     
     private ProcessListChangedSubscriber subscriber;
-    
+     
     private ContextManager contextManager;
     
     @Mock
