@@ -108,6 +108,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 17020       | HY000     | The cluster status is %s, can not support SQL statement '%s'. |
 | 17030       | HY000     | Cluster is already locked.                                    |
 | 17031       | HY000     | Cluster is not locked.                                        |
+| 17100       | 42S02     | Cluster persist repository configuration is required.         |
 
 ### Data Pipeline
 
