@@ -276,13 +276,10 @@ public final class ContextManager implements AutoCloseable {
     /**
      * Update cluster state.
      * 
-     * @param status status
+     * @param clusterState cluster state
      */
-    public void updateClusterState(final String status) {
-        try {
-            clusterStateContext.switchState(ClusterState.valueOf(status));
-        } catch (final IllegalArgumentException ignore) {
-        }
+    public void updateClusterState(final ClusterState clusterState) {
+        clusterStateContext.switchState(clusterState);
     }
     
     @Override

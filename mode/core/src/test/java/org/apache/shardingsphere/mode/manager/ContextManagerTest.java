@@ -266,7 +266,7 @@ class ContextManagerTest {
     
     @Test
     void assertUpdateClusterStatus() {
-        contextManager.updateClusterState("READ_ONLY");
+        contextManager.updateClusterState(ClusterState.READ_ONLY);
         assertThat(contextManager.getClusterStateContext().getCurrentState(), is(ClusterState.READ_ONLY));
     }
     

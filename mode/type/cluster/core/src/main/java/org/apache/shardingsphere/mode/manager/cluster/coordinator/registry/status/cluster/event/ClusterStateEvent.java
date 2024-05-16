@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 
 /**
  * Cluster state event.
@@ -28,5 +29,5 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 @Getter
 public final class ClusterStateEvent implements GovernanceEvent {
     
-    private final String status;
+    private final ClusterState clusterState;
 }

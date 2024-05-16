@@ -52,7 +52,7 @@ class ClusterStatusServiceTest {
     
     @Test
     void assertLoadClusterStatus() {
-        new ClusterStatusService(repository).loadClusterStatus();
+        new ClusterStatusService(repository).loadClusterState();
         verify(repository).getDirectly(ComputeNode.getClusterStatusNodePath());
     }
 }

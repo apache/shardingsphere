@@ -130,7 +130,7 @@ class StateChangedSubscriberTest {
     
     @Test
     void assertRenewClusterStatus() {
-        ClusterStateEvent mockClusterStateEvent = new ClusterStateEvent("READ_ONLY");
+        ClusterStateEvent mockClusterStateEvent = new ClusterStateEvent(ClusterState.READ_ONLY);
         subscriber.renew(mockClusterStateEvent);
         assertThat(contextManager.getClusterStateContext().getCurrentState(), is(ClusterState.READ_ONLY));
     }

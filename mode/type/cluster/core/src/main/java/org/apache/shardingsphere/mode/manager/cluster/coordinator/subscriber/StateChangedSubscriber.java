@@ -84,7 +84,7 @@ public final class StateChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final ClusterStateEvent event) {
-        contextManager.updateClusterState(event.getStatus());
+        contextManager.updateClusterState(event.getClusterState());
     }
     
     /**
