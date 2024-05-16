@@ -120,7 +120,7 @@ jobs:
       - run: sudo npm install -g markdown-link-check@3.10.0
       - name: Check dead link
         run: |
-          IGNORED_PATH_LIST=("./docs/document/themes" "./docs/community/content/powered-by" "./docs/blog/content/material" "./docs/blog/themes")
+          IGNORED_PATH_LIST=("./docs/document/themes" "./docs/community/content/powered-by" "./docs/blog/content/material" "./docs/blog/themes" "./docs/community/themes")
           ignore_current_file=false
           
           for file in $(find . -name "*.md"); do
