@@ -15,37 +15,15 @@
  * limitations under the License.
  */
 
-lexer grammar LexerAlphabet;
+lexer grammar Number;
 
-FOR_GENERATOR: 'DO NOT MATCH ANY THING, JUST FOR GENERATOR';
-
-fragment A:   [Aa];
-fragment B:   [Bb];
-fragment C:   [Cc];
-fragment D:   [Dd];
-fragment E:   [Ee];
-fragment F:   [Ff];
-fragment G:   [Gg];
-fragment H:   [Hh];
-fragment I:   [Ii];
-fragment J:   [Jj];
-fragment K:   [Kk];
-fragment L:   [Ll];
-fragment M:   [Mm];
-fragment N:   [Nn];
-fragment O:   [Oo];
-fragment P:   [Pp];
-fragment Q:   [Qq];
-fragment R:   [Rr];
-fragment S:   [Ss];
-fragment T:   [Tt];
-fragment U:   [Uu];
-fragment V:   [Vv];
-fragment W:   [Ww];
-fragment X:   [Xx];
-fragment Y:   [Yy];
-fragment Z:   [Zz];
-fragment UL_: '_';
-
-
-
+fragment ZERO_:  [0];
+fragment ONE_:   [1];
+fragment TWO_:   [2];
+fragment THREE_: [3];
+fragment FOUR_:  [4];
+fragment FIVE_:  [5];
+fragment SIX_:   [6];
+fragment SEVEN_: [7];
+fragment EIGHT_: [8];
+fragment NINE_:  [9];

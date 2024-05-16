@@ -23,6 +23,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.clickhouse.Cli
 /**
  * ClickHouse delete statement.
  */
-public class ClickHouseDeleteStatement extends DeleteStatement implements ClickHouseStatement {
-    
+public final class ClickHouseDeleteStatement extends DeleteStatement implements ClickHouseStatement {
 }

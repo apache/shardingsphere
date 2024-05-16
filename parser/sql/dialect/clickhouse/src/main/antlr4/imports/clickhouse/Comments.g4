@@ -15,15 +15,10 @@
  * limitations under the License.
  */
 
-lexer grammar LexerNumber;
+lexer grammar Comments;
 
-fragment ZERO_:  [0];
-fragment ONE_:   [1];
-fragment TWO_:   [2];
-fragment THREE_: [3];
-fragment FOUR_:  [4];
-fragment FIVE_:  [5];
-fragment SIX_:   [6];
-fragment SEVEN_: [7];
-fragment EIGHT_: [8];
-fragment NINE_:  [9];
+import Symbol;
+
+MULTI_LINE_COMMENT: '/*' .*? '*/' -> skip;
+SINGLE_LINE_COMMENT: '--' ~('\n'|'\r')* ('\n' | '\r' | EOF) -> skip;
+WHITESPACE: [ \u000B\u000C\t\r\n] -> skip;  // '\n' can be part of multiline single query

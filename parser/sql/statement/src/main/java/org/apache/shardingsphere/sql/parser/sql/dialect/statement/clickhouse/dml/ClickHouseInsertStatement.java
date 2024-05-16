@@ -23,5 +23,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.clickhouse.Cli
 /**
  * ClickHouse insert statement.
  */
-public class ClickHouseInsertStatement extends InsertStatement implements ClickHouseStatement {
+public final class ClickHouseInsertStatement extends InsertStatement implements ClickHouseStatement {
 }

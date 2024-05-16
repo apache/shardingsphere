@@ -57,11 +57,8 @@ blobValue
     ;
 
 delete
-    :
-    | ALTER TABLE tableName cluster? DELETE whereClause?
+    : ALTER TABLE tableName cluster? DELETE whereClause?
     ;
-
-
 
 singleTableClause
     : FROM tableName (AS? alias)?
