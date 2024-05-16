@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterLockDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStatusChangedEvent;
@@ -36,18 +34,24 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
  * State changed subscriber.
  */
-@RequiredArgsConstructor
 @SuppressWarnings("unused")
 public final class StateChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
     
-    private final RegistryCenter registryCenter;
+    private final ComputeNodeStatusService computeNodeStatusService;
+    
+    public StateChangedSubscriber(final ContextManager contextManager, final ClusterPersistRepository repository) {
+        this.contextManager = contextManager;
+        computeNodeStatusService = new ComputeNodeStatusService(repository);
+    }
     
     /**
      * Renew disabled data source names.
@@ -125,7 +129,7 @@ public final class StateChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final InstanceOnlineEvent event) {
-        contextManager.getInstanceContext().addComputeNodeInstance(registryCenter.getComputeNodeStatusService().loadComputeNodeInstance(event.getInstanceMetaData()));
+        contextManager.getInstanceContext().addComputeNodeInstance(computeNodeStatusService.loadComputeNodeInstance(event.getInstanceMetaData()));
     }
     
     /**

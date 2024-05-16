@@ -21,17 +21,16 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.instance.ComputeNodeData;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataFactory;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.instance.ComputeNodeData;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -84,7 +83,7 @@ public final class ComputeNodeStatusService {
      * @param instanceId instance id
      * @param workerId worker id
      */
-    public void persistInstanceWorkerId(final String instanceId, final Integer workerId) {
+    public void persistInstanceWorkerId(final String instanceId, final int workerId) {
         repository.persistEphemeral(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(workerId));
     }
     
@@ -97,7 +96,7 @@ public final class ComputeNodeStatusService {
     @SuppressWarnings("unchecked")
     public Collection<String> loadInstanceLabels(final String instanceId) {
         String yamlContent = repository.getDirectly(ComputeNode.getInstanceLabelsNodePath(instanceId));
-        return Strings.isNullOrEmpty(yamlContent) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
+        return Strings.isNullOrEmpty(yamlContent) ? new LinkedList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
     }
     
     /**

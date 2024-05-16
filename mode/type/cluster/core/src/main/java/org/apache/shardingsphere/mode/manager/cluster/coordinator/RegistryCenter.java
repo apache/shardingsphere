@@ -41,9 +41,6 @@ public final class RegistryCenter {
     
     private final Map<String, DatabaseConfiguration> databaseConfigs;
     
-    @Getter
-    private final ComputeNodeStatusService computeNodeStatusService;
-    
     private final GovernanceWatcherFactory listenerFactory;
     
     public RegistryCenter(final EventBusContext eventBusContext,
@@ -51,7 +48,6 @@ public final class RegistryCenter {
         this.repository = repository;
         this.instanceMetaData = instanceMetaData;
         this.databaseConfigs = databaseConfigs;
-        computeNodeStatusService = new ComputeNodeStatusService(repository);
         listenerFactory = new GovernanceWatcherFactory(repository, eventBusContext, getJDBCDatabaseName());
     }
     
@@ -65,6 +61,7 @@ public final class RegistryCenter {
      * @param computeNodeInstance compute node instance
      */
     public void onlineInstance(final ComputeNodeInstance computeNodeInstance) {
+        ComputeNodeStatusService computeNodeStatusService = new ComputeNodeStatusService(repository);
         computeNodeStatusService.registerOnline(computeNodeInstance.getMetaData());
         computeNodeStatusService.persistInstanceLabels(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getLabels());
         computeNodeStatusService.persistInstanceState(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getState());

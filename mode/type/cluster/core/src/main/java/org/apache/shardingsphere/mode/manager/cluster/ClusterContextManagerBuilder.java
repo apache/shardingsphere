@@ -36,6 +36,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ClusterProcessSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.service.ClusterStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.subscriber.ClusterStatusSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.subscriber.ComputeNodeStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber.QualifiedDataSourceStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator.ClusterWorkerIdGenerator;
@@ -62,7 +63,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     public ContextManager build(final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) throws SQLException {
         ClusterPersistRepository repository = getClusterPersistRepository((ClusterPersistRepositoryConfiguration) param.getModeConfiguration().getRepository());
         RegistryCenter registryCenter = new RegistryCenter(eventBusContext, repository, param.getInstanceMetaData(), param.getDatabaseConfigs());
-        InstanceContext instanceContext = buildInstanceContext(registryCenter, param, eventBusContext);
+        InstanceContext instanceContext = buildInstanceContext(repository, param, eventBusContext);
         if (registryCenter.getRepository() instanceof InstanceContextAware) {
             ((InstanceContextAware) registryCenter.getRepository()).setInstanceContext(instanceContext);
         }
@@ -83,9 +84,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
-    private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) {
-        return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()), new ClusterWorkerIdGenerator(registryCenter, param.getInstanceMetaData()), param.getModeConfiguration(),
-                new ClusterModeContextManager(), new GlobalLockContext(new GlobalLockPersistService(initDistributedLockHolder(registryCenter.getRepository()))), eventBusContext);
+    private InstanceContext buildInstanceContext(final ClusterPersistRepository repository, final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) {
+        return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()), new ClusterWorkerIdGenerator(repository, param.getInstanceMetaData()), param.getModeConfiguration(),
+                new ClusterModeContextManager(), new GlobalLockContext(new GlobalLockPersistService(initDistributedLockHolder(repository))), eventBusContext);
     }
     
     private DistributedLockHolder initDistributedLockHolder(final ClusterPersistRepository repository) {
@@ -109,7 +110,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void registerOnline(final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
         registryCenter.onlineInstance(contextManager.getInstanceContext().getInstance());
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
-        contextManager.getInstanceContext().getAllClusterInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
+        contextManager.getInstanceContext().getAllClusterInstances().addAll(new ComputeNodeStatusService(registryCenter.getRepository()).loadAllComputeNodeInstances());
         new ClusterEventSubscriberRegistry(contextManager, registryCenter).register();
     }
     
