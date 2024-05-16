@@ -30,8 +30,6 @@ public final class TransactionStatus {
     
     private volatile boolean inTransaction;
     
-    private volatile boolean exceptionOccur;
-    
     /**
      * Judge whether in connection held transaction.
      * 
