@@ -36,7 +36,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Cluster worker id generator for cluster mode.
+ * Worker ID generator for cluster mode.
  */
 @RequiredArgsConstructor
 @Slf4j
