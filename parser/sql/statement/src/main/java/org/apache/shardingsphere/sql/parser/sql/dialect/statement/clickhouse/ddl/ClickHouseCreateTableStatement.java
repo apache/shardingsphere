@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTable
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.clickhouse.ClickHouseStatement;
 
 /**
- * ClickHouse Create Table Statement.
+ * ClickHouse create table statement.
  */
 @RequiredArgsConstructor
 @Getter
@@ -37,5 +37,4 @@ public final class ClickHouseCreateTableStatement extends CreateTableStatement i
     private SimpleTableSegment clusterClause;
     
     private SimpleTableSegment tableSchemaClause;
-    
 }

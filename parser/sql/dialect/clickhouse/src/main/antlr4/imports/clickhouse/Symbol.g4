@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-lexer grammar LexerSymbol;
+lexer grammar Symbol;
 
 AND_:                '&&';
 CONCAT_:             '||';
@@ -56,4 +56,3 @@ SQ_ :                '\'';
 QUESTION_:           '?';
 AT_:                 '@';
 SEMI_:               ';';
-

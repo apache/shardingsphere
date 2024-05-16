@@ -24,18 +24,5 @@ execute
     | insert
     | update
     | delete
-//    | createDatabase
-//    | dropDatabase
-//    | createTable
-//    | alterTable
-//    | dropTable
-//    | createView
-//    | dropView
-//    | setTransaction
-//    | commit
-//    | rollback
-//    | grant
-//    | revoke
     ) SEMI_? EOF
     ;
-

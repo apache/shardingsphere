@@ -29,5 +29,4 @@ public final class ClickHouseLexer extends ClickHouseStatementLexer implements S
     public ClickHouseLexer(final CharStream input) {
         super(input);
     }
-    
 }

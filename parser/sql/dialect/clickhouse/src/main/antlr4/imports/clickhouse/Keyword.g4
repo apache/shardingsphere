@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-lexer grammar LexerKeyword;
+lexer grammar Keyword;
 
-import LexerAlphabet;
+import Alphabet;
 
 WS
     : [ \t\r\n] + ->skip
@@ -543,5 +543,3 @@ VARCHAR
 FLOAT
     : F L O A T
     ;
-
-

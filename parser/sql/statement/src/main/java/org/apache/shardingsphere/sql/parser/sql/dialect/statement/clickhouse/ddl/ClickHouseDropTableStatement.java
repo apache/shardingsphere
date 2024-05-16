@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableSt
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.clickhouse.ClickHouseStatement;
 
 /**
- * ClickHouse Drop Table Statement.
+ * ClickHouse drop table statement.
  */
 public final class ClickHouseDropTableStatement extends DropTableStatement implements ClickHouseStatement {
 }
