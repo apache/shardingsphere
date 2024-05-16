@@ -38,7 +38,7 @@ public final class ClusterStatusService {
      *
      * @param state cluster state
      */
-    public void persistClusterState(final ClusterState state) {
+    public void persist(final ClusterState state) {
         if (Strings.isNullOrEmpty(repository.getDirectly(ComputeNode.getClusterStatusNodePath()))) {
             repository.persist(ComputeNode.getClusterStatusNodePath(), state.name());
         }
@@ -49,7 +49,7 @@ public final class ClusterStatusService {
      *
      * @return cluster state
      */
-    public Optional<ClusterState> loadClusterState() {
+    public Optional<ClusterState> load() {
         String value = repository.getDirectly(ComputeNode.getClusterStatusNodePath());
         return Strings.isNullOrEmpty(value) ? Optional.empty() : Optional.of(ClusterState.valueOf(value));
     }

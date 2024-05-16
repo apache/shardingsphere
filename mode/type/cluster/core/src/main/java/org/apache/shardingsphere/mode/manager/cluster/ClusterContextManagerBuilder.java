@@ -102,11 +102,11 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void setClusterStatus(final RegistryCenter registryCenter, final ContextManager contextManager) {
-        Optional<ClusterState> clusterState = registryCenter.getClusterStatusService().loadClusterState();
+        Optional<ClusterState> clusterState = registryCenter.getClusterStatusService().load();
         if (clusterState.isPresent()) {
             contextManager.updateClusterState(clusterState.get());
         } else {
-            registryCenter.getClusterStatusService().persistClusterState(ClusterState.OK);
+            registryCenter.getClusterStatusService().persist(ClusterState.OK);
         }
     }
     
