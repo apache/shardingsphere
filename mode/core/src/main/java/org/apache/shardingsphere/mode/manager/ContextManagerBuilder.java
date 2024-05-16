@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager;
 
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
 import java.sql.SQLException;
 
@@ -32,8 +33,9 @@ public interface ContextManagerBuilder extends TypedSPI {
      * Build context manager.
      *
      * @param param context manager builder parameter
+     * @param eventBusContext event bus context
      * @return context manager
      * @throws SQLException SQL exception
      */
-    ContextManager build(ContextManagerBuilderParameter param) throws SQLException;
+    ContextManager build(ContextManagerBuilderParameter param, EventBusContext eventBusContext) throws SQLException;
 }
