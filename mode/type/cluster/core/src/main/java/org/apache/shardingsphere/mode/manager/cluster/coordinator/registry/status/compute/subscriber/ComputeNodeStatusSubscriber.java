@@ -18,23 +18,26 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.node.ComputeNodeStatusChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
  * Compute node status subscriber.
  */
-@RequiredArgsConstructor
 public final class ComputeNodeStatusSubscriber implements EventSubscriber {
     
-    private final RegistryCenter registryCenter;
-    
     private final ClusterPersistRepository repository;
+    
+    private final ComputeNodeStatusService computeNodeStatusService;
+    
+    public ComputeNodeStatusSubscriber(final ClusterPersistRepository repository) {
+        this.repository = repository;
+        computeNodeStatusService = new ComputeNodeStatusService(repository);
+    }
     
     /**
      * Update compute node status.
@@ -53,6 +56,6 @@ public final class ComputeNodeStatusSubscriber implements EventSubscriber {
      */
     @Subscribe
     public void update(final LabelsChangedEvent event) {
-        registryCenter.getComputeNodeStatusService().persistInstanceLabels(event.getInstanceId(), event.getLabels());
+        computeNodeStatusService.persistInstanceLabels(event.getInstanceId(), event.getLabels());
     }
 }

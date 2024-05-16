@@ -30,6 +30,11 @@ import org.apache.shardingsphere.mode.manager.ContextManagerAware;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.ShardingSphereSchemaDataRegistrySubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ClusterProcessSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.subscriber.ClusterStatusSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.subscriber.ComputeNodeStatusSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber.QualifiedDataSourceStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator.ClusterWorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.ClusterEventSubscriberRegistry;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -56,6 +61,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, instanceContext, registryCenter.getQualifiedDataSourceStatusService().loadStatus());
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         setContextManagerAware(result);
+        createSubscribers(eventBusContext, repository);
         registerOnline(registryCenter, param, result);
         return result;
     }
@@ -74,6 +80,15 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void setContextManagerAware(final ContextManager contextManager) {
         ((ContextManagerAware) contextManager.getInstanceContext().getModeContextManager()).setContextManager(contextManager);
+    }
+    
+    // TODO remove the method, only keep ZooKeeper's events, remove all decouple events
+    private void createSubscribers(final EventBusContext eventBusContext, final ClusterPersistRepository repository) {
+        eventBusContext.register(new ComputeNodeStatusSubscriber(repository));
+        eventBusContext.register(new ClusterStatusSubscriber(repository));
+        eventBusContext.register(new QualifiedDataSourceStatusSubscriber(repository));
+        eventBusContext.register(new ClusterProcessSubscriber(repository, eventBusContext));
+        eventBusContext.register(new ShardingSphereSchemaDataRegistrySubscriber(repository));
     }
     
     private void registerOnline(final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {

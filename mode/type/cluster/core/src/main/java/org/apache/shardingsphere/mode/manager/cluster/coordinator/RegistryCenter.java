@@ -28,17 +28,12 @@ import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.ShardingSphereSchemaDataRegistrySubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ClusterProcessSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.service.ClusterStatusService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.subscriber.ClusterStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.subscriber.ComputeNodeStatusSubscriber;
-import org.apache.shardingsphere.mode.storage.service.QualifiedDataSourceStatusService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber.QualifiedDataSourceStatusSubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
+import org.apache.shardingsphere.mode.storage.service.QualifiedDataSourceStatusService;
 
 import java.util.Map;
 import java.util.Properties;
@@ -47,8 +42,6 @@ import java.util.Properties;
  * Registry center.
  */
 public final class RegistryCenter {
-    
-    private final EventBusContext eventBusContext;
     
     @Getter
     private final ClusterPersistRepository repository;
@@ -73,7 +66,6 @@ public final class RegistryCenter {
     
     public RegistryCenter(final EventBusContext eventBusContext,
                           final ClusterPersistRepository repository, final InstanceMetaData instanceMetaData, final Map<String, DatabaseConfiguration> databaseConfigs) {
-        this.eventBusContext = eventBusContext;
         this.repository = repository;
         this.instanceMetaData = instanceMetaData;
         this.databaseConfigs = databaseConfigs;
@@ -82,7 +74,6 @@ public final class RegistryCenter {
         computeNodeStatusService = new ComputeNodeStatusService(repository);
         globalLockPersistService = new GlobalLockPersistService(initDistributedLockHolder(repository));
         listenerFactory = new GovernanceWatcherFactory(repository, eventBusContext, getJDBCDatabaseName());
-        createSubscribers(repository);
     }
     
     private DistributedLockHolder initDistributedLockHolder(final ClusterPersistRepository repository) {
@@ -92,14 +83,6 @@ public final class RegistryCenter {
     
     private String getJDBCDatabaseName() {
         return instanceMetaData instanceof JDBCInstanceMetaData ? databaseConfigs.keySet().stream().findFirst().orElse(null) : null;
-    }
-    
-    private void createSubscribers(final ClusterPersistRepository repository) {
-        eventBusContext.register(new ComputeNodeStatusSubscriber(this, repository));
-        eventBusContext.register(new ClusterStatusSubscriber(repository));
-        eventBusContext.register(new QualifiedDataSourceStatusSubscriber(repository));
-        eventBusContext.register(new ClusterProcessSubscriber(repository, eventBusContext));
-        eventBusContext.register(new ShardingSphereSchemaDataRegistrySubscriber(repository));
     }
     
     /**
