@@ -17,7 +17,7 @@
 
 lexer grammar LexerClickHouseKeyword;
 
-import LexerAlphabet, LexerKeyword;
+import LexerAlphabet, LexerKeyword,LexerNumber;
 
 
 ADD: A D D;
@@ -209,57 +209,35 @@ WHERE: W H E R E;
 WINDOW: W I N D O W;
 WITH: W I T H;
 YEAR: Y E A R | Y Y Y Y;
-
-ESCAPE
-    : E S C A P E
-    ;
-
+ESCAPE: E S C A P E;
 JSON_FALSE: 'false';
 JSON_TRUE: 'true';
 
-
 //dataType
-// Numeric Types
-UINT8: 'UInt8';
-UINT16: 'UInt16';
-UINT32: 'UInt32';
-UINT64: 'UInt64';
-INT8: 'Int8';
-INT16: 'Int16';
-INT32: 'Int32';
-INT64: 'Int64';
-FLOAT32: 'Float32';
-FLOAT64: 'Float64';
-DECIMAL: 'Decimal';
+UINT8: U I N T EIGHT_;
+UINT16: U I N T ONE_ SIX_;
+UINT32: U I N T THREE_ TWO_;
+UINT64: U I N T SIX_ FOUR_;
+INT8: I N T EIGHT_;
+INT16: I N T ONE_ SIX_;
+INT32: I N T THREE_ TWO_;
+INT64: I N T SIX_ FOUR_;
+FLOAT32: F L O A T THREE_ TWO_;
+FLOAT64: F L O A T SIX_ FOUR_;
+DECIMAL: D E C I M A L;
+STRING: S T R I N G;
+FIXED_STRING: F I X E D S T R I N G;
+DATETIME: D A T E T I M E;
+DATETIME64: D A T E T I M E SIX_ FOUR_;
+ENUM8: E N U M EIGHT_;
+ENUM16: E N U M ONE_ SIX_;
+TUPLE: T U P L E;
+IPV4: I P V FOUR_;
+IPV6: I P V SIX_;
+NESTED: N E S T E D;
+NULLABLE: N U L L A B L E;
 
-// String Types
-STRING: 'String';
-FIXED_STRING: 'FixedString';
 
-// Date and Time Types
-//DATE: 'Date';
-DATETIME: 'DateTime';
-DATETIME64: 'DateTime64';
 
-// Enum Types
-ENUM8: 'Enum8';
-ENUM16: 'Enum16';
 
-// UUID Type
-//UUID: 'UUID';
 
-// Array Type
-//ARRAY: 'Array';
-
-// Tuple Type
-TUPLE: 'Tuple';
-
-// IPv4 and IPv6 Types
-IPV4: 'IPv4';
-IPV6: 'IPv6';
-
-// Nested Types
-NESTED: 'Nested';
-
-// Nullable Types
-NULLABLE: 'Nullable';

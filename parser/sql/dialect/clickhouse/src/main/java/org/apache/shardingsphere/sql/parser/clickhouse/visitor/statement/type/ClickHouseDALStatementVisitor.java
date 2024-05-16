@@ -23,5 +23,5 @@ import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHo
 /**
  * ClickHouse DAL statement visitor.
  */
-public class ClickHouseDALStatementVisitor extends ClickHouseStatementVisitor implements DALStatementVisitor {
+public final class ClickHouseDALStatementVisitor extends ClickHouseStatementVisitor implements DALStatementVisitor {
 }

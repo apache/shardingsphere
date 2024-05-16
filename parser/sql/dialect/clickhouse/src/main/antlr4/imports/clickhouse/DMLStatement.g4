@@ -58,7 +58,6 @@ blobValue
 
 delete
     :
-//    DELETE singleTableClause whereClause?
     | ALTER TABLE tableName cluster? DELETE whereClause?
     ;
 

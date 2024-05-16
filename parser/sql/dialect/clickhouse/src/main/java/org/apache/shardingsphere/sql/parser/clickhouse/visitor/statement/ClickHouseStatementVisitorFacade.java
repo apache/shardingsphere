@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 /**
  * Statement visitor facade for ClickHouse.
  */
-public class ClickHouseStatementVisitorFacade implements SQLStatementVisitorFacade {
+public final class ClickHouseStatementVisitorFacade implements SQLStatementVisitorFacade {
     
     @Override
     public Class<? extends DMLStatementVisitor> getDMLVisitorClass() {

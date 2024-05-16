@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type;
+lexer grammar LexerNumber;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitor;
-
-/**
- * ClickHouse TCL statement visitor.
- */
-public final class ClickHouseTCLStatementVisitor extends ClickHouseStatementVisitor implements TCLStatementVisitor {
-    
-}
+fragment ZERO_:  [0];
+fragment ONE_:   [1];
+fragment TWO_:   [2];
+fragment THREE_: [3];
+fragment FOUR_:  [4];
+fragment FIVE_:  [5];
+fragment SIX_:   [6];
+fragment SEVEN_: [7];
+fragment EIGHT_: [8];
+fragment NINE_:  [9];

@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHo
 /**
  * ClickHouse DDL statement visitor.
  */
-public class ClickHouseDDLStatementVisitor extends ClickHouseStatementVisitor implements DDLStatementVisitor {
+public final class ClickHouseDDLStatementVisitor extends ClickHouseStatementVisitor implements DDLStatementVisitor {
     
 }

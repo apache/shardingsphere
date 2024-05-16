@@ -23,5 +23,5 @@ import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHo
 /**
  * ClickHouse RL statement visitor.
  */
-public class ClickHouseRLStatementVisitor extends ClickHouseStatementVisitor implements RLStatementVisitor {
+public final class ClickHouseRLStatementVisitor extends ClickHouseStatementVisitor implements RLStatementVisitor {
 }
