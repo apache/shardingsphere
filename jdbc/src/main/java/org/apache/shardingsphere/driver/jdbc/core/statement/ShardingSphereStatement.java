@@ -83,7 +83,6 @@ import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.exception.EmptyTrafficExecutionUnitException;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutorCallback;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
-import org.apache.shardingsphere.transaction.implicit.ImplicitTransactionCallback;
 import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.Connection;
@@ -315,7 +314,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private int executeUpdate(final ExecuteUpdateCallback updateCallback, final SQLStatementContext sqlStatementContext, final ExecutionContext executionContext) throws SQLException {
         return isNeedImplicitCommitTransaction(connection, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
-                ? executeUpdateWithImplicitCommitTransaction(() -> useDriverToExecuteUpdate(updateCallback, sqlStatementContext, executionContext))
+                ? executeWithImplicitCommitTransaction(() -> useDriverToExecuteUpdate(updateCallback, sqlStatementContext, executionContext), connection,
+                        metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType())
                 : useDriverToExecuteUpdate(updateCallback, sqlStatementContext, executionContext);
     }
     
@@ -335,23 +335,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             return accumulate(results);
         }
         return executeUpdate(updateCallback, queryContext.getSqlStatementContext(), executionContext);
-    }
-    
-    private int executeUpdateWithImplicitCommitTransaction(final ImplicitTransactionCallback<Integer> callback) throws SQLException {
-        int result;
-        try {
-            connection.setAutoCommit(false);
-            result = callback.execute();
-            connection.commit();
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
-            // CHECKSTYLE:ON
-            connection.rollback();
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
-        } finally {
-            connection.setAutoCommit(true);
-        }
-        return result;
     }
     
     private int useDriverToExecuteUpdate(final ExecuteUpdateCallback updateCallback, final SQLStatementContext sqlStatementContext,
@@ -537,25 +520,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private boolean executeWithExecutionContext(final ExecuteCallback executeCallback, final ExecutionContext executionContext) throws SQLException {
         return isNeedImplicitCommitTransaction(connection, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
-                ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(executeCallback, executionContext))
+                ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(executeCallback, executionContext), connection,
+                        metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType())
                 : useDriverToExecute(executeCallback, executionContext);
-    }
-    
-    private boolean executeWithImplicitCommitTransaction(final ImplicitTransactionCallback<Boolean> callback) throws SQLException {
-        boolean result;
-        try {
-            connection.setAutoCommit(false);
-            result = callback.execute();
-            connection.commit();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            connection.rollback();
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
-        } finally {
-            connection.setAutoCommit(true);
-        }
-        return result;
     }
     
     private boolean useDriverToExecute(final ExecuteCallback callback, final ExecutionContext executionContext) throws SQLException {
