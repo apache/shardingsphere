@@ -68,6 +68,6 @@ public final class RegistryCenter {
         computeNodeStatusService.registerOnline(computeNodeInstance.getMetaData());
         computeNodeStatusService.persistInstanceLabels(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getLabels());
         computeNodeStatusService.persistInstanceState(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getState());
-        listenerFactory.watchListeners(); 
+        listenerFactory.watchListeners();
     }
 }
