@@ -48,7 +48,6 @@ import java.util.Properties;
  */
 public final class RegistryCenter {
     
-    @Getter
     private final EventBusContext eventBusContext;
     
     @Getter
@@ -72,8 +71,9 @@ public final class RegistryCenter {
     
     private final GovernanceWatcherFactory listenerFactory;
     
-    public RegistryCenter(final ClusterPersistRepository repository, final InstanceMetaData instanceMetaData, final Map<String, DatabaseConfiguration> databaseConfigs) {
-        eventBusContext = new EventBusContext();
+    public RegistryCenter(final EventBusContext eventBusContext,
+                          final ClusterPersistRepository repository, final InstanceMetaData instanceMetaData, final Map<String, DatabaseConfiguration> databaseConfigs) {
+        this.eventBusContext = eventBusContext;
         this.repository = repository;
         this.instanceMetaData = instanceMetaData;
         this.databaseConfigs = databaseConfigs;
