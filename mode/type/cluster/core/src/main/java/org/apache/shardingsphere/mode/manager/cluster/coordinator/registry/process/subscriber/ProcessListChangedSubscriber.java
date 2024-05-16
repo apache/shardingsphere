@@ -28,11 +28,11 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillLocalProcessCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillLocalProcessEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesEvent;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -48,7 +48,7 @@ public final class ProcessListChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
     
-    private final RegistryCenter registryCenter;
+    private final ClusterPersistRepository repository;
     
     private final YamlProcessListSwapper swapper = new YamlProcessListSwapper();
     
@@ -64,10 +64,10 @@ public final class ProcessListChangedSubscriber implements EventSubscriber {
         }
         Collection<Process> processes = ProcessRegistry.getInstance().listAll();
         if (!processes.isEmpty()) {
-            registryCenter.getRepository().persist(
+            repository.persist(
                     ProcessNode.getProcessListInstancePath(event.getTaskId(), event.getInstanceId()), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
         }
-        registryCenter.getRepository().delete(ComputeNode.getProcessTriggerInstanceNodePath(event.getInstanceId(), event.getTaskId()));
+        repository.delete(ComputeNode.getProcessTriggerInstanceNodePath(event.getInstanceId(), event.getTaskId()));
     }
     
     /**
@@ -98,7 +98,7 @@ public final class ProcessListChangedSubscriber implements EventSubscriber {
                 each.cancel();
             }
         }
-        registryCenter.getRepository().delete(ComputeNode.getProcessKillInstanceIdNodePath(event.getInstanceId(), event.getProcessId()));
+        repository.delete(ComputeNode.getProcessKillInstanceIdNodePath(event.getInstanceId(), event.getProcessId()));
     }
     
     /**
