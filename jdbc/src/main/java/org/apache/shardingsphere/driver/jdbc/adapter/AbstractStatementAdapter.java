@@ -61,7 +61,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
             return false;
         }
         TransactionType transactionType = connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
-        boolean isInTransaction = connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction();
+        boolean isInTransaction = connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction();
         if (!TransactionType.isDistributedTransaction(transactionType) || isInTransaction) {
             return false;
         }
