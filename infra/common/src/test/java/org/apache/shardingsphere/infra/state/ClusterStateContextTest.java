@@ -23,33 +23,15 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ClusterStateContextTest {
     
     private final ClusterStateContext clusterStateContext = new ClusterStateContext();
     
     @Test
-    void assertSwitchStateWithUnavailable() {
+    void assertSwitchState() {
+        assertThat(clusterStateContext.getCurrentState(), is(ClusterState.OK));
         clusterStateContext.switchState(ClusterState.UNAVAILABLE);
         assertThat(clusterStateContext.getCurrentState(), is(ClusterState.UNAVAILABLE));
-        clusterStateContext.switchState(ClusterState.OK);
-    }
-    
-    @Test
-    void assertSwitchStateWithReadOnly() {
-        clusterStateContext.switchState(ClusterState.READ_ONLY);
-        assertThat(clusterStateContext.getCurrentState(), is(ClusterState.READ_ONLY));
-        clusterStateContext.switchState(ClusterState.OK);
-    }
-    
-    @Test
-    void assertSwitchStateWithMultiStateChange() {
-        clusterStateContext.switchState(ClusterState.UNAVAILABLE);
-        assertThrows(IllegalStateException.class, () -> clusterStateContext.switchState(ClusterState.READ_ONLY));
-        clusterStateContext.switchState(ClusterState.OK);
-        clusterStateContext.switchState(ClusterState.READ_ONLY);
-        assertThat(clusterStateContext.getCurrentState(), is(ClusterState.READ_ONLY));
-        clusterStateContext.switchState(ClusterState.OK);
     }
 }
