@@ -84,7 +84,7 @@ public final class ComputeNodeStatusService {
      * @param instanceId instance id
      * @param workerId worker id
      */
-    public void persistInstanceWorkerId(final String instanceId, final Integer workerId) {
+    public void persistInstanceWorkerId(final String instanceId, final int workerId) {
         repository.persistEphemeral(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(workerId));
     }
     

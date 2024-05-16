@@ -33,6 +33,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Cluster worker id generator for cluster mode.
@@ -45,7 +46,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     private final InstanceMetaData instanceMetaData;
     
-    private volatile boolean isWarned;
+    private final AtomicBoolean isWarned = new AtomicBoolean(false);
     
     @Override
     public int generate(final Properties props) {
@@ -54,14 +55,14 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
         return result;
     }
     
-    private Integer reGenerate() {
-        Optional<Integer> result;
+    private int reGenerate() {
+        Optional<Integer> generatedWorkId;
         do {
-            result = generateAvailableWorkerId();
-        } while (!result.isPresent());
-        Integer generatedWorkId = result.get();
-        registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceMetaData.getId(), generatedWorkId);
-        return generatedWorkId;
+            generatedWorkId = generateAvailableWorkerId();
+        } while (!generatedWorkId.isPresent());
+        int result = generatedWorkId.get();
+        registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceMetaData.getId(), result);
+        return result;
     }
     
     private Optional<Integer> generateAvailableWorkerId() {
@@ -85,9 +86,9 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
         }
     }
     
-    private void checkIneffectiveConfiguration(final long generatedWorkerId, final Properties props) {
-        if (!isWarned && null != props && props.containsKey(WORKER_ID_KEY)) {
-            isWarned = true;
+    private void checkIneffectiveConfiguration(final int generatedWorkerId, final Properties props) {
+        if (!isWarned.get() && null != props && props.containsKey(WORKER_ID_KEY)) {
+            isWarned.set(true);
             log.warn("No need to configured {} in cluster mode, system assigned {} was {}", WORKER_ID_KEY, WORKER_ID_KEY, generatedWorkerId);
         }
     }
