@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaDa
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.service.ClusterStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
@@ -48,9 +47,6 @@ public final class RegistryCenter {
     private final Map<String, DatabaseConfiguration> databaseConfigs;
     
     @Getter
-    private final ClusterStatusService clusterStatusService;
-    
-    @Getter
     private final QualifiedDataSourceStatusService qualifiedDataSourceStatusService;
     
     @Getter
@@ -66,7 +62,6 @@ public final class RegistryCenter {
         this.repository = repository;
         this.instanceMetaData = instanceMetaData;
         this.databaseConfigs = databaseConfigs;
-        clusterStatusService = new ClusterStatusService(repository);
         qualifiedDataSourceStatusService = new QualifiedDataSourceStatusService(repository);
         computeNodeStatusService = new ComputeNodeStatusService(repository);
         globalLockPersistService = new GlobalLockPersistService(initDistributedLockHolder(repository));
