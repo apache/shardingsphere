@@ -18,8 +18,19 @@
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import com.google.common.base.Strings;
+import com.sphereex.dbplusengine.SphereEx;
+import com.sphereex.dbplusengine.SphereEx.Type;
+import com.sphereex.dbplusengine.authority.model.subject.RoleSubject;
+import com.sphereex.dbplusengine.data.pipeline.scenario.ddl.decide.DDLConsistencyDeciderEngine;
+import com.sphereex.dbplusengine.data.pipeline.scenario.ddl.engine.DDLExecutionEngine;
+import com.sphereex.dbplusengine.data.pipeline.scenario.ddl.engine.DDLExecutionEngineFactory;
+import com.sphereex.dbplusengine.data.pipeline.scenario.ddl.enums.DDLExecutionTypeEnum;
+import com.sphereex.dbplusengine.global.index.execute.GlobalIndexExecutorContext;
+import com.sphereex.dbplusengine.global.index.rewrite.context.GlobalIndexRewriterContext;
+import com.sphereex.dbplusengine.infra.connection.execute.BatchConnectionContext;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.driver.executor.DriverExecutor;
 import org.apache.shardingsphere.driver.executor.batch.BatchExecutionUnit;
 import org.apache.shardingsphere.driver.executor.batch.BatchPreparedStatementExecutor;
@@ -30,8 +41,6 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultS
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtils;
 import org.apache.shardingsphere.driver.jdbc.core.statement.metadata.ShardingSphereParameterMetaData;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
@@ -40,10 +49,13 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatem
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -70,6 +82,7 @@ import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -89,7 +102,6 @@ import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationCon
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.exception.EmptyTrafficExecutionUnitException;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
-import org.apache.shardingsphere.transaction.implicit.ImplicitTransactionCallback;
 import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.Connection;
@@ -101,19 +113,23 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * ShardingSphere prepared statement.
  */
+// SPEX CHANGED: BEGIN
+@Getter
+// SPEX CHANGED: END
 @HighFrequencyInvocation
 public final class ShardingSpherePreparedStatement extends AbstractPreparedStatementAdapter {
     
-    @Getter
     private final ShardingSphereConnection connection;
     
     private final MetaDataContexts metaDataContexts;
@@ -168,30 +184,52 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private ResultSet currentBatchGeneratedKeysResultSet;
     
-    public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql) throws SQLException {
-        this(connection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, false, null);
+    @SphereEx
+    private final Grantee grantee;
+    
+    @SphereEx
+    private final BatchConnectionContext batchContext;
+    
+    @SphereEx
+    private final Map<GlobalIndexRewriterContext, BatchPreparedStatementExecutor> globalIndexBatchExecutors = new LinkedHashMap<>();
+    
+    @SphereEx
+    private final Map<GlobalIndexRewriterContext, List<Integer>> globalIndexLogicalAddBatchCallTimes = new LinkedHashMap<>();
+    
+    @SphereEx
+    private Integer globalIndexBatchCount = 0;
+    
+    @SphereEx(Type.MODIFY)
+    public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql, @SphereEx final Grantee grantee) throws SQLException {
+        this(connection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, false, null, grantee);
     }
     
-    public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql, final int resultSetType, final int resultSetConcurrency) throws SQLException {
-        this(connection, sql, resultSetType, resultSetConcurrency, ResultSet.HOLD_CURSORS_OVER_COMMIT, false, null);
+    @SphereEx(Type.MODIFY)
+    public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql,
+                                           final int resultSetType, final int resultSetConcurrency, @SphereEx final Grantee grantee) throws SQLException {
+        this(connection, sql, resultSetType, resultSetConcurrency, ResultSet.HOLD_CURSORS_OVER_COMMIT, false, null, grantee);
     }
     
-    public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql, final int autoGeneratedKeys) throws SQLException {
-        this(connection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, Statement.RETURN_GENERATED_KEYS == autoGeneratedKeys, null);
+    @SphereEx(Type.MODIFY)
+    public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql, final int autoGeneratedKeys, @SphereEx final Grantee grantee) throws SQLException {
+        this(connection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, Statement.RETURN_GENERATED_KEYS == autoGeneratedKeys, null, grantee);
     }
     
-    public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql, final String[] columns) throws SQLException {
-        this(connection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, true, columns);
+    @SphereEx(Type.MODIFY)
+    public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql, final String[] columns, @SphereEx final Grantee grantee) throws SQLException {
+        this(connection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, true, columns, grantee);
     }
     
+    @SphereEx(Type.MODIFY)
     public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql, final int resultSetType, final int resultSetConcurrency,
-                                           final int resultSetHoldability) throws SQLException {
-        this(connection, sql, resultSetType, resultSetConcurrency, resultSetHoldability, false, null);
+                                           final int resultSetHoldability, @SphereEx final Grantee grantee) throws SQLException {
+        this(connection, sql, resultSetType, resultSetConcurrency, resultSetHoldability, false, null, grantee);
     }
     
+    @SphereEx(Type.MODIFY)
     private ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql,
                                             final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
-                                            final String[] columns) throws SQLException {
+                                            final String[] columns, @SphereEx final Grantee grantee) throws SQLException {
         if (Strings.isNullOrEmpty(sql)) {
             throw new EmptySQLException().toSQLException();
         }
@@ -199,6 +237,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         metaDataContexts = connection.getContextManager().getMetaDataContexts();
         hintValueContext = SQLHintUtils.extractHint(sql);
         this.sql = SQLHintUtils.removeHint(sql);
+        // SPEX ADDED: BEGIN
+        this.grantee = grantee;
+        batchContext = new BatchConnectionContext();
+        setMaskQueryParameterToConnectionContext();
+        // SPEX ADDED: END
         statements = new ArrayList<>();
         parameterSets = new ArrayList<>();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
@@ -211,12 +254,22 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         executor = new DriverExecutor(connection);
         JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
-        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(metaDataContexts, jdbcExecutor, databaseName, connection.getProcessId());
+        // SPEX CHANGED: BEGIN
+        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(metaDataContexts, jdbcExecutor, databaseName, connection.getProcessId(), batchContext);
+        // SPEX CHANGED: END
         kernelProcessor = new KernelProcessor();
         statementsCacheable = isStatementsCacheable(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData());
         trafficRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
         selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
         statementManager = new StatementManager();
+    }
+    
+    @SphereEx
+    private void setMaskQueryParameterToConnectionContext() {
+        connection.getDatabaseConnectionManager().getConnectionContext().setGrantee(grantee);
+        AuthorityRule authorityRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        connection.getDatabaseConnectionManager().getConnectionContext().setRoles(authorityRule.findRoles(grantee).stream().map(RoleSubject::toString).collect(Collectors.toList()));
+        connection.getDatabaseConnectionManager().getConnectionContext().setHintValueContext(hintValueContext);
     }
     
     private boolean isStatementsCacheable(final RuleMetaData databaseRuleMetaData) {
@@ -239,11 +292,21 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeQuery());
             }
+            // SPEX ADDED: BEGIN
+            if (executor.getSystemSchemaQueryEngine().decide(queryContext.getSqlStatementContext())) {
+                return executeSystemSchemaQuery(queryContext);
+            }
+            // SPEX ADDED: END
             useFederation = decide(queryContext,
                     metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData());
             if (useFederation) {
                 return executeFederationQuery(queryContext);
             }
+            // SPEX ADDED: BEGIN
+            if (executor.getGlobalIndexEngine().isContainsGlobalIndex(queryContext)) {
+                return executeGlobalIndexQuery(queryContext);
+            }
+            // SPEX ADDED: END
             executionContext = createExecutionContext(queryContext);
             result = doExecuteQuery(executionContext);
             // CHECKSTYLE:OFF
@@ -256,6 +319,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
         currentResultSet = result;
         return result;
+    }
+    
+    @SphereEx
+    private ResultSet executeSystemSchemaQuery(final QueryContext queryContext) throws SQLException {
+        return executor.getSystemSchemaQueryEngine().execute(queryContext, this, connection.getDatabaseName());
     }
     
     private ShardingSphereResultSet doExecuteQuery(final ExecutionContext executionContext) throws SQLException {
@@ -338,6 +406,23 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits());
     }
     
+    @SphereEx
+    private ResultSet executeGlobalIndexQuery(final QueryContext queryContext) throws SQLException {
+        PreparedStatementExecuteQueryCallback callback = new PreparedStatementExecuteQueryCallback(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType(),
+                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown());
+        GlobalIndexExecutorContext executorContext = new GlobalIndexExecutorContext(connection.getProcessId());
+        List<QueryResult> queryResults = executor.getGlobalIndexEngine().executeGlobalIndex(createDriverExecutionPrepareEngine(), callback,
+                connection.getDatabaseConnectionManager().getConnectionContext(), queryContext, executorContext);
+        statements.addAll(executorContext.getCachedPreparedStatements());
+        executionContext = executorContext.getPrimarySQLExecutionContext().orElseThrow(() -> new IllegalStateException("Can not get global index primary sql execution context."));
+        MergedResult mergedResult = mergeQuery(queryResults, executionContext.getSqlStatementContext());
+        List<ResultSet> resultSets = getResultSets();
+        if (null == columnLabelAndIndexMap) {
+            columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, selectContainsEnhancedTable, resultSets.get(0).getMetaData());
+        }
+        return new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, executionContext, columnLabelAndIndexMap);
+    }
+    
     @Override
     public int executeUpdate() throws SQLException {
         try {
@@ -353,7 +438,19 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeUpdate());
             }
+            // SPEX ADDED: BEGIN
+            if (executor.getGlobalIndexEngine().isContainsGlobalIndex(queryContext)) {
+                return isNeedImplicitCommitTransaction(connection, sqlStatement, true) ? executeWithImplicitCommitTransaction(() -> executeGlobalIndexUpdate(queryContext), connection,
+                        metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType())
+                        : executeGlobalIndexUpdate(queryContext);
+            }
+            // SPEX ADDED: END
             executionContext = createExecutionContext(queryContext);
+            // SPEX ADDED: BEGIN
+            if (new DDLConsistencyDeciderEngine().isDDLSQLStatement(connection.getContextManager(), executionContext, connection.getDatabaseName())) {
+                return executeDDLSQLStatementUpdate(executionContext);
+            }
+            // SPEX ADDED: END
             if (hasRawExecutionRule()) {
                 Collection<ExecuteResult> results =
                         executor.getRawExecutor().execute(createRawExecutionGroupContext(executionContext), executionContext.getQueryContext(), new RawSQLExecutorCallback());
@@ -370,6 +467,17 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
     }
     
+    @SphereEx
+    private int executeGlobalIndexUpdate(final QueryContext queryContext) throws SQLException {
+        GlobalIndexExecutorContext executorContext = new GlobalIndexExecutorContext(connection.getProcessId());
+        int result = executor.getGlobalIndexEngine().executeUpdate(createDriverExecutionPrepareEngine(), createExecuteCallback(),
+                connection.getDatabaseConnectionManager().getConnectionContext(), queryContext, executorContext);
+        statements.addAll(executorContext.getCachedPreparedStatements());
+        executionContext = executorContext.getPrimarySQLExecutionContext().orElseThrow(() -> new IllegalStateException("Can not get global index primary sql execution context."));
+        return result;
+    }
+    
+    @SphereEx(Type.MODIFY)
     private int useDriverToExecuteUpdate(final ExecutionContext executionContext) throws SQLException {
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(executionContext);
         cacheStatements(executionGroupContext.getInputGroups());
@@ -417,13 +525,31 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).execute());
             }
+            // SPEX ADDED: BEGIN
+            if (executor.getSystemSchemaQueryEngine().decide(queryContext.getSqlStatementContext())) {
+                ResultSet resultSet = executeSystemSchemaQuery(queryContext);
+                return null != resultSet;
+            }
+            // SPEX ADDED: END
             useFederation = decide(queryContext,
                     metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData());
             if (useFederation) {
                 ResultSet resultSet = executeFederationQuery(queryContext);
                 return null != resultSet;
             }
+            // SPEX ADDED: BEGIN
+            if (executor.getGlobalIndexEngine().isContainsGlobalIndex(queryContext)) {
+                return isNeedImplicitCommitTransaction(connection, sqlStatement, true) ? executeWithImplicitCommitTransaction(() -> executeGlobalIndex(queryContext), connection,
+                        metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType())
+                        : executeGlobalIndex(queryContext);
+            }
+            // SPEX ADDED: END
             executionContext = createExecutionContext(queryContext);
+            // SPEX ADDED: BEGIN
+            if (new DDLConsistencyDeciderEngine().isDDLSQLStatement(connection.getContextManager(), executionContext, connection.getDatabaseName())) {
+                return executeDDLSQLStatement(executionContext);
+            }
+            // SPEX ADDED: END
             if (hasRawExecutionRule()) {
                 Collection<ExecuteResult> results =
                         executor.getRawExecutor().execute(createRawExecutionGroupContext(executionContext), executionContext.getQueryContext(), new RawSQLExecutorCallback());
@@ -440,6 +566,16 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
     }
     
+    @SphereEx
+    private boolean executeGlobalIndex(final QueryContext queryContext) throws SQLException {
+        GlobalIndexExecutorContext executorContext = new GlobalIndexExecutorContext(connection.getProcessId());
+        boolean result = executor.getGlobalIndexEngine().execute(createDriverExecutionPrepareEngine(), createExecuteCallback(), connection.getDatabaseConnectionManager().getConnectionContext(),
+                queryContext, executorContext);
+        statements.addAll(executorContext.getCachedPreparedStatements());
+        executionContext = executorContext.getPrimarySQLExecutionContext().orElseThrow(() -> new IllegalStateException("Can not get global index primary sql execution context."));
+        return result;
+    }
+    
     private boolean hasRawExecutionRule() {
         return !metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty();
     }
@@ -452,50 +588,17 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private boolean executeWithExecutionContext(final ExecutionContext executionContext) throws SQLException {
         return isNeedImplicitCommitTransaction(connection, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
-                ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(executionContext))
+                ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(executionContext), connection, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType())
                 : useDriverToExecute(executionContext);
-    }
-    
-    private boolean executeWithImplicitCommitTransaction(final ImplicitTransactionCallback<Boolean> callback) throws SQLException {
-        boolean result;
-        try {
-            connection.setAutoCommit(false);
-            result = callback.execute();
-            connection.commit();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            connection.rollback();
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
-        } finally {
-            connection.setAutoCommit(true);
-        }
-        return result;
     }
     
     private int executeUpdateWithExecutionContext(final ExecutionContext executionContext) throws SQLException {
         return isNeedImplicitCommitTransaction(connection, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
-                ? executeUpdateWithImplicitCommitTransaction(() -> useDriverToExecuteUpdate(executionContext))
+                ? executeWithImplicitCommitTransaction(() -> useDriverToExecuteUpdate(executionContext), connection, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType())
                 : useDriverToExecuteUpdate(executionContext);
     }
     
-    private int executeUpdateWithImplicitCommitTransaction(final ImplicitTransactionCallback<Integer> callback) throws SQLException {
-        int result;
-        try {
-            connection.setAutoCommit(false);
-            result = callback.execute();
-            connection.commit();
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
-            // CHECKSTYLE:ON
-            connection.rollback();
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
-        } finally {
-            connection.setAutoCommit(true);
-        }
-        return result;
-    }
-    
+    @SphereEx(Type.MODIFY)
     private boolean useDriverToExecute(final ExecutionContext executionContext) throws SQLException {
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(executionContext);
         cacheStatements(executionGroupContext.getInputGroups());
@@ -503,7 +606,33 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), createExecuteCallback());
     }
     
+    @SphereEx
+    private boolean executeDDLSQLStatement(final ExecutionContext executionContext) throws SQLException {
+        JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
+        JDBCExecutorCallback<Boolean> jdbcExecutorCallback = createExecuteCallback();
+        DDLExecutionEngine ddlEngine = DDLExecutionEngineFactory.newInstance(executionContext.getQueryContext(), metaDataContexts, connection.getDatabaseName(),
+                connection.getContextManager().getInstanceContext(), connection.getProcessId(), jdbcExecutor, connection.getDatabaseConnectionManager().getConnectionContext());
+        return ddlEngine.executeDDLSQLStatement(metaDataContexts, executionContext, DDLExecutionTypeEnum.JDBC_EXECUTE,
+                connection.getDatabaseConnectionManager().getConnectionContext().getExecutionConnectionContext(), InstanceType.JDBC, createDriverExecutionPrepareEngine(), jdbcExecutorCallback);
+    }
+    
+    @SphereEx
+    private int executeDDLSQLStatementUpdate(final ExecutionContext executionContext) throws SQLException {
+        JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
+        JDBCExecutorCallback<Integer> callback = createExecuteUpdateCallback();
+        DDLExecutionEngine ddlEngine = DDLExecutionEngineFactory.newInstance(executionContext.getQueryContext(), metaDataContexts, connection.getDatabaseName(),
+                connection.getContextManager().getInstanceContext(), connection.getProcessId(), jdbcExecutor, connection.getDatabaseConnectionManager().getConnectionContext());
+        return ddlEngine.executeDDLSQLStatement(metaDataContexts, executionContext, DDLExecutionTypeEnum.JDBC_EXECUTE_UPDATE,
+                connection.getDatabaseConnectionManager().getConnectionContext().getExecutionConnectionContext(), InstanceType.JDBC, createDriverExecutionPrepareEngine(), callback);
+    }
+    
+    @SphereEx(Type.MODIFY)
     private JDBCExecutorCallback<Boolean> createExecuteCallback() {
+        return createExecuteCallback(sqlStatement);
+    }
+    
+    @SphereEx
+    private JDBCExecutorCallback<Boolean> createExecuteCallback(final SQLStatement sqlStatement) {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         return new JDBCExecutorCallback<Boolean>(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType(),
                 metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), sqlStatement, isExceptionThrown) {
@@ -576,7 +705,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
         RuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
         ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(databaseName);
-        SQLAuditEngine.audit(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, currentDatabase, null, queryContext.getHintValueContext());
+        // SPEX CHANGED: BEGIN
+        SQLAuditEngine.audit(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, currentDatabase, grantee, queryContext.getHintValueContext(),
+                queryContext.getSql());
+        // SPEX CHANGED: END
         ExecutionContext result = kernelProcessor.generateExecutionContext(
                 queryContext, currentDatabase, globalRuleMetaData, metaDataContexts.getMetaData().getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
         findGeneratedKey(result).ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
@@ -588,8 +720,15 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return new ExecutionContext(queryContext, Collections.singletonList(executionUnit), new RouteContext());
     }
     
+    @SphereEx(Type.MODIFY)
     private QueryContext createQueryContext() {
-        List<Object> params = new ArrayList<>(getParameters());
+        return createQueryContext(false);
+    }
+    
+    @SphereEx
+    private QueryContext createQueryContext(final boolean executeBatch) {
+        List<Object> parameters = executeBatch && isSupportBatchPerformance() ? batchPreparedStatementExecutor.getParameters() : getParameters();
+        List<Object> params = new ArrayList<>(parameters);
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(params);
         }
@@ -661,23 +800,85 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     @Override
-    public void addBatch() {
+    public void addBatch() throws @SphereEx SQLException {
         try {
+            // SPEX ADDED: BEGIN
+            connection.getDatabaseConnectionManager().getConnectionContext().setBatchContext(batchContext);
+            if (isSupportBatchPerformance()) {
+                batchPreparedStatementExecutor.addParameters(getParameters());
+                return;
+            }
+            // SPEX ADDED: END
             QueryContext queryContext = createQueryContext();
             trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
+            // SPEX ADDED: BEGIN
+            if (executor.getGlobalIndexEngine().isContainsGlobalIndex(queryContext)) {
+                addBatchForGlobalIndex(queryContext);
+                return;
+            }
+            // SPEX ADDED: END
             executionContext = null == trafficInstanceId ? createExecutionContext(queryContext) : createExecutionContext(queryContext, trafficInstanceId);
             batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits());
         } finally {
             currentResultSet = null;
             clearParameters();
+            // SPEX ADDED: BEGIN
+            connection.getDatabaseConnectionManager().getConnectionContext().resetBatchContext();
+            // SPEX ADDED: END
         }
+    }
+    
+    @SphereEx
+    private void addBatchForGlobalIndex(final QueryContext queryContext) throws SQLException {
+        Collection<GlobalIndexRewriterContext> executionContexts = executor.getGlobalIndexEngine().addBatch(queryContext, connection.getDatabaseConnectionManager().getConnectionContext(),
+                createDriverExecutionPrepareEngine(), createExecuteCallback(), new GlobalIndexExecutorContext(connection.getProcessId()));
+        for (GlobalIndexRewriterContext each : executionContexts) {
+            ShardingSpherePreconditions.checkState(each.getExecutionContext().isPresent(), () -> new UnsupportedOperationException("Execution context is required"));
+            globalIndexBatchExecutors
+                    .computeIfAbsent(each,
+                            unused -> new BatchPreparedStatementExecutor(metaDataContexts, batchPreparedStatementExecutor.getJdbcExecutor(), databaseName, connection.getProcessId(), batchContext))
+                    .addBatchForExecutionUnits(each.getExecutionContext().get().getExecutionUnits());
+            if (each.isPrimarySQL()) {
+                executionContext = each.getExecutionContext().get();
+                globalIndexLogicalAddBatchCallTimes.computeIfAbsent(each, unused -> new LinkedList<>()).add(globalIndexBatchCount);
+            }
+        }
+        globalIndexBatchCount++;
     }
     
     @Override
     public int[] executeBatch() throws SQLException {
+        // SPEX ADDED: BEGIN
+        connection.getDatabaseConnectionManager().getConnectionContext().setBatchContext(batchContext);
+        if (isSupportBatchPerformance()) {
+            if (0 == batchPreparedStatementExecutor.getBatchCount()) {
+                return new int[0];
+            }
+            QueryContext queryContext = createQueryContext(true);
+            batchContext.setOneBatchValuesSize(((InsertStatementContext) queryContext.getSqlStatementContext()).getValueListCount());
+            executionContext = createExecutionContext(queryContext);
+            batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits());
+        }
+        // SPEX ADDED: END
         if (null == executionContext) {
             return new int[0];
         }
+        // SPEX ADDED: BEGIN
+        if (executor.getGlobalIndexEngine().isContainsGlobalIndex(executionContext.getQueryContext())) {
+            int[] results = new int[globalIndexBatchCount];
+            for (Entry<GlobalIndexRewriterContext, BatchPreparedStatementExecutor> entry : globalIndexBatchExecutors.entrySet()) {
+                int[] eachResult = doExecuteBatch(entry.getValue());
+                if (entry.getKey().isPrimarySQL()) {
+                    List<Integer> logicalCallTimes = globalIndexLogicalAddBatchCallTimes.get(entry.getKey());
+                    for (int i = 0; i < logicalCallTimes.size(); i++) {
+                        Integer logicalCallTime = logicalCallTimes.get(i);
+                        results[logicalCallTime] += eachResult[i];
+                    }
+                }
+            }
+            return results;
+        }
+        // SPEX ADDED: END
         try {
             // TODO add raw SQL executor
             return doExecuteBatch(batchPreparedStatementExecutor);
@@ -731,9 +932,21 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public void clearBatch() {
+        // SPEX ADDED: BEGIN
+        if (null != executionContext && executor.getGlobalIndexEngine().isContainsGlobalIndex(executionContext.getQueryContext())) {
+            globalIndexBatchExecutors.forEach((key, value) -> value.clear());
+            globalIndexBatchExecutors.clear();
+            globalIndexLogicalAddBatchCallTimes.clear();
+            globalIndexBatchCount = 0;
+        }
+        // SPEX ADDED: END
         currentResultSet = null;
         batchPreparedStatementExecutor.clear();
         clearParameters();
+        batchContext.close();
+        // SPEX ADDED: BEGIN
+        connection.getDatabaseConnectionManager().getConnectionContext().resetBatchContext();
+        // SPEX ADDED: END
     }
     
     @SuppressWarnings("MagicConstant")
@@ -766,5 +979,19 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Override
     public Collection<PreparedStatement> getRoutedStatements() {
         return statements;
+    }
+    
+    /**
+     * Judge whether support batch performance or not. 
+     *
+     * @return support batch performance or not
+     */
+    @SphereEx
+    public boolean isSupportBatchPerformance() {
+        if (null == batchContext.getSupportBatchPerformance()) {
+            Boolean useBatchPerformanceConfig = metaDataContexts.getMetaData().getTemporaryProps().<Boolean>getValue(TemporaryConfigurationPropertyKey.BATCH_PERFORMANCE_ENABLED);
+            batchContext.setSupportBatchPerformance(Boolean.TRUE.equals(useBatchPerformanceConfig) && batchPreparedStatementExecutor.isSupportBatchPerformance(sqlStatementContext));
+        }
+        return batchContext.isSupportBatchPerformance();
     }
 }
