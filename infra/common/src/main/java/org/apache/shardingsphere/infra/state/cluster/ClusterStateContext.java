@@ -17,29 +17,30 @@
 
 package org.apache.shardingsphere.infra.state.cluster;
 
-import lombok.Getter;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Cluster state context.
  */
-@Getter
 public final class ClusterStateContext {
     
-    private ClusterState currentState = ClusterState.OK;
+    private final AtomicReference<ClusterState> currentState = new AtomicReference<>(ClusterState.OK);
     
     /**
-     * Switch state.
+     * Get current cluster state.
      * 
-     * @param state state
-     * @throws IllegalStateException illegal state exception
+     * @return current cluster state
+     */
+    public ClusterState getCurrentState() {
+        return currentState.get();
+    }
+    
+    /**
+     * Switch current cluster state.
+     * 
+     * @param state to be switched cluster state
      */
     public void switchState(final ClusterState state) {
-        if (currentState == state) {
-            return;
-        }
-        if (ClusterState.OK != currentState && ClusterState.OK != state) {
-            throw new IllegalStateException("Cluster is locked");
-        }
-        currentState = state;
+        currentState.set(state);
     }
 }
