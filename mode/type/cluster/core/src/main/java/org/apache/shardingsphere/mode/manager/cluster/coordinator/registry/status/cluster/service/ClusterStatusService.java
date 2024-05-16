@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.service;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -33,10 +34,12 @@ public final class ClusterStatusService {
     /**
      * Persist cluster state.
      *
-     * @param state cluster state context
+     * @param state cluster state
      */
-    public void persistClusterState(final ClusterStateContext state) {
-        repository.persist(ComputeNode.getClusterStatusNodePath(), state.getCurrentState().name());
+    public void persistClusterState(final ClusterState state) {
+        if (Strings.isNullOrEmpty(repository.getDirectly(ComputeNode.getClusterStatusNodePath()))) {
+            repository.persist(ComputeNode.getClusterStatusNodePath(), state.name());
+        }
     }
     
     /**
