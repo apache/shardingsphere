@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mode.manager.ContextManagerAware;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.ShardingSphereSchemaDataRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ClusterProcessSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.service.ClusterStatusService;
@@ -44,9 +45,13 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
+import org.apache.shardingsphere.mode.storage.service.QualifiedDataSourceStatusService;
 
 import java.sql.SQLException;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Cluster context manager builder.
@@ -62,7 +67,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
             ((InstanceContextAware) registryCenter.getRepository()).setInstanceContext(instanceContext);
         }
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, instanceContext, registryCenter.getQualifiedDataSourceStatusService().loadStatus());
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, instanceContext, new QualifiedDataSourceStatusService(repository).loadStatus());
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         setContextManagerAware(result);
         createSubscribers(eventBusContext, repository);
@@ -79,8 +84,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) {
-        return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()), new ClusterWorkerIdGenerator(registryCenter, param.getInstanceMetaData()),
-                param.getModeConfiguration(), new ClusterModeContextManager(), new GlobalLockContext(registryCenter.getGlobalLockPersistService()), eventBusContext);
+        return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()), new ClusterWorkerIdGenerator(registryCenter, param.getInstanceMetaData()), param.getModeConfiguration(),
+                new ClusterModeContextManager(), new GlobalLockContext(new GlobalLockPersistService(initDistributedLockHolder(registryCenter.getRepository()))), eventBusContext);
+    }
+    
+    private DistributedLockHolder initDistributedLockHolder(final ClusterPersistRepository repository) {
+        DistributedLockHolder distributedLockHolder = repository.getDistributedLockHolder();
+        return null == distributedLockHolder ? new DistributedLockHolder("default", repository, new DefaultLockTypedProperties(new Properties())) : distributedLockHolder;
     }
     
     private void setContextManagerAware(final ContextManager contextManager) {
