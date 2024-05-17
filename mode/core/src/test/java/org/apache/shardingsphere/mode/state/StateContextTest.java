@@ -15,32 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.state.cluster;
+package org.apache.shardingsphere.mode.state;
 
-import java.util.concurrent.atomic.AtomicReference;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
+import org.junit.jupiter.api.Test;
 
-/**
- * Cluster state context.
- */
-public final class ClusterStateContext {
-    
-    private final AtomicReference<ClusterState> currentState = new AtomicReference<>(ClusterState.OK);
-    
-    /**
-     * Get current cluster state.
-     * 
-     * @return current cluster state
-     */
-    public ClusterState getCurrentState() {
-        return currentState.get();
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+
+class StateContextTest {
+
+    private final StateContext stateContext = new StateContext(mock(StateService.class));
+
+    @Test
+    void assertGetCurrentState() {
+        assertThat(stateContext.getCurrentState(), is(ClusterState.OK));
     }
-    
-    /**
-     * Switch current cluster state.
-     * 
-     * @param state to be switched cluster state
-     */
-    public void switchState(final ClusterState state) {
-        currentState.set(state);
+
+    @Test
+    void assertSwitchState() {
+        assertThat(stateContext.getCurrentState(), is(ClusterState.OK));
+        stateContext.switchState(ClusterState.UNAVAILABLE);
+        assertThat(stateContext.getCurrentState(), is(ClusterState.UNAVAILABLE));
     }
 }

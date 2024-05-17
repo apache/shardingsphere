@@ -53,7 +53,7 @@ public final class UnlockClusterExecutor implements DistSQLUpdateExecutor<Unlock
     }
     
     private void checkState(final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(ClusterState.OK != contextManager.getClusterStateContext().getCurrentState(), NotLockedClusterException::new);
+        ShardingSpherePreconditions.checkState(ClusterState.OK != contextManager.getStateContext().getCurrentState(), NotLockedClusterException::new);
     }
     
     @Override

@@ -45,14 +45,14 @@ class LockClusterExecutorTest {
     @Test
     void assertExecuteUpdateWithLockedCluster() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterState.UNAVAILABLE);
+        when(contextManager.getStateContext().getCurrentState()).thenReturn(ClusterState.UNAVAILABLE);
         assertThrows(LockedClusterException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties())), contextManager));
     }
     
     @Test
     void assertExecuteUpdateWithWrongAlgorithm() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterState.OK);
+        when(contextManager.getStateContext().getCurrentState()).thenReturn(ClusterState.OK);
         assertThrows(ServiceProviderNotFoundException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties())), contextManager));
     }
 }
