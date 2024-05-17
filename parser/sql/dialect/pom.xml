@@ -35,6 +35,7 @@
         <module>opengauss</module>
         <module>clickhouse</module>
         <module>doris</module>
+        <module>hive</module>
     </modules>
     
     <dependencies>
