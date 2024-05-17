@@ -35,7 +35,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.GlobalLoc
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.ShardingSphereSchemaDataRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ClusterProcessSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.service.ClusterStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.subscriber.ClusterStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.subscriber.ComputeNodeStatusSubscriber;
@@ -49,6 +48,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
+import org.apache.shardingsphere.mode.state.StateService;
 import org.apache.shardingsphere.mode.storage.service.QualifiedDataSourceStatusService;
 
 import java.sql.SQLException;
@@ -74,7 +74,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         setContextManagerAware(result);
         createSubscribers(eventBusContext, repository);
         registerOnline(eventBusContext, instanceContext, repository, param, result);
-        setClusterState(repository, result);
+        setClusterState(result);
         return result;
     }
     
@@ -121,13 +121,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         new ClusterEventSubscriberRegistry(contextManager, repository).register();
     }
     
-    private void setClusterState(final ClusterPersistRepository repository, final ContextManager contextManager) {
-        ClusterStatusService clusterStatusService = new ClusterStatusService(repository);
-        Optional<ClusterState> clusterState = clusterStatusService.load();
+    private void setClusterState(final ContextManager contextManager) {
+        StateService stateService = contextManager.getStateContext().getStateService();
+        Optional<ClusterState> clusterState = stateService.load();
         if (clusterState.isPresent()) {
             contextManager.updateClusterState(clusterState.get());
         } else {
-            clusterStatusService.persist(ClusterState.OK);
+            stateService.persist(ClusterState.OK);
         }
     }
     
