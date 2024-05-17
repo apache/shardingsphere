@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.postgresql.parser;
+grammar PrestoStatement;
 
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import Comments, DMLStatement, DDLStatement, DALStatement;
 
-/**
- * SQL parser for PostgreSQL.
- */
-public final class PostgreSQLParser extends PostgreSQLStatementParser implements SQLParser {
-    
-    public PostgreSQLParser(final TokenStream input) {
-        super(input);
-    }
-    
-    @Override
-    public ASTNode parse() {
-        return new ParseASTNode(execute(), (CommonTokenStream) getTokenStream());
-    }
-}
+// TODO correct presto SQL parsing according to official documentation
+execute
+    : (select
+    | insert
+    | update
+    | delete
+    | createTable
+    | alterTable
+    | dropTable
+    | createView
+    | dropView
+    | explain
+    | show
+    ) (SEMI_ EOF? | EOF)
+    | EOF
+    ;

@@ -15,29 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.postgresql.parser;
+lexer grammar Comments;
 
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DialectSQLParserFacade;
+import Symbol;
 
-/**
- * SQL parser facade for PostgreSQL.
- */
-public final class PostgreSQLParserFacade implements DialectSQLParserFacade {
-    
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return PostgreSQLLexer.class;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return PostgreSQLParser.class;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "PostgreSQL";
-    }
-}
+BLOCK_COMMENT:  '/*' .*? '*/' -> channel(HIDDEN);
+INLINE_COMMENT: (('-- ' | '#') ~[\r\n]* ('\r'? '\n' | EOF) | '--' ('\r'? '\n' | EOF)) -> channel(HIDDEN);

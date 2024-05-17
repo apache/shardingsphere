@@ -15,18 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.postgresql.parser;
+package org.apache.shardingsphere.sql.parser.presto.parser;
 
 import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementLexer;
+import org.antlr.v4.runtime.Lexer;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
- * SQL lexer for PostgreSQL.
+ * SQL lexer base for PostgreSQL.
  */
-public final class PostgreSQLLexer extends PostgreSQLStatementLexer implements SQLLexer {
+public abstract class PostgreSQLLexerBase extends Lexer {
     
-    public PostgreSQLLexer(final CharStream input) {
+    private final Deque<String> tags = new ArrayDeque<>();
+    
+    protected PostgreSQLLexerBase(final CharStream input) {
         super(input);
+    }
+    
+    /**
+     * Push tag.
+     */
+    public void pushTag() {
+        tags.push(getText());
+    }
+    
+    /**
+     * Judge is tag.
+     *
+     * @return is tag
+     */
+    public boolean isTag() {
+        return getText().equals(tags.peek());
+    }
+    
+    /**
+     * Pop tag.
+     */
+    public void popTag() {
+        tags.pop();
     }
 }

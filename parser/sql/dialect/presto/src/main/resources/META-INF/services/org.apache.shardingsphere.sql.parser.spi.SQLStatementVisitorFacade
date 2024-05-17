@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.presto.parser.PostgreSQLParserFacade
+org.apache.shardingsphere.sql.parser.presto.visitor.statement.PrestoStatementVisitorFacade

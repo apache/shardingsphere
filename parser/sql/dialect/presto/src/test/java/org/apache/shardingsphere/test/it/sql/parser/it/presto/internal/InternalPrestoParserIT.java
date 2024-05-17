@@ -15,45 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.postgresql.parser;
+package org.apache.shardingsphere.test.it.sql.parser.it.presto.internal;
 
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.Lexer;
+import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT;
+import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
+import org.junit.jupiter.api.Disabled;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-
-/**
- * SQL lexer base for PostgreSQL.
- */
-public abstract class PostgreSQLLexerBase extends Lexer {
-    
-    private final Deque<String> tags = new ArrayDeque<>();
-    
-    protected PostgreSQLLexerBase(final CharStream input) {
-        super(input);
-    }
-    
-    /**
-     * Push tag.
-     */
-    public void pushTag() {
-        tags.push(getText());
-    }
-    
-    /**
-     * Judge is tag.
-     *
-     * @return is tag
-     */
-    public boolean isTag() {
-        return getText().equals(tags.peek());
-    }
-    
-    /**
-     * Pop tag.
-     */
-    public void popTag() {
-        tags.pop();
-    }
+@Disabled("Presto dependency has been excluded")
+@InternalSQLParserITSettings("Presto")
+class InternalPrestoParserIT extends InternalSQLParserIT {
 }
