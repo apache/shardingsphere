@@ -326,4 +326,45 @@
     <sql-case id="create_table_with_enclosed" value="CREATE TABLE emp_load(first_name CHAR(15), last_name CHAR(20), year_of_birth CHAR(4)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '(' and ')'LRTRIM LOCATION (info.dat));" db-types="Oracle"/>
     <sql-case id="create_table_with_builtin_function" value="CREATE TABLE tab AS SELECT DBMS_LOB.GETLENGTH@dbs2(clob_col) len FROM tab@dbs2;" db-types="Oracle"/>
     <sql-case id="create_table_with_autoextend_size" value="CREATE TABLESPACE ts1 AUTOEXTEND_SIZE = 4M" db-types="MySQL"/>
+    <sql-case id="create_table_with_cast_function1" value="create table finance_ods.yh_ods_bs_class_all as
+        select jw.id,
+               jw.product_level_code,
+               jw.product_type
+        from finance_ods.yh_bs_class jw
+        where if(op_type is null,'0',op_type) != '1'
+        union all
+        select arc.id,
+               cast(arc.ClassScaleType as bigint),
+               jw.mother_class_id, -- mother_class_id&#x000A;
+               arc.product_type
+        from finance_ods.yh_archive_bs_class arc
+                 left join (select mother_class_id from finance_ods.yh_bs_class
+                 where if(op_type is null,'0',op_type) != '1') jw
+                           on arc.nSchoolId = jw.NSCHOOLID and arc.sCode = jw.SCODE
+        where  if(arc.op_type is null,'0',arc.op_type) != '1' and jw.NSCHOOLID is null;" db-types="Doris"/>
+    <sql-case id="create_table_with_split" value="create table finance_ods.tmp_classcode_property_new as
+        select a.scode as classcode,
+               c.all_layer_value_name,
+               split(c.all_layer_value_name,',')[1] as f_dept_name_update,
+               split(c.all_layer_value_name,',')[4] as productlevelname_update,
+               c.memo,split(c.memo,',')[1] as f_dept_code_update,
+               split(c.memo,',')[4] as productlevelcode_update
+        from finance_ods.yh_ods_bs_class_all a
+                 inner join (select * from finance_ods.yh_product_course_product where if(op_type is null,'0',op_type) != '1') b on aa.course_code_target = b.code
+        where coalesce(a.f_dept_code,'') in ('05','16','31')
+          and date(a.dtbegindate) >= date('2018-06-01');" db-types="Doris"/>
+    <sql-case id="create_table_with_properties" value="CREATE TABLE `dim_ehr_all_dimension_dict1` (
+      `id` varchar(255) NULL COMMENT &quot;id&quot;,
+      `code` varchar(255) NULL COMMENT &quot;编码&quot;,
+      `px` int(11) NULL COMMENT &quot;排序&quot;
+        ) ENGINE=OLAP
+        DUPLICATE KEY(`id`)
+        DISTRIBUTED BY HASH(`id`) BUCKETS 3
+        PROPERTIES (
+        &quot;replication_num&quot; = &quot;3&quot;,
+        &quot;in_memory&quot; = &quot;false&quot;,
+        &quot;storage_format&quot; = &quot;DEFAULT&quot;,
+        &quot;enable_persistent_index&quot; = &quot;false&quot;,
+        &quot;compression&quot; = &quot;LZ4&quot;
+            );" db-types="Doris"/>
 </sql-cases>

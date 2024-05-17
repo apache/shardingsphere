@@ -1104,6 +1104,9 @@ castType
     | castTypeName = REAL
     | castTypeName = DOUBLE PRECISION
     | castTypeName = FLOAT precision?
+    | castTypeName = STRING
+    | castTypeName = INT
+    | castTypeName = BIGINT
     ;
     
 positionFunction
@@ -1154,9 +1157,13 @@ shorthandRegularFunction
     ;
     
 completeRegularFunction
-    : regularFunctionName (LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_)
+    : regularFunctionName (LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_) indexAlias?
     ;
-    
+
+indexAlias
+    : LBT_ (NUMBER_ | columnRef) RBT_ (SEMI_? (AS | EQ_) (identifier | columnRef))?
+    ;
+
 regularFunctionName
     : IF | LOCALTIME | LOCALTIMESTAMP | REPLACE | INSERT | INTERVAL | MOD
     | DATABASE | SCHEMA | LEFT | RIGHT | DATE | DAY | GEOMETRYCOLLECTION | REPEAT
@@ -1224,6 +1231,7 @@ dataType
     | (dataTypeName = REAL | dataTypeName = DOUBLE PRECISION?) precision? fieldOptions?
     | dataTypeName = (FLOAT | DECIMAL | DEC | NUMERIC | FIXED) (fieldLength | precision)? fieldOptions?
     | dataTypeName = BIT fieldLength?
+    | dataTypeName = DECIMAL64 precision
     | dataTypeName = (BOOL | BOOLEAN)
     | dataTypeName = CHAR fieldLength? charsetWithOptBinary?
     | (dataTypeName = NCHAR | dataTypeName = NATIONAL_CHAR) fieldLength? BINARY?

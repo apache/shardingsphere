@@ -2415,4 +2415,470 @@
             <column name="c1" start-index="17" stop-index="18"/>
         </column-definition>
     </create-table>
+    
+    <create-table sql-case-id="create_table_with_cast_function1">
+        <table name="yh_ods_bs_class_all" start-index="13" stop-index="43">
+            <owner name="finance_ods" start-index="13" stop-index="23" />
+        </table>
+        <select>
+            <projections start-index="63" stop-index="137">
+                <column-projection name="id" start-index="63" stop-index="67">
+                    <owner name="jw" start-index="63" stop-index="64" />
+                </column-projection>
+                <column-projection name="product_level_code" start-index="85" stop-index="105">
+                    <owner name="jw" start-index="85" stop-index="86" />
+                </column-projection>
+                <column-projection name="product_type" start-index="123" stop-index="137">
+                    <owner name="jw" start-index="123" stop-index="124" />
+                </column-projection>
+            </projections>
+            <from>
+                <simple-table name="yh_bs_class" alias="jw" start-index="152" stop-index="177">
+                    <owner name="finance_ods" start-index="152" stop-index="162"/>
+                </simple-table>
+            </from>
+            <combine combine-type="UNION_ALL" start-index="240" stop-index="775">
+                <left start-index="56" stop-index="230">
+                    <projections start-index="63" stop-index="137">
+                        <column-projection name="id" start-index="63" stop-index="67">
+                            <owner name="jw" start-index="63" stop-index="64" />
+                        </column-projection>
+                        <column-projection name="product_level_code" start-index="85" stop-index="105">
+                            <owner name="jw" start-index="85" stop-index="86" />
+                        </column-projection>
+                        <column-projection name="product_type" start-index="123" stop-index="137">
+                            <owner name="jw" start-index="123" stop-index="124" />
+                        </column-projection>
+                    </projections>
+                    <from>
+                        <simple-table name="yh_bs_class" alias="jw" start-index="152" stop-index="177">
+                            <owner name="finance_ods" start-index="152" stop-index="162"/>
+                        </simple-table>
+                    </from>
+                    <where start-index="187" stop-index="230">
+                        <expr>
+                            <binary-operation-expression start-index="193" stop-index="230">
+                                <left start-index="193" stop-index="223">
+                                    <function function-name="if" start-index="193" stop-index="223" text="if(op_type is null,'0',op_type)">
+                                        <parameter>
+                                            <binary-operation-expression start-index="196" stop-index="210">
+                                                <left>
+                                                    <column name="op_type" start-index="196" stop-index="202" />
+                                                </left>
+                                                <right>
+                                                    <literal-expression value="null" start-index="207" stop-index="210" />
+                                                </right>
+                                                <operator>IS</operator>
+                                            </binary-operation-expression>
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression value="0" start-index="212" stop-index="214" />
+                                        </parameter>
+                                        <parameter>
+                                            <column name="op_type" start-index="216" stop-index="222"/>
+                                        </parameter>
+                                    </function>
+                                </left>
+                                <right >
+                                    <literal-expression value="1" start-index="228" stop-index="230"/>
+                                </right>
+                                <operator>!=</operator>
+                            </binary-operation-expression>
+                        </expr>
+                    </where>
+                </left>
+                <right start-index="258" right-index="775">
+                    <projections start-index="265" stop-index="409">
+                        <column-projection name="id" start-index="265" stop-index="270">
+                            <owner name="arc" start-index="265" stop-index="267" />
+                        </column-projection>
+                        <expression-projection start-index="288" stop-index="321" text="cast(arc.ClassScaleType as bigint)">
+                            <expr>
+                                <function function-name="cast" start-index="288" stop-index="321" text="cast(arc.ClassScaleType as bigint)">
+                                    <parameter>
+                                        <column name="ClassScaleType" start-index="293" stop-index="310">
+                                            <owner name="arc" start-index="293" stop-index="295" />
+                                        </column>
+                                    </parameter>
+                                    <parameter>
+                                        <data-type value="bigint" start-index="315" stop-index="320"/>
+                                    </parameter>
+                                </function>
+                            </expr>
+                        </expression-projection>
+                        <column-projection name="mother_class_id" start-index="339" stop-index="356">
+                            <owner name="jw" start-index="339" stop-index="340"/>
+                        </column-projection>
+                        <column-projection name="product_type" start-index="394" stop-index="409">
+                            <owner name="arc" start-index="394" stop-index="396"/>
+                        </column-projection>
+                    </projections>
+                    <from>
+                        <join-table join-type="LEFT">
+                            <left>
+                                <simple-table name="yh_archive_bs_class" start-index="424" stop-index="458" alias="arc">
+                                    <owner name="finance_ods" start-index="424" stop-index="434" />
+                                </simple-table>
+                            </left>
+                            <right>
+                                <subquery-table alias="jw" start-index="487" stop-index="604">
+                                    <subquery>
+                                        <select>
+                                            <projections start-index="495" stop-index="509">
+                                                <column-projection name="mother_class_id" start-index="495" stop-index="509"/>
+                                            </projections>
+                                            <from>
+                                                <simple-table name="yh_bs_class" start-index="516" stop-index="538">
+                                                    <owner name="finance_ods" start-index="516" stop-index="526"/>
+                                                </simple-table>
+                                            </from>
+                                            <where start-index="557" stop-index="600">
+                                                <expr>
+                                                    <binary-operation-expression start-index="563" stop-index="600" text="if(op_type is null,'0',op_type)">
+                                                        <left>
+                                                            <function function-name="if" start-index="563" stop-index="593" text="if(op_type is null,'0',op_type)">
+                                                                <parameter>
+                                                                    <binary-operation-expression start-index="566" stop-index="580" >
+                                                                        <left>
+                                                                            <column name="op_type" start-index="566" stop-index="572" />
+                                                                        </left>
+                                                                        <right>
+                                                                            <literal-expression value="null" start-index="577" stop-index="580" />
+                                                                        </right>
+                                                                        <operator>IS</operator>
+                                                                    </binary-operation-expression>
+                                                                </parameter>
+                                                                <parameter>
+                                                                    <literal-expression value="0" start-index="582" stop-index="584" />
+                                                                </parameter>
+                                                                <parameter>
+                                                                    <column name="op_type" start-index="586" stop-index="592"/>
+                                                                </parameter>
+                                                            </function>
+                                                        </left>
+                                                        <right>
+                                                            <literal-expression value="1" start-index="598" stop-index="600"/>
+                                                        </right>
+                                                        <operator>!=</operator>
+                                                    </binary-operation-expression>
+                                                </expr>
+                                            </where>
+                                        </select>
+                                    </subquery>
+                                </subquery-table>
+                            </right>
+                            <on-condition>
+                                <binary-operation-expression start-index="636" stop-index="688">
+                                    <left>
+                                        <binary-operation-expression start-index="636" stop-index="663">
+                                            <left>
+                                                <column name="nSchoolId" start-index="636" stop-index="648">
+                                                    <owner name="arc" start-index="636" stop-index="638" />
+                                                </column>
+                                            </left>
+                                            <right>
+                                                <column name="NSCHOOLID" start-index="652" stop-index="663">
+                                                    <owner name="jw" start-index="652" stop-index="653" />
+                                                </column>
+                                            </right>
+                                            <operator>=</operator>
+                                        </binary-operation-expression>
+                                    </left>
+                                    <right>
+                                        <binary-operation-expression start-index="669" stop-index="688">
+                                            <left>
+                                                <column name="sCode" start-index="669" stop-index="677">
+                                                    <owner name="arc" start-index="669" stop-index="671"/>
+                                                </column>
+                                            </left>
+                                            <right>
+                                                <column name="SCODE" start-index="681" stop-index="688">
+                                                    <owner name="jw" start-index="681" stop-index="682" />
+                                                </column>
+                                            </right>
+                                            <operator>=</operator>
+                                        </binary-operation-expression>
+                                    </right>
+                                    <operator>and</operator>
+                                </binary-operation-expression>
+                            </on-condition>
+                        </join-table>
+                    </from>
+                    <where start-index="698" stop-index="775">
+                        <expr>
+                            <binary-operation-expression start-index="705" stop-index="775" >
+                                <left>
+                                    <binary-operation-expression start-index="705" stop-index="750" text="if(arc.op_type is null,'0',arc.op_type)">
+                                        <left>
+                                            <function function-name="if" start-index="705" stop-index="743" text="if(arc.op_type is null,'0',arc.op_type)">
+                                                <parameter>
+                                                    <binary-operation-expression start-index="708" stop-index="726">
+                                                        <left>
+                                                            <column name="op_type" start-index="708" stop-index="718">
+                                                                <owner name="arc" start-index="708" stop-index="710" />
+                                                            </column>
+                                                        </left>
+                                                        <right>
+                                                            <literal-expression value="null" start-index="723" stop-index="726"/>
+                                                        </right>
+                                                        <operator>IS</operator>
+                                                    </binary-operation-expression>
+                                                </parameter>
+                                                <parameter>
+                                                    <literal-expression value="0" start-index="728" stop-index="730" />
+                                                </parameter>
+                                                <parameter>
+                                                    <column name="op_type" start-index="732" stop-index="742">
+                                                        <owner name="arc" start-index="732" stop-index="734" />
+                                                    </column>
+                                                </parameter>
+                                            </function>
+                                        </left>
+                                        <right>
+                                            <literal-expression value="1" start-index="748" stop-index="750"/>
+                                        </right>
+                                        <operator>!=</operator>
+                                    </binary-operation-expression>
+                                </left>
+                                <right>
+                                    <binary-operation-expression start-index="756" stop-index="775">
+                                        <left>
+                                            <column name="NSCHOOLID" start-index="756" stop-index="767">
+                                                <owner name="jw" start-index="756" stop-index="757" />
+                                            </column>
+                                        </left>
+                                        <right>
+                                            <literal-expression value="null" start-index="772" stop-index="775"/>
+                                        </right>
+                                        <operator>IS</operator>
+                                    </binary-operation-expression>
+                                </right>
+                                <operator>and</operator>
+                            </binary-operation-expression>
+                        </expr>
+                    </where>
+                </right>
+            </combine>
+        </select>
+        <comment text="-- mother_class_id&#x000A;" start-index="359" stop-index="378"/>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_split">
+        <table name="tmp_classcode_property_new" start-index="13" stop-index="50">
+            <owner name="finance_ods" start-index="13" stop-index="23" />
+        </table>
+        <select>
+            <projections start-index="70" stop-index="413">
+                <column-projection name="scode" start-index="70" stop-index="89" alias="classcode">
+                    <owner name="a" start-index="70" stop-index="70" />
+                </column-projection>
+                <column-projection name="all_layer_value_name" start-index="107" stop-index="128">
+                    <owner name="c" start-index="107" stop-index="107" />
+                </column-projection>
+                <expression-projection start-index="146" stop-index="203" text="split(c.all_layer_value_name,',')[1] as f_dept_name_update">
+                    <expr>
+                        <function function-name="split" start-index="146" stop-index="203" text="split(c.all_layer_value_name,',')[1] as f_dept_name_update">
+                            <parameter>
+                                <column name="all_layer_value_name" start-index="152" stop-index="173">
+                                    <owner name="c" start-index="152" stop-index="152"/>
+                                </column>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="," start-index="175" stop-index="177" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+                <expression-projection start-index="221" stop-index="283" text="split(c.all_layer_value_name,',')[4] as productlevelname_update">
+                    <expr>
+                        <function function-name="split" start-index="221" stop-index="283" text="split(c.all_layer_value_name,',')[4] as productlevelname_update">
+                            <parameter>
+                                <column name="all_layer_value_name" start-index="227" stop-index="248">
+                                    <owner name="c" start-index="227" stop-index="227" />
+                                </column>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="," start-index="250" stop-index="252" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+                <column-projection name="memo" start-index="301" stop-index="306">
+                    <owner name="c" start-index="301" stop-index="301"/>
+                </column-projection>
+                <expression-projection start-index="308" stop-index="349" text="split(c.memo,',')[1] as f_dept_code_update">
+                    <expr>
+                        <function function-name="split" start-index="308" stop-index="349" text="split(c.memo,',')[1] as f_dept_code_update">
+                            <parameter>
+                                <column name="memo" start-index="314" stop-index="319">
+                                    <owner name="c" start-index="314" stop-index="314"/>
+                                </column>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="," start-index="321" stop-index="323"/>
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+                <expression-projection start-index="367" stop-index="413" text="split(c.memo,',')[4] as productlevelcode_update">
+                    <expr>
+                        <function function-name="split" start-index="367" stop-index="413" text="split(c.memo,',')[4] as productlevelcode_update">
+                            <parameter>
+                                <column name="memo" start-index="373" stop-index="378">
+                                    <owner name="c" start-index="373" stop-index="373" />
+                                </column>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="," start-index="380" stop-index="382"/>
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <join-table join-type="INNER">
+                    <left>
+                        <simple-table name="yh_ods_bs_class_all" alias="a" start-index="428" stop-index="460">
+                            <owner name="finance_ods" start-index="428" stop-index="438"/>
+                        </simple-table>
+                    </left>
+                    <right>
+                        <subquery-table alias="b" start-index="490" stop-index="589">
+                            <subquery>
+                                <select>
+                                    <projections start-index="498" stop-index="498">
+                                        <shorthand-projection start-index="498" stop-index="498"/>
+                                    </projections>
+                                    <from>
+                                        <simple-table name="yh_product_course_product" start-index="505" stop-index="541">
+                                            <owner name="finance_ods" start-index="505" stop-index="515" />
+                                        </simple-table>
+                                    </from>
+                                    <where start-index="543" stop-index="586">
+                                        <expr>
+                                            <binary-operation-expression start-index="549" stop-index="586">
+                                                <left>
+                                                    <function function-name="if" text="if(op_type is null,'0',op_type)" start-index="549" stop-index="579">
+                                                        <parameter>
+                                                            <binary-operation-expression start-index="552" stop-index="566" >
+                                                                <left>
+                                                                    <column name="op_type" start-index="552" stop-index="558" />
+                                                                </left>
+                                                                <right>
+                                                                    <literal-expression value="null" start-index="563" stop-index="566"/>
+                                                                </right>
+                                                                <operator>IS</operator>
+                                                            </binary-operation-expression>
+                                                        </parameter>
+                                                        <parameter>
+                                                            <literal-expression value="0" start-index="568" stop-index="570"/>
+                                                        </parameter>
+                                                        <parameter>
+                                                            <column name="op_type" start-index="572" stop-index="578" />
+                                                        </parameter>
+                                                    </function>
+                                                </left>
+                                                <right>
+                                                    <literal-expression value="1" start-index="584" stop-index="586"/>
+                                                </right>
+                                                <operator>!=</operator>
+                                            </binary-operation-expression>
+                                        </expr>
+                                    </where>
+                                </select>
+                            </subquery>
+                        </subquery-table>
+                    </right>
+                    <on-condition>
+                        <binary-operation-expression start-index="594" stop-index="623" text="aa.course_code_target = b.code">
+                            <left>
+                                <column name="course_code_target" start-index="594" stop-index="614">
+                                    <owner name="aa" start-index="594" stop-index="595"/>
+                                </column>
+                            </left>
+                            <right>
+                                <column name="code" start-index="618" stop-index="623">
+                                    <owner name="b" start-index="618" stop-index="618"/>
+                                </column>
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </on-condition>
+                </join-table>
+            </from>
+            <where start-index="633" stop-index="740">
+                <expr>
+                    <binary-operation-expression start-index="639" stop-index="740" text="coalesce(a.f_dept_code,'') in ('05','16','31') and date(a.dtbegindate) >= date('2018-06-01')">
+                        <left>
+                            <in-expression start-index="639" stop-index="684">
+                                <left>
+                                    <function function-name="coalesce" text="coalesce(a.f_dept_code,'')" start-index="639" stop-index="664">
+                                        <parameter>
+                                            <column name="f_dept_code" start-index="648" stop-index="660">
+                                                <owner name="a" start-index="648" stop-index="648"/>
+                                            </column>
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression value="" start-index="662" stop-index="663"/>
+                                        </parameter>
+                                    </function>
+                                </left>
+                                <right>
+                                    <list-expression start-index="669" stop-index="684">
+                                        <items>
+                                            <literal-expression value="05" start-index="670" stop-index="673"/>
+                                        </items>
+                                        <items>
+                                            <literal-expression value="16" start-index="675" stop-index="678"/>
+                                        </items>
+                                        <items>
+                                            <literal-expression value="31" start-index="680" stop-index="683"/>
+                                        </items>
+                                    </list-expression>
+                                </right>
+                            </in-expression>
+                        </left>
+                        <right>
+                            <binary-operation-expression start-index="700" stop-index="740" text="date(a.dtbegindate) >= date('2018-06-01')">
+                                <left>
+                                    <function function-name="date" start-index="700" stop-index="718" text="date(a.dtbegindate)">
+                                        <parameter>
+                                            <column name="dtbegindate" start-index="705" stop-index="717">
+                                                <owner name="a" start-index="705" stop-index="705"/>
+                                            </column>
+                                        </parameter>
+                                    </function>
+                                </left>
+                                <right>
+                                    <function function-name="date" text="date('2018-06-01')" start-index="723" stop-index="740">
+                                        <parameter>
+                                            <literal-expression value="2018-06-01" start-index="728" stop-index="739"/>
+                                        </parameter>
+                                    </function>
+                                </right>
+                                <operator>>=</operator>
+                            </binary-operation-expression>
+                        </right>
+                        <operator>and</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_properties">
+        <table name="dim_ehr_all_dimension_dict1" start-index="13" stop-index="41" start-delimiter="`" end-delimiter="`" />
+        <column-definition type="varchar" start-index="51" stop-index="85">
+            <column name="id" start-index="51" stop-index="54" start-delimiter="`" end-delimiter="`" />
+        </column-definition>
+        <column-definition type="varchar" start-index="94" stop-index="130">
+            <column name="code" start-index="94" stop-index="99" start-delimiter="`" end-delimiter="`"/>
+        </column-definition>
+        <column-definition type="int" start-index="139" stop-index="168">
+            <column name="px" start-index="139" stop-index="142" start-delimiter="`" end-delimiter="`"/>
+        </column-definition>
+        <create-table-option start-index="180" stop-index="190">
+            <engine name="OLAP" start-index="187" stop-index="190"/>
+        </create-table-option>
+    </create-table>
 </sql-parser-test-cases>

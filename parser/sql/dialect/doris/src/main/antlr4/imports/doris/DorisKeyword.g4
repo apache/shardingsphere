@@ -507,6 +507,10 @@ DECIMAL
     : D E C I M A L
     ;
 
+DECIMAL64
+    : D E C I M A L '64'
+    ;
+
 DECLARE
     : D E C L A R E
     ;
@@ -613,6 +617,10 @@ DUMPFILE
 
 DUPLICATE
     : D U P L I C A T E
+    ;
+
+DISTRIBUTED
+    : D I S T R I B U T E D
     ;
 
 DYNAMIC
@@ -1905,6 +1913,10 @@ PROFILE
 
 PROFILES
     : P R O F I L E S
+    ;
+
+PROPERTIES
+    : P R O P E R T I E S
     ;
 
 PROXY

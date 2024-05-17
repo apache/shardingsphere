@@ -1805,6 +1805,11 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             for (int i = 1; i < ctx.tableReference().size(); i++) {
                 result = generateJoinTableSourceFromEscapedTableReference(ctx.tableReference(i), result);
             }
+            return result;
+        }
+        if (null != ctx.regularFunction()) {
+            FunctionSegment functionSegment = (FunctionSegment) visit(ctx.regularFunction());
+            return new FunctionTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), functionSegment);
         }
         return result;
     }
