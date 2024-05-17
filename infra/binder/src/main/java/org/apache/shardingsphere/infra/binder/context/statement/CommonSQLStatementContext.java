@@ -24,10 +24,13 @@ import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperation
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.clickhouse.ClickHouseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.hive.HiveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.presto.PrestoStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Statement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
@@ -67,11 +70,20 @@ public abstract class CommonSQLStatementContext implements SQLStatementContext {
         if (sqlStatement instanceof OpenGaussStatement) {
             return TypedSPILoader.getService(DatabaseType.class, "openGauss");
         }
-        if (sqlStatement instanceof SQL92Statement) {
-            return TypedSPILoader.getService(DatabaseType.class, "SQL92");
-        }
         if (sqlStatement instanceof ClickHouseStatement) {
             return TypedSPILoader.getService(DatabaseType.class, "ClickHouse");
+        }
+        if (sqlStatement instanceof DorisStatement) {
+            return TypedSPILoader.getService(DatabaseType.class, "Doris");
+        }
+        if (sqlStatement instanceof HiveStatement) {
+            return TypedSPILoader.getService(DatabaseType.class, "Hive");
+        }
+        if (sqlStatement instanceof PrestoStatement) {
+            return TypedSPILoader.getService(DatabaseType.class, "Presto");
+        }
+        if (sqlStatement instanceof SQL92Statement) {
+            return TypedSPILoader.getService(DatabaseType.class, "SQL92");
         }
         throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
     }
