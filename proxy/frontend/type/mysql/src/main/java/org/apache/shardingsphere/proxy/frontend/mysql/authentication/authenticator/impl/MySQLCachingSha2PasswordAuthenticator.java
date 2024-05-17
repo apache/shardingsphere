@@ -35,14 +35,14 @@ import java.util.Arrays;
  * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_caching_sha2_authentication_exchanges.html">Caching_sha2_password information</a>
  */
 public final class MySQLCachingSha2PasswordAuthenticator implements MySQLAuthenticator {
-
+    
     @Override
     public boolean authenticate(final ShardingSphereUser user, final Object[] authInfo) {
         byte[] authResponse = (byte[]) authInfo[0];
         MySQLAuthenticationPluginData authPluginData = (MySQLAuthenticationPluginData) authInfo[1];
         return Strings.isNullOrEmpty(user.getPassword()) || Arrays.equals(scramble256(user.getPassword().getBytes(), authPluginData.getAuthenticationPluginData()), authResponse);
     }
-
+    
     @SneakyThrows({NoSuchAlgorithmException.class, DigestException.class})
     public byte[] scramble256(final byte[] pass, final byte[] authenticationPluginData) {
         int cachingSha2DigestLength = 32;
@@ -63,7 +63,7 @@ public final class MySQLCachingSha2PasswordAuthenticator implements MySQLAuthent
         xorString(dig1, result, scramble1, cachingSha2DigestLength);
         return result;
     }
-
+    
     private void xorString(final byte[] from, final byte[] to, final byte[] scramble, final int length) {
         int pos = 0;
         int scrambleLength = scramble.length;
@@ -72,7 +72,7 @@ public final class MySQLCachingSha2PasswordAuthenticator implements MySQLAuthent
             pos++;
         }
     }
-
+    
     @Override
     public String getAuthenticationMethodName() {
         return MySQLAuthenticationMethod.CACHING_SHA2_PASSWORD.getMethodName();
