@@ -34,10 +34,10 @@
         <module>opengauss</module>
         <module>oracle</module>
         <module>sqlserver</module>
+        <module>clickhouse</module>
+        <module>doris</module>
         <module>h2</module>
         <module>sql92</module>
-        <module>clickhouse</module>
         <module>testcontainers</module>
-        <module>doris</module>
     </modules>
 </project>
