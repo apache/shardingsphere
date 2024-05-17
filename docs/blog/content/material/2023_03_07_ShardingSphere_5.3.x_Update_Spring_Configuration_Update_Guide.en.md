@@ -298,7 +298,7 @@ The original ShardingSphere configuration in `spring-sharding.xml` has been repl
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                            http://www.springframework.org/schema/beans/spring-beans.xsd">
     
-    <bean id="shardingDataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+    <bean id="shardingDataSource" class="com.zaxxer.hikari.HikariDataSource">
         <property name="driverClass" value="org.apache.shardingsphere.driver.ShardingSphereDriver" />
         <property name="url" value="jdbc:shardingsphere:classpath:sharding.yaml" />
     </bean>

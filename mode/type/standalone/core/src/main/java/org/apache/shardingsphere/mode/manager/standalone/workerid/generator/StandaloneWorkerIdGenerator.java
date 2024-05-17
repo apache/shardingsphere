@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import java.util.Properties;
 
 /**
- * Worker id generator for standalone mode.
+ * Worker ID generator for standalone mode.
  */
 public final class StandaloneWorkerIdGenerator implements WorkerIdGenerator {
     

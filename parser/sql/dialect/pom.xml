@@ -33,6 +33,10 @@
         <module>oracle</module>
         <module>sqlserver</module>
         <module>opengauss</module>
+        <module>clickhouse</module>
+        <module>doris</module>
+        <module>hive</module>
+        <module>presto</module>
     </modules>
     
     <dependencies>

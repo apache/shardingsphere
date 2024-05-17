@@ -34,9 +34,12 @@
         <module>opengauss</module>
         <module>oracle</module>
         <module>sqlserver</module>
+        <module>clickhouse</module>
+        <module>doris</module>
+        <module>hive</module>
+        <module>presto</module>
         <module>h2</module>
         <module>sql92</module>
-        <module>clickhouse</module>
         <module>testcontainers</module>
     </modules>
 </project>

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.instance.workerid;
 import java.util.Properties;
 
 /**
- * Worker id generator.
+ * Worker ID generator.
  */
 public interface WorkerIdGenerator {
     

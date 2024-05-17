@@ -37,7 +37,7 @@ class ClusterStateChangedWatcherTest {
         Optional<GovernanceEvent> actual = new ClusterStateChangedWatcher()
                 .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.READ_ONLY.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertThat(((ClusterStateEvent) actual.get()).getStatus(), is(ClusterState.READ_ONLY.name()));
+        assertThat(((ClusterStateEvent) actual.get()).getClusterState(), is(ClusterState.READ_ONLY));
     }
     
     @Test
@@ -45,7 +45,7 @@ class ClusterStateChangedWatcherTest {
         Optional<GovernanceEvent> actual = new ClusterStateChangedWatcher()
                 .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.UNAVAILABLE.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertThat(((ClusterStateEvent) actual.get()).getStatus(), is(ClusterState.UNAVAILABLE.name()));
+        assertThat(((ClusterStateEvent) actual.get()).getClusterState(), is(ClusterState.UNAVAILABLE));
     }
     
     @Test
@@ -53,6 +53,6 @@ class ClusterStateChangedWatcherTest {
         Optional<GovernanceEvent> actual = new ClusterStateChangedWatcher()
                 .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.OK.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertThat(((ClusterStateEvent) actual.get()).getStatus(), is(ClusterState.OK.name()));
+        assertThat(((ClusterStateEvent) actual.get()).getClusterState(), is(ClusterState.OK));
     }
 }

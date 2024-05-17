@@ -38,7 +38,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 import org.apache.shardingsphere.mode.manager.context.ConfigurationContextManager;
 import org.apache.shardingsphere.mode.manager.context.ResourceMetaDataContextManager;
@@ -46,6 +45,8 @@ import org.apache.shardingsphere.mode.manager.context.ShardingSphereDatabaseCont
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.state.StateContext;
+import org.apache.shardingsphere.mode.state.StateService;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -72,7 +73,7 @@ public final class ContextManager implements AutoCloseable {
     
     private final ExecutorEngine executorEngine;
     
-    private final ClusterStateContext clusterStateContext;
+    private final StateContext stateContext;
     
     public ContextManager(final MetaDataContexts metaDataContexts, final InstanceContext instanceContext) {
         this.metaDataContexts = new AtomicReference<>(metaDataContexts);
@@ -81,7 +82,7 @@ public final class ContextManager implements AutoCloseable {
         configurationContextManager = new ConfigurationContextManager(this.metaDataContexts, instanceContext);
         resourceMetaDataContextManager = new ResourceMetaDataContextManager(this.metaDataContexts);
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
-        clusterStateContext = new ClusterStateContext();
+        stateContext = new StateContext(new StateService(metaDataContexts.getPersistService().getRepository()));
     }
     
     /**
@@ -276,13 +277,10 @@ public final class ContextManager implements AutoCloseable {
     /**
      * Update cluster state.
      * 
-     * @param status status
+     * @param clusterState cluster state
      */
-    public void updateClusterState(final String status) {
-        try {
-            clusterStateContext.switchState(ClusterState.valueOf(status));
-        } catch (final IllegalArgumentException ignore) {
-        }
+    public void updateClusterState(final ClusterState clusterState) {
+        stateContext.switchState(clusterState);
     }
     
     @Override

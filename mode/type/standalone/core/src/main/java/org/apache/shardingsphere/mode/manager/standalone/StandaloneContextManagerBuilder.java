@@ -42,12 +42,12 @@ import java.util.Properties;
 public final class StandaloneContextManagerBuilder implements ContextManagerBuilder {
     
     @Override
-    public ContextManager build(final ContextManagerBuilderParameter param) throws SQLException {
+    public ContextManager build(final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) throws SQLException {
         PersistRepositoryConfiguration repositoryConfig = param.getModeConfiguration().getRepository();
         StandalonePersistRepository repository = TypedSPILoader.getService(
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
-        InstanceContext instanceContext = buildInstanceContext(param);
+        InstanceContext instanceContext = buildInstanceContext(param, eventBusContext);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, instanceContext);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         new StandaloneEventSubscriberRegistry(result).register();
@@ -55,9 +55,9 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         return result;
     }
     
-    private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter param) {
+    private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) {
         return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()),
-                new StandaloneWorkerIdGenerator(), param.getModeConfiguration(), new StandaloneModeContextManager(), new GlobalLockContext(null), new EventBusContext());
+                new StandaloneWorkerIdGenerator(), param.getModeConfiguration(), new StandaloneModeContextManager(), new GlobalLockContext(null), eventBusContext);
     }
     
     private void setContextManagerAware(final ContextManager contextManager) {

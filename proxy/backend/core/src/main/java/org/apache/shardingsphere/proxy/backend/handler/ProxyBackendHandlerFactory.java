@@ -154,7 +154,7 @@ public final class ProxyBackendHandlerFactory {
     }
     
     private static void allowExecutingWhenTransactionalError(final DatabaseType databaseType, final ConnectionSession connectionSession, final SQLStatement sqlStatement) throws SQLException {
-        if (!connectionSession.getTransactionStatus().isExceptionOccur()) {
+        if (!connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur()) {
             return;
         }
         Optional<TransactionalErrorAllowedSQLStatementHandler> allowedSQLStatementHandler = DatabaseTypedSPILoader.findService(TransactionalErrorAllowedSQLStatementHandler.class, databaseType);
@@ -201,7 +201,7 @@ public final class ProxyBackendHandlerFactory {
     }
     
     private static void checkClusterState(final SQLStatement sqlStatement) {
-        ClusterState clusterCurrentState = ProxyContext.getInstance().getContextManager().getClusterStateContext().getCurrentState();
+        ClusterState clusterCurrentState = ProxyContext.getInstance().getContextManager().getStateContext().getCurrentState();
         if (ClusterState.OK != clusterCurrentState) {
             TypedSPILoader.getService(ProxyClusterState.class, clusterCurrentState.name()).check(sqlStatement);
         }

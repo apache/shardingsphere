@@ -26,11 +26,15 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
 - `org.apache.shardingsphere:shardingsphere-single-core`，单表（所有的分片数据源中仅唯一存在的表）核心
 - `org.apache.shardingsphere:shardingsphere-sql-federation-core`，联邦查询执行器核心
 - `org.apache.shardingsphere:shardingsphere-sql-parser-mysql`， SQL 解析的 MySQL 方言实现
+- `org.apache.shardingsphere:shardingsphere-sql-parser-postgresql`， SQL 解析的 PostgreSQL 方言实现
 - `org.apache.shardingsphere:shardingsphere-sql-parser-opengauss`， SQL 解析的 OpenGauss 方言实现
 - `org.apache.shardingsphere:shardingsphere-sql-parser-oracle`， SQL 解析的 Oracle 方言解析实现
-- `org.apache.shardingsphere:shardingsphere-sql-parser-postgresql`， SQL 解析的 PostgreSQL 方言实现
-- `org.apache.shardingsphere:shardingsphere-sql-parser-sql92`， SQL 解析的 SQL 92 方言实现
 - `org.apache.shardingsphere:shardingsphere-sql-parser-sqlserver`， SQL 解析的 SQL Server 方言实现
+- `org.apache.shardingsphere:shardingsphere-sql-parser-clickhouse`， SQL 解析的 ClickHouse 方言实现
+- `org.apache.shardingsphere:shardingsphere-sql-parser-doris`， SQL 解析的 Doris 方言实现
+- `org.apache.shardingsphere:shardingsphere-sql-parser-hive`， SQL 解析的 Hive 方言实现
+- `org.apache.shardingsphere:shardingsphere-sql-parser-presto`， SQL 解析的 Presto 方言实现
+- `org.apache.shardingsphere:shardingsphere-sql-parser-sql92`， SQL 解析的 SQL 92 方言实现
 - `org.apache.shardingsphere:shardingsphere-standalone-mode-core`，单机模式配置信息持久化定义核心
 - `org.apache.shardingsphere:shardingsphere-standalone-mode-repository-jdbc-h2`，单机模式配置信息持久化定义的 H2 实现
 - `org.apache.shardingsphere:shardingsphere-traffic-core`，流量治理核心
