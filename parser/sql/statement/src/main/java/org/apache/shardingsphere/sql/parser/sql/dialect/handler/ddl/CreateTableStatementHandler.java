@@ -76,8 +76,8 @@ public final class CreateTableStatementHandler implements SQLStatementHandler {
             return createTableStatement.getSelectStatement();
         }
         // {Doris} ADDED BEGIN
-        if(createTableStatement instanceof DorisStatement){
-            return  createTableStatement.getSelectStatement();
+        if (createTableStatement instanceof DorisStatement) {
+            return createTableStatement.getSelectStatement();
         }
         // {Doris} ADDED END
         return Optional.empty();
@@ -120,7 +120,7 @@ public final class CreateTableStatementHandler implements SQLStatementHandler {
             return ((MySQLCreateTableStatement) createTableStatement).getCreateTableOptionSegment();
         }
         // {Doris} ADDED BEGIN
-        if(createTableStatement instanceof DorisCreateTableStatement){
+        if (createTableStatement instanceof DorisCreateTableStatement) {
             return ((DorisCreateTableStatement) createTableStatement).getCreateTableOptionSegment();
         }
         // {Doris} ADDED END
