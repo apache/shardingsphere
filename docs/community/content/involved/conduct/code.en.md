@@ -113,7 +113,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
 
 ### Common Conduct
 
-### 维护规范
+### Maintenance Conduct
 
 - The `G4` syntax files and `SQLVisitor` implementation classes involved in the SQL parsing module need to be marked with differential codes according to the following database relationships. When database A does not provide the corresponding database driver and protocol, but directly uses the driver and protocol of database B, database A can be considered to be a branch database of database B.
   Usually branch databases will directly use the SQL parsing logic of the trunk database. However, in order to adapt to the unique syntax of the branch database, some branch databases will copy and maintain their own SQL parsing logic from the trunk database. At this time, for the unique syntax of the branch database, you need to use Comments are marked, and other parts need to be consistent with the implementation of the backbone database;
