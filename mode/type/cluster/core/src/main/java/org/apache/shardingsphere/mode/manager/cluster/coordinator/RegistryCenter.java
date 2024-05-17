@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -37,22 +38,12 @@ public final class RegistryCenter {
     @Getter
     private final ClusterPersistRepository repository;
     
-    private final InstanceMetaData instanceMetaData;
-    
-    private final Map<String, DatabaseConfiguration> databaseConfigs;
-    
     private final GovernanceWatcherFactory listenerFactory;
     
     public RegistryCenter(final EventBusContext eventBusContext,
                           final ClusterPersistRepository repository, final InstanceMetaData instanceMetaData, final Map<String, DatabaseConfiguration> databaseConfigs) {
         this.repository = repository;
-        this.instanceMetaData = instanceMetaData;
-        this.databaseConfigs = databaseConfigs;
-        listenerFactory = new GovernanceWatcherFactory(repository, eventBusContext, getJDBCDatabaseName());
-    }
-    
-    private String getJDBCDatabaseName() {
-        return instanceMetaData instanceof JDBCInstanceMetaData ? databaseConfigs.keySet().stream().findFirst().orElse(null) : null;
+        listenerFactory = new GovernanceWatcherFactory(repository, eventBusContext, instanceMetaData instanceof JDBCInstanceMetaData ? databaseConfigs.keySet() : Collections.emptyList());
     }
     
     /**
