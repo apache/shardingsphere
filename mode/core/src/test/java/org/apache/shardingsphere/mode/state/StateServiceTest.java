@@ -31,17 +31,17 @@ import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class StateServiceTest {
-
+    
     @Mock
     private PersistRepository repository;
-
+    
     @Test
     void assertPersistClusterStateWithoutPath() {
         StateService stateService = new StateService(repository);
         stateService.persist(ClusterState.OK);
         verify(repository).persist(ComputeNode.getClusterStatusNodePath(), ClusterState.OK.name());
     }
-
+    
     @Test
     void assertPersistClusterStateWithPath() {
         StateService stateService = new StateService(repository);
@@ -49,7 +49,7 @@ class StateServiceTest {
         stateService.persist(ClusterState.OK);
         verify(repository, times(0)).persist(ComputeNode.getClusterStatusNodePath(), ClusterState.OK.name());
     }
-
+    
     @Test
     void assertLoadClusterStatus() {
         new StateService(repository).load();
