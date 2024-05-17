@@ -108,7 +108,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void registerOnline(final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
-        registryCenter.onlineInstance(contextManager.getInstanceContext().getInstance());
+        registryCenter.onlineInstance(contextManager.getInstanceContext());
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
         contextManager.getInstanceContext().getAllClusterInstances().addAll(new ComputeNodeStatusService(registryCenter.getRepository()).loadAllComputeNodeInstances());
         new ClusterEventSubscriberRegistry(contextManager, registryCenter).register();
