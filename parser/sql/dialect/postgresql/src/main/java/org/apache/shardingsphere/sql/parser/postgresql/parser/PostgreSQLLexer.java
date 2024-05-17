@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.presto.parser;
+package org.apache.shardingsphere.sql.parser.postgresql.parser;
 
+import org.antlr.v4.runtime.CharStream;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DialectSQLParserFacade;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementLexer;
 
 /**
- * SQL parser facade for PostgreSQL.
+ * SQL lexer for PostgreSQL.
  */
-public final class PostgreSQLParserFacade implements DialectSQLParserFacade {
+public final class PostgreSQLLexer extends PostgreSQLStatementLexer implements SQLLexer {
     
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return PostgreSQLLexer.class;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return PostgreSQLParser.class;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "PostgreSQL";
+    public PostgreSQLLexer(final CharStream input) {
+        super(input);
     }
 }
