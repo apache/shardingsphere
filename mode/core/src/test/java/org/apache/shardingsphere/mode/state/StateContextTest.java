@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.state;
+package org.apache.shardingsphere.mode.state;
 
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
-class ClusterStateContextTest {
+class StateContextTest {
     
-    private final ClusterStateContext clusterStateContext = new ClusterStateContext();
+    private final StateContext stateContext = new StateContext(mock(StateService.class));
+    
+    @Test
+    void assertGetCurrentState() {
+        assertThat(stateContext.getCurrentState(), is(ClusterState.OK));
+    }
     
     @Test
     void assertSwitchState() {
-        assertThat(clusterStateContext.getCurrentState(), is(ClusterState.OK));
-        clusterStateContext.switchState(ClusterState.UNAVAILABLE);
-        assertThat(clusterStateContext.getCurrentState(), is(ClusterState.UNAVAILABLE));
+        assertThat(stateContext.getCurrentState(), is(ClusterState.OK));
+        stateContext.switchState(ClusterState.UNAVAILABLE);
+        assertThat(stateContext.getCurrentState(), is(ClusterState.UNAVAILABLE));
     }
 }

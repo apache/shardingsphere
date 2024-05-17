@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.state.cluster;
+package org.apache.shardingsphere.mode.state;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Cluster state context.
+ * State context.
  */
-public final class ClusterStateContext {
+@RequiredArgsConstructor
+public final class StateContext {
     
     private final AtomicReference<ClusterState> currentState = new AtomicReference<>(ClusterState.OK);
+    
+    private final StateService stateService;
     
     /**
      * Get current cluster state.

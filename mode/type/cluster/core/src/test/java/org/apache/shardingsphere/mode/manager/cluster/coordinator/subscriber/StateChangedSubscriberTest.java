@@ -124,14 +124,14 @@ class StateChangedSubscriberTest {
     void assertResetClusterStatus() {
         ClusterLockDeletedEvent mockLockDeletedEvent = new ClusterLockDeletedEvent(ClusterState.OK);
         subscriber.renew(mockLockDeletedEvent);
-        assertThat(contextManager.getClusterStateContext().getCurrentState(), is(ClusterState.OK));
+        assertThat(contextManager.getStateContext().getCurrentState(), is(ClusterState.OK));
     }
     
     @Test
     void assertRenewClusterStatus() {
         ClusterStateEvent mockClusterStateEvent = new ClusterStateEvent(ClusterState.READ_ONLY);
         subscriber.renew(mockClusterStateEvent);
-        assertThat(contextManager.getClusterStateContext().getCurrentState(), is(ClusterState.READ_ONLY));
+        assertThat(contextManager.getStateContext().getCurrentState(), is(ClusterState.READ_ONLY));
     }
     
     @Test
