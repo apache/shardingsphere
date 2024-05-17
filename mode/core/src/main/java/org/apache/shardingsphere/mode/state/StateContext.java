@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.state;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -29,9 +28,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class StateContext {
     
     private final AtomicReference<ClusterState> currentState = new AtomicReference<>(ClusterState.OK);
-
+    
     private final StateService stateService;
-
+    
     /**
      * Get current cluster state.
      * 

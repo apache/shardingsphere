@@ -25,14 +25,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 class StateContextTest {
-
+    
     private final StateContext stateContext = new StateContext(mock(StateService.class));
-
+    
     @Test
     void assertGetCurrentState() {
         assertThat(stateContext.getCurrentState(), is(ClusterState.OK));
     }
-
+    
     @Test
     void assertSwitchState() {
         assertThat(stateContext.getCurrentState(), is(ClusterState.OK));
