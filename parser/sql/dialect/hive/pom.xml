@@ -27,7 +27,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <dialect.parser>doris</dialect.parser>
+        <dialect.parser>hive</dialect.parser>
     </properties>
     
     <dependencies>
