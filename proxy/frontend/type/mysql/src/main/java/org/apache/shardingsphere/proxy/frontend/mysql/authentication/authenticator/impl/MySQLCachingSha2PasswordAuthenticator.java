@@ -44,7 +44,7 @@ public final class MySQLCachingSha2PasswordAuthenticator implements MySQLAuthent
     }
     
     @SneakyThrows({NoSuchAlgorithmException.class, DigestException.class})
-    public byte[] scramble256(final byte[] pass, final byte[] authenticationPluginData) {
+    private byte[] scramble256(final byte[] pass, final byte[] authenticationPluginData) {
         int cachingSha2DigestLength = 32;
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
         byte[] dig1 = new byte[cachingSha2DigestLength];
