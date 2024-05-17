@@ -31,7 +31,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerAware;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.ShardingSphereSchemaDataRegistrySubscriber;
@@ -65,17 +64,16 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     @Override
     public ContextManager build(final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) throws SQLException {
         ClusterPersistRepository repository = getClusterPersistRepository((ClusterPersistRepositoryConfiguration) param.getModeConfiguration().getRepository());
-        RegistryCenter registryCenter = new RegistryCenter(eventBusContext, repository, param.getInstanceMetaData(), param.getDatabaseConfigs());
         InstanceContext instanceContext = buildInstanceContext(repository, param, eventBusContext);
-        if (registryCenter.getRepository() instanceof InstanceContextAware) {
-            ((InstanceContextAware) registryCenter.getRepository()).setInstanceContext(instanceContext);
+        if (repository instanceof InstanceContextAware) {
+            ((InstanceContextAware) repository).setInstanceContext(instanceContext);
         }
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, instanceContext, new QualifiedDataSourceStatusService(repository).loadStatus());
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         setContextManagerAware(result);
         createSubscribers(eventBusContext, repository);
-        registerOnline(eventBusContext, instanceContext, registryCenter, param, result);
+        registerOnline(eventBusContext, instanceContext, repository, param, result);
         setClusterState(repository, result);
         return result;
     }
@@ -111,16 +109,16 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void registerOnline(final EventBusContext eventBusContext, final InstanceContext instanceContext,
-                                final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
-        ComputeNodeStatusService computeNodeStatusService = new ComputeNodeStatusService(registryCenter.getRepository());
+                                final ClusterPersistRepository repository, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
+        ComputeNodeStatusService computeNodeStatusService = new ComputeNodeStatusService(repository);
         computeNodeStatusService.registerOnline(instanceContext.getInstance().getMetaData());
         computeNodeStatusService.persistInstanceLabels(instanceContext.getInstance().getCurrentInstanceId(), instanceContext.getInstance().getLabels());
         computeNodeStatusService.persistInstanceState(instanceContext.getInstance().getCurrentInstanceId(), instanceContext.getInstance().getState());
-        new GovernanceWatcherFactory(registryCenter.getRepository(),
+        new GovernanceWatcherFactory(repository,
                 eventBusContext, param.getInstanceMetaData() instanceof JDBCInstanceMetaData ? param.getDatabaseConfigs().keySet() : Collections.emptyList()).watchListeners();
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
-        contextManager.getInstanceContext().getAllClusterInstances().addAll(new ComputeNodeStatusService(registryCenter.getRepository()).loadAllComputeNodeInstances());
-        new ClusterEventSubscriberRegistry(contextManager, registryCenter).register();
+        contextManager.getInstanceContext().getAllClusterInstances().addAll(new ComputeNodeStatusService(repository).loadAllComputeNodeInstances());
+        new ClusterEventSubscriberRegistry(contextManager, repository).register();
     }
     
     private void setClusterState(final ClusterPersistRepository repository, final ContextManager contextManager) {

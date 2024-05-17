@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessListChangedSubscriber;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.subsciber.EventSubscriberRegistry;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscriber;
 
@@ -28,15 +28,15 @@ import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscriber;
  */
 public final class ClusterEventSubscriberRegistry extends EventSubscriberRegistry {
     
-    public ClusterEventSubscriberRegistry(final ContextManager contextManager, final RegistryCenter registryCenter) {
+    public ClusterEventSubscriberRegistry(final ContextManager contextManager, final ClusterPersistRepository repository) {
         super(contextManager,
                 new RuleItemChangedSubscriber(contextManager),
                 new ConfigurationChangedSubscriber(contextManager),
                 new ConfigurationChangedSubscriber(contextManager),
                 new ResourceMetaDataChangedSubscriber(contextManager),
-                new StateChangedSubscriber(contextManager, registryCenter.getRepository()),
+                new StateChangedSubscriber(contextManager, repository),
                 new DatabaseChangedSubscriber(contextManager),
-                new ProcessListChangedSubscriber(contextManager, registryCenter.getRepository()),
+                new ProcessListChangedSubscriber(contextManager, repository),
                 new CacheEvictedSubscriber());
     }
 }
