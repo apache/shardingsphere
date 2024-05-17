@@ -36,7 +36,7 @@ import java.util.Optional;
 public final class GlobalRuleChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys(final String databaseName) {
+    public Collection<String> getWatchingKeys(final Collection<String> databaseNames) {
         return Collections.singleton(GlobalNode.getGlobalRuleRootNode());
     }
     
