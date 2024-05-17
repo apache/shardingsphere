@@ -47,7 +47,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Aggregat
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.IntervalExpressionProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.segment.mysql.match.MatchAgainstExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.match.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.interval.IntervalDayToSecondExpression;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.interval.IntervalYearToMonthExpression;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.join.OuterJoinExpression;

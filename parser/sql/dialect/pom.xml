@@ -34,6 +34,7 @@
         <module>sqlserver</module>
         <module>opengauss</module>
         <module>clickhouse</module>
+        <module>doris</module>
     </modules>
     
     <dependencies>

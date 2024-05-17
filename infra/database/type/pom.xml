@@ -38,5 +38,6 @@
         <module>sql92</module>
         <module>clickhouse</module>
         <module>testcontainers</module>
+        <module>doris</module>
     </modules>
 </project>

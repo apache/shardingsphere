@@ -15,34 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.segment.mysql.match;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
- * Match against expression.
+ * Doris show process list statement.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class MatchAgainstExpression implements ExpressionSegment {
+public final class DorisShowProcessListStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final Collection<ColumnSegment> columns = new LinkedList<>();
-    
-    private final ExpressionSegment expr;
-    
-    private final String searchModifier;
-    
-    private final String text;
+    private final boolean full;
 }

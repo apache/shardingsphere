@@ -58,7 +58,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
-import org.apache.shardingsphere.sql.parser.sql.dialect.segment.mysql.match.MatchAgainstExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.match.MatchAgainstExpression;
 
 import java.util.Collection;
 import java.util.LinkedList;
