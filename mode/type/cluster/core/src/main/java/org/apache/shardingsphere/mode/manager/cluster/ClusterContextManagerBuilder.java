@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
+import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.GlobalLockPersistService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.ShardingSphereSchemaDataRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ClusterProcessSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.service.ClusterStatusService;
@@ -51,6 +53,7 @@ import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.Default
 import org.apache.shardingsphere.mode.storage.service.QualifiedDataSourceStatusService;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -72,7 +75,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         setContextManagerAware(result);
         createSubscribers(eventBusContext, repository);
-        registerOnline(registryCenter, param, result);
+        registerOnline(eventBusContext, instanceContext, registryCenter, param, result);
         setClusterState(repository, result);
         return result;
     }
@@ -107,8 +110,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         eventBusContext.register(new ShardingSphereSchemaDataRegistrySubscriber(repository));
     }
     
-    private void registerOnline(final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
-        registryCenter.onlineInstance(contextManager.getInstanceContext());
+    private void registerOnline(final EventBusContext eventBusContext, final InstanceContext instanceContext,
+                                final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
+        ComputeNodeStatusService computeNodeStatusService = new ComputeNodeStatusService(registryCenter.getRepository());
+        computeNodeStatusService.registerOnline(instanceContext.getInstance().getMetaData());
+        computeNodeStatusService.persistInstanceLabels(instanceContext.getInstance().getCurrentInstanceId(), instanceContext.getInstance().getLabels());
+        computeNodeStatusService.persistInstanceState(instanceContext.getInstance().getCurrentInstanceId(), instanceContext.getInstance().getState());
+        new GovernanceWatcherFactory(registryCenter.getRepository(),
+                eventBusContext, param.getInstanceMetaData() instanceof JDBCInstanceMetaData ? param.getDatabaseConfigs().keySet() : Collections.emptyList()).watchListeners();
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
         contextManager.getInstanceContext().getAllClusterInstances().addAll(new ComputeNodeStatusService(registryCenter.getRepository()).loadAllComputeNodeInstances());
         new ClusterEventSubscriberRegistry(contextManager, registryCenter).register();
