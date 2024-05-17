@@ -269,9 +269,11 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         if (null != ctx.createTableOptions()) {
             result.setCreateTableOptionSegment((CreateTableOptionSegment) visit(ctx.createTableOptions()));
         }
+        // {Doris} ADDED BEGIN
         if (null != ctx.duplicateAsQueryExpression()) {
             result.setSelectStatement((SelectStatement) visit(ctx.duplicateAsQueryExpression().select()));
         }
+        // {Doris} ADDED END
         return result;
     }
     
