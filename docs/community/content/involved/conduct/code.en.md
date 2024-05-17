@@ -109,7 +109,32 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
    - When mocking static methods or constructors, it is recommended to use the testing framework's `AutoMockExtension` and `StaticMockSettings` to release resources automatically; If using Mockito's `mockStatic` and `mockConstruction` methods, please use `try-with-resource` or close them in the cleanup method to avoid resource leaks.
    - When verifying only one invocation, there is no need to use `times(1)` parameter, please use the single-argument method of `verify`.
 
-## Contributor Covenant G4 of Conduct
+## SQL Parser of Conduct
+
+### Common Conduct
+
+### 维护规范
+
+- The `G4` syntax files and `SQLVisitor` implementation classes involved in the SQL parsing module need to be marked with differential codes according to the following database relationships. When database A does not provide the corresponding database driver and protocol, but directly uses the driver and protocol of database B, database A can be considered to be a branch database of database B.
+  Usually branch databases will directly use the SQL parsing logic of the trunk database. However, in order to adapt to the unique syntax of the branch database, some branch databases will copy and maintain their own SQL parsing logic from the trunk database. At this time, for the unique syntax of the branch database, you need to use Comments are marked, and other parts need to be consistent with the implementation of the backbone database;
+
+  | Trunk Database | Branch Database |
+  |----------------|-----------------|
+  | MySQL          | MariaDB、Doris   |
+  | PostgreSQL     | -               |
+  | openGauss      | -               |
+  | Oracle         | -               |
+  | SQLServer      | -               |
+  | ClickHouse     | -               |
+  | Hive           | -               |
+  | Presto         | -               |
+  | SQL92          | -               |
+
+- Difference code markup syntax, when adding, replace `{DatabaseType}` with the uppercase name of the database type, for example: `DORIS`.
+    - New syntax: `//{DatabaseType} ADDED BEGIN` and `// {DatabaseType} ADDED END`;
+    - Modified syntax: `//{DatabaseType} CHANGED BEGIN` and `// {DatabaseType} CHANGED END`.
+
+### Contributor Covenant G4 of Conduct
 
  - Common Conduct
    - Every line cannot over `200` chars, guarantee every line have complete semantics.

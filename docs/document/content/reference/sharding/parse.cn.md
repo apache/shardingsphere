@@ -52,13 +52,17 @@ ShardingSphere 的 SQL 解析器经历了 3 代产品的更新迭代。
 * 支持多种方言的 SQL 解析
 
 | 数据库      | 支持状态  |
-|----------- |-------- |
+|------------|-------- |
 | MySQL      |支持，完善 |
 | PostgreSQL |支持，完善 |
 | SQLServer  |支持      |
 | Oracle     |支持      |
 | SQL92      |支持      |
 | openGauss  |支持      |
+| ClickHouse |支持      |
+| Doris      |支持      |
+| Hive       |支持      |
+| Presto     |支持      |
 
 ### API使用
 

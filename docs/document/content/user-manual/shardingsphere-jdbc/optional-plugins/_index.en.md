@@ -26,11 +26,15 @@ All the built-in plugins for ShardingSphere-JDBC are listed below in the form of
 - `org.apache.shardingsphere:shardingsphere-single-core`, single-table (only the only table that exists in all sharded data sources) core
 - `org.apache.shardingsphere:shardingsphere-sql-federation-core`, federation query executor core
 - `org.apache.shardingsphere:shardingsphere-sql-parser-mysql`, MySQL dialect implementation of SQL parsing
+- `org.apache.shardingsphere:shardingsphere-sql-parser-postgresql`, PostgreSQL dialect implementation of SQL parsing
 - `org.apache.shardingsphere:shardingsphere-sql-parser-opengauss`, OpenGauss dialect implementation of SQL parsing
 - `org.apache.shardingsphere:shardingsphere-sql-parser-oracle`, Oracle dialect implementation of SQL parsing
-- `org.apache.shardingsphere:shardingsphere-sql-parser-postgresql`, PostgreSQL dialect implementation of SQL parsing
-- `org.apache.shardingsphere:shardingsphere-sql-parser-sql92`,the SQL 92 dialect implementation of SQL parsing
 - `org.apache.shardingsphere:shardingsphere-sql-parser-sqlserver`, SQL Server dialect implementation of SQL parsing
+- `org.apache.shardingsphere:shardingsphere-sql-parser-clickhouse`， ClickHouse dialect implementation of SQL parsing
+- `org.apache.shardingsphere:shardingsphere-sql-parser-doris`， Doris dialect implementation of SQL parsing
+- `org.apache.shardingsphere:shardingsphere-sql-parser-hive`， Hive dialect implementation of SQL parsing
+- `org.apache.shardingsphere:shardingsphere-sql-parser-presto`， Presto dialect implementation of SQL parsing
+- `org.apache.shardingsphere:shardingsphere-sql-parser-sql92`,the SQL 92 dialect implementation of SQL parsing
 - `org.apache.shardingsphere:shardingsphere-standalone-mode-core`, the persistence definition core of single-machine mode configuration information
 - `org.apache.shardingsphere:shardingsphere-standalone-mode-repository-jdbc-h2`, H2 implementation of persistent definition of configuration information in stand-alone mode
 - `org.apache.shardingsphere:shardingsphere-traffic-core`, traffic governance core

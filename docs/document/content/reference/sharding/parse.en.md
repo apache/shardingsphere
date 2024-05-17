@@ -49,13 +49,17 @@ Since V5.0.x, the architecture of the parsing engine has been restructured and a
 * Support multiple dialects
 
 | Database   | Status            |
-|----------- |------------------ |
+|----------- |-------------------|
 | MySQL      | perfect supported |
 | PostgreSQL | perfect supported |
 | SQLServer  | supported         |
 | Oracle     | supported         |
 | SQL92      | supported         |
 | openGauss  | supported         |
+| ClickHouse | supported         |
+| Doris      | supported         |
+| Hive       | supported         |
+| Presto     | supported         |
 
 ### API Usage
 
