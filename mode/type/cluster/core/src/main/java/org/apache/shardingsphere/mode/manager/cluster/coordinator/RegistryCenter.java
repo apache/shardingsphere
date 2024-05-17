@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -58,13 +58,13 @@ public final class RegistryCenter {
     /**
      * Online instance.
      * 
-     * @param computeNodeInstance compute node instance
+     * @param instanceContext instance context
      */
-    public void onlineInstance(final ComputeNodeInstance computeNodeInstance) {
+    public void onlineInstance(final InstanceContext instanceContext) {
         ComputeNodeStatusService computeNodeStatusService = new ComputeNodeStatusService(repository);
-        computeNodeStatusService.registerOnline(computeNodeInstance.getMetaData());
-        computeNodeStatusService.persistInstanceLabels(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getLabels());
-        computeNodeStatusService.persistInstanceState(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getState());
+        computeNodeStatusService.registerOnline(instanceContext.getInstance().getMetaData());
+        computeNodeStatusService.persistInstanceLabels(instanceContext.getInstance().getCurrentInstanceId(), instanceContext.getInstance().getLabels());
+        computeNodeStatusService.persistInstanceState(instanceContext.getInstance().getCurrentInstanceId(), instanceContext.getInstance().getState());
         listenerFactory.watchListeners();
     }
 }
