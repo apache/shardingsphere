@@ -23,6 +23,34 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.BitExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.BitValueLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.BooleanLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.BooleanPrimaryContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ColumnRefContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.FunctionNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HexadecimalLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.IdentifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.IndexNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.NullValueLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.NumberLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.OwnerContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ParameterMarkerContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.PredicateContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.SimpleExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.StringLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.String_Context;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableListContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TemporalLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ViewNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ViewNamesContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -473,7 +501,7 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
         return visitRemainSimpleExpr(ctx);
     }
     
-    private ASTNode visitRemainSimpleExpr(final HiveStatementParser.SimpleExprContext ctx) {
+    private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx) {
         if (null != ctx.caseExpression()) {
             return visit(ctx.caseExpression());
         }
@@ -483,10 +511,10 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
         if (null != ctx.variable()) {
             return visit(ctx.variable());
         }
-        for (HiveStatementParser.ExprContext each : ctx.expr()) {
+        for (ExprContext each : ctx.expr()) {
             visit(each);
         }
-        for (HiveStatementParser.SimpleExprContext each : ctx.simpleExpr()) {
+        for (SimpleExprContext each : ctx.simpleExpr()) {
             visit(each);
         }
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));

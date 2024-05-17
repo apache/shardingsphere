@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.hive.parser;
 
 import org.antlr.v4.runtime.CharStream;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementLexer;
 
 /**
  * SQL lexer for hive.
