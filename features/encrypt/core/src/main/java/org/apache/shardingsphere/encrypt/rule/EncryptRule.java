@@ -135,8 +135,8 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
     
     @Override
     public boolean partialUpdate(final EncryptRuleConfiguration toBeUpdatedRuleConfig) {
-        Collection<String> toBeAddedTableNames = toBeUpdatedRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
-        toBeAddedTableNames.removeAll(tables.keySet());
+        Collection<String> toBeAddedTableNames = toBeUpdatedRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).filter(each -> !tables.containsKey(each.toLowerCase()))
+                .collect(Collectors.toList());
         if (!toBeAddedTableNames.isEmpty()) {
             toBeAddedTableNames.forEach(each -> addTableRule(each, toBeUpdatedRuleConfig));
             attributes.set(new RuleAttributes(new EncryptTableMapperRuleAttribute(tables.keySet())));
