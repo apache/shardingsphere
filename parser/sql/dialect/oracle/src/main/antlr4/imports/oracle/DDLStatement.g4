@@ -4325,3 +4325,8 @@ noAuditTraditional
 dropDatabase
     : DROP DATABASE (INCLUDING BACKUPS)? NOPROMPT?
     ;
+
+createOutline
+    : CREATE (OR REPLACE)? (PUBLIC | PRIVATE)? OUTLINE outlineName?
+    (FROM (PUBLIC | PRIVATE)? outlineName)? (FOR CATEGORY categoryName)? (ON (select | delete | update | insert | createTable))?
+    ;
