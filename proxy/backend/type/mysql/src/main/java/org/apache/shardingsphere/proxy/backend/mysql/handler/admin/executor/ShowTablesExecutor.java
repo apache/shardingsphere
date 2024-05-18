@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -83,7 +84,8 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         if (!systemDatabase.getSystemSchemas().contains(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        List<MemoryQueryResultDataRow> rows = getAllTableNames(databaseName).stream().map(each -> {
+        Collection<ShardingSphereTable> sortedTables = getTables(databaseName).stream().sorted(Comparator.comparing(ShardingSphereTable::getName)).collect(Collectors.toList());
+        List<MemoryQueryResultDataRow> rows = sortedTables.stream().map(each -> {
             List<Object> rowValues = new LinkedList<>();
             rowValues.add(each.getName());
             if (showTablesStatement.isContainsFull()) {
@@ -94,12 +96,17 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     
-    private Collection<ShardingSphereTable> getAllTableNames(final String databaseName) {
+    private Collection<ShardingSphereTable> getTables(final String databaseName) {
         Collection<ShardingSphereTable> result = ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getSchema(databaseName).getTables().values();
+        Optional<Pattern> likePattern = getLikePattern();
+        return likePattern.isPresent() ? result.stream().filter(each -> likePattern.get().matcher(each.getName()).matches()).collect(Collectors.toList()) : result;
+    }
+    
+    private Optional<Pattern> getLikePattern() {
         if (!showTablesStatement.getFilter().isPresent()) {
-            return result;
+            return Optional.empty();
         }
         Optional<String> pattern = showTablesStatement.getFilter().get().getLike().map(optional -> RegexUtils.convertLikePatternToRegex(optional.getPattern()));
-        return pattern.isPresent() ? result.stream().filter(each -> Pattern.compile(pattern.get(), Pattern.CASE_INSENSITIVE).matcher(each.getName()).matches()).collect(Collectors.toList()) : result;
+        return pattern.map(optional -> Pattern.compile(RegexUtils.convertLikePatternToRegex(optional), Pattern.CASE_INSENSITIVE));
     }
 }
