@@ -32,7 +32,31 @@ alterStatement
     ;
 
 createTable
-    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? partitionClause? duplicateAsQueryExpression? startTransaction? | createLikeClause)
+    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? partitionClause? duplicateAsQueryExpression? startTransaction? duplicatekeyClause? commentClause? distributedbyClause? propertiesClause? | createLikeClause)
+    ;
+
+duplicatekeyClause
+    : DUPLICATE KEY (LP_ columnName RP_)
+    ;
+
+commentClause
+    : COMMENT EQ_? literals
+    ;
+
+distributedbyClause
+    : DISTRIBUTED BY HASH (LP_ columnName RP_) BUCKETS NUMBER_
+    ;
+
+propertiesClause
+    : PROPERTIES LP_ properties RP_
+    ;
+
+properties
+    : property (COMMA_ property)*
+    ;
+
+property
+    : (identifier | SINGLE_QUOTED_TEXT) EQ_? literals
     ;
 
 startTransaction
@@ -437,7 +461,7 @@ createDefinitionClause
     ;
 
 columnDefinition
-    : column_name=identifier fieldDefinition referenceDefinition?
+    : column_name=identifier fieldDefinition referenceDefinition? | NAME EQ_ columnName
     ;
 
 fieldDefinition

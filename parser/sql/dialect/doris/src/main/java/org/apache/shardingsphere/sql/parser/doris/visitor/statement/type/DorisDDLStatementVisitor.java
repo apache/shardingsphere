@@ -145,6 +145,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeS
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.ddl.DorisAlterDatabaseStatement;
@@ -268,6 +269,11 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         if (null != ctx.createTableOptions()) {
             result.setCreateTableOptionSegment((CreateTableOptionSegment) visit(ctx.createTableOptions()));
         }
+        // {Doris} ADDED BEGIN
+        if (null != ctx.duplicateAsQueryExpression()) {
+            result.setSelectStatement((SelectStatement) visit(ctx.duplicateAsQueryExpression().select()));
+        }
+        // {Doris} ADDED END
         return result;
     }
     

@@ -25,6 +25,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.ddl.DorisCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
@@ -73,6 +75,11 @@ public final class CreateTableStatementHandler implements SQLStatementHandler {
         if (createTableStatement instanceof SQLServerStatement) {
             return createTableStatement.getSelectStatement();
         }
+        // {Doris} ADDED BEGIN
+        if (createTableStatement instanceof DorisStatement) {
+            return createTableStatement.getSelectStatement();
+        }
+        // {Doris} ADDED END
         return Optional.empty();
     }
     
@@ -112,6 +119,11 @@ public final class CreateTableStatementHandler implements SQLStatementHandler {
         if (createTableStatement instanceof MySQLCreateTableStatement) {
             return ((MySQLCreateTableStatement) createTableStatement).getCreateTableOptionSegment();
         }
+        // {Doris} ADDED BEGIN
+        if (createTableStatement instanceof DorisCreateTableStatement) {
+            return ((DorisCreateTableStatement) createTableStatement).getCreateTableOptionSegment();
+        }
+        // {Doris} ADDED END
         return Optional.empty();
     }
 }

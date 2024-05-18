@@ -276,7 +276,7 @@ fromClause
     ;
 
 tableReferences
-    : tableReference (COMMA_ tableReference)*
+    : tableReference (COMMA_ tableReference)* (COMMA_ regularFunction)?
     ;
 
 escapedTableReference
