@@ -63,7 +63,7 @@ public final class MySQLHandshakePacket extends MySQLPacket {
         statusFlag = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT;
         capabilityFlagsUpper = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
         this.authPluginData = authPluginData;
-        authPluginName = MySQLAuthenticationMethod.NATIVE.getMethodName();
+        authPluginName = MySQLAuthenticationMethod.CACHING_SHA2_PASSWORD.getMethodName();
     }
     
     public MySQLHandshakePacket(final MySQLPacketPayload payload) {
