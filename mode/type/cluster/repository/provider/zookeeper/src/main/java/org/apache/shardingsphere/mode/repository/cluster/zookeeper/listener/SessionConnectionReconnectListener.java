@@ -39,12 +39,12 @@ public final class SessionConnectionReconnectListener implements ConnectionState
     private final InstanceContext instanceContext;
     
     private final ComputeNodeStatusService computeNodeStatusService;
-
+    
     public SessionConnectionReconnectListener(final InstanceContext instanceContext, final ClusterPersistRepository repository) {
         this.instanceContext = instanceContext;
         computeNodeStatusService = new ComputeNodeStatusService(repository);
     }
-
+    
     @Override
     public void stateChanged(final CuratorFramework client, final ConnectionState connectionState) {
         if (ConnectionState.LOST != connectionState) {
@@ -83,7 +83,7 @@ public final class SessionConnectionReconnectListener implements ConnectionState
         computeNodeStatusService.persistInstanceLabels(instanceContext.getInstance().getMetaData().getId(), instanceContext.getInstance().getLabels());
         computeNodeStatusService.persistInstanceState(instanceContext.getInstance().getMetaData().getId(), instanceContext.getInstance().getState());
     }
-
+    
     @SneakyThrows(InterruptedException.class)
     private void sleepInterval() {
         Thread.sleep(RECONNECT_INTERVAL_SECONDS * 1000L);
