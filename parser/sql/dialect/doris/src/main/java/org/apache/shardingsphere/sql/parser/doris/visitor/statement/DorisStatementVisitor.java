@@ -1807,12 +1807,12 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             }
             return result;
         }
-        // {Doris} ADDED BEGIN
+        // DORIS ADDED BEGIN
         if (null != ctx.regularFunction()) {
             FunctionSegment functionSegment = (FunctionSegment) visit(ctx.regularFunction());
             return new FunctionTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), functionSegment);
         }
-        // {Doris} ADDED END
+        // DORIS ADDED END
         return result;
     }
     
