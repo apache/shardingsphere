@@ -20,7 +20,8 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Through the uniform code style of spotless, execute the `./mvnw spotless:apply -Pcheck` formatted code.
  - Make sure the test coverage rate is not lower than the master branch.
  - Careful consideration for each `pull request`; Small and frequent `pull request` with complete unit function is welcomed.
- - If using IDEA, you can import the recommended `src/resources/code-style-idea.xml`.
+ - If you are using IDEA, please import `src/resources/idea/code-style.xml` to maintain consistency in code style.
+ - If you are using IDEA, please import `src/resources/idea/inspections.xml` to detect potential issues in the code.
 
 ## Contributor Covenant Code of Conduct
 
