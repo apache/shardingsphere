@@ -486,7 +486,8 @@ This blog only covers the SQL Executor Engine and its optimizations. In the futu
 - **PostgreSQL UNION：** https://www.postgresql.org/docs/14/sql-select.html
 - **Oracle UNION：** https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/The-UNION-ALL-INTERSECT-MINUS-Operators.html
 - **SQL Server UNION：** https://docs.microsoft.com/en-us/sql/t-sql/language-elements/set-operators-union-transact-sql?view=sql-server-ver15
-- 
+
+
 ## Author
 **Duan Zhengqiang**
 
