@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeInstanceStateChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.junit.jupiter.api.Test;
@@ -40,8 +40,8 @@ class ComputeNodeStateChangedWatcherTest {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
                 .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", InstanceState.CIRCUIT_BREAK.name(), Type.ADDED));
         assertTrue(actual.isPresent());
-        assertThat(((StateEvent) actual.get()).getStatus(), is(InstanceState.CIRCUIT_BREAK.name()));
-        assertThat(((StateEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
+        assertThat(((ComputeNodeInstanceStateChangedEvent) actual.get()).getStatus(), is(InstanceState.CIRCUIT_BREAK.name()));
+        assertThat(((ComputeNodeInstanceStateChangedEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
     }
     
     @Test
@@ -49,8 +49,8 @@ class ComputeNodeStateChangedWatcherTest {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
                 .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", "", Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertTrue(((StateEvent) actual.get()).getStatus().isEmpty());
-        assertThat(((StateEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
+        assertTrue(((ComputeNodeInstanceStateChangedEvent) actual.get()).getStatus().isEmpty());
+        assertThat(((ComputeNodeInstanceStateChangedEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
     }
     
     @Test

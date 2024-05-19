@@ -30,10 +30,10 @@ import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Instance context.
@@ -56,19 +56,19 @@ public final class InstanceContext {
     
     private final EventBusContext eventBusContext;
     
-    private final Collection<ComputeNodeInstance> allClusterComputeNodeInstances = new LinkedList<>();
+    private final Collection<ComputeNodeInstance> allClusterComputeNodeInstances = new CopyOnWriteArrayList<>();
     
     /**
      * Update instance status.
      *
-     * @param instanceId instance id
+     * @param id instance ID
      * @param status status
      */
-    public void updateInstanceStatus(final String instanceId, final String status) {
-        if (instance.getMetaData().getId().equals(instanceId)) {
+    public void updateStatus(final String id, final String status) {
+        if (instance.getMetaData().getId().equals(id)) {
             instance.switchState(status);
         }
-        updateRelatedComputeNodeInstancesStatus(instanceId, status);
+        updateRelatedComputeNodeInstancesStatus(id, status);
     }
     
     private void updateRelatedComputeNodeInstancesStatus(final String instanceId, final String status) {

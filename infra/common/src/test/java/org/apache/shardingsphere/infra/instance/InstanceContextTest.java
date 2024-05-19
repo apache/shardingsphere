@@ -58,10 +58,10 @@ class InstanceContextTest {
                 new WorkerIdGeneratorFixture(Integer.MIN_VALUE), modeConfig, modeContextManager, lockContext, eventBusContext);
         InstanceState actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(InstanceState.OK));
-        context.updateInstanceStatus(instanceMetaData.getId(), InstanceState.CIRCUIT_BREAK.name());
+        context.updateStatus(instanceMetaData.getId(), InstanceState.CIRCUIT_BREAK.name());
         actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(InstanceState.CIRCUIT_BREAK));
-        context.updateInstanceStatus(instanceMetaData.getId(), InstanceState.OK.name());
+        context.updateStatus(instanceMetaData.getId(), InstanceState.OK.name());
         actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(InstanceState.OK));
     }
