@@ -116,8 +116,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                 final ClusterPersistRepository repository, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
         ComputeNodeStatusService computeNodeStatusService = new ComputeNodeStatusService(repository);
         computeNodeStatusService.registerOnline(instanceContext.getInstance().getMetaData());
-        computeNodeStatusService.persistInstanceLabels(instanceContext.getInstance().getCurrentInstanceId(), instanceContext.getInstance().getLabels());
-        computeNodeStatusService.persistInstanceState(instanceContext.getInstance().getCurrentInstanceId(), instanceContext.getInstance().getState());
+        computeNodeStatusService.persistInstanceLabels(instanceContext.getInstance().getMetaData().getId(), instanceContext.getInstance().getLabels());
+        computeNodeStatusService.persistInstanceState(instanceContext.getInstance().getMetaData().getId(), instanceContext.getInstance().getState());
         new GovernanceWatcherFactory(repository,
                 eventBusContext, param.getInstanceMetaData() instanceof JDBCInstanceMetaData ? param.getDatabaseConfigs().keySet() : Collections.emptyList()).watchListeners();
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());

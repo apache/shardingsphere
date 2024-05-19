@@ -54,7 +54,7 @@ public final class SessionConnectionReconnectListener implements ConnectionState
         do {
             isReconnectFailed = !reconnect(client);
         } while (isReconnectFailed);
-        log.info("Instance reconnect success, instance ID: {}", instanceContext.getInstance().getCurrentInstanceId());
+        log.info("Instance reconnect success, instance ID: {}", instanceContext.getInstance().getMetaData().getId());
     }
     
     private boolean reconnect(final CuratorFramework client) {
