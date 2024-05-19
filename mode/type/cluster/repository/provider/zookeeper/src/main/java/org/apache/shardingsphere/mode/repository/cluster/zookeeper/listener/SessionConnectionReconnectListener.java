@@ -17,17 +17,13 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
-import org.apache.shardingsphere.infra.instance.ComputeNodeData;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Properties;
@@ -35,7 +31,6 @@ import java.util.Properties;
 /**
  * Session connection reconnect listener.
  */
-@RequiredArgsConstructor
 @Slf4j
 public final class SessionConnectionReconnectListener implements ConnectionStateListener {
     
@@ -43,7 +38,12 @@ public final class SessionConnectionReconnectListener implements ConnectionState
     
     private final InstanceContext instanceContext;
     
-    private final ClusterPersistRepository repository;
+    private final ComputeNodeStatusService computeNodeStatusService;
+
+    public SessionConnectionReconnectListener(final InstanceContext instanceContext, final ClusterPersistRepository repository) {
+        this.instanceContext = instanceContext;
+        computeNodeStatusService = new ComputeNodeStatusService(repository);
+    }
 
     @Override
     public void stateChanged(final CuratorFramework client, final ConnectionState connectionState) {
@@ -79,11 +79,9 @@ public final class SessionConnectionReconnectListener implements ConnectionState
     }
     
     private void reRegisterInstanceComputeNode() {
-        ComputeNodeInstance instance = instanceContext.getInstance();
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instance.getCurrentInstanceId(),
-                instance.getMetaData().getType()), YamlEngine.marshal(new ComputeNodeData(instance.getMetaData().getAttributes(), instance.getMetaData().getVersion())));
-        repository.persistEphemeral(ComputeNode.getInstanceLabelsNodePath(instance.getCurrentInstanceId()), YamlEngine.marshal(instance.getLabels()));
-        repository.persistEphemeral(ComputeNode.getInstanceStatusNodePath(instance.getCurrentInstanceId()), instance.getState().getCurrentState().name());
+        computeNodeStatusService.registerOnline(instanceContext.getInstance().getMetaData());
+        computeNodeStatusService.persistInstanceLabels(instanceContext.getInstance().getMetaData().getId(), instanceContext.getInstance().getLabels());
+        computeNodeStatusService.persistInstanceState(instanceContext.getInstance().getMetaData().getId(), instanceContext.getInstance().getState());
     }
 
     @SneakyThrows(InterruptedException.class)
