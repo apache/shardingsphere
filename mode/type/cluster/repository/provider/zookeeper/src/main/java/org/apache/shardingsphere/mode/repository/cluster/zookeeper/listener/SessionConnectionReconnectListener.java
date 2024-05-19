@@ -33,30 +33,31 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import java.util.Properties;
 
 /**
- * Session connection state listener.
+ * Session connection reconnect listener.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class SessionConnectionListener implements ConnectionStateListener {
+public final class SessionConnectionReconnectListener implements ConnectionStateListener {
     
     private static final long RECONNECT_INTERVAL_SECONDS = 5L;
     
     private final InstanceContext instanceContext;
     
     private final ClusterPersistRepository repository;
-    
+
     @Override
     public void stateChanged(final CuratorFramework client, final ConnectionState connectionState) {
-        if (ConnectionState.LOST == connectionState) {
-            boolean reRegistered;
-            do {
-                reRegistered = reRegister(client);
-            } while (!reRegistered);
-            log.debug("Instance re-register success instance id: {}", instanceContext.getInstance().getCurrentInstanceId());
+        if (ConnectionState.LOST != connectionState) {
+            return;
         }
+        boolean isReconnectFailed;
+        do {
+            isReconnectFailed = !reconnect(client);
+        } while (isReconnectFailed);
+        log.info("Instance reconnect success, instance ID: {}", instanceContext.getInstance().getCurrentInstanceId());
     }
     
-    private boolean reRegister(final CuratorFramework client) {
+    private boolean reconnect(final CuratorFramework client) {
         try {
             if (client.getZookeeperClient().blockUntilConnectedOrTimedOut()) {
                 if (isNeedGenerateWorkerId()) {
@@ -84,7 +85,7 @@ public final class SessionConnectionListener implements ConnectionStateListener 
         repository.persistEphemeral(ComputeNode.getInstanceLabelsNodePath(instance.getCurrentInstanceId()), YamlEngine.marshal(instance.getLabels()));
         repository.persistEphemeral(ComputeNode.getInstanceStatusNodePath(instance.getCurrentInstanceId()), instance.getState().getCurrentState().name());
     }
-    
+
     @SneakyThrows(InterruptedException.class)
     private void sleepInterval() {
         Thread.sleep(RECONNECT_INTERVAL_SECONDS * 1000L);

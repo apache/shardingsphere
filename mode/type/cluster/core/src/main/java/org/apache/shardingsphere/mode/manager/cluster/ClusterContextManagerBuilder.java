@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.cluster;
 
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
@@ -63,8 +65,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) throws SQLException {
-        ClusterPersistRepository repository = getClusterPersistRepository((ClusterPersistRepositoryConfiguration) param.getModeConfiguration().getRepository());
-        InstanceContext instanceContext = buildInstanceContext(repository, param, eventBusContext);
+        ModeConfiguration modeConfig = param.getModeConfiguration();
+        ClusterPersistRepository repository = getClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository());
+        InstanceContext instanceContext = buildInstanceContext(modeConfig, param.getInstanceMetaData(), repository, eventBusContext);
         if (repository instanceof InstanceContextAware) {
             ((InstanceContextAware) repository).setInstanceContext(instanceContext);
         }
@@ -85,8 +88,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
-    private InstanceContext buildInstanceContext(final ClusterPersistRepository repository, final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) {
-        return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()), new ClusterWorkerIdGenerator(repository, param.getInstanceMetaData()), param.getModeConfiguration(),
+    private InstanceContext buildInstanceContext(final ModeConfiguration modeConfig,
+                                                 final InstanceMetaData instanceMetaData, final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
+        return new InstanceContext(new ComputeNodeInstance(instanceMetaData), new ClusterWorkerIdGenerator(repository, instanceMetaData), modeConfig,
                 new ClusterModeContextManager(), new GlobalLockContext(new GlobalLockPersistService(initDistributedLockHolder(repository))), eventBusContext);
     }
     

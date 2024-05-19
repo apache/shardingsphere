@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.instance.ComputeNodeData;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -52,7 +51,7 @@ public final class ComputeNodeStatusService {
      */
     public void registerOnline(final InstanceMetaData instanceMetaData) {
         repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceMetaData.getId(), instanceMetaData.getType()),
-                YamlEngine.marshal(new ComputeNodeData(instanceMetaData.getAttributes(), ShardingSphereVersion.VERSION)));
+                YamlEngine.marshal(new ComputeNodeData(instanceMetaData.getAttributes(), instanceMetaData.getVersion())));
     }
     
     /**

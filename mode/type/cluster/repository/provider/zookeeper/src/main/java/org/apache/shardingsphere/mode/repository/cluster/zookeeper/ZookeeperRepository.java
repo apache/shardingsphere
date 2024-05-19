@@ -38,7 +38,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.ZookeeperExceptionHandler;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionListener;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionReconnectListener;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
@@ -285,7 +285,7 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Inst
     
     @Override
     public void setInstanceContext(final InstanceContext instanceContext) {
-        client.getConnectionStateListenable().addListener(new SessionConnectionListener(instanceContext, this));
+        client.getConnectionStateListenable().addListener(new SessionConnectionReconnectListener(instanceContext, this));
     }
     
     @Override
