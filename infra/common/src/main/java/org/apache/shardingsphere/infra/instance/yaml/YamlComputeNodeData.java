@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance;
+package org.apache.shardingsphere.infra.instance.yaml;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Compute node data.
+ * YAML compute node data.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ComputeNodeData {
+@Setter
+public final class YamlComputeNodeData implements YamlConfiguration {
     
-    private final String attribute;
+    private String attribute;
     
-    private final String version;
+    private String version;
 }
