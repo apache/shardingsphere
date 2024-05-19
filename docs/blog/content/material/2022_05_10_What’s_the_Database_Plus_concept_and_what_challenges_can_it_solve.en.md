@@ -67,7 +67,7 @@ Thanks to the implementation of the Database access protocol, Database Plus prov
 
 Moreover, Database Plus supports maximum conversion between SQL dialects. An AST (abstract syntax tree) that parses SQL can be used to regenerate SQL according to the rules of other database dialects. The SQL dialect conversion makes it possible for heterogeneous databases to access each other. This way, users can use any SQL dialect to access heterogeneous underlying databases.
 
-**Database gateway is the best interpretation of Connect. **It is the prerequisite for Database Plus providing a solution for database fragmentation. This is done by building a common open docking layer positioned in the upper layer of the database, to pool all the access traffic of the fragmented databases.
+**Database gateway is the best interpretation of Connect.** It is the prerequisite for Database Plus providing a solution for database fragmentation. This is done by building a common open docking layer positioned in the upper layer of the database, to pool all the access traffic of the fragmented databases.
 
 ### 2. Enhance: database computing enhancement engine
 Following decades of development, databases now boast their own query optimizer, transaction engine, storage engine, and other time-tested storage and computing capabilities and design models. With the advent of the distributed and cloud native era, original computing and storage capabilities of the database will be scattered and woven into a distributed and cloud native level of new capabilities.
