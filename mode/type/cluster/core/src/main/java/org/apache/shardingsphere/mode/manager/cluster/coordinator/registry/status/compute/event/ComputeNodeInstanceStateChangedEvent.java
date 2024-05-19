@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * State event.
+ * Compute node instance state changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StateEvent implements GovernanceEvent {
+public final class ComputeNodeInstanceStateChangedEvent implements GovernanceEvent {
     
     private final String instanceId;
     
