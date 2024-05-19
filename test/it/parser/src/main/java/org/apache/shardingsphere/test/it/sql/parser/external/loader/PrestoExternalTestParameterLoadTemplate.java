@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
  */
 public final class PrestoExternalTestParameterLoadTemplate implements TestParameterLoadTemplate {
     
+    private static final String REGEX = "\\$\\{mutableTables.hive.datatype}";
+    
     @Override
     public Collection<ExternalSQLTestParameter> load(final String sqlCaseFileName, final List<String> sqlCaseFileContent, final List<String> resultFileContent,
                                                      final String databaseType, final String reportType) {
@@ -69,6 +71,6 @@ public final class PrestoExternalTestParameterLoadTemplate implements TestParame
                 }
             }
         }
-        return result.stream().map(each -> each.replaceAll("\\$\\{mutableTables.hive.datatype}", "a")).collect(Collectors.toList());
+        return result.stream().map(each -> each.replaceAll(REGEX, "a")).collect(Collectors.toList());
     }
 }
