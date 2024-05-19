@@ -96,13 +96,13 @@ class TrafficEngineTest {
         when(loadBalancer.getTargetName("traffic", new ArrayList<>(instanceIds.keySet()))).thenReturn("foo_id");
         when(strategyRule.getLoadBalancer()).thenReturn(loadBalancer);
         when(strategyRule.getName()).thenReturn("traffic");
-        when(instanceContext.getAllClusterInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(instanceIds);
+        when(instanceContext.getAllClusterComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(instanceIds);
         Optional<String> actual = trafficEngine.dispatch(queryContext, false);
         assertThat(actual, is(Optional.of("foo_id")));
     }
     
     private Map<String, InstanceMetaData> mockComputeNodeInstances() {
-        Map<String, InstanceMetaData> result = new HashMap<>();
+        Map<String, InstanceMetaData> result = new HashMap<>(2, 1F);
         result.put("foo_id", new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_version"));
         result.put("bar_id", new ProxyInstanceMetaData("bar_id", "127.0.0.1@3308", "foo_version"));
         return result;

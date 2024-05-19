@@ -118,7 +118,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         new GovernanceWatcherFactory(repository,
                 eventBusContext, param.getInstanceMetaData() instanceof JDBCInstanceMetaData ? param.getDatabaseConfigs().keySet() : Collections.emptyList()).watchListeners();
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
-        contextManager.getInstanceContext().getAllClusterInstances().addAll(new ComputeNodeStatusService(repository).loadAllComputeNodeInstances());
+        contextManager.getInstanceContext().getAllClusterComputeNodeInstances().addAll(new ComputeNodeStatusService(repository).loadAllComputeNodeInstances());
         new ClusterEventSubscriberRegistry(contextManager, repository).register();
     }
     
