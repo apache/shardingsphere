@@ -69,13 +69,4 @@ public final class ComputeNodeInstance {
             state.switchToInvalidState(InstanceState.CIRCUIT_BREAK);
         }
     }
-    
-    /**
-     * Get current instance id.
-     *
-     * @return current instance id
-     */
-    public String getCurrentInstanceId() {
-        return metaData.getId();
-    }
 }
