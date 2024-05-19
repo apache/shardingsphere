@@ -97,10 +97,13 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     
     private Collection<ShardingSphereTable> getTables(final String databaseName) {
         Collection<ShardingSphereTable> tables = ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getSchema(databaseName).getTables().values();
+        Collection<ShardingSphereTable> filteredTables = filterByLike(tables);
+        return filteredTables.stream().sorted(Comparator.comparing(ShardingSphereTable::getName)).collect(Collectors.toList());
+    }
+    
+    private Collection<ShardingSphereTable> filterByLike(final Collection<ShardingSphereTable> tables) {
         Optional<Pattern> likePattern = getLikePattern();
-        return likePattern.isPresent()
-                ? tables.stream().filter(each -> likePattern.get().matcher(each.getName()).matches()).sorted(Comparator.comparing(ShardingSphereTable::getName)).collect(Collectors.toList())
-                : tables;
+        return likePattern.isPresent() ? tables.stream().filter(each -> likePattern.get().matcher(each.getName()).matches()).collect(Collectors.toList()) : tables;
     }
     
     private Optional<Pattern> getLikePattern() {
