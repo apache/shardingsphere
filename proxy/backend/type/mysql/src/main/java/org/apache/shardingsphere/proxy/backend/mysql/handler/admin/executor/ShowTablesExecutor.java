@@ -84,8 +84,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         if (!systemDatabase.getSystemSchemas().contains(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        Collection<ShardingSphereTable> sortedTables = getTables(databaseName).stream().sorted(Comparator.comparing(ShardingSphereTable::getName)).collect(Collectors.toList());
-        List<MemoryQueryResultDataRow> rows = sortedTables.stream().map(each -> {
+        List<MemoryQueryResultDataRow> rows = getTables(databaseName).stream().map(each -> {
             List<Object> rowValues = new LinkedList<>();
             rowValues.add(each.getName());
             if (showTablesStatement.isContainsFull()) {
@@ -97,9 +96,11 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private Collection<ShardingSphereTable> getTables(final String databaseName) {
-        Collection<ShardingSphereTable> result = ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getSchema(databaseName).getTables().values();
+        Collection<ShardingSphereTable> tables = ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getSchema(databaseName).getTables().values();
         Optional<Pattern> likePattern = getLikePattern();
-        return likePattern.isPresent() ? result.stream().filter(each -> likePattern.get().matcher(each.getName()).matches()).collect(Collectors.toList()) : result;
+        return likePattern.isPresent()
+                ? tables.stream().filter(each -> likePattern.get().matcher(each.getName()).matches()).sorted(Comparator.comparing(ShardingSphereTable::getName)).collect(Collectors.toList())
+                : tables;
     }
     
     private Optional<Pattern> getLikePattern() {
