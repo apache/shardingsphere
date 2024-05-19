@@ -169,7 +169,7 @@ public final class InstanceContext {
      * @return compute node instance
      */
     public Optional<ComputeNodeInstance> getComputeNodeInstanceById(final String instanceId) {
-        return allClusterInstances.stream().filter(each -> instanceId.equals(each.getCurrentInstanceId())).findFirst();
+        return allClusterInstances.stream().filter(each -> instanceId.equals(each.getMetaData().getId())).findFirst();
     }
     
     /**
