@@ -2417,8 +2417,8 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_cast_function1">
-        <table name="yh_ods_bs_class_all" start-index="13" stop-index="43">
-            <owner name="finance_ods" start-index="13" stop-index="23" />
+        <table name="tb_ods_bs_class_all" start-index="13" stop-index="43">
+            <owner name="test_schema" start-index="13" stop-index="23" />
         </table>
         <select>
             <projections start-index="63" stop-index="137">
@@ -2433,8 +2433,8 @@
                 </column-projection>
             </projections>
             <from>
-                <simple-table name="yh_bs_class" alias="jw" start-index="152" stop-index="177">
-                    <owner name="finance_ods" start-index="152" stop-index="162"/>
+                <simple-table name="tb_bs_class" alias="jw" start-index="152" stop-index="177">
+                    <owner name="test_schema" start-index="152" stop-index="162"/>
                 </simple-table>
             </from>
             <combine combine-type="UNION_ALL" start-index="240" stop-index="775">
@@ -2451,8 +2451,8 @@
                         </column-projection>
                     </projections>
                     <from>
-                        <simple-table name="yh_bs_class" alias="jw" start-index="152" stop-index="177">
-                            <owner name="finance_ods" start-index="152" stop-index="162"/>
+                        <simple-table name="tb_bs_class" alias="jw" start-index="152" stop-index="177">
+                            <owner name="test_schema" start-index="152" stop-index="162"/>
                         </simple-table>
                     </from>
                     <where start-index="187" stop-index="230">
@@ -2516,8 +2516,8 @@
                     <from>
                         <join-table join-type="LEFT">
                             <left>
-                                <simple-table name="yh_archive_bs_class" start-index="424" stop-index="458" alias="arc">
-                                    <owner name="finance_ods" start-index="424" stop-index="434" />
+                                <simple-table name="tb_archive_bs_class" start-index="424" stop-index="458" alias="arc">
+                                    <owner name="test_schema" start-index="424" stop-index="434" />
                                 </simple-table>
                             </left>
                             <right>
@@ -2528,8 +2528,8 @@
                                                 <column-projection name="mother_class_id" start-index="495" stop-index="509"/>
                                             </projections>
                                             <from>
-                                                <simple-table name="yh_bs_class" start-index="516" stop-index="538">
-                                                    <owner name="finance_ods" start-index="516" stop-index="526"/>
+                                                <simple-table name="tb_bs_class" start-index="516" stop-index="538">
+                                                    <owner name="test_schema" start-index="516" stop-index="526"/>
                                                 </simple-table>
                                             </from>
                                             <where start-index="557" stop-index="600">
@@ -2665,7 +2665,7 @@
     
     <create-table sql-case-id="create_table_with_split">
         <table name="tmp_classcode_property_new" start-index="13" stop-index="50">
-            <owner name="finance_ods" start-index="13" stop-index="23" />
+            <owner name="test_schema" start-index="13" stop-index="23" />
         </table>
         <select>
             <projections start-index="70" stop-index="413">
@@ -2738,8 +2738,8 @@
             <from>
                 <join-table join-type="INNER">
                     <left>
-                        <simple-table name="yh_ods_bs_class_all" alias="a" start-index="428" stop-index="460">
-                            <owner name="finance_ods" start-index="428" stop-index="438"/>
+                        <simple-table name="tb_ods_bs_class_all" alias="a" start-index="428" stop-index="460">
+                            <owner name="test_schema" start-index="428" stop-index="438"/>
                         </simple-table>
                     </left>
                     <right>
@@ -2750,8 +2750,8 @@
                                         <shorthand-projection start-index="498" stop-index="498"/>
                                     </projections>
                                     <from>
-                                        <simple-table name="yh_product_course_product" start-index="505" stop-index="541">
-                                            <owner name="finance_ods" start-index="505" stop-index="515" />
+                                        <simple-table name="tb_product_course_product" start-index="505" stop-index="541">
+                                            <owner name="test_schema" start-index="505" stop-index="515" />
                                         </simple-table>
                                     </from>
                                     <where start-index="543" stop-index="586">

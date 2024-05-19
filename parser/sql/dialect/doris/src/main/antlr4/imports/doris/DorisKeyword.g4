@@ -507,9 +507,11 @@ DECIMAL
     : D E C I M A L
     ;
 
+// DORIS ADDED BEGIN
 DECIMAL64
     : D E C I M A L '64'
     ;
+// DORIS ADDED END
 
 DECLARE
     : D E C L A R E
@@ -619,9 +621,11 @@ DUPLICATE
     : D U P L I C A T E
     ;
 
+// DORIS ADDED BEGIN
 DISTRIBUTED
     : D I S T R I B U T E D
     ;
+// DORIS ADDED END
 
 DYNAMIC
     : D Y N A M I C
@@ -1915,9 +1919,11 @@ PROFILES
     : P R O F I L E S
     ;
 
+// DORIS ADDED BEGIN
 PROPERTIES
     : P R O P E R T I E S
     ;
+// DORIS ADDED END
 
 PROXY
     : P R O X Y

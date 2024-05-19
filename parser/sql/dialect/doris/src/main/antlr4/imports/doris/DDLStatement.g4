@@ -32,9 +32,12 @@ alterStatement
     ;
 
 createTable
+    // DORIS CHANGED BEGIN
     : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? partitionClause? duplicateAsQueryExpression? startTransaction? duplicatekeyClause? commentClause? distributedbyClause? propertiesClause? | createLikeClause)
+    // DORIS CHANGED END
     ;
 
+// DORIS ADDED BEGIN
 duplicatekeyClause
     : DUPLICATE KEY (LP_ columnName RP_)
     ;
@@ -58,6 +61,7 @@ properties
 property
     : (identifier | SINGLE_QUOTED_TEXT) EQ_? literals
     ;
+// DORIS ADDED END
 
 startTransaction
     : START TRANSACTION
@@ -461,7 +465,9 @@ createDefinitionClause
     ;
 
 columnDefinition
+    // DORIS CHANGED BEGIN
     : column_name=identifier fieldDefinition referenceDefinition? | NAME EQ_ columnName
+    // DORIS CHANGED END
     ;
 
 fieldDefinition
