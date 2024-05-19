@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.instance.util.IpUtils;
-import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
@@ -55,9 +54,12 @@ class ComputeNodeStatusServiceTest {
     
     @Test
     void assertRegisterOnline() {
-        InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
-        new ComputeNodeStatusService(repository).registerOnline(instanceMetaData);
-        verify(repository).persistEphemeral(eq("/nodes/compute_nodes/online/proxy/" + instanceMetaData.getId()), anyString());
+        ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3307));
+        computeNodeInstance.setLabels(Collections.singletonList("test"));
+        new ComputeNodeStatusService(repository).registerOnline(computeNodeInstance);
+        verify(repository).persistEphemeral(eq("/nodes/compute_nodes/online/proxy/" + computeNodeInstance.getMetaData().getId()), anyString());
+        verify(repository).persistEphemeral(ComputeNode.getInstanceStatusNodePath(computeNodeInstance.getMetaData().getId()), InstanceState.OK.name());
+        verify(repository).persistEphemeral(ComputeNode.getInstanceLabelsNodePath(computeNodeInstance.getMetaData().getId()), YamlEngine.marshal(Collections.singletonList("test")));
     }
     
     @Test
@@ -69,15 +71,6 @@ class ComputeNodeStatusServiceTest {
         verify(repository).persistEphemeral(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(Collections.singletonList("test")));
         computeNodeStatusService.persistInstanceLabels(instanceId, Collections.emptyList());
         verify(repository).persistEphemeral(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(Collections.emptyList()));
-    }
-    
-    @Test
-    void assertPersistInstanceState() {
-        ComputeNodeStatusService computeNodeStatusService = new ComputeNodeStatusService(repository);
-        InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
-        final String instanceId = instanceMetaData.getId();
-        computeNodeStatusService.persistInstanceState(instanceId, new InstanceStateContext());
-        verify(repository).persistEphemeral(ComputeNode.getInstanceStatusNodePath(instanceId), InstanceState.OK.name());
     }
     
     @Test

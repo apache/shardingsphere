@@ -63,7 +63,7 @@ public final class SessionConnectionReconnectListener implements ConnectionState
                 if (isNeedGenerateWorkerId()) {
                     instanceContext.generateWorkerId(new Properties());
                 }
-                reRegisterInstanceComputeNode();
+                computeNodeStatusService.registerOnline(instanceContext.getInstance());
                 return true;
             }
             sleepInterval();
@@ -76,12 +76,6 @@ public final class SessionConnectionReconnectListener implements ConnectionState
     
     private boolean isNeedGenerateWorkerId() {
         return -1 != instanceContext.getInstance().getWorkerId();
-    }
-    
-    private void reRegisterInstanceComputeNode() {
-        computeNodeStatusService.registerOnline(instanceContext.getInstance().getMetaData());
-        computeNodeStatusService.persistInstanceLabels(instanceContext.getInstance().getMetaData().getId(), instanceContext.getInstance().getLabels());
-        computeNodeStatusService.persistInstanceState(instanceContext.getInstance().getMetaData().getId(), instanceContext.getInstance().getState());
     }
     
     @SneakyThrows(InterruptedException.class)

@@ -56,7 +56,7 @@ public final class InstanceContext {
     
     private final EventBusContext eventBusContext;
     
-    private final Collection<ComputeNodeInstance> allClusterInstances = new LinkedList<>();
+    private final Collection<ComputeNodeInstance> allClusterComputeNodeInstances = new LinkedList<>();
     
     /**
      * Update instance status.
@@ -72,7 +72,7 @@ public final class InstanceContext {
     }
     
     private void updateRelatedComputeNodeInstancesStatus(final String instanceId, final String status) {
-        for (ComputeNodeInstance each : allClusterInstances) {
+        for (ComputeNodeInstance each : allClusterComputeNodeInstances) {
             if (each.getMetaData().getId().equals(instanceId)) {
                 each.switchState(status);
             }
@@ -89,7 +89,7 @@ public final class InstanceContext {
         if (instance.getMetaData().getId().equals(instanceId)) {
             instance.setWorkerId(workerId);
         }
-        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.setWorkerId(workerId));
+        allClusterComputeNodeInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.setWorkerId(workerId));
     }
     
     /**
@@ -102,7 +102,7 @@ public final class InstanceContext {
         if (instance.getMetaData().getId().equals(instanceId)) {
             instance.setLabels(labels);
         }
-        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.setLabels(labels));
+        allClusterComputeNodeInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.setLabels(labels));
     }
     
     /**
@@ -132,8 +132,8 @@ public final class InstanceContext {
      * @param instance compute node instance
      */
     public void addComputeNodeInstance(final ComputeNodeInstance instance) {
-        allClusterInstances.removeIf(each -> each.getMetaData().getId().equalsIgnoreCase(instance.getMetaData().getId()));
-        allClusterInstances.add(instance);
+        allClusterComputeNodeInstances.removeIf(each -> each.getMetaData().getId().equalsIgnoreCase(instance.getMetaData().getId()));
+        allClusterComputeNodeInstances.add(instance);
     }
     
     /**
@@ -142,7 +142,7 @@ public final class InstanceContext {
      * @param instance compute node instance
      */
     public void deleteComputeNodeInstance(final ComputeNodeInstance instance) {
-        allClusterInstances.removeIf(each -> each.getMetaData().getId().equalsIgnoreCase(instance.getMetaData().getId()));
+        allClusterComputeNodeInstances.removeIf(each -> each.getMetaData().getId().equalsIgnoreCase(instance.getMetaData().getId()));
     }
     
     /**
@@ -152,9 +152,9 @@ public final class InstanceContext {
      * @param labels collection of contained label
      * @return compute node instances
      */
-    public Map<String, InstanceMetaData> getAllClusterInstances(final InstanceType instanceType, final Collection<String> labels) {
-        Map<String, InstanceMetaData> result = new LinkedHashMap<>(allClusterInstances.size(), 1F);
-        for (ComputeNodeInstance each : allClusterInstances) {
+    public Map<String, InstanceMetaData> getAllClusterComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
+        Map<String, InstanceMetaData> result = new LinkedHashMap<>(allClusterComputeNodeInstances.size(), 1F);
+        for (ComputeNodeInstance each : allClusterComputeNodeInstances) {
             if (each.getMetaData().getType() == instanceType && labels.stream().anyMatch(((Collection<String>) each.getLabels())::contains)) {
                 result.put(each.getMetaData().getId(), each.getMetaData());
             }
@@ -169,7 +169,7 @@ public final class InstanceContext {
      * @return compute node instance
      */
     public Optional<ComputeNodeInstance> getComputeNodeInstanceById(final String instanceId) {
-        return allClusterInstances.stream().filter(each -> instanceId.equals(each.getMetaData().getId())).findFirst();
+        return allClusterComputeNodeInstances.stream().filter(each -> instanceId.equals(each.getMetaData().getId())).findFirst();
     }
     
     /**
