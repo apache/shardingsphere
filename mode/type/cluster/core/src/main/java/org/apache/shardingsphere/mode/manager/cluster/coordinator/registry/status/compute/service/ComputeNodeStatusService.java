@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataFactory;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -45,35 +44,28 @@ public final class ComputeNodeStatusService {
     private final ClusterPersistRepository repository;
     
     /**
-     * Register online.
+     * Register compute node online.
      * 
-     * @param instanceMetaData instance definition
+     * @param computeNodeInstance compute node instance
      */
-    public void registerOnline(final InstanceMetaData instanceMetaData) {
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceMetaData.getId(), instanceMetaData.getType()),
-                YamlEngine.marshal(new ComputeNodeData(instanceMetaData.getAttributes(), instanceMetaData.getVersion())));
+    public void registerOnline(final ComputeNodeInstance computeNodeInstance) {
+        String instanceId = computeNodeInstance.getMetaData().getId();
+        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceId, computeNodeInstance.getMetaData().getType()),
+                YamlEngine.marshal(new ComputeNodeData(computeNodeInstance.getMetaData().getAttributes(), computeNodeInstance.getMetaData().getVersion())));
+        repository.persistEphemeral(ComputeNode.getInstanceStatusNodePath(instanceId), computeNodeInstance.getState().getCurrentState().name());
+        persistInstanceLabels(instanceId, computeNodeInstance.getLabels());
     }
     
     /**
      * Persist instance labels.
      *
      * @param instanceId instance id
-     * @param labels collection of label
+     * @param labels instance labels
      */
     public void persistInstanceLabels(final String instanceId, final Collection<String> labels) {
         if (null != labels) {
             repository.persistEphemeral(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(labels));
         }
-    }
-    
-    /**
-     * Persist instance state.
-     *
-     * @param instanceId instance id
-     * @param state state context
-     */
-    public void persistInstanceState(final String instanceId, final InstanceStateContext state) {
-        repository.persistEphemeral(ComputeNode.getInstanceStatusNodePath(instanceId), state.getCurrentState().name());
     }
     
     /**
