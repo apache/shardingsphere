@@ -1753,7 +1753,7 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "start-replica")
     private final List<StartReplicaStatementTestCase> startReplicaStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-outline")
     private final List<CreateOutlineStatementTestCase> createOutlineStatementTestCases = new LinkedList<>();
     

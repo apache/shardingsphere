@@ -1769,7 +1769,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitCreateOperator(final CreateOperatorContext ctx) {
         return new OracleCreateOperatorStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateOutline(final CreateOutlineContext ctx) {
         return new OracleCreateOutlineStatement();
