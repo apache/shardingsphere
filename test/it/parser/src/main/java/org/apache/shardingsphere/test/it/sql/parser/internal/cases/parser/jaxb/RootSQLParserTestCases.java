@@ -191,6 +191,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateMaterializedViewLogStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateMaterializedViewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateOperatorStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateOutlineStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreatePFileStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreatePolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateProfileStatementTestCase;
@@ -1752,6 +1753,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "start-replica")
     private final List<StartReplicaStatementTestCase> startReplicaStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-outline")
+    private final List<CreateOutlineStatementTestCase> createOutlineStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
