@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.context.ConfigurationContextManager;
 import org.apache.shardingsphere.mode.manager.context.ResourceMetaDataContextManager;
 import org.apache.shardingsphere.mode.manager.context.ShardingSphereDatabaseContextManager;
@@ -135,7 +135,7 @@ public final class ContextManager implements AutoCloseable {
     public void refreshDatabaseMetaData(final ShardingSphereDatabase database, final boolean force) {
         try {
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
-            MetaDataBasedPersistService persistService = metaDataContexts.get().getPersistService();
+            MetaDataPersistService persistService = metaDataContexts.get().getPersistService();
             if (force) {
                 metaDataContexts.set(reloadedMetaDataContexts);
                 metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
@@ -169,7 +169,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private MetaDataContexts createMetaDataContexts(final ShardingSphereDatabase database) throws SQLException {
-        MetaDataBasedPersistService metaDataPersistService = metaDataContexts.get().getPersistService();
+        MetaDataPersistService metaDataPersistService = metaDataContexts.get().getPersistService();
         Map<String, DataSourcePoolProperties> dataSourcePoolPropsFromRegCenter = metaDataPersistService.getDataSourceUnitService().load(database.getName());
         SwitchingResource switchingResource = new ResourceSwitchManager().alterStorageUnit(database.getResourceMetaData(), dataSourcePoolPropsFromRegCenter);
         metaDataContexts.get().getMetaData().getDatabases().putAll(configurationContextManager.renewDatabase(database, switchingResource));

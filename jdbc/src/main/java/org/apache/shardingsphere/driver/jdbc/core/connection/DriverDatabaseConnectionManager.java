@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
@@ -109,7 +109,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
         if (rule.getStrategyRules().isEmpty()) {
             return Collections.emptyMap();
         }
-        MetaDataBasedPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
+        MetaDataPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
         String actualDatabaseName = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName();
         Map<String, DataSourcePoolProperties> propsMap = persistService.getDataSourceUnitService().load(actualDatabaseName);
         Preconditions.checkState(!propsMap.isEmpty(), "Can not get data source properties from meta data.");
