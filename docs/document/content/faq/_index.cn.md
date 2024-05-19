@@ -16,12 +16,12 @@ chapter = true
 ### [JDBC] Oracle 表名、字段名配置大小写在加载 `metadata` 元数据时结果不正确？
 
 回答：
-需要注意，Oracle 表名和字段名，默认元数据都是大写，除非建表语句中带双引号，如 `CREATE TABLE "TableName"("Id" number)` 元数据为双引号中内容，可参考以下SQL查看元数据的具体情况：
+需要注意，Oracle 表名和字段名，默认元数据都是大写，除非建表语句中带双引号，如 `CREATE TABLE "TableName"("Id" number)` 元数据为双引号中内容，可参考以下 SQL 查看元数据的具体情况：
 ```sql
 SELECT OWNER, TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM ALL_TAB_COLUMNS WHERE TABLE_NAME IN ('TableName') 
 ```
 ShardingSphere 使用 `OracleTableMetaDataLoader` 对 Oracle 元数据进行加载，配置时需确保表名、字段名的大小写配置与数据库中的一致。
-ShardingSphere 查询元数据关键SQL:
+ShardingSphere 查询元数据关键 SQL:
 ```java
  private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData metaData) throws SQLException {
      StringBuilder stringBuilder = new StringBuilder(28);
