@@ -55,7 +55,7 @@ class ComputeNodeStatusServiceTest {
     @Test
     void assertRegisterOnline() {
         ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3307));
-        computeNodeInstance.setLabels(Collections.singletonList("test"));
+        computeNodeInstance.getLabels().add("test");
         new ComputeNodeStatusService(repository).registerOnline(computeNodeInstance);
         verify(repository).persistEphemeral(eq("/nodes/compute_nodes/online/proxy/" + computeNodeInstance.getMetaData().getId()), anyString());
         verify(repository).persistEphemeral(ComputeNode.getInstanceStatusNodePath(computeNodeInstance.getMetaData().getId()), InstanceState.OK.name());
