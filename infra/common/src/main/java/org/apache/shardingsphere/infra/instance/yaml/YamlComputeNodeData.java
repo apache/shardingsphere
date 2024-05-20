@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
+package org.apache.shardingsphere.infra.instance.yaml;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * State event.
+ * YAML compute node data.
  */
-@RequiredArgsConstructor
 @Getter
-public final class StateEvent implements GovernanceEvent {
+@Setter
+public final class YamlComputeNodeData implements YamlConfiguration {
     
-    private final String instanceId;
+    private String attribute;
     
-    private final String status;
+    private String version;
 }

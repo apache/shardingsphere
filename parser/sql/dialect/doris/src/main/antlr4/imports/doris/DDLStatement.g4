@@ -32,8 +32,36 @@ alterStatement
     ;
 
 createTable
-    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? partitionClause? duplicateAsQueryExpression? startTransaction? | createLikeClause)
+    // DORIS CHANGED BEGIN
+    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? partitionClause? duplicateAsQueryExpression? startTransaction? duplicatekeyClause? commentClause? distributedbyClause? propertiesClause? | createLikeClause)
+    // DORIS CHANGED END
     ;
+
+// DORIS ADDED BEGIN
+duplicatekeyClause
+    : DUPLICATE KEY (LP_ columnName RP_)
+    ;
+
+commentClause
+    : COMMENT EQ_? literals
+    ;
+
+distributedbyClause
+    : DISTRIBUTED BY HASH (LP_ columnName RP_) BUCKETS NUMBER_
+    ;
+
+propertiesClause
+    : PROPERTIES LP_ properties RP_
+    ;
+
+properties
+    : property (COMMA_ property)*
+    ;
+
+property
+    : (identifier | SINGLE_QUOTED_TEXT) EQ_? literals
+    ;
+// DORIS ADDED END
 
 startTransaction
     : START TRANSACTION
@@ -437,7 +465,9 @@ createDefinitionClause
     ;
 
 columnDefinition
-    : column_name=identifier fieldDefinition referenceDefinition?
+    // DORIS CHANGED BEGIN
+    : column_name=identifier fieldDefinition referenceDefinition? | NAME EQ_ columnName
+    // DORIS CHANGED END
     ;
 
 fieldDefinition

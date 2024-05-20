@@ -6,7 +6,7 @@ Example for 2.x or 3.x or 4.x please see tags in `https://github.com/apache/shar
 
 **Notices**
 
-- *The `shardingsphere-jdbc-example-generator` module is a brand-new sample experience module. *
+- *The `shardingsphere-jdbc-example-generator` module is a brand-new sample experience module.*
 
 - *Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise, readwrite-splitting example will query empty data from the replica.*
 

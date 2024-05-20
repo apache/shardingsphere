@@ -32,7 +32,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeInstanceStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
@@ -92,13 +92,13 @@ public final class StateChangedSubscriber implements EventSubscriber {
     }
     
     /**
-     * Renew instance status.
+     * Renew compute node instance state.
      * 
-     * @param event state event
+     * @param event compute node instance state changed event
      */
     @Subscribe
-    public synchronized void renew(final StateEvent event) {
-        contextManager.getInstanceContext().updateInstanceStatus(event.getInstanceId(), event.getStatus());
+    public synchronized void renew(final ComputeNodeInstanceStateChangedEvent event) {
+        contextManager.getInstanceContext().updateStatus(event.getInstanceId(), event.getStatus());
     }
     
     /**

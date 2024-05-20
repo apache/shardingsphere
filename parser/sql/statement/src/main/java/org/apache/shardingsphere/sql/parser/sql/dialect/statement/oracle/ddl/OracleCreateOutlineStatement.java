@@ -15,19 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateOutlineStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Compute node data.
+ * Oracle create outline statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ComputeNodeData {
-    
-    private final String attribute;
-    
-    private final String version;
+public final class OracleCreateOutlineStatement extends CreateOutlineStatement implements OracleStatement {
 }

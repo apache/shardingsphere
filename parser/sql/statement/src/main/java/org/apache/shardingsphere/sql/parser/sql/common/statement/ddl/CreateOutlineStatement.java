@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Compute node data.
+ * Create outline statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ComputeNodeData {
-    
-    private final String attribute;
-    
-    private final String version;
+public abstract class CreateOutlineStatement extends AbstractSQLStatement implements DDLStatement {
 }

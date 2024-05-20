@@ -23,7 +23,8 @@ chapter = true
  - 通过 Spotless 统一代码风格，执行 `./mvnw spotless:apply -Pcheck` 格式化代码。
  - 确保覆盖率不低于 master 分支。
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
- - 如果您使用 IDEA，可导入推荐的 `src/resources/code-style-idea.xml`。
+ - 如果您使用 IDEA，可导入 `src/resources/idea/code-style.xml`，用于保持代码风格一致性。
+ - 如果您使用 IDEA，可导入 `src/resources/idea/inspections.xml`，用于检测代码潜在问题。
 
 ## 编码规范
 

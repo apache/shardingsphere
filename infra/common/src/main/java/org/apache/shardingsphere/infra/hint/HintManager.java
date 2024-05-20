@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.hint;
 
+import com.alibaba.ttl.TransmittableThreadLocal;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -34,7 +35,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManager implements AutoCloseable {
     
-    private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
+    private static final TransmittableThreadLocal<HintManager> HINT_MANAGER_HOLDER = new TransmittableThreadLocal<>();
     
     private final Multimap<String, Comparable<?>> databaseShardingValues = ArrayListMultimap.create();
     

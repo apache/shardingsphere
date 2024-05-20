@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Compute node data.
+ * Create outline statement test case.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ComputeNodeData {
-    
-    private final String attribute;
-    
-    private final String version;
+public final class CreateOutlineStatementTestCase extends SQLParserTestCase {
 }

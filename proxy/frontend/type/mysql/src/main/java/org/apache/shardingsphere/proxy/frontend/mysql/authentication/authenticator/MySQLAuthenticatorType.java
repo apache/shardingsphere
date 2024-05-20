@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication.authentica
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authentication.AuthenticatorType;
+import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.impl.MySQLCachingSha2PasswordAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.impl.MySQLClearPasswordAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.impl.MySQLNativePasswordAuthenticator;
 
@@ -41,7 +42,9 @@ public enum MySQLAuthenticatorType implements AuthenticatorType {
     WINDOWS_NATIVE(MySQLNativePasswordAuthenticator.class),
     
     // TODO impl SHA256 Authenticator
-    SHA256(MySQLNativePasswordAuthenticator.class);
+    SHA256(MySQLNativePasswordAuthenticator.class),
+    
+    CACHING_SHA2_PASSWORD(MySQLCachingSha2PasswordAuthenticator.class);
     
     private final Class<? extends MySQLAuthenticator> authenticatorClass;
     
