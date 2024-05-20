@@ -31,7 +31,7 @@ public interface WorkerIdGenerator {
     /**
      * Generate worker ID.
      *
-     * @param props props
+     * @param props properties
      * @return worker ID
      */
     int generate(Properties props);

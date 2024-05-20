@@ -34,7 +34,7 @@ public final class WorkerIdNode {
      * @param workerId worker id
      * @return worker id generator path
      */
-    public static String getWorkerIdGeneratorPath(final String workerId) {
-        return String.join("/", "", ROOT_NODE, workerId);
+    public static String getWorkerIdGeneratorPath(final int workerId) {
+        return String.join("/", "", ROOT_NODE, String.valueOf(workerId));
     }
 }
