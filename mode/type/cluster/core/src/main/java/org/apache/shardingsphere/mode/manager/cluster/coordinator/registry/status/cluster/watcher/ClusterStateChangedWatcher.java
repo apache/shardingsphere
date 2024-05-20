@@ -38,7 +38,7 @@ public final class ClusterStateChangedWatcher implements GovernanceWatcher<Gover
     
     @Override
     public Collection<String> getWatchingKeys(final Collection<String> databaseNames) {
-        return Collections.singleton(ComputeNode.getClusterStatusNodePath());
+        return Collections.singleton(ComputeNode.getClusterStateNodePath());
     }
     
     @Override
@@ -48,8 +48,8 @@ public final class ClusterStateChangedWatcher implements GovernanceWatcher<Gover
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        String clusterStatusPath = ComputeNode.getClusterStatusNodePath();
-        return Strings.isNullOrEmpty(clusterStatusPath) || Type.DELETED == event.getType() || !event.getKey().equals(ComputeNode.getClusterStatusNodePath())
+        String clusterStatePath = ComputeNode.getClusterStateNodePath();
+        return Strings.isNullOrEmpty(clusterStatePath) || Type.DELETED == event.getType() || !event.getKey().equals(ComputeNode.getClusterStateNodePath())
                 ? Optional.empty()
                 : Optional.of(new ClusterStateEvent(getClusterState(event)));
     }

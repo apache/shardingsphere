@@ -39,8 +39,8 @@ public final class StateService {
      * @param state cluster state
      */
     public void persist(final ClusterState state) {
-        if (Strings.isNullOrEmpty(repository.getDirectly(ComputeNode.getClusterStatusNodePath()))) {
-            repository.persist(ComputeNode.getClusterStatusNodePath(), state.name());
+        if (Strings.isNullOrEmpty(repository.getDirectly(ComputeNode.getClusterStateNodePath()))) {
+            repository.persist(ComputeNode.getClusterStateNodePath(), state.name());
         }
     }
     
@@ -50,7 +50,7 @@ public final class StateService {
      * @return cluster state
      */
     public Optional<ClusterState> load() {
-        String value = repository.getDirectly(ComputeNode.getClusterStatusNodePath());
+        String value = repository.getDirectly(ComputeNode.getClusterStateNodePath());
         return Strings.isNullOrEmpty(value) ? Optional.empty() : Optional.of(ClusterState.valueOf(value));
     }
 }

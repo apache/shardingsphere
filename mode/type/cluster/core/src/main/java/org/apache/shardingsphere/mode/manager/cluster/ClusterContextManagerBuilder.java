@@ -37,7 +37,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.GlobalLoc
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.ShardingSphereSchemaDataRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ClusterProcessSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.subscriber.ClusterStatusSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.subscriber.ClusterStateSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.subscriber.ComputeNodeStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber.QualifiedDataSourceStatusSubscriber;
@@ -106,7 +106,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     // TODO remove the method, only keep ZooKeeper's events, remove all decouple events
     private void createSubscribers(final EventBusContext eventBusContext, final ClusterPersistRepository repository) {
         eventBusContext.register(new ComputeNodeStatusSubscriber(repository));
-        eventBusContext.register(new ClusterStatusSubscriber(repository));
+        eventBusContext.register(new ClusterStateSubscriber(repository));
         eventBusContext.register(new QualifiedDataSourceStatusSubscriber(repository));
         eventBusContext.register(new ClusterProcessSubscriber(repository, eventBusContext));
         eventBusContext.register(new ShardingSphereSchemaDataRegistrySubscriber(repository));
