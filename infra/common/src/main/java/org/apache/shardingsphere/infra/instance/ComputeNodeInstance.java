@@ -21,38 +21,29 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
+import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Instance of compute node.
  */
 @RequiredArgsConstructor
 @Getter
+@ThreadSafe
 public final class ComputeNodeInstance {
     
     private final InstanceMetaData metaData;
     
     private final InstanceStateContext state = new InstanceStateContext();
     
-    private Collection<String> labels = new LinkedList<>();
+    private final Collection<String> labels = new CopyOnWriteArrayList<>();
     
     @Setter
     private volatile int workerId = -1;
-    
-    /**
-     * Set labels.
-     *
-     * @param labels labels
-     */
-    public void setLabels(final Collection<String> labels) {
-        if (null != labels) {
-            this.labels = labels;
-        }
-    }
     
     /**
      * Switch state.

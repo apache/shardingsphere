@@ -150,7 +150,7 @@ class StateChangedSubscriberTest {
     
     @Test
     void assertRenewInstanceLabels() {
-        Collection<String> labels = Collections.singleton("test");
+        Collection<String> labels = Collections.singletonList("test");
         subscriber.renew(new LabelsEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), labels));
         assertThat(contextManager.getInstanceContext().getInstance().getLabels(), is(labels));
     }

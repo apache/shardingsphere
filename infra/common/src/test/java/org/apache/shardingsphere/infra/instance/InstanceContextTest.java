@@ -28,9 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.Properties;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -87,7 +85,7 @@ class InstanceContextTest {
         when(instanceMetaData.getId()).thenReturn("foo_instance_id");
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceMetaData), new WorkerIdGeneratorFixture(Integer.MIN_VALUE),
                 modeConfig, modeContextManager, lockContext, eventBusContext);
-        Set<String> expected = new LinkedHashSet<>(Arrays.asList("label_1", "label_2"));
+        Collection<String> expected = Arrays.asList("label_1", "label_2");
         context.updateLabel("foo_instance_id", expected);
         Collection<String> actual = context.getInstance().getLabels();
         assertThat(actual, is(expected));
