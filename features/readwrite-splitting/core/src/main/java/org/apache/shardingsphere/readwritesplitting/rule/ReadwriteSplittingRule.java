@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -58,13 +58,13 @@ public final class ReadwriteSplittingRule implements DatabaseRule {
     @Getter
     private final RuleAttributes attributes;
     
-    public ReadwriteSplittingRule(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
+    public ReadwriteSplittingRule(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         configuration = ruleConfig;
         loadBalancers = createLoadBalancers(ruleConfig);
         dataSourceRuleGroups = createDataSourceGroupRules(databaseName, ruleConfig);
         attributes = new RuleAttributes(
                 new ReadwriteSplittingDataSourceMapperRuleAttribute(dataSourceRuleGroups.values()),
-                new ReadwriteSplittingStaticDataSourceRuleAttribute(databaseName, dataSourceRuleGroups, instanceContext),
+                new ReadwriteSplittingStaticDataSourceRuleAttribute(databaseName, dataSourceRuleGroups, computeNodeInstanceContext),
                 new ReadwriteSplittingExportableRuleAttribute(dataSourceRuleGroups),
                 new ReadwriteSplittingStorageConnectorReusableRuleAttribute());
     }

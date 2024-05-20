@@ -58,7 +58,7 @@ class StatisticsCollectJobTest {
         when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(
                 PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED.getKey(), Boolean.TRUE.toString()))));
         new StatisticsCollectJob(contextManager).execute(null);
-        verify(contextManager).getInstanceContext();
+        verify(contextManager).getComputeNodeInstanceContext();
     }
     
     private ShardingSphereStatistics mockStatistics() {

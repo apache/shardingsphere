@@ -85,7 +85,7 @@ class UnregisterStorageUnitExecutorTest {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(result.getInstanceContext().getModeContextManager()).thenReturn(modeContextManager);
+        when(result.getComputeNodeInstanceContext().getModeContextManager()).thenReturn(modeContextManager);
         when(result.getDatabase("foo_db")).thenReturn(database);
         return result;
     }

@@ -39,13 +39,13 @@ public final class LabelComputeNodeExecutor implements DistSQLUpdateExecutor<Lab
     @Override
     public void executeUpdate(final LabelComputeNodeStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         String instanceId = sqlStatement.getInstanceId();
-        Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
+        Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getComputeNodeInstanceContext().getComputeNodeInstanceById(instanceId);
         if (computeNodeInstance.isPresent()) {
             Collection<String> labels = new LinkedHashSet<>(sqlStatement.getLabels());
             if (!sqlStatement.isOverwrite()) {
                 labels.addAll(computeNodeInstance.get().getLabels());
             }
-            contextManager.getInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, new LinkedList<>(labels)));
+            contextManager.getComputeNodeInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, new LinkedList<>(labels)));
         }
     }
     

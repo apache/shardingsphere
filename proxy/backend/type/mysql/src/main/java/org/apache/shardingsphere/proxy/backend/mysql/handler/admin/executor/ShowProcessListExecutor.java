@@ -60,7 +60,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
     
     public ShowProcessListExecutor(final boolean showFullProcesslist) {
         this.showFullProcesslist = showFullProcesslist;
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().register(this);
+        ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getEventBusContext().register(this);
     }
     
     /**
@@ -81,7 +81,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
     }
     
     private QueryResult getQueryResult() {
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(new ShowProcessListRequestEvent());
+        ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getEventBusContext().post(new ShowProcessListRequestEvent());
         if (null == processes || processes.isEmpty()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }

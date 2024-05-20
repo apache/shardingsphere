@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.LockContext;
@@ -110,7 +110,7 @@ class SetDistVariableExecutorTest {
         when(metaDataPersistService.getPropsService()).thenReturn(mock(PropertiesPersistService.class));
         StandaloneModeContextManager standaloneModeContextManager = new StandaloneModeContextManager();
         ContextManager result = new ContextManager(new MetaDataContexts(metaDataPersistService, new ShardingSphereMetaData()),
-                new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(WorkerIdGenerator.class),
+                new ComputeNodeInstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(WorkerIdGenerator.class),
                         new ModeConfiguration("Standalone", null), standaloneModeContextManager, mock(LockContext.class), new EventBusContext()));
         standaloneModeContextManager.setContextManager(result);
         return result;

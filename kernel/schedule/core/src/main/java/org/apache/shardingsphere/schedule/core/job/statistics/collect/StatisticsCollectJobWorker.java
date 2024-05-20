@@ -55,7 +55,7 @@ public final class StatisticsCollectJobWorker {
     }
     
     private static void start(final ContextManager contextManager) {
-        ModeConfiguration modeConfig = contextManager.getInstanceContext().getModeConfiguration();
+        ModeConfiguration modeConfig = contextManager.getComputeNodeInstanceContext().getModeConfiguration();
         if ("ZooKeeper".equals(modeConfig.getRepository().getType())) {
             ScheduleJobBootstrap bootstrap = new ScheduleJobBootstrap(createRegistryCenter(modeConfig), new StatisticsCollectJob(contextManager), createJobConfiguration());
             bootstrap.schedule();

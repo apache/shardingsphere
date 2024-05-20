@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -53,9 +53,9 @@ public final class RegisterMigrationSourceStorageUnitExecutor implements DistSQL
     
     @Override
     public void executeUpdate(final RegisterMigrationSourceStorageUnitStatement sqlStatement, final ContextManager contextManager) {
-        InstanceContext instanceContext = contextManager.getInstanceContext();
-        ShardingSpherePreconditions.checkState(instanceContext.isCluster(),
-                () -> new PipelineInvalidParameterException(String.format("Only `Cluster` is supported now, but current mode type is `%s`", instanceContext.getModeConfiguration().getType())));
+        ComputeNodeInstanceContext computeNodeInstanceContext = contextManager.getComputeNodeInstanceContext();
+        ShardingSpherePreconditions.checkState(computeNodeInstanceContext.isCluster(), () -> new PipelineInvalidParameterException(
+                String.format("Only `Cluster` is supported now, but current mode type is `%s`", computeNodeInstanceContext.getModeConfiguration().getType())));
         checkDataSource(sqlStatement);
         List<DataSourceSegment> dataSources = new ArrayList<>(sqlStatement.getDataSources());
         URLBasedDataSourceSegment urlBasedDataSourceSegment = (URLBasedDataSourceSegment) dataSources.get(0);

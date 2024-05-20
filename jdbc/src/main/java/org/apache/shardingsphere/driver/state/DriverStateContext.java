@@ -39,6 +39,6 @@ public final class DriverStateContext {
      */
     public static Connection getConnection(final String databaseName, final ContextManager contextManager) {
         return TypedSPILoader.getService(
-                DriverState.class, contextManager.getInstanceContext().getInstance().getState().getCurrentState().name()).getConnection(databaseName, contextManager);
+                DriverState.class, contextManager.getComputeNodeInstanceContext().getInstance().getState().getCurrentState().name()).getConnection(databaseName, contextManager);
     }
 }

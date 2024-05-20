@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.exception.dialect.exception.transaction.T
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -108,7 +108,7 @@ class ProxySQLExecutorTest {
         when(metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.XA);
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(mock(SQLFederationRule.class), transactionRule)));
-        ContextManager contextManager = new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), metaData), mock(InstanceContext.class));
+        ContextManager contextManager = new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), metaData), mock(ComputeNodeInstanceContext.class));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
     

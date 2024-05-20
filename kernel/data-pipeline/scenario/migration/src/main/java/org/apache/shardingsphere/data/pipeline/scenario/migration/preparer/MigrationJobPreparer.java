@@ -124,7 +124,7 @@ public final class MigrationJobPreparer {
     private void prepareAndCheckTargetWithLock(final MigrationJobItemContext jobItemContext) throws SQLException {
         MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String jobId = jobConfig.getJobId();
-        LockContext lockContext = PipelineContextManager.getContext(PipelineJobIdUtils.parseContextKey(jobId)).getContextManager().getInstanceContext().getLockContext();
+        LockContext lockContext = PipelineContextManager.getContext(PipelineJobIdUtils.parseContextKey(jobId)).getContextManager().getComputeNodeInstanceContext().getLockContext();
         if (!jobItemManager.getProgress(jobId, jobItemContext.getShardingItem()).isPresent()) {
             jobItemManager.persistProgress(jobItemContext);
         }

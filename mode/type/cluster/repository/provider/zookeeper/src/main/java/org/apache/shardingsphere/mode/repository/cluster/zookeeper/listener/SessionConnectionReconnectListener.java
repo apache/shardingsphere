@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -36,12 +36,12 @@ public final class SessionConnectionReconnectListener implements ConnectionState
     
     private static final long RECONNECT_INTERVAL_SECONDS = 5L;
     
-    private final InstanceContext instanceContext;
+    private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
     private final ComputeNodeStatusService computeNodeStatusService;
     
-    public SessionConnectionReconnectListener(final InstanceContext instanceContext, final ClusterPersistRepository repository) {
-        this.instanceContext = instanceContext;
+    public SessionConnectionReconnectListener(final ComputeNodeInstanceContext computeNodeInstanceContext, final ClusterPersistRepository repository) {
+        this.computeNodeInstanceContext = computeNodeInstanceContext;
         computeNodeStatusService = new ComputeNodeStatusService(repository);
     }
     
@@ -54,16 +54,16 @@ public final class SessionConnectionReconnectListener implements ConnectionState
         do {
             isReconnectFailed = !reconnect(client);
         } while (isReconnectFailed);
-        log.info("Instance reconnect success, instance ID: {}", instanceContext.getInstance().getMetaData().getId());
+        log.info("Instance reconnect success, instance ID: {}", computeNodeInstanceContext.getInstance().getMetaData().getId());
     }
     
     private boolean reconnect(final CuratorFramework client) {
         try {
             if (client.getZookeeperClient().blockUntilConnectedOrTimedOut()) {
                 if (isNeedGenerateWorkerId()) {
-                    instanceContext.generateWorkerId(new Properties());
+                    computeNodeInstanceContext.generateWorkerId(new Properties());
                 }
-                computeNodeStatusService.registerOnline(instanceContext.getInstance());
+                computeNodeStatusService.registerOnline(computeNodeInstanceContext.getInstance());
                 return true;
             }
             sleepInterval();
@@ -75,7 +75,7 @@ public final class SessionConnectionReconnectListener implements ConnectionState
     }
     
     private boolean isNeedGenerateWorkerId() {
-        return -1 != instanceContext.getInstance().getWorkerId();
+        return -1 != computeNodeInstanceContext.getInstance().getWorkerId();
     }
     
     @SneakyThrows(InterruptedException.class)

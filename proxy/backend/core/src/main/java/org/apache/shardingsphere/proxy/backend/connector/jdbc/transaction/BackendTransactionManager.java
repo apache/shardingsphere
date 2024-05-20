@@ -85,7 +85,7 @@ public final class BackendTransactionManager implements TransactionManager {
     @Override
     public void commit() throws SQLException {
         for (TransactionHook each : transactionHooks) {
-            each.beforeCommit(connection.getCachedConnections().values(), getTransactionContext(), ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext());
+            each.beforeCommit(connection.getCachedConnections().values(), getTransactionContext(), ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getLockContext());
         }
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
@@ -96,7 +96,8 @@ public final class BackendTransactionManager implements TransactionManager {
                 }
             } finally {
                 for (TransactionHook each : transactionHooks) {
-                    each.afterCommit(connection.getCachedConnections().values(), getTransactionContext(), ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext());
+                    each.afterCommit(connection.getCachedConnections().values(),
+                            getTransactionContext(), ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getLockContext());
                 }
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
                 connection.getConnectionSession().getConnectionContext().clearTransactionContext();

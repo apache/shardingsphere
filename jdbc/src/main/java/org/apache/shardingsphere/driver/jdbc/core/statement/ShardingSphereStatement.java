@@ -64,7 +64,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -216,9 +216,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private Optional<String> getInstanceId(final QueryContext queryContext) {
-        InstanceContext instanceContext = connection.getContextManager().getInstanceContext();
+        ComputeNodeInstanceContext computeNodeInstanceContext = connection.getContextManager().getComputeNodeInstanceContext();
         return null != trafficRule && !trafficRule.getStrategyRules().isEmpty()
-                ? new TrafficEngine(trafficRule, instanceContext).dispatch(queryContext, connection.isHoldTransaction())
+                ? new TrafficEngine(trafficRule, computeNodeInstanceContext).dispatch(queryContext, connection.isHoldTransaction())
                 : Optional.empty();
     }
     

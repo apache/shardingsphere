@@ -41,9 +41,9 @@ public final class ShowComputeNodeInfoExecutor implements DistSQLQueryExecutor<S
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowComputeNodeInfoStatement sqlStatement, final ContextManager contextManager) {
-        ComputeNodeInstance instance = contextManager.getInstanceContext().getInstance();
+        ComputeNodeInstance instance = contextManager.getComputeNodeInstanceContext().getInstance();
         InstanceMetaData instanceMetaData = instance.getMetaData();
-        String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
+        String modeType = contextManager.getComputeNodeInstanceContext().getModeConfiguration().getType();
         return Collections.singletonList(new LocalDataQueryResultRow(instanceMetaData.getId(), instanceMetaData.getIp(),
                 instanceMetaData instanceof ProxyInstanceMetaData ? ((ProxyInstanceMetaData) instanceMetaData).getPort() : -1,
                 instance.getState().getCurrentState(), modeType, instance.getWorkerId(), String.join(",", instance.getLabels()),

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodeInfoStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
@@ -42,8 +42,8 @@ class ShowComputeNodeInfoExecutorTest {
     void assertExecute() {
         ShowComputeNodeInfoExecutor executor = new ShowComputeNodeInfoExecutor();
         ContextManager contextManager = mock(ContextManager.class);
-        InstanceContext instanceContext = createInstanceContext();
-        when(contextManager.getInstanceContext()).thenReturn(instanceContext);
+        ComputeNodeInstanceContext computeNodeInstanceContext = createInstanceContext();
+        when(contextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodeInfoStatement.class), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
@@ -57,8 +57,8 @@ class ShowComputeNodeInfoExecutorTest {
         assertThat(row.getCell(8), is("foo_version"));
     }
     
-    private InstanceContext createInstanceContext() {
-        InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
+    private ComputeNodeInstanceContext createInstanceContext() {
+        ComputeNodeInstanceContext result = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
         when(result.getInstance().getMetaData()).thenReturn(new ProxyInstanceMetaData("foo", "127.0.0.1@3309", "foo_version"));
         when(result.getInstance().getState()).thenReturn(new InstanceStateContext());
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("H2", new Properties())));

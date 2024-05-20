@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -63,7 +63,7 @@ public final class ContextManager implements AutoCloseable {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     
-    private final InstanceContext instanceContext;
+    private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
     private final ShardingSphereDatabaseContextManager shardingSphereDatabaseContextManager;
     
@@ -75,11 +75,11 @@ public final class ContextManager implements AutoCloseable {
     
     private final StateContext stateContext;
     
-    public ContextManager(final MetaDataContexts metaDataContexts, final InstanceContext instanceContext) {
+    public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         this.metaDataContexts = new AtomicReference<>(metaDataContexts);
-        this.instanceContext = instanceContext;
+        this.computeNodeInstanceContext = computeNodeInstanceContext;
         shardingSphereDatabaseContextManager = new ShardingSphereDatabaseContextManager(this.metaDataContexts);
-        configurationContextManager = new ConfigurationContextManager(this.metaDataContexts, instanceContext);
+        configurationContextManager = new ConfigurationContextManager(this.metaDataContexts, computeNodeInstanceContext);
         resourceMetaDataContextManager = new ResourceMetaDataContextManager(this.metaDataContexts);
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         stateContext = new StateContext(new StateService(metaDataContexts.getPersistService().getRepository()));

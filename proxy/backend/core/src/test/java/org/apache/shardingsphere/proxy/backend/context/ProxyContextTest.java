@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.context;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -68,7 +68,7 @@ class ProxyContextTest {
     @Test
     void assertInit() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
-        ProxyContext.init(new ContextManager(metaDataContexts, mock(InstanceContext.class, RETURNS_DEEP_STUBS)));
+        ProxyContext.init(new ContextManager(metaDataContexts, mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS)));
         assertThat(ProxyContext.getInstance().getContextManager().getStateContext(), is(ProxyContext.getInstance().getContextManager().getStateContext()));
         assertThat(ProxyContext.getInstance().getContextManager().getStateContext().getCurrentState(), is(ClusterState.OK));
         assertThat(ProxyContext.getInstance().getContextManager().getMetaDataContexts(), is(ProxyContext.getInstance().getContextManager().getMetaDataContexts()));

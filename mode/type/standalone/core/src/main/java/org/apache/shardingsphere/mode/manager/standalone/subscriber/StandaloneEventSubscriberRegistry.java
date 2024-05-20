@@ -28,7 +28,7 @@ public final class StandaloneEventSubscriberRegistry extends EventSubscriberRegi
     
     public StandaloneEventSubscriberRegistry(final ContextManager contextManager) {
         super(contextManager,
-                new StandaloneProcessSubscriber(contextManager.getInstanceContext().getEventBusContext()),
+                new StandaloneProcessSubscriber(contextManager.getComputeNodeInstanceContext().getEventBusContext()),
                 new RuleItemChangedSubscriber(contextManager));
     }
 }

@@ -115,7 +115,7 @@ class ProcessListChangedSubscriberTest {
         when(process.getCompletedUnitCount()).thenReturn(new AtomicInteger(0));
         when(process.getTotalUnitCount()).thenReturn(new AtomicInteger(0));
         ProcessRegistry.getInstance().add(process);
-        String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
+        String instanceId = contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId();
         subscriber.reportLocalProcesses(new ReportLocalProcessesEvent(instanceId, processId));
         verify(repository).persist("/execution_nodes/foo_id/" + instanceId,
                 "processes:" + System.lineSeparator() + "- completedUnitCount: 0" + System.lineSeparator()
@@ -143,7 +143,7 @@ class ProcessListChangedSubscriberTest {
     
     @Test
     void assertKillLocalProcess() throws SQLException {
-        String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
+        String instanceId = contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId();
         String processId = "foo_id";
         subscriber.killLocalProcess(new KillLocalProcessEvent(instanceId, processId));
         verify(repository).delete("/nodes/compute_nodes/kill_process_trigger/" + instanceId + ":foo_id");

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.traffic.algorithm.engine;
 
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
@@ -51,7 +51,7 @@ class TrafficEngineTest {
     private TrafficRule trafficRule;
     
     @Mock
-    private InstanceContext instanceContext;
+    private ComputeNodeInstanceContext computeNodeInstanceContext;
     
     @Mock
     private TrafficStrategyRule strategyRule;
@@ -61,7 +61,7 @@ class TrafficEngineTest {
     
     @Test
     void assertDispatchWhenNotExistTrafficStrategyRule() {
-        TrafficEngine trafficEngine = new TrafficEngine(trafficRule, instanceContext);
+        TrafficEngine trafficEngine = new TrafficEngine(trafficRule, computeNodeInstanceContext);
         when(trafficRule.findMatchedStrategyRule(queryContext, false)).thenReturn(Optional.empty());
         Optional<String> actual = trafficEngine.dispatch(queryContext, false);
         assertFalse(actual.isPresent());
@@ -69,7 +69,7 @@ class TrafficEngineTest {
     
     @Test
     void assertDispatchWhenTrafficStrategyRuleInvalid() {
-        TrafficEngine trafficEngine = new TrafficEngine(trafficRule, instanceContext);
+        TrafficEngine trafficEngine = new TrafficEngine(trafficRule, computeNodeInstanceContext);
         TrafficStrategyRule strategyRule = mock(TrafficStrategyRule.class);
         when(strategyRule.getLabels()).thenReturn(Collections.emptyList());
         when(trafficRule.findMatchedStrategyRule(queryContext, false)).thenReturn(Optional.of(strategyRule));
@@ -79,7 +79,7 @@ class TrafficEngineTest {
     
     @Test
     void assertDispatchWhenExistTrafficStrategyRuleNotExistComputeNodeInstances() {
-        TrafficEngine trafficEngine = new TrafficEngine(trafficRule, instanceContext);
+        TrafficEngine trafficEngine = new TrafficEngine(trafficRule, computeNodeInstanceContext);
         when(trafficRule.findMatchedStrategyRule(queryContext, false)).thenReturn(Optional.of(strategyRule));
         when(strategyRule.getLabels()).thenReturn(Arrays.asList("OLTP", "OLAP"));
         Optional<String> actual = trafficEngine.dispatch(queryContext, false);
@@ -88,7 +88,7 @@ class TrafficEngineTest {
     
     @Test
     void assertDispatchWhenExistTrafficStrategyRuleExistComputeNodeInstances() {
-        TrafficEngine trafficEngine = new TrafficEngine(trafficRule, instanceContext);
+        TrafficEngine trafficEngine = new TrafficEngine(trafficRule, computeNodeInstanceContext);
         when(trafficRule.findMatchedStrategyRule(queryContext, false)).thenReturn(Optional.of(strategyRule));
         when(strategyRule.getLabels()).thenReturn(Arrays.asList("OLTP", "OLAP"));
         LoadBalanceAlgorithm loadBalancer = mock(LoadBalanceAlgorithm.class);
@@ -96,7 +96,7 @@ class TrafficEngineTest {
         when(loadBalancer.getTargetName("traffic", new ArrayList<>(instanceIds.keySet()))).thenReturn("foo_id");
         when(strategyRule.getLoadBalancer()).thenReturn(loadBalancer);
         when(strategyRule.getName()).thenReturn("traffic");
-        when(instanceContext.getAllClusterComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(instanceIds);
+        when(computeNodeInstanceContext.getAllClusterComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(instanceIds);
         Optional<String> actual = trafficEngine.dispatch(queryContext, false);
         assertThat(actual, is(Optional.of("foo_id")));
     }

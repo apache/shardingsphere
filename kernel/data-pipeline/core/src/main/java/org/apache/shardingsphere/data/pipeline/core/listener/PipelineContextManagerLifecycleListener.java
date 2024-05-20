@@ -49,8 +49,8 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
     
     @Override
     public void onInitialized(final String databaseName, final ContextManager contextManager) {
-        ModeConfiguration modeConfig = contextManager.getInstanceContext().getModeConfiguration();
-        if (!contextManager.getInstanceContext().isCluster()) {
+        ModeConfiguration modeConfig = contextManager.getComputeNodeInstanceContext().getModeConfiguration();
+        if (!contextManager.getComputeNodeInstanceContext().isCluster()) {
             log.info("mode type is not Cluster, mode type='{}', ignore", modeConfig.getType());
             return;
         }
@@ -58,7 +58,7 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         if (DefaultDatabase.LOGIC_NAME.equals(databaseName)) {
             return;
         }
-        PipelineContextKey contextKey = new PipelineContextKey(databaseName, contextManager.getInstanceContext().getInstance().getMetaData().getType());
+        PipelineContextKey contextKey = new PipelineContextKey(databaseName, contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType());
         PipelineContextManager.putContext(contextKey, new PipelineContext(modeConfig, contextManager));
         PipelineMetaDataNodeWatcher.getInstance(contextKey);
         ElasticJobServiceLoader.registerTypedService(ElasticJobListener.class);

@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -81,7 +81,8 @@ class ShowShardingTableNodesExecutorTest {
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
         Optional<ShardingRuleConfiguration> shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRootConfig.getRules());
         assertTrue(shardingRuleConfig.isPresent());
-        return new ShardingRule(shardingRuleConfig.get(), Maps.of("ds_1", new MockedDataSource(), "ds_2", new MockedDataSource(), "ds_3", new MockedDataSource()), mock(InstanceContext.class));
+        return new ShardingRule(shardingRuleConfig.get(),
+                Maps.of("ds_1", new MockedDataSource(), "ds_2", new MockedDataSource(), "ds_3", new MockedDataSource()), mock(ComputeNodeInstanceContext.class));
     }
     
     private void assertOrder(final ShardingRule rule) throws SQLException {

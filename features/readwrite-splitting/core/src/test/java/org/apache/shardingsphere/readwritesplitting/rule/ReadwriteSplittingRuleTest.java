@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
@@ -54,7 +54,7 @@ class ReadwriteSplittingRuleTest {
         ReadwriteSplittingDataSourceGroupRuleConfiguration config =
                 new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random");
         return new ReadwriteSplittingRule("logic_db", new ReadwriteSplittingRuleConfiguration(
-                Collections.singleton(config), Collections.singletonMap("random", new AlgorithmConfiguration("RANDOM", new Properties()))), mock(InstanceContext.class));
+                Collections.singleton(config), Collections.singletonMap("random", new AlgorithmConfiguration("RANDOM", new Properties()))), mock(ComputeNodeInstanceContext.class));
     }
     
     private void assertDataSourceGroupRule(final ReadwriteSplittingDataSourceGroupRule actual) {
@@ -99,7 +99,7 @@ class ReadwriteSplittingRuleTest {
                 Arrays.asList("<GROOVY>read_ds_${['0']}", "read_ds_${['1']}", "read_ds_2", "<LITERAL>read_ds_3"),
                 "random");
         ReadwriteSplittingRule readwriteSplittingRule = new ReadwriteSplittingRule("logic_db", new ReadwriteSplittingRuleConfiguration(
-                Collections.singleton(config), Collections.singletonMap("random", new AlgorithmConfiguration("RANDOM", new Properties()))), mock(InstanceContext.class));
+                Collections.singleton(config), Collections.singletonMap("random", new AlgorithmConfiguration("RANDOM", new Properties()))), mock(ComputeNodeInstanceContext.class));
         Optional<ReadwriteSplittingDataSourceGroupRule> actual = readwriteSplittingRule.findDataSourceGroupRule("readwrite_ds");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("readwrite_ds"));

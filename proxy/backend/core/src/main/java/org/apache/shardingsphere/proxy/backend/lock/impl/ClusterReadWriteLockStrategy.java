@@ -29,7 +29,7 @@ public class ClusterReadWriteLockStrategy implements ClusterLockStrategy {
     
     @Override
     public void lock() {
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(ClusterState.UNAVAILABLE));
+        ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(ClusterState.UNAVAILABLE));
     }
     
     @Override

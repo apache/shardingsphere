@@ -67,7 +67,7 @@ class DriverStateContextTest {
         MetaDataContexts metaDataContexts = new MetaDataContexts(
                 mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), globalRuleMetaData, new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(contextManager.getInstanceContext().getInstance().getState()).thenReturn(new InstanceStateContext());
+        when(contextManager.getComputeNodeInstanceContext().getInstance().getState()).thenReturn(new InstanceStateContext());
         when(contextManager.getStateContext()).thenReturn(new StateContext(mock(StateService.class)));
     }
     

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.lock.LockContext;
@@ -168,12 +168,12 @@ class ExportMetaDataExecutorTest {
                 new RuleMetaData(Arrays.asList(new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build()),
                         new GlobalClockRule(new DefaultGlobalClockRuleConfigurationBuilder().build(), Collections.singletonMap(database.getName(), database)))),
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true")))));
-        InstanceContext instanceContext = new InstanceContext(
+        ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null),
                 mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(result.getInstanceContext()).thenReturn(instanceContext);
+        when(result.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
         when(result.getDatabase("normal_db")).thenReturn(database);
         return result;
     }

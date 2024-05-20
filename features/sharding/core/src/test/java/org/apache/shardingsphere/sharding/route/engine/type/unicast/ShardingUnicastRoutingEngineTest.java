@@ -21,7 +21,7 @@ import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -49,7 +49,8 @@ class ShardingUnicastRoutingEngineTest {
     void setUp() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..2}"));
-        shardingRule = new ShardingRule(shardingRuleConfig, Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource(), "ds_2", new MockedDataSource()), mock(InstanceContext.class));
+        shardingRule = new ShardingRule(shardingRuleConfig,
+                Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource(), "ds_2", new MockedDataSource()), mock(ComputeNodeInstanceContext.class));
     }
     
     @Test

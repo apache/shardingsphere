@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -123,7 +123,7 @@ class ProxyDatabaseConnectionManagerTest {
         TransactionRule transactionRule = mock(TransactionRule.class);
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singletonList(transactionRule)));
-        return new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), metaData), mock(InstanceContext.class));
+        return new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), metaData), mock(ComputeNodeInstanceContext.class));
     }
     
     @AfterEach

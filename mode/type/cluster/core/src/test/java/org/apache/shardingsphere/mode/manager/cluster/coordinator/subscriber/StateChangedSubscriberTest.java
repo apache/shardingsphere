@@ -137,28 +137,29 @@ class StateChangedSubscriberTest {
     
     @Test
     void assertRenewInstanceStatus() {
-        ComputeNodeInstanceStateChangedEvent event = new ComputeNodeInstanceStateChangedEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), InstanceState.OK.name());
+        ComputeNodeInstanceStateChangedEvent event = new ComputeNodeInstanceStateChangedEvent(
+                contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), InstanceState.OK.name());
         subscriber.renew(event);
-        assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(InstanceState.OK));
+        assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getState().getCurrentState(), is(InstanceState.OK));
     }
     
     @Test
     void assertRenewInstanceWorkerIdEvent() {
-        subscriber.renew(new WorkerIdEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), 0));
-        assertThat(contextManager.getInstanceContext().getInstance().getWorkerId(), is(0));
+        subscriber.renew(new WorkerIdEvent(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), 0));
+        assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getWorkerId(), is(0));
     }
     
     @Test
     void assertRenewInstanceLabels() {
         Collection<String> labels = Collections.singletonList("test");
-        subscriber.renew(new LabelsEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), labels));
-        assertThat(contextManager.getInstanceContext().getInstance().getLabels(), is(labels));
+        subscriber.renew(new LabelsEvent(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), labels));
+        assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getLabels(), is(labels));
     }
     
     @Test
     void assertRenewInstanceOfflineEvent() {
-        subscriber.renew(new InstanceOfflineEvent(contextManager.getInstanceContext().getInstance().getMetaData()));
-        assertThat(((ProxyInstanceMetaData) contextManager.getInstanceContext().getInstance().getMetaData()).getPort(), is(3307));
+        subscriber.renew(new InstanceOfflineEvent(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData()));
+        assertThat(((ProxyInstanceMetaData) contextManager.getComputeNodeInstanceContext().getInstance().getMetaData()).getPort(), is(3307));
     }
     
     @Test
@@ -166,15 +167,15 @@ class StateChangedSubscriberTest {
         InstanceMetaData instanceMetaData1 = new ProxyInstanceMetaData("foo_instance_3307", 3307);
         InstanceOnlineEvent instanceOnlineEvent1 = new InstanceOnlineEvent(instanceMetaData1);
         subscriber.renew(instanceOnlineEvent1);
-        assertThat(contextManager.getInstanceContext().getAllClusterComputeNodeInstances().size(), is(1));
-        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getInstanceContext().getAllClusterComputeNodeInstances()).get(0).getMetaData(), is(instanceMetaData1));
+        assertThat(contextManager.getComputeNodeInstanceContext().getAllClusterComputeNodeInstances().size(), is(1));
+        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getComputeNodeInstanceContext().getAllClusterComputeNodeInstances()).get(0).getMetaData(), is(instanceMetaData1));
         InstanceMetaData instanceMetaData2 = new ProxyInstanceMetaData("foo_instance_3308", 3308);
         InstanceOnlineEvent instanceOnlineEvent2 = new InstanceOnlineEvent(instanceMetaData2);
         subscriber.renew(instanceOnlineEvent2);
-        assertThat(contextManager.getInstanceContext().getAllClusterComputeNodeInstances().size(), is(2));
-        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getInstanceContext().getAllClusterComputeNodeInstances()).get(1).getMetaData(), is(instanceMetaData2));
+        assertThat(contextManager.getComputeNodeInstanceContext().getAllClusterComputeNodeInstances().size(), is(2));
+        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getComputeNodeInstanceContext().getAllClusterComputeNodeInstances()).get(1).getMetaData(), is(instanceMetaData2));
         subscriber.renew(instanceOnlineEvent1);
-        assertThat(contextManager.getInstanceContext().getAllClusterComputeNodeInstances().size(), is(2));
-        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getInstanceContext().getAllClusterComputeNodeInstances()).get(1).getMetaData(), is(instanceMetaData1));
+        assertThat(contextManager.getComputeNodeInstanceContext().getAllClusterComputeNodeInstances().size(), is(2));
+        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getComputeNodeInstanceContext().getAllClusterComputeNodeInstances()).get(1).getMetaData(), is(instanceMetaData1));
     }
 }

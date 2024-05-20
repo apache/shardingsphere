@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -88,9 +88,9 @@ class ContextManagerTest {
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getDatabase("foo_db").containsSchema("foo_schema")).thenReturn(true);
         when(metaDataContexts.getMetaData().getDatabases().values()).thenReturn(Collections.singleton(database));
-        InstanceContext instanceContext = mock(InstanceContext.class);
-        when(instanceContext.getModeContextManager()).thenReturn(mock(ModeContextManager.class));
-        contextManager = new ContextManager(metaDataContexts, instanceContext);
+        ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
+        when(computeNodeInstanceContext.getModeContextManager()).thenReturn(mock(ModeContextManager.class));
+        contextManager = new ContextManager(metaDataContexts, computeNodeInstanceContext);
     }
     
     private ShardingSphereDatabase mockDatabase() {

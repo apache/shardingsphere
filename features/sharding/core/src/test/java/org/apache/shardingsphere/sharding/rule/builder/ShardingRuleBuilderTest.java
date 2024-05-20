@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rule.builder;
 
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -53,13 +53,13 @@ class ShardingRuleBuilderTest {
     @Test
     void assertBuild() {
         assertThat(builder.build(ruleConfig, "sharding_db", new MySQLDatabaseType(),
-                Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(ShardingRule.class));
+                Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)), Collections.emptyList(), mock(ComputeNodeInstanceContext.class)), instanceOf(ShardingRule.class));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     void assertBuildWithEmptyDataSourceMap() {
         assertThrows(MissingRequiredShardingConfigurationException.class,
-                () -> builder.build(ruleConfig, "sharding_db", new MySQLDatabaseType(), Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)));
+                () -> builder.build(ruleConfig, "sharding_db", new MySQLDatabaseType(), Collections.emptyMap(), Collections.emptyList(), mock(ComputeNodeInstanceContext.class)));
     }
 }

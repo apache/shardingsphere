@@ -49,7 +49,7 @@ public final class CreateDatabaseRuleOperator implements DatabaseRuleOperator {
     @SuppressWarnings("unchecked")
     public Collection<MetaDataVersion> operate(final DatabaseRuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        ModeContextManager modeContextManager = contextManager.getInstanceContext().getModeContextManager();
+        ModeContextManager modeContextManager = contextManager.getComputeNodeInstanceContext().getModeContextManager();
         return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeCreatedRuleConfig));
     }
     

@@ -60,7 +60,7 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
             }
             // TODO refactor to new metadata refresh way
         }
-        ModeContextManager modeContextManager = contextManager.getInstanceContext().getModeContextManager();
+        ModeContextManager modeContextManager = contextManager.getComputeNodeInstanceContext().getModeContextManager();
         RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
         modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);

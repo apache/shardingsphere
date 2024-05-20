@@ -78,7 +78,7 @@ public final class StateChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final ClusterLockDeletedEvent event) {
-        contextManager.getInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(event.getState()));
+        contextManager.getComputeNodeInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(event.getState()));
     }
     
     /**
@@ -98,7 +98,7 @@ public final class StateChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final ComputeNodeInstanceStateChangedEvent event) {
-        contextManager.getInstanceContext().updateStatus(event.getInstanceId(), event.getStatus());
+        contextManager.getComputeNodeInstanceContext().updateStatus(event.getInstanceId(), event.getStatus());
     }
     
     /**
@@ -108,7 +108,7 @@ public final class StateChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final WorkerIdEvent event) {
-        contextManager.getInstanceContext().updateWorkerId(event.getInstanceId(), event.getWorkerId());
+        contextManager.getComputeNodeInstanceContext().updateWorkerId(event.getInstanceId(), event.getWorkerId());
     }
     
     /**
@@ -119,7 +119,7 @@ public final class StateChangedSubscriber implements EventSubscriber {
     @Subscribe
     public synchronized void renew(final LabelsEvent event) {
         // TODO labels may be empty
-        contextManager.getInstanceContext().updateLabel(event.getInstanceId(), event.getLabels());
+        contextManager.getComputeNodeInstanceContext().updateLabel(event.getInstanceId(), event.getLabels());
     }
     
     /**
@@ -129,7 +129,7 @@ public final class StateChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final InstanceOnlineEvent event) {
-        contextManager.getInstanceContext().addComputeNodeInstance(computeNodeStatusService.loadComputeNodeInstance(event.getInstanceMetaData()));
+        contextManager.getComputeNodeInstanceContext().addComputeNodeInstance(computeNodeStatusService.loadComputeNodeInstance(event.getInstanceMetaData()));
     }
     
     /**
@@ -139,6 +139,6 @@ public final class StateChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final InstanceOfflineEvent event) {
-        contextManager.getInstanceContext().deleteComputeNodeInstance(new ComputeNodeInstance(event.getInstanceMetaData()));
+        contextManager.getComputeNodeInstanceContext().deleteComputeNodeInstance(new ComputeNodeInstance(event.getInstanceMetaData()));
     }
 }

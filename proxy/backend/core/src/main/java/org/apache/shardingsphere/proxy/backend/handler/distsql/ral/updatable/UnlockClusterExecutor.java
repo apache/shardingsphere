@@ -39,12 +39,12 @@ public final class UnlockClusterExecutor implements DistSQLUpdateExecutor<Unlock
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void executeUpdate(final UnlockClusterStatement sqlStatement, final ContextManager contextManager) {
         checkState(contextManager);
-        LockContext lockContext = contextManager.getInstanceContext().getLockContext();
+        LockContext lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
         if (lockContext.tryLock(lockDefinition, 3000L)) {
             try {
                 checkState(contextManager);
-                contextManager.getInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(ClusterState.OK));
+                contextManager.getComputeNodeInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(ClusterState.OK));
                 // TODO unlock snapshot info if locked
             } finally {
                 lockContext.unlock(lockDefinition);

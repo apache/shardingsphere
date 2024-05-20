@@ -36,11 +36,11 @@ import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Instance context.
+ * Compute node instance context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InstanceContext {
+public final class ComputeNodeInstanceContext {
     
     private final ComputeNodeInstance instance;
     
