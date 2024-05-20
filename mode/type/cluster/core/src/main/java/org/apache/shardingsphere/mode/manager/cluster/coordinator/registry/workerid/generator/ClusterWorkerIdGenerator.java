@@ -76,7 +76,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
         return result;
     }
     
-    private Optional<Integer> generateAvailableWorkerId () {
+    private Optional<Integer> generateAvailableWorkerId() {
         Collection<Integer> assignedWorkerIds = computeNodeStatusService.getAssignedWorkerIds();
         ShardingSpherePreconditions.checkState(assignedWorkerIds.size() <= MAX_WORKER_ID + 1, WorkerIdAssignedException::new);
         PriorityQueue<Integer> availableWorkerIds = IntStream.range(0, 1024).boxed().filter(each -> !assignedWorkerIds.contains(each)).collect(Collectors.toCollection(PriorityQueue::new));
