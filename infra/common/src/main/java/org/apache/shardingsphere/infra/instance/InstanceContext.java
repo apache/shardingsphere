@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
 import java.util.Collection;
@@ -65,16 +66,20 @@ public final class InstanceContext {
      * @param status status
      */
     public void updateStatus(final String id, final String status) {
-        if (instance.getMetaData().getId().equals(id)) {
-            instance.switchState(status);
+        Optional<InstanceState> instanceState = InstanceState.get(status);
+        if (!instanceState.isPresent()) {
+            return;
         }
-        updateRelatedComputeNodeInstancesStatus(id, status);
+        if (instance.getMetaData().getId().equals(id)) {
+            instance.switchState(instanceState.get());
+        }
+        updateRelatedComputeNodeInstancesStatus(id, instanceState.get());
     }
     
-    private void updateRelatedComputeNodeInstancesStatus(final String instanceId, final String status) {
+    private void updateRelatedComputeNodeInstancesStatus(final String instanceId, final InstanceState instanceState) {
         for (ComputeNodeInstance each : allClusterComputeNodeInstances) {
             if (each.getMetaData().getId().equals(instanceId)) {
-                each.switchState(status);
+                each.switchState(instanceState);
             }
         }
     }
