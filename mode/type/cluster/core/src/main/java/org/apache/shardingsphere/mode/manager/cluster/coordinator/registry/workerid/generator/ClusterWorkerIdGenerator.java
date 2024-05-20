@@ -20,10 +20,9 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.work
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.workerid.WorkerIdAssignedException;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
-import org.apache.shardingsphere.infra.instance.workerid.WorkerIdAssignedException;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node.WorkerIdNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
@@ -43,15 +42,15 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     private final ClusterPersistRepository repository;
     
-    private final InstanceMetaData instanceMetaData;
+    private final String instanceId;
     
     private final ComputeNodeStatusService computeNodeStatusService;
     
     private final AtomicBoolean isWarned = new AtomicBoolean(false);
     
-    public ClusterWorkerIdGenerator(final ClusterPersistRepository repository, final InstanceMetaData instanceMetaData) {
+    public ClusterWorkerIdGenerator(final ClusterPersistRepository repository, final String instanceId) {
         this.repository = repository;
-        this.instanceMetaData = instanceMetaData;
+        this.instanceId = instanceId;
         computeNodeStatusService = new ComputeNodeStatusService(repository);
     }
     
@@ -63,7 +62,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     }
     
     private Optional<Integer> loadExistedWorkerId() {
-        return computeNodeStatusService.loadInstanceWorkerId(instanceMetaData.getId());
+        return computeNodeStatusService.loadInstanceWorkerId(instanceId);
     }
     
     private int generateNewWorkerId() {
@@ -72,7 +71,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
             generatedWorkId = generateAvailableWorkerId();
         } while (!generatedWorkId.isPresent());
         int result = generatedWorkId.get();
-        computeNodeStatusService.persistInstanceWorkerId(instanceMetaData.getId(), result);
+        computeNodeStatusService.persistInstanceWorkerId(instanceId, result);
         return result;
     }
     
@@ -90,7 +89,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
         Integer preselectedWorkerId = priorityQueue.poll();
         Preconditions.checkState(null != preselectedWorkerId, "Preselected worker-id can not be null.");
         try {
-            repository.persistExclusiveEphemeral(WorkerIdNode.getWorkerIdGeneratorPath(preselectedWorkerId.toString()), instanceMetaData.getId());
+            repository.persistExclusiveEphemeral(WorkerIdNode.getWorkerIdGeneratorPath(preselectedWorkerId.toString()), instanceId);
             return Optional.of(preselectedWorkerId);
         } catch (final ClusterPersistRepositoryException ignore) {
             return Optional.empty();
