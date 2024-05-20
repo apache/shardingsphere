@@ -21,14 +21,14 @@ import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStatusChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
- * Cluster status subscriber.
+ * Cluster state subscriber.
  */
 @RequiredArgsConstructor
-public final class ClusterStatusSubscriber implements EventSubscriber {
+public final class ClusterStateSubscriber implements EventSubscriber {
     
     private final ClusterPersistRepository repository;
     
@@ -38,7 +38,7 @@ public final class ClusterStatusSubscriber implements EventSubscriber {
      * @param event cluster status changed event
      */
     @Subscribe
-    public void update(final ClusterStatusChangedEvent event) {
-        repository.persist(ComputeNode.getClusterStatusNodePath(), event.getState().name());
+    public void update(final ClusterStateChangedEvent event) {
+        repository.persist(ComputeNode.getClusterStateNodePath(), event.getState().name());
     }
 }

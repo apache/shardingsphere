@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.exception;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 
 /**
- * Cluster status exception.
+ * Cluster state changed event.
  */
-public final class ClusterStatusException extends ClusterSQLException {
+@RequiredArgsConstructor
+@Getter
+public final class ClusterStateChangedEvent {
     
-    private static final long serialVersionUID = 3834132923835083492L;
-    
-    public ClusterStatusException(final String type, final SQLStatement sqlStatement) {
-        super(XOpenSQLState.GENERAL_ERROR, 20, "The cluster status is %s, can not support SQL statement '%s'.", type, sqlStatement.getClass().getSimpleName());
-    }
+    private final ClusterState state;
 }

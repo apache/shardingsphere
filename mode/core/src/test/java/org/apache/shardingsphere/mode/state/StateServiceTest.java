@@ -39,7 +39,7 @@ class StateServiceTest {
     void assertPersistClusterStateWithoutPath() {
         StateService stateService = new StateService(repository);
         stateService.persist(ClusterState.OK);
-        verify(repository).persist(ComputeNode.getClusterStatusNodePath(), ClusterState.OK.name());
+        verify(repository).persist(ComputeNode.getClusterStateNodePath(), ClusterState.OK.name());
     }
     
     @Test
@@ -47,12 +47,12 @@ class StateServiceTest {
         StateService stateService = new StateService(repository);
         when(repository.getDirectly("/nodes/compute_nodes/status")).thenReturn(ClusterState.OK.name());
         stateService.persist(ClusterState.OK);
-        verify(repository, times(0)).persist(ComputeNode.getClusterStatusNodePath(), ClusterState.OK.name());
+        verify(repository, times(0)).persist(ComputeNode.getClusterStateNodePath(), ClusterState.OK.name());
     }
     
     @Test
-    void assertLoadClusterStatus() {
+    void assertLoadClusterState() {
         new StateService(repository).load();
-        verify(repository).getDirectly(ComputeNode.getClusterStatusNodePath());
+        verify(repository).getDirectly(ComputeNode.getClusterStateNodePath());
     }
 }

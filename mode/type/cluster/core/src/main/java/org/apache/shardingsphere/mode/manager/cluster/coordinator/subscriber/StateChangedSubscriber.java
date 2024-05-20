@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterLockDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStatusChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
@@ -78,7 +78,7 @@ public final class StateChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final ClusterLockDeletedEvent event) {
-        contextManager.getComputeNodeInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(event.getState()));
+        contextManager.getComputeNodeInstanceContext().getEventBusContext().post(new ClusterStateChangedEvent(event.getState()));
     }
     
     /**
