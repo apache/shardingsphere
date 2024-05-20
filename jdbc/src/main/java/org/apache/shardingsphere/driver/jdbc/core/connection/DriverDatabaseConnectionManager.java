@@ -116,7 +116,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
         DataSourcePoolProperties propsSample = propsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = contextManager.getMetaDataContexts().getMetaData()
                 .getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getConfiguration().getUsers();
-        Collection<InstanceMetaData> instances = contextManager.getComputeNodeInstanceContext().getAllClusterComputeNodeInstances(InstanceType.PROXY, rule.getLabels()).values();
+        Collection<InstanceMetaData> instances = contextManager.getComputeNodeInstanceContext().getAllClusterInstances(InstanceType.PROXY, rule.getLabels()).values();
         return DataSourcePoolCreator.create(createDataSourcePoolPropertiesMap(instances, users, propsSample, actualDatabaseName), true);
     }
     

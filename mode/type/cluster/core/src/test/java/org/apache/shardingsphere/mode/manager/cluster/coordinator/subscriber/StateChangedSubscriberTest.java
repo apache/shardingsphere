@@ -167,15 +167,15 @@ class StateChangedSubscriberTest {
         InstanceMetaData instanceMetaData1 = new ProxyInstanceMetaData("foo_instance_3307", 3307);
         InstanceOnlineEvent instanceOnlineEvent1 = new InstanceOnlineEvent(instanceMetaData1);
         subscriber.renew(instanceOnlineEvent1);
-        assertThat(contextManager.getComputeNodeInstanceContext().getAllClusterComputeNodeInstances().size(), is(1));
-        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getComputeNodeInstanceContext().getAllClusterComputeNodeInstances()).get(0).getMetaData(), is(instanceMetaData1));
+        assertThat(contextManager.getComputeNodeInstanceContext().getAllClusterInstances().size(), is(1));
+        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getComputeNodeInstanceContext().getAllClusterInstances()).get(0).getMetaData(), is(instanceMetaData1));
         InstanceMetaData instanceMetaData2 = new ProxyInstanceMetaData("foo_instance_3308", 3308);
         InstanceOnlineEvent instanceOnlineEvent2 = new InstanceOnlineEvent(instanceMetaData2);
         subscriber.renew(instanceOnlineEvent2);
-        assertThat(contextManager.getComputeNodeInstanceContext().getAllClusterComputeNodeInstances().size(), is(2));
-        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getComputeNodeInstanceContext().getAllClusterComputeNodeInstances()).get(1).getMetaData(), is(instanceMetaData2));
+        assertThat(contextManager.getComputeNodeInstanceContext().getAllClusterInstances().size(), is(2));
+        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getComputeNodeInstanceContext().getAllClusterInstances()).get(1).getMetaData(), is(instanceMetaData2));
         subscriber.renew(instanceOnlineEvent1);
-        assertThat(contextManager.getComputeNodeInstanceContext().getAllClusterComputeNodeInstances().size(), is(2));
-        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getComputeNodeInstanceContext().getAllClusterComputeNodeInstances()).get(1).getMetaData(), is(instanceMetaData1));
+        assertThat(contextManager.getComputeNodeInstanceContext().getAllClusterInstances().size(), is(2));
+        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getComputeNodeInstanceContext().getAllClusterInstances()).get(1).getMetaData(), is(instanceMetaData1));
     }
 }

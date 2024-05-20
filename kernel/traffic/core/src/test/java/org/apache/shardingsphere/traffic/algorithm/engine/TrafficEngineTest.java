@@ -96,7 +96,7 @@ class TrafficEngineTest {
         when(loadBalancer.getTargetName("traffic", new ArrayList<>(instanceIds.keySet()))).thenReturn("foo_id");
         when(strategyRule.getLoadBalancer()).thenReturn(loadBalancer);
         when(strategyRule.getName()).thenReturn("traffic");
-        when(computeNodeInstanceContext.getAllClusterComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(instanceIds);
+        when(computeNodeInstanceContext.getAllClusterInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(instanceIds);
         Optional<String> actual = trafficEngine.dispatch(queryContext, false);
         assertThat(actual, is(Optional.of("foo_id")));
     }

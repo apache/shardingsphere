@@ -26,15 +26,13 @@ public interface WorkerIdGenerator {
     
     String WORKER_ID_KEY = "worker-id";
     
-    int DEFAULT_WORKER_ID = 0;
-    
     int MAX_WORKER_ID = 1023;
     
     /**
-     * Generate worker id.
+     * Generate worker ID.
      *
      * @param props props
-     * @return worker id
+     * @return worker ID
      */
     int generate(Properties props);
 }

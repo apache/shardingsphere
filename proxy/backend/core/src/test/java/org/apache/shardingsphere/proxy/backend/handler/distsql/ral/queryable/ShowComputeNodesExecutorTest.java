@@ -97,7 +97,7 @@ class ShowComputeNodesExecutorTest {
         when(computeNodeInstance.getMetaData()).thenReturn(new ProxyInstanceMetaData("foo", "127.0.0.1@3309", "foo_version"));
         when(computeNodeInstance.getState()).thenReturn(new InstanceStateContext());
         when(computeNodeInstance.getWorkerId()).thenReturn(1);
-        when(result.getAllClusterComputeNodeInstances()).thenReturn(Collections.singleton(computeNodeInstance));
+        when(result.getAllClusterInstances()).thenReturn(Collections.singleton(computeNodeInstance));
         return result;
     }
 }

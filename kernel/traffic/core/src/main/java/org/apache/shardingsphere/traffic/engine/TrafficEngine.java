@@ -52,7 +52,7 @@ public final class TrafficEngine {
         if (!strategyRule.isPresent() || isInvalidStrategyRule(strategyRule.get())) {
             return Optional.empty();
         }
-        Map<String, InstanceMetaData> instances = computeNodeInstanceContext.getAllClusterComputeNodeInstances(InstanceType.PROXY, strategyRule.get().getLabels());
+        Map<String, InstanceMetaData> instances = computeNodeInstanceContext.getAllClusterInstances(InstanceType.PROXY, strategyRule.get().getLabels());
         if (!instances.isEmpty()) {
             LoadBalanceAlgorithm loadBalancer = strategyRule.get().getLoadBalancer();
             String instanceId = 1 == instances.size() ? instances.keySet().iterator().next() : loadBalancer.getTargetName(strategyRule.get().getName(), new ArrayList<>(instances.keySet()));

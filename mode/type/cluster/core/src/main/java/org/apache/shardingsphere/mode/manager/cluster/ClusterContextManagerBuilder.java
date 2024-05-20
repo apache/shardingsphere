@@ -120,7 +120,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         if (null != param.getLabels()) {
             contextManager.getComputeNodeInstanceContext().getInstance().getLabels().addAll(param.getLabels());
         }
-        contextManager.getComputeNodeInstanceContext().getAllClusterComputeNodeInstances().addAll(new ComputeNodeStatusService(repository).loadAllComputeNodeInstances());
+        contextManager.getComputeNodeInstanceContext().getAllClusterInstances().addAll(new ComputeNodeStatusService(repository).loadAllComputeNodeInstances());
         new ClusterEventSubscriberRegistry(contextManager, repository).register();
     }
     

@@ -82,7 +82,7 @@ class DriverDatabaseConnectionManagerTest {
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
                 new RuleMetaData(Arrays.asList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS), mock(TransactionRule.class, RETURNS_DEEP_STUBS),
                         mock(TrafficRule.class, RETURNS_DEEP_STUBS))));
-        when(result.getComputeNodeInstanceContext().getAllClusterComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(
+        when(result.getComputeNodeInstanceContext().getAllClusterInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(
                 Collections.singletonMap("foo_id", new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_version")));
         Map<String, DataSource> trafficDataSourceMap = mockTrafficDataSourceMap();
         when(DataSourcePoolCreator.create(any(), eq(true))).thenReturn(trafficDataSourceMap);
