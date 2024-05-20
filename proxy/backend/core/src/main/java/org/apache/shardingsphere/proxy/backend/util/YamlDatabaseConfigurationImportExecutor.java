@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSpher
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.MissingRequiredDatabaseException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.StorageUnitsOperateException;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -97,7 +97,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     
     private void addDatabase(final String databaseName) {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        contextManager.getInstanceContext().getModeContextManager().createDatabase(databaseName);
+        contextManager.getComputeNodeInstanceContext().getModeContextManager().createDatabase(databaseName);
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), contextManager.getMetaDataContexts().getMetaData().getProps());
         contextManager.getMetaDataContexts().getMetaData().addDatabase(databaseName, protocolType, contextManager.getMetaDataContexts().getMetaData().getProps());
     }
@@ -110,7 +110,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         }
         validateHandler.validate(propsMap);
         try {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(databaseName, propsMap);
+            ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getModeContextManager().registerStorageUnits(databaseName, propsMap);
         } catch (final SQLException ex) {
             throw new StorageUnitsOperateException("import", propsMap.keySet(), ex);
         }
@@ -144,8 +144,8 @@ public final class YamlDatabaseConfigurationImportExecutor {
         DatabaseRuleBuilder ruleBuilder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
-        return ruleBuilder.build(ruleConfig, database.getName(), database.getProtocolType(), dataSources, database.getRuleMetaData().getRules(), instanceContext);
+        ComputeNodeInstanceContext computeNodeInstanceContext = ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext();
+        return ruleBuilder.build(ruleConfig, database.getName(), database.getProtocolType(), dataSources, database.getRuleMetaData().getRules(), computeNodeInstanceContext);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -160,6 +160,6 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void dropDatabase(final String databaseName) {
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().dropDatabase(databaseName);
+        ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getModeContextManager().dropDatabase(databaseName);
     }
 }

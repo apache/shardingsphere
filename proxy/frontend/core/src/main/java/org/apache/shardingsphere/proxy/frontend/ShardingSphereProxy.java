@@ -118,7 +118,7 @@ public final class ShardingSphereProxy {
     }
     
     private void accept(final List<ChannelFuture> futures) throws InterruptedException {
-        log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType());
+        log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getModeConfiguration().getType());
         for (ChannelFuture each : futures) {
             each.channel().closeFuture().sync();
         }

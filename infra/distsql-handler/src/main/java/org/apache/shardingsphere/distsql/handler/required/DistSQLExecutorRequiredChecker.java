@@ -50,7 +50,7 @@ public final class DistSQLExecutorRequiredChecker {
     }
     
     private void checkClusterMode(final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), NotClusterModeException::new);
+        ShardingSpherePreconditions.checkState(contextManager.getComputeNodeInstanceContext().isCluster(), NotClusterModeException::new);
     }
     
     private void checkCurrentRule(final SQLStatement sqlStatement, final ContextManager contextManager, final ShardingSphereDatabase database,

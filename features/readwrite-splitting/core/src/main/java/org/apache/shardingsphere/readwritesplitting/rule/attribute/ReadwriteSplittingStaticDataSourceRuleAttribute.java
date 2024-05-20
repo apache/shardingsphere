@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.rule.attribute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
@@ -42,7 +42,7 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
     
     private final Map<String, ReadwriteSplittingDataSourceGroupRule> dataSourceGroupRules;
     
-    private final InstanceContext instanceContext;
+    private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
     @Override
     public Map<String, Collection<String>> getDataSourceMapper() {
@@ -73,7 +73,7 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
     
     private void deleteStorageNodeDataSources(final ReadwriteSplittingDataSourceGroupRule rule) {
         rule.getReadwriteSplittingGroup().getReadDataSources()
-                .forEach(each -> instanceContext.getEventBusContext().post(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource(databaseName, rule.getName(), each))));
+                .forEach(each -> computeNodeInstanceContext.getEventBusContext().post(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource(databaseName, rule.getName(), each))));
     }
     
     @Override

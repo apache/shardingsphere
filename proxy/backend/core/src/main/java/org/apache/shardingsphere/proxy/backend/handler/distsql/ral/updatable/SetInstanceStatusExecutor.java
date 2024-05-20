@@ -39,21 +39,21 @@ public final class SetInstanceStatusExecutor implements DistSQLUpdateExecutor<Se
         } else {
             checkEnablingIsValid(contextManager, sqlStatement.getInstanceId());
         }
-        contextManager.getInstanceContext().getEventBusContext().post(
+        contextManager.getComputeNodeInstanceContext().getEventBusContext().post(
                 new ComputeNodeStatusChangedEvent(sqlStatement.getInstanceId(), "DISABLE".equals(sqlStatement.getStatus()) ? InstanceState.CIRCUIT_BREAK : InstanceState.OK));
     }
     
     private void checkEnablingIsValid(final ContextManager contextManager, final String instanceId) {
-        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId).isPresent(),
+        ShardingSpherePreconditions.checkState(contextManager.getComputeNodeInstanceContext().getComputeNodeInstanceById(instanceId).isPresent(),
                 () -> new UnsupportedSQLOperationException(String.format("`%s` does not exist", instanceId)));
     }
     
     private void checkDisablingIsValid(final ContextManager contextManager, final String instanceId) {
-        ShardingSpherePreconditions.checkState(!contextManager.getInstanceContext().getInstance().getMetaData().getId().equals(instanceId),
+        ShardingSpherePreconditions.checkState(!contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId().equals(instanceId),
                 () -> new UnsupportedSQLOperationException(String.format("`%s` is the currently in use instance and cannot be disabled", instanceId)));
-        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId).isPresent(),
+        ShardingSpherePreconditions.checkState(contextManager.getComputeNodeInstanceContext().getComputeNodeInstanceById(instanceId).isPresent(),
                 () -> new UnsupportedSQLOperationException(String.format("`%s` does not exist", instanceId)));
-        ShardingSpherePreconditions.checkState(InstanceState.CIRCUIT_BREAK != contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId).get().getState().getCurrentState(),
+        ShardingSpherePreconditions.checkState(InstanceState.CIRCUIT_BREAK != contextManager.getComputeNodeInstanceContext().getComputeNodeInstanceById(instanceId).get().getState().getCurrentState(),
                 () -> new UnsupportedSQLOperationException(String.format("`%s` compute node has been disabled", instanceId)));
     }
     

@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.infra.instance;
 
 /**
- * Instance context aware.
+ * Compute node instance context aware.
  */
-public interface InstanceContextAware {
+public interface ComputeNodeInstanceContextAware {
     
     /**
-     * Set instance context.
+     * Set compute node instance context.
      * 
-     * @param instanceContext instance context
+     * @param computeNodeInstanceContext compute node instance context
      */
-    void setInstanceContext(InstanceContext instanceContext);
+    void setComputeNodeInstanceContext(ComputeNodeInstanceContext computeNodeInstanceContext);
 }

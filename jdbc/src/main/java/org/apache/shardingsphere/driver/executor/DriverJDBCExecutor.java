@@ -58,7 +58,7 @@ public final class DriverJDBCExecutor {
         this.databaseName = databaseName;
         this.jdbcExecutor = jdbcExecutor;
         metaDataContexts = contextManager.getMetaDataContexts();
-        modeContextManager = contextManager.getInstanceContext().getModeContextManager();
+        modeContextManager = contextManager.getComputeNodeInstanceContext().getModeContextManager();
     }
     
     /**

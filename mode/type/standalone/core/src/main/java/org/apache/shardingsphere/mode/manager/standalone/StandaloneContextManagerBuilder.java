@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.standalone;
 
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
@@ -47,21 +47,21 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         StandalonePersistRepository repository = TypedSPILoader.getService(
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
-        InstanceContext instanceContext = buildInstanceContext(param, eventBusContext);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, instanceContext);
-        ContextManager result = new ContextManager(metaDataContexts, instanceContext);
+        ComputeNodeInstanceContext computeNodeInstanceContext = buildComputeNodeInstanceContext(param, eventBusContext);
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, computeNodeInstanceContext);
+        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext);
         new StandaloneEventSubscriberRegistry(result).register();
         setContextManagerAware(result);
         return result;
     }
     
-    private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) {
-        return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()),
+    private ComputeNodeInstanceContext buildComputeNodeInstanceContext(final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) {
+        return new ComputeNodeInstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()),
                 new StandaloneWorkerIdGenerator(), param.getModeConfiguration(), new StandaloneModeContextManager(), new GlobalLockContext(null), eventBusContext);
     }
     
     private void setContextManagerAware(final ContextManager contextManager) {
-        ((StandaloneModeContextManager) contextManager.getInstanceContext().getModeContextManager()).setContextManager(contextManager);
+        ((StandaloneModeContextManager) contextManager.getComputeNodeInstanceContext().getModeContextManager()).setContextManager(contextManager);
     }
     
     @Override

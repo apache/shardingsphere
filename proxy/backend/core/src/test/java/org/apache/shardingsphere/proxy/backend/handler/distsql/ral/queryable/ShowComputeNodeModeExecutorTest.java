@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodeModeStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -42,8 +42,8 @@ class ShowComputeNodeModeExecutorTest {
     void assertExecute() {
         ShowComputeNodeModeExecutor executor = new ShowComputeNodeModeExecutor();
         ContextManager contextManager = mock(ContextManager.class);
-        InstanceContext instanceContext = createInstanceContext();
-        when(contextManager.getInstanceContext()).thenReturn(instanceContext);
+        ComputeNodeInstanceContext computeNodeInstanceContext = createInstanceContext();
+        when(contextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowComputeNodeModeStatement(), contextManager);
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
@@ -53,8 +53,8 @@ class ShowComputeNodeModeExecutorTest {
         assertThat(row.getCell(3), is("{\"key\":\"value1,value2\"}"));
     }
     
-    private InstanceContext createInstanceContext() {
-        InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
+    private ComputeNodeInstanceContext createInstanceContext() {
+        ComputeNodeInstanceContext result = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
         when(result.getInstance().getMetaData().getId()).thenReturn("127.0.0.1@3309");
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Cluster",
                 new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance_ds", "127.0.0.1:2181", PropertiesBuilder.build(new Property("key", "value1,value2")))));

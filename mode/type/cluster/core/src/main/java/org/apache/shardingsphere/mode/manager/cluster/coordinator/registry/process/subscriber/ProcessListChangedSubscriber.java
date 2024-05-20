@@ -59,7 +59,7 @@ public final class ProcessListChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public void reportLocalProcesses(final ReportLocalProcessesEvent event) {
-        if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
+        if (!event.getInstanceId().equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
         Collection<Process> processes = ProcessRegistry.getInstance().listAll();
@@ -88,7 +88,7 @@ public final class ProcessListChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void killLocalProcess(final KillLocalProcessEvent event) throws SQLException {
-        if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
+        if (!event.getInstanceId().equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
         Process process = ProcessRegistry.getInstance().get(event.getProcessId());

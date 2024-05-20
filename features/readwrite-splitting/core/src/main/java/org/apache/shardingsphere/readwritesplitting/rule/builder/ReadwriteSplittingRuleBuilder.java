@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -36,8 +36,8 @@ public final class ReadwriteSplittingRuleBuilder implements DatabaseRuleBuilder<
     
     @Override
     public ReadwriteSplittingRule build(final ReadwriteSplittingRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType,
-                                        final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new ReadwriteSplittingRule(databaseName, ruleConfig, instanceContext);
+                                        final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ComputeNodeInstanceContext computeNodeInstanceContext) {
+        return new ReadwriteSplittingRule(databaseName, ruleConfig, computeNodeInstanceContext);
     }
     
     @Override

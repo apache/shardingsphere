@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.metadata.reviser.constraint;
 
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -56,7 +56,7 @@ class ShardingConstraintReviserTest {
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.setTables(Collections.singleton(new ShardingTableRuleConfiguration("table_name", "ds.table_name")));
-        return new ShardingRule(ruleConfig, Collections.singletonMap("ds", new MockedDataSource()), mock(InstanceContext.class));
+        return new ShardingRule(ruleConfig, Collections.singletonMap("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class));
     }
     
     @Test

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.metadata.factory;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +39,7 @@ class ExternalMetaDataFactoryTest {
     @Test
     void assertCreateSingleDatabase() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
-        ShardingSphereDatabase actual = ExternalMetaDataFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
+        ShardingSphereDatabase actual = ExternalMetaDataFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
         assertThat(actual.getName(), is("foo_db"));
         assertTrue(actual.getResourceMetaData().getStorageUnits().isEmpty());
     }
@@ -48,7 +48,7 @@ class ExternalMetaDataFactoryTest {
     void assertCreateDatabaseMap() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
         Map<String, ShardingSphereDatabase> actual = ExternalMetaDataFactory.create(
-                Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
+                Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
         assertTrue(actual.containsKey("foo_db"));
         assertTrue(actual.get("foo_db").getResourceMetaData().getStorageUnits().isEmpty());
     }
@@ -57,7 +57,7 @@ class ExternalMetaDataFactoryTest {
     void assertCreateDatabaseMapWhenConfigUppercaseDatabaseName() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
         Map<String, ShardingSphereDatabase> actual = ExternalMetaDataFactory.create(
-                Collections.singletonMap("FOO_DB", databaseConfig), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
+                Collections.singletonMap("FOO_DB", databaseConfig), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
         assertTrue(actual.containsKey("foo_db"));
         assertTrue(actual.get("foo_db").getResourceMetaData().getStorageUnits().isEmpty());
     }

@@ -73,8 +73,8 @@ public final class ImportMetaDataExecutor implements DistSQLUpdateExecutor<Impor
             return;
         }
         Collection<RuleConfiguration> rules = ruleConfigSwapperEngine.swapToRuleConfigurations(yamlServerConfig.getRules());
-        rules.forEach(each -> contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(each));
-        contextManager.getInstanceContext().getModeContextManager().alterProperties(yamlServerConfig.getProps());
+        rules.forEach(each -> contextManager.getComputeNodeInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(each));
+        contextManager.getComputeNodeInstanceContext().getModeContextManager().alterProperties(yamlServerConfig.getProps());
     }
     
     private void importDatabase(final ExportedMetaData exportedMetaData) {

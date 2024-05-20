@@ -34,7 +34,7 @@ public abstract class EventSubscriberRegistry {
     private final Collection<EventSubscriber> subscribers;
     
     protected EventSubscriberRegistry(final ContextManager contextManager, final EventSubscriber... subscribers) {
-        eventBusContext = contextManager.getInstanceContext().getEventBusContext();
+        eventBusContext = contextManager.getComputeNodeInstanceContext().getEventBusContext();
         this.subscribers = Arrays.asList(subscribers);
     }
     

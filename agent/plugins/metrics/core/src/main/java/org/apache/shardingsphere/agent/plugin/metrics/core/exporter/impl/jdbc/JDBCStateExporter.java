@@ -50,7 +50,7 @@ public final class JDBCStateExporter implements MetricsExporter {
         for (Entry<String, ShardingSphereDataSource> entry : dataSourceMap.get().entrySet()) {
             ShardingSphereDataSource dataSource = entry.getValue();
             ContextManager contextManager = AgentReflectionUtils.getFieldValue(dataSource, "contextManager");
-            result.addMetric(Collections.emptyList(), contextManager.getInstanceContext().getInstance().getState().getCurrentState().ordinal());
+            result.addMetric(Collections.emptyList(), contextManager.getComputeNodeInstanceContext().getInstance().getState().getCurrentState().ordinal());
         }
         return Optional.of(result);
     }

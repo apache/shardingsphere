@@ -57,7 +57,7 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
         }
         checkInUsed(sqlStatement);
         try {
-            contextManager.getInstanceContext().getModeContextManager().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
+            contextManager.getComputeNodeInstanceContext().getModeContextManager().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
         } catch (final SQLException | ShardingSphereServerException ex) {
             throw new StorageUnitsOperateException("unregister", sqlStatement.getStorageUnitNames(), ex);
         }

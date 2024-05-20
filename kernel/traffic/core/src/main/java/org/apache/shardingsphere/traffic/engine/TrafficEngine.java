@@ -19,7 +19,7 @@ package org.apache.shardingsphere.traffic.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -38,7 +38,7 @@ public final class TrafficEngine {
     
     private final TrafficRule trafficRule;
     
-    private final InstanceContext instanceContext;
+    private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
     /**
      * Dispatch.
@@ -52,7 +52,7 @@ public final class TrafficEngine {
         if (!strategyRule.isPresent() || isInvalidStrategyRule(strategyRule.get())) {
             return Optional.empty();
         }
-        Map<String, InstanceMetaData> instances = instanceContext.getAllClusterComputeNodeInstances(InstanceType.PROXY, strategyRule.get().getLabels());
+        Map<String, InstanceMetaData> instances = computeNodeInstanceContext.getAllClusterComputeNodeInstances(InstanceType.PROXY, strategyRule.get().getLabels());
         if (!instances.isEmpty()) {
             LoadBalanceAlgorithm loadBalancer = strategyRule.get().getLoadBalancer();
             String instanceId = 1 == instances.size() ? instances.keySet().iterator().next() : loadBalancer.getTargetName(strategyRule.get().getName(), new ArrayList<>(instances.keySet()));

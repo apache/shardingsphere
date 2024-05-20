@@ -135,7 +135,7 @@ public final class StatisticsCollectJob implements SimpleJob {
         }
         statistics.getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().put(changedTableData.getName().toLowerCase(), changedTableData);
         ShardingSphereSchemaDataAlteredEvent event = getShardingSphereSchemaDataAlteredEvent(databaseName, schemaName, tableData, changedTableData, table);
-        contextManager.getInstanceContext().getEventBusContext().post(event);
+        contextManager.getComputeNodeInstanceContext().getEventBusContext().post(event);
     }
     
     private ShardingSphereSchemaDataAlteredEvent getShardingSphereSchemaDataAlteredEvent(final String databaseName, final String schemaName, final ShardingSphereTableData tableData,

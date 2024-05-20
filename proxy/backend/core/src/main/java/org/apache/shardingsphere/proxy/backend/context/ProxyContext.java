@@ -85,6 +85,6 @@ public final class ProxyContext {
      * @return instance state context
      */
     public Optional<InstanceStateContext> getInstanceStateContext() {
-        return null == contextManager.getInstanceContext() ? Optional.empty() : Optional.ofNullable(contextManager.getInstanceContext().getInstance().getState());
+        return null == contextManager.getComputeNodeInstanceContext() ? Optional.empty() : Optional.ofNullable(contextManager.getComputeNodeInstanceContext().getInstance().getState());
     }
 }
