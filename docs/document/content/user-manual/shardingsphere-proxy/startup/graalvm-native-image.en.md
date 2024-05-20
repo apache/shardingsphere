@@ -29,6 +29,8 @@ services:
 
 - This section assumes a Linux (amd64, aarch64), MacOS (amd64, aarch64/M1) or Windows (amd64) environment.
 
+- This section is still subject to the documented content of [GraalVM Native Image](/en/user-manual/shardingsphere-jdbc/graalvm-native-image) on the ShardingSphere JDBC side.
+
 ## Premise
 
 1. Install and configure `GraalVM Community Edition` or a downstream distribution of `GraalVM Community Edition` for 
@@ -38,7 +40,7 @@ JDK 21 according to https://www.graalvm.org/downloads/. If `SDKMAN!` is used,
 sdk install java 21.0.2-graalce
 ```
 
-2. Install the local toolchain as required by https://www.graalvm.org/jdk17/reference-manual/native-image/#prerequisites.
+2. Install the local toolchain as required by https://www.graalvm.org/jdk21/reference-manual/native-image/#prerequisites.
 
 3. If you need to build a Docker Image, make sure `docker-ce` is installed.
 
@@ -118,7 +120,7 @@ services:
 - If you don't make any changes to the Git Source, the commands mentioned above will use `oraclelinux:9-slim` as the
   Base Docker Image. But if you want to use a smaller Docker Image like `busybox:glic`, `gcr.io/distroless/base` or
   `scratch` as the Base Docker Image, you need according
-  to https://www.graalvm.org/jdk17/reference-manual/native-image/guides/build-static-executables/,
+  to https://www.graalvm.org/jdk21/reference-manual/native-image/guides/build-static-executables/,
   add operations such as `-H:+StaticExecutableWithDynamicLibC` to `jvmArgs` as the `native profile` of `pom.xml`.
   Also note that some 3rd-party dependencies will require more system libraries such as `libdl` to be installed in
   the `Dockerfile`. So make sure to tune `distribution/proxy-native` according to your usage `pom.xml` and `Dockerfile`
@@ -131,7 +133,7 @@ with https://shardingsphere.apache.org/document/current/cn/user-manual/shardings
 not consistent.
 
 You can observe GraalVM Native Image using a series of command line tools or visualization tools available
-at https://www.graalvm.org/jdk17/tools/, and use VSCode to debug it according to its requirements.
+at https://www.graalvm.org/jdk21/tools/, and use VSCode to debug it according to its requirements.
 If you are using IntelliJ IDEA and want to debug the generated GraalVM Native Image, You can follow
 https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
 and its successors. If you are not using Linux, you cannot debug GraalVM Native Image, please pay attention
