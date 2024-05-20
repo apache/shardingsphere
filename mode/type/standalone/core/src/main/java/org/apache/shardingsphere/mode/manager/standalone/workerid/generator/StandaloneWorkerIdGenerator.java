@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.workerid.generator;
 
-import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.instance.workerid.WorkerIdAssignedException;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 
 import java.util.Properties;
@@ -35,7 +36,7 @@ public final class StandaloneWorkerIdGenerator implements WorkerIdGenerator {
             return DEFAULT_WORKER_ID;
         }
         int result = Integer.parseInt(props.get(WORKER_ID_KEY).toString());
-        Preconditions.checkState(result <= MAX_WORKER_ID, "%s can not exceed %s", WORKER_ID_KEY, MAX_WORKER_ID);
+        ShardingSpherePreconditions.checkState(result >= 0 && result <= MAX_WORKER_ID, WorkerIdAssignedException::new);
         return result;
     }
 }

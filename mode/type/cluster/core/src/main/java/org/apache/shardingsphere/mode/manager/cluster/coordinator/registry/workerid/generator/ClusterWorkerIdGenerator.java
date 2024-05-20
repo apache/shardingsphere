@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.exception.WorkIdAssignedException;
+import org.apache.shardingsphere.infra.instance.workerid.WorkerIdAssignedException;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node.WorkerIdNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
@@ -57,12 +57,16 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
     public int generate(final Properties props) {
-        int result = computeNodeStatusService.loadInstanceWorkerId(instanceMetaData.getId()).orElseGet(this::reGenerate);
-        checkIneffectiveConfiguration(result, props);
+        int result = loadExistedWorkerId().orElseGet(this::generateNewWorkerId);
+        logWarning(result, props);
         return result;
     }
     
-    private int reGenerate() {
+    private Optional<Integer> loadExistedWorkerId() {
+        return computeNodeStatusService.loadInstanceWorkerId(instanceMetaData.getId());
+    }
+    
+    private int generateNewWorkerId() {
         Optional<Integer> generatedWorkId;
         do {
             generatedWorkId = generateAvailableWorkerId();
@@ -74,7 +78,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     private Optional<Integer> generateAvailableWorkerId() {
         Collection<Integer> assignedWorkerIds = computeNodeStatusService.getAssignedWorkerIds();
-        ShardingSpherePreconditions.checkState(assignedWorkerIds.size() <= 1024, WorkIdAssignedException::new);
+        ShardingSpherePreconditions.checkState(assignedWorkerIds.size() <= MAX_WORKER_ID + 1, WorkerIdAssignedException::new);
         Collection<Integer> availableWorkerIds = new LinkedList<>();
         for (int i = 0; i < 1024; i++) {
             availableWorkerIds.add(i);
@@ -93,10 +97,10 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
         }
     }
     
-    private void checkIneffectiveConfiguration(final int generatedWorkerId, final Properties props) {
-        if (!isWarned.get() && null != props && props.containsKey(WORKER_ID_KEY)) {
+    private void logWarning(final int generatedWorkerId, final Properties props) {
+        if (!isWarned.get() && props.containsKey(WORKER_ID_KEY)) {
             isWarned.set(true);
-            log.warn("No need to configured {} in cluster mode, system assigned {} was {}", WORKER_ID_KEY, WORKER_ID_KEY, generatedWorkerId);
+            log.warn("It is unnecessary to configure {} in cluster mode, system assigned {} was {}", WORKER_ID_KEY, WORKER_ID_KEY, generatedWorkerId);
         }
     }
 }

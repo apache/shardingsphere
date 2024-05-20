@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.exception;
+package org.apache.shardingsphere.infra.instance.workerid;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
 
 /**
- * Work id assigned exception.
+ * Worker ID assigned exception.
  */
-public final class WorkIdAssignedException extends ClusterSQLException {
+public final class WorkerIdAssignedException extends ClusterSQLException {
     
     private static final long serialVersionUID = 4782736481041926266L;
     
-    public WorkIdAssignedException() {
-        super(XOpenSQLState.GENERAL_ERROR, 1, "Work ID assigned failed, which can not exceed 1024.");
+    public WorkerIdAssignedException() {
+        super(XOpenSQLState.GENERAL_ERROR, 1, "Worker ID assigned failed, which should be in [0, %s).", WorkerIdGenerator.MAX_WORKER_ID + 1);
     }
 }
