@@ -35,7 +35,8 @@ public enum InstanceState {
     public static Optional<InstanceState> get(final String state) {
         if (OK.name().equals(state)) {
             return Optional.of(OK);
-        } else if (CIRCUIT_BREAK.name().equals(state)) {
+        }
+        if (CIRCUIT_BREAK.name().equals(state)) {
             return Optional.of(CIRCUIT_BREAK);
         }
         return Optional.empty();

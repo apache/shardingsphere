@@ -31,13 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class StandaloneWorkerIdGeneratorTest {
     
     @Test
-    void assertGenerateWithNullProperties() {
-        assertThat(new StandaloneWorkerIdGenerator().generate(null), is(WorkerIdGenerator.DEFAULT_WORKER_ID));
-    }
-    
-    @Test
     void assertGenerateWithEmptyProperties() {
-        assertThat(new StandaloneWorkerIdGenerator().generate(new Properties()), is(WorkerIdGenerator.DEFAULT_WORKER_ID));
+        assertThat(new StandaloneWorkerIdGenerator().generate(new Properties()), is(0));
     }
     
     @Test

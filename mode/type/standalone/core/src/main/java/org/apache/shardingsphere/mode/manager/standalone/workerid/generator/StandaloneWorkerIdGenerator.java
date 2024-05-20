@@ -27,16 +27,14 @@ import java.util.Properties;
  */
 public final class StandaloneWorkerIdGenerator implements WorkerIdGenerator {
     
+    private static final int DEFAULT_WORKER_ID = 0;
+    
     @Override
     public int generate(final Properties props) {
-        if (null == props) {
+        if (!props.containsKey(WORKER_ID_KEY)) {
             return DEFAULT_WORKER_ID;
         }
-        Object workerId = props.get(WORKER_ID_KEY);
-        if (null == workerId) {
-            return DEFAULT_WORKER_ID;
-        }
-        int result = Integer.parseInt(workerId.toString());
+        int result = Integer.parseInt(props.get(WORKER_ID_KEY).toString());
         Preconditions.checkState(result <= MAX_WORKER_ID, "%s can not exceed %s", WORKER_ID_KEY, MAX_WORKER_ID);
         return result;
     }
