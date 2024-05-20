@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator;
 
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -37,19 +36,15 @@ class ClusterWorkerIdGeneratorTest {
     
     @Test
     void assertGenerateWithExistedWorkerId() {
-        InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
-        when(instanceMetaData.getId()).thenReturn("foo_id");
         ClusterPersistRepository repository = mock(ClusterPersistRepository.class);
         when(repository.getDirectly("/nodes/compute_nodes/worker_id/foo_id")).thenReturn("10");
-        assertThat(new ClusterWorkerIdGenerator(repository, instanceMetaData).generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "1"))), is(10));
+        assertThat(new ClusterWorkerIdGenerator(repository, "foo_id").generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "1"))), is(10));
     }
     
     @Test
     void assertGenerateWithoutExistedWorkerId() {
-        InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
-        when(instanceMetaData.getId()).thenReturn("foo_id");
         ClusterPersistRepository repository = mock(ClusterPersistRepository.class);
         doAnswer((Answer<Object>) invocation -> "foo_id").when(repository).persistEphemeral("/worker_id/0", "foo_id");
-        assertThat(new ClusterWorkerIdGenerator(repository, instanceMetaData).generate(new Properties()), is(0));
+        assertThat(new ClusterWorkerIdGenerator(repository, "foo_id").generate(new Properties()), is(0));
     }
 }
