@@ -66,9 +66,7 @@ public final class ComputeNodeStatusService {
      * @param labels instance labels
      */
     public void persistInstanceLabels(final String instanceId, final Collection<String> labels) {
-        if (null != labels) {
-            repository.persistEphemeral(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(labels));
-        }
+        repository.persistEphemeral(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(labels));
     }
     
     /**
@@ -153,7 +151,7 @@ public final class ComputeNodeStatusService {
      */
     public ComputeNodeInstance loadComputeNodeInstance(final InstanceMetaData instanceMetaData) {
         ComputeNodeInstance result = new ComputeNodeInstance(instanceMetaData);
-        result.setLabels(loadInstanceLabels(instanceMetaData.getId()));
+        result.getLabels().addAll(loadInstanceLabels(instanceMetaData.getId()));
         InstanceState.get(loadInstanceStatus(instanceMetaData.getId())).ifPresent(result::switchState);
         loadInstanceWorkerId(instanceMetaData.getId()).ifPresent(result::setWorkerId);
         return result;
