@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.state.impl;
+package org.apache.shardingsphere.infra.state.instance;
 
-import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
-import org.apache.shardingsphere.proxy.frontend.state.ProxyState;
+import org.junit.jupiter.api.Test;
 
-/**
- * Lock proxy state.
- */
-public final class LockProxyState implements ProxyState {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class InstanceStateTest {
     
-    @Override
-    public void execute(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final ConnectionSession connectionSession) {
-        throw new UnsupportedSQLOperationException("LockProxyState");
+    @Test
+    void assertGetInstanceState() {
+        assertTrue(InstanceState.get("OK").isPresent());
+        assertTrue(InstanceState.get("CIRCUIT_BREAK").isPresent());
+        assertFalse(InstanceState.get("TEST_STATE").isPresent());
     }
 }

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataFactory
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData;
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeDataSwapper;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -151,7 +152,7 @@ public final class ComputeNodeStatusService {
     public ComputeNodeInstance loadComputeNodeInstance(final InstanceMetaData instanceMetaData) {
         ComputeNodeInstance result = new ComputeNodeInstance(instanceMetaData);
         result.getLabels().addAll(loadInstanceLabels(instanceMetaData.getId()));
-        result.switchState(loadInstanceStatus(instanceMetaData.getId()));
+        InstanceState.get(loadInstanceStatus(instanceMetaData.getId())).ifPresent(result::switchState);
         loadInstanceWorkerId(instanceMetaData.getId()).ifPresent(result::setWorkerId);
         return result;
     }
