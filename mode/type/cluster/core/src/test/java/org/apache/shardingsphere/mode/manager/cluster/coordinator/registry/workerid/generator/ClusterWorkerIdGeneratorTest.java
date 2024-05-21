@@ -44,7 +44,7 @@ class ClusterWorkerIdGeneratorTest {
     @Test
     void assertGenerateWithoutExistedWorkerId() {
         ClusterPersistRepository repository = mock(ClusterPersistRepository.class);
-        doAnswer((Answer<Object>) invocation -> "foo_id").when(repository).persistEphemeral("/worker_id/0", "foo_id");
+        doAnswer((Answer<Object>) invocation -> Boolean.TRUE).when(repository).persistExclusiveEphemeral("/reservation/worker_id/0", "foo_id");
         assertThat(new ClusterWorkerIdGenerator(repository, "foo_id").generate(new Properties()), is(0));
     }
 }
