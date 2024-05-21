@@ -26,9 +26,7 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterLockDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
@@ -69,16 +67,6 @@ public final class StateChangedSubscriber implements EventSubscriber {
         for (StaticDataSourceRuleAttribute each : database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)) {
             each.updateStatus(qualifiedDataSource, event.getStatus().getStatus());
         }
-    }
-    
-    /**
-     * Reset cluster state.
-     * 
-     * @param event cluster lock deleted event
-     */
-    @Subscribe
-    public synchronized void renew(final ClusterLockDeletedEvent event) {
-        contextManager.getComputeNodeInstanceContext().getEventBusContext().post(new ClusterStateChangedEvent(event.getState()));
     }
     
     /**

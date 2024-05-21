@@ -33,12 +33,10 @@ public enum InstanceState {
      * @return instance state enum
      */
     public static Optional<InstanceState> get(final String state) {
-        if (OK.name().equals(state)) {
-            return Optional.of(OK);
+        try {
+            return Optional.ofNullable(state).isPresent() ? Optional.of(InstanceState.valueOf(state)) : Optional.empty();
+        } catch (final IllegalArgumentException ignore) {
+            return Optional.empty();
         }
-        if (CIRCUIT_BREAK.name().equals(state)) {
-            return Optional.of(CIRCUIT_BREAK);
-        }
-        return Optional.empty();
     }
 }
