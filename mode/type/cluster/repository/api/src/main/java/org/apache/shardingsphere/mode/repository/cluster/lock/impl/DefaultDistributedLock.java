@@ -63,8 +63,7 @@ public final class DefaultDistributedLock implements DistributedLock {
     }
     
     private boolean persist(final String value) {
-        client.persistExclusiveEphemeral(lockKey, value);
-        return true;
+        return client.persistExclusiveEphemeral(lockKey, value);
     }
     
     @Override
