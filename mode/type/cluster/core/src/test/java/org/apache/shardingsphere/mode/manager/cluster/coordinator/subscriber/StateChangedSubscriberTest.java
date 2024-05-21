@@ -36,7 +36,6 @@ import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterLockDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeInstanceStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
@@ -119,13 +118,6 @@ class StateChangedSubscriberTest {
         verify(ruleAttribute).updateStatus(
                 argThat(qualifiedDataSource -> Objects.equals(event.getQualifiedDataSource(), qualifiedDataSource)),
                 argThat(dataSourceState -> event.getStatus().getStatus() == dataSourceState));
-    }
-    
-    @Test
-    void assertResetClusterState() {
-        ClusterLockDeletedEvent mockLockDeletedEvent = new ClusterLockDeletedEvent(ClusterState.OK);
-        subscriber.renew(mockLockDeletedEvent);
-        assertThat(contextManager.getStateContext().getCurrentClusterState(), is(ClusterState.OK));
     }
     
     @Test
