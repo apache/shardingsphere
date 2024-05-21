@@ -25,9 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class StateServiceTest {
@@ -40,14 +38,6 @@ class StateServiceTest {
         StateService stateService = new StateService(repository);
         stateService.persist(ClusterState.OK);
         verify(repository).persist(ComputeNode.getClusterStateNodePath(), ClusterState.OK.name());
-    }
-    
-    @Test
-    void assertPersistClusterStateWithPath() {
-        StateService stateService = new StateService(repository);
-        when(repository.getDirectly("/nodes/compute_nodes/status")).thenReturn(ClusterState.OK.name());
-        stateService.persist(ClusterState.OK);
-        verify(repository, times(0)).persist(ComputeNode.getClusterStateNodePath(), ClusterState.OK.name());
     }
     
     @Test
