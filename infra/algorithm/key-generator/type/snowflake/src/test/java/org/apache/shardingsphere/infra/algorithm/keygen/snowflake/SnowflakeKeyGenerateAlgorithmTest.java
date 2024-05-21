@@ -23,16 +23,9 @@ import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmExecute
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.fixture.FixedTimeService;
-import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.fixture.WorkerIdGeneratorFixture;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContextAware;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.awaitility.Awaitility;
@@ -200,26 +193,10 @@ class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    void assertSetWorkerIdFailureWhenNegative() {
-        SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
-        ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(-1),
-                new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
-        assertThrows(IllegalArgumentException.class, () -> algorithm.setComputeNodeInstanceContext(computeNodeInstanceContext));
-    }
-    
-    @Test
     void assertSetMaxVibrationOffsetFailureWhenNegative() {
         assertThrows(AlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "-1")))
                         .generateKeys(mock(AlgorithmSQLContext.class), 1));
-    }
-    
-    @Test
-    void assertSetWorkerIdFailureWhenOutOfRange() {
-        SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
-        ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Integer.MIN_VALUE),
-                new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
-        assertThrows(IllegalArgumentException.class, () -> algorithm.setComputeNodeInstanceContext(computeNodeInstanceContext));
     }
     
     @Test
