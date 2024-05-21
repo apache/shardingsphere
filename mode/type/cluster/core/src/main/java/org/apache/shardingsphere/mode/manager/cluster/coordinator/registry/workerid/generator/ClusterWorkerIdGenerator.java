@@ -83,8 +83,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
         Integer preselectedWorkerId = availableWorkerIds.poll();
         Preconditions.checkNotNull(preselectedWorkerId, "Preselected worker-id can not be null.");
         try {
-            repository.persistExclusiveEphemeral(WorkerIdReservationNode.getWorkerIdReservationPath(preselectedWorkerId), instanceId);
-            return Optional.of(preselectedWorkerId);
+            return repository.persistExclusiveEphemeral(WorkerIdReservationNode.getWorkerIdReservationPath(preselectedWorkerId), instanceId) ? Optional.of(preselectedWorkerId) : Optional.empty();
         } catch (final ClusterPersistRepositoryException ignore) {
             return Optional.empty();
         }

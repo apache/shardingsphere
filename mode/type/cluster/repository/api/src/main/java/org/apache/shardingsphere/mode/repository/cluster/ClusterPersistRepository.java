@@ -46,8 +46,9 @@ public interface ClusterPersistRepository extends PersistRepository {
      *
      * @param key key of data
      * @param value value of data
+     * @return persist exclusive node sucess or not 
      */
-    void persistExclusiveEphemeral(String key, String value);
+    boolean persistExclusiveEphemeral(String key, String value);
     
     /**
      * Get distributed lock holder.
