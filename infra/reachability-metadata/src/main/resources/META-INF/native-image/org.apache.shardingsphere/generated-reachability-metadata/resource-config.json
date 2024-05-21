@@ -292,9 +292,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qcom/atomikos/icatch/provider/imp/transactions.properties\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\Qseata-script-client-conf-file.conf\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
     "pattern":"\\Qjndi.properties\\E"
   }, {
@@ -2754,6 +2751,9 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader"},
     "pattern":"\\Qschema\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\Qseata-script-client-conf-file.conf\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\Qseata.conf\\E"
