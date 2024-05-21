@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdAssignedException;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node.WorkerIdNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node.WorkerIdReservationNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
 
@@ -83,7 +83,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
         Integer preselectedWorkerId = availableWorkerIds.poll();
         Preconditions.checkNotNull(preselectedWorkerId, "Preselected worker-id can not be null.");
         try {
-            repository.persistExclusiveEphemeral(WorkerIdNode.getWorkerIdGeneratorPath(preselectedWorkerId), instanceId);
+            repository.persistExclusiveEphemeral(WorkerIdReservationNode.getWorkerIdReservationPath(preselectedWorkerId), instanceId);
             return Optional.of(preselectedWorkerId);
         } catch (final ClusterPersistRepositoryException ignore) {
             return Optional.empty();
