@@ -70,7 +70,7 @@ class ProxyContextTest {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
         ProxyContext.init(new ContextManager(metaDataContexts, mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS)));
         assertThat(ProxyContext.getInstance().getContextManager().getStateContext(), is(ProxyContext.getInstance().getContextManager().getStateContext()));
-        assertThat(ProxyContext.getInstance().getContextManager().getStateContext().getCurrentState(), is(ClusterState.OK));
+        assertThat(ProxyContext.getInstance().getContextManager().getStateContext().getCurrentClusterState(), is(ClusterState.OK));
         assertThat(ProxyContext.getInstance().getContextManager().getMetaDataContexts(), is(ProxyContext.getInstance().getContextManager().getMetaDataContexts()));
         assertTrue(ProxyContext.getInstance().getInstanceStateContext().isPresent());
         assertThat(ProxyContext.getInstance().getInstanceStateContext(), is(ProxyContext.getInstance().getInstanceStateContext()));

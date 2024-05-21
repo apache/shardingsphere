@@ -40,7 +40,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -262,12 +261,6 @@ class ContextManagerTest {
         ShardingSphereDatabase database = mockDatabase();
         contextManager.reloadTable(database, "foo_schema", "foo_table");
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnits().containsKey("foo_ds"));
-    }
-    
-    @Test
-    void assertUpdateClusterState() {
-        contextManager.updateClusterState(ClusterState.READ_ONLY);
-        assertThat(contextManager.getStateContext().getCurrentState(), is(ClusterState.READ_ONLY));
     }
     
     @Test

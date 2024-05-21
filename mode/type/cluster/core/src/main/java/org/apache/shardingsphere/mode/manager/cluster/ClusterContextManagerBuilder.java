@@ -128,7 +128,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         StateService stateService = contextManager.getStateContext().getStateService();
         Optional<ClusterState> clusterState = stateService.load();
         if (clusterState.isPresent()) {
-            contextManager.updateClusterState(clusterState.get());
+            contextManager.getStateContext().switchCurrentClusterState(clusterState.get());
         } else {
             stateService.persist(ClusterState.OK);
         }

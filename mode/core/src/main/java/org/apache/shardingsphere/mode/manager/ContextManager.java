@@ -37,7 +37,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.context.ConfigurationContextManager;
 import org.apache.shardingsphere.mode.manager.context.ResourceMetaDataContextManager;
@@ -272,15 +271,6 @@ public final class ContextManager implements AutoCloseable {
         ShardingSphereSchema schema = GenericSchemaBuilder.build(Collections.singleton(tableName), material).getOrDefault(schemaName, new ShardingSphereSchema());
         metaDataContexts.get().getPersistService().getDatabaseMetaDataService().getTableMetaDataPersistService()
                 .persist(database.getName(), schemaName, Collections.singletonMap(tableName, schema.getTable(tableName)));
-    }
-    
-    /**
-     * Update cluster state.
-     * 
-     * @param clusterState cluster state
-     */
-    public void updateClusterState(final ClusterState clusterState) {
-        stateContext.switchState(clusterState);
     }
     
     @Override

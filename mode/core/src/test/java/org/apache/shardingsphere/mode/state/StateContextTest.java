@@ -29,14 +29,14 @@ class StateContextTest {
     private final StateContext stateContext = new StateContext(mock(StateService.class));
     
     @Test
-    void assertGetCurrentState() {
-        assertThat(stateContext.getCurrentState(), is(ClusterState.OK));
+    void assertGetCurrentClusterState() {
+        assertThat(stateContext.getCurrentClusterState(), is(ClusterState.OK));
     }
     
     @Test
-    void assertSwitchState() {
-        assertThat(stateContext.getCurrentState(), is(ClusterState.OK));
-        stateContext.switchState(ClusterState.UNAVAILABLE);
-        assertThat(stateContext.getCurrentState(), is(ClusterState.UNAVAILABLE));
+    void assertSwitchCurrentClusterState() {
+        assertThat(stateContext.getCurrentClusterState(), is(ClusterState.OK));
+        stateContext.switchCurrentClusterState(ClusterState.UNAVAILABLE);
+        assertThat(stateContext.getCurrentClusterState(), is(ClusterState.UNAVAILABLE));
     }
 }
