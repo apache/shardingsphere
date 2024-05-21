@@ -17,24 +17,15 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.Test;
 
-/**
- * Worker id node.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class WorkerIdNode {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class WorkerIdReservationNodeTest {
     
-    private static final String ROOT_NODE = "worker_id";
-    
-    /**
-     * Get worker id generator path.
-     *
-     * @param workerId worker id
-     * @return worker id generator path
-     */
-    public static String getWorkerIdGeneratorPath(final int workerId) {
-        return String.join("/", "", ROOT_NODE, String.valueOf(workerId));
+    @Test
+    void assertGetWorkerIdReservationPath() {
+        assertThat(WorkerIdReservationNode.getWorkerIdReservationPath(1), is("/reservation/worker_id/1"));
     }
 }
