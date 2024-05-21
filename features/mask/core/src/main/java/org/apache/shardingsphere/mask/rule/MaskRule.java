@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mask.rule;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
@@ -29,7 +31,8 @@ import org.apache.shardingsphere.mask.rule.attribute.MaskTableMapperRuleAttribut
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,20 +46,17 @@ public final class MaskRule implements DatabaseRule, PartialRuleUpdateSupported<
     
     private final AtomicReference<MaskRuleConfiguration> configuration = new AtomicReference<>();
     
-    private final ConcurrentHashMap<String, MaskAlgorithm<?, ?>> maskAlgorithms;
+    private final Map<String, MaskAlgorithm<?, ?>> maskAlgorithms = new CaseInsensitiveMap<>(Collections.emptyMap(), new ConcurrentHashMap<>());
     
-    private final ConcurrentHashMap<String, MaskTable> tables;
+    private final Map<String, MaskTable> tables = new CaseInsensitiveMap<>(Collections.emptyMap(), new ConcurrentHashMap<>());
     
     private final AtomicReference<RuleAttributes> attributes = new AtomicReference<>();
     
     @SuppressWarnings("unchecked")
     public MaskRule(final MaskRuleConfiguration ruleConfig) {
         configuration.set(ruleConfig);
-        maskAlgorithms = ruleConfig.getMaskAlgorithms().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> TypedSPILoader.getService(MaskAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps()),
-                        (oldValue, currentValue) -> oldValue, ConcurrentHashMap::new));
-        tables = ruleConfig.getTables().stream()
-                .collect(Collectors.toMap(each -> each.getName().toLowerCase(), each -> new MaskTable(each, maskAlgorithms), (oldValue, currentValue) -> oldValue, ConcurrentHashMap::new));
+        ruleConfig.getMaskAlgorithms().forEach((key, value) -> maskAlgorithms.put(key, TypedSPILoader.getService(MaskAlgorithm.class, value.getType(), value.getProps())));
+        ruleConfig.getTables().forEach(each -> tables.put(each.getName(), new MaskTable(each, maskAlgorithms)));
         attributes.set(new RuleAttributes(new MaskTableMapperRuleAttribute(tables.keySet())));
     }
     
@@ -87,17 +87,16 @@ public final class MaskRule implements DatabaseRule, PartialRuleUpdateSupported<
     
     @Override
     public boolean partialUpdate(final MaskRuleConfiguration toBeUpdatedRuleConfig) {
-        Collection<String> toBeAddedTableNames = toBeUpdatedRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
-        toBeAddedTableNames.removeAll(tables.keySet());
+        Collection<String> toBeUpdatedTablesNames = toBeUpdatedRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toCollection(CaseInsensitiveSet::new));
+        Collection<String> toBeAddedTableNames = toBeUpdatedTablesNames.stream().filter(each -> !tables.containsKey(each)).collect(Collectors.toList());
         if (!toBeAddedTableNames.isEmpty()) {
             toBeAddedTableNames.forEach(each -> addTableRule(each, toBeUpdatedRuleConfig));
             attributes.set(new RuleAttributes(new MaskTableMapperRuleAttribute(tables.keySet())));
             return true;
         }
-        Collection<String> toBeRemovedTableNames = new HashSet<>(tables.keySet());
-        toBeRemovedTableNames.removeAll(toBeUpdatedRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList()));
+        Collection<String> toBeRemovedTableNames = tables.keySet().stream().filter(each -> !toBeUpdatedTablesNames.contains(each)).collect(Collectors.toList());
         if (!toBeRemovedTableNames.isEmpty()) {
-            toBeRemovedTableNames.stream().map(String::toLowerCase).forEach(tables::remove);
+            toBeRemovedTableNames.forEach(tables::remove);
             attributes.set(new RuleAttributes(new MaskTableMapperRuleAttribute(tables.keySet())));
             // TODO check and remove unused INLINE mask algorithms
             return true;
@@ -112,7 +111,7 @@ public final class MaskRule implements DatabaseRule, PartialRuleUpdateSupported<
         for (Entry<String, AlgorithmConfiguration> entry : toBeUpdatedRuleConfig.getMaskAlgorithms().entrySet()) {
             maskAlgorithms.computeIfAbsent(entry.getKey(), key -> TypedSPILoader.getService(MaskAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps()));
         }
-        tables.put(tableName.toLowerCase(), new MaskTable(tableRuleConfig, maskAlgorithms));
+        tables.put(tableName, new MaskTable(tableRuleConfig, maskAlgorithms));
     }
     
     private MaskTableRuleConfiguration getTableRuleConfiguration(final String tableName, final MaskRuleConfiguration toBeUpdatedRuleConfig) {
