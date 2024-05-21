@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public final class StateContext {
     
-    private final AtomicReference<ClusterState> currentState = new AtomicReference<>(ClusterState.OK);
+    private final AtomicReference<ClusterState> currentClusterState = new AtomicReference<>(ClusterState.OK);
     
     @Getter
     private final StateService stateService;
@@ -38,8 +38,8 @@ public final class StateContext {
      * 
      * @return current cluster state
      */
-    public ClusterState getCurrentState() {
-        return currentState.get();
+    public ClusterState getCurrentClusterState() {
+        return currentClusterState.get();
     }
     
     /**
@@ -47,7 +47,7 @@ public final class StateContext {
      * 
      * @param state to be switched cluster state
      */
-    public void switchState(final ClusterState state) {
-        currentState.set(state);
+    public void switchCurrentClusterState(final ClusterState state) {
+        currentClusterState.set(state);
     }
 }

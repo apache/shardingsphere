@@ -265,12 +265,6 @@ class ContextManagerTest {
     }
     
     @Test
-    void assertUpdateClusterState() {
-        contextManager.updateClusterState(ClusterState.READ_ONLY);
-        assertThat(contextManager.getStateContext().getCurrentState(), is(ClusterState.READ_ONLY));
-    }
-    
-    @Test
     void assertClose() {
         contextManager.close();
         verify(metaDataContexts).close();
