@@ -25,7 +25,7 @@ chapter = true
 
 相比于数据分片方案的逐渐成熟，集性能、透明化、自动化、强一致、并能适用于各种应用场景于一体的分布式事务解决方案则显得凤毛麟角。基于两（三）阶段提交的分布式事务的性能瓶颈以及柔性事务的业务改造问题，使得分布式事务至今依然是令架构师们头疼的问题。
 
-Apache ShardingSphere（Incubating）不失时机的在2019年初，提供了一个刚柔并济的一体化分布式事务解决方案。如果您的应用系统正在受到这方面的困扰，不妨倒上一杯咖啡，花十分钟阅读此文，说不定会有些收获呢？
+Apache ShardingSphere（Incubating）不失时机的在 2019 年初，提供了一个刚柔并济的一体化分布式事务解决方案。如果您的应用系统正在受到这方面的困扰，不妨倒上一杯咖啡，花十分钟阅读此文，说不定会有些收获呢？
 
 ### 背景
 
@@ -91,9 +91,9 @@ TCC（ Try-Cancel/Confirm 实现)是另一种柔性事务的协调实现。TCC �
 
 两阶段提交与柔性事务的 API 和功能并不完全相同，在它们之间并不能做到自由的透明切换。在开发决策阶段，就不得不在两阶段提交的事务和柔性事务之间抉择，使得设计和开发成本被大幅增加。
 
-基于XA的两阶段提交事务使用相对简单，但是无法很好的应对互联网的高并发或复杂系统的长事务场景；柔性事务则需要开发者对应用进行改造，接入成本非常高，并且需要开发者自行实现资源占用和反向补偿。
+基于 XA 的两阶段提交事务使用相对简单，但是无法很好的应对互联网的高并发或复杂系统的长事务场景；柔性事务则需要开发者对应用进行改造，接入成本非常高，并且需要开发者自行实现资源占用和反向补偿。
 
-### ShardingSphere的分布式事务
+### ShardingSphere 的分布式事务
 
 整合现有的成熟事务方案，为本地事务、两阶段提交和柔性事务提供统一的分布式事务接口，并弥补当前方案的不足，提供一站式的分布式事务解决方案是 Apache ShardingSphere（Incubating）分布式事务模块的主要设计目标。该模块的名称是 sharding-transaction。可以用刚柔并济、自动化和透明化这3个关键词来概括 sharding-transaction 模块的设计理念和功能呈现。
 
@@ -135,7 +135,7 @@ sharding-transaction 模块由 sharding-transaction-core，sharding-transaction-
 
 Sharding-transaction-xa 模块进一步定义了面向 XA 事务管理器开发者的SPI，开发者仅需实现 SPI 定义的接口，即可自动加入至 Apache ShardingSphere（Incubating）生态，作为其 XA 事务管理器。
 
-Apache ShardingSphere（Incubating）官方目前实现了基于 Atomikos 和 Bitronix 的SPI，并且邀请了 Redhat JBoss 的 XA 事务引擎 Narayana [https://github.com/jbosstm/narayana] 开发团队实现了 JBoss 的SPI。用户可以自行的在 Atomikos，Bitronix 和 Narayana 间选择自己喜欢的 XA 事务管理器。
+Apache ShardingSphere（Incubating）官方目前实现了基于 Atomikos 和 Bitronix 的 SPI，并且邀请了 Redhat JBoss 的 XA 事务引擎 Narayana [https://github.com/jbosstm/narayana] 开发团队实现了 JBoss 的 SPI。用户可以自行的在 Atomikos，Bitronix 和 Narayana 间选择自己喜欢的 XA 事务管理器。
 
 
 
@@ -196,7 +196,7 @@ Saga 模块的架构图如下：
 
 #### 接入端—面向原生事务接口的分布式事务
 
-Apache ShardingSphere（Incubating）的目标是像使用一个数据库一样使用分片后的多数据库，在事务模块，这个目标依然适用。无论被 ShardingSphere 所管理的数据库如何分片，面向开发者的逻辑数据库始终只有一个。因此，ShardingSphere 的事务接口依然是原生的本地事务接口，即 JDBC 的 java.sql.Connection的setAutoCommit, commit 和 rollback 方法；以及面向数据库事务管理器的 begin, commit 和 rollback 语句。在用户调用原生本地事务接口的同时，ShardingSphere 则通过 sharding-transaction 模块保证后端分片数据库的分布式事务。
+Apache ShardingSphere（Incubating）的目标是像使用一个数据库一样使用分片后的多数据库，在事务模块，这个目标依然适用。无论被 ShardingSphere 所管理的数据库如何分片，面向开发者的逻辑数据库始终只有一个。因此，ShardingSphere 的事务接口依然是原生的本地事务接口，即 JDBC 的 java.sql.Connection 的 setAutoCommit, commit 和 rollback 方法；以及面向数据库事务管理器的 begin, commit 和 rollback 语句。在用户调用原生本地事务接口的同时，ShardingSphere 则通过 sharding-transaction 模块保证后端分片数据库的分布式事务。
 
 
 
