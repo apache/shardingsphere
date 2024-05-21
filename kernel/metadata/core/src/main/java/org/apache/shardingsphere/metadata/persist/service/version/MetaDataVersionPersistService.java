@@ -30,10 +30,6 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class MetaDataVersionPersistService implements MetaDataVersionBasedPersistService {
     
-    private static final String ACTIVE_VERSION = "/active_version";
-    
-    private static final String VERSIONS = "/versions/";
-    
     private final PersistRepository repository;
     
     @Override
@@ -42,8 +38,8 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
             if (each.getNextActiveVersion().equals(each.getCurrentActiveVersion())) {
                 continue;
             }
-            repository.persist(each.getKey() + ACTIVE_VERSION, each.getNextActiveVersion());
-            repository.delete(each.getKey() + VERSIONS + each.getCurrentActiveVersion());
+            repository.persist(each.getActiveVersionNodePath(), each.getNextActiveVersion());
+            repository.delete(each.getVersionsNodePath());
         }
     }
     
