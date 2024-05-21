@@ -50,4 +50,13 @@ public final class StateContext {
     public void switchCurrentClusterState(final ClusterState state) {
         currentClusterState.set(state);
     }
+    
+    /**
+     * Update cluster state.
+     *
+     * @param state cluster state
+     */
+    public void updateClusterState(final ClusterState state) {
+        stateService.persist(state);
+    }
 }

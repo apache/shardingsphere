@@ -39,9 +39,7 @@ public final class StateService {
      * @param state cluster state
      */
     public void persist(final ClusterState state) {
-        if (Strings.isNullOrEmpty(repository.getDirectly(ComputeNode.getClusterStateNodePath()))) {
-            repository.persist(ComputeNode.getClusterStateNodePath(), state.name());
-        }
+        repository.persist(ComputeNode.getClusterStateNodePath(), state.name());
     }
     
     /**
