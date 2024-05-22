@@ -17,38 +17,32 @@
 
 package org.apache.shardingsphere.mode.state;
 
-import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
+import static org.mockito.Mockito.verify;
 
-/**
- * State service.
- */
-@RequiredArgsConstructor
-public final class StateService {
+@ExtendWith(MockitoExtension.class)
+class StatePersistServiceTest {
     
-    private final PersistRepository repository;
+    @Mock
+    private PersistRepository repository;
     
-    /**
-     * Persist cluster state.
-     *
-     * @param state cluster state
-     */
-    public void persist(final ClusterState state) {
-        repository.persist(ComputeNode.getClusterStateNodePath(), state.name());
+    @Test
+    void assertUpdateClusterStateClusterStateWithoutPath() {
+        StatePersistService statePersistService = new StatePersistService(repository);
+        statePersistService.updateClusterState(ClusterState.OK);
+        verify(repository).persist(ComputeNode.getClusterStateNodePath(), ClusterState.OK.name());
     }
     
-    /**
-     * Load cluster state.
-     *
-     * @return cluster state
-     */
-    public Optional<ClusterState> load() {
-        String value = repository.getDirectly(ComputeNode.getClusterStateNodePath());
-        return Strings.isNullOrEmpty(value) ? Optional.empty() : Optional.of(ClusterState.valueOf(value));
+    @Test
+    void assertLoadClusterStateClusterState() {
+        new StatePersistService(repository).loadClusterState();
+        verify(repository).getDirectly(ComputeNode.getClusterStateNodePath());
     }
 }

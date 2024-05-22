@@ -22,12 +22,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 class StateContextTest {
     
-    private final StateContext stateContext = new StateContext(mock(StateService.class));
+    private final StateContext stateContext = new StateContext();
     
     @Test
     void assertGetCurrentClusterState() {
@@ -39,11 +37,5 @@ class StateContextTest {
         assertThat(stateContext.getCurrentClusterState(), is(ClusterState.OK));
         stateContext.switchCurrentClusterState(ClusterState.UNAVAILABLE);
         assertThat(stateContext.getCurrentClusterState(), is(ClusterState.UNAVAILABLE));
-    }
-    
-    @Test
-    void assertUpdateClusterState() {
-        stateContext.updateClusterState(ClusterState.OK);
-        verify(stateContext.getStateService()).persist(ClusterState.OK);
     }
 }

@@ -38,11 +38,11 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Compute node status service.
+ * Compute node persist service.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class ComputeNodeService {
+public final class ComputeNodePersistService {
     
     private final PersistRepository repository;
     
