@@ -23,7 +23,6 @@ import org.apache.shardingsphere.distsql.statement.ral.updatable.SetInstanceStat
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
-import org.apache.shardingsphere.mode.event.node.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
@@ -39,8 +38,8 @@ public final class SetInstanceStatusExecutor implements DistSQLUpdateExecutor<Se
         } else {
             checkEnablingIsValid(contextManager, sqlStatement.getInstanceId());
         }
-        contextManager.getComputeNodeInstanceContext().getEventBusContext().post(
-                new ComputeNodeStatusChangedEvent(sqlStatement.getInstanceId(), "DISABLE".equals(sqlStatement.getStatus()) ? InstanceState.CIRCUIT_BREAK : InstanceState.OK));
+        contextManager.getContextServiceFacade().getComputeNodeService().updateComputeNodeState(sqlStatement.getInstanceId(),
+                "DISABLE".equals(sqlStatement.getStatus()) ? InstanceState.CIRCUIT_BREAK : InstanceState.OK);
     }
     
     private void checkEnablingIsValid(final ContextManager contextManager, final String instanceId) {

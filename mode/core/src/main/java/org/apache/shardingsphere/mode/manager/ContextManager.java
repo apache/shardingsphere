@@ -44,6 +44,7 @@ import org.apache.shardingsphere.mode.manager.context.ShardingSphereDatabaseCont
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.service.ContextServiceFacade;
 import org.apache.shardingsphere.mode.state.StateContext;
 import org.apache.shardingsphere.mode.state.StateService;
 
@@ -74,6 +75,8 @@ public final class ContextManager implements AutoCloseable {
     
     private final StateContext stateContext;
     
+    private final ContextServiceFacade contextServiceFacade;
+    
     public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         this.metaDataContexts = new AtomicReference<>(metaDataContexts);
         this.computeNodeInstanceContext = computeNodeInstanceContext;
@@ -82,6 +85,7 @@ public final class ContextManager implements AutoCloseable {
         resourceMetaDataContextManager = new ResourceMetaDataContextManager(this.metaDataContexts);
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         stateContext = new StateContext(new StateService(metaDataContexts.getPersistService().getRepository()));
+        contextServiceFacade = new ContextServiceFacade(metaDataContexts.getPersistService().getRepository());
     }
     
     /**

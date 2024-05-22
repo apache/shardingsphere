@@ -32,9 +32,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeInstanceStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
  * State changed subscriber.
@@ -44,11 +42,8 @@ public final class StateChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
     
-    private final ComputeNodeStatusService computeNodeStatusService;
-    
-    public StateChangedSubscriber(final ContextManager contextManager, final ClusterPersistRepository repository) {
+    public StateChangedSubscriber(final ContextManager contextManager) {
         this.contextManager = contextManager;
-        computeNodeStatusService = new ComputeNodeStatusService(repository);
     }
     
     /**
@@ -117,7 +112,7 @@ public final class StateChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final InstanceOnlineEvent event) {
-        contextManager.getComputeNodeInstanceContext().addComputeNodeInstance(computeNodeStatusService.loadComputeNodeInstance(event.getInstanceMetaData()));
+        contextManager.getComputeNodeInstanceContext().addComputeNodeInstance(contextManager.getContextServiceFacade().getComputeNodeService().loadComputeNodeInstance(event.getInstanceMetaData()));
     }
     
     /**

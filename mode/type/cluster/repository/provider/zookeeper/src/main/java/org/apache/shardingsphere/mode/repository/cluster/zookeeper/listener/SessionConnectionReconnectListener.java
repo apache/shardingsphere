@@ -23,8 +23,8 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.service.ComputeNodeService;
 
 import java.util.Properties;
 
@@ -38,11 +38,11 @@ public final class SessionConnectionReconnectListener implements ConnectionState
     
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
-    private final ComputeNodeStatusService computeNodeStatusService;
+    private final ComputeNodeService computeNodeService;
     
     public SessionConnectionReconnectListener(final ComputeNodeInstanceContext computeNodeInstanceContext, final ClusterPersistRepository repository) {
         this.computeNodeInstanceContext = computeNodeInstanceContext;
-        computeNodeStatusService = new ComputeNodeStatusService(repository);
+        this.computeNodeService = new ComputeNodeService(repository);
     }
     
     @Override
@@ -63,7 +63,7 @@ public final class SessionConnectionReconnectListener implements ConnectionState
                 if (isNeedGenerateWorkerId()) {
                     computeNodeInstanceContext.generateWorkerId(new Properties());
                 }
-                computeNodeStatusService.registerOnline(computeNodeInstanceContext.getInstance());
+                computeNodeService.registerOnline(computeNodeInstanceContext.getInstance());
                 return true;
             }
             sleepInterval();

@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.node;
+package org.apache.shardingsphere.mode.service;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.state.instance.InstanceState;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
- * Compute node status changed event.
+ * Context service facade.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ComputeNodeStatusChangedEvent {
+public final class ContextServiceFacade {
     
-    private final String instanceId;
+    private final ComputeNodeService computeNodeService;
     
-    private final InstanceState state;
+    public ContextServiceFacade(final PersistRepository repository) {
+        computeNodeService = new ComputeNodeService(repository);
+    }
 }
