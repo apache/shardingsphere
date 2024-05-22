@@ -47,7 +47,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
-import org.apache.shardingsphere.mode.state.StateService;
+import org.apache.shardingsphere.mode.state.StatePersistService;
 import org.apache.shardingsphere.mode.storage.service.QualifiedDataSourceStatusService;
 
 import java.sql.SQLException;
@@ -109,23 +109,23 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void registerOnline(final EventBusContext eventBusContext, final ComputeNodeInstanceContext computeNodeInstanceContext,
                                 final ClusterPersistRepository repository, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
-        contextManager.getContextServiceFacade().getComputeNodeService().registerOnline(computeNodeInstanceContext.getInstance());
+        contextManager.getPersistServiceFacade().getComputeNodePersistService().registerOnline(computeNodeInstanceContext.getInstance());
         new GovernanceWatcherFactory(repository,
                 eventBusContext, param.getInstanceMetaData() instanceof JDBCInstanceMetaData ? param.getDatabaseConfigs().keySet() : Collections.emptyList()).watchListeners();
         if (null != param.getLabels()) {
             contextManager.getComputeNodeInstanceContext().getInstance().getLabels().addAll(param.getLabels());
         }
-        contextManager.getComputeNodeInstanceContext().getAllClusterInstances().addAll(contextManager.getContextServiceFacade().getComputeNodeService().loadAllComputeNodeInstances());
+        contextManager.getComputeNodeInstanceContext().getAllClusterInstances().addAll(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllComputeNodeInstances());
         new ClusterEventSubscriberRegistry(contextManager, repository).register();
     }
     
     private void setClusterState(final ContextManager contextManager) {
-        StateService stateService = contextManager.getStateContext().getStateService();
-        Optional<ClusterState> clusterState = stateService.load();
+        StatePersistService statePersistService = contextManager.getPersistServiceFacade().getStatePersistService();
+        Optional<ClusterState> clusterState = statePersistService.loadClusterState();
         if (clusterState.isPresent()) {
             contextManager.getStateContext().switchCurrentClusterState(clusterState.get());
         } else {
-            stateService.persist(ClusterState.OK);
+            statePersistService.updateClusterState(ClusterState.OK);
         }
     }
     

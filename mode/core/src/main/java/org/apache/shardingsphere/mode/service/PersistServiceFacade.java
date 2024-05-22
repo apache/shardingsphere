@@ -19,16 +19,20 @@ package org.apache.shardingsphere.mode.service;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.state.StatePersistService;
 
 /**
- * Context service facade.
+ * Persist service facade.
  */
 @Getter
-public final class ContextServiceFacade {
+public final class PersistServiceFacade {
     
-    private final ComputeNodeService computeNodeService;
+    private final ComputeNodePersistService computeNodePersistService;
     
-    public ContextServiceFacade(final PersistRepository repository) {
-        computeNodeService = new ComputeNodeService(repository);
+    private final StatePersistService statePersistService;
+    
+    public PersistServiceFacade(final PersistRepository repository) {
+        computeNodePersistService = new ComputeNodePersistService(repository);
+        statePersistService = new StatePersistService(repository);
     }
 }

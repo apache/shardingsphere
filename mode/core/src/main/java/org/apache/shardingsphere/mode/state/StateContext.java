@@ -17,21 +17,15 @@
 
 package org.apache.shardingsphere.mode.state;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * State context.
  */
-@RequiredArgsConstructor
 public final class StateContext {
     
     private final AtomicReference<ClusterState> currentClusterState = new AtomicReference<>(ClusterState.OK);
-    
-    @Getter
-    private final StateService stateService;
     
     /**
      * Get current cluster state.
@@ -49,14 +43,5 @@ public final class StateContext {
      */
     public void switchCurrentClusterState(final ClusterState state) {
         currentClusterState.set(state);
-    }
-    
-    /**
-     * Update cluster state.
-     *
-     * @param state cluster state
-     */
-    public void updateClusterState(final ClusterState state) {
-        stateService.persist(state);
     }
 }
