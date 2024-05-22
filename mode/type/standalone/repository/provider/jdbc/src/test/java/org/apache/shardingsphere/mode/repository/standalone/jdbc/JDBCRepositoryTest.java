@@ -164,7 +164,7 @@ class JDBCRepositoryTest {
         when(mockJdbcConnection.prepareStatement(repositorySQL.getInsertSQL())).thenReturn(mockPreparedStatementForPersist);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         repository.persist(key, value);
-        int depthOfDirectory = (int) key.chars().filter(ch -> ch == '/').count();
+        int depthOfDirectory = (int) key.chars().filter(each -> each == '/').count();
         int beginIndex = 0;
         String parentDirectory = "/";
         for (int i = 0; i < depthOfDirectory; i++) {
@@ -237,7 +237,7 @@ class JDBCRepositoryTest {
         String key = "key";
         when(mockJdbcConnection.prepareStatement(repositorySQL.getDeleteSQL())).thenReturn(mockPreparedStatement);
         repository.delete(key);
-        verify(mockPreparedStatement).setString(1, key);
+        verify(mockPreparedStatement).setString(1, key + "%");
         verify(mockPreparedStatement).executeUpdate();
     }
     
