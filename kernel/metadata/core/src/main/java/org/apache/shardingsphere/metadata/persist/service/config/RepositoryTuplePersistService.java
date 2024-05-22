@@ -69,7 +69,7 @@ public final class RepositoryTuplePersistService {
     }
     
     private RepositoryTuple getRepositoryTuple(final String node) {
-        String activeRuleKey = node.replace(ACTIVE_VERSION_PATH, VERSIONS_PATH) + "/" + repository.getDirectly(node);
-        return new RepositoryTuple(activeRuleKey, repository.getDirectly(activeRuleKey));
+        String activeRuleKey = node.replace(ACTIVE_VERSION_PATH, VERSIONS_PATH) + "/" + repository.query(node);
+        return new RepositoryTuple(activeRuleKey, repository.query(activeRuleKey));
     }
 }

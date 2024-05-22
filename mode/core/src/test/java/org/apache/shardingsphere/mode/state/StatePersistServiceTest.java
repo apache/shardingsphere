@@ -43,6 +43,6 @@ class StatePersistServiceTest {
     @Test
     void assertLoadClusterStateClusterState() {
         new StatePersistService(repository).loadClusterState();
-        verify(repository).getDirectly(ComputeNode.getClusterStateNodePath());
+        verify(repository).query(ComputeNode.getClusterStateNodePath());
     }
 }

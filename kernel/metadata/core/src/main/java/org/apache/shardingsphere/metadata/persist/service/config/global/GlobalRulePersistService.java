@@ -72,10 +72,10 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
             List<String> versions = repository.getChildrenKeys(GlobalNode.getGlobalRuleVersionsNode(each.getKey()));
             String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             repository.persist(GlobalNode.getGlobalRuleVersionNode(each.getKey(), nextActiveVersion), each.getValue());
-            if (Strings.isNullOrEmpty(repository.getDirectly(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey())))) {
+            if (Strings.isNullOrEmpty(repository.query(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey())))) {
                 repository.persist(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), DEFAULT_VERSION);
             }
-            result.add(new MetaDataVersion(GlobalNode.getGlobalRuleNode(each.getKey()), repository.getDirectly(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey())), nextActiveVersion));
+            result.add(new MetaDataVersion(GlobalNode.getGlobalRuleNode(each.getKey()), repository.query(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey())), nextActiveVersion));
         }
         return result;
     }

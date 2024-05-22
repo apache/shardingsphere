@@ -418,13 +418,13 @@ New issue Have a question about this project? Sign up for a free GitHub account 
 github.com
 
 ## Reference
-**1. ShardingSphere-Proxy Quickstart: **[https://shardingsphere.apache.org/document/5.1.0/cn/quick-start/shardingsphere-proxy-quick-start/](https://shardingsphere.apache.org/document/5.1.0/en/quick-start/shardingsphere-proxy-quick-start/)
+**1. ShardingSphere-Proxy Quickstart:** [https://shardingsphere.apache.org/document/5.1.0/cn/quick-start/shardingsphere-proxy-quick-start/](https://shardingsphere.apache.org/document/5.1.0/en/quick-start/shardingsphere-proxy-quick-start/)
 
-**2.DistSQL RDL：**https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/
+**2.DistSQL RDL**https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/
 
-**3.DistSQL RQL：**https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/syntax/rql/resource-query/
+**3.DistSQL RQL**https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/syntax/rql/resource-query/
 
-**4.DistSQL RAL：**https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/
+**4.DistSQL RAL**https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/
 
 **Apache ShardingSphere Project Links:**
 [ShardingSphere Github](https://github.com/apache/shardingsphere/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22project%3A+OpenForce+2022%22)

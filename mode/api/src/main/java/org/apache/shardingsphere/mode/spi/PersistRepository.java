@@ -32,12 +32,12 @@ public interface PersistRepository extends TypedSPI, AutoCloseable {
     String PATH_SEPARATOR = "/";
     
     /**
-     * Get value from registry center directly.
+     * Query data.
      *
-     * @param key key
-     * @return value
+     * @param key key to be queried
+     * @return queryed data
      */
-    String getDirectly(String key);
+    String query(String key);
     
     /**
      * Get names of sub-node.
