@@ -189,7 +189,7 @@ public abstract class BaseDQLE2EIT {
                             : actualValue;
                     assertThat(String.valueOf(convertedActualValue), is(String.valueOf(convertedExpectedValue)));
                 } else if (actualValue instanceof String && expectedValue instanceof byte[]) {
-                    assertThat(actualValue, is(new String(((byte[]) expectedValue))));
+                    assertThat(actualValue, is(new String((byte[]) expectedValue)));
                 } else {
                     assertThat(String.valueOf(actualValue), is(String.valueOf(expectedValue)));
                 }
