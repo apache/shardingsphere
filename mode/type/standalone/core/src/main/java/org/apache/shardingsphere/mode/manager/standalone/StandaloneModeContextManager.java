@@ -290,8 +290,8 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     public void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
         if (null != toBeRemovedRuleConfig) {
             sendDatabaseRuleChangedEvent(databaseName,
-                    contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().deleteConfigurations(databaseName,
-                            Collections.singleton(toBeRemovedRuleConfig)), Type.DELETED);
+                    contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().deleteConfigurations(databaseName, Collections.singleton(toBeRemovedRuleConfig)),
+                    Type.DELETED);
             clearServiceCache();
         }
     }
