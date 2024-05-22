@@ -47,7 +47,7 @@ public final class DataNode {
     private final String dataSourceName;
     
     private final String tableName;
-    
+
 
     /**
      * TODO add final for schemaName
@@ -62,7 +62,7 @@ public final class DataNode {
     public DataNode(final String dataNode) {
         // TODO remove duplicated splitting?
         boolean isIncludeInstance = isActualDataNodesIncludedDataSourceInstance(dataNode);
-        if (!isIncludeInstance && !(isValidDataNode(dataNode, 2))) {
+        if (!isIncludeInstance && !isValidDataNode(dataNode, 2)) {
             throw new InvalidDataNodeFormatException(dataNode);
         }
         if (isIncludeInstance && !isValidDataNode(dataNode, 3)) {
