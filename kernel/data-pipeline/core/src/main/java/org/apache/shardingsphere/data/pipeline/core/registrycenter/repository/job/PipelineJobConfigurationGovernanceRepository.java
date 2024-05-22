@@ -38,7 +38,7 @@ public final class PipelineJobConfigurationGovernanceRepository {
      * @return pipeline job configuration exists or not
      */
     public boolean isExisted(final String jobId) {
-        return null != repository.getDirectly(PipelineMetaDataNode.getJobConfigurationPath(jobId));
+        return null != repository.query(PipelineMetaDataNode.getJobConfigurationPath(jobId));
     }
     
     /**

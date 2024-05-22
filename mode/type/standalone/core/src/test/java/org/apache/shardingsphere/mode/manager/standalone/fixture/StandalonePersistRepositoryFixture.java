@@ -29,7 +29,7 @@ public final class StandalonePersistRepositoryFixture implements StandalonePersi
     private final Map<String, String> persistMap = new HashMap<>();
     
     @Override
-    public String getDirectly(final String key) {
+    public String query(final String key) {
         return persistMap.get(key);
     }
     

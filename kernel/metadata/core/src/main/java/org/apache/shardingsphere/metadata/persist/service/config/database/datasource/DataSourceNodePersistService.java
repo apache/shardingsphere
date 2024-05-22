@@ -63,7 +63,7 @@ public final class DataSourceNodePersistService implements DatabaseBasedPersistS
     public Map<String, DataSourcePoolProperties> load(final String databaseName) {
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>();
         for (String each : repository.getChildrenKeys(DataSourceMetaDataNode.getDataSourceNodesNode(databaseName))) {
-            String dataSourceValue = repository.getDirectly(DataSourceMetaDataNode.getDataSourceNodeVersionNode(databaseName, each, getDataSourceActiveVersion(databaseName, each)));
+            String dataSourceValue = repository.query(DataSourceMetaDataNode.getDataSourceNodeVersionNode(databaseName, each, getDataSourceActiveVersion(databaseName, each)));
             if (!Strings.isNullOrEmpty(dataSourceValue)) {
                 result.put(each, new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
             }
@@ -74,8 +74,8 @@ public final class DataSourceNodePersistService implements DatabaseBasedPersistS
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, DataSourcePoolProperties> load(final String databaseName, final String name) {
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>();
-        String dataSourceValue = repository.getDirectly(DataSourceMetaDataNode.getDataSourceNodeVersionNode(databaseName, name, getDataSourceActiveVersion(databaseName, name)));
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(1, 1F);
+        String dataSourceValue = repository.query(DataSourceMetaDataNode.getDataSourceNodeVersionNode(databaseName, name, getDataSourceActiveVersion(databaseName, name)));
         if (!Strings.isNullOrEmpty(dataSourceValue)) {
             result.put(name, new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
         }
@@ -115,6 +115,6 @@ public final class DataSourceNodePersistService implements DatabaseBasedPersistS
     }
     
     private String getDataSourceActiveVersion(final String databaseName, final String dataSourceName) {
-        return repository.getDirectly(DataSourceMetaDataNode.getDataSourceNodeActiveVersionNode(databaseName, dataSourceName));
+        return repository.query(DataSourceMetaDataNode.getDataSourceNodeActiveVersionNode(databaseName, dataSourceName));
     }
 }

@@ -119,7 +119,7 @@ class EtcdRepositoryTest {
     
     @SuppressWarnings("unchecked")
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
-    private Client mockClient() {
+    private void mockClient() {
         when(client.getKVClient()).thenReturn(kv);
         when(kv.get(any(ByteSequence.class))).thenReturn(getFuture);
         when(kv.get(any(ByteSequence.class), any(GetOption.class))).thenReturn(getFuture);
@@ -131,12 +131,11 @@ class EtcdRepositoryTest {
         when(leaseFuture.get()).thenReturn(leaseGrantResponse);
         when(leaseGrantResponse.getID()).thenReturn(123L);
         when(client.getWatchClient()).thenReturn(watch);
-        return client;
     }
     
     @Test
     void assertGetKey() {
-        repository.getDirectly("key");
+        repository.query("key");
         verify(kv).get(ByteSequence.from("key", StandardCharsets.UTF_8));
         verify(getResponse).getKvs();
     }
@@ -226,7 +225,7 @@ class EtcdRepositoryTest {
     void assertGetKeyWhenThrowInterruptedException() throws ExecutionException, InterruptedException {
         doThrow(InterruptedException.class).when(getFuture).get();
         try {
-            repository.getDirectly("key");
+            repository.query("key");
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -238,7 +237,7 @@ class EtcdRepositoryTest {
     void assertGetKeyWhenThrowExecutionException() throws ExecutionException, InterruptedException {
         doThrow(ExecutionException.class).when(getFuture).get();
         try {
-            repository.getDirectly("key");
+            repository.query("key");
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

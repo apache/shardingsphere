@@ -50,7 +50,7 @@ public final class PipelineJobCheckGovernanceRepository {
      * @return check job id
      */
     public Optional<String> findLatestCheckJobId(final String parentJobId) {
-        return Optional.ofNullable(repository.getDirectly(PipelineMetaDataNode.getLatestCheckJobIdPath(parentJobId)));
+        return Optional.ofNullable(repository.query(PipelineMetaDataNode.getLatestCheckJobIdPath(parentJobId)));
     }
     
     /**
@@ -91,7 +91,7 @@ public final class PipelineJobCheckGovernanceRepository {
      */
     @SuppressWarnings("unchecked")
     public Map<String, TableDataConsistencyCheckResult> getCheckJobResult(final String parentJobId, final String checkJobId) {
-        String yamlCheckResultMapText = repository.getDirectly(PipelineMetaDataNode.getCheckJobResultPath(parentJobId, checkJobId));
+        String yamlCheckResultMapText = repository.query(PipelineMetaDataNode.getCheckJobResultPath(parentJobId, checkJobId));
         if (Strings.isNullOrEmpty(yamlCheckResultMapText)) {
             return Collections.emptyMap();
         }
