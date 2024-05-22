@@ -36,7 +36,7 @@ public final class MySQLColumnTypeConverter implements SQLFederationColumnTypeCo
     @Override
     public int convertColumnType(final int columnType) {
         if (SqlTypeName.BOOLEAN.getJdbcOrdinal() == columnType) {
-            return SqlTypeName.BIGINT.getJdbcOrdinal();
+            return SqlTypeName.VARCHAR.getJdbcOrdinal();
         }
         return columnType;
     }
