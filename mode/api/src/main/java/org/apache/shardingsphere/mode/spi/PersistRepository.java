@@ -69,9 +69,7 @@ public interface PersistRepository extends TypedSPI {
      * @param key key of data
      * @param value value of data
      */
-    default void persistEphemeral(String key, String value) {
-    
-    }
+    default void persistEphemeral(String key, String value) { }
     
     /**
      * Update data.
