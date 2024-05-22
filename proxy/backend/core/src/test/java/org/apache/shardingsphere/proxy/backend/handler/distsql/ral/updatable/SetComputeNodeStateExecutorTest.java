@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.statement.ral.updatable.SetInstanceStatusStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.SetComputeNodeStateStatement;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -28,20 +28,20 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class SetInstanceStatusExecutorTest {
+class SetComputeNodeStateExecutorTest {
     
-    private final SetInstanceStatusExecutor executor = new SetInstanceStatusExecutor();
+    private final SetComputeNodeStateExecutor executor = new SetComputeNodeStateExecutor();
     
     @Test
     void assertExecuteUpdateWithNotExistsInstanceID() {
-        assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new SetInstanceStatusStatement("ENABLE", "instanceID"), mock(ContextManager.class, RETURNS_DEEP_STUBS)));
+        assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new SetComputeNodeStateStatement("ENABLE", "instanceID"), mock(ContextManager.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test
     void assertExecuteUpdateWithCurrentUsingInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn("instanceID");
-        assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new SetInstanceStatusStatement("DISABLE", "instanceID"), contextManager));
+        assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new SetComputeNodeStateStatement("DISABLE", "instanceID"), contextManager));
     }
     
     @Test
@@ -50,6 +50,6 @@ class SetInstanceStatusExecutorTest {
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn("currentInstance");
         when(contextManager.getComputeNodeInstanceContext().getComputeNodeInstanceById("instanceID").isPresent()).thenReturn(true);
         when(contextManager.getComputeNodeInstanceContext().getComputeNodeInstanceById("instanceID").get().getState().getCurrentState()).thenReturn(InstanceState.CIRCUIT_BREAK);
-        assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new SetInstanceStatusStatement("DISABLE", "instanceID"), contextManager));
+        assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new SetComputeNodeStateStatement("DISABLE", "instanceID"), contextManager));
     }
 }

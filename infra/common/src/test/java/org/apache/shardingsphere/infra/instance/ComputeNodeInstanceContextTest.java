@@ -49,7 +49,7 @@ class ComputeNodeInstanceContextTest {
     private final EventBusContext eventBusContext = new EventBusContext();
     
     @Test
-    void assertUpdateInstanceStatus() {
+    void assertUpdateComputeNodeState() {
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
         when(instanceMetaData.getId()).thenReturn("foo_instance_id");
         ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(

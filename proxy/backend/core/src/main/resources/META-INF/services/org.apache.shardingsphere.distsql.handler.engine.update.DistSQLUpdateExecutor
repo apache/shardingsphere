@@ -17,7 +17,7 @@
 
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.LabelComputeNodeExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.UnlabelComputeNodeExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetInstanceStatusExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetComputeNodeStateExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.ImportDatabaseConfigurationExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.ImportMetaDataExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetDistVariableExecutor

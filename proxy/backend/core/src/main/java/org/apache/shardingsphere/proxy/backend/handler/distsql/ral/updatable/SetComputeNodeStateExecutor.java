@@ -19,27 +19,27 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.SetInstanceStatusStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.SetComputeNodeStateStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
- * Set instance status executor.
+ * Set compute node state executor.
  */
 @DistSQLExecutorClusterModeRequired
-public final class SetInstanceStatusExecutor implements DistSQLUpdateExecutor<SetInstanceStatusStatement> {
+public final class SetComputeNodeStateExecutor implements DistSQLUpdateExecutor<SetComputeNodeStateStatement> {
     
     @Override
-    public void executeUpdate(final SetInstanceStatusStatement sqlStatement, final ContextManager contextManager) {
-        if ("DISABLE".equals(sqlStatement.getStatus())) {
+    public void executeUpdate(final SetComputeNodeStateStatement sqlStatement, final ContextManager contextManager) {
+        if ("DISABLE".equals(sqlStatement.getState())) {
             checkDisablingIsValid(contextManager, sqlStatement.getInstanceId());
         } else {
             checkEnablingIsValid(contextManager, sqlStatement.getInstanceId());
         }
         contextManager.getContextServiceFacade().getComputeNodeService().updateComputeNodeState(sqlStatement.getInstanceId(),
-                "DISABLE".equals(sqlStatement.getStatus()) ? InstanceState.CIRCUIT_BREAK : InstanceState.OK);
+                "DISABLE".equals(sqlStatement.getState()) ? InstanceState.CIRCUIT_BREAK : InstanceState.OK);
     }
     
     private void checkEnablingIsValid(final ContextManager contextManager, final String instanceId) {
@@ -57,7 +57,7 @@ public final class SetInstanceStatusExecutor implements DistSQLUpdateExecutor<Se
     }
     
     @Override
-    public Class<SetInstanceStatusStatement> getType() {
-        return SetInstanceStatusStatement.class;
+    public Class<SetComputeNodeStateStatement> getType() {
+        return SetComputeNodeStateStatement.class;
     }
 }

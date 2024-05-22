@@ -73,8 +73,8 @@ class ComputeNodeTest {
     }
     
     @Test
-    void assertGetInstanceStatusNodePath() {
-        assertThat(ComputeNode.getInstanceStatusNodePath("foo_instance"), is("/nodes/compute_nodes/status/foo_instance"));
+    void assertGetComputeNodeStateNodePath() {
+        assertThat(ComputeNode.getComputeNodeStateNodePath("foo_instance"), is("/nodes/compute_nodes/status/foo_instance"));
     }
     
     @Test

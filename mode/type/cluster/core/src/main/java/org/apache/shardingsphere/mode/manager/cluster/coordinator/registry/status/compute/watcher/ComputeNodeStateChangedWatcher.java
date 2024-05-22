@@ -86,7 +86,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     
     @SuppressWarnings("unchecked")
     private Optional<GovernanceEvent> createInstanceGovernanceEvent(final DataChangedEvent event, final String instanceId) {
-        if (event.getKey().equals(ComputeNode.getInstanceStatusNodePath(instanceId)) && Type.DELETED != event.getType()) {
+        if (event.getKey().equals(ComputeNode.getComputeNodeStateNodePath(instanceId)) && Type.DELETED != event.getType()) {
             return Optional.of(new ComputeNodeInstanceStateChangedEvent(instanceId, event.getValue()));
         }
         if (event.getKey().equals(ComputeNode.getInstanceLabelsNodePath(instanceId)) && Type.DELETED != event.getType()) {

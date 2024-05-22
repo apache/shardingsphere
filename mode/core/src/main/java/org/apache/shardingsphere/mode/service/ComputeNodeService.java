@@ -55,7 +55,7 @@ public final class ComputeNodeService {
         String instanceId = computeNodeInstance.getMetaData().getId();
         repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceId, computeNodeInstance.getMetaData().getType()), YamlEngine.marshal(
                 new YamlComputeNodeDataSwapper().swapToYamlConfiguration(new ComputeNodeData(computeNodeInstance.getMetaData().getAttributes(), computeNodeInstance.getMetaData().getVersion()))));
-        repository.persistEphemeral(ComputeNode.getInstanceStatusNodePath(instanceId), computeNodeInstance.getState().getCurrentState().name());
+        repository.persistEphemeral(ComputeNode.getComputeNodeStateNodePath(instanceId), computeNodeInstance.getState().getCurrentState().name());
         persistInstanceLabels(instanceId, computeNodeInstance.getLabels());
     }
     
@@ -92,13 +92,13 @@ public final class ComputeNodeService {
     }
     
     /**
-     * Load instance status.
+     * Load compute node state.
      *
      * @param instanceId instance id
-     * @return status
+     * @return state
      */
-    public String loadInstanceStatus(final String instanceId) {
-        return repository.getDirectly(ComputeNode.getInstanceStatusNodePath(instanceId));
+    public String loadComputeNodeState(final String instanceId) {
+        return repository.getDirectly(ComputeNode.getComputeNodeStateNodePath(instanceId));
     }
     
     /**
@@ -152,7 +152,7 @@ public final class ComputeNodeService {
     public ComputeNodeInstance loadComputeNodeInstance(final InstanceMetaData instanceMetaData) {
         ComputeNodeInstance result = new ComputeNodeInstance(instanceMetaData);
         result.getLabels().addAll(loadInstanceLabels(instanceMetaData.getId()));
-        InstanceState.get(loadInstanceStatus(instanceMetaData.getId())).ifPresent(result::switchState);
+        InstanceState.get(loadComputeNodeState(instanceMetaData.getId())).ifPresent(result::switchState);
         loadInstanceWorkerId(instanceMetaData.getId()).ifPresent(result::setWorkerId);
         return result;
     }
@@ -181,6 +181,6 @@ public final class ComputeNodeService {
      * @param instanceState instance state
      */
     public void updateComputeNodeState(final String instanceId, final InstanceState instanceState) {
-        repository.persistEphemeral(ComputeNode.getInstanceStatusNodePath(instanceId), instanceState.name());
+        repository.persistEphemeral(ComputeNode.getComputeNodeStateNodePath(instanceId), instanceState.name());
     }
 }
