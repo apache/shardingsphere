@@ -237,7 +237,7 @@ class JDBCRepositoryTest {
         String key = "key";
         when(mockJdbcConnection.prepareStatement(repositorySQL.getDeleteSQL())).thenReturn(mockPreparedStatement);
         repository.delete(key);
-        verify(mockPreparedStatement).setString(1, key);
+        verify(mockPreparedStatement).setString(1, key + "%");
         verify(mockPreparedStatement).executeUpdate();
     }
     
