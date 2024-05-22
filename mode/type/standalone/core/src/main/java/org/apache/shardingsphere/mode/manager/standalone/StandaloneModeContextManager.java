@@ -269,20 +269,20 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
             Collection<MetaDataVersion> metaDataVersions = contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService()
                     .persistConfigurations(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), Collections.singletonList(toBeAlteredRuleConfig));
             contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
-            sendDatabaseRuleChangedEvent(databaseName, metaDataVersions);
+            sendDatabaseRuleChangedEvent(databaseName, metaDataVersions, Type.UPDATED);
             clearServiceCache();
         }
         return Collections.emptyList();
     }
     
-    private void sendDatabaseRuleChangedEvent(final String databaseName, final Collection<MetaDataVersion> metaDataVersions) {
+    private void sendDatabaseRuleChangedEvent(final String databaseName, final Collection<MetaDataVersion> metaDataVersions, final Type type) {
         for (MetaDataVersion each : metaDataVersions) {
-            sendDatabaseRuleChangedEvent(databaseName, each);
+            sendDatabaseRuleChangedEvent(databaseName, each, type);
         }
     }
     
-    private void sendDatabaseRuleChangedEvent(final String databaseName, final MetaDataVersion metaDataVersion) {
-        ruleConfigurationEventBuilder.build(databaseName, new DataChangedEvent(metaDataVersion.getActiveVersionNodePath(), metaDataVersion.getNextActiveVersion(), Type.UPDATED))
+    private void sendDatabaseRuleChangedEvent(final String databaseName, final MetaDataVersion metaDataVersion, final Type type) {
+        ruleConfigurationEventBuilder.build(databaseName, new DataChangedEvent(metaDataVersion.getActiveVersionNodePath(), metaDataVersion.getNextActiveVersion(), type))
                 .ifPresent(optional -> contextManager.getComputeNodeInstanceContext().getEventBusContext().post(optional));
     }
     
@@ -290,7 +290,8 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     public void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
         if (null != toBeRemovedRuleConfig) {
             sendDatabaseRuleChangedEvent(databaseName,
-                    contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().deleteConfigurations(databaseName, Collections.singleton(toBeRemovedRuleConfig)));
+                    contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().deleteConfigurations(databaseName,
+                            Collections.singleton(toBeRemovedRuleConfig)), Type.DELETED);
             clearServiceCache();
         }
     }
