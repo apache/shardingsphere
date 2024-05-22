@@ -87,7 +87,7 @@ public final class ComputeNodePersistService {
      */
     @SuppressWarnings("unchecked")
     public Collection<String> loadInstanceLabels(final String instanceId) {
-        String yamlContent = repository.getDirectly(ComputeNode.getInstanceLabelsNodePath(instanceId));
+        String yamlContent = repository.query(ComputeNode.getInstanceLabelsNodePath(instanceId));
         return Strings.isNullOrEmpty(yamlContent) ? new LinkedList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
     }
     
@@ -98,7 +98,7 @@ public final class ComputeNodePersistService {
      * @return state
      */
     public String loadComputeNodeState(final String instanceId) {
-        return repository.getDirectly(ComputeNode.getComputeNodeStateNodePath(instanceId));
+        return repository.query(ComputeNode.getComputeNodeStateNodePath(instanceId));
     }
     
     /**
@@ -109,7 +109,7 @@ public final class ComputeNodePersistService {
      */
     public Optional<Integer> loadInstanceWorkerId(final String instanceId) {
         try {
-            String workerId = repository.getDirectly(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
+            String workerId = repository.query(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
             return Strings.isNullOrEmpty(workerId) ? Optional.empty() : Optional.of(Integer.valueOf(workerId));
         } catch (final NumberFormatException ex) {
             log.error("Invalid worker id for instance: {}", instanceId);
@@ -133,7 +133,7 @@ public final class ComputeNodePersistService {
     private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType) {
         Collection<ComputeNodeInstance> result = new LinkedList<>();
         for (String each : repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType))) {
-            String value = repository.getDirectly(ComputeNode.getOnlineInstanceNodePath(each, instanceType));
+            String value = repository.query(ComputeNode.getOnlineInstanceNodePath(each, instanceType));
             if (Strings.isNullOrEmpty(value)) {
                 continue;
             }
@@ -166,7 +166,7 @@ public final class ComputeNodePersistService {
         Collection<String> childrenKeys = repository.getChildrenKeys(ComputeNode.getInstanceWorkerIdRootNodePath());
         Collection<Integer> result = new LinkedHashSet<>(childrenKeys.size(), 1F);
         for (String each : childrenKeys) {
-            String workerId = repository.getDirectly(ComputeNode.getInstanceWorkerIdNodePath(each));
+            String workerId = repository.query(ComputeNode.getInstanceWorkerIdNodePath(each));
             if (null != workerId) {
                 result.add(Integer.parseInt(workerId));
             }

@@ -128,6 +128,6 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     }
     
     private String getActiveVersion(final String databaseName, final String ruleName, final String key) {
-        return repository.getDirectly(DatabaseRuleMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, key));
+        return repository.query(DatabaseRuleMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, key));
     }
 }

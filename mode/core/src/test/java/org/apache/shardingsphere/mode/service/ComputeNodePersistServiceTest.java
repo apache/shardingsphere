@@ -86,7 +86,7 @@ class ComputeNodePersistServiceTest {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         final String instanceId = instanceMetaData.getId();
         new ComputeNodePersistService(repository).loadInstanceLabels(instanceId);
-        verify(repository).getDirectly(ComputeNode.getInstanceLabelsNodePath(instanceId));
+        verify(repository).query(ComputeNode.getInstanceLabelsNodePath(instanceId));
     }
     
     @Test
@@ -94,7 +94,7 @@ class ComputeNodePersistServiceTest {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         final String instanceId = instanceMetaData.getId();
         new ComputeNodePersistService(repository).loadComputeNodeState(instanceId);
-        verify(repository).getDirectly(ComputeNode.getComputeNodeStateNodePath(instanceId));
+        verify(repository).query(ComputeNode.getComputeNodeStateNodePath(instanceId));
     }
     
     @Test
@@ -102,7 +102,7 @@ class ComputeNodePersistServiceTest {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         final String instanceId = instanceMetaData.getId();
         new ComputeNodePersistService(repository).loadInstanceWorkerId(instanceId);
-        verify(repository).getDirectly(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
+        verify(repository).query(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
     }
     
     @Test
@@ -112,11 +112,11 @@ class ComputeNodePersistServiceTest {
         YamlComputeNodeData yamlComputeNodeData0 = new YamlComputeNodeData();
         yamlComputeNodeData0.setAttribute("127.0.0.1@3307");
         yamlComputeNodeData0.setVersion("foo_version");
-        when(repository.getDirectly("/nodes/compute_nodes/online/jdbc/foo_instance_3307")).thenReturn(YamlEngine.marshal(yamlComputeNodeData0));
+        when(repository.query("/nodes/compute_nodes/online/jdbc/foo_instance_3307")).thenReturn(YamlEngine.marshal(yamlComputeNodeData0));
         YamlComputeNodeData yamlComputeNodeData1 = new YamlComputeNodeData();
         yamlComputeNodeData1.setAttribute("127.0.0.1@3308");
         yamlComputeNodeData1.setVersion("foo_version");
-        when(repository.getDirectly("/nodes/compute_nodes/online/proxy/foo_instance_3308")).thenReturn(YamlEngine.marshal(yamlComputeNodeData1));
+        when(repository.query("/nodes/compute_nodes/online/proxy/foo_instance_3308")).thenReturn(YamlEngine.marshal(yamlComputeNodeData1));
         List<ComputeNodeInstance> actual = new ArrayList<>(new ComputeNodePersistService(repository).loadAllComputeNodeInstances());
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).getMetaData().getId(), is("foo_instance_3307"));

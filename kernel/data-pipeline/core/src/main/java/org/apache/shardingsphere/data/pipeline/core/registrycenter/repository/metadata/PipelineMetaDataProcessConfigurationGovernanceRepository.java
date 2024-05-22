@@ -46,6 +46,6 @@ public final class PipelineMetaDataProcessConfigurationGovernanceRepository {
      * @return process configuration YAML text
      */
     public String load(final String jobType) {
-        return repository.getDirectly(PipelineMetaDataNode.getMetaDataProcessConfigPath(jobType));
+        return repository.query(PipelineMetaDataNode.getMetaDataProcessConfigPath(jobType));
     }
 }

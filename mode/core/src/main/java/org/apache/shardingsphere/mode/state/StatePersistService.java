@@ -48,7 +48,7 @@ public final class StatePersistService {
      * @return cluster state
      */
     public Optional<ClusterState> loadClusterState() {
-        String value = repository.getDirectly(ComputeNode.getClusterStateNodePath());
+        String value = repository.query(ComputeNode.getClusterStateNodePath());
         return Strings.isNullOrEmpty(value) ? Optional.empty() : Optional.of(ClusterState.valueOf(value));
     }
 }

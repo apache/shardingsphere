@@ -53,7 +53,7 @@ class ClusterProcessSubscriberTest {
     void assertPostShowProcessListData() {
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.JDBC))).thenReturn(Collections.emptyList());
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
-        when(repository.getDirectly(any())).thenReturn(null);
+        when(repository.query(any())).thenReturn(null);
         clusterProcessListSubscriber.postShowProcessListData(new ShowProcessListRequestEvent());
         verify(repository).persist(any(), any());
     }

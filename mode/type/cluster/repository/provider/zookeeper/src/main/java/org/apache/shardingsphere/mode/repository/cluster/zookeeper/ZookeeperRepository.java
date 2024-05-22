@@ -167,7 +167,7 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Comp
     }
     
     @Override
-    public String getDirectly(final String key) {
+    public String query(final String key) {
         try {
             return new String(client.getData().forPath(key), StandardCharsets.UTF_8);
             // CHECKSTYLE:OFF
