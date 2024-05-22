@@ -19,8 +19,6 @@ package org.apache.shardingsphere.infra.metadata.version;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -34,10 +32,5 @@ class MetaDataVersionTest {
     @Test
     void assertGetVersionsNodePath() {
         assertThat(new MetaDataVersion("foo", "0", "1").getVersionsNodePath(), is("foo/versions/0"));
-    }
-    
-    @Test
-    void assertGetActiveVersionKeys() {
-        assertThat(new MetaDataVersion("foo", "0", "1").getActiveVersionKeys(), is(Arrays.asList("foo/active_version", "foo/active_version/0")));
     }
 }
