@@ -84,7 +84,7 @@ import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStat
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.SetInstanceStatusStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.SetComputeNodeStateStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlabelComputeNodeStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.AlterStorageUnitStatement;
@@ -157,12 +157,12 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitEnableComputeNode(final EnableComputeNodeContext ctx) {
-        return buildSetInstanceStatusStatement(ctx.ENABLE().getText().toUpperCase(), ctx.instanceId());
+        return buildSetComputeNodeStateStatement(ctx.ENABLE().getText().toUpperCase(), ctx.instanceId());
     }
     
     @Override
     public ASTNode visitDisableComputeNode(final DisableComputeNodeContext ctx) {
-        return buildSetInstanceStatusStatement(ctx.DISABLE().getText().toUpperCase(), ctx.instanceId());
+        return buildSetComputeNodeStateStatement(ctx.DISABLE().getText().toUpperCase(), ctx.instanceId());
     }
     
     @Override
@@ -177,8 +177,8 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
         return new UnlabelComputeNodeStatement(getIdentifierValue(ctx.instanceId()), labels);
     }
     
-    private SetInstanceStatusStatement buildSetInstanceStatusStatement(final String status, final InstanceIdContext instanceIdContext) {
-        return new SetInstanceStatusStatement(status, getIdentifierValue(instanceIdContext));
+    private SetComputeNodeStateStatement buildSetComputeNodeStateStatement(final String status, final InstanceIdContext instanceIdContext) {
+        return new SetComputeNodeStateStatement(status, getIdentifierValue(instanceIdContext));
     }
     
     @Override

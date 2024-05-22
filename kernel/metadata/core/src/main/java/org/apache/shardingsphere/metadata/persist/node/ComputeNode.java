@@ -176,12 +176,12 @@ public final class ComputeNode {
     }
     
     /**
-     * Get instance status node path.
+     * Get compute node state node path.
      * 
      * @param instanceId instance id
-     * @return instance status node path
+     * @return compute node state node path
      */
-    public static String getInstanceStatusNodePath(final String instanceId) {
+    public static String getComputeNodeStateNodePath(final String instanceId) {
         return String.join("/", "", ROOT_NODE, COMPUTE_NODE, STATUS_NODE, instanceId);
     }
 }

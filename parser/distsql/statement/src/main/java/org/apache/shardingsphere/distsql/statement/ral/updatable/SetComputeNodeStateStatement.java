@@ -21,13 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Set instance status statement.
+ * Set compute node state statement.
  */
 @RequiredArgsConstructor
 @Getter
-public class SetInstanceStatusStatement extends UpdatableRALStatement {
+public class SetComputeNodeStateStatement extends UpdatableRALStatement {
     
-    private final String status;
+    private final String state;
     
     private final String instanceId;
 }
