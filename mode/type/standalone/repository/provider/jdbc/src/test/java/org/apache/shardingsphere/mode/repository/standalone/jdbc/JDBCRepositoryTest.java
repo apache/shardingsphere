@@ -104,7 +104,7 @@ class JDBCRepositoryTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getString("value")).thenReturn(value);
-        String actual = repository.getDirectly(key);
+        String actual = repository.query(key);
         verify(mockPreparedStatement).setString(1, key);
         assertThat(actual, is(value));
     }
@@ -114,7 +114,7 @@ class JDBCRepositoryTest {
         when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
-        String actual = repository.getDirectly("key");
+        String actual = repository.query("key");
         assertThat(actual, is(""));
     }
     

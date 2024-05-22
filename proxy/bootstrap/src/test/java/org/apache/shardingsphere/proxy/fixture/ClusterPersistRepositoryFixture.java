@@ -36,7 +36,7 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public String getDirectly(final String key) {
+    public String query(final String key) {
         return REGISTRY_DATA.get(key);
     }
     

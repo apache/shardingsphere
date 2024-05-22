@@ -49,7 +49,7 @@ public final class QualifiedDataSourceStatusService {
         Collection<String> qualifiedDataSourceNodes = repository.getChildrenKeys(QualifiedDataSourceNode.getRootPath());
         Map<String, QualifiedDataSourceStatus> result = new HashMap<>(qualifiedDataSourceNodes.size(), 1F);
         qualifiedDataSourceNodes.forEach(each -> {
-            String yamlContent = repository.getDirectly(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(new QualifiedDataSource(each)));
+            String yamlContent = repository.query(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(new QualifiedDataSource(each)));
             if (!Strings.isNullOrEmpty(yamlContent)) {
                 result.put(each, new YamlQualifiedDataSourceStatusSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlQualifiedDataSourceStatus.class)));
             }

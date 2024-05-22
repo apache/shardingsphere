@@ -55,11 +55,11 @@ public final class PropertiesPersistService implements GlobalPersistService<Prop
     
     @Override
     public Properties load() {
-        String yamlContent = repository.getDirectly(GlobalNode.getPropsVersionNode(getActiveVersion()));
+        String yamlContent = repository.query(GlobalNode.getPropsVersionNode(getActiveVersion()));
         return Strings.isNullOrEmpty(yamlContent) ? new Properties() : YamlEngine.unmarshal(yamlContent, Properties.class);
     }
     
     private String getActiveVersion() {
-        return repository.getDirectly(GlobalNode.getPropsActiveVersionNode());
+        return repository.query(GlobalNode.getPropsActiveVersionNode());
     }
 }

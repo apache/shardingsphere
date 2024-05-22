@@ -32,7 +32,7 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public String getDirectly(final String key) {
+    public String query(final String key) {
         return "";
     }
     
@@ -52,10 +52,6 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     
     @Override
     public void update(final String key, final String value) {
-    }
-    
-    @Override
-    public void persistEphemeral(final String key, final String value) {
     }
     
     @Override

@@ -51,7 +51,7 @@ public final class PipelineJobOffsetGovernanceRepository {
      * @return job offset info
      */
     public JobOffsetInfo load(final String jobId) {
-        String value = repository.getDirectly(PipelineMetaDataNode.getJobOffsetPath(jobId));
+        String value = repository.query(PipelineMetaDataNode.getJobOffsetPath(jobId));
         return new YamlJobOffsetInfoSwapper().swapToObject(Strings.isNullOrEmpty(value) ? new YamlJobOffsetInfo() : YamlEngine.unmarshal(value, YamlJobOffsetInfo.class));
     }
 }
