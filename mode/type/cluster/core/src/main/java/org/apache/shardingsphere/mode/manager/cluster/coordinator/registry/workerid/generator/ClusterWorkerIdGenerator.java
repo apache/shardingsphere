@@ -22,10 +22,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdAssignedException;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node.WorkerIdReservationNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
+import org.apache.shardingsphere.mode.service.ComputeNodeService;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -45,14 +45,14 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     private final String instanceId;
     
-    private final ComputeNodeStatusService computeNodeStatusService;
+    private final ComputeNodeService computeNodeService;
     
     private final AtomicBoolean isWarned = new AtomicBoolean(false);
     
     public ClusterWorkerIdGenerator(final ClusterPersistRepository repository, final String instanceId) {
         this.repository = repository;
         this.instanceId = instanceId;
-        computeNodeStatusService = new ComputeNodeStatusService(repository);
+        computeNodeService = new ComputeNodeService(repository);
     }
     
     @Override
@@ -63,7 +63,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     }
     
     private Optional<Integer> loadExistedWorkerId() {
-        return computeNodeStatusService.loadInstanceWorkerId(instanceId);
+        return computeNodeService.loadInstanceWorkerId(instanceId);
     }
     
     private int generateNewWorkerId() {
@@ -72,12 +72,12 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
             generatedWorkId = generateAvailableWorkerId();
         } while (!generatedWorkId.isPresent());
         int result = generatedWorkId.get();
-        computeNodeStatusService.persistInstanceWorkerId(instanceId, result);
+        computeNodeService.persistInstanceWorkerId(instanceId, result);
         return result;
     }
     
     private Optional<Integer> generateAvailableWorkerId() {
-        Collection<Integer> assignedWorkerIds = computeNodeStatusService.getAssignedWorkerIds();
+        Collection<Integer> assignedWorkerIds = computeNodeService.getAssignedWorkerIds();
         ShardingSpherePreconditions.checkState(assignedWorkerIds.size() <= MAX_WORKER_ID + 1, WorkerIdAssignedException::new);
         PriorityQueue<Integer> availableWorkerIds = IntStream.range(0, 1024).boxed().filter(each -> !assignedWorkerIds.contains(each)).collect(Collectors.toCollection(PriorityQueue::new));
         Integer preselectedWorkerId = availableWorkerIds.poll();

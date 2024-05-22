@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service;
+package org.apache.shardingsphere.mode.service;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -47,16 +47,16 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ComputeNodeStatusServiceTest {
+class ComputeNodeServiceTest {
     
     @Mock
-    private ClusterPersistRepository repository;
+    private PersistRepository repository;
     
     @Test
     void assertRegisterOnline() {
         ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3307));
         computeNodeInstance.getLabels().add("test");
-        new ComputeNodeStatusService(repository).registerOnline(computeNodeInstance);
+        new ComputeNodeService(repository).registerOnline(computeNodeInstance);
         verify(repository).persistEphemeral(eq("/nodes/compute_nodes/online/proxy/" + computeNodeInstance.getMetaData().getId()), anyString());
         verify(repository).persistEphemeral(ComputeNode.getInstanceStatusNodePath(computeNodeInstance.getMetaData().getId()), InstanceState.OK.name());
         verify(repository).persistEphemeral(ComputeNode.getInstanceLabelsNodePath(computeNodeInstance.getMetaData().getId()), YamlEngine.marshal(Collections.singletonList("test")));
@@ -64,12 +64,12 @@ class ComputeNodeStatusServiceTest {
     
     @Test
     void assertPersistInstanceLabels() {
-        ComputeNodeStatusService computeNodeStatusService = new ComputeNodeStatusService(repository);
+        ComputeNodeService computeNodeService = new ComputeNodeService(repository);
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         final String instanceId = instanceMetaData.getId();
-        computeNodeStatusService.persistInstanceLabels(instanceId, Collections.singletonList("test"));
+        computeNodeService.persistInstanceLabels(instanceId, Collections.singletonList("test"));
         verify(repository).persistEphemeral(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(Collections.singletonList("test")));
-        computeNodeStatusService.persistInstanceLabels(instanceId, Collections.emptyList());
+        computeNodeService.persistInstanceLabels(instanceId, Collections.emptyList());
         verify(repository).persistEphemeral(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(Collections.emptyList()));
     }
     
@@ -77,7 +77,7 @@ class ComputeNodeStatusServiceTest {
     void assertPersistInstanceWorkerId() {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         final String instanceId = instanceMetaData.getId();
-        new ComputeNodeStatusService(repository).persistInstanceWorkerId(instanceId, 100);
+        new ComputeNodeService(repository).persistInstanceWorkerId(instanceId, 100);
         verify(repository).persistEphemeral(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(100));
     }
     
@@ -85,7 +85,7 @@ class ComputeNodeStatusServiceTest {
     void assertLoadInstanceLabels() {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         final String instanceId = instanceMetaData.getId();
-        new ComputeNodeStatusService(repository).loadInstanceLabels(instanceId);
+        new ComputeNodeService(repository).loadInstanceLabels(instanceId);
         verify(repository).getDirectly(ComputeNode.getInstanceLabelsNodePath(instanceId));
     }
     
@@ -93,7 +93,7 @@ class ComputeNodeStatusServiceTest {
     void assertLoadInstanceStatus() {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         final String instanceId = instanceMetaData.getId();
-        new ComputeNodeStatusService(repository).loadInstanceStatus(instanceId);
+        new ComputeNodeService(repository).loadInstanceStatus(instanceId);
         verify(repository).getDirectly(ComputeNode.getInstanceStatusNodePath(instanceId));
     }
     
@@ -101,7 +101,7 @@ class ComputeNodeStatusServiceTest {
     void assertLoadInstanceWorkerId() {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         final String instanceId = instanceMetaData.getId();
-        new ComputeNodeStatusService(repository).loadInstanceWorkerId(instanceId);
+        new ComputeNodeService(repository).loadInstanceWorkerId(instanceId);
         verify(repository).getDirectly(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
     }
     
@@ -117,7 +117,7 @@ class ComputeNodeStatusServiceTest {
         yamlComputeNodeData1.setAttribute("127.0.0.1@3308");
         yamlComputeNodeData1.setVersion("foo_version");
         when(repository.getDirectly("/nodes/compute_nodes/online/proxy/foo_instance_3308")).thenReturn(YamlEngine.marshal(yamlComputeNodeData1));
-        List<ComputeNodeInstance> actual = new ArrayList<>(new ComputeNodeStatusService(repository).loadAllComputeNodeInstances());
+        List<ComputeNodeInstance> actual = new ArrayList<>(new ComputeNodeService(repository).loadAllComputeNodeInstances());
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).getMetaData().getId(), is("foo_instance_3307"));
         assertThat(actual.get(0).getMetaData().getIp(), is(IpUtils.getIp()));
@@ -130,13 +130,19 @@ class ComputeNodeStatusServiceTest {
     @Test
     void assertLoadComputeNodeInstance() {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
-        ComputeNodeInstance actual = new ComputeNodeStatusService(repository).loadComputeNodeInstance(instanceMetaData);
+        ComputeNodeInstance actual = new ComputeNodeService(repository).loadComputeNodeInstance(instanceMetaData);
         assertThat(actual.getMetaData(), is(instanceMetaData));
     }
     
     @Test
     void assertGetUsedWorkerIds() {
-        new ComputeNodeStatusService(repository).getAssignedWorkerIds();
+        new ComputeNodeService(repository).getAssignedWorkerIds();
         verify(repository).getChildrenKeys(ComputeNode.getInstanceWorkerIdRootNodePath());
+    }
+    
+    @Test
+    void assertUpdateComputeNodeState() {
+        new ComputeNodeService(repository).updateComputeNodeState("foo_instance_id", InstanceState.OK);
+        verify(repository).persistEphemeral(ComputeNode.getInstanceStatusNodePath("foo_instance_id"), InstanceState.OK.name());
     }
 }

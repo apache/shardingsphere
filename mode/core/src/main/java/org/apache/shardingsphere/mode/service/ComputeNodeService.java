@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service;
+package org.apache.shardingsphere.mode.service;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeDataSwapper;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -42,9 +42,9 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class ComputeNodeStatusService {
+public final class ComputeNodeService {
     
-    private final ClusterPersistRepository repository;
+    private final PersistRepository repository;
     
     /**
      * Register compute node online.
@@ -172,5 +172,15 @@ public final class ComputeNodeStatusService {
             }
         }
         return result;
+    }
+    
+    /**
+     * Update compute node state.
+     *
+     * @param instanceId instance id
+     * @param instanceState instance state
+     */
+    public void updateComputeNodeState(final String instanceId, final InstanceState instanceState) {
+        repository.persistEphemeral(ComputeNode.getInstanceStatusNodePath(instanceId), instanceState.name());
     }
 }

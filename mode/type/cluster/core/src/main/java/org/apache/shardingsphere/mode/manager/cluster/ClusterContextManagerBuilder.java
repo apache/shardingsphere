@@ -37,8 +37,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.GlobalLoc
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.ShardingSphereSchemaDataRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ClusterProcessSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.subscriber.ComputeNodeStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber.QualifiedDataSourceStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator.ClusterWorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.ClusterEventSubscriberRegistry;
@@ -104,7 +102,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     // TODO remove the method, only keep ZooKeeper's events, remove all decouple events
     private void createSubscribers(final EventBusContext eventBusContext, final ClusterPersistRepository repository) {
-        eventBusContext.register(new ComputeNodeStatusSubscriber(repository));
         eventBusContext.register(new QualifiedDataSourceStatusSubscriber(repository));
         eventBusContext.register(new ClusterProcessSubscriber(repository, eventBusContext));
         eventBusContext.register(new ShardingSphereSchemaDataRegistrySubscriber(repository));
@@ -112,14 +109,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void registerOnline(final EventBusContext eventBusContext, final ComputeNodeInstanceContext computeNodeInstanceContext,
                                 final ClusterPersistRepository repository, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
-        ComputeNodeStatusService computeNodeStatusService = new ComputeNodeStatusService(repository);
-        computeNodeStatusService.registerOnline(computeNodeInstanceContext.getInstance());
+        contextManager.getContextServiceFacade().getComputeNodeService().registerOnline(computeNodeInstanceContext.getInstance());
         new GovernanceWatcherFactory(repository,
                 eventBusContext, param.getInstanceMetaData() instanceof JDBCInstanceMetaData ? param.getDatabaseConfigs().keySet() : Collections.emptyList()).watchListeners();
         if (null != param.getLabels()) {
             contextManager.getComputeNodeInstanceContext().getInstance().getLabels().addAll(param.getLabels());
         }
-        contextManager.getComputeNodeInstanceContext().getAllClusterInstances().addAll(computeNodeStatusService.loadAllComputeNodeInstances());
+        contextManager.getComputeNodeInstanceContext().getAllClusterInstances().addAll(contextManager.getContextServiceFacade().getComputeNodeService().loadAllComputeNodeInstances());
         new ClusterEventSubscriberRegistry(contextManager, repository).register();
     }
     

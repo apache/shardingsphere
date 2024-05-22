@@ -34,7 +34,7 @@ public final class ClusterEventSubscriberRegistry extends EventSubscriberRegistr
                 new ConfigurationChangedSubscriber(contextManager),
                 new ConfigurationChangedSubscriber(contextManager),
                 new ResourceMetaDataChangedSubscriber(contextManager),
-                new StateChangedSubscriber(contextManager, repository),
+                new StateChangedSubscriber(contextManager),
                 new DatabaseChangedSubscriber(contextManager),
                 new ProcessListChangedSubscriber(contextManager, repository),
                 new CacheEvictedSubscriber());

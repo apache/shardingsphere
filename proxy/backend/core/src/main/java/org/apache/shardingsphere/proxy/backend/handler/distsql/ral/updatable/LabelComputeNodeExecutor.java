@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExec
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LabelComputeNodeStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -45,7 +44,7 @@ public final class LabelComputeNodeExecutor implements DistSQLUpdateExecutor<Lab
             if (!sqlStatement.isOverwrite()) {
                 labels.addAll(computeNodeInstance.get().getLabels());
             }
-            contextManager.getComputeNodeInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, new LinkedList<>(labels)));
+            contextManager.getContextServiceFacade().getComputeNodeService().persistInstanceLabels(instanceId, new LinkedList<>(labels));
         }
     }
     
