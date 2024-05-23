@@ -89,6 +89,7 @@ simpleSelect
 2. We can use IDEA’s ANTLR4 plugin to easily view the syntax tree of the SQL statement.
 
 For more information of ANTLR4 , please refer to: [https://plugins.jetbrains.com/plugin/7358-antlr-v4](https://plugins.jetbrains.com/plugin/7358-antlr-v4.).
+
 ![Image description](https://miro.medium.com/max/700/1*EiWkP_kYN3sLOH4qsPonDA.jpeg)
 
 ANTLR4 can compile the syntax file we define: it first performs lexical analysis on the SQL statement, splits it into indivisible parts, namely tokens, and divides these tokens into keywords, expressions, according to the dictionary values of different databases.
@@ -157,6 +158,7 @@ At first, in terms of the above-mentioned `Visitor` method, the visitor to be us
 Next, let’s still take the SQL statement as an example and provide specific code to show how `Visitor` formats it.
 
 `MySQLFormatSQLVisitor` is used to visit SQL. Based on the `DEBUG` code, we can clearly see the execution path of this visit as shown in the figure below. Visitor traverses all parts of the syntax tree, and ANTLR4 generates default methods for visiting each node according to the defined grammar rules. Apache ShardingSphere leverages key methods and successfully develops complete the SQL formatting function.
+
 ![Image description](https://miro.medium.com/max/700/1*xjjACczbInC-K4t8EX-pEw.jpeg)
 
 The following code can help us better understand how `Visitor` can format SQL.
@@ -235,6 +237,7 @@ public static void main(String[] args) {
 ```
 
 - Parameters Supported by Properties
+  
 ![Image description](https://miro.medium.com/max/550/1*1Ft7G0EKkayVy5vrbcsDBg.png)
 
 You can also use DistSQL in ShardingSphere-Proxy to perform operations on the SQL Parse Format function:
@@ -279,6 +282,7 @@ Currently, Apache ShardingSphere’s Format function only supports [MySQL](https
 ## Author
 
 **Chen Chuxin**
+
 ![Image description](https://miro.medium.com/max/634/1*smrIU5STVJsJRais0_Tghg.png)
 
 > SphereEx Middleware Engineer & Apache ShardingSphere Committer
