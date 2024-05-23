@@ -259,6 +259,9 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.service.MetaDataManagerPersistServiceBuilder\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.spi.RuleNodePathProvider\\E"
   }, {
