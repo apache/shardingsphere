@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mode.metadata.refresher;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -39,7 +39,7 @@ public interface MetaDataRefresher<T extends SQLStatement> extends TypedSPI {
     /**
      * Refresh schema.
      *
-     * @param modeContextManager mode context manager
+     * @param metaDataManagerPersistService meta data manager persist service
      * @param database database
      * @param logicDataSourceNames route data source names
      * @param schemaName schema name
@@ -48,7 +48,7 @@ public interface MetaDataRefresher<T extends SQLStatement> extends TypedSPI {
      * @param props configuration properties
      * @throws SQLException SQL exception
      */
-    void refresh(ModeContextManager modeContextManager, ShardingSphereDatabase database, Collection<String> logicDataSourceNames, String schemaName,
+    void refresh(MetaDataManagerPersistService metaDataManagerPersistService, ShardingSphereDatabase database, Collection<String> logicDataSourceNames, String schemaName,
                  DatabaseType databaseType, T sqlStatement, ConfigurationProperties props) throws SQLException;
     
     @Override

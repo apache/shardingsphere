@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mode.metadata.refresher.type.schema;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.mode.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
@@ -34,9 +34,9 @@ import java.util.LinkedList;
 public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresher<DropSchemaStatement> {
     
     @Override
-    public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) {
-        modeContextManager.dropSchema(database.getName(), getSchemaNames(sqlStatement));
+        metaDataManagerPersistService.dropSchema(database.getName(), getSchemaNames(sqlStatement));
     }
     
     private Collection<String> getSchemaNames(final DropSchemaStatement sqlStatement) {

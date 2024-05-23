@@ -21,10 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -42,7 +42,7 @@ public final class MetaDataRefreshEngine {
     
     private static final Collection<Class<? extends SQLStatement>> IGNORED_SQL_STATEMENT_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
-    private final ModeContextManager modeContextManager;
+    private final MetaDataManagerPersistService metaDataManagerPersistService;
     
     private final ShardingSphereDatabase database;
     
@@ -66,7 +66,8 @@ public final class MetaDataRefreshEngine {
             String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
                     .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName())).toLowerCase();
             Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
-            schemaRefresher.get().refresh(modeContextManager, database, logicDataSourceNames, schemaName, sqlStatementContext.getDatabaseType(), sqlStatementContext.getSqlStatement(), props);
+            schemaRefresher.get().refresh(metaDataManagerPersistService, database, logicDataSourceNames, schemaName, sqlStatementContext.getDatabaseType(),
+                    sqlStatementContext.getSqlStatement(), props);
             return;
         }
         IGNORED_SQL_STATEMENT_CLASSES.add(sqlStatementClass);

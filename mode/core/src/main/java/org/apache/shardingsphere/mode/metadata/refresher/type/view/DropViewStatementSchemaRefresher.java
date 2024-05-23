@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mode.metadata.refresher.type.view;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.mode.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 
 import java.util.Collection;
@@ -33,7 +33,7 @@ import java.util.Collection;
 public final class DropViewStatementSchemaRefresher implements MetaDataRefresher<DropViewStatement> {
     
     @Override
-    public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final DropViewStatement sqlStatement, final ConfigurationProperties props) {
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
         sqlStatement.getViews().forEach(each -> {
@@ -41,7 +41,7 @@ public final class DropViewStatementSchemaRefresher implements MetaDataRefresher
             alterSchemaMetaDataPOJO.getDroppedTables().add(viewName);
             alterSchemaMetaDataPOJO.getDroppedViews().add(viewName);
         });
-        modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
+        metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
     }
     
     @Override
