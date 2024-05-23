@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.protocol;
 
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -96,6 +97,8 @@ class FrontDatabaseProtocolTypeFactoryTest {
         when(metaDataPersistService.getShardingSphereDataPersistService()).thenReturn(shardingSphereDataPersistService);
         MetaDataContexts metaDataContexts = new MetaDataContexts(metaDataPersistService,
                 new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(props)));
-        return new ContextManager(metaDataContexts, mock(ComputeNodeInstanceContext.class));
+        ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
+        when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
+        return new ContextManager(metaDataContexts, computeNodeInstanceContext);
     }
 }

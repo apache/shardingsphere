@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.connector;
 
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -123,7 +124,9 @@ class ProxyDatabaseConnectionManagerTest {
         TransactionRule transactionRule = mock(TransactionRule.class);
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singletonList(transactionRule)));
-        return new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), metaData), mock(ComputeNodeInstanceContext.class));
+        ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
+        when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
+        return new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), metaData), computeNodeInstanceContext);
     }
     
     @AfterEach

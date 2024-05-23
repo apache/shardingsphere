@@ -84,7 +84,7 @@ public final class ContextManager implements AutoCloseable {
         resourceMetaDataContextManager = new ResourceMetaDataContextManager(this.metaDataContexts);
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         stateContext = new StateContext();
-        persistServiceFacade = new PersistServiceFacade(metaDataContexts.getPersistService().getRepository());
+        persistServiceFacade = new PersistServiceFacade(metaDataContexts.getPersistService().getRepository(), computeNodeInstanceContext.getModeConfiguration(), this);
     }
     
     /**
