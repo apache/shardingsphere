@@ -289,10 +289,21 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     @Override
     public void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
         if (null != toBeRemovedRuleConfig) {
-            sendDatabaseRuleChangedEvent(databaseName,
+            sendDatabaseRuleDeletedEvent(databaseName,
                     contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().deleteConfigurations(databaseName, Collections.singleton(toBeRemovedRuleConfig)));
             clearServiceCache();
         }
+    }
+    
+    private void sendDatabaseRuleDeletedEvent(final String databaseName, final Collection<MetaDataVersion> metaDataVersions) {
+        for (MetaDataVersion each : metaDataVersions) {
+            sendDatabaseRuleDeletedEvent(databaseName, each);
+        }
+    }
+    
+    private void sendDatabaseRuleDeletedEvent(final String databaseName, final MetaDataVersion metaDataVersion) {
+        ruleConfigurationEventBuilder.build(databaseName, new DataChangedEvent(metaDataVersion.getActiveVersionNodePath(), "", Type.DELETED))
+                .ifPresent(optional -> contextManager.getComputeNodeInstanceContext().getEventBusContext().post(optional));
     }
     
     @Override

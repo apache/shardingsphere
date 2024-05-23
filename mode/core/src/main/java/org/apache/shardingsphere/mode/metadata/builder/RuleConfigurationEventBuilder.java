@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mode.path.rule.item.UniqueRuleItemNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
@@ -54,7 +55,7 @@ public final class RuleConfigurationEventBuilder {
     }
     
     private Optional<GovernanceEvent> build(final RuleNodePath ruleNodePath, final String databaseName, final DataChangedEvent event) {
-        if (!ruleNodePath.getRoot().isValidatedPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+        if (!ruleNodePath.getRoot().isValidatedPath(event.getKey()) || Type.DELETED != event.getType() && Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
