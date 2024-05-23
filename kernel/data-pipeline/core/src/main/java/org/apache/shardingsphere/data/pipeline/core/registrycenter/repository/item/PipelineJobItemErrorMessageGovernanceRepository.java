@@ -61,6 +61,6 @@ public final class PipelineJobItemErrorMessageGovernanceRepository {
      * @return error msg
      */
     public String load(final String jobId, final int shardingItem) {
-        return Optional.ofNullable(repository.getDirectly(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem))).orElse("");
+        return Optional.ofNullable(repository.query(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem))).orElse("");
     }
 }

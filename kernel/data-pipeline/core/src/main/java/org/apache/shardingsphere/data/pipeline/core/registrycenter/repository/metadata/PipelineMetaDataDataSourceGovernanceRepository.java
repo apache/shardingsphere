@@ -46,6 +46,6 @@ public final class PipelineMetaDataDataSourceGovernanceRepository {
      * @return data source properties
      */
     public String load(final String jobType) {
-        return repository.getDirectly(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType));
+        return repository.query(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType));
     }
 }

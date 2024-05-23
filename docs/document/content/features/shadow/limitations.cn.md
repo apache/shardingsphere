@@ -4,14 +4,14 @@ weight = 2
 +++
 
 ## 基于 Hint 的影子算法
-
-* 无。
+* 无
 
 ## 基于列的影子算法
+SQL 不支持列表：
+* 不支持 DDL
+* 不支持范围、分组和子查询，如：BETWEEN、GROUP BY ... HAVING 等
 
-* 不支持 DDL；
-* 不支持范围、分组和子查询，如：BETWEEN、GROUP BY ... HAVING 等。
-  SQL 支持列表：
+SQL 支持列表：
   - INSERT
   
   | *SQL*                                                                            | *是否支持* |

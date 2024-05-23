@@ -37,7 +37,7 @@ class ClusterWorkerIdGeneratorTest {
     @Test
     void assertGenerateWithExistedWorkerId() {
         ClusterPersistRepository repository = mock(ClusterPersistRepository.class);
-        when(repository.getDirectly("/nodes/compute_nodes/worker_id/foo_id")).thenReturn("10");
+        when(repository.query("/nodes/compute_nodes/worker_id/foo_id")).thenReturn("10");
         assertThat(new ClusterWorkerIdGenerator(repository, "foo_id").generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "1"))), is(10));
     }
     

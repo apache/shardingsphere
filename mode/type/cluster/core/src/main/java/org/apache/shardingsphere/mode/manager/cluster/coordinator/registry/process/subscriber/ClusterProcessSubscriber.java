@@ -73,7 +73,7 @@ public final class ClusterProcessSubscriber implements ProcessSubscriber, EventS
     private void postShowProcessListData(final String taskId) {
         YamlProcessList yamlProcessList = new YamlProcessList();
         for (String each : repository.getChildrenKeys(ProcessNode.getProcessIdPath(taskId)).stream()
-                .map(each -> repository.getDirectly(ProcessNode.getProcessListInstancePath(taskId, each))).collect(Collectors.toList())) {
+                .map(each -> repository.query(ProcessNode.getProcessListInstancePath(taskId, each))).collect(Collectors.toList())) {
             yamlProcessList.getProcesses().addAll(YamlEngine.unmarshal(each, YamlProcessList.class).getProcesses());
         }
         eventBusContext.post(new ShowProcessListResponseEvent(swapper.swapToObject(yamlProcessList)));
@@ -86,7 +86,7 @@ public final class ClusterProcessSubscriber implements ProcessSubscriber, EventS
     }
     
     private boolean isReady(final Collection<String> paths) {
-        return paths.stream().noneMatch(each -> null != repository.getDirectly(each));
+        return paths.stream().noneMatch(each -> null != repository.query(each));
     }
     
     @Override
