@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
-import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
@@ -52,6 +51,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttri
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;

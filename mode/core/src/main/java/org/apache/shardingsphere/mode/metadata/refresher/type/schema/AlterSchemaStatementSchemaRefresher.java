@@ -15,40 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.connection.refresher.type.schema;
+package org.apache.shardingsphere.mode.metadata.refresher.type.schema;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
+import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterSchemaStatementHandler;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Optional;
 
 /**
- * Schema refresher for drop schema statement.
+ * Schema refresher for alter schema statement.
  */
-public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresher<DropSchemaStatement> {
+public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefresher<AlterSchemaStatement> {
     
     @Override
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final DatabaseType databaseType, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) {
-        modeContextManager.dropSchema(database.getName(), getSchemaNames(sqlStatement));
-    }
-    
-    private Collection<String> getSchemaNames(final DropSchemaStatement sqlStatement) {
-        Collection<String> result = new LinkedList<>();
-        for (IdentifierValue each : sqlStatement.getSchemaNames()) {
-            result.add(each.getValue().toLowerCase());
+                        final String schemaName, final DatabaseType databaseType, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) {
+        Optional<String> renameSchemaName = AlterSchemaStatementHandler.getRenameSchema(sqlStatement).map(optional -> optional.getValue().toLowerCase());
+        if (!renameSchemaName.isPresent()) {
+            return;
         }
-        return result;
+        modeContextManager.alterSchema(new AlterSchemaPOJO(database.getName(), sqlStatement.getSchemaName().getValue().toLowerCase(),
+                renameSchemaName.get(), logicDataSourceNames));
     }
     
     @Override
-    public Class<DropSchemaStatement> getType() {
-        return DropSchemaStatement.class;
+    public Class<AlterSchemaStatement> getType() {
+        return AlterSchemaStatement.class;
     }
 }

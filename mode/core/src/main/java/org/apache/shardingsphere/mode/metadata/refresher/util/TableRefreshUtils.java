@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.connection.refresher.util;
+package org.apache.shardingsphere.mode.metadata.refresher.util;
 
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
