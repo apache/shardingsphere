@@ -127,7 +127,7 @@ public abstract class BaseDQLE2EIT {
             assertThat(actualResultSetMetaData.getColumnLabel(i + 1), is(expectedResultSetMetaData.getColumnLabel(i + 1)));
             assertThat(actualResultSetMetaData.getColumnName(i + 1), is(expectedResultSetMetaData.getColumnName(i + 1)));
             if ("db_tbl_sql_federation".equals(testParam.getScenario())) {
-                return;
+                continue;
             }
             if ("jdbc".equals(testParam.getAdapter()) && "Cluster".equals(testParam.getMode())) {
                 // FIXME correct columnType with proxy adapter
