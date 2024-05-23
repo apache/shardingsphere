@@ -115,7 +115,7 @@ Recently, to celebrate the third anniversary of ShardingSphere entering Apache S
 - On November 10, 2021, Version 5.0.0 GA was released as a third-anniversity celebration with the whole Apache ShardingSphere community, and the distributed database industry.
 ![Apache ShardingSphere—Roadmap](https://miro.medium.com/max/1400/0*ejOCiszgebnrZ2kx)
 
-Since Version 5.0.0, Apache ShardingSphere has embarked on its new journey: with the plugin oriented architect at its core, it evloved from a data sharding application to a comprehensive and enhanced data governance tool applicable to various complex application scenarios. Concurrently, Apache ShardingSphere also has more features, and big data solutions.
+Since Version 5.0.0, Apache ShardingSphere has embarked on its new journey: With the plugin oriented architect at its core, it evloved from a data sharding application to a comprehensive and enhanced data governance tool applicable to various complex application scenarios. Concurrently, Apache ShardingSphere also has more features, and big data solutions.
 
 ## Conclusion
 
