@@ -24,15 +24,15 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:postgresql:16.1-bookworm://test-native-databases-postgres/demo_ds_0?TC_DAEMON=true
+    jdbcUrl: jdbc:tc:postgresql:16.3-bookworm://test-native-databases-postgres/demo_ds_0
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:postgresql:16.1-bookworm://test-native-databases-postgres/demo_ds_1?TC_DAEMON=true
+    jdbcUrl: jdbc:tc:postgresql:16.3-bookworm://test-native-databases-postgres/demo_ds_1
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:postgresql:16.1-bookworm://test-native-databases-postgres/demo_ds_2?TC_DAEMON=true
+    jdbcUrl: jdbc:tc:postgresql:16.3-bookworm://test-native-databases-postgres/demo_ds_2
 
 rules:
 - !SHARDING
