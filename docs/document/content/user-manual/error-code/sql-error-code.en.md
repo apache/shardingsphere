@@ -188,10 +188,11 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### SQL Federation
 
-| Vendor Code | SQL State | Reason                                                  |
-|-------------|-----------|---------------------------------------------------------|
+| Vendor Code | SQL State | Reason                                                 |
+|-------------|-----------|--------------------------------------------------------|
 | 20100       | 42000     | Unsupported SQL node conversion for SQL statement '%s'. |
-| 20101       | 42000     | SQL federation does not support SQL '%s'.               |
+| 20101       | 42000     | SQL federation does not support SQL '%s'.              |
+| 20102       | 42S02     | SQL federation schema not found SQL '%s'.              |
 
 ### Readwrite-splitting
 
