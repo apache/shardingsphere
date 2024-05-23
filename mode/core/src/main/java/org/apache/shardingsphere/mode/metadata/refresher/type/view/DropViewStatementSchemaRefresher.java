@@ -15,38 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.connection.refresher.type.schema;
+package org.apache.shardingsphere.mode.metadata.refresher.type.view;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterSchemaStatementHandler;
+import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
+import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
- * Schema refresher for alter schema statement.
+ * Schema refresher for drop view statement.
  */
-public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefresher<AlterSchemaStatement> {
+public final class DropViewStatementSchemaRefresher implements MetaDataRefresher<DropViewStatement> {
     
     @Override
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final DatabaseType databaseType, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) {
-        Optional<String> renameSchemaName = AlterSchemaStatementHandler.getRenameSchema(sqlStatement).map(optional -> optional.getValue().toLowerCase());
-        if (!renameSchemaName.isPresent()) {
-            return;
-        }
-        modeContextManager.alterSchema(new AlterSchemaPOJO(database.getName(), sqlStatement.getSchemaName().getValue().toLowerCase(),
-                renameSchemaName.get(), logicDataSourceNames));
+                        final String schemaName, final DatabaseType databaseType, final DropViewStatement sqlStatement, final ConfigurationProperties props) {
+        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
+        sqlStatement.getViews().forEach(each -> {
+            String viewName = each.getTableName().getIdentifier().getValue();
+            alterSchemaMetaDataPOJO.getDroppedTables().add(viewName);
+            alterSchemaMetaDataPOJO.getDroppedViews().add(viewName);
+        });
+        modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
     }
     
     @Override
-    public Class<AlterSchemaStatement> getType() {
-        return AlterSchemaStatement.class;
+    public Class<DropViewStatement> getType() {
+        return DropViewStatement.class;
     }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.manager.context;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.connection.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRu
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 
 import java.util.Collections;
 import java.util.Optional;
