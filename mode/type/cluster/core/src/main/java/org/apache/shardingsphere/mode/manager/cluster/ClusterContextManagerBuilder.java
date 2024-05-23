@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.ContextManagerAware;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.GlobalLockPersistService;
@@ -71,7 +70,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, computeNodeInstanceContext, new QualifiedDataSourceStatusService(repository).loadStatus());
         ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext);
-        setContextManagerAware(result);
         createSubscribers(eventBusContext, repository);
         registerOnline(eventBusContext, computeNodeInstanceContext, repository, param, result);
         setClusterState(result);
@@ -87,17 +85,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private ComputeNodeInstanceContext buildComputeNodeInstanceContext(final ModeConfiguration modeConfig,
                                                                        final InstanceMetaData instanceMetaData, final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
-        return new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), new ClusterWorkerIdGenerator(repository, instanceMetaData.getId()), modeConfig,
-                new ClusterModeContextManager(), new GlobalLockContext(new GlobalLockPersistService(initDistributedLockHolder(repository))), eventBusContext);
+        return new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData),
+                new ClusterWorkerIdGenerator(repository, instanceMetaData.getId()), modeConfig,
+                new GlobalLockContext(new GlobalLockPersistService(initDistributedLockHolder(repository))), eventBusContext);
     }
     
     private DistributedLockHolder initDistributedLockHolder(final ClusterPersistRepository repository) {
         DistributedLockHolder distributedLockHolder = repository.getDistributedLockHolder();
         return null == distributedLockHolder ? new DistributedLockHolder("default", repository, new DefaultLockTypedProperties(new Properties())) : distributedLockHolder;
-    }
-    
-    private void setContextManagerAware(final ContextManager contextManager) {
-        ((ContextManagerAware) contextManager.getComputeNodeInstanceContext().getModeContextManager()).setContextManager(contextManager);
     }
     
     // TODO remove the method, only keep ZooKeeper's events, remove all decouple events

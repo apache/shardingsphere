@@ -108,7 +108,7 @@ class ShardingRouteCacheableCheckerTest {
         ruleConfig.getTables().add(nonCacheableTableSharding);
         ruleConfig.setShardingCache(new ShardingCacheConfiguration(100, new ShardingCacheOptionsConfiguration(true, 0, 0)));
         return new ShardingRule(ruleConfig, Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource()),
-                new ComputeNodeInstanceContext(mock(ComputeNodeInstance.class), props -> 0, null, null, null, null));
+                new ComputeNodeInstanceContext(mock(ComputeNodeInstance.class), props -> 0, null, null, null));
     }
     
     private TimestampServiceRule createTimeServiceRule() {

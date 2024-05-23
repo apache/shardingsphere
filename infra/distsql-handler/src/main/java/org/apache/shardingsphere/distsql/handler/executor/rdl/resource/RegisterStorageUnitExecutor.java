@@ -67,7 +67,7 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
         }
         validateHandler.validate(propsMap);
         try {
-            contextManager.getComputeNodeInstanceContext().getModeContextManager().registerStorageUnits(database.getName(), propsMap);
+            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().registerStorageUnits(database.getName(), propsMap);
         } catch (final SQLException | ShardingSphereExternalException ex) {
             throw new StorageUnitsOperateException("register", propsMap.keySet(), ex);
         }
