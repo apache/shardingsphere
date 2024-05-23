@@ -531,6 +531,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/16010265?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+         <td>
+            <a href="https://github.com/iamhucong" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/20391901?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -541,6 +546,9 @@ chapter = true
         </td>
         <td>
             <b>姜茂林</b>
+        </td>
+        <td>
+            <b>胡聪</b>
         </td>
     </tr>
 </table>
