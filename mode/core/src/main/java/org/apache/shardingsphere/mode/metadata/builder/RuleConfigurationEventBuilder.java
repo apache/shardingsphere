@@ -55,7 +55,7 @@ public final class RuleConfigurationEventBuilder {
     }
     
     private Optional<GovernanceEvent> build(final RuleNodePath ruleNodePath, final String databaseName, final DataChangedEvent event) {
-        if (!ruleNodePath.getRoot().isValidatedPath(event.getKey()) || (Type.DELETED != event.getType() && Strings.isNullOrEmpty(event.getValue()))) {
+        if (!ruleNodePath.getRoot().isValidatedPath(event.getKey()) || Type.DELETED != event.getType() && Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
