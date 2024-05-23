@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.mode.service;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.state.StatePersistService;
 
@@ -31,8 +34,11 @@ public final class PersistServiceFacade {
     
     private final StatePersistService statePersistService;
     
-    public PersistServiceFacade(final PersistRepository repository) {
+    private final MetaDataManagerPersistService metaDataManagerPersistService;
+    
+    public PersistServiceFacade(final PersistRepository repository, final ModeConfiguration modeConfiguration, final ContextManager contextManager) {
         computeNodePersistService = new ComputeNodePersistService(repository);
         statePersistService = new StatePersistService(repository);
+        metaDataManagerPersistService = TypedSPILoader.getService(MetaDataManagerPersistServiceBuilder.class, modeConfiguration.getType()).build(contextManager);
     }
 }
