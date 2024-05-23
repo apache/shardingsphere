@@ -85,8 +85,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private ComputeNodeInstanceContext buildComputeNodeInstanceContext(final ModeConfiguration modeConfig,
                                                                        final InstanceMetaData instanceMetaData, final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
-        return new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), new ClusterWorkerIdGenerator(repository, instanceMetaData.getId()), modeConfig,
-                 new GlobalLockContext(new GlobalLockPersistService(initDistributedLockHolder(repository))), eventBusContext);
+        return new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData),
+                new ClusterWorkerIdGenerator(repository, instanceMetaData.getId()), modeConfig,
+                new GlobalLockContext(new GlobalLockPersistService(initDistributedLockHolder(repository))), eventBusContext);
     }
     
     private DistributedLockHolder initDistributedLockHolder(final ClusterPersistRepository repository) {
