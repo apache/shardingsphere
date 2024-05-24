@@ -148,8 +148,8 @@ public final class JDBCRepository implements StandalonePersistRepository {
             // Create key level directory recursively.
             for (int i = 0; i < paths.length - 1; i++) {
                 String tempKey = tempPrefix + SEPARATOR + paths[i];
-                if (isExisted(tempKey)){
-                    update(tempKey, value);
+                if (!isExisted(tempKey)) {
+                    insert(tempKey, "", parent);
                 }
                 tempPrefix = tempKey;
                 parent = tempKey;
