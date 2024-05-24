@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableDa
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.service.PersistServiceFacade;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class ShardingSphereDatabaseContextManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
+    
+    private final PersistServiceFacade persistServiceFacade;
     
     /**
      * Add ShardingSphere database data.

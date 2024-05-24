@@ -22,7 +22,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,14 +32,11 @@ import java.util.LinkedList;
 @Getter
 public final class MetaDataContexts implements AutoCloseable {
     
-    private final MetaDataPersistService persistService;
-    
     private final ShardingSphereMetaData metaData;
     
     private final ShardingSphereStatistics statistics;
     
-    public MetaDataContexts(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
-        this.persistService = persistService;
+    public MetaDataContexts(final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
         this.metaData = metaData;
         this.statistics = statistics;
     }
@@ -48,7 +44,6 @@ public final class MetaDataContexts implements AutoCloseable {
     @SneakyThrows(Exception.class)
     @Override
     public void close() {
-        persistService.getRepository().close();
         for (ShardingSphereRule each : getAllRules()) {
             if (each instanceof AutoCloseable) {
                 ((AutoCloseable) each).close();

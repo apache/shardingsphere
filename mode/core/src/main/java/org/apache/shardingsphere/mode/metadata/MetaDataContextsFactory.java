@@ -49,8 +49,8 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.storage.QualifiedDataSourceStatus;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.storage.QualifiedDataSourceStatus;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -112,10 +112,10 @@ public final class MetaDataContextsFactory {
         RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props));
         ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData(databases, globalResourceMetaData, globalRuleMetaData, props);
         ShardingSphereStatistics shardingSphereStatistics = initStatistics(persistService, shardingSphereMetaData);
-        MetaDataContexts result = new MetaDataContexts(persistService, shardingSphereMetaData, shardingSphereStatistics);
+        MetaDataContexts result = new MetaDataContexts(shardingSphereMetaData, shardingSphereStatistics);
         if (!isDatabaseMetaDataExisted) {
-            persistDatabaseConfigurations(result, param);
-            persistMetaData(result);
+            persistDatabaseConfigurations(result, param, persistService);
+            persistMetaData(result, persistService);
         }
         return result;
     }
@@ -128,7 +128,7 @@ public final class MetaDataContextsFactory {
      * @return meta data contexts
      */
     public static MetaDataContexts create(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
-        return new MetaDataContexts(persistService, metaData, initStatistics(persistService, metaData));
+        return new MetaDataContexts(metaData, initStatistics(persistService, metaData));
     }
     
     private static Collection<String> getDatabaseNames(final ComputeNodeInstanceContext computeNodeInstanceContext,
@@ -218,21 +218,21 @@ public final class MetaDataContextsFactory {
         }
     }
     
-    private static void persistDatabaseConfigurations(final MetaDataContexts metadataContexts, final ContextManagerBuilderParameter param) {
-        metadataContexts.getPersistService().persistGlobalRuleConfiguration(param.getGlobalRuleConfigs(), param.getProps());
+    private static void persistDatabaseConfigurations(final MetaDataContexts metadataContexts, final ContextManagerBuilderParameter param, final MetaDataPersistService persistService) {
+        persistService.persistGlobalRuleConfiguration(param.getGlobalRuleConfigs(), param.getProps());
         for (Entry<String, ? extends DatabaseConfiguration> entry : param.getDatabaseConfigs().entrySet()) {
             String databaseName = entry.getKey();
-            metadataContexts.getPersistService().persistConfigurations(entry.getKey(), entry.getValue(),
+            persistService.persistConfigurations(entry.getKey(), entry.getValue(),
                     metadataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits().entrySet().stream()
                             .collect(Collectors.toMap(Entry::getKey, each -> each.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                     metadataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
         }
     }
     
-    private static void persistMetaData(final MetaDataContexts metaDataContexts) {
-        metaDataContexts.getMetaData().getDatabases().values().forEach(each -> each.getSchemas()
-                .forEach((schemaName, schema) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persistByAlterConfiguration(each.getName(), schemaName, schema)));
-        metaDataContexts.getStatistics().getDatabaseData().forEach((databaseName, databaseData) -> databaseData.getSchemaData().forEach((schemaName, schemaData) -> metaDataContexts
-                .getPersistService().getShardingSphereDataPersistService().persist(databaseName, schemaName, schemaData, metaDataContexts.getMetaData().getDatabases())));
+    private static void persistMetaData(final MetaDataContexts metaDataContexts, final MetaDataPersistService persistService) {
+        metaDataContexts.getMetaData().getDatabases().values().forEach(each -> each.getSchemas().forEach((schemaName, schema) -> persistService.getDatabaseMetaDataService()
+                .persistByAlterConfiguration(each.getName(), schemaName, schema)));
+        metaDataContexts.getStatistics().getDatabaseData().forEach((databaseName, databaseData) -> databaseData.getSchemaData().forEach((schemaName, schemaData) -> persistService
+                .getShardingSphereDataPersistService().persist(databaseName, schemaName, schemaData, metaDataContexts.getMetaData().getDatabases())));
     }
 }
