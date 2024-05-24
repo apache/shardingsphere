@@ -29,6 +29,7 @@ import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.rule.attribute.ShadowDataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.shadow.rule.attribute.ShadowTableMapperRuleAttribute;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
@@ -68,7 +69,8 @@ public final class ShadowRule implements DatabaseRule {
             hintShadowAlgorithmNames.add(ruleConfig.getDefaultShadowAlgorithmName());
         }
         initShadowTableRules(ruleConfig.getTables());
-        attributes = new RuleAttributes(new ShadowDataSourceMapperRuleAttribute(shadowDataSourceMappings));
+        attributes = new RuleAttributes(new ShadowDataSourceMapperRuleAttribute(shadowDataSourceMappings),
+                new ShadowTableMapperRuleAttribute(ruleConfig.getTables().keySet()));
     }
     
     private void initShadowDataSourceMappings(final Collection<ShadowDataSourceConfiguration> dataSources) {
