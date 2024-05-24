@@ -63,6 +63,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.EmbedTestingServer;
@@ -141,7 +142,7 @@ public final class PipelineContextUtils {
                 new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         old.getMetaData().getDatabase("logic_db").getSchema("logic_db").putAll(tables);
-        return new MetaDataContexts(persistService, old.getMetaData());
+        return MetaDataContextsFactory.create(persistService, old.getMetaData());
     }
     
     /**

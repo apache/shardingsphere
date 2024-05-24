@@ -25,6 +25,10 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -33,7 +37,13 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
@@ -51,6 +61,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -99,12 +110,25 @@ public final class MetaDataContextsFactory {
                 : ExternalMetaDataFactory.create(effectiveDatabaseConfigs, props, computeNodeInstanceContext);
         ResourceMetaData globalResourceMetaData = new ResourceMetaData(globalDataSources);
         RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props));
-        MetaDataContexts result = new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalResourceMetaData, globalRuleMetaData, props));
+        ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData(databases, globalResourceMetaData, globalRuleMetaData, props);
+        ShardingSphereStatistics shardingSphereStatistics = initStatistics(persistService, shardingSphereMetaData);
+        MetaDataContexts result = new MetaDataContexts(persistService, shardingSphereMetaData, shardingSphereStatistics);
         if (!isDatabaseMetaDataExisted) {
             persistDatabaseConfigurations(result, param);
             persistMetaData(result);
         }
         return result;
+    }
+    
+    /**
+     * Create meta data contexts.
+     *
+     * @param persistService meta data persist service
+     * @param metaData shardingsphere meta data
+     * @return meta data contexts
+     */
+    public static MetaDataContexts create(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
+        return new MetaDataContexts(persistService, metaData, initStatistics(persistService, metaData));
     }
     
     private static Collection<String> getDatabaseNames(final ComputeNodeInstanceContext computeNodeInstanceContext,
@@ -150,6 +174,48 @@ public final class MetaDataContextsFactory {
             result.put(databaseName + "." + dataSourceName, DataSourceState.valueOf(value.getStatus().name()));
         });
         return result;
+    }
+    
+    private static ShardingSphereStatistics initStatistics(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
+        if (metaData.getDatabases().isEmpty()) {
+            return new ShardingSphereStatistics();
+        }
+        DatabaseType protocolType = metaData.getDatabases().values().iterator().next().getProtocolType();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
+        // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
+        DatabaseType databaseType = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL") : protocolType;
+        Optional<ShardingSphereStatisticsBuilder> statisticsBuilder = DatabaseTypedSPILoader.findService(ShardingSphereStatisticsBuilder.class, databaseType);
+        if (!statisticsBuilder.isPresent()) {
+            return new ShardingSphereStatistics();
+        }
+        ShardingSphereStatistics result = statisticsBuilder.get().build(metaData);
+        Optional<ShardingSphereStatistics> loadedStatistics = persistService.getShardingSphereDataPersistService().load(metaData);
+        loadedStatistics.ifPresent(optional -> useLoadedToReplaceInit(result, optional));
+        return result;
+    }
+    
+    private static void useLoadedToReplaceInit(final ShardingSphereStatistics initStatistics, final ShardingSphereStatistics loadedStatistics) {
+        for (Entry<String, ShardingSphereDatabaseData> entry : initStatistics.getDatabaseData().entrySet()) {
+            if (loadedStatistics.getDatabaseData().containsKey(entry.getKey())) {
+                useLoadedToReplaceInitByDatabaseData(entry.getValue(), loadedStatistics.getDatabaseData().get(entry.getKey()));
+            }
+        }
+    }
+    
+    private static void useLoadedToReplaceInitByDatabaseData(final ShardingSphereDatabaseData initDatabaseData, final ShardingSphereDatabaseData loadedDatabaseData) {
+        for (Entry<String, ShardingSphereSchemaData> entry : initDatabaseData.getSchemaData().entrySet()) {
+            if (loadedDatabaseData.getSchemaData().containsKey(entry.getKey())) {
+                useLoadedToReplaceInitBySchemaData(entry.getValue(), loadedDatabaseData.getSchemaData().get(entry.getKey()));
+            }
+        }
+    }
+    
+    private static void useLoadedToReplaceInitBySchemaData(final ShardingSphereSchemaData initSchemaData, final ShardingSphereSchemaData loadedSchemaData) {
+        for (Entry<String, ShardingSphereTableData> entry : initSchemaData.getTableData().entrySet()) {
+            if (loadedSchemaData.getTableData().containsKey(entry.getKey())) {
+                entry.setValue(loadedSchemaData.getTableData().get(entry.getKey()));
+            }
+        }
     }
     
     private static void persistDatabaseConfigurations(final MetaDataContexts metadataContexts, final ContextManagerBuilderParameter param) {

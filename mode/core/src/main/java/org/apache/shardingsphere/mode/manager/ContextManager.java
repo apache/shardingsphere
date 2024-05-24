@@ -44,6 +44,7 @@ import org.apache.shardingsphere.mode.manager.context.ShardingSphereDatabaseCont
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.service.PersistServiceFacade;
 import org.apache.shardingsphere.mode.state.StateContext;
 
@@ -180,7 +181,7 @@ public final class ContextManager implements AutoCloseable {
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, changedDatabases, props));
-        MetaDataContexts result = new MetaDataContexts(metaDataPersistService,
+        MetaDataContexts result = MetaDataContextsFactory.create(metaDataPersistService,
                 new ShardingSphereMetaData(changedDatabases, metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
         switchingResource.closeStaleDataSources();
         return result;
