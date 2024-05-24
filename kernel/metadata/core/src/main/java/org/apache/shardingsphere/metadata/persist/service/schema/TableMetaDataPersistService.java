@@ -32,8 +32,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -55,8 +55,10 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
             String tableName = entry.getKey().toLowerCase();
             List<String> versions = repository.getChildrenKeys(TableMetaDataNode.getTableVersionsNode(databaseName, schemaName, tableName));
             String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            repository.persist(TableMetaDataNode.getTableVersionNode(databaseName, schemaName, tableName, nextActiveVersion),
-                    YamlEngine.marshal(new YamlTableSwapper().swapToYamlConfiguration(entry.getValue())));
+            if (entry.getValue() != null) {
+                repository.persist(TableMetaDataNode.getTableVersionNode(databaseName, schemaName, tableName, nextActiveVersion),
+                        YamlEngine.marshal(new YamlTableSwapper().swapToYamlConfiguration(entry.getValue())));
+            }
             if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, tableName))) {
                 repository.persist(TableMetaDataNode.getTableActiveVersionNode(databaseName, schemaName, tableName), DEFAULT_VERSION);
             }

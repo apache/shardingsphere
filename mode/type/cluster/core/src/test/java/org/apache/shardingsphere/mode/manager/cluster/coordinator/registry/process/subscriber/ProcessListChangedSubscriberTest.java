@@ -83,7 +83,7 @@ class ProcessListChangedSubscriberTest {
     void setUp() throws SQLException {
         EventBusContext eventBusContext = new EventBusContext();
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter(), eventBusContext);
-        contextManager.renewMetaDataContexts(MetaDataContextsFactory.create(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
+        contextManager.renewMetaDataContexts(MetaDataContextsFactory.create(contextManager.getPersistServiceFacade().getMetaDataPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalResourceMetaData(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
                 new ConfigurationProperties(new Properties()))));
         subscriber = new ProcessListChangedSubscriber(contextManager, repository);

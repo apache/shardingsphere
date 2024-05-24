@@ -46,6 +46,7 @@ import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.service.PersistServiceFacade;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.state.StateContext;
 
 import java.sql.SQLException;
@@ -77,15 +78,18 @@ public final class ContextManager implements AutoCloseable {
     
     private final PersistServiceFacade persistServiceFacade;
     
-    public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext) {
+    private final PersistRepository repository;
+    
+    public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
         this.metaDataContexts = new AtomicReference<>(metaDataContexts);
         this.computeNodeInstanceContext = computeNodeInstanceContext;
-        shardingSphereDatabaseContextManager = new ShardingSphereDatabaseContextManager(this.metaDataContexts);
-        configurationContextManager = new ConfigurationContextManager(this.metaDataContexts, computeNodeInstanceContext);
-        resourceMetaDataContextManager = new ResourceMetaDataContextManager(this.metaDataContexts);
+        this.repository = repository;
+        persistServiceFacade = new PersistServiceFacade(repository, computeNodeInstanceContext.getModeConfiguration(), this);
+        shardingSphereDatabaseContextManager = new ShardingSphereDatabaseContextManager(this.metaDataContexts, persistServiceFacade);
+        configurationContextManager = new ConfigurationContextManager(this.metaDataContexts, computeNodeInstanceContext, persistServiceFacade);
+        resourceMetaDataContextManager = new ResourceMetaDataContextManager(this.metaDataContexts, persistServiceFacade);
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         stateContext = new StateContext();
-        persistServiceFacade = new PersistServiceFacade(metaDataContexts.getPersistService().getRepository(), computeNodeInstanceContext.getModeConfiguration(), this);
     }
     
     /**
@@ -138,7 +142,7 @@ public final class ContextManager implements AutoCloseable {
     public void refreshDatabaseMetaData(final ShardingSphereDatabase database, final boolean force) {
         try {
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
-            MetaDataPersistService persistService = metaDataContexts.get().getPersistService();
+            MetaDataPersistService persistService = persistServiceFacade.getMetaDataPersistService();
             if (force) {
                 metaDataContexts.set(reloadedMetaDataContexts);
                 metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
@@ -165,14 +169,14 @@ public final class ContextManager implements AutoCloseable {
             deletedSchemaNames(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
             metaDataContexts.set(reloadedMetaDataContexts);
             metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
-                    .forEach((schemaName, schema) -> metaDataContexts.get().getPersistService().getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
+                    .forEach((schemaName, schema) -> persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
         } catch (final SQLException ex) {
             log.error("Refresh table meta data: {} failed", database.getName(), ex);
         }
     }
     
     private MetaDataContexts createMetaDataContexts(final ShardingSphereDatabase database) throws SQLException {
-        MetaDataPersistService metaDataPersistService = metaDataContexts.get().getPersistService();
+        MetaDataPersistService metaDataPersistService = persistServiceFacade.getMetaDataPersistService();
         Map<String, DataSourcePoolProperties> dataSourcePoolPropsFromRegCenter = metaDataPersistService.getDataSourceUnitService().load(database.getName());
         SwitchingResource switchingResource = new ResourceSwitchManager().alterStorageUnit(database.getResourceMetaData(), dataSourcePoolPropsFromRegCenter);
         metaDataContexts.get().getMetaData().getDatabases().putAll(configurationContextManager.renewDatabase(database, switchingResource));
@@ -196,7 +200,7 @@ public final class ContextManager implements AutoCloseable {
      */
     public void deletedSchemaNames(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         GenericSchemaManager.getToBeDeletedSchemaNames(reloadDatabase.getSchemas(), currentDatabase.getSchemas()).keySet()
-                .forEach(each -> metaDataContexts.get().getPersistService().getDatabaseMetaDataService().dropSchema(databaseName, each));
+                .forEach(each -> persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService().dropSchema(databaseName, each));
     }
     
     /**
@@ -211,11 +215,11 @@ public final class ContextManager implements AutoCloseable {
             ShardingSphereSchema reloadedSchema = loadSchema(database, schemaName, dataSourceName);
             if (reloadedSchema.getTables().isEmpty()) {
                 database.dropSchema(schemaName);
-                metaDataContexts.get().getPersistService().getDatabaseMetaDataService().dropSchema(database.getName(),
+                persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService().dropSchema(database.getName(),
                         schemaName);
             } else {
                 database.addSchema(schemaName, reloadedSchema);
-                metaDataContexts.get().getPersistService().getDatabaseMetaDataService()
+                persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService()
                         .compareAndPersist(database.getName(), schemaName, reloadedSchema);
             }
         } catch (final SQLException ex) {
@@ -230,7 +234,7 @@ public final class ContextManager implements AutoCloseable {
                 Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnits().get(dataSourceName).getDataSource()),
                 database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
         ShardingSphereSchema result = GenericSchemaBuilder.build(material).get(schemaName);
-        result.getViews().putAll(metaDataContexts.get().getPersistService().getDatabaseMetaDataService().getViewMetaDataPersistService().load(database.getName(), schemaName));
+        result.getViews().putAll(persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService().getViewMetaDataPersistService().load(database.getName(), schemaName));
         return result;
     }
     
@@ -273,7 +277,7 @@ public final class ContextManager implements AutoCloseable {
     
     private void persistTable(final ShardingSphereDatabase database, final String schemaName, final String tableName, final GenericSchemaBuilderMaterial material) throws SQLException {
         ShardingSphereSchema schema = GenericSchemaBuilder.build(Collections.singleton(tableName), material).getOrDefault(schemaName, new ShardingSphereSchema());
-        metaDataContexts.get().getPersistService().getDatabaseMetaDataService().getTableMetaDataPersistService()
+        persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService().getTableMetaDataPersistService()
                 .persist(database.getName(), schemaName, Collections.singletonMap(tableName, schema.getTable(tableName)));
     }
     
@@ -281,5 +285,6 @@ public final class ContextManager implements AutoCloseable {
     public void close() {
         executorEngine.close();
         metaDataContexts.get().close();
+        repository.close();
     }
 }

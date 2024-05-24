@@ -80,7 +80,7 @@ class ResourceMetaDataChangedSubscriberTest {
     @BeforeEach
     void setUp() throws SQLException {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter(), new EventBusContext());
-        contextManager.renewMetaDataContexts(MetaDataContextsFactory.create(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
+        contextManager.renewMetaDataContexts(MetaDataContextsFactory.create(contextManager.getPersistServiceFacade().getMetaDataPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalResourceMetaData(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
                 new ConfigurationProperties(new Properties()))));
         subscriber = new ResourceMetaDataChangedSubscriber(contextManager);

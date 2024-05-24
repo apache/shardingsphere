@@ -78,7 +78,7 @@ class DriverDatabaseConnectionManagerTest {
         Map<String, StorageUnit> storageUnits = mockStorageUnits();
         when(result.getStorageUnits(DefaultDatabase.LOGIC_NAME)).thenReturn(storageUnits);
         MetaDataPersistService persistService = mockMetaDataPersistService();
-        when(result.getMetaDataContexts().getPersistService()).thenReturn(persistService);
+        when(result.getPersistServiceFacade().getMetaDataPersistService()).thenReturn(persistService);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
                 new RuleMetaData(Arrays.asList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS), mock(TransactionRule.class, RETURNS_DEEP_STUBS),
                         mock(TrafficRule.class, RETURNS_DEEP_STUBS))));

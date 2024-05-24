@@ -109,7 +109,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
         if (rule.getStrategyRules().isEmpty()) {
             return Collections.emptyMap();
         }
-        MetaDataPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
+        MetaDataPersistService persistService = contextManager.getPersistServiceFacade().getMetaDataPersistService();
         String actualDatabaseName = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName();
         Map<String, DataSourcePoolProperties> propsMap = persistService.getDataSourceUnitService().load(actualDatabaseName);
         Preconditions.checkState(!propsMap.isEmpty(), "Can not get data source properties from meta data.");

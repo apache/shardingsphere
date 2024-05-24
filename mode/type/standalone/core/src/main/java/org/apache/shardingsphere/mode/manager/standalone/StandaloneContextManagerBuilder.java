@@ -49,7 +49,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         ComputeNodeInstanceContext computeNodeInstanceContext = buildComputeNodeInstanceContext(param, eventBusContext);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, computeNodeInstanceContext);
-        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext);
+        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
         new StandaloneEventSubscriberRegistry(result).register();
         return result;
     }

@@ -191,7 +191,7 @@ class PipelineGovernanceFacadeTest {
     
     private ClusterPersistRepository getClusterPersistRepository() {
         ContextManager contextManager = PipelineContextManager.getContext(PipelineContextUtils.getContextKey()).getContextManager();
-        return (ClusterPersistRepository) contextManager.getMetaDataContexts().getPersistService().getRepository();
+        return (ClusterPersistRepository) contextManager.getRepository();
     }
     
     private MigrationJobItemContext mockJobItemContext() {

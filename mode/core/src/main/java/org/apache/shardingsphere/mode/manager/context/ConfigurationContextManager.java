@@ -40,15 +40,16 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.service.PersistServiceFacade;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import javax.sql.DataSource;
@@ -75,6 +76,8 @@ public final class ConfigurationContextManager {
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
+    
+    private final PersistServiceFacade persistServiceFacade;
     
     /**
      * Register storage unit.
@@ -132,7 +135,7 @@ public final class ConfigurationContextManager {
         MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, false, switchingResource, null);
         persistSchemaMetaData(databaseName, reloadMetaDataContexts, isDropConfig);
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
-                .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> reloadMetaDataContexts.getPersistService().getShardingSphereDataPersistService()
+                .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> persistServiceFacade.getMetaDataPersistService().getShardingSphereDataPersistService()
                         .persist(databaseName, schemaName, schemaData, metaDataContexts.get().getMetaData().getDatabases())));
         alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName), isDropConfig);
         metaDataContexts.set(reloadMetaDataContexts);
@@ -142,10 +145,10 @@ public final class ConfigurationContextManager {
     
     private void persistSchemaMetaData(final String databaseName, final MetaDataContexts reloadMetaDataContexts, final boolean isDropConfig) {
         if (isDropConfig) {
-            reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> reloadMetaDataContexts.getPersistService().getDatabaseMetaDataService()
+            reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService()
                     .persistByDropConfiguration(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
         } else {
-            reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> reloadMetaDataContexts.getPersistService().getDatabaseMetaDataService()
+            reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService()
                     .persistByAlterConfiguration(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
         }
     }
@@ -233,11 +236,11 @@ public final class ConfigurationContextManager {
         Map<String, ShardingSphereSchema> toBeAlterSchemas = GenericSchemaManager.getToBeDeletedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         Map<String, ShardingSphereSchema> toBeAddedSchemas = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         if (isDropConfig) {
-            toBeAddedSchemas.forEach((key, value) -> metaDataContexts.get().getPersistService().getDatabaseMetaDataService().persistByDropConfiguration(databaseName, key, value));
+            toBeAddedSchemas.forEach((key, value) -> persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService().persistByDropConfiguration(databaseName, key, value));
         } else {
-            toBeAddedSchemas.forEach((key, value) -> metaDataContexts.get().getPersistService().getDatabaseMetaDataService().persistByAlterConfiguration(databaseName, key, value));
+            toBeAddedSchemas.forEach((key, value) -> persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService().persistByAlterConfiguration(databaseName, key, value));
         }
-        toBeAlterSchemas.forEach((key, value) -> metaDataContexts.get().getPersistService().getDatabaseMetaDataService().delete(databaseName, key, value));
+        toBeAlterSchemas.forEach((key, value) -> persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService().delete(databaseName, key, value));
     }
     
     /**
@@ -320,7 +323,7 @@ public final class ConfigurationContextManager {
         DatabaseConfiguration toBeCreatedDatabaseConfig = getDatabaseConfiguration(
                 metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), switchingResource, toBeCreatedRuleConfigs);
         ShardingSphereDatabase changedDatabase = createChangedDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(), internalLoadMetaData,
-                metaDataContexts.get().getPersistService(), toBeCreatedDatabaseConfig, metaDataContexts.get().getMetaData().getProps(), computeNodeInstanceContext);
+                persistServiceFacade.getMetaDataPersistService(), toBeCreatedDatabaseConfig, metaDataContexts.get().getMetaData().getProps(), computeNodeInstanceContext);
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(metaDataContexts.get().getMetaData().getDatabases());
         result.put(databaseName.toLowerCase(), changedDatabase);
         return result;
@@ -366,7 +369,7 @@ public final class ConfigurationContextManager {
     public Map<String, ShardingSphereDatabase> newShardingSphereDatabase(final ShardingSphereDatabase originalDatabase) {
         return Collections.singletonMap(originalDatabase.getName().toLowerCase(), new ShardingSphereDatabase(originalDatabase.getName(),
                 originalDatabase.getProtocolType(), originalDatabase.getResourceMetaData(), originalDatabase.getRuleMetaData(),
-                metaDataContexts.get().getPersistService().getDatabaseMetaDataService().loadSchemas(originalDatabase.getName())));
+                persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService().loadSchemas(originalDatabase.getName())));
     }
     
     /**
@@ -414,6 +417,6 @@ public final class ConfigurationContextManager {
     }
     
     private MetaDataContexts newMetaDataContexts(final ShardingSphereMetaData metaData) {
-        return MetaDataContextsFactory.create(metaDataContexts.get().getPersistService(), metaData);
+        return MetaDataContextsFactory.create(persistServiceFacade.getMetaDataPersistService(), metaData);
     }
 }

@@ -44,7 +44,7 @@ class PipelineDistributedBarrierTest {
     void assertRegisterAndRemove() throws ReflectiveOperationException {
         String jobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
         PipelineContextKey contextKey = PipelineContextUtils.getContextKey();
-        PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getMetaDataContexts().getPersistService().getRepository();
+        PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(contextKey);
         String parentPath = "/barrier";
@@ -60,7 +60,7 @@ class PipelineDistributedBarrierTest {
     void assertAwait() {
         String jobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
         PipelineContextKey contextKey = PipelineContextUtils.getContextKey();
-        PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getMetaDataContexts().getPersistService().getRepository();
+        PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(contextKey);
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);

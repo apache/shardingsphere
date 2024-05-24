@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedTy
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
+import org.apache.shardingsphere.mode.service.PersistServiceFacade;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -45,6 +46,8 @@ public final class ResourceMetaDataContextManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     
+    private final PersistServiceFacade persistServiceFacade;
+    
     /**
      * Add database.
      *
@@ -56,7 +59,7 @@ public final class ResourceMetaDataContextManager {
         }
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.get().getMetaData().getProps());
         metaDataContexts.get().getMetaData().addDatabase(databaseName, protocolType, metaDataContexts.get().getMetaData().getProps());
-        metaDataContexts.set(MetaDataContextsFactory.create(metaDataContexts.get().getPersistService(), metaDataContexts.get().getMetaData()));
+        metaDataContexts.set(MetaDataContextsFactory.create(persistServiceFacade.getMetaDataPersistService(), metaDataContexts.get().getMetaData()));
     }
     
     /**
