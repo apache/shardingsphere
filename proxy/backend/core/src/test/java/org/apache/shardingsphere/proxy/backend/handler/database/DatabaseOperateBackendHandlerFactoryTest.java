@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -78,7 +79,7 @@ class DatabaseOperateBackendHandlerFactoryTest {
     
     @BeforeEach
     void setUp() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -151,7 +152,7 @@ class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     private void setGovernanceMetaDataContexts(final boolean isGovernance) {
-        MetaDataContexts metaDataContexts = isGovernance ? mockMetaDataContexts() : new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
+        MetaDataContexts metaDataContexts = isGovernance ? mockMetaDataContexts() : MetaDataContextsFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
     }
     

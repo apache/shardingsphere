@@ -41,6 +41,7 @@ import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilde
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
@@ -413,6 +414,6 @@ public final class ConfigurationContextManager {
     }
     
     private MetaDataContexts newMetaDataContexts(final ShardingSphereMetaData metaData) {
-        return new MetaDataContexts(metaDataContexts.get().getPersistService(), metaData);
+        return MetaDataContextsFactory.create(metaDataContexts.get().getPersistService(), metaData);
     }
 }
