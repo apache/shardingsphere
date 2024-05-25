@@ -48,7 +48,8 @@ import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -179,8 +180,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void dropSchema(final String databaseName, final Collection<String> schemaNames) {
-        Collection<String> tobeRemovedTables = new LinkedHashSet<>();
-        Collection<String> tobeRemovedSchemas = new LinkedHashSet<>(schemaNames.size(), 1F);
+        Collection<String> tobeRemovedTables = new LinkedList<>();
+        Collection<String> tobeRemovedSchemas = new LinkedList<>();
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         for (String each : schemaNames) {
@@ -189,7 +190,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             Optional.of(schema).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
             tobeRemovedSchemas.add(each.toLowerCase());
         }
-        removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), tobeRemovedSchemas, tobeRemovedTables);
+        removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), new HashSet<>(tobeRemovedSchemas), new HashSet<>(tobeRemovedTables));
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
