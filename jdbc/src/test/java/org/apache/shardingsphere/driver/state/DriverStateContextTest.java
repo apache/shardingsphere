@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.state.StateContext;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -65,7 +66,7 @@ class DriverStateContextTest {
         TrafficRule trafficRule = mock(TrafficRule.class);
         AuthorityRule authorityRule = mock(AuthorityRule.class);
         RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(transactionRule, trafficRule, authorityRule));
-        MetaDataContexts metaDataContexts = new MetaDataContexts(
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(
                 mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), globalRuleMetaData, new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getComputeNodeInstanceContext().getInstance().getState()).thenReturn(new InstanceStateContext());

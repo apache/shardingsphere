@@ -192,6 +192,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 |-------------|-----------|---------------------------------------------------------|
 | 20100       | 42000     | Unsupported SQL node conversion for SQL statement '%s'. |
 | 20101       | 42000     | SQL federation does not support SQL '%s'.               |
+| 20102       | 42S02     | SQL federation schema not found SQL '%s'.              |
 
 ### 读写分离
 

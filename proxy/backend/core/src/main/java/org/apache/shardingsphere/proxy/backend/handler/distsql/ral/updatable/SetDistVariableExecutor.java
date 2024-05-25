@@ -25,6 +25,8 @@ import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariable
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.InvalidVariableValueException;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
 import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 import org.apache.shardingsphere.infra.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.props.exception.TypedPropertyValueException;
@@ -33,8 +35,6 @@ import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.exception.kernel.syntax.InvalidVariableValueException;
-import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
@@ -71,8 +71,8 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
         contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterProperties(props);
         refreshRootLogger(props);
-        syncSQLShowToLoggingRule(propertyKey, metaDataContexts, value);
-        syncSQLSimpleToLoggingRule(propertyKey, metaDataContexts, value);
+        syncSQLShowToLoggingRule(propertyKey, metaDataContexts, value, contextManager);
+        syncSQLSimpleToLoggingRule(propertyKey, metaDataContexts, value, contextManager);
     }
     
     private Object getValue(final TypedPropertyKey propertyKey, final String value) {
@@ -97,20 +97,20 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
         rootLogger.setLevel(Level.valueOf(props.getOrDefault(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getKey(), ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getDefaultValue()).toString()));
     }
     
-    private void syncSQLShowToLoggingRule(final TypedPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value) {
+    private void syncSQLShowToLoggingRule(final TypedPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value, final ContextManager contextManager) {
         if (LoggingConstants.SQL_SHOW.equalsIgnoreCase(propertyKey.getKey())) {
             LoggingUtils.getSQLLogger(metaDataContexts.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
                 option.getProps().setProperty(LoggingConstants.SQL_LOG_ENABLE, value);
-                metaDataContexts.getPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
             });
         }
     }
     
-    private void syncSQLSimpleToLoggingRule(final TypedPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value) {
+    private void syncSQLSimpleToLoggingRule(final TypedPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value, final ContextManager contextManager) {
         if (LoggingConstants.SQL_SIMPLE.equalsIgnoreCase(propertyKey.getKey())) {
             LoggingUtils.getSQLLogger(metaDataContexts.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
                 option.getProps().setProperty(LoggingConstants.SQL_LOG_SIMPLE, value);
-                metaDataContexts.getPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
             });
         }
     }

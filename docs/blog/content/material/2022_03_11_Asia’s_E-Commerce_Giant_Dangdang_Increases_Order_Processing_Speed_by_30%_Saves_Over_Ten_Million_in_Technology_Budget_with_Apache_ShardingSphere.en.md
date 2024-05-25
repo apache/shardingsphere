@@ -8,7 +8,7 @@ chapter = true
 
 > - Li Yong, Head of WMS Technology, Dangdang
 
-Ffollowing [Apache ShardingSphere 5.0.0 GA](https://medium.com/codex/apache-shardingsphere-5-0-0-new-features-middleware-to-ecosystem-evolution-e69de00bfb1b) release in November 2021, the [5.1.0 version](https://shardingsphere.medium.com/apache-shardingsphere-5-1-0-now-avaliable-4244ac470e77) was released last month. Having gone through over two years of polishing, ShardingSphere’s plugin-oriented ecosystem is beginning to take shape, and the project embarks on the evolution from a simple data sharding middleware to a mature distributed database ecosystem driven by the concept of [Database Plus](https://www.infoq.com/articles/next-evolution-of-database-sharding-architecture/).
+Following [Apache ShardingSphere 5.0.0 GA](https://medium.com/codex/apache-shardingsphere-5-0-0-new-features-middleware-to-ecosystem-evolution-e69de00bfb1b) release in November 2021, the [5.1.0 version](https://shardingsphere.medium.com/apache-shardingsphere-5-1-0-now-avaliable-4244ac470e77) was released last month. Having gone through over two years of polishing, ShardingSphere’s plugin-oriented ecosystem is beginning to take shape, and the project embarks on the evolution from a simple data sharding middleware to a mature distributed database ecosystem driven by the concept of [Database Plus](https://www.infoq.com/articles/next-evolution-of-database-sharding-architecture/).
 
 Dangdang, established at the end of 1999, has become a leading e-commerce platform selling books of any kind, and by integrating new Internet technologies with the traditional book industry. Dangdang was founded during the surge in China’s Internet industry in the early 2000s.
 
@@ -115,7 +115,7 @@ Recently, to celebrate the third anniversary of ShardingSphere entering Apache S
 - On November 10, 2021, Version 5.0.0 GA was released as a third-anniversity celebration with the whole Apache ShardingSphere community, and the distributed database industry.
 ![Apache ShardingSphere—Roadmap](https://miro.medium.com/max/1400/0*ejOCiszgebnrZ2kx)
 
-Since Version 5.0.0, Apache ShardingSphere has embarked on its new journey: with the plugin oriented architect at its core, it evloved from a data sharding application to a comprehensive and enhanced data governance tool applicable to various complex application scenarios. Concurrently, Apache ShardingSphere also has more features, and big data solutions.
+Since Version 5.0.0, Apache ShardingSphere has embarked on its new journey: With the plugin oriented architect at its core, it evloved from a data sharding application to a comprehensive and enhanced data governance tool applicable to various complex application scenarios. Concurrently, Apache ShardingSphere also has more features, and big data solutions.
 
 ## Conclusion
 

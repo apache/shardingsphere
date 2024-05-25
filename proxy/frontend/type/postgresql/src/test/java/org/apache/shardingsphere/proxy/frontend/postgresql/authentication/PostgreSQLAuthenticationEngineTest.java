@@ -46,6 +46,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl.PostgreSQLMD5PasswordAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
@@ -198,7 +199,7 @@ class PostgreSQLAuthenticationEngineTest {
     }
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
-        return new MetaDataContexts(mock(MetaDataPersistService.class),
+        return MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(Collections.emptyMap(), mock(ResourceMetaData.class), buildGlobalRuleMetaData(user), new ConfigurationProperties(new Properties())));
     }
     

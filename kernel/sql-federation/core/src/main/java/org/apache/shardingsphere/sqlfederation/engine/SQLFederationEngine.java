@@ -59,6 +59,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationCompilerEn
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerMetaData;
+import org.apache.shardingsphere.sqlfederation.optimizer.exception.SQLFederationSchemaNotFoundException;
 import org.apache.shardingsphere.sqlfederation.optimizer.exception.SQLFederationUnsupportedSQLException;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationTable;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.cache.ExecutionPlanCacheKey;
@@ -181,6 +182,7 @@ public final class SQLFederationEngine implements AutoCloseable {
             SqlToRelConverter converter = SQLFederationPlannerUtils.createSqlToRelConverter(catalogReader, validator, SQLFederationPlannerUtils.createRelOptCluster(DEFAULT_DATA_TYPE_FACTORY),
                     sqlFederationRule.getOptimizerContext().getSqlParserRule(), sqlFederationRule.getOptimizerContext().getParserContext(databaseName).getDatabaseType(), true);
             Schema sqlFederationSchema = catalogReader.getRootSchema().plus().getSubSchema(schemaName);
+            ShardingSpherePreconditions.checkNotNull(sqlFederationSchema, () -> new SQLFederationSchemaNotFoundException(federationContext.getQueryContext().getSql()));
             SQLFederationExecutionPlan executionPlan = compileQuery(prepareEngine, callback, federationContext, databaseName, schemaName, sqlFederationSchema, converter);
             resultSet = executePlan(federationContext, executionPlan, validator, converter, sqlFederationSchema);
             return resultSet;

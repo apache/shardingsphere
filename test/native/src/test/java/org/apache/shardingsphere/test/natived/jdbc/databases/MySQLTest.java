@@ -61,7 +61,7 @@ class MySQLTest {
     @EnabledInNativeImage
     void assertShardingInLocalTransactions() throws SQLException {
         try (
-                GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("mysql:8.2.0-oracle"))
+                GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("mysql:8.4.0-oracle"))
                         .withEnv("MYSQL_DATABASE", DATABASE)
                         .withEnv("MYSQL_ROOT_PASSWORD", PASSWORD)
                         .withExposedPorts(3306)) {

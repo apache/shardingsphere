@@ -43,11 +43,12 @@ public final class ConfigurationChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public void renew(final RegisterStorageUnitEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
+                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
         contextManager.getConfigurationContextManager().registerStorageUnit(event.getDatabaseName(),
-                contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
     /**
@@ -57,11 +58,12 @@ public final class ConfigurationChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public void renew(final AlterStorageUnitEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
+                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
         contextManager.getConfigurationContextManager().alterStorageUnit(
-                event.getDatabaseName(), contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
+                event.getDatabaseName(), contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
     /**
@@ -84,10 +86,11 @@ public final class ConfigurationChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterGlobalRuleConfigurationEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
+                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().load(event.getRuleSimpleName())
+        contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load(event.getRuleSimpleName())
                 .ifPresent(optional -> contextManager.getConfigurationContextManager().alterGlobalRuleConfiguration(optional));
         
     }
@@ -99,9 +102,10 @@ public final class ConfigurationChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterPropertiesEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
+                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.getConfigurationContextManager().alterProperties(contextManager.getMetaDataContexts().getPersistService().getPropsService().load());
+        contextManager.getConfigurationContextManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
     }
 }
