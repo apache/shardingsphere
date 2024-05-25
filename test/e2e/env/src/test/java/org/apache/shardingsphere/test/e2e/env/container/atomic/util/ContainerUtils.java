@@ -30,8 +30,6 @@ public final class ContainerUtils {
     
     private static final AtomicInteger ATOMIC_MYSQL_SERVER_ID = new AtomicInteger(1);
     
-    private static final AtomicInteger ATOMIC_STORAGE_CONTAINER_ID = new AtomicInteger(1);
-    
     /**
      * Generate a unique MySQL server id.
      *
