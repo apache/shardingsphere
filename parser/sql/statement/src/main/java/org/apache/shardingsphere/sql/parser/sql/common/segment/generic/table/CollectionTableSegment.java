@@ -45,15 +45,6 @@ public final class CollectionTableSegment implements TableSegment {
         return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
     }
     
-    /**
-     * Get alias segment.
-     *
-     * @return alias segment
-     */
-    public Optional<AliasSegment> getAliasSegment() {
-        return Optional.ofNullable(alias);
-    }
-    
     @Override
     public int getStartIndex() {
         return expressionSegment.getStartIndex();
