@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shadow.distsql.update;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.CreateDefaultShadowAlgorithmExecutor;
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.statement.CreateDefaultShadowAlgorithmStatement;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -42,9 +40,6 @@ import static org.mockito.Mockito.when;
 class CreateDefaultShadowAlgorithmExecutorTest {
     
     private final CreateDefaultShadowAlgorithmExecutor executor = new CreateDefaultShadowAlgorithmExecutor();
-    
-    @Mock
-    private ShadowRuleConfiguration currentConfig;
     
     @BeforeEach
     void setUp() {

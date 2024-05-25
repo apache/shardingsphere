@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
 import java.sql.Connection;
@@ -28,7 +27,6 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Calculation context.
  */
-@RequiredArgsConstructor
 public final class CalculationContext implements AutoCloseable {
     
     private final AtomicReference<Connection> connection = new AtomicReference<>();
