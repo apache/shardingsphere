@@ -27,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class MetaDataVersion {
     
+    public static final String DEFAULT_VERSION = "0";
+    
     private static final String ACTIVE_VERSION = "active_version";
     
     private static final String VERSIONS = "versions";

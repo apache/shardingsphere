@@ -39,8 +39,6 @@ import java.util.Optional;
  */
 public final class GlobalRulePersistService implements GlobalPersistService<Collection<RuleConfiguration>> {
     
-    private static final String DEFAULT_VERSION = "0";
-    
     private final PersistRepository repository;
     
     private final MetaDataVersionPersistService metaDataVersionPersistService;
@@ -70,10 +68,10 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
             List<String> versions = repository.getChildrenKeys(GlobalNode.getGlobalRuleVersionsNode(each.getKey()));
-            String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             repository.persist(GlobalNode.getGlobalRuleVersionNode(each.getKey(), nextActiveVersion), each.getValue());
             if (Strings.isNullOrEmpty(repository.query(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey())))) {
-                repository.persist(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), DEFAULT_VERSION);
+                repository.persist(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), MetaDataVersion.DEFAULT_VERSION);
             }
             result.add(new MetaDataVersion(GlobalNode.getGlobalRuleNode(each.getKey()), repository.query(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey())), nextActiveVersion));
         }
