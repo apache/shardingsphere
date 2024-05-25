@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -250,7 +251,8 @@ class ShardingSphereConnectionTest {
         StorageUnit storageUnit = mock(StorageUnit.class);
         when(storageUnit.getDataSource()).thenReturn(dataSource);
         when(result.getStorageUnits(DefaultDatabase.LOGIC_NAME)).thenReturn(Collections.singletonMap("ds", storageUnit));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(mockTransactionRule(), mock(TrafficRule.class))));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
+                new RuleMetaData(Arrays.asList(mockTransactionRule(), mock(TrafficRule.class), mock(AuthorityRule.class))));
         return result;
     }
     
