@@ -34,7 +34,6 @@ import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -106,19 +105,14 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     @Override
     public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) {
-        contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().deleteConfigurations(databaseName,
-                getToBeDroppedDataSourcePoolProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService()
-                        .getDataSourceUnitService().load(databaseName), toBeDroppedStorageUnitNames));
+        for (String each : getToBeDroppedResourceNames(databaseName, toBeDroppedStorageUnitNames)) {
+            contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().delete(databaseName, each);
+        }
     }
     
-    private Map<String, DataSourcePoolProperties> getToBeDroppedDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> propsMap, final Collection<String> toBeDroppedResourceNames) {
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(toBeDroppedResourceNames.size(), 1F);
-        for (String each : toBeDroppedResourceNames) {
-            if (propsMap.containsKey(each)) {
-                result.put(each, propsMap.get(each));
-            }
-        }
-        return result;
+    private Collection<String> getToBeDroppedResourceNames(final String databaseName, final Collection<String> toBeDroppedResourceNames) {
+        Map<String, DataSourcePoolProperties> propsMap = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(databaseName);
+        return toBeDroppedResourceNames.stream().filter(propsMap::containsKey).collect(Collectors.toList());
     }
     
     @Override

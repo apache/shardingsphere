@@ -40,13 +40,4 @@ public final class ContainerUtils {
     public static int generateMySQLServerId() {
         return ATOMIC_MYSQL_SERVER_ID.getAndIncrement();
     }
-    
-    /**
-     * Generate a unique storage container id.
-     *
-     * @return unique storage container id
-     */
-    public static int generateStorageContainerId() {
-        return ATOMIC_STORAGE_CONTAINER_ID.getAndIncrement();
-    }
 }
