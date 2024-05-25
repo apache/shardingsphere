@@ -108,6 +108,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private final MetaDataContexts metaDataContexts;
     
+    private String databaseName;
+    
     private final List<Statement> statements;
     
     private final StatementOption statementOption;
@@ -130,12 +132,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private ResultSet currentResultSet;
     
-    private String trafficInstanceId;
-    
-    private boolean useFederation;
-    
-    private String databaseName;
-    
     public ShardingSphereStatement(final ShardingSphereConnection connection) {
         this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
@@ -147,6 +143,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     public ShardingSphereStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         this.connection = connection;
         metaDataContexts = connection.getContextManager().getMetaDataContexts();
+        databaseName = connection.getDatabaseName();
         statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         executor = new DriverExecutor(connection);
@@ -154,7 +151,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         trafficRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
         statementManager = new StatementManager();
         batchStatementExecutor = new BatchStatementExecutor(this);
-        databaseName = connection.getDatabaseName();
     }
     
     @Override
@@ -166,13 +162,16 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             handleAutoCommit(queryContext);
             databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
             connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
-            trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
+            String trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
-                return executor.getTrafficExecutor().execute(createTrafficExecutionUnit(trafficInstanceId, queryContext), Statement::executeQuery);
+                result = executor.getTrafficExecutor().execute(createTrafficExecutionUnit(trafficInstanceId, queryContext), Statement::executeQuery);
+                currentResultSet = result;
+                return result;
             }
-            useFederation = decide(queryContext, metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData());
-            if (useFederation) {
-                return executeFederationQuery(queryContext);
+            if (decide(queryContext, metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData())) {
+                result = executeFederationQuery(queryContext);
+                currentResultSet = result;
+                return result;
             }
             executionContext = createExecutionContext(queryContext);
             result = doExecuteQuery(executionContext);
@@ -320,7 +319,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         handleAutoCommit(queryContext);
         databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
-        trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
+        String trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
         if (null != trafficInstanceId) {
             JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
             return executor.getTrafficExecutor().execute(executionUnit, trafficCallback);
@@ -426,14 +425,16 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             handleAutoCommit(queryContext);
             databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
             connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
-            trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
+            String trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
-                return executor.getTrafficExecutor().execute(executionUnit, trafficCallback);
+                boolean result = executor.getTrafficExecutor().execute(executionUnit, trafficCallback);
+                currentResultSet = executor.getTrafficExecutor().getResultSet();
+                return result;
             }
-            useFederation = decide(queryContext, metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData());
-            if (useFederation) {
+            if (decide(queryContext, metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData())) {
                 ResultSet resultSet = executeFederationQuery(queryContext);
+                currentResultSet = resultSet;
                 return null != resultSet;
             }
             executionContext = createExecutionContext(queryContext);
@@ -563,14 +564,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (null != trafficInstanceId) {
-            return executor.getTrafficExecutor().getResultSet();
-        }
-        if (useFederation) {
-            return executor.getSqlFederationEngine().getResultSet();
-        }
-        if (executionContext.getSqlStatementContext() instanceof SelectStatementContext
-                || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
+        if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
             if (resultSets.isEmpty()) {
                 return currentResultSet;

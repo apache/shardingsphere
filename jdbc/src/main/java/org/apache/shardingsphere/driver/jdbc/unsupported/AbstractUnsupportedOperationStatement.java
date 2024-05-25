@@ -29,17 +29,17 @@ import java.sql.Statement;
 public abstract class AbstractUnsupportedOperationStatement extends WrapperAdapter implements Statement {
     
     @Override
-    public final void closeOnCompletion() throws SQLException {
+    public void closeOnCompletion() throws SQLException {
         throw new SQLFeatureNotSupportedException("closeOnCompletion");
     }
     
     @Override
-    public final boolean isCloseOnCompletion() throws SQLException {
+    public boolean isCloseOnCompletion() throws SQLException {
         throw new SQLFeatureNotSupportedException("isCloseOnCompletion");
     }
     
     @Override
-    public final void setCursorName(final String name) throws SQLException {
+    public void setCursorName(final String name) throws SQLException {
         throw new SQLFeatureNotSupportedException("setCursorName");
     }
 }
