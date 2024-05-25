@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.executor.DriverExecutor;
@@ -39,6 +38,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
@@ -159,9 +159,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
-        if (Strings.isNullOrEmpty(sql)) {
-            throw new EmptySQLException().toSQLException();
-        }
+        ShardingSpherePreconditions.checkNotEmpty(sql, () -> new EmptySQLException().toSQLException());
         ResultSet result;
         try {
             QueryContext queryContext = createQueryContext(sql);
@@ -170,11 +168,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
             trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
-                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
-                return executor.getTrafficExecutor().execute(executionUnit, Statement::executeQuery);
+                return executor.getTrafficExecutor().execute(createTrafficExecutionUnit(trafficInstanceId, queryContext), Statement::executeQuery);
             }
-            useFederation = decide(queryContext,
-                    metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData());
+            useFederation = decide(queryContext, metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData());
             if (useFederation) {
                 return executeFederationQuery(queryContext);
             }
@@ -435,8 +431,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
                 return executor.getTrafficExecutor().execute(executionUnit, trafficCallback);
             }
-            useFederation = decide(queryContext,
-                    metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData());
+            useFederation = decide(queryContext, metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData());
             if (useFederation) {
                 ResultSet resultSet = executeFederationQuery(queryContext);
                 return null != resultSet;

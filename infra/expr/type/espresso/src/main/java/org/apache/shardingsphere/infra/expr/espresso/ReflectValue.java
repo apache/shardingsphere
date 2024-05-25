@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.expr.espresso;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.util.stream.Stream;
@@ -25,15 +26,12 @@ import java.util.stream.Stream;
  * Reflect Value.
  * Avoid using JDK21 bytecode during compilation. Refer to `org.graalvm.polyglot.Value`.
  */
+@RequiredArgsConstructor
 public class ReflectValue {
     
     private static final String VALUE_CLASS_NAME = "org.graalvm.polyglot.Value";
     
     private final Object valueInstance;
-    
-    public ReflectValue(final Object valueInstance) {
-        this.valueInstance = valueInstance;
-    }
     
     /**
      * Returns the member with a given identifier or null if the member does not exist.
