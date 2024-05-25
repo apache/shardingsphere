@@ -27,9 +27,9 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * Unsupported command packet for PostgreSQL.
  */
 @RequiredArgsConstructor
+@Getter
 public final class PostgreSQLUnsupportedCommandPacket extends PostgreSQLCommandPacket {
     
-    @Getter
     private final PostgreSQLIdentifierTag identifier;
     
     @Override
