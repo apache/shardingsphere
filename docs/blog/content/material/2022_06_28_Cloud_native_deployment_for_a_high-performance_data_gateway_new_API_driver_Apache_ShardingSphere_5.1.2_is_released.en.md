@@ -19,7 +19,8 @@ In addition to the above-mentioned new features, this update also improves SQL p
 This post will give you an overview of the ShardingSphere 5.1.2 updates.
 
 ## New Features
-**ShardingSphere-Proxy configuration using Helm**
+### **ShardingSphere-Proxy configuration using Helm**
+
 ShardingSphere-Proxy provides Docker images for deployment in containers. However, for those who need to deploy ShardingSphere-Proxy on [Kubernetes](https://kubernetes.io/), you have to go through some procedures such as database driver mounting, configuration mounting, custom algorithm mounting, etc., which make the deployment process relatively tedious and causes high operation & maintenance costs.
 
 This update brings the new ShardingSphere-Proxy Helm Chart, a new feature donated to the Apache ShardingSphere community by [SphereEx](https://www.sphere-ex.com/), a provider of enterprise-grade, cloud-native data-enhanced computing products, and solutions. This development allows Apache ShardingSphere to embrace ahead cloud-native computing.
@@ -32,7 +33,8 @@ Due to the limits imposed by open source protocol, ShardingSphere-Proxy’s bina
 
 For such cases, ShardingSphere-Proxy Helm Chart can automatically obtain the MySQL JDBC driver in the Pod’s Init container, reducing your deployment operation costs.
 
-**SQL dialect translation**
+### **SQL dialect translation**
+
 With increased database diversification, the coexistence of multiple types of databases is now the norm. The scenarios in which heterogeneous databases are accessed using one SQL dialect are becoming a trend.
 
 The existence of multiple diversified databases makes it difficult to standardize SQL dialects for accessing databases, meaning that engineers need to use different dialects for different types of databases - lacking a unified query platform.
@@ -68,25 +70,29 @@ Connection conn = dataSource.getConnection();
 ```
 
 ## Optimizations of the existing capabilities
-**Kernel**
+### **Kernel**
+
 In this update, ShardingSphere merged lots of PRs to improve SQL parsing support. SQL parsing optimizations take up a large proportion of the update log.
 
 ShardingSphere provided preliminary support for PostgreSQL / openGauss schema in 5.1.1.
 
 In this 5.1.2 update, the kernel, cluster mode, and auto-scaling support for PostgreSQL / openGauss schema has been improved. For example, support for schema structure has been added to metadata pairs, and schema customization is also supported in kernel and auto-scaling.
 
-**ShardingSphere-Proxy**
+### **ShardingSphere-Proxy**
+
 As the market for servers using ARM CPUs becomes more popular, ShardingSphere-Proxy also provides images for arm64 architecture on Docker as well.
 
 When it comes to MySQL, ShardingSphere-Proxy fixed the issue where packets longer than 8 MB could not be received, and further supports receiving data larger than 16 MB in total.
 
-**Auto-scaling**
+### **Auto-scaling**
+
 In addition to supporting PostgreSQL schema customization, auto-scaling also implements automatic table creation when migrating PostgreSQL, and fixes the problem where PostgreSQL incremental migration would report errors when encountering null fields values. In addition to these features, auto-scaling also reduces resource consumption during migration and provides support for incremental migration in openGauss 3.0.
 
 ## Release notes
 The full release note for ShardingSphere 5.1.2 can be found in the following sections. Note that this update adjusts a small number of APIs, so please refer to the API Adjustments section for more details.
 
-**New Features**
+### **New Features**
+
 Kernel: alpha version of SQL dialect conversion for MySQL and PostgreSQL.
 
 Kernel: Support for PostgreSQL and openGauss custom schema.
@@ -115,7 +121,8 @@ Operation mode: Governance Center supports PG/openGauss three-level structure.
 
 Operation mode: Governance Center supports Database level distributed locking.
 
-**Optimization**
+### **Optimization**
+
 Kernel: support for PostgreSQL and openGauss copy statements.
 
 Kernel: support for PostgreSQL alter/ drop index statements.

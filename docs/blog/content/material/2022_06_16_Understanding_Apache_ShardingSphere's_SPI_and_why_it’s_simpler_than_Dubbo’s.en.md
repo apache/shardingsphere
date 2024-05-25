@@ -50,7 +50,7 @@ We can see now that Dubbo’s Java SPI is completely different from the JDK SPI.
 
 Unlike the Dubbo implementation concept, ShardingSphere extends the JDK SPI with less code.
 
-1. The configuration is exactly the same as in the Java SPI.
+The configuration is exactly the same as in the Java SPI.
 Let’s take the `DialectTableMetaDataLoader` interface implementation class as an example:
 
 `DialectTableMetaDataLoader.class`
