@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRu
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
-import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourceUnitPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -48,7 +48,8 @@ import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -179,8 +180,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void dropSchema(final String databaseName, final Collection<String> schemaNames) {
-        Collection<String> tobeRemovedTables = new LinkedHashSet<>();
-        Collection<String> tobeRemovedSchemas = new LinkedHashSet<>(schemaNames.size(), 1F);
+        Collection<String> tobeRemovedTables = new LinkedList<>();
+        Collection<String> tobeRemovedSchemas = new LinkedList<>();
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         for (String each : schemaNames) {
@@ -189,7 +190,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             Optional.of(schema).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
             tobeRemovedSchemas.add(each.toLowerCase());
         }
-        removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), tobeRemovedSchemas, tobeRemovedTables);
+        removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), new HashSet<>(tobeRemovedSchemas), new HashSet<>(tobeRemovedTables));
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
@@ -222,7 +223,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getSchemas()
                 .forEach((schemaName, schema) -> contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService()
                         .persistByAlterConfiguration(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
-        DatabaseBasedPersistService<Map<String, DataSourcePoolProperties>> dataSourceService = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService();
+        DataSourceUnitPersistService dataSourceService = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService();
         contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
                 .switchActiveVersion(dataSourceService.persistConfigurations(databaseName, toBeRegisteredProps));
         clearServiceCache();
@@ -236,7 +237,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 .createChangedDatabases(databaseName, true, switchingResource, null));
         contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()
                 .forEach(each -> ((GlobalRule) each).refresh(contextManager.getMetaDataContexts().getMetaData().getDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
-        DatabaseBasedPersistService<Map<String, DataSourcePoolProperties>> dataSourceService = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService();
+        DataSourceUnitPersistService dataSourceService = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService();
         contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
                 .switchActiveVersion(dataSourceService.persistConfigurations(databaseName, toBeUpdatedProps));
         switchingResource.closeStaleDataSources();

@@ -33,13 +33,27 @@ import java.util.Properties;
  * Properties persist service.
  */
 @RequiredArgsConstructor
-public final class PropertiesPersistService implements GlobalPersistService<Properties> {
+public final class PropertiesPersistService {
     
     private final PersistRepository repository;
     
     private final MetaDataVersionPersistService metaDataVersionPersistService;
     
-    @Override
+    /**
+     * Load properties.
+     *
+     * @return properties
+     */
+    public Properties load() {
+        String yamlContent = repository.query(GlobalNode.getPropsVersionNode(getActiveVersion()));
+        return Strings.isNullOrEmpty(yamlContent) ? new Properties() : YamlEngine.unmarshal(yamlContent, Properties.class);
+    }
+    
+    /**
+     * Persist properties.
+     *
+     * @param props properties
+     */
     public void persist(final Properties props) {
         List<String> versions = repository.getChildrenKeys(GlobalNode.getPropsVersionsNode());
         String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
@@ -47,14 +61,7 @@ public final class PropertiesPersistService implements GlobalPersistService<Prop
         if (Strings.isNullOrEmpty(getActiveVersion())) {
             repository.persist(GlobalNode.getPropsActiveVersionNode(), MetaDataVersion.DEFAULT_VERSION);
         }
-        metaDataVersionPersistService.switchActiveVersion(Collections.singletonList(new MetaDataVersion(GlobalNode.getPropsRootNode(),
-                getActiveVersion(), nextActiveVersion)));
-    }
-    
-    @Override
-    public Properties load() {
-        String yamlContent = repository.query(GlobalNode.getPropsVersionNode(getActiveVersion()));
-        return Strings.isNullOrEmpty(yamlContent) ? new Properties() : YamlEngine.unmarshal(yamlContent, Properties.class);
+        metaDataVersionPersistService.switchActiveVersion(Collections.singleton(new MetaDataVersion(GlobalNode.getPropsRootNode(), getActiveVersion(), nextActiveVersion)));
     }
     
     private String getActiveVersion() {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service.config.database.datasource;
+package org.apache.shardingsphere.metadata.persist.service.config.database;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.metadata.persist.node.metadata.DataSourceMetaDataNode;
-import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
@@ -38,11 +37,16 @@ import java.util.Map.Entry;
  * Data source unit persist service.
  */
 @RequiredArgsConstructor
-public final class DataSourceUnitPersistService implements DatabaseBasedPersistService<Map<String, DataSourcePoolProperties>> {
+public final class DataSourceUnitPersistService {
     
     private final PersistRepository repository;
     
-    @Override
+    /**
+     * Persist data source pool configurations.
+     *
+     * @param databaseName database name
+     * @param dataSourceConfigs data source pool configurations
+     */
     public void persist(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
         for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
             String activeVersion = getDataSourceActiveVersion(databaseName, entry.getKey());
@@ -56,8 +60,13 @@ public final class DataSourceUnitPersistService implements DatabaseBasedPersistS
         }
     }
     
+    /**
+     * Load data source pool configurations.
+     *
+     * @param databaseName database name
+     * @return data source pool configurations
+     */
     @SuppressWarnings("unchecked")
-    @Override
     public Map<String, DataSourcePoolProperties> load(final String databaseName) {
         Collection<String> childrenKeys = repository.getChildrenKeys(DataSourceMetaDataNode.getDataSourceUnitsNode(databaseName));
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(childrenKeys.size(), 1F);
@@ -70,23 +79,40 @@ public final class DataSourceUnitPersistService implements DatabaseBasedPersistS
         return result;
     }
     
+    /**
+     * Load data source pool configurations.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @return data source pool configurations
+     */
     @SuppressWarnings("unchecked")
-    @Override
-    public Map<String, DataSourcePoolProperties> load(final String databaseName, final String name) {
+    public Map<String, DataSourcePoolProperties> load(final String databaseName, final String dataSourceName) {
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(1, 1F);
-        String dataSourceValue = repository.query(DataSourceMetaDataNode.getDataSourceUnitVersionNode(databaseName, name, getDataSourceActiveVersion(databaseName, name)));
+        String dataSourceValue = repository.query(DataSourceMetaDataNode.getDataSourceUnitVersionNode(databaseName, dataSourceName, getDataSourceActiveVersion(databaseName, dataSourceName)));
         if (!Strings.isNullOrEmpty(dataSourceValue)) {
-            result.put(name, new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
+            result.put(dataSourceName, new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
         }
         return result;
     }
     
-    @Override
-    public void delete(final String databaseName, final String name) {
-        repository.delete(DataSourceMetaDataNode.getDataSourceUnitNode(databaseName, name));
+    /**
+     * Delete data source pool configurations.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     */
+    public void delete(final String databaseName, final String dataSourceName) {
+        repository.delete(DataSourceMetaDataNode.getDataSourceUnitNode(databaseName, dataSourceName));
     }
     
-    @Override
+    /**
+     * Delete data source pool configurations.
+     *
+     * @param databaseName database name
+     * @param dataSourceConfigs to be deleted configurations
+     * @return meta data versions
+     */
     public Collection<MetaDataVersion> deleteConfigurations(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
@@ -97,7 +123,13 @@ public final class DataSourceUnitPersistService implements DatabaseBasedPersistS
         return result;
     }
     
-    @Override
+    /**
+     * Persist data source pool configurations.
+     *
+     * @param databaseName database name
+     * @param dataSourceConfigs to be persisted configurations
+     * @return meta data versions
+     */
     public Collection<MetaDataVersion> persistConfigurations(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
