@@ -107,23 +107,6 @@ public final class DataSourceUnitPersistService {
     }
     
     /**
-     * Delete data source pool configurations.
-     *
-     * @param databaseName database name
-     * @param dataSourceConfigs to be deleted configurations
-     * @return meta data versions
-     */
-    public Collection<MetaDataVersion> deleteConfigurations(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
-        Collection<MetaDataVersion> result = new LinkedList<>();
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
-            String delKey = DataSourceMetaDataNode.getDataSourceUnitNode(databaseName, entry.getKey());
-            repository.delete(delKey);
-            result.add(new MetaDataVersion(delKey));
-        }
-        return result;
-    }
-    
-    /**
      * Persist data source pool configurations.
      *
      * @param databaseName database name

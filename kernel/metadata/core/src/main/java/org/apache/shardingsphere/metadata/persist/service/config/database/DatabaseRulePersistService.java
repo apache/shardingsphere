@@ -109,6 +109,10 @@ public final class DatabaseRulePersistService {
         return result;
     }
     
+    private String getActiveVersion(final String databaseName, final String ruleName, final String key) {
+        return repository.query(DatabaseRuleMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, key));
+    }
+    
     /**
      * Delete configurations.
      *
@@ -149,9 +153,5 @@ public final class DatabaseRulePersistService {
             result.add(new MetaDataVersion(delKey));
         }
         return result;
-    }
-    
-    private String getActiveVersion(final String databaseName, final String ruleName, final String key) {
-        return repository.query(DatabaseRuleMetaDataNode.getDatabaseRuleActiveVersionNode(databaseName, ruleName, key));
     }
 }
