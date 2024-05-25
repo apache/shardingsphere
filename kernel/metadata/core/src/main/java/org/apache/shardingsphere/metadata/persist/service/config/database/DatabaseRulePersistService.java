@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service.config.database.rule;
+package org.apache.shardingsphere.metadata.persist.service.config.database;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.metadata.DatabaseRuleMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
-import org.apache.shardingsphere.mode.tuple.RepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
+import org.apache.shardingsphere.mode.tuple.RepositoryTupleSwapperEngine;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +38,7 @@ import java.util.Objects;
 /**
  * Database rule persist service.
  */
-public final class DatabaseRulePersistService implements DatabaseBasedPersistService<Collection<RuleConfiguration>> {
+public final class DatabaseRulePersistService {
     
     private final PersistRepository repository;
     
@@ -50,7 +49,22 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
         repositoryTuplePersistService = new RepositoryTuplePersistService(repository);
     }
     
-    @Override
+    /**
+     * Load configurations.
+     *
+     * @param databaseName database name
+     * @return configurations
+     */
+    public Collection<RuleConfiguration> load(final String databaseName) {
+        return new RepositoryTupleSwapperEngine().swapToRuleConfigurations(repositoryTuplePersistService.loadRepositoryTuples(DatabaseRuleMetaDataNode.getRulesNode(databaseName)));
+    }
+    
+    /**
+     * Persist configurations.
+     *
+     * @param databaseName database name
+     * @param configs configurations
+     */
     public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
         RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
         for (YamlRuleConfiguration each : new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs)) {
@@ -61,17 +75,13 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
         }
     }
     
-    @Override
-    public Collection<RuleConfiguration> load(final String databaseName) {
-        return new RepositoryTupleSwapperEngine().swapToRuleConfigurations(repositoryTuplePersistService.loadRepositoryTuples(DatabaseRuleMetaDataNode.getRulesNode(databaseName)));
-    }
-    
-    @Override
-    public void delete(final String databaseName, final String name) {
-        repository.delete(DatabaseRuleMetaDataNode.getDatabaseRuleNode(databaseName, name));
-    }
-    
-    @Override
+    /**
+     * Persist configurations.
+     *
+     * @param databaseName database name
+     * @param configs to be persisted configurations
+     * @return meta data versions
+     */
     public Collection<MetaDataVersion> persistConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
@@ -99,7 +109,23 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
         return result;
     }
     
-    @Override
+    /**
+     * Delete configurations.
+     *
+     * @param databaseName database name
+     * @param ruleTypeName rule type name
+     */
+    public void delete(final String databaseName, final String ruleTypeName) {
+        repository.delete(DatabaseRuleMetaDataNode.getDatabaseRuleNode(databaseName, ruleTypeName));
+    }
+    
+    /**
+     * Delete configurations.
+     *
+     * @param databaseName database name
+     * @param configs to be deleted configurations
+     * @return meta data versions
+     */
     public Collection<MetaDataVersion> deleteConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();

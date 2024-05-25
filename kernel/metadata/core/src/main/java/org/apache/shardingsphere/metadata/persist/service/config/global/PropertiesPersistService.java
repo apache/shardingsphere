@@ -40,6 +40,16 @@ public final class PropertiesPersistService {
     private final MetaDataVersionPersistService metaDataVersionPersistService;
     
     /**
+     * Load properties.
+     *
+     * @return properties
+     */
+    public Properties load() {
+        String yamlContent = repository.query(GlobalNode.getPropsVersionNode(getActiveVersion()));
+        return Strings.isNullOrEmpty(yamlContent) ? new Properties() : YamlEngine.unmarshal(yamlContent, Properties.class);
+    }
+    
+    /**
      * Persist properties.
      *
      * @param props properties
@@ -52,16 +62,6 @@ public final class PropertiesPersistService {
             repository.persist(GlobalNode.getPropsActiveVersionNode(), MetaDataVersion.DEFAULT_VERSION);
         }
         metaDataVersionPersistService.switchActiveVersion(Collections.singleton(new MetaDataVersion(GlobalNode.getPropsRootNode(), getActiveVersion(), nextActiveVersion)));
-    }
-    
-    /**
-     * Load properties.
-     *
-     * @return properties
-     */
-    public Properties load() {
-        String yamlContent = repository.query(GlobalNode.getPropsVersionNode(getActiveVersion()));
-        return Strings.isNullOrEmpty(yamlContent) ? new Properties() : YamlEngine.unmarshal(yamlContent, Properties.class);
     }
     
     private String getActiveVersion() {

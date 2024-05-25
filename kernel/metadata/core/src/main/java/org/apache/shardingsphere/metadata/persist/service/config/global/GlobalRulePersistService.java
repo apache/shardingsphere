@@ -20,14 +20,14 @@ package org.apache.shardingsphere.metadata.persist.service.config.global;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.tuple.RepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
+import org.apache.shardingsphere.mode.tuple.RepositoryTupleSwapperEngine;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -49,6 +49,25 @@ public final class GlobalRulePersistService {
         this.repository = repository;
         this.metaDataVersionPersistService = metaDataVersionPersistService;
         repositoryTuplePersistService = new RepositoryTuplePersistService(repository);
+    }
+    
+    /**
+     * Load global rule configurations.
+     *
+     * @return global rule configurations
+     */
+    public Collection<RuleConfiguration> load() {
+        return new RepositoryTupleSwapperEngine().swapToRuleConfigurations(repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleRootNode()));
+    }
+    
+    /**
+     * Load global rule configuration.
+     *
+     * @param ruleTypeName rule type name to be loaded
+     * @return global rule configuration
+     */
+    public Optional<RuleConfiguration> load(final String ruleTypeName) {
+        return new RepositoryTupleSwapperEngine().swapToRuleConfiguration(ruleTypeName, repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleNode(ruleTypeName)));
     }
     
     /**
@@ -80,24 +99,5 @@ public final class GlobalRulePersistService {
             result.add(new MetaDataVersion(GlobalNode.getGlobalRuleNode(each.getKey()), repository.query(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey())), nextActiveVersion));
         }
         return result;
-    }
-    
-    /**
-     * Load global rule configurations.
-     *
-     * @return global rule configurations
-     */
-    public Collection<RuleConfiguration> load() {
-        return new RepositoryTupleSwapperEngine().swapToRuleConfigurations(repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleRootNode()));
-    }
-    
-    /**
-     * Load global rule configuration.
-     *
-     * @param ruleTypeName rule type name to be loaded
-     * @return global rule configuration
-     */
-    public Optional<RuleConfiguration> load(final String ruleTypeName) {
-        return new RepositoryTupleSwapperEngine().swapToRuleConfiguration(ruleTypeName, repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleNode(ruleTypeName)));
     }
 }
