@@ -37,7 +37,7 @@ import java.util.Optional;
 /**
  * Global rule persist service.
  */
-public final class GlobalRulePersistService implements GlobalPersistService<Collection<RuleConfiguration>> {
+public final class GlobalRulePersistService {
     
     private final PersistRepository repository;
     
@@ -51,7 +51,11 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
         repositoryTuplePersistService = new RepositoryTuplePersistService(repository);
     }
     
-    @Override
+    /**
+     * Persist global rule configurations.
+     *
+     * @param globalRuleConfigs global rule configurations
+     */
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
         RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
@@ -78,13 +82,22 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
         return result;
     }
     
-    @Override
+    /**
+     * Load global rule configurations.
+     *
+     * @return global rule configurations
+     */
     public Collection<RuleConfiguration> load() {
         return new RepositoryTupleSwapperEngine().swapToRuleConfigurations(repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleRootNode()));
     }
     
-    @Override
-    public Optional<RuleConfiguration> load(final String ruleName) {
-        return new RepositoryTupleSwapperEngine().swapToRuleConfiguration(ruleName, repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleNode(ruleName)));
+    /**
+     * Load global rule configuration.
+     *
+     * @param ruleTypeName rule type name to be loaded
+     * @return global rule configuration
+     */
+    public Optional<RuleConfiguration> load(final String ruleTypeName) {
+        return new RepositoryTupleSwapperEngine().swapToRuleConfiguration(ruleTypeName, repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleNode(ruleTypeName)));
     }
 }
