@@ -214,12 +214,14 @@ public final class MySQLJsonValueDecoder {
     
     private static int decodeDataLength(final ByteBuf byteBuf) {
         int result = 0;
-        for (int i = 0;; i++) {
+        int i = 0;
+        while (true) {
             int data = byteBuf.readUnsignedByte();
             result |= (data & 0x7f) << (7 * i);
             if (0 == (data & 0x80)) {
                 break;
             }
+            i++;
         }
         return result;
     }
