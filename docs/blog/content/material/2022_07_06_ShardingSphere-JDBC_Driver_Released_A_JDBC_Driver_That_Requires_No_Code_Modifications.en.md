@@ -38,9 +38,10 @@ DistSQL ensures security which Java and YAML are short of, and it naturally supp
 After the preconditions were met, ShardingSphere-JDBC version 5.1.2 took the opportunity to provide a JDBC driver that can be used only through configuration changes, without requiring engineers to modify the code.
 
 **Driver class name**
+
 `org.apache.shardingsphere.driver.ShardingSphereDriver`
-**
-URL configuration description**
+
+**URL configuration description**
 
 - Prefix: `jdbc:shardingsphere:`
 - Config files: `xxx.yaml`, its format is consistent with that of `YAML` configuration.
@@ -100,6 +101,7 @@ ShardingSphere-JDBC Driver officially makes ShardingSphere easier to use than ev
 In the coming future, the JDBC driver can be further simplified by providing the governance center address directly in the `URL`. Apache ShardingSphere has made great strides towards diversified distributed clusters.
 
 **Relevant Links:**
+
 [GitHub issue](https://github.com/apache/shardingsphere/issues)
 
 [Contributor Guide](https://shardingsphere.apache.org/community/en/involved/)
