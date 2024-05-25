@@ -95,6 +95,10 @@ public final class DataSourceNodePersistService {
         }
     }
     
+    private String getDataSourceActiveVersion(final String databaseName, final String dataSourceName) {
+        return repository.query(DataSourceMetaDataNode.getDataSourceNodeActiveVersionNode(databaseName, dataSourceName));
+    }
+    
     /**
      * Delete data source pool configuration.
      *
@@ -103,9 +107,5 @@ public final class DataSourceNodePersistService {
      */
     public void delete(final String databaseName, final String dataSourceName) {
         repository.delete(DataSourceMetaDataNode.getDataSourceNodeNode(databaseName, dataSourceName));
-    }
-    
-    private String getDataSourceActiveVersion(final String databaseName, final String dataSourceName) {
-        return repository.query(DataSourceMetaDataNode.getDataSourceNodeActiveVersionNode(databaseName, dataSourceName));
     }
 }
