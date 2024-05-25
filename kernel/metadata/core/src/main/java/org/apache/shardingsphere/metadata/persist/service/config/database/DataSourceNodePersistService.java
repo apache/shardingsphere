@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -104,45 +103,6 @@ public final class DataSourceNodePersistService {
      */
     public void delete(final String databaseName, final String dataSourceName) {
         repository.delete(DataSourceMetaDataNode.getDataSourceNodeNode(databaseName, dataSourceName));
-    }
-    
-    /**
-     * Delete data source pool configuration.
-     *
-     * @param databaseName database name
-     * @param dataSourceConfigs to be deleted configurations
-     * @return meta data versions
-     */
-    public Collection<MetaDataVersion> deleteConfigurations(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
-        Collection<MetaDataVersion> result = new LinkedList<>();
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
-            String delKey = DataSourceMetaDataNode.getDataSourceNodeNode(databaseName, entry.getKey());
-            repository.delete(delKey);
-            result.add(new MetaDataVersion(delKey));
-        }
-        return result;
-    }
-    
-    /**
-     * Persist data source pool configurations.
-     *
-     * @param databaseName database name
-     * @param dataSourceConfigs to be persisted configurations
-     * @return meta data versions
-     */
-    public Collection<MetaDataVersion> persistConfigurations(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
-        Collection<MetaDataVersion> result = new LinkedList<>();
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
-            List<String> versions = repository.getChildrenKeys(DataSourceMetaDataNode.getDataSourceNodeVersionsNode(databaseName, entry.getKey()));
-            String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            repository.persist(DataSourceMetaDataNode.getDataSourceNodeVersionNode(databaseName, entry.getKey(), nextActiveVersion),
-                    YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
-            if (Strings.isNullOrEmpty(getDataSourceActiveVersion(databaseName, entry.getKey()))) {
-                repository.persist(DataSourceMetaDataNode.getDataSourceNodeActiveVersionNode(databaseName, entry.getKey()), MetaDataVersion.DEFAULT_VERSION);
-            }
-            result.add(new MetaDataVersion(DataSourceMetaDataNode.getDataSourceNodeNode(databaseName, entry.getKey()), getDataSourceActiveVersion(databaseName, entry.getKey()), nextActiveVersion));
-        }
-        return result;
     }
     
     private String getDataSourceActiveVersion(final String databaseName, final String dataSourceName) {
