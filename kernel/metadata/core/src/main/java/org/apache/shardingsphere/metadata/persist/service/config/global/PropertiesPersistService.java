@@ -35,8 +35,6 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public final class PropertiesPersistService implements GlobalPersistService<Properties> {
     
-    private static final String DEFAULT_VERSION = "0";
-    
     private final PersistRepository repository;
     
     private final MetaDataVersionPersistService metaDataVersionPersistService;
@@ -44,10 +42,10 @@ public final class PropertiesPersistService implements GlobalPersistService<Prop
     @Override
     public void persist(final Properties props) {
         List<String> versions = repository.getChildrenKeys(GlobalNode.getPropsVersionsNode());
-        String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+        String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
         repository.persist(GlobalNode.getPropsVersionNode(nextActiveVersion), YamlEngine.marshal(props));
         if (Strings.isNullOrEmpty(getActiveVersion())) {
-            repository.persist(GlobalNode.getPropsActiveVersionNode(), DEFAULT_VERSION);
+            repository.persist(GlobalNode.getPropsActiveVersionNode(), MetaDataVersion.DEFAULT_VERSION);
         }
         metaDataVersionPersistService.switchActiveVersion(Collections.singletonList(new MetaDataVersion(GlobalNode.getPropsRootNode(),
                 getActiveVersion(), nextActiveVersion)));

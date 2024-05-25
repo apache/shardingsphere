@@ -42,8 +42,6 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public final class ViewMetaDataPersistService implements SchemaMetaDataPersistService<Map<String, ShardingSphereView>> {
     
-    private static final String DEFAULT_VERSION = "0";
-    
     private final PersistRepository repository;
     
     private final MetaDataVersionPersistService metaDataVersionPersistService;
@@ -54,11 +52,11 @@ public final class ViewMetaDataPersistService implements SchemaMetaDataPersistSe
         for (Entry<String, ShardingSphereView> entry : views.entrySet()) {
             String viewName = entry.getKey().toLowerCase();
             List<String> versions = repository.getChildrenKeys(ViewMetaDataNode.getViewVersionsNode(databaseName, schemaName, viewName));
-            String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             repository.persist(ViewMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName, nextActiveVersion),
                     YamlEngine.marshal(new YamlViewSwapper().swapToYamlConfiguration(entry.getValue())));
             if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, viewName))) {
-                repository.persist(ViewMetaDataNode.getViewActiveVersionNode(databaseName, schemaName, viewName), DEFAULT_VERSION);
+                repository.persist(ViewMetaDataNode.getViewActiveVersionNode(databaseName, schemaName, viewName), MetaDataVersion.DEFAULT_VERSION);
             }
             metaDataVersions.add(new MetaDataVersion(ViewMetaDataNode.getViewNode(databaseName, schemaName, viewName), getActiveVersion(databaseName, schemaName, viewName), nextActiveVersion));
         }
