@@ -33,6 +33,7 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -188,6 +189,8 @@ public abstract class BaseDQLE2EIT {
                             ? expectedResultSet.getTimestamp(i + 1).toLocalDateTime().format(DateTimeFormatterFactory.getStandardFormatter())
                             : actualValue;
                     assertThat(String.valueOf(convertedActualValue), is(String.valueOf(convertedExpectedValue)));
+                } else if (expectedValue instanceof Clob) {
+                    assertThat(String.valueOf(actualValue), is(((Clob) expectedValue).getSubString(1, (int) ((Clob) expectedValue).length())));
                 } else if (actualValue instanceof String && expectedValue instanceof byte[]) {
                     assertThat(actualValue, is(new String((byte[]) expectedValue)));
                 } else {
