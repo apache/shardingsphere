@@ -227,7 +227,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             QueryContext queryContext = createQueryContext();
-            handleAutoCommit(queryContext);
+            handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             String trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
                 currentResultSet = executor.getTrafficExecutor().execute(
@@ -266,8 +266,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return executor.getSqlFederationEngine().decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, globalRuleMetaData);
     }
     
-    private void handleAutoCommit(final QueryContext queryContext) throws SQLException {
-        if (AutoCommitUtils.needOpenTransaction(queryContext.getSqlStatementContext().getSqlStatement())) {
+    private void handleAutoCommit(final SQLStatement sqlStatement) throws SQLException {
+        if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
             connection.handleAutoCommit();
         }
     }
@@ -341,7 +341,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             QueryContext queryContext = createQueryContext();
-            handleAutoCommit(queryContext);
+            handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             String trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
@@ -405,7 +405,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             QueryContext queryContext = createQueryContext();
-            handleAutoCommit(queryContext);
+            handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             String trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);

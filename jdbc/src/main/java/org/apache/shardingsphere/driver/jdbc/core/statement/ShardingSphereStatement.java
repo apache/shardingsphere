@@ -158,7 +158,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         ShardingSpherePreconditions.checkNotEmpty(sql, () -> new EmptySQLException().toSQLException());
         try {
             QueryContext queryContext = createQueryContext(sql);
-            handleAutoCommit(queryContext);
+            handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
             connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
             String trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
@@ -311,7 +311,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private int executeUpdate0(final String sql, final ExecuteUpdateCallback updateCallback, final TrafficExecutorCallback<Integer> trafficCallback) throws SQLException {
         QueryContext queryContext = createQueryContext(sql);
-        handleAutoCommit(queryContext);
+        handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
         databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
         String trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
@@ -416,7 +416,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private boolean execute0(final String sql, final ExecuteCallback executeCallback, final TrafficExecutorCallback<Boolean> trafficCallback) throws SQLException {
         QueryContext queryContext = createQueryContext(sql);
-        handleAutoCommit(queryContext);
+        handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
         databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
         String trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
@@ -440,8 +440,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return executeWithExecutionContext(executeCallback, executionContext);
     }
     
-    private void handleAutoCommit(final QueryContext queryContext) throws SQLException {
-        if (AutoCommitUtils.needOpenTransaction(queryContext.getSqlStatementContext().getSqlStatement())) {
+    private void handleAutoCommit(final SQLStatement sqlStatement) throws SQLException {
+        if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
             connection.handleAutoCommit();
         }
     }
