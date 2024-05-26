@@ -34,7 +34,6 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.ShardingSphereSchemaDataRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ClusterProcessSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber.QualifiedDataSourceStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator.ClusterWorkerIdGenerator;
@@ -99,7 +98,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void createSubscribers(final EventBusContext eventBusContext, final ClusterPersistRepository repository) {
         eventBusContext.register(new QualifiedDataSourceStatusSubscriber(repository));
         eventBusContext.register(new ClusterProcessSubscriber(repository, eventBusContext));
-        eventBusContext.register(new ShardingSphereSchemaDataRegistrySubscriber(repository));
     }
     
     private void registerOnline(final EventBusContext eventBusContext, final ComputeNodeInstanceContext computeNodeInstanceContext,

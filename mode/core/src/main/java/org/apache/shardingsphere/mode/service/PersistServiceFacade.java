@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.service.pojo.ShardingSphereSchemaDataAlteredPOJO;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.state.StatePersistService;
 
@@ -44,5 +45,21 @@ public final class PersistServiceFacade {
         computeNodePersistService = new ComputeNodePersistService(repository);
         statePersistService = new StatePersistService(repository);
         metaDataManagerPersistService = TypedSPILoader.getService(MetaDataManagerPersistServiceBuilder.class, modeConfiguration.getType()).build(contextManager);
+    }
+    
+    /**
+     * Update when sharding sphere schema data altered.
+     *
+     * @param schemaDataAlteredPOJO sharding sphere schema data
+     */
+    public void persist(final ShardingSphereSchemaDataAlteredPOJO schemaDataAlteredPOJO) {
+        String databaseName = schemaDataAlteredPOJO.getDatabaseName();
+        String schemaName = schemaDataAlteredPOJO.getSchemaName();
+        metaDataPersistService.getShardingSphereDataPersistService().getTableRowDataPersistService().persist(databaseName, schemaName, schemaDataAlteredPOJO.getTableName(),
+                schemaDataAlteredPOJO.getAddedRows());
+        metaDataPersistService.getShardingSphereDataPersistService().getTableRowDataPersistService().persist(databaseName, schemaName, schemaDataAlteredPOJO.getTableName(),
+                schemaDataAlteredPOJO.getUpdatedRows());
+        metaDataPersistService.getShardingSphereDataPersistService().getTableRowDataPersistService().delete(databaseName, schemaName, schemaDataAlteredPOJO.getTableName(),
+                schemaDataAlteredPOJO.getDeletedRows());
     }
 }
