@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event;
+package org.apache.shardingsphere.mode.service.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Schema altered event.
+ * Schema altered pojo.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingSphereSchemaDataAlteredEvent implements GovernanceEvent {
+public final class ShardingSphereSchemaDataAlteredPOJO {
     
     private final String databaseName;
     
