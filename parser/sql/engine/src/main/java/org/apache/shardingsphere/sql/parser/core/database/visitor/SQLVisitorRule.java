@@ -711,7 +711,9 @@ public enum SQLVisitorRule {
     
     SPOOL("Spool", SQLStatementType.DAL),
     
-    START_REPLICA("StartReplica", SQLStatementType.RL);
+    START_REPLICA("StartReplica", SQLStatementType.RL),
+    
+    OPEN("Open", SQLStatementType.DDL);
     
     private final String name;
     
