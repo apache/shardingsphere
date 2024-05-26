@@ -220,7 +220,6 @@ public final class CircuitBreakerStatement extends WrapperAdapter implements Sta
     
     @Override
     public void closeOnCompletion() {
-    
     }
     
     @Override
