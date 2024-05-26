@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.util;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.cursor.ExpectedCursorName;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Container utility class.
+ * Open statement test case.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ContainerUtils {
+@Getter
+@Setter
+public final class OpenStatementTestCase extends SQLParserTestCase {
     
-    private static final AtomicInteger ATOMIC_MYSQL_SERVER_ID = new AtomicInteger(1);
-    
-    /**
-     * Generate a unique MySQL server id.
-     *
-     * @return unique MySQL server id
-     */
-    public static int generateMySQLServerId() {
-        return ATOMIC_MYSQL_SERVER_ID.getAndIncrement();
-    }
+    @XmlElement(name = "cursor-name")
+    private ExpectedCursorName cursorName;
 }

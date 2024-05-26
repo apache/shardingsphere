@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.traffic.executor;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 
@@ -33,6 +34,9 @@ public final class TrafficExecutor implements AutoCloseable {
     
     private Statement statement;
     
+    @Getter
+    private ResultSet resultSet;
+    
     /**
      * Execute.
      * 
@@ -45,7 +49,9 @@ public final class TrafficExecutor implements AutoCloseable {
     public <T> T execute(final JDBCExecutionUnit executionUnit, final TrafficExecutorCallback<T> callback) throws SQLException {
         SQLUnit sqlUnit = executionUnit.getExecutionUnit().getSqlUnit();
         cacheStatement(sqlUnit.getParameters(), executionUnit.getStorageResource());
-        return callback.execute(statement, sqlUnit.getSql());
+        T result = callback.execute(statement, sqlUnit.getSql());
+        resultSet = statement.getResultSet();
+        return result;
     }
     
     private void cacheStatement(final List<Object> params, final Statement statement) throws SQLException {
@@ -61,16 +67,6 @@ public final class TrafficExecutor implements AutoCloseable {
         for (Object each : params) {
             ((PreparedStatement) statement).setObject(index++, each);
         }
-    }
-    
-    /**
-     * Get result set.
-     *
-     * @return result set
-     * @throws SQLException SQL exception
-     */
-    public ResultSet getResultSet() throws SQLException {
-        return statement.getResultSet();
     }
     
     @Override

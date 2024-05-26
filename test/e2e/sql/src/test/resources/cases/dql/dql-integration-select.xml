@@ -276,4 +276,32 @@
     <test-case sql="SELECT result.max_datetime FROM (SELECT MAX(type_datetime) AS max_datetime FROM t_product_extend) result" db-types="MySQL" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+    
+    <test-case sql="SELECT type_bit FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT type_blob FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT type_mediumblob FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT type_longblob FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT type_binary FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT type_varbinary FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT type_bit, type_blob, type_mediumblob, type_longblob, type_binary, type_varbinary FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
 </integration-test-cases>

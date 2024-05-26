@@ -23,7 +23,6 @@ import org.apache.shardingsphere.driver.executor.DriverExecutor;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -38,6 +37,7 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.Collection;
@@ -46,7 +46,7 @@ import java.util.Collection;
  * Adapter for {@code Statement}.
  */
 @Getter
-public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperationStatement {
+public abstract class AbstractStatementAdapter extends WrapperAdapter implements Statement {
     
     @Getter(AccessLevel.NONE)
     private final ForceExecuteTemplate<Statement> forceExecuteTemplate = new ForceExecuteTemplate<>();
@@ -58,6 +58,8 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     private int fetchDirection;
     
     private boolean closed;
+    
+    private boolean closeOnCompletion;
     
     protected final boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final SQLStatement sqlStatement, final boolean multiExecutionUnits) {
         if (!connection.getAutoCommit()) {
@@ -227,6 +229,29 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void clearWarnings() {
+    }
+    
+    @Override
+    public void closeOnCompletion() {
+        closeOnCompletion = true;
+    }
+    
+    @Override
+    public boolean isCloseOnCompletion() {
+        return closeOnCompletion;
+    }
+    
+    @Override
+    public void setCursorName(final String name) throws SQLException {
+        if (isTransparent()) {
+            getRoutedStatements().iterator().next().setCursorName(name);
+        } else {
+            throw new SQLFeatureNotSupportedException("setCursorName");
+        }
+    }
+    
+    private boolean isTransparent() {
+        return 1 == getRoutedStatements().size();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

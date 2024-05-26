@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.util;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Container utility class.
+ * Open statement.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ContainerUtils {
+@Getter
+@Setter
+public abstract class OpenStatement extends AbstractSQLStatement implements DDLStatement {
     
-    private static final AtomicInteger ATOMIC_MYSQL_SERVER_ID = new AtomicInteger(1);
-    
-    /**
-     * Generate a unique MySQL server id.
-     *
-     * @return unique MySQL server id
-     */
-    public static int generateMySQLServerId() {
-        return ATOMIC_MYSQL_SERVER_ID.getAndIncrement();
-    }
+    private CursorNameSegment cursorName;
 }

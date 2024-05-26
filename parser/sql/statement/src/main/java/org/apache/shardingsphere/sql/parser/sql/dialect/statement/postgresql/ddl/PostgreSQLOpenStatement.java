@@ -15,27 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.util;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.OpenStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Container utility class.
+ * PostgreSQL open statement.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ContainerUtils {
-    
-    private static final AtomicInteger ATOMIC_MYSQL_SERVER_ID = new AtomicInteger(1);
-    
-    /**
-     * Generate a unique MySQL server id.
-     *
-     * @return unique MySQL server id
-     */
-    public static int generateMySQLServerId() {
-        return ATOMIC_MYSQL_SERVER_ID.getAndIncrement();
-    }
+public final class PostgreSQLOpenStatement extends OpenStatement implements PostgreSQLStatement {
 }

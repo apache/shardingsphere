@@ -282,6 +282,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.MoveStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.NoAuditStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.NotifyStmtStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.OpenStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.PreparedStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.PurgeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.RefreshMatViewStmtStatementTestCase;
@@ -1756,6 +1757,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "create-outline")
     private final List<CreateOutlineStatementTestCase> createOutlineStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "open")
+    private final List<OpenStatementTestCase> openTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
