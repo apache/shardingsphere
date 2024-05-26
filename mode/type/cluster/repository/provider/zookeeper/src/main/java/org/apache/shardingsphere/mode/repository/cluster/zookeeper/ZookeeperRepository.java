@@ -25,7 +25,6 @@ import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
 import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -241,6 +240,7 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Comp
             cache = CuratorCache.build(client, key);
             caches.put(key, cache);
         }
+        // CHECKSTYLE:OFF
         CuratorCacheListener cacheListener = (curatorType, oldData, newData) -> {
             if (null == newData && null == oldData) {
                 return;
@@ -256,6 +256,7 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Comp
             byte[] data = Type.DELETED == type ? oldData.getData() : newData.getData();
             listener.onChange(new DataChangedEvent(path, null == data ? "" : new String(data, StandardCharsets.UTF_8), type));
         };
+        // CHECKSTYLE:ON
         cache.listenable().addListener(cacheListener);
         cache.start();
     }
