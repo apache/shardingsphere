@@ -59,6 +59,8 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     private boolean closed;
     
+    private boolean closeOnCompletion;
+    
     protected final boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final SQLStatement sqlStatement, final boolean multiExecutionUnits) {
         if (!connection.getAutoCommit()) {
             return false;
@@ -227,6 +229,28 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void clearWarnings() {
+    }
+    
+    @Override
+    public void closeOnCompletion() {
+        closeOnCompletion = true;
+    }
+    
+    @Override
+    public boolean isCloseOnCompletion() {
+        return closeOnCompletion;
+    }
+    
+    @Override
+    public void setCursorName(final String name) throws SQLException {
+        if (isTransparent()) {
+            getRoutedStatements().iterator().next().setCursorName(name);
+        }
+        super.setCursorName(name);
+    }
+    
+    private boolean isTransparent() {
+        return 1 == getRoutedStatements().size();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
