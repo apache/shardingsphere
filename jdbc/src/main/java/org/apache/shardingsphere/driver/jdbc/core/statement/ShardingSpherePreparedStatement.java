@@ -230,8 +230,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             handleAutoCommit(queryContext);
             String trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
-                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
-                currentResultSet = executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeQuery());
+                currentResultSet = executor.getTrafficExecutor().execute(
+                        createTrafficExecutionUnit(trafficInstanceId, queryContext), (statement, sql) -> ((PreparedStatement) statement).executeQuery());
                 return currentResultSet;
             }
             if (decide(queryContext, metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData())) {
