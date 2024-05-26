@@ -108,8 +108,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private final MetaDataContexts metaDataContexts;
     
-    private String databaseName;
-    
     private final List<Statement> statements;
     
     private final StatementOption statementOption;
@@ -125,6 +123,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private final StatementManager statementManager;
     
     private final BatchStatementExecutor batchStatementExecutor;
+    
+    private String databaseName;
     
     private boolean returnGeneratedKeys;
     
@@ -143,7 +143,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     public ShardingSphereStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         this.connection = connection;
         metaDataContexts = connection.getContextManager().getMetaDataContexts();
-        databaseName = connection.getDatabaseName();
         statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         executor = new DriverExecutor(connection);
@@ -151,12 +150,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         trafficRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
         statementManager = new StatementManager();
         batchStatementExecutor = new BatchStatementExecutor(this);
+        databaseName = connection.getDatabaseName();
     }
     
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
         ShardingSpherePreconditions.checkNotEmpty(sql, () -> new EmptySQLException().toSQLException());
-        ResultSet result;
         try {
             QueryContext queryContext = createQueryContext(sql);
             handleAutoCommit(queryContext);
@@ -164,25 +163,23 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
             String trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
-                result = executor.getTrafficExecutor().execute(createTrafficExecutionUnit(trafficInstanceId, queryContext), Statement::executeQuery);
-                currentResultSet = result;
-                return result;
+                currentResultSet = executor.getTrafficExecutor().execute(createTrafficExecutionUnit(trafficInstanceId, queryContext), Statement::executeQuery);
+                return currentResultSet;
             }
             if (decide(queryContext, metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData())) {
-                result = executeFederationQuery(queryContext);
-                currentResultSet = result;
-                return result;
+                currentResultSet = executeFederationQuery(queryContext);
+                return currentResultSet;
             }
             executionContext = createExecutionContext(queryContext);
-            result = doExecuteQuery(executionContext);
+            currentResultSet = doExecuteQuery(executionContext);
+            return currentResultSet;
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
+            currentResultSet = null;
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
         }
-        currentResultSet = result;
-        return result;
     }
     
     private ShardingSphereResultSet doExecuteQuery(final ExecutionContext executionContext) throws SQLException {
