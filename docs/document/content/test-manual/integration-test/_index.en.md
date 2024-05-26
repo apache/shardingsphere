@@ -30,7 +30,7 @@ In the future, ShardingSphere-JDBC + MySQL of the Embed environment will be adop
 
 Database types currently support MySQL, PostgreSQL, SQLServer, and Oracle, and test cases can be executed using ShardingSphere-JDBC or ShardingSphere-Proxy.
 
-Scenarios are used to test the supporting rules of ShardingSphere. Currently, data sharding and read/write splitting and other related scenarios are supported, and the combination of scenarios will be improved continuously in the future. 
+Scenarios are used to test the supporting rules of ShardingSphere. Currently, data sharding and read/write splitting and other related scenarios are supported, and the combination of scenarios will be improved continuously in the future.
 
 ### Test engine
 
@@ -43,7 +43,7 @@ Each SQL generates a test report in the combination of `database type * access p
   - Database types: H2, MySQL, PostgreSQL, SQLServer, and Oracle;
   - Access port types: ShardingSphere-JDBC and ShardingSphere-Proxy;
   - SQL execution modes: Statement and PreparedStatement;
-    
+
   - JDBC execution modes: execute and executeQuery/executeUpdate;
   - Scenarios: database shards, table shards, read/write splitting and sharding + read/write splitting
 
@@ -66,12 +66,12 @@ The case file format is as follows:
         <!-- ... more assertions -->
         <assertion parameters="${value_3}:${type_3}, ${value_4}:${type_4}" expected-data-file="${dataset_file_2}.xml" />
      </test-case>
-    
+
     <!-- ... more test cases -->
 </integration-test-cases>
 ```
 
-The lookup rule of `expected-data-file`is as follows: 
+The lookup rule of `expected-data-file`is as follows:
   1. Find the file `dataset\${SCENARIO_NAME}\${DATABASE_TYPE}\${dataset_file}.xml` in the same level directory;
   2. Find the file `dataset\${SCENARIO_NAME}\${dataset_file}.xml` in the same level directory;
   3. Find the file `dataset\${dataset_file}.xml` in the same level directory;
@@ -123,7 +123,7 @@ Directory: `src/test/resources/docker/${SCENARIO-TYPE}`
 
 #### Configure the running environment of the test engine
 
-Control the test engine by configuring `src/test/resources/env/engine-env.properties`. 
+Control the test engine by configuring `src/test/resources/env/engine-env.properties`.
 
 All attribute values can be dynamically injected via Maven command line `-D`.
 
@@ -135,7 +135,7 @@ it.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
 # Whether to run additional test cases
 it.run.additional.cases=false
 
-# Configure the environment type. Only one value is supported. Optional value: docker or null. The default value: null. 
+# Configure the environment type. Only one value is supported. Optional value: docker or null. The default value: null.
 it.cluster.env.type=${it.env}
 # Access port types to be tested. Multiple values can be separated by commas. Optional value: jdbc, proxy. The default value: jdbc
 it.cluster.adapters=jdbc
@@ -197,8 +197,8 @@ After editing the above information, run Run -> Run -> e2e-debug in IDEA to star
 ##### Remote debug Proxy started by Testcontainer
 > Note: If the Proxy container is started by Testcontainer, because the 3308 port is not exposed before Testcontainer starts, it cannot be debugged by the `Remote debug Proxy started by docker image` method.
 Debug Testcontainer started Proxy container by the following method:
-  - Set a breakpoint in the relevant startup class of Testcontainer, for example, after the line `containerComposer.start();` in BaseE2EIT#setUp() in the suite test, at this time, the relevant containers must have been started.
-  - Access breakpoint debugging mode through shortcut key Alt + F8, and view the port mapped by the 3308 mapping of the Proxy object under the containerComposer (the external mapping port of Testcontainer is random). For example, the expression `((ShardingSphereProxyClusterContainer)((java.util.LinkedList)((ITContainers)((ClusterContainerComposer)containerComposer).containers).dockerContainers).getLast()).getMappedPort(3308)` get the mapped random port 51837.(or get mapped port by `docker ps`)
+  - Set a breakpoint in the relevant startup class of Testcontainer, for example, after the line `containerComposer.start();` in E2EContainerComposer in the suite test, at this time, the relevant containers must have been started.
+  - Access breakpoint debugging mode through shortcut key Alt + F8, and get mapped port by `docker ps` for the 3308 mapping of the Proxy object under the containerComposer (the external mapping port of Testcontainer is random).
   - See the `Remote debug Proxy started by docker image` method, set the Name, Host, Port, and use the port got in previous step, e.g. 51837.
 
 After editing the above information, run Run -> Run -> e2e-debug -> debug in IDEA to start the remote debug of IDEA.
