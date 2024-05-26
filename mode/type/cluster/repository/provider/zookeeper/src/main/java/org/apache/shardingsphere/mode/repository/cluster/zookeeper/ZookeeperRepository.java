@@ -241,26 +241,32 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Comp
             cache = CuratorCache.build(client, key);
             caches.put(key, cache);
         }
-        CuratorCacheListener curatorCacheListener = CuratorCacheListener.builder()
-                .afterInitialized()
-                .forTreeCache(client, (framework, treeCacheListener) -> {
-                    Type changedType = getChangedType(treeCacheListener.getType());
-                    if (Type.IGNORED != changedType) {
-                        listener.onChange(new DataChangedEvent(treeCacheListener.getData().getPath(),
-                                new String(treeCacheListener.getData().getData(), StandardCharsets.UTF_8), changedType));
-                    }
-                }).build();
-        cache.listenable().addListener(curatorCacheListener);
+        CuratorCacheListener cacheListener = (curatorType, oldData, newData) -> {
+            if (null == newData && null == oldData) {
+                return;
+            }
+            Type type = getChangedType(curatorType);
+            String path = Type.DELETED == type ? oldData.getPath() : newData.getPath();
+            if (path.isEmpty() || Type.IGNORED == type) {
+                return;
+            }
+            if (type == Type.UPDATED && new String(oldData.getData(), StandardCharsets.UTF_8).equals(new String(newData.getData(), StandardCharsets.UTF_8))) {
+                return;
+            }
+            byte[] data = Type.DELETED == type ? oldData.getData() : newData.getData();
+            listener.onChange(new DataChangedEvent(path, null == data ? "" : new String(data, StandardCharsets.UTF_8), type));
+        };
+        cache.listenable().addListener(cacheListener);
         cache.start();
     }
     
-    private Type getChangedType(final TreeCacheEvent.Type type) {
+    private Type getChangedType(final CuratorCacheListener.Type type) {
         switch (type) {
-            case NODE_ADDED:
+            case NODE_CREATED:
                 return Type.ADDED;
-            case NODE_UPDATED:
+            case NODE_CHANGED:
                 return Type.UPDATED;
-            case NODE_REMOVED:
+            case NODE_DELETED:
                 return Type.DELETED;
             default:
                 return Type.IGNORED;
