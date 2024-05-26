@@ -55,8 +55,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import static org.apache.curator.framework.recipes.cache.CuratorCacheListener.builder;
-
 /**
  * Registry repository of ZooKeeper.
  */
@@ -259,7 +257,7 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Comp
             listener.onChange(new DataChangedEvent(path, null == data ? "" : new String(data, StandardCharsets.UTF_8), type));
         };
         // CHECKSTYLE:ON
-        cache.listenable().addListener(builder().forAll(cacheListener).afterInitialized().build());
+        cache.listenable().addListener(CuratorCacheListener.builder().forAll(cacheListener).afterInitialized().build());
         cache.start();
     }
     
