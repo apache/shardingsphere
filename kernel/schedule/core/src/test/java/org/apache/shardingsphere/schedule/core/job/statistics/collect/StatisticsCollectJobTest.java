@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaD
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.service.pojo.ShardingSphereSchemaDataAlteredPOJO;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Properties;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -58,7 +60,7 @@ class StatisticsCollectJobTest {
         when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(
                 PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED.getKey(), Boolean.TRUE.toString()))));
         new StatisticsCollectJob(contextManager).execute(null);
-        verify(contextManager).getComputeNodeInstanceContext();
+        verify(contextManager.getPersistServiceFacade()).persist(any(ShardingSphereSchemaDataAlteredPOJO.class));
     }
     
     private ShardingSphereStatistics mockStatistics() {

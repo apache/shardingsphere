@@ -139,7 +139,7 @@ public final class StatisticsCollectJob implements SimpleJob {
     }
     
     private ShardingSphereSchemaDataAlteredPOJO getShardingSphereSchemaDataAlteredPOJO(final String databaseName, final String schemaName, final ShardingSphereTableData tableData,
-                                                                                         final ShardingSphereTableData changedTableData, final ShardingSphereTable table) {
+                                                                                       final ShardingSphereTableData changedTableData, final ShardingSphereTable table) {
         ShardingSphereSchemaDataAlteredPOJO result = new ShardingSphereSchemaDataAlteredPOJO(databaseName, schemaName, tableData.getName());
         Map<String, ShardingSphereRowData> tableDataMap = tableData.getRows().stream().collect(Collectors.toMap(ShardingSphereRowData::getUniqueKey, Function.identity()));
         Map<String, ShardingSphereRowData> changedTableDataMap = changedTableData.getRows().stream().collect(Collectors.toMap(ShardingSphereRowData::getUniqueKey, Function.identity()));
