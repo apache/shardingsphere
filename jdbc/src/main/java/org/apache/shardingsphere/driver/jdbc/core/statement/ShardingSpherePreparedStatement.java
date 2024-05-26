@@ -417,6 +417,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 currentResultSet = resultSet;
                 return null != resultSet;
             }
+            currentResultSet = null;
             executionContext = createExecutionContext(queryContext);
             if (hasRawExecutionRule()) {
                 Collection<ExecuteResult> results =
