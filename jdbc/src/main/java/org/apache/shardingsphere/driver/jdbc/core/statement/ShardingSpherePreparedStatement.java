@@ -582,6 +582,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private void clearPrevious() {
+        currentResultSet = null;
         statements.clear();
         parameterSets.clear();
         generatedValues.clear();
