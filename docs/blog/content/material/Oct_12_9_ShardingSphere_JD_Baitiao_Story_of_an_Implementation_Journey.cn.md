@@ -162,7 +162,6 @@ DBRep 是 ShardingSphere-Scaling 产品设计的基石，Scaling 具备的自动
 
 搭配使用 Scaling 同步迁移组件从容面对“618”和“11.11”等大型活动，系统灵活扩容。
 
--
 
 ### 写在最后
 
