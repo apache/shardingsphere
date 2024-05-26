@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.manager.cluster.service.ClusterMetaDataManagerPersistServiceBuilder
+org.apache.shardingsphere.mode.manager.cluster.service.ClusterPersistServiceBuilder

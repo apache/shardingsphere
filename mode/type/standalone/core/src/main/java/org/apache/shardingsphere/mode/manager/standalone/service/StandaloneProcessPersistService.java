@@ -17,27 +17,34 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.service;
 
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.service.MetaDataManagerPersistServiceBuilder;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
+import org.apache.shardingsphere.mode.service.ProcessPersistService;
+
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collection;
 
 /**
- * Standalone meta data manager persist service builder.
+ * Standalone process persist service.
  */
-public final class StandaloneMetaDataManagerPersistServiceBuilder implements MetaDataManagerPersistServiceBuilder {
+@RequiredArgsConstructor
+public final class StandaloneProcessPersistService implements ProcessPersistService {
     
     @Override
-    public MetaDataManagerPersistService build(final ContextManager contextManager) {
-        return new StandaloneMetaDataManagerPersistService(contextManager);
+    public Collection<Process> getProcessList() {
+        return ProcessRegistry.getInstance().listAll();
     }
     
     @Override
-    public Object getType() {
-        return "Standalone";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+    public void killProcess(final String processId) throws SQLException {
+        Process process = ProcessRegistry.getInstance().get(processId);
+        if (null == process) {
+            return;
+        }
+        for (Statement each : process.getProcessStatements().values()) {
+            each.cancel();
+        }
     }
 }
