@@ -247,7 +247,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             handleExceptionInTransaction(connection, metaDataContexts);
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
         } finally {
-            clearBatch();
+            batchPreparedStatementExecutor.clear();
+            clearParameters();
         }
     }
     
