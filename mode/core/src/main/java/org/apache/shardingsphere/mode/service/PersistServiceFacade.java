@@ -40,11 +40,15 @@ public final class PersistServiceFacade {
     
     private final MetaDataManagerPersistService metaDataManagerPersistService;
     
+    private final ProcessPersistService processPersistService;
+    
     public PersistServiceFacade(final PersistRepository repository, final ModeConfiguration modeConfiguration, final ContextManager contextManager) {
         metaDataPersistService = new MetaDataPersistService(repository);
         computeNodePersistService = new ComputeNodePersistService(repository);
         statePersistService = new StatePersistService(repository);
-        metaDataManagerPersistService = TypedSPILoader.getService(MetaDataManagerPersistServiceBuilder.class, modeConfiguration.getType()).build(contextManager);
+        PersistServiceBuilder persistServiceBuilder = TypedSPILoader.getService(PersistServiceBuilder.class, modeConfiguration.getType());
+        metaDataManagerPersistService = persistServiceBuilder.buildMetaDataManagerPersistService(contextManager);
+        processPersistService = persistServiceBuilder.buildProcessPersistService(contextManager);
     }
     
     /**

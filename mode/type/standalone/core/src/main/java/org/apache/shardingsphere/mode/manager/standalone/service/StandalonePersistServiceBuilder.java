@@ -15,24 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.service;
+package org.apache.shardingsphere.mode.manager.standalone.service;
 
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.service.MetaDataManagerPersistServiceBuilder;
+import org.apache.shardingsphere.mode.service.PersistServiceBuilder;
+import org.apache.shardingsphere.mode.service.ProcessPersistService;
 
 /**
- * Cluster meta data manager persist service builder.
+ * Standalone meta data manager persist service builder.
  */
-public final class ClusterMetaDataManagerPersistServiceBuilder implements MetaDataManagerPersistServiceBuilder {
+public final class StandalonePersistServiceBuilder implements PersistServiceBuilder {
     
     @Override
-    public MetaDataManagerPersistService build(final ContextManager contextManager) {
-        return new ClusterMetaDataManagerPersistService(contextManager);
+    public MetaDataManagerPersistService buildMetaDataManagerPersistService(final ContextManager contextManager) {
+        return new StandaloneMetaDataManagerPersistService(contextManager);
+    }
+    
+    @Override
+    public ProcessPersistService buildProcessPersistService(final ContextManager contextManager) {
+        return new StandaloneProcessPersistService();
     }
     
     @Override
     public Object getType() {
-        return "Cluster";
+        return "Standalone";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

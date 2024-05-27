@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.fixture.MetaDataManagerPersistServiceBuilderFixture
+org.apache.shardingsphere.mode.fixture.PersistServiceBuilderFixture
