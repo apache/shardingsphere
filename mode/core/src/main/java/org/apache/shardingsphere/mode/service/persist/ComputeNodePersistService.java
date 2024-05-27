@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.service;
+package org.apache.shardingsphere.mode.service.persist;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;

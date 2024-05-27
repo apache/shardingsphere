@@ -45,7 +45,7 @@ public final class DatabaseChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DatabaseDataAddedEvent event) {
-        contextManager.getShardingSphereDatabaseContextManager().addShardingSphereDatabaseData(event.getDatabaseName());
+        contextManager.getManagerServiceFacade().getDatabaseManagerService().addShardingSphereDatabaseData(event.getDatabaseName());
     }
     
     /**
@@ -55,7 +55,7 @@ public final class DatabaseChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DatabaseDataDeletedEvent event) {
-        contextManager.getShardingSphereDatabaseContextManager().dropShardingSphereDatabaseData(event.getDatabaseName());
+        contextManager.getManagerServiceFacade().getDatabaseManagerService().dropShardingSphereDatabaseData(event.getDatabaseName());
     }
     
     /**
@@ -65,7 +65,7 @@ public final class DatabaseChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final SchemaDataAddedEvent event) {
-        contextManager.getShardingSphereDatabaseContextManager().addShardingSphereSchemaData(event.getDatabaseName(), event.getSchemaName());
+        contextManager.getManagerServiceFacade().getDatabaseManagerService().addShardingSphereSchemaData(event.getDatabaseName(), event.getSchemaName());
     }
     
     /**
@@ -75,7 +75,7 @@ public final class DatabaseChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final SchemaDataDeletedEvent event) {
-        contextManager.getShardingSphereDatabaseContextManager().dropShardingSphereSchemaData(event.getDatabaseName(), event.getSchemaName());
+        contextManager.getManagerServiceFacade().getDatabaseManagerService().dropShardingSphereSchemaData(event.getDatabaseName(), event.getSchemaName());
     }
     
     /**
@@ -86,10 +86,10 @@ public final class DatabaseChangedSubscriber implements EventSubscriber {
     @Subscribe
     public synchronized void renew(final TableDataChangedEvent event) {
         if (null != event.getAddedTable()) {
-            contextManager.getShardingSphereDatabaseContextManager().addShardingSphereTableData(event.getDatabaseName(), event.getSchemaName(), event.getAddedTable());
+            contextManager.getManagerServiceFacade().getDatabaseManagerService().addShardingSphereTableData(event.getDatabaseName(), event.getSchemaName(), event.getAddedTable());
         }
         if (null != event.getDeletedTable()) {
-            contextManager.getShardingSphereDatabaseContextManager().dropShardingSphereTableData(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable());
+            contextManager.getManagerServiceFacade().getDatabaseManagerService().dropShardingSphereTableData(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable());
         }
     }
     
@@ -100,7 +100,7 @@ public final class DatabaseChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final ShardingSphereRowDataChangedEvent event) {
-        contextManager.getShardingSphereDatabaseContextManager().alterShardingSphereRowData(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), event.getYamlRowData());
+        contextManager.getManagerServiceFacade().getDatabaseManagerService().alterShardingSphereRowData(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), event.getYamlRowData());
     }
     
     /**
@@ -110,6 +110,6 @@ public final class DatabaseChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final ShardingSphereRowDataDeletedEvent event) {
-        contextManager.getShardingSphereDatabaseContextManager().deleteShardingSphereRowData(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), event.getUniqueKey());
+        contextManager.getManagerServiceFacade().getDatabaseManagerService().deleteShardingSphereRowData(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), event.getUniqueKey());
     }
 }

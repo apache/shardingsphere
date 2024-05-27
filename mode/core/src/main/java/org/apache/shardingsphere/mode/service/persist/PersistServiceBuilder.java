@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.service;
+package org.apache.shardingsphere.mode.service.persist;
 
-import org.apache.shardingsphere.infra.executor.sql.process.Process;
-
-import java.sql.SQLException;
-import java.util.Collection;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
- * Process persist service.
+ * Persist service builder.
  */
-public interface ProcessPersistService {
+public interface PersistServiceBuilder extends TypedSPI {
     
     /**
-     * Get process list.
+     * Build meta data manager persist service.
      *
-     * @return collection of process
+     * @param contextManager context manager
+     * @return meta data manager persist service
      */
-    Collection<Process> getProcessList();
+    MetaDataManagerPersistService buildMetaDataManagerPersistService(ContextManager contextManager);
     
     /**
-     * Kill process.
+     * Build process persist service.
      *
-     * @param processId process id
-     * @throws  SQLException SQL exception
+     * @param contextManager context manager
+     * @return process persist service
      */
-    void killProcess(String processId) throws SQLException;
+    ProcessPersistService buildProcessPersistService(ContextManager contextManager);
 }
