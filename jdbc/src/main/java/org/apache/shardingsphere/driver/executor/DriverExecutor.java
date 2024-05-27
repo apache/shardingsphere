@@ -93,10 +93,10 @@ public final class DriverExecutor implements AutoCloseable {
                                                    final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
-            TrafficExecutorCallback<ResultSet> callback = JDBCDriverType.STATEMENT.equals(prepareEngine.getType())
+            TrafficExecutorCallback<ResultSet> trafficCallback = JDBCDriverType.STATEMENT.equals(prepareEngine.getType())
                     ? Statement::executeQuery
                     : ((statement, sql) -> ((PreparedStatement) statement).executeQuery());
-            return Optional.of(trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, callback));
+            return Optional.of(trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, trafficCallback));
         }
         if (sqlFederationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaData.getGlobalRuleMetaData())) {
             ExecuteQueryCallback sqlFederationCallback = JDBCDriverType.STATEMENT.equals(prepareEngine.getType())
@@ -171,10 +171,12 @@ public final class DriverExecutor implements AutoCloseable {
         }
         if (sqlFederationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaData.getGlobalRuleMetaData())) {
             executeType = ExecuteType.FEDERATION;
-            ResultSet resultSet = sqlFederationEngine.executeQuery(prepareEngine,
-                    new StatementExecuteQueryCallback(database.getProtocolType(), database.getResourceMetaData(),
-                            queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown()),
-                    new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
+            ExecuteQueryCallback sqlFederationCallback = JDBCDriverType.STATEMENT.equals(prepareEngine.getType())
+                    ? new StatementExecuteQueryCallback(database.getProtocolType(), database.getResourceMetaData(),
+                            queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown())
+                    : new PreparedStatementExecuteQueryCallback(database.getProtocolType(), database.getResourceMetaData(),
+                            queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
+            ResultSet resultSet = sqlFederationEngine.executeQuery(prepareEngine, sqlFederationCallback, new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
             return Optional.of(null != resultSet);
         }
         return Optional.empty();
