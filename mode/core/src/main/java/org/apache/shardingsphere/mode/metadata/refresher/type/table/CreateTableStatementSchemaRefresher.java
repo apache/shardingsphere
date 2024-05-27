@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.metadata.refresher.type.table;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchema
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
+import org.apache.shardingsphere.mode.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
 import java.sql.SQLException;
@@ -45,7 +45,7 @@ import java.util.Optional;
 public final class CreateTableStatementSchemaRefresher implements MetaDataRefresher<CreateTableStatement> {
     
     @Override
-    public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String tableName = TableRefreshUtils.getTableName(databaseType, sqlStatement.getTable().getTableName().getIdentifier());
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
@@ -60,9 +60,9 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
         if (actualTableMetaData.isPresent()) {
             AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
             alterSchemaMetaDataPOJO.getAlteredTables().add(actualTableMetaData.get());
-            modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
+            metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
             if (isSingleTable && TableRefreshUtils.isRuleRefreshRequired(ruleMetaData, schemaName, tableName)) {
-                modeContextManager.alterSingleRuleConfiguration(database.getName(), ruleMetaData.getConfigurations());
+                metaDataManagerPersistService.alterSingleRuleConfiguration(database.getName(), ruleMetaData.getConfigurations());
             }
         }
     }

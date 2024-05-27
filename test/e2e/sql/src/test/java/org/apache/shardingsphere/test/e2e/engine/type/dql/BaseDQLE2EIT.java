@@ -33,6 +33,7 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -126,6 +127,9 @@ public abstract class BaseDQLE2EIT {
         for (int i = 0; i < actualResultSetMetaData.getColumnCount(); i++) {
             assertThat(actualResultSetMetaData.getColumnLabel(i + 1), is(expectedResultSetMetaData.getColumnLabel(i + 1)));
             assertThat(actualResultSetMetaData.getColumnName(i + 1), is(expectedResultSetMetaData.getColumnName(i + 1)));
+            if ("db_tbl_sql_federation".equals(testParam.getScenario())) {
+                continue;
+            }
             if ("jdbc".equals(testParam.getAdapter()) && "Cluster".equals(testParam.getMode())) {
                 // FIXME correct columnType with proxy adapter
                 assertThat(actualResultSetMetaData.getColumnType(i + 1), is(expectedResultSetMetaData.getColumnType(i + 1)));
@@ -185,6 +189,10 @@ public abstract class BaseDQLE2EIT {
                             ? expectedResultSet.getTimestamp(i + 1).toLocalDateTime().format(DateTimeFormatterFactory.getStandardFormatter())
                             : actualValue;
                     assertThat(String.valueOf(convertedActualValue), is(String.valueOf(convertedExpectedValue)));
+                } else if (expectedValue instanceof Clob) {
+                    assertThat(String.valueOf(actualValue), is(((Clob) expectedValue).getSubString(1, (int) ((Clob) expectedValue).length())));
+                } else if (actualValue instanceof String && expectedValue instanceof byte[]) {
+                    assertThat(actualValue, is(new String((byte[]) expectedValue)));
                 } else {
                     assertThat(String.valueOf(actualValue), is(String.valueOf(expectedValue)));
                 }

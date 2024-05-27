@@ -15,31 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.unsupported;
+package org.apache.shardingsphere.mode.manager.standalone.service;
 
-import org.apache.shardingsphere.driver.jdbc.adapter.WrapperAdapter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
+import org.apache.shardingsphere.mode.service.ProcessPersistService;
 
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
+import java.util.Collection;
 
 /**
- * Unsupported {@code Statement} methods.
+ * Standalone process persist service.
  */
-public abstract class AbstractUnsupportedOperationStatement extends WrapperAdapter implements Statement {
+@RequiredArgsConstructor
+public final class StandaloneProcessPersistService implements ProcessPersistService {
     
     @Override
-    public final void closeOnCompletion() throws SQLException {
-        throw new SQLFeatureNotSupportedException("closeOnCompletion");
+    public Collection<Process> getProcessList() {
+        return ProcessRegistry.getInstance().listAll();
     }
     
     @Override
-    public final boolean isCloseOnCompletion() throws SQLException {
-        throw new SQLFeatureNotSupportedException("isCloseOnCompletion");
-    }
-    
-    @Override
-    public final void setCursorName(final String name) throws SQLException {
-        throw new SQLFeatureNotSupportedException("setCursorName");
+    public void killProcess(final String processId) throws SQLException {
+        Process process = ProcessRegistry.getInstance().get(processId);
+        if (null == process) {
+            return;
+        }
+        for (Statement each : process.getProcessStatements().values()) {
+            each.cancel();
+        }
     }
 }

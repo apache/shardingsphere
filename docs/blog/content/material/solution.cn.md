@@ -41,7 +41,7 @@ Apache ShardingSphere（Incubating）不失时机的在 2019 年初，提供了�
 
 在单一数据节点中，事务仅限于对单一数据库资源的访问控制，称之为本地事务。几乎所有的成熟的关系型数据库都提供了对本地事务的原生支持。 但是在基于微服务的分布式应用环境下，越来越多的应用场景要求对多个服务的访问及其相对应的多个数据库资源能纳入到同一个事务当中，分布式事务应运而生。
 
-关系型数据库虽然对本地事务提供了完美的 ACID 原生支持。 但在分布式的场景下，它却成为系统性能的桎梏。如何让数据库在分布式场景下满足ACID的特性或找寻相应的替代方案，是分布式事务的重点工作。
+关系型数据库虽然对本地事务提供了完美的 ACID 原生支持。 但在分布式的场景下，它却成为系统性能的桎梏。如何让数据库在分布式场景下满足 ACID 的特性或找寻相应的替代方案，是分布式事务的重点工作。
 
 #### 本地事务
 
@@ -49,9 +49,9 @@ Apache ShardingSphere（Incubating）不失时机的在 2019 年初，提供了�
 
 #### 两阶段提交
 
-XA协议最早的分布式事务模型是由 X/Open 国际联盟提出的 X/Open Distributed Transaction Processing（DTP）模型，简称 XA 协议。
+XA 协议最早的分布式事务模型是由 X/Open 国际联盟提出的 X/Open Distributed Transaction Processing（DTP）模型，简称 XA 协议。
 
-基于XA协议实现的分布式事务对业务侵入很小。 它最大的优势就是对使用方透明，用户可以像使用本地事务一样使用基于 XA 协议的分布式事务。 XA 协议能够严格保障事务 ACID 特性。
+基于 XA 协议实现的分布式事务对业务侵入很小。 它最大的优势就是对使用方透明，用户可以像使用本地事务一样使用基于 XA 协议的分布式事务。 XA 协议能够严格保障事务 ACID 特性。
 
 严格保障事务 ACID 特性是一把双刃剑。 事务执行在过程中需要将所需资源全部锁定，它更加适用于执行时间确定的短事务。 对于长事务来说，整个事务进行期间对数据的独占，将导致对热点数据依赖的业务系统并发性能衰退明显。 因此，在高并发的性能至上场景中，基于XA协议两阶段提交类型的分布式事务并不是最佳选择。
 
@@ -133,7 +133,7 @@ sharding-transaction 模块由 sharding-transaction-core，sharding-transaction-
 
 **1.复用成熟引擎，自动切换底层实现**
 
-Sharding-transaction-xa 模块进一步定义了面向 XA 事务管理器开发者的SPI，开发者仅需实现 SPI 定义的接口，即可自动加入至 Apache ShardingSphere（Incubating）生态，作为其 XA 事务管理器。
+Sharding-transaction-xa 模块进一步定义了面向 XA 事务管理器开发者的 SPI，开发者仅需实现 SPI 定义的接口，即可自动加入至 Apache ShardingSphere（Incubating）生态，作为其 XA 事务管理器。
 
 Apache ShardingSphere（Incubating）官方目前实现了基于 Atomikos 和 Bitronix 的 SPI，并且邀请了 Redhat JBoss 的 XA 事务引擎 Narayana [https://github.com/jbosstm/narayana] 开发团队实现了 JBoss 的 SPI。用户可以自行的在 Atomikos，Bitronix 和 Narayana 间选择自己喜欢的 XA 事务管理器。
 
@@ -143,7 +143,7 @@ Apache ShardingSphere（Incubating）官方目前实现了基于 Atomikos 和 Bi
 
 
 
-如果这3个 XA 事务管理器仍未满足用户需求，开发者则可通过扩展SPI来实现定制化的 XA 事务管理器。
+如果这 3 个 XA 事务管理器仍未满足用户需求，开发者则可通过扩展 SPI 来实现定制化的 XA 事务管理器。
 
 
 
@@ -155,7 +155,7 @@ Apache ShardingSphere（Incubating）能够自动将 XADataSource 作为数据�
 
 
 
-XA模块的架构图如下：
+XA 模块的架构图如下：
 
 
 ![](https://shardingsphere.apache.org/blog/img/solution1.jpg)

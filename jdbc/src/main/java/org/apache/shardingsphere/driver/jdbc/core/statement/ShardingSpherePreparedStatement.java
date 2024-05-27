@@ -41,7 +41,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
@@ -159,10 +158,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private ResultSet currentResultSet;
     
-    private String trafficInstanceId;
-    
-    private boolean useFederation;
-    
     private final HintValueContext hintValueContext;
     
     private ResultSet currentBatchGeneratedKeysResultSet;
@@ -224,7 +219,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public ResultSet executeQuery() throws SQLException {
-        ResultSet result;
         try {
             if (statementsCacheable && !statements.isEmpty()) {
                 resetParameters();
@@ -232,29 +226,30 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             QueryContext queryContext = createQueryContext();
-            handleAutoCommit(queryContext);
-            trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
+            handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
+            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+            String trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
-                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
-                return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeQuery());
+                currentResultSet = executor.getTrafficExecutor().execute(connection.getProcessId(), databaseName,
+                        trafficInstanceId, queryContext, createDriverExecutionPrepareEngine(database), (statement, sql) -> ((PreparedStatement) statement).executeQuery());
+                return currentResultSet;
             }
-            useFederation = decide(queryContext,
-                    metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData());
-            if (useFederation) {
-                return executeFederationQuery(queryContext);
+            if (decide(queryContext, database, metaDataContexts.getMetaData().getGlobalRuleMetaData())) {
+                currentResultSet = executeFederationQuery(queryContext);
+                return currentResultSet;
             }
             executionContext = createExecutionContext(queryContext);
-            result = doExecuteQuery(executionContext);
+            currentResultSet = doExecuteQuery(executionContext);
+            return currentResultSet;
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
         } finally {
-            clearBatch();
+            batchPreparedStatementExecutor.clear();
+            clearParameters();
         }
-        currentResultSet = result;
-        return result;
     }
     
     private ShardingSphereResultSet doExecuteQuery(final ExecutionContext executionContext) throws SQLException {
@@ -271,19 +266,19 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return executor.getSqlFederationEngine().decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, globalRuleMetaData);
     }
     
-    private void handleAutoCommit(final QueryContext queryContext) throws SQLException {
-        if (AutoCommitUtils.needOpenTransaction(queryContext.getSqlStatementContext().getSqlStatement())) {
+    private void handleAutoCommit(final SQLStatement sqlStatement) throws SQLException {
+        if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
             connection.handleAutoCommit();
         }
     }
     
     private JDBCExecutionUnit createTrafficExecutionUnit(final String trafficInstanceId, final QueryContext queryContext) throws SQLException {
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine();
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(database);
         ExecutionUnit executionUnit = new ExecutionUnit(trafficInstanceId, new SQLUnit(queryContext.getSql(), queryContext.getParameters()));
         ExecutionGroupContext<JDBCExecutionUnit> context =
                 prepareEngine.prepare(new RouteContext(), Collections.singleton(executionUnit), new ExecutionGroupReportContext(connection.getProcessId(), databaseName, new Grantee("", "")));
-        ShardingSpherePreconditions.checkState(!context.getInputGroups().isEmpty() && !context.getInputGroups().iterator().next().getInputs().isEmpty(), EmptyTrafficExecutionUnitException::new);
-        return context.getInputGroups().iterator().next().getInputs().iterator().next();
+        return context.getInputGroups().stream().flatMap(each -> each.getInputs().stream()).findFirst().orElseThrow(EmptyTrafficExecutionUnitException::new);
     }
     
     private Optional<String> getInstanceIdAndSet(final QueryContext queryContext) {
@@ -324,17 +319,17 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private ResultSet executeFederationQuery(final QueryContext queryContext) {
-        PreparedStatementExecuteQueryCallback callback = new PreparedStatementExecuteQueryCallback(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown());
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+        PreparedStatementExecuteQueryCallback callback = new PreparedStatementExecuteQueryCallback(database.getProtocolType(),
+                database.getResourceMetaData(), sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown());
         SQLFederationContext context = new SQLFederationContext(false, queryContext, metaDataContexts.getMetaData(), connection.getProcessId());
-        return executor.getSqlFederationEngine().executeQuery(createDriverExecutionPrepareEngine(), callback, context);
+        return executor.getSqlFederationEngine().executeQuery(createDriverExecutionPrepareEngine(database), callback, context);
     }
     
-    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine() {
+    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final ShardingSphereDatabase database) {
         int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT, maxConnectionsSizePerQuery, connection.getDatabaseConnectionManager(), statementManager,
-                statementOption, metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits());
+        return new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT, maxConnectionsSizePerQuery, connection.getDatabaseConnectionManager(), statementManager, statementOption,
+                database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
     }
     
     @Override
@@ -346,11 +341,12 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             QueryContext queryContext = createQueryContext();
-            handleAutoCommit(queryContext);
-            trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
+            handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
+            String trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
-                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
-                return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeUpdate());
+                ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+                return executor.getTrafficExecutor().execute(connection.getProcessId(), databaseName,
+                        trafficInstanceId, queryContext, createDriverExecutionPrepareEngine(database), (statement, sql) -> ((PreparedStatement) statement).executeUpdate());
             }
             executionContext = createExecutionContext(queryContext);
             if (hasRawExecutionRule()) {
@@ -410,18 +406,21 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             QueryContext queryContext = createQueryContext();
-            handleAutoCommit(queryContext);
-            trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
+            handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
+            String trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
-                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
-                return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).execute());
+                ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+                boolean result = executor.getTrafficExecutor().execute(connection.getProcessId(), databaseName,
+                        trafficInstanceId, queryContext, createDriverExecutionPrepareEngine(database), (statement, sql) -> ((PreparedStatement) statement).execute());
+                currentResultSet = executor.getTrafficExecutor().getResultSet();
+                return result;
             }
-            useFederation = decide(queryContext,
-                    metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData());
-            if (useFederation) {
+            if (decide(queryContext, metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData())) {
                 ResultSet resultSet = executeFederationQuery(queryContext);
+                currentResultSet = resultSet;
                 return null != resultSet;
             }
+            currentResultSet = null;
             executionContext = createExecutionContext(queryContext);
             if (hasRawExecutionRule()) {
                 Collection<ExecuteResult> results =
@@ -435,7 +434,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             handleExceptionInTransaction(connection, metaDataContexts);
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
         } finally {
-            clearBatch();
+            batchPreparedStatementExecutor.clear();
+            clearParameters();
         }
     }
     
@@ -486,7 +486,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private ExecutionGroupContext<JDBCExecutionUnit> createExecutionGroupContext(final ExecutionContext executionContext) throws SQLException {
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine();
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(database);
         return prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(),
                 new ExecutionGroupReportContext(connection.getProcessId(), databaseName, new Grantee("", "")));
     }
@@ -496,14 +497,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (null != trafficInstanceId) {
-            return executor.getTrafficExecutor().getResultSet();
-        }
-        if (useFederation) {
-            return executor.getSqlFederationEngine().getResultSet();
-        }
-        if (executionContext.getSqlStatementContext() instanceof SelectStatementContext
-                || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
+        if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
             if (resultSets.isEmpty()) {
                 return currentResultSet;
@@ -591,6 +585,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private void clearPrevious() {
+        currentResultSet = null;
         statements.clear();
         parameterSets.clear();
         generatedValues.clear();
@@ -629,7 +624,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     public void addBatch() {
         try {
             QueryContext queryContext = createQueryContext();
-            trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
+            String trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             executionContext = null == trafficInstanceId ? createExecutionContext(queryContext) : createExecutionContext(queryContext, trafficInstanceId);
             batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits());
         } finally {

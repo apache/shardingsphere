@@ -21,11 +21,4 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.pojo;
  * Attach available.
  */
 public interface Attachable {
-    
-    /**
-     * Get start index.
-     *
-     * @return start index
-     */
-    int getStartIndex();
 }

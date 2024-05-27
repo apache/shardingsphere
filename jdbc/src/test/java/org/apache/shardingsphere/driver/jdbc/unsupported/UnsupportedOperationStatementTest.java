@@ -61,16 +61,6 @@ class UnsupportedOperationStatementTest {
     }
     
     @Test
-    void assertCloseOnCompletion() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.closeOnCompletion());
-    }
-    
-    @Test
-    void assertIsCloseOnCompletion() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.isCloseOnCompletion());
-    }
-    
-    @Test
     void assertSetCursorName() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.setCursorName("cursorName"));
     }

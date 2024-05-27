@@ -19,11 +19,11 @@ package org.apache.shardingsphere.mode.metadata.refresher.type.table;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
+import org.apache.shardingsphere.mode.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 
@@ -35,15 +35,15 @@ import java.util.Collection;
 public final class DropTableStatementSchemaRefresher implements MetaDataRefresher<DropTableStatement> {
     
     @Override
-    public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final DropTableStatement sqlStatement, final ConfigurationProperties props) {
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
         sqlStatement.getTables().forEach(each -> alterSchemaMetaDataPOJO.getDroppedTables().add(each.getTableName().getIdentifier().getValue()));
         boolean isRuleRefreshRequired = TableRefreshUtils.isRuleRefreshRequired(database.getRuleMetaData(), schemaName, sqlStatement.getTables());
-        modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
+        metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         for (SimpleTableSegment each : sqlStatement.getTables()) {
             if (isRuleRefreshRequired && TableRefreshUtils.isSingleTable(each.getTableName().getIdentifier().getValue(), database)) {
-                modeContextManager.alterSingleRuleConfiguration(database.getName(), database.getRuleMetaData().getConfigurations());
+                metaDataManagerPersistService.alterSingleRuleConfiguration(database.getName(), database.getRuleMetaData().getConfigurations());
                 break;
             }
         }

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.database.rule.DatabaseRulePersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
@@ -120,7 +120,6 @@ class MetaDataContextsFactoryTest {
         when(databaseMetaDataPersistService.loadAllDatabaseNames()).thenReturn(Collections.singletonList("foo_db"));
         when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
         try (MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS))) {
-            assertThat(actual.getPersistService(), is(metaDataPersistService));
             assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(1));
             assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), instanceOf(MockedRule.class));
             assertTrue(actual.getMetaData().getDatabases().containsKey("foo_db"));

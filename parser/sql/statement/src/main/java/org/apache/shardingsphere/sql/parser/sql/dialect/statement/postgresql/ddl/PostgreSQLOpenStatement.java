@@ -15,29 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.service;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.service.MetaDataManagerPersistServiceBuilder;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.OpenStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Standalone meta data manager persist service builder.
+ * PostgreSQL open statement.
  */
-public final class StandaloneMetaDataManagerPersistServiceBuilder implements MetaDataManagerPersistServiceBuilder {
-    
-    @Override
-    public MetaDataManagerPersistService build(final ContextManager contextManager) {
-        return new StandaloneMetaDataManagerPersistService(contextManager);
-    }
-    
-    @Override
-    public Object getType() {
-        return "Standalone";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
+public final class PostgreSQLOpenStatement extends OpenStatement implements PostgreSQLStatement {
 }

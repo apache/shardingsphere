@@ -40,9 +40,9 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -89,7 +89,7 @@ class ContextManagerTest {
         when(metaDataContexts.getMetaData().getDatabases().values()).thenReturn(Collections.singleton(database));
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
-        contextManager = new ContextManager(metaDataContexts, computeNodeInstanceContext);
+        contextManager = new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(PersistRepository.class));
     }
     
     private ShardingSphereDatabase mockDatabase() {
@@ -243,21 +243,13 @@ class ContextManagerTest {
     @Test
     void assertReloadSchema() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getName()).thenReturn("foo_db");
-        DatabaseMetaDataPersistService databaseMetaDataPersistService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        MetaDataPersistService persistService = mock(MetaDataPersistService.class);
-        when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
-        when(metaDataContexts.getPersistService()).thenReturn(persistService);
         ShardingSphereDatabase database = mockDatabase();
         contextManager.reloadSchema(database, "foo_schema", "foo_ds");
-        verify(databaseMetaDataPersistService).dropSchema("foo_db", "foo_schema");
+        verify(contextManager.getRepository()).delete(DatabaseMetaDataNode.getMetaDataSchemaPath("foo_db", "foo_schema"));
     }
     
     @Test
     void assertReloadTable() {
-        DatabaseMetaDataPersistService databaseMetaDataPersistService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        MetaDataPersistService persistService = mock(MetaDataPersistService.class);
-        when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
-        when(metaDataContexts.getPersistService()).thenReturn(persistService);
         ShardingSphereDatabase database = mockDatabase();
         contextManager.reloadTable(database, "foo_schema", "foo_table");
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnits().containsKey("foo_ds"));

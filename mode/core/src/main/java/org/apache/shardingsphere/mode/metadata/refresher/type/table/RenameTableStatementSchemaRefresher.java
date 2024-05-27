@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.metadata.refresher.type.table;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchema
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
+import org.apache.shardingsphere.mode.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTableStatement;
 
@@ -46,14 +46,14 @@ import java.util.Optional;
 public final class RenameTableStatementSchemaRefresher implements MetaDataRefresher<RenameTableStatement> {
     
     @Override
-    public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
             AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
             alterSchemaMetaDataPOJO.getAlteredTables().add(getTable(database, logicDataSourceNames, schemaName,
                     TableRefreshUtils.getTableName(databaseType, each.getRenameTable().getTableName().getIdentifier()), props));
             alterSchemaMetaDataPOJO.getDroppedTables().add(each.getTable().getTableName().getIdentifier().getValue());
-            modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
+            metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         }
     }
     

@@ -90,10 +90,11 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
      */
     @Subscribe
     public synchronized void renew(final CreateOrAlterTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
+                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        Map<String, ShardingSphereTable> tables = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService()
+        Map<String, ShardingSphereTable> tables = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService()
                 .getTableMetaDataPersistService().load(event.getDatabaseName(), event.getSchemaName(), event.getTableName());
         contextManager.getResourceMetaDataContextManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), tables.values().iterator().next(), null);
     }
@@ -115,10 +116,11 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
      */
     @Subscribe
     public synchronized void renew(final CreateOrAlterViewEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
+        if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
+                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        Map<String, ShardingSphereView> views = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService()
+        Map<String, ShardingSphereView> views = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService()
                 .getViewMetaDataPersistService().load(event.getDatabaseName(), event.getSchemaName(), event.getViewName());
         contextManager.getResourceMetaDataContextManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), null, views.values().iterator().next());
     }

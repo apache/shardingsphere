@@ -47,7 +47,7 @@ ShardingSphere CDC 分为两个部分，一个是 CDC Server，另一个是 CDC 
 
 ### CDC Server 使用手册
 
-1. 修改配置文件 `conf/global.yaml`，打开 CDC 功能。 目前 `mode` 必须是 `Cluster`，需要提前启动对应的注册中心。如果 GLT provider 使用 Redis，需要提前启动 Redis。
+修改配置文件 `conf/global.yaml`，打开 CDC 功能。 目前 `mode` 必须是 `Cluster`，需要提前启动对应的注册中心。如果 GLT provider 使用 Redis，需要提前启动 Redis。
 
 配置示例：
 

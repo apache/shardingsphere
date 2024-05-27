@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
@@ -51,8 +50,6 @@ public final class ComputeNodeInstanceContext {
     private final WorkerIdGenerator workerIdGenerator;
     
     private final ModeConfiguration modeConfiguration;
-    
-    private final ModeContextManager modeContextManager;
     
     @SuppressWarnings("rawtypes")
     private final LockContext lockContext;

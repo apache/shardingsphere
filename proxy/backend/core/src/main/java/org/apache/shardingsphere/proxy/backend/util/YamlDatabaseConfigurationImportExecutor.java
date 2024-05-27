@@ -97,7 +97,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     
     private void addDatabase(final String databaseName) {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        contextManager.getComputeNodeInstanceContext().getModeContextManager().createDatabase(databaseName);
+        contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().createDatabase(databaseName);
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), contextManager.getMetaDataContexts().getMetaData().getProps());
         contextManager.getMetaDataContexts().getMetaData().addDatabase(databaseName, protocolType, contextManager.getMetaDataContexts().getMetaData().getProps());
     }
@@ -110,7 +110,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         }
         validateHandler.validate(propsMap);
         try {
-            ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getModeContextManager().registerStorageUnits(databaseName, propsMap);
+            ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService().registerStorageUnits(databaseName, propsMap);
         } catch (final SQLException ex) {
             throw new StorageUnitsOperateException("import", propsMap.keySet(), ex);
         }
@@ -130,7 +130,8 @@ public final class YamlDatabaseConfigurationImportExecutor {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         swapToRuleConfigs(yamlRuleConfigs).values().forEach(each -> addRule(ruleConfigs, each, database));
-        metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
+        ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getMetaDataPersistService().getDatabaseRulePersistService()
+                .persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
     }
     
     private void addRule(final Collection<RuleConfiguration> ruleConfigs, final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
@@ -160,6 +161,6 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void dropDatabase(final String databaseName) {
-        ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getModeContextManager().dropDatabase(databaseName);
+        ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService().dropDatabase(databaseName);
     }
 }

@@ -32,8 +32,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -41,8 +41,6 @@ import java.util.Map.Entry;
  */
 @RequiredArgsConstructor
 public final class TableMetaDataPersistService implements SchemaMetaDataPersistService<Map<String, ShardingSphereTable>> {
-    
-    private static final String DEFAULT_VERSION = "0";
     
     private final PersistRepository repository;
     
@@ -54,11 +52,13 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
         for (Entry<String, ShardingSphereTable> entry : tables.entrySet()) {
             String tableName = entry.getKey().toLowerCase();
             List<String> versions = repository.getChildrenKeys(TableMetaDataNode.getTableVersionsNode(databaseName, schemaName, tableName));
-            String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            repository.persist(TableMetaDataNode.getTableVersionNode(databaseName, schemaName, tableName, nextActiveVersion),
-                    YamlEngine.marshal(new YamlTableSwapper().swapToYamlConfiguration(entry.getValue())));
+            String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            if (entry.getValue() != null) {
+                repository.persist(TableMetaDataNode.getTableVersionNode(databaseName, schemaName, tableName, nextActiveVersion),
+                        YamlEngine.marshal(new YamlTableSwapper().swapToYamlConfiguration(entry.getValue())));
+            }
             if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, tableName))) {
-                repository.persist(TableMetaDataNode.getTableActiveVersionNode(databaseName, schemaName, tableName), DEFAULT_VERSION);
+                repository.persist(TableMetaDataNode.getTableActiveVersionNode(databaseName, schemaName, tableName), MetaDataVersion.DEFAULT_VERSION);
             }
             metaDataVersions.add(new MetaDataVersion(TableMetaDataNode.getTableNode(databaseName, schemaName, tableName), getActiveVersion(databaseName, schemaName, tableName), nextActiveVersion));
         }

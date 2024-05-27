@@ -19,5 +19,5 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment
 
 public enum ACLAttributeEnum {
     
-    UNCHANGED, DEFAULT, YES, NO
+    DEFAULT, YES, NO
 }

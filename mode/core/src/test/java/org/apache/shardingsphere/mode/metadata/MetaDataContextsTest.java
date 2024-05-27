@@ -46,6 +46,6 @@ class MetaDataContextsTest {
         Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class),
                 mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
-        assertThat(new MetaDataContexts(mock(MetaDataPersistService.class), metaData).getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME), is(database));
+        assertThat(MetaDataContextsFactory.create(mock(MetaDataPersistService.class), metaData).getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME), is(database));
     }
 }

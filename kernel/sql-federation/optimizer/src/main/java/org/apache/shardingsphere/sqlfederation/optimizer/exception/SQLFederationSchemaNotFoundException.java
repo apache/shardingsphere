@@ -15,40 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service.config.global;
+package org.apache.shardingsphere.sqlfederation.optimizer.exception;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Global persist service.
- * 
- * @param <T> type of configuration
+ * SQL federation schema not found exception.
  */
-public interface GlobalPersistService<T> {
+public final class SQLFederationSchemaNotFoundException extends SQLFederationSQLException {
     
-    /**
-     * Persist configurations.
-     *
-     * @param globalRuleConfigs configurations
-     */
-    void persist(T globalRuleConfigs);
+    private static final long serialVersionUID = 1273654561551534516L;
     
-    /**
-     * Load configurations.
-     *
-     * @return configurations
-     */
-    T load();
-    
-    /**
-     * Load single rule configuration.
-     *
-     * @param ruleName rule name
-     * @return single rule configuration
-     */
-    default Optional<RuleConfiguration> load(final String ruleName) {
-        return Optional.empty();
+    public SQLFederationSchemaNotFoundException(final String sql) {
+        super(XOpenSQLState.NOT_FOUND, 2, "SQL federation schema not found SQL '%s'.", sql);
     }
 }

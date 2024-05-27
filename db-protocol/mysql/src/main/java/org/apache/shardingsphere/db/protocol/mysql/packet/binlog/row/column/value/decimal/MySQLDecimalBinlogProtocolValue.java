@@ -61,9 +61,10 @@ public final class MySQLDecimalBinlogProtocolValue implements MySQLBinlogProtoco
     private static BigDecimal decodeIntegerValue(final DecimalMetaData metaData, final byte[] value) {
         int offset = DIG_TO_BYTES[metaData.getExtraIntegerSize()];
         BigDecimal result = offset > 0 ? BigDecimal.valueOf(readFixedLengthIntBE(value, 0, offset)) : BigDecimal.ZERO;
-        for (; offset < metaData.getIntegerByteLength(); offset += DEC_BYTE_SIZE) {
+        while (offset < metaData.getIntegerByteLength()) {
             int i = readFixedLengthIntBE(value, offset, DEC_BYTE_SIZE);
             result = result.movePointRight(DIG_PER_DEC).add(BigDecimal.valueOf(i));
+            offset += DEC_BYTE_SIZE;
         }
         return result;
     }
@@ -73,8 +74,10 @@ public final class MySQLDecimalBinlogProtocolValue implements MySQLBinlogProtoco
         int shift = 0;
         int offset = metaData.getIntegerByteLength();
         int scale = metaData.getScale();
-        for (; shift + DIG_PER_DEC <= scale; shift += DIG_PER_DEC, offset += DEC_BYTE_SIZE) {
+        while (shift + DIG_PER_DEC <= scale) {
             result = result.add(BigDecimal.valueOf(readFixedLengthIntBE(value, offset, DEC_BYTE_SIZE)).movePointLeft(shift + DIG_PER_DEC));
+            shift += DIG_PER_DEC;
+            offset += DEC_BYTE_SIZE;
         }
         if (shift < scale) {
             result = result.add(BigDecimal.valueOf(readFixedLengthIntBE(value, offset, DIG_TO_BYTES[scale - shift])).movePointLeft(scale));

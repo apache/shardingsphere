@@ -431,7 +431,7 @@ rules:
         worker-id: 123
 ```
 
-We use the JMH test program to test different CASEs:
+We use the JMH test program to test different cases:
 
 ```
 @State(Scope.Thread)

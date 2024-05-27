@@ -21,6 +21,9 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.embedded.EmbeddedChannel;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.authentication.result.AuthenticationResult;
+import org.apache.shardingsphere.authentication.result.AuthenticationResultBuilder;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -31,8 +34,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
-import org.apache.shardingsphere.authentication.result.AuthenticationResult;
-import org.apache.shardingsphere.authentication.result.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -44,7 +45,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.util.Collections;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -80,7 +81,7 @@ class FrontendChannelInboundHandlerTest {
         when(authenticationEngine.handshake(any(ChannelHandlerContext.class))).thenReturn(CONNECTION_ID);
         channel = new EmbeddedChannel(false, true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(TransactionRule.class))));
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(mock(TransactionRule.class), mock(AuthorityRule.class))));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         frontendChannelInboundHandler = new FrontendChannelInboundHandler(frontendEngine, channel);
         channel.pipeline().addLast(frontendChannelInboundHandler);

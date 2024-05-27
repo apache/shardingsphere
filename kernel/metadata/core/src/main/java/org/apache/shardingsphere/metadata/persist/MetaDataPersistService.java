@@ -27,9 +27,9 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.database.datasource.DataSourceNodePersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.database.datasource.DataSourceUnitPersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.database.rule.DatabaseRulePersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourceNodePersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourceUnitPersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;

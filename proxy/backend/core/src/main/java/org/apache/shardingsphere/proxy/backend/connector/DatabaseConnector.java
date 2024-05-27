@@ -120,7 +120,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         this.driverType = driverType;
         this.database = database;
         this.queryContext = queryContext;
-        this.selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
+        selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
         this.databaseConnectionManager = databaseConnectionManager;
         if (sqlStatementContext instanceof CursorAvailable) {
             prepareCursorStatementContext((CursorAvailable) sqlStatementContext, databaseConnectionManager.getConnectionSession());
@@ -283,7 +283,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        new MetaDataRefreshEngine(contextManager.getComputeNodeInstanceContext().getModeContextManager(), database,
+        new MetaDataRefreshEngine(contextManager.getPersistServiceFacade().getMetaDataManagerPersistService(), database,
                 contextManager.getMetaDataContexts().getMetaData().getProps()).refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
     }
     

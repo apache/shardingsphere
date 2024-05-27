@@ -63,7 +63,7 @@ public final class PipelineAPIFactory {
             @Override
             protected PipelineGovernanceFacade initialize() {
                 ContextManager contextManager = PipelineContextManager.getContext(contextKey).getContextManager();
-                return new PipelineGovernanceFacade((ClusterPersistRepository) contextManager.getMetaDataContexts().getPersistService().getRepository());
+                return new PipelineGovernanceFacade((ClusterPersistRepository) contextManager.getPersistServiceFacade().getMetaDataPersistService().getRepository());
             }
         }).get();
     }

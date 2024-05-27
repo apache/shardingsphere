@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.schema;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * View meta data changed event.
+ * Open statement.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ViewMetaDataChangedEvent implements GovernanceEvent {
+@Setter
+public abstract class OpenStatement extends AbstractSQLStatement implements DDLStatement {
     
-    private final String databaseName;
-    
-    private final String schemaName;
-    
-    private final ShardingSphereView changedViewMetaData;
-    
-    private final String deletedView;
+    private CursorNameSegment cursorName;
 }

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mode.metadata.refresher.type.schema;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.mode.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterSchemaStatementHandler;
 
@@ -35,13 +35,13 @@ import java.util.Optional;
 public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefresher<AlterSchemaStatement> {
     
     @Override
-    public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) {
         Optional<String> renameSchemaName = AlterSchemaStatementHandler.getRenameSchema(sqlStatement).map(optional -> optional.getValue().toLowerCase());
         if (!renameSchemaName.isPresent()) {
             return;
         }
-        modeContextManager.alterSchema(new AlterSchemaPOJO(database.getName(), sqlStatement.getSchemaName().getValue().toLowerCase(),
+        metaDataManagerPersistService.alterSchema(new AlterSchemaPOJO(database.getName(), sqlStatement.getSchemaName().getValue().toLowerCase(),
                 renameSchemaName.get(), logicDataSourceNames));
     }
     

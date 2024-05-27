@@ -49,19 +49,14 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         ComputeNodeInstanceContext computeNodeInstanceContext = buildComputeNodeInstanceContext(param, eventBusContext);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, computeNodeInstanceContext);
-        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext);
+        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
         new StandaloneEventSubscriberRegistry(result).register();
-        setContextManagerAware(result);
         return result;
     }
     
     private ComputeNodeInstanceContext buildComputeNodeInstanceContext(final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) {
         return new ComputeNodeInstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()),
-                new StandaloneWorkerIdGenerator(), param.getModeConfiguration(), new StandaloneModeContextManager(), new GlobalLockContext(null), eventBusContext);
-    }
-    
-    private void setContextManagerAware(final ContextManager contextManager) {
-        ((StandaloneModeContextManager) contextManager.getComputeNodeInstanceContext().getModeContextManager()).setContextManager(contextManager);
+                new StandaloneWorkerIdGenerator(), param.getModeConfiguration(), new GlobalLockContext(null), eventBusContext);
     }
     
     @Override

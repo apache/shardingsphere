@@ -19,8 +19,9 @@ This post will introduce you to the tools commonly used in database protocol dev
 
 The full features, installation and other details about Wireshark can be found in the official Wireshark documents.
 
-## 1.1 Packet capture using tools like Wireshark or tcpdump
-**1.1.1 Wireshark**
+### 1.1 Packet capture using tools like Wireshark or tcpdump
+#### **1.1.1 Wireshark**
+
 Wireshark itself has the ability to capture packets, so if the environment connected to ShardingSphere-Proxy can run Wireshark, you can use it to capture packets directly.
 
 After initiating Wireshark , first select the correct network card.
@@ -33,7 +34,7 @@ Once the NIC is selected, Wireshark starts capturing packets. Since there may be
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/p11ab3e8qjqdiaa7repp.png)
  
 
-**1.1.2 tcpdump**
+#### **1.1.2 tcpdump**
 In cases where ShardingSphere-Proxy is deployed in an online environment, or when you cannot use Wireshark to capture packets, consider using tcpdump or other tools.
 
 NIC eth0 as target, filter TCP port 3307, write the result to /path/to/dump.cap. Command Example:
@@ -41,7 +42,7 @@ NIC eth0 as target, filter TCP port 3307, write the result to /path/to/dump.cap.
 `tcpdump -i eth0 -w /path/to/dump.cap tcp port 3307`
 To know how to use tcpdump, you can man tcpdump. tcpdump’s packet capture result file can be opened through Wireshark.
 
-**1.1.3 Note**
+#### **1.1.3 Note**
 When a client connects to MySQL, SSL encryption may be automatically enabled, causing the packet capture result to not directly parse the protocol content. You can disable SSL by specifying parameters using the MySQL client command line with the following command:
 
 `mysql --ssl-mode=disable`
@@ -49,7 +50,7 @@ Parameters can be added using JDBC with the following parameters:
 
 `jdbc:mysql://127.0.0.1:3306/db?useSSL=false`
 
-## 1.2 Use Wireshark to read packet capture result
+### 1.2 Use Wireshark to read packet capture result
 Wireshark supports reading multiple packet capture file formats, including tcpdump’s capture format.
 
 By default, Wireshark decodes port 3306 to MySQL protocol and port 5432 to PostgreSQL protocol. For cases where ShardingSphere-Proxy may use a different port, you can configure the protocol for specified port in Decode As…
@@ -79,7 +80,7 @@ Example: the client executes SQL select version() with the protocol shown below:
 
 ## 2. Protocol Troubeshooting Case Study: ShardingSphere-Proxy MySQL support oversized data packages
 
-## 2.1 Problem Description
+### 2.1 Problem Description
 Using MySQL Connector/J 8.0.28 as a client to connect to ShardingSphere-Proxy 5.1.1, bulk insertion error prompted while executing.
 
 Problem solved after replacing driver MySQL Connector/J 5.1.38.
@@ -111,10 +112,10 @@ java.lang.IllegalArgumentException: Sequence ID of MySQL command packet must be 
  at java.base/java.lang.Thread.run(Thread.java:834)
 ```
 
-## 2.2 Troubleshooting
+### 2.2 Troubleshooting
 The error occurred at the front end of the Proxy, which excludes the backend JDBC Driver and is related to the protocol implementation.
 
-**2.2.1 Analysis**
+#### **2.2.1 Analysis**
 Directly determine in the source code that if the sequence ID is not equal to 0, an error is reported.
 
 ```java
@@ -133,6 +134,7 @@ public final class MySQLCommandPacketTypeLoader {
 }
 ```
 **Code link:**
+
 [https://github.com/apache/shardingsphere/blob/d928165ea4f6ecf2983b2a3a8670ff66ffe63647/shardingsphere-db-protocol/shardingsphere-db-protocol-mysql/src/main/java/org/apache/shardingsphere/db/protocol/mysql/packet/command/MySQLCommandPacketTypeLoader.java#L38](https://github.com/apache/shardingsphere/blob/d928165ea4f6ecf2983b2a3a8670ff66ffe63647/shardingsphere-db-protocol/shardingsphere-db-protocol-mysql/src/main/java/org/apache/shardingsphere/db/protocol/mysql/packet/command/MySQLCommandPacketTypeLoader.java#L38)
 
 In accordance with MySQL protocol documentation, consider when the sequence ID will not equal 0 [2].
@@ -140,11 +142,12 @@ In accordance with MySQL protocol documentation, consider when the sequence ID w
 - The server responds multiple messages to the client.
 - The client sends multiple consecutive messages.
 - ……
+  
 In this case, the message header of MySQL Packet consists of 3 bytes length + 1 byte Sequence ID [3], so the maximum length of Payload part is 16 MB — 1.
 
 Considering that the error is generated during bulk insertion, the problem might be that the data sent by the client exceeds the length limit of a single MySQL Packet and was split into multiple consecutive MySQL Packets, which the Proxy could not handle.
 
-**2.2.2 Trying to recreate the problem**
+#### **2.2.2 Trying to recreate the problem**
 Using a `longtext` type field. The original idea was to construct a SQL with a length of more than 16 MB, but inadvertently we found that the error was also reported when the SQL length was more than 8 MB. The code was reproduced as follows:
 
 ```java
@@ -215,7 +218,7 @@ out.add(in.readRetainedSlice(SEQUENCE_LENGTH + payloadLength));
 ```
 The problem is clear: because ShardingSphere-Proxy didn’t aggregate packets, multiple packets are parsed separately by Proxy as multiple commands, and because the `Sequence ID` of subsequent packets is greater than 0, the Proxy’s internal assertion logic for the Sequence ID reported an error.
 
-## 2.3 Troubleshooting and Repair
+### 2.3 Troubleshooting and Repair
 After troubleshooting, the error was reported as:
 
 - (Direct cause) The ShardingSphere-Proxy MySQL protocol unpacket logic does not handle the length sign correctly [4].
@@ -230,7 +233,7 @@ It is first important to understand how MySQL protocol handles very long packets
 - When the data length is exactly equal to 16 MB — 1 or a multiple thereof, one or more packets of length 16 MB — 1 are sent followed by a packet of length 0, as shown in the following figure:
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/2ag3mbjanbchj012eu5c.png)
  
-**Solution:** in order for the protocol implementation of ShardingSphere-Proxy MySQL to not care about how very long packets are handled, it is better to aggregate the packets in the data decoding logic.
+**Solution:** In order for the protocol implementation of ShardingSphere-Proxy MySQL to not care about how very long packets are handled, it is better to aggregate the packets in the data decoding logic.
 
 In the ShardingSphere-Proxy front-end [Netty](https://netty.io/) decoding logic, when a data Packet of length `0xFFFFFF` is encountered, the Payload part of multiple MySQL Packets is aggregated via CompositeByteBuf.
 
@@ -274,8 +277,10 @@ The solutions presented in this article have been released with Apache ShardingS
 
 [8] [https://github.com/apache/shardingsphere/pull/17914](https://github.com/apache/shardingsphere/pull/17914
 )
+
 [9] [https://github.com/apache/shardingsphere/blob/2c9936497214b8a654cb56d43583f62cd7a6b76b/shardingsphere-proxy/shardingsphere-proxy-frontend/shardingsphere-proxy-frontend-core/src/main/java/org/apache/shardingsphere/proxy/frontend/netty/ServerHandlerInitializer.java](https://github.com/apache/shardingsphere/blob/2c9936497214b8a654cb56d43583f62cd7a6b76b/shardingsphere-proxy/shardingsphere-proxy-frontend/shardingsphere-proxy-frontend-core/src/main/java/org/apache/shardingsphere/proxy/frontend/netty/ServerHandlerInitializer.java
 )
+
 [10] [https://shardingsphere.apache.org/document/current/cn/downloads/](https://shardingsphere.apache.org/document/current/cn/downloads/)
 
 [GitHub issue](https://github.com/apache/shardingsphere/issues)

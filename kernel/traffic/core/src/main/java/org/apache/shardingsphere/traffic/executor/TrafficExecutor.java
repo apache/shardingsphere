@@ -17,13 +17,24 @@
 
 package org.apache.shardingsphere.traffic.executor;
 
+import lombok.Getter;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.traffic.exception.EmptyTrafficExecutionUnitException;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,6 +43,9 @@ import java.util.List;
 public final class TrafficExecutor implements AutoCloseable {
     
     private Statement statement;
+    
+    @Getter
+    private ResultSet resultSet;
     
     /**
      * Execute.
@@ -45,7 +59,40 @@ public final class TrafficExecutor implements AutoCloseable {
     public <T> T execute(final JDBCExecutionUnit executionUnit, final TrafficExecutorCallback<T> callback) throws SQLException {
         SQLUnit sqlUnit = executionUnit.getExecutionUnit().getSqlUnit();
         cacheStatement(sqlUnit.getParameters(), executionUnit.getStorageResource());
-        return callback.execute(statement, sqlUnit.getSql());
+        T result = callback.execute(statement, sqlUnit.getSql());
+        resultSet = statement.getResultSet();
+        return result;
+    }
+    
+    /**
+     * Execute.
+     *
+     * @param processId process ID
+     * @param databaseName database name
+     * @param trafficInstanceId traffic instance ID
+     * @param queryContext query context
+     * @param prepareEngine prepare engine
+     * @param callback callback
+     * @param <T> return type
+     * @return execute result
+     * @throws SQLException SQL exception
+     */
+    public <T> T execute(final String processId, final String databaseName, final String trafficInstanceId, final QueryContext queryContext,
+                         final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final TrafficExecutorCallback<T> callback) throws SQLException {
+        JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(processId, databaseName, trafficInstanceId, queryContext, prepareEngine);
+        SQLUnit sqlUnit = executionUnit.getExecutionUnit().getSqlUnit();
+        cacheStatement(sqlUnit.getParameters(), executionUnit.getStorageResource());
+        T result = callback.execute(statement, sqlUnit.getSql());
+        resultSet = statement.getResultSet();
+        return result;
+    }
+    
+    private JDBCExecutionUnit createTrafficExecutionUnit(final String processId, final String databaseName, final String trafficInstanceId, final QueryContext queryContext,
+                                                         final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
+        ExecutionUnit executionUnit = new ExecutionUnit(trafficInstanceId, new SQLUnit(queryContext.getSql(), queryContext.getParameters()));
+        ExecutionGroupContext<JDBCExecutionUnit> context =
+                prepareEngine.prepare(new RouteContext(), Collections.singleton(executionUnit), new ExecutionGroupReportContext(processId, databaseName, new Grantee("", "")));
+        return context.getInputGroups().stream().flatMap(each -> each.getInputs().stream()).findFirst().orElseThrow(EmptyTrafficExecutionUnitException::new);
     }
     
     private void cacheStatement(final List<Object> params, final Statement statement) throws SQLException {
@@ -61,16 +108,6 @@ public final class TrafficExecutor implements AutoCloseable {
         for (Object each : params) {
             ((PreparedStatement) statement).setObject(index++, each);
         }
-    }
-    
-    /**
-     * Get result set.
-     *
-     * @return result set
-     * @throws SQLException SQL exception
-     */
-    public ResultSet getResultSet() throws SQLException {
-        return statement.getResultSet();
     }
     
     @Override

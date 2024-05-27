@@ -20,14 +20,14 @@ package org.apache.shardingsphere.metadata.persist.service.config.global;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.tuple.RepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
+import org.apache.shardingsphere.mode.tuple.RepositoryTupleSwapperEngine;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,9 +37,7 @@ import java.util.Optional;
 /**
  * Global rule persist service.
  */
-public final class GlobalRulePersistService implements GlobalPersistService<Collection<RuleConfiguration>> {
-    
-    private static final String DEFAULT_VERSION = "0";
+public final class GlobalRulePersistService {
     
     private final PersistRepository repository;
     
@@ -53,7 +51,30 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
         repositoryTuplePersistService = new RepositoryTuplePersistService(repository);
     }
     
-    @Override
+    /**
+     * Load global rule configurations.
+     *
+     * @return global rule configurations
+     */
+    public Collection<RuleConfiguration> load() {
+        return new RepositoryTupleSwapperEngine().swapToRuleConfigurations(repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleRootNode()));
+    }
+    
+    /**
+     * Load global rule configuration.
+     *
+     * @param ruleTypeName rule type name to be loaded
+     * @return global rule configuration
+     */
+    public Optional<RuleConfiguration> load(final String ruleTypeName) {
+        return new RepositoryTupleSwapperEngine().swapToRuleConfiguration(ruleTypeName, repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleNode(ruleTypeName)));
+    }
+    
+    /**
+     * Persist global rule configurations.
+     *
+     * @param globalRuleConfigs global rule configurations
+     */
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
         RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
@@ -70,23 +91,13 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
             List<String> versions = repository.getChildrenKeys(GlobalNode.getGlobalRuleVersionsNode(each.getKey()));
-            String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             repository.persist(GlobalNode.getGlobalRuleVersionNode(each.getKey(), nextActiveVersion), each.getValue());
             if (Strings.isNullOrEmpty(repository.query(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey())))) {
-                repository.persist(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), DEFAULT_VERSION);
+                repository.persist(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey()), MetaDataVersion.DEFAULT_VERSION);
             }
             result.add(new MetaDataVersion(GlobalNode.getGlobalRuleNode(each.getKey()), repository.query(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey())), nextActiveVersion));
         }
         return result;
-    }
-    
-    @Override
-    public Collection<RuleConfiguration> load() {
-        return new RepositoryTupleSwapperEngine().swapToRuleConfigurations(repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleRootNode()));
-    }
-    
-    @Override
-    public Optional<RuleConfiguration> load(final String ruleName) {
-        return new RepositoryTupleSwapperEngine().swapToRuleConfiguration(ruleName, repositoryTuplePersistService.loadRepositoryTuples(GlobalNode.getGlobalRuleNode(ruleName)));
     }
 }

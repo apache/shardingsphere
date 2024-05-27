@@ -370,10 +370,11 @@ class MySQLJsonValueDecoderTest {
         }
         // compress
         int index = lengthData.length - 1;
-        for (; index > 0; index--) {
+        while (index > 0) {
             if (0 != lengthData[index]) {
                 break;
             }
+            index--;
         }
         for (int i = 0; i < index; i++) {
             lengthData[i] |= 0x80;

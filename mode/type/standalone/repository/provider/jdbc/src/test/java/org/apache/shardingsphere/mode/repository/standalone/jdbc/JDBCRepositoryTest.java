@@ -147,7 +147,6 @@ class JDBCRepositoryTest {
         when(mockJdbcConnection.prepareStatement(repositorySQL.getUpdateSQL())).thenReturn(mockPreparedStatementForPersist);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
-        when(mockResultSet.getString("value")).thenReturn("oldValue");
         repository.persist(key, value);
         verify(mockPreparedStatement).setString(1, key);
         verify(mockPreparedStatementForPersist).setString(eq(1), anyString());
@@ -199,7 +198,6 @@ class JDBCRepositoryTest {
         when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
-        when(mockResultSet.getString("value")).thenReturn("oldValue");
         when(mockJdbcConnection.prepareStatement(repositorySQL.getUpdateSQL())).thenReturn(mockPreparedStatement);
         repository.persist(key, "value");
         verify(mockPreparedStatementForPersist, times(0)).executeUpdate();
