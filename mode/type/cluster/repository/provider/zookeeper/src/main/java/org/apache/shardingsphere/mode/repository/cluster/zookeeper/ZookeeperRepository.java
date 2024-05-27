@@ -248,7 +248,7 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Comp
                         listener.onChange(new DataChangedEvent(newData.getPath(), new String(newData.getData(), StandardCharsets.UTF_8), Type.UPDATED));
                     }
                 })
-                .forDeletes(oldData -> listener.onChange(new DataChangedEvent(oldData.getPath(), "", Type.DELETED)))
+                .forDeletes(oldData -> listener.onChange(new DataChangedEvent(oldData.getPath(), new String(oldData.getData(), StandardCharsets.UTF_8), Type.DELETED)))
                 .afterInitialized()
                 .build();
         cache.listenable().addListener(curatorCacheListener);
