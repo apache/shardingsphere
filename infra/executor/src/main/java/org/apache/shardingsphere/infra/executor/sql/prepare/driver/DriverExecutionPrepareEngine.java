@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -45,6 +46,9 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @SuppressWarnings("rawtypes")
     private static final Map<String, SQLExecutionUnitBuilder> TYPE_TO_BUILDER_MAP = new ConcurrentHashMap<>(8, 1F);
     
+    @Getter
+    private final String type;
+    
     private final DatabaseConnectionManager<C> databaseConnectionManager;
     
     private final ExecutorStatementManager<C, ?, ?> statementManager;
@@ -60,6 +64,7 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
                                         final ExecutorStatementManager<C, ?, ?> statementManager, final StorageResourceOption option, final Collection<ShardingSphereRule> rules,
                                         final Map<String, StorageUnit> storageUnits) {
         super(maxConnectionsSizePerQuery, rules);
+        this.type = type;
         this.databaseConnectionManager = databaseConnectionManager;
         this.statementManager = statementManager;
         this.option = option;
