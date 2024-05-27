@@ -30,8 +30,8 @@ public class ShadowTableMapperRuleAttribute implements TableMapperRuleAttribute 
     
     private final CaseInsensitiveSet<String> logicalTableMapper;
     
-    public ShadowTableMapperRuleAttribute(final Collection<String> encryptTableNames) {
-        logicalTableMapper = new CaseInsensitiveSet<>(encryptTableNames);
+    public ShadowTableMapperRuleAttribute(final Collection<String> shadowTableNames) {
+        logicalTableMapper = new CaseInsensitiveSet<>(shadowTableNames);
     }
     
     @Override
