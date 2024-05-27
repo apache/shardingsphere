@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher;
-import org.apache.shardingsphere.mode.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterSchemaStatementHandler;
 

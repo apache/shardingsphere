@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.context;
+package org.apache.shardingsphere.mode.service.manager;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -71,7 +71,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class ConfigurationContextManager {
+public final class ConfigurationManagerService {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     

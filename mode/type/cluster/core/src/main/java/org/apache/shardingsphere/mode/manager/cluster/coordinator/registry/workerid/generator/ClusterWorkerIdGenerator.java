@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node.WorkerIdReservationNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
-import org.apache.shardingsphere.mode.service.ComputeNodePersistService;
+import org.apache.shardingsphere.mode.service.persist.ComputeNodePersistService;
 
 import java.util.Collection;
 import java.util.Optional;

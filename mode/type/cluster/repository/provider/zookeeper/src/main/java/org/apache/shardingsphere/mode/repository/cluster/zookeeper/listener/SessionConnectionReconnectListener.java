@@ -24,7 +24,7 @@ import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.service.ComputeNodePersistService;
+import org.apache.shardingsphere.mode.service.persist.ComputeNodePersistService;
 
 import java.util.Properties;
 
