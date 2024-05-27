@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber;
+package org.apache.shardingsphere.mode.manager.cluster.service;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
-import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,26 +33,32 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ClusterProcessSubscriberTest {
+class ClusterProcessPersistServiceTest {
     
     @Mock
     private ClusterPersistRepository repository;
     
-    private final EventBusContext eventBusContext = new EventBusContext();
-    
-    private ClusterProcessSubscriber clusterProcessListSubscriber;
+    private ClusterProcessPersistService processPersistService;
     
     @BeforeEach
     void setUp() {
-        clusterProcessListSubscriber = new ClusterProcessSubscriber(repository, eventBusContext);
+        processPersistService = new ClusterProcessPersistService(repository);
     }
     
     @Test
-    void assertPostShowProcessListData() {
+    void getProcessList() {
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.JDBC))).thenReturn(Collections.emptyList());
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
         when(repository.query(any())).thenReturn(null);
-        clusterProcessListSubscriber.postShowProcessListData(new ShowProcessListRequestEvent());
+        processPersistService.getProcessList();
+        verify(repository).persist(any(), any());
+    }
+    
+    @Test
+    void killProcess() {
+        when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.JDBC))).thenReturn(Collections.emptyList());
+        when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
+        processPersistService.killProcess("foo_process_id");
         verify(repository).persist(any(), any());
     }
 }
