@@ -101,9 +101,9 @@ public final class DriverExecutor implements AutoCloseable {
         if (sqlFederationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaData.getGlobalRuleMetaData())) {
             ExecuteQueryCallback sqlFederationCallback = JDBCDriverType.STATEMENT.equals(prepareEngine.getType())
                     ? new StatementExecuteQueryCallback(database.getProtocolType(), database.getResourceMetaData(),
-                    queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown())
+                            queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown())
                     : new PreparedStatementExecuteQueryCallback(database.getProtocolType(),
-                    database.getResourceMetaData(), queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
+                            database.getResourceMetaData(), queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
             return Optional.of(sqlFederationEngine.executeQuery(prepareEngine, sqlFederationCallback, new SQLFederationContext(false, queryContext, metaData, connection.getProcessId())));
         }
         return Optional.empty();
