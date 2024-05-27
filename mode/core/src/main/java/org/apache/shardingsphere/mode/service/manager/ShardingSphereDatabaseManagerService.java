@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.context;
+package org.apache.shardingsphere.mode.service.manager;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableDa
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.service.PersistServiceFacade;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +34,9 @@ import java.util.concurrent.atomic.AtomicReference;
  * ShardingSphere database context manager.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereDatabaseContextManager {
+public final class ShardingSphereDatabaseManagerService {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
-    
-    private final PersistServiceFacade persistServiceFacade;
     
     /**
      * Add ShardingSphere database data.

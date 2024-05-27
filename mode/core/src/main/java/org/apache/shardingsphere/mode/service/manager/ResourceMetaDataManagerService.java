@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.context;
+package org.apache.shardingsphere.mode.service.manager;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Resource meta data context manager.
  */
 @RequiredArgsConstructor
-public final class ResourceMetaDataContextManager {
+public final class ResourceMetaDataManagerService {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     

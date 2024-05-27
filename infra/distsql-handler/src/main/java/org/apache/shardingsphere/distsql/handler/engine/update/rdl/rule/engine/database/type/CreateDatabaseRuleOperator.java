@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

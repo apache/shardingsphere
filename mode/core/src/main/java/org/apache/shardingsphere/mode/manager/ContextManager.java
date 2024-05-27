@@ -38,14 +38,13 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.manager.context.ConfigurationContextManager;
-import org.apache.shardingsphere.mode.manager.context.ResourceMetaDataContextManager;
-import org.apache.shardingsphere.mode.manager.context.ShardingSphereDatabaseContextManager;
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.service.ManagerServiceFacade;
 import org.apache.shardingsphere.mode.service.PersistServiceFacade;
+import org.apache.shardingsphere.mode.service.manager.ConfigurationManagerService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.state.StateContext;
 
@@ -66,17 +65,13 @@ public final class ContextManager implements AutoCloseable {
     
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
-    private final ShardingSphereDatabaseContextManager shardingSphereDatabaseContextManager;
-    
-    private final ConfigurationContextManager configurationContextManager;
-    
-    private final ResourceMetaDataContextManager resourceMetaDataContextManager;
-    
     private final ExecutorEngine executorEngine;
     
     private final StateContext stateContext;
     
     private final PersistServiceFacade persistServiceFacade;
+    
+    private final ManagerServiceFacade managerServiceFacade;
     
     private final PersistRepository repository;
     
@@ -85,9 +80,7 @@ public final class ContextManager implements AutoCloseable {
         this.computeNodeInstanceContext = computeNodeInstanceContext;
         this.repository = repository;
         persistServiceFacade = new PersistServiceFacade(repository, computeNodeInstanceContext.getModeConfiguration(), this);
-        shardingSphereDatabaseContextManager = new ShardingSphereDatabaseContextManager(this.metaDataContexts, persistServiceFacade);
-        configurationContextManager = new ConfigurationContextManager(this.metaDataContexts, computeNodeInstanceContext, persistServiceFacade);
-        resourceMetaDataContextManager = new ResourceMetaDataContextManager(this.metaDataContexts, persistServiceFacade);
+        managerServiceFacade = new ManagerServiceFacade(this.metaDataContexts, computeNodeInstanceContext, persistServiceFacade);
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         stateContext = new StateContext();
     }
@@ -177,11 +170,12 @@ public final class ContextManager implements AutoCloseable {
     
     private MetaDataContexts createMetaDataContexts(final ShardingSphereDatabase database) throws SQLException {
         MetaDataPersistService metaDataPersistService = persistServiceFacade.getMetaDataPersistService();
+        ConfigurationManagerService configurationManagerService = managerServiceFacade.getConfigurationManagerService();
         Map<String, DataSourcePoolProperties> dataSourcePoolPropsFromRegCenter = metaDataPersistService.getDataSourceUnitService().load(database.getName());
         SwitchingResource switchingResource = new ResourceSwitchManager().alterStorageUnit(database.getResourceMetaData(), dataSourcePoolPropsFromRegCenter);
-        metaDataContexts.get().getMetaData().getDatabases().putAll(configurationContextManager.renewDatabase(database, switchingResource));
+        metaDataContexts.get().getMetaData().getDatabases().putAll(configurationManagerService.renewDatabase(database, switchingResource));
         Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(database.getName());
-        Map<String, ShardingSphereDatabase> changedDatabases = configurationContextManager.createChangedDatabases(database.getName(), false, switchingResource, ruleConfigs);
+        Map<String, ShardingSphereDatabase> changedDatabases = configurationManagerService.createChangedDatabases(database.getName(), false, switchingResource, ruleConfigs);
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, changedDatabases, props));

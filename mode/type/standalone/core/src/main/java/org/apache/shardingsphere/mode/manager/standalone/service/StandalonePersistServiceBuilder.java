@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mode.manager.standalone.service;
 
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.service.PersistServiceBuilder;
-import org.apache.shardingsphere.mode.service.ProcessPersistService;
+import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.service.persist.PersistServiceBuilder;
+import org.apache.shardingsphere.mode.service.persist.ProcessPersistService;
 
 /**
  * Standalone meta data manager persist service builder.
