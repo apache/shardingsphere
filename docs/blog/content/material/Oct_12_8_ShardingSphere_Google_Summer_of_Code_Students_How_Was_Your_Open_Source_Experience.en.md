@@ -47,7 +47,7 @@ Major: Business Informatics
 
 **Thanoshan:** Here, in Sri Lanka, many of my seniors have already done the Google Summer of Code. They strongly advised me to look at this opportunity and told me that I should definitely try it. So, I researched the GSoC program, for things such as “What is about? How can I work on that?”.
 
-**Liangda：**The first time I got to know GSoC was during last year’s summer, I was surfing on the internet, and I accidentally found out a blog sharing about some GSoC experiences and application tips. I was really fascinated by this program. But at that time, open source was completely new for me, and I was not confident enough. Then during the winter of 2020, I got the chance to work as a research assistant at the university on a chatbot project using Rasa, which is an open source conversational AI framework. That was the first time I dove so deep into an open source framework and interacted with the open source community. It was a great experience for me. And the idea came into my mind, why not take the opportunity of GSoC to get to learn more about the open source world.
+**Liangda：** The first time I got to know GSoC was during last year’s summer, I was surfing on the internet, and I accidentally found out a blog sharing about some GSoC experiences and application tips. I was really fascinated by this program. But at that time, open source was completely new for me, and I was not confident enough. Then during the winter of 2020, I got the chance to work as a research assistant at the university on a chatbot project using Rasa, which is an open source conversational AI framework. That was the first time I dove so deep into an open source framework and interacted with the open source community. It was a great experience for me. And the idea came into my mind, why not take the opportunity of GSoC to get to learn more about the open source world.
 
 > **What’s so great about the program anyway?**
 
@@ -55,7 +55,7 @@ Major: Business Informatics
 
 > **What project did you work on during GSoC?**
 
-**Thanoshan:**ShardingSphere’s ANTLR project. I’m really interested in Java, and Java related technologies and it’s my one of the favorite languages. Also, I am very passionate about open source software development. So, I want to do something in Java and open source, to learn more from other people, something that allows me to collaborate with other people. The Java-related technology is the main motivation, which actually drove me in this project.
+**Thanoshan:** ShardingSphere’s ANTLR project. I’m really interested in Java, and Java related technologies and it’s my one of the favorite languages. Also, I am very passionate about open source software development. So, I want to do something in Java and open source, to learn more from other people, something that allows me to collaborate with other people. The Java-related technology is the main motivation, which actually drove me in this project.
 
 **Liangda:** My GSoC project contributes to Apache ShardingSphere’s parser engine, which handles different database SQLs like MySQL, PostgreSQL, Oracle etc. And I was focusing on proofreading the Oracle SQL definition of DDL (Data Definition Language) and TCL (Transaction Control language).
 
@@ -77,35 +77,35 @@ However, the Apache ShardingSphere is a nice and friendly community, my question
 
 > **How was your experience as a GSoC student?**
 
-**Liangda:**It was a really great experience. The program is well organized with clear timeline and schedule. I was able to learn a lot about open source development and improve my skills and knowledge. The GSoC student summit at the end of the program was also really interesting and informative.
+**Liangda:** It was a really great experience. The program is well organized with clear timeline and schedule. I was able to learn a lot about open source development and improve my skills and knowledge. The GSoC student summit at the end of the program was also really interesting and informative.
 
 >**What did you do differently in order to get selected for GSoC by ShardingSphere?**
 
-**Liangda:**I think I was really motivated and I’m able to dive deep into the issues I faced to find the root cause. If I could not solve the issue by myself, I’m not afraid to ask on GitHub directly. This makes me get started quickly.
+**Liangda:** I think I was really motivated and I’m able to dive deep into the issues I faced to find the root cause. If I could not solve the issue by myself, I’m not afraid to ask on GitHub directly. This makes me get started quickly.
 
 And after I got familiar with my project, I also worked proactively to answer questions, review pull requests and fix other small issues. Beside this, when I was writing my project proposal, I communicated with my mentor regularly and asked for early feedback. It is important to know mentors’ expectations.
 
 >**How was your experience as a GSoC student?**
 
-**Liangda：**It was a really great experience. The program is well organized with clear timeline and schedule. I was able to learn a lot about open source development and improve my skills and knowledge. The GSoC student summit at the end of the program was also really interesting and informative.
+**Liangda：** It was a really great experience. The program is well organized with clear timeline and schedule. I was able to learn a lot about open source development and improve my skills and knowledge. The GSoC student summit at the end of the program was also really interesting and informative.
 
 >**What did you do differently in order to get selected for GSoC by ShardingSphere?**
 
-**Liangda: **I think I was really motivated and I’m able to dive deep into the issues I faced to find the root cause. If I could not solve the issue by myself, I’m not afraid to ask on GitHub directly. This makes me get started quickly.
+**Liangda:** I think I was really motivated and I’m able to dive deep into the issues I faced to find the root cause. If I could not solve the issue by myself, I’m not afraid to ask on GitHub directly. This makes me get started quickly.
 
 And after I got familiar with my project, I also worked proactively to answer questions, review pull requests and fix other small issues. Beside this, when I was writing my project proposal, I communicated with my mentor regularly and asked for early feedback. It is important to know mentors’ expectations.
 
 > **Is there anything that you would like to say to students who are looking forward to work with ShardingSphere in GSoC? Or do you have any tips for them?**
 
-**Thanoshan:**I would say there will be some projects that will be specified by the mentors and the ShardingSphere community. So, students will have to participate in the community even before the GSoC.
+**Thanoshan:** I would say there will be some projects that will be specified by the mentors and the ShardingSphere community. So, students will have to participate in the community even before the GSoC.
 
 Students can approach the ShardingSphere community even before the program and work on some preliminary tasks related to the GSoC’s main task, which will definitely help them compete in the selection process. So, I would say that they should approach the ShardingSphere community as early as possible.
 
-**Liangda:**Yes, I would highly recommend it and it will be a great experience for sure. There are some issues labeled as “good first issue” or “volunteer wanted”. Just go and try it as soon as possible! The easiest way to get started is learning by doing. And if you feel blocked, don’t be afraid to ask questions and express your thoughts! We are all here to support you!
+**Liangda:** Yes, I would highly recommend it and it will be a great experience for sure. There are some issues labeled as “good first issue” or “volunteer wanted”. Just go and try it as soon as possible! The easiest way to get started is learning by doing. And if you feel blocked, don’t be afraid to ask questions and express your thoughts! We are all here to support you!
 
 > **Do you have any suggestions to improve ShardingSphere?**
 
-**Thanoshan:**To improve ShardingSphere? I mean it’s a huge project. And the plus point I see here is the documentation. It’s great. So, to be honest with you, I learned a lot about SQL. I worked on the SQL parser engine part of the project, so I learned the concepts of the SQL parser engine in the ShardingSphere project. For the improvement, I currently do not see anything specific. Actually, ShardingSphere is a great one. I really love to collaborate with the ShardingSphere community. I was able to understand the concepts very easily with the help of the documentation of the ShardingSphere. I also see that there are many community contributors who submitted pull requests for the improvement of the documentation. I’m an inquisitive person so I look around in the ShardingSphere documentation and codes, support, pull request, and issues all the time. So, when I set up the project the first time, I didn’t have this setup guide. Even though I use the Intellj, the JDK, and I set up it correctly, but I didn’t have the support at that time.
+**Thanoshan:** To improve ShardingSphere? I mean it’s a huge project. And the plus point I see here is the documentation. It’s great. So, to be honest with you, I learned a lot about SQL. I worked on the SQL parser engine part of the project, so I learned the concepts of the SQL parser engine in the ShardingSphere project. For the improvement, I currently do not see anything specific. Actually, ShardingSphere is a great one. I really love to collaborate with the ShardingSphere community. I was able to understand the concepts very easily with the help of the documentation of the ShardingSphere. I also see that there are many community contributors who submitted pull requests for the improvement of the documentation. I’m an inquisitive person so I look around in the ShardingSphere documentation and codes, support, pull request, and issues all the time. So, when I set up the project the first time, I didn’t have this setup guide. Even though I use the Intellj, the JDK, and I set up it correctly, but I didn’t have the support at that time.
 
 It’s nice to see that ShardingSphere currently has been adding the setup guides, so that the new contributors can easily jump to that document and read and understand what they have to do. So, it’s a great thing to have. I am happy for it.
 

@@ -68,3 +68,7 @@ chapter = true
 
 **ShardingSphere GitHub 地址：** <https://github.com/apache/shardingsphere>
 
+**ShardingSphere Twitter 链接：** <https://twitter.com/ShardingSphere>
+
+**ShardingSphere Slack Channel 链接：** <https://bit.ly/3qB2GGc>
+
