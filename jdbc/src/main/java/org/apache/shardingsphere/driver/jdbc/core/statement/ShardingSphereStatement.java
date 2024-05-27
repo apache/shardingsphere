@@ -74,9 +74,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutorCallback;
-import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.Connection;
@@ -111,8 +109,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private final KernelProcessor kernelProcessor;
     
-    private final TrafficRule trafficRule;
-    
     @Getter(AccessLevel.PROTECTED)
     private final StatementManager statementManager;
     
@@ -141,7 +137,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         executor = new DriverExecutor(connection);
         kernelProcessor = new KernelProcessor();
-        trafficRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
         statementManager = new StatementManager();
         batchStatementExecutor = new BatchStatementExecutor(this);
         databaseName = connection.getDatabaseName();
@@ -156,14 +151,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
             connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-            Optional<String> trafficInstanceId = connection.getTrafficInstanceId(trafficRule, queryContext);
-            if (trafficInstanceId.isPresent()) {
-                currentResultSet = executor.getTrafficExecutor().execute(
-                        connection.getProcessId(), databaseName, trafficInstanceId.get(), queryContext, createDriverExecutionPrepareEngine(database), Statement::executeQuery);
-                return currentResultSet;
-            }
-            if (decide(queryContext, database, metaDataContexts.getMetaData().getGlobalRuleMetaData())) {
-                currentResultSet = executeFederationQuery(queryContext);
+            Optional<ResultSet> advancedResultSet = executor.executeAdvanceQuery(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database));
+            if (advancedResultSet.isPresent()) {
+                currentResultSet = advancedResultSet.get();
                 return currentResultSet;
             }
             executionContext = createExecutionContext(queryContext);
@@ -186,10 +176,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return new ShardingSphereResultSet(getResultSets(), mergedResult, this, selectContainsEnhancedTable, executionContext);
     }
     
-    private boolean decide(final QueryContext queryContext, final ShardingSphereDatabase database, final RuleMetaData globalRuleMetaData) {
-        return executor.getSqlFederationEngine().decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, globalRuleMetaData);
-    }
-    
     private List<QueryResult> executeQuery0(final ExecutionContext executionContext) throws SQLException {
         if (!metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()) {
             return executor.getRawExecutor().execute(
@@ -201,14 +187,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), executionContext.getSqlStatementContext().getSqlStatement(),
                 SQLExecutorExceptionHandler.isExceptionThrown());
         return executor.getRegularExecutor().executeQuery(executionGroupContext, executionContext.getQueryContext(), callback);
-    }
-    
-    private ResultSet executeFederationQuery(final QueryContext queryContext) {
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-        StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(database.getProtocolType(),
-                database.getResourceMetaData(), queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
-        SQLFederationContext context = new SQLFederationContext(false, queryContext, metaDataContexts.getMetaData(), connection.getProcessId());
-        return executor.getSqlFederationEngine().executeQuery(createDriverExecutionPrepareEngine(database), callback, context);
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final ShardingSphereDatabase database) {
@@ -291,11 +269,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
         databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
-        Optional<String> trafficInstanceId = connection.getTrafficInstanceId(trafficRule, queryContext);
-        if (trafficInstanceId.isPresent()) {
-            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-            return executor.getTrafficExecutor().execute(
-                    connection.getProcessId(), databaseName, trafficInstanceId.get(), queryContext, createDriverExecutionPrepareEngine(database), trafficCallback);
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+        Optional<Integer> updatedCount = executor.executeAdvanceUpdate(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database), trafficCallback);
+        if (updatedCount.isPresent()) {
+            return updatedCount.get();
         }
         executionContext = createExecutionContext(queryContext);
         if (!metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()) {
@@ -393,24 +370,16 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private boolean execute0(final String sql, final ExecuteCallback executeCallback, final TrafficExecutorCallback<Boolean> trafficCallback) throws SQLException {
+        currentResultSet = null;
         QueryContext queryContext = createQueryContext(sql);
         handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
         databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
-        Optional<String> trafficInstanceId = connection.getTrafficInstanceId(trafficRule, queryContext);
-        if (trafficInstanceId.isPresent()) {
-            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-            boolean result = executor.getTrafficExecutor().execute(
-                    connection.getProcessId(), databaseName, trafficInstanceId.get(), queryContext, createDriverExecutionPrepareEngine(database), trafficCallback);
-            currentResultSet = executor.getTrafficExecutor().getResultSet();
-            return result;
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+        Optional<Boolean> advancedResult = executor.executeAdvance(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database), trafficCallback);
+        if (advancedResult.isPresent()) {
+            return advancedResult.get();
         }
-        if (decide(queryContext, metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData())) {
-            ResultSet resultSet = executeFederationQuery(queryContext);
-            currentResultSet = resultSet;
-            return null != resultSet;
-        }
-        currentResultSet = null;
         executionContext = createExecutionContext(queryContext);
         if (!metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()) {
             Collection<ExecuteResult> results = executor.getRawExecutor().execute(createRawExecutionContext(executionContext), executionContext.getQueryContext(), new RawSQLExecutorCallback());
@@ -527,6 +496,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     public ResultSet getResultSet() throws SQLException {
         if (null != currentResultSet) {
             return currentResultSet;
+        }
+        Optional<ResultSet> advancedResultSet = executor.getAdvancedResultSet();
+        if (advancedResultSet.isPresent()) {
+            return advancedResultSet.get();
         }
         if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
