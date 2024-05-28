@@ -295,7 +295,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             QueryContext queryContext = createQueryContext();
             handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-            Optional<Integer> updatedCount = executor.executeAdvanceUpdate(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database));
+            Optional<Integer> updatedCount = executor.executeAdvanceUpdate(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database),
+                    (statement, sql) -> ((PreparedStatement) statement).executeUpdate());
             if (updatedCount.isPresent()) {
                 return updatedCount.get();
             }
