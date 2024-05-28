@@ -45,7 +45,7 @@ public final class DatabaseChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DatabaseDataAddedEvent event) {
-        contextManager.getManagerServiceFacade().getDatabaseManagerService().addShardingSphereDatabaseData(event.getDatabaseName());
+        contextManager.getMetaDataContextManager().getDatabaseManager().addShardingSphereDatabaseData(event.getDatabaseName());
     }
     
     /**
@@ -55,7 +55,7 @@ public final class DatabaseChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DatabaseDataDeletedEvent event) {
-        contextManager.getManagerServiceFacade().getDatabaseManagerService().dropShardingSphereDatabaseData(event.getDatabaseName());
+        contextManager.getMetaDataContextManager().getDatabaseManager().dropShardingSphereDatabaseData(event.getDatabaseName());
     }
     
     /**
@@ -65,7 +65,7 @@ public final class DatabaseChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final SchemaDataAddedEvent event) {
-        contextManager.getManagerServiceFacade().getDatabaseManagerService().addShardingSphereSchemaData(event.getDatabaseName(), event.getSchemaName());
+        contextManager.getMetaDataContextManager().getDatabaseManager().addShardingSphereSchemaData(event.getDatabaseName(), event.getSchemaName());
     }
     
     /**
@@ -75,7 +75,7 @@ public final class DatabaseChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final SchemaDataDeletedEvent event) {
-        contextManager.getManagerServiceFacade().getDatabaseManagerService().dropShardingSphereSchemaData(event.getDatabaseName(), event.getSchemaName());
+        contextManager.getMetaDataContextManager().getDatabaseManager().dropShardingSphereSchemaData(event.getDatabaseName(), event.getSchemaName());
     }
     
     /**
@@ -86,10 +86,10 @@ public final class DatabaseChangedSubscriber implements EventSubscriber {
     @Subscribe
     public synchronized void renew(final TableDataChangedEvent event) {
         if (null != event.getAddedTable()) {
-            contextManager.getManagerServiceFacade().getDatabaseManagerService().addShardingSphereTableData(event.getDatabaseName(), event.getSchemaName(), event.getAddedTable());
+            contextManager.getMetaDataContextManager().getDatabaseManager().addShardingSphereTableData(event.getDatabaseName(), event.getSchemaName(), event.getAddedTable());
         }
         if (null != event.getDeletedTable()) {
-            contextManager.getManagerServiceFacade().getDatabaseManagerService().dropShardingSphereTableData(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable());
+            contextManager.getMetaDataContextManager().getDatabaseManager().dropShardingSphereTableData(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable());
         }
     }
     
@@ -100,7 +100,7 @@ public final class DatabaseChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final ShardingSphereRowDataChangedEvent event) {
-        contextManager.getManagerServiceFacade().getDatabaseManagerService().alterShardingSphereRowData(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), event.getYamlRowData());
+        contextManager.getMetaDataContextManager().getDatabaseManager().alterShardingSphereRowData(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), event.getYamlRowData());
     }
     
     /**
@@ -110,6 +110,6 @@ public final class DatabaseChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final ShardingSphereRowDataDeletedEvent event) {
-        contextManager.getManagerServiceFacade().getDatabaseManagerService().deleteShardingSphereRowData(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), event.getUniqueKey());
+        contextManager.getMetaDataContextManager().getDatabaseManager().deleteShardingSphereRowData(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), event.getUniqueKey());
     }
 }
