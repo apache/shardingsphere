@@ -72,3 +72,12 @@ chapter = true
 北京易华录信息技术股份有限公司，成立于 2001 年，是国务院国资委直接监管的中央企业中国华录集团旗下控股的上市公司，致力于建设城市数字经济基础设施，以努力降低全社会长期保存数据的能耗和成本为使命，以成为社会可信的大数据一级开发和存储服务提供商直至演变成数据银行为愿景，构建一个数字孪生的城市，最终实现数字永生。
 
 作为易华录内部孵化的第一款 C 端产品，葫芦 App 能够将用户生产内容的构思与素材妥善存储下来，并提供故事化的记录方式，降低用户内容制作门槛，让每个用户都能将生活的美好生动地展现出来，发现个人生活的精彩之处。为用户存储一生，点亮美好。
+
+**ShardingSphere 社区链接:**
+
+ShardingSphere Github: [https://github.com/apache/shardingsphere]()
+
+ShardingSphere Twitter: [https://twitter.com/ShardingSphere]()
+
+ShardingSphere Slack Channel: [apacheshardingsphere.slack.com]()
+
