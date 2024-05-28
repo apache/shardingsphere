@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.service.persist.PersistServiceBuilder;
 import org.apache.shardingsphere.mode.service.persist.ProcessPersistService;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
  * Standalone meta data manager persist service builder.
@@ -33,7 +34,7 @@ public final class StandalonePersistServiceBuilder implements PersistServiceBuil
     }
     
     @Override
-    public ProcessPersistService buildProcessPersistService(final ContextManager contextManager) {
+    public ProcessPersistService buildProcessPersistService(final PersistRepository repository) {
         return new StandaloneProcessPersistService();
     }
     
