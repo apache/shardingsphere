@@ -69,7 +69,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     public PostgreSQLComQueryExecutor(final PortalContext portalContext, final PostgreSQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         this.portalContext = portalContext;
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(packet.getSQL(), databaseType, connectionSession);
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(databaseType, packet.getSQL(), sqlStatement, connectionSession, packet.getHintValueContext());
     }
