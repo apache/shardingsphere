@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.service.persist.PersistServiceBuilder;
 import org.apache.shardingsphere.mode.service.persist.ProcessPersistService;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 public final class PersistServiceBuilderFixture implements PersistServiceBuilder {
     
@@ -30,7 +31,7 @@ public final class PersistServiceBuilderFixture implements PersistServiceBuilder
     }
     
     @Override
-    public ProcessPersistService buildProcessPersistService(final ContextManager contextManager) {
+    public ProcessPersistService buildProcessPersistService(final PersistRepository repository) {
         return null;
     }
     

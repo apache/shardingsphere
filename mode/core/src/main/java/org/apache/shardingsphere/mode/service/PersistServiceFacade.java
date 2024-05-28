@@ -52,7 +52,7 @@ public final class PersistServiceFacade {
         statePersistService = new StatePersistService(repository);
         PersistServiceBuilder persistServiceBuilder = TypedSPILoader.getService(PersistServiceBuilder.class, modeConfiguration.getType());
         metaDataManagerPersistService = persistServiceBuilder.buildMetaDataManagerPersistService(contextManager);
-        processPersistService = persistServiceBuilder.buildProcessPersistService(contextManager);
+        processPersistService = persistServiceBuilder.buildProcessPersistService(repository);
     }
     
     /**

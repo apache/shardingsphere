@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.service.persist;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
  * Persist service builder.
@@ -36,8 +37,8 @@ public interface PersistServiceBuilder extends TypedSPI {
     /**
      * Build process persist service.
      *
-     * @param contextManager context manager
+     * @param repository persist repository
      * @return process persist service
      */
-    ProcessPersistService buildProcessPersistService(ContextManager contextManager);
+    ProcessPersistService buildProcessPersistService(PersistRepository repository);
 }
