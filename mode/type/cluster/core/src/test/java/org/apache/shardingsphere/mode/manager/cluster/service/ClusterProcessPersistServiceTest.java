@@ -46,7 +46,7 @@ class ClusterProcessPersistServiceTest {
     }
     
     @Test
-    void getProcessList() {
+    void assertGetProcessList() {
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.JDBC))).thenReturn(Collections.emptyList());
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
         when(repository.query(any())).thenReturn(null);
@@ -55,7 +55,7 @@ class ClusterProcessPersistServiceTest {
     }
     
     @Test
-    void killProcess() {
+    void assertKillProcess() {
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.JDBC))).thenReturn(Collections.emptyList());
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
         processPersistService.killProcess("foo_process_id");
