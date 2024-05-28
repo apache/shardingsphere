@@ -70,7 +70,7 @@ chapter = true
 
 作为易华录内部孵化的第一款 C 端产品，葫芦 App 能够将用户生产内容的构思与素材妥善存储下来，并提供故事化的记录方式，降低用户内容制作门槛，让每个用户都能将生活的美好生动地展现出来，发现个人生活的精彩之处。为用户存储一生，点亮美好。
 
-**ShardingSphere 社区链接:**
+### ShardingSphere 社区链接:
 
 ShardingSphere Github: [https://github.com/apache/shardingsphere]()
 
