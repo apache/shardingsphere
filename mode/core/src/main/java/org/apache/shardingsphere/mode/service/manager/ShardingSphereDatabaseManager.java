@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * ShardingSphere database context manager.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereDatabaseManagerService {
+public final class ShardingSphereDatabaseManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     

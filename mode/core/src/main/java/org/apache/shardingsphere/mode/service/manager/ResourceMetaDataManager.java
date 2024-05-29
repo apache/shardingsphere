@@ -39,10 +39,10 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Resource meta data context manager.
+ * Resource meta data manager.
  */
 @RequiredArgsConstructor
-public final class ResourceMetaDataManagerService {
+public final class ResourceMetaDataManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     
