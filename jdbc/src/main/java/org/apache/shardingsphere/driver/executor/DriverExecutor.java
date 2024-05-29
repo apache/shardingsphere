@@ -98,7 +98,7 @@ public final class DriverExecutor implements AutoCloseable {
         }
         if (sqlFederationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaData.getGlobalRuleMetaData())) {
             return Optional.of(sqlFederationEngine.executeQuery(
-                    prepareEngine, getSQLFederationCallback(database, queryContext, prepareEngine), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId())));
+                    prepareEngine, getSQLFederationCallback(database, queryContext, prepareEngine.getType()), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId())));
         }
         return Optional.empty();
     }
@@ -107,9 +107,8 @@ public final class DriverExecutor implements AutoCloseable {
         return JDBCDriverType.STATEMENT.equals(prepareEngine.getType()) ? Statement::executeQuery : ((statement, sql) -> ((PreparedStatement) statement).executeQuery());
     }
     
-    private ExecuteQueryCallback getSQLFederationCallback(final ShardingSphereDatabase database, final QueryContext queryContext,
-                                                          final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) {
-        return JDBCDriverType.STATEMENT.equals(prepareEngine.getType())
+    private ExecuteQueryCallback getSQLFederationCallback(final ShardingSphereDatabase database, final QueryContext queryContext, final String jdbcDriverType) {
+        return JDBCDriverType.STATEMENT.equals(jdbcDriverType)
                 ? new StatementExecuteQueryCallback(database.getProtocolType(), database.getResourceMetaData(),
                         queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown())
                 : new PreparedStatementExecuteQueryCallback(database.getProtocolType(), database.getResourceMetaData(),
@@ -159,7 +158,7 @@ public final class DriverExecutor implements AutoCloseable {
         if (sqlFederationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaData.getGlobalRuleMetaData())) {
             executeType = ExecuteType.FEDERATION;
             ResultSet resultSet = sqlFederationEngine.executeQuery(
-                    prepareEngine, getSQLFederationCallback(database, queryContext, prepareEngine), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
+                    prepareEngine, getSQLFederationCallback(database, queryContext, prepareEngine.getType()), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
             return Optional.of(null != resultSet);
         }
         return Optional.empty();
