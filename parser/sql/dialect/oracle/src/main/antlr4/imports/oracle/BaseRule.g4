@@ -1274,7 +1274,7 @@ rollbackSegment
     ;
 
 queryName
-    : (owner DOT_)? name
+    : alias
     ;
 
 cycleValue

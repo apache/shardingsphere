@@ -738,8 +738,8 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             for (SubqueryFactoringClauseContext each : ctx.subqueryFactoringClause()) {
                 SubquerySegment subquery = new SubquerySegment(each.selectSubquery().start.getStartIndex(), each.selectSubquery().stop.getStopIndex(), (OracleSelectStatement) visit(each),
                         getOriginalText(each));
-                IdentifierValue identifier = (IdentifierValue) visit(each.queryName().name().identifier());
-                CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), identifier, subquery);
+                CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(),
+                        (AliasSegment) visit(each.queryName().alias()), subquery);
                 if (null != each.searchClause()) {
                     ColumnNameContext columnName = each.searchClause().orderingColumn().columnName();
                     commonTableExpression.getColumns().add((ColumnSegment) visit(columnName));

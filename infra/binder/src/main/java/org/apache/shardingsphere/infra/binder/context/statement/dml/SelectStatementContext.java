@@ -197,7 +197,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     /**
      * Judge whether contains dollar parameter marker or not.
-     * 
+     *
      * @return whether contains dollar parameter marker or not
      */
     public boolean isContainsDollarParameterMarker() {
@@ -224,7 +224,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     /**
      * Judge whether contains partial distinct aggregation.
-     * 
+     *
      * @return whether contains partial distinct aggregation
      */
     public boolean isContainsPartialDistinctAggregation() {
@@ -320,7 +320,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     /**
      * Find column projection.
-     * 
+     *
      * @param columnIndex column index
      * @return find column projection
      */
@@ -388,7 +388,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
      * @return whether sql statement contains table subquery segment or not
      */
     public boolean containsTableSubquery() {
-        return getSqlStatement().getFrom().isPresent() && getSqlStatement().getFrom().get() instanceof SubqueryTableSegment;
+        return getSqlStatement().getFrom().isPresent() && getSqlStatement().getFrom().get() instanceof SubqueryTableSegment || getSqlStatement().getWithSegment().isPresent();
     }
     
     @Override

@@ -777,7 +777,7 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
     
     @Override
     public String visitCteClause(final CteClauseContext ctx) {
-        visit(ctx.identifier());
+        visit(ctx.alias());
         formattedSQL.append(' ');
         if (null != ctx.columnNames()) {
             visit(ctx.columnNames());

@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpr
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ValuesExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
@@ -61,7 +60,7 @@ public final class ExpressionExtractUtils {
     
     /**
      * Get and predicate collection.
-     * 
+     *
      * @param expression expression segment
      * @return and predicate collection
      */
@@ -108,7 +107,7 @@ public final class ExpressionExtractUtils {
     
     /**
      * Get parameter marker expression collection.
-     * 
+     *
      * @param expressions expression collection
      * @return parameter marker expression collection
      */
@@ -142,7 +141,7 @@ public final class ExpressionExtractUtils {
     
     /**
      * Extract join conditions.
-     * 
+     *
      * @param joinConditions join conditions
      * @param whereSegments where segments
      */
@@ -189,9 +188,6 @@ public final class ExpressionExtractUtils {
         }
         if (expression instanceof OuterJoinExpression) {
             result.add(((OuterJoinExpression) expression).getColumnName());
-        }
-        if (expression instanceof CommonTableExpressionSegment) {
-            result.addAll(((CommonTableExpressionSegment) expression).getColumns());
         }
         if (expression instanceof DatetimeExpression) {
             result.addAll(extractColumns(((DatetimeExpression) expression).getLeft(), containsSubQuery));

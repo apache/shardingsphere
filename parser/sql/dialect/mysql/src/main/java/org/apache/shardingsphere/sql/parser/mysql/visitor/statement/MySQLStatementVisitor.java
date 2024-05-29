@@ -215,6 +215,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.Parameter
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.match.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.IndexHintSegment;
@@ -232,7 +233,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.Number
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.match.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -751,7 +751,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCteClause(final CteClauseContext ctx) {
-        CommonTableExpressionSegment result = new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()),
+        CommonTableExpressionSegment result = new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (AliasSegment) visit(ctx.alias()),
                 new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())));
         if (null != ctx.columnNames()) {
             CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(ctx.columnNames());

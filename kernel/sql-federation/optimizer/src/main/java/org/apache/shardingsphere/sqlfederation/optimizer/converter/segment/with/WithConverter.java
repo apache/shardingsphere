@@ -55,7 +55,7 @@ public final class WithConverter {
     private static SqlNodeList convertWithItem(final Collection<CommonTableExpressionSegment> commonTableExpressionSegments) {
         SqlNodeList result = new SqlNodeList(SqlParserPos.ZERO);
         for (CommonTableExpressionSegment each : commonTableExpressionSegments) {
-            SqlIdentifier name = new SqlIdentifier(each.getIdentifier().getValue(), SqlParserPos.ZERO);
+            SqlIdentifier name = new SqlIdentifier(each.getAliasName().orElse(""), SqlParserPos.ZERO);
             SqlNodeList columns = each.getColumns().isEmpty() ? null : convertColumns(each.getColumns());
             result.add(new SqlWithItem(SqlParserPos.ZERO, name, columns, new SelectStatementConverter().convert(each.getSubquery().getSelect())));
         }
