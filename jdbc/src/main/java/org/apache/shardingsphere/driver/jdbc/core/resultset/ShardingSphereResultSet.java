@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
+import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -62,6 +63,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     private final MergedResult mergeResultSet;
     
+    @Getter
     private final Map<String, Integer> columnLabelAndIndexMap;
     
     public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final boolean selectContainsEnhancedTable,
