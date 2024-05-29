@@ -20,10 +20,10 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -266,13 +266,12 @@ class StatementAdapterTest {
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         ShardingSphereStatement result = new ShardingSphereStatement(connection);
         result.getRoutedStatements().addAll(Arrays.asList(statements));
-        ExecutionContext executionContext = mock(ExecutionContext.class, RETURNS_DEEP_STUBS);
-        setExecutionContext(result, executionContext);
+        setExecutionContext(result);
         return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setExecutionContext(final ShardingSphereStatement statement, final ExecutionContext executionContext) {
-        Plugins.getMemberAccessor().set(statement.getClass().getDeclaredField("executionContext"), statement, executionContext);
+    private void setExecutionContext(final ShardingSphereStatement statement) {
+        Plugins.getMemberAccessor().set(statement.getClass().getDeclaredField("sqlStatementContext"), statement, mock(SQLStatementContext.class));
     }
 }
