@@ -15,10 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.process.event;
+package org.apache.shardingsphere.mode.service.persist;
+
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
+
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
- * Show process list request event.
+ * Process persist service.
  */
-public final class ShowProcessListRequestEvent {
+public interface ProcessPersistService {
+    
+    /**
+     * Get process list.
+     *
+     * @return collection of process
+     */
+    Collection<Process> getProcessList();
+    
+    /**
+     * Kill process.
+     *
+     * @param processId process id
+     * @throws  SQLException SQL exception
+     */
+    void killProcess(String processId) throws SQLException;
 }

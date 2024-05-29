@@ -47,7 +47,7 @@ public final class ConfigurationChangedSubscriber implements EventSubscriber {
                 .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.getConfigurationContextManager().registerStorageUnit(event.getDatabaseName(),
+        contextManager.getMetaDataContextManager().getConfigurationManager().registerStorageUnit(event.getDatabaseName(),
                 contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
@@ -62,7 +62,7 @@ public final class ConfigurationChangedSubscriber implements EventSubscriber {
                 .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.getConfigurationContextManager().alterStorageUnit(
+        contextManager.getMetaDataContextManager().getConfigurationManager().alterStorageUnit(
                 event.getDatabaseName(), contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
@@ -76,7 +76,7 @@ public final class ConfigurationChangedSubscriber implements EventSubscriber {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
-        contextManager.getConfigurationContextManager().unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
+        contextManager.getMetaDataContextManager().getConfigurationManager().unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
     }
     
     /**
@@ -91,7 +91,7 @@ public final class ConfigurationChangedSubscriber implements EventSubscriber {
             return;
         }
         contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load(event.getRuleSimpleName())
-                .ifPresent(optional -> contextManager.getConfigurationContextManager().alterGlobalRuleConfiguration(optional));
+                .ifPresent(optional -> contextManager.getMetaDataContextManager().getConfigurationManager().alterGlobalRuleConfiguration(optional));
         
     }
     
@@ -106,6 +106,6 @@ public final class ConfigurationChangedSubscriber implements EventSubscriber {
                 .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.getConfigurationContextManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
+        contextManager.getMetaDataContextManager().getConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
     }
 }

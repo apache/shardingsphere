@@ -27,8 +27,6 @@ import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscriber;
 public final class StandaloneEventSubscriberRegistry extends EventSubscriberRegistry {
     
     public StandaloneEventSubscriberRegistry(final ContextManager contextManager) {
-        super(contextManager,
-                new StandaloneProcessSubscriber(contextManager.getComputeNodeInstanceContext().getEventBusContext()),
-                new RuleItemChangedSubscriber(contextManager));
+        super(contextManager, new RuleItemChangedSubscriber(contextManager));
     }
 }

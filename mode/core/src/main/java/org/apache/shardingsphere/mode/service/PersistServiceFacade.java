@@ -22,6 +22,10 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.service.persist.ComputeNodePersistService;
+import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.service.persist.PersistServiceBuilder;
+import org.apache.shardingsphere.mode.service.persist.ProcessPersistService;
 import org.apache.shardingsphere.mode.service.pojo.ShardingSphereSchemaDataAlteredPOJO;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.state.StatePersistService;
@@ -48,7 +52,7 @@ public final class PersistServiceFacade {
         statePersistService = new StatePersistService(repository);
         PersistServiceBuilder persistServiceBuilder = TypedSPILoader.getService(PersistServiceBuilder.class, modeConfiguration.getType());
         metaDataManagerPersistService = persistServiceBuilder.buildMetaDataManagerPersistService(contextManager);
-        processPersistService = persistServiceBuilder.buildProcessPersistService(contextManager);
+        processPersistService = persistServiceBuilder.buildProcessPersistService(repository);
     }
     
     /**

@@ -44,13 +44,82 @@ originalName
     ;
 
 systemVariable
-    : identifier
+    : (APPI | APPINFO)
+    | (ARRAY | ARRAYSIZE)
+    | (AUTO | AUTOCOMMIT)
+    | (AUTOP | AUTOPN)
+    | AUTORECOVERY
+    | (AUTOT | AUTOTRACE)
+    | (BLO | BLOCKTERMINATOR)
+    | (CMDS | CMDSEP)
+    | (COLINVI | COLINVISIBLE)
+    | COLSEP
+    | (CON | CONCAT)
+    | (COPYC | COPYCOMMIT)
+    | COPYTYPECHECK
+    | (DEF | DEFINE)
+    | DESCRIBE
+    | ECHO
+    | (EDITF | EDITFILE)
+    | (EMB | EMBEDDED)
+    | ERRORDETAILS
+    | (ERRORL | ERRORLOGGING)
+    | (ESC | ESCAPE)
+    | ESCCHAR
+    | (EXITCOMMIT | OMMIT)
+    | FEEDBACK
+    | FLAGGER
+    | (FLU | FLUSH)
+    | (HEADING | HEA)
+    | (HISTORY | HIST)
+    | INSTANCE
+    | JSONPRINT
+    | (LINESIZE | LIN)
+    | (LOBOFFSET | LOBOF)
+    | LOGSOURCE
+    | LONG
+    | LONGCHUNKSIZE
+    | (MARK | MARKUP)
+    | (NEWPAGE | NEWP)
+    | NULL
+    | (NUMFORMAT | NUMF)
+    | (NUMWIDTH | NUM)
+    | (PAGESIZE | PAGES)
+    | (PAUSE | PAU)
+    | RECSEP
+    | RECSEPCHAR
+    | ROWLIMIT
+    | ROWPREFETCH
+    | SECUREDCOL
+    | (SERVEROUTPUT | SERVEROUT)
+    | (SHIFTINOUT | SHIFT)
+    | (SHOWMODE | SHOW)
+    | (SQLBLANKLINES | SQLBL)
+    | (SQLCASE | SQLC)
+    | (SQLCONTINUE | SQLCO)
+    | (SQLNUMBER | SQLN)
+    | (SQLPLUSCOMPATIBILITY | SQLPLUSCOMPAT)
+    | (SQLPREFIX | SQLPRE)
+    | (SQLPROMPT | SQLP)
+    | (SQLTERMINATOR | SQLT)
+    | (STATEMENTCACHE | STATEMENTC)
+    | (SUFFIX | SUF)
+    | TAB
+    | (TERMOUT | TERM)
+    | (TIME | TI)
+    | (TIMING | TIMI)
+    | (TRIMOUT | TRIM)
+    | (TRIMSPOOL | TRIMS)
+    | (UNDERLINE | UND)
+    | (VERIFY | VER)
+    | (WRAP | WRA)
+    | (XMLOPTIMIZATIONCHECK | XMLOPT)
+    | XQUERY
     ;
 
 showOptions
-// TODO refactor systemVariable sytax according to https://docs.oracle.com/en/database/oracle/oracle-database/23/sqpug/SET-system-variable-summary.html#GUID-A6A5ADFF-4119-4BA4-A13E-BC8D29166FAE
-//    : systemVariable
-    : ALL
+    : systemVariable
+    | ALL
     | CON_ID
     | CON_NAME
     | EDITION

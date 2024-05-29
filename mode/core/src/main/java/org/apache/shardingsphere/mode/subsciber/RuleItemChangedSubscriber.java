@@ -55,7 +55,7 @@ public final class RuleItemChangedSubscriber implements EventSubscriber {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.changeRuleItemConfiguration(event, currentRuleConfig, processor.swapRuleItemConfiguration(event, yamlContent));
-            contextManager.getConfigurationContextManager().alterRuleConfiguration(databaseName, currentRuleConfig);
+            contextManager.getMetaDataContextManager().getConfigurationManager().alterRuleConfiguration(databaseName, currentRuleConfig);
         }
     }
     
@@ -75,7 +75,7 @@ public final class RuleItemChangedSubscriber implements EventSubscriber {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.dropRuleItemConfiguration(event, currentRuleConfig);
-            contextManager.getConfigurationContextManager().dropRuleConfiguration(databaseName, currentRuleConfig);
+            contextManager.getMetaDataContextManager().getConfigurationManager().dropRuleConfiguration(databaseName, currentRuleConfig);
         }
     }
 }

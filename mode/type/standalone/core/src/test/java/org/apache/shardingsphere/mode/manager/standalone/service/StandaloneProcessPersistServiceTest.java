@@ -15,29 +15,56 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.subscriber;
+package org.apache.shardingsphere.mode.manager.standalone.service;
 
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProcessRegistry.class)
-class StandaloneProcessSubscriberTest {
+class StandaloneProcessPersistServiceTest {
+    
+    private StandaloneProcessPersistService processPersistService;
+    
+    @BeforeEach
+    void setUp() {
+        processPersistService = new StandaloneProcessPersistService();
+    }
     
     @Test
-    void assertPostShowProcessListData() {
+    void getProcessList() {
         ProcessRegistry processRegistry = mock(ProcessRegistry.class);
         when(ProcessRegistry.getInstance()).thenReturn(processRegistry);
-        new StandaloneProcessSubscriber(new EventBusContext()).postShowProcessListData(new ShowProcessListRequestEvent());
+        processPersistService.getProcessList();
         verify(processRegistry).listAll();
+    }
+    
+    @Test
+    void killProcess() throws SQLException {
+        ProcessRegistry processRegistry = mock(ProcessRegistry.class);
+        when(ProcessRegistry.getInstance()).thenReturn(processRegistry);
+        Process process = mock(Process.class);
+        Statement statement = mock(Statement.class);
+        Map<Integer, Statement> processStatements = new ConcurrentHashMap<>();
+        processStatements.put(1, statement);
+        when(process.getProcessStatements()).thenReturn(processStatements);
+        when(processRegistry.get(any())).thenReturn(process);
+        processPersistService.killProcess("foo_process_id");
+        verify(statement).cancel();
     }
 }

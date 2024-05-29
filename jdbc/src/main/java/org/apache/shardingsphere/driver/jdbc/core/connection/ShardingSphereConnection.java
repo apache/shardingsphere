@@ -18,17 +18,20 @@
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import lombok.Getter;
+import org.apache.shardingsphere.driver.exception.ConnectionClosedException;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
-import org.apache.shardingsphere.driver.exception.ConnectionClosedException;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.traffic.engine.TrafficEngine;
+import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
@@ -40,6 +43,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.Optional;
 
 /**
  * ShardingSphere connection.
@@ -210,6 +214,29 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
                 }
             }
         }
+    }
+    
+    /**
+     * Get traffic tnstance ID.
+     *
+     * @param trafficRule traffic rule
+     * @param queryContext query context
+     * @return traffic tnstance ID
+     */
+    public Optional<String> getTrafficInstanceId(final TrafficRule trafficRule, final QueryContext queryContext) {
+        if (null == trafficRule || trafficRule.getStrategyRules().isEmpty()) {
+            return Optional.empty();
+        }
+        Optional<String> existedTrafficInstanceId = databaseConnectionManager.getConnectionContext().getTrafficInstanceId();
+        if (existedTrafficInstanceId.isPresent()) {
+            return existedTrafficInstanceId;
+        }
+        boolean isHoldTransaction = isHoldTransaction();
+        Optional<String> result = new TrafficEngine(trafficRule, contextManager.getComputeNodeInstanceContext()).dispatch(queryContext, isHoldTransaction);
+        if (isHoldTransaction && result.isPresent()) {
+            databaseConnectionManager.getConnectionContext().setTrafficInstanceId(result.get());
+        }
+        return result;
     }
     
     @Override

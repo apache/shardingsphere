@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
-import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
@@ -29,8 +28,6 @@ import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
-import org.apache.shardingsphere.mode.process.event.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -50,8 +47,6 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
     
     private final boolean showFullProcesslist;
     
-    private Collection<Process> processes;
-    
     @Getter
     private QueryResultMetaData queryResultMetaData;
     
@@ -63,17 +58,6 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getEventBusContext().register(this);
     }
     
-    /**
-     * Receive and handle response event.
-     *
-     * @param event show process list response event
-     */
-    @SuppressWarnings("unused")
-    @Subscribe
-    public void receiveProcessListData(final ShowProcessListResponseEvent event) {
-        processes = event.getProcesses();
-    }
-    
     @Override
     public void execute(final ConnectionSession connectionSession) {
         queryResultMetaData = createQueryResultMetaData();
@@ -81,7 +65,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
     }
     
     private QueryResult getQueryResult() {
-        ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getEventBusContext().post(new ShowProcessListRequestEvent());
+        Collection<Process> processes = ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getProcessPersistService().getProcessList();
         if (null == processes || processes.isEmpty()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
