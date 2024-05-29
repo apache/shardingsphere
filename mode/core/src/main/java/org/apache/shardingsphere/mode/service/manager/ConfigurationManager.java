@@ -131,7 +131,6 @@ public final class ConfigurationManager {
     }
     
     private void buildNewMetaDataContext(final String databaseName, final SwitchingResource switchingResource, final boolean isDropConfig) throws SQLException {
-        metaDataContexts.get().getMetaData().getDatabases().putAll(renewDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName), switchingResource));
         MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, false, switchingResource, null);
         persistSchemaMetaData(databaseName, reloadMetaDataContexts, isDropConfig);
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
@@ -244,23 +243,22 @@ public final class ConfigurationManager {
     }
     
     /**
-     * Renew ShardingSphere databases.
+     * Get effective resource meta data.
      *
      * @param database database
      * @param resource resource
-     * @return ShardingSphere databases
+     * @return effective resource meta data
      */
-    public Map<String, ShardingSphereDatabase> renewDatabase(final ShardingSphereDatabase database, final SwitchingResource resource) {
+    public ResourceMetaData getEffectiveResourceMetaData(final ShardingSphereDatabase database, final SwitchingResource resource) {
         Map<StorageNode, DataSource> storageNodes = getStorageNodes(database.getResourceMetaData().getDataSources(), resource);
         Map<String, StorageUnit> storageUnits = getStorageUnits(database.getResourceMetaData().getStorageUnits(), resource);
-        return Collections.singletonMap(database.getName().toLowerCase(), new ShardingSphereDatabase(database.getName(), database.getProtocolType(),
-                new ResourceMetaData(storageNodes, storageUnits), database.getRuleMetaData(), database.getSchemas()));
+        return new ResourceMetaData(storageNodes, storageUnits);
     }
     
     private Map<StorageNode, DataSource> getStorageNodes(final Map<StorageNode, DataSource> currentStorageNodes, final SwitchingResource resource) {
         Map<StorageNode, DataSource> result = new LinkedHashMap<>(currentStorageNodes.size(), 1F);
         for (Entry<StorageNode, DataSource> entry : currentStorageNodes.entrySet()) {
-            if (!resource.getStaleDataSources().containsKey(entry.getKey())) {
+            if (null == resource || !resource.getStaleDataSources().containsKey(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue());
             }
         }
@@ -270,7 +268,7 @@ public final class ConfigurationManager {
     private Map<String, StorageUnit> getStorageUnits(final Map<String, StorageUnit> currentStorageUnits, final SwitchingResource resource) {
         Map<String, StorageUnit> result = new LinkedHashMap<>(currentStorageUnits.size(), 1F);
         for (Entry<String, StorageUnit> entry : currentStorageUnits.entrySet()) {
-            if (!resource.getStaleStorageUnitNames().contains(entry.getKey())) {
+            if (null == resource || !resource.getStaleStorageUnitNames().contains(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue());
             }
         }
@@ -296,8 +294,8 @@ public final class ConfigurationManager {
      * @return MetaDataContexts meta data contexts
      * @throws SQLException SQL exception
      */
-    public MetaDataContexts createMetaDataContexts(final String databaseName, final boolean internalLoadMetaData, final SwitchingResource switchingResource,
-                                                   final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+    public MetaDataContexts createMetaDataContexts(final String databaseName, final boolean internalLoadMetaData,
+                                                   final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         Map<String, ShardingSphereDatabase> changedDatabases = createChangedDatabases(databaseName, internalLoadMetaData, switchingResource, ruleConfigs);
         ConfigurationProperties props = metaDataContexts.get().getMetaData().getProps();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
@@ -317,11 +315,11 @@ public final class ConfigurationManager {
      */
     public synchronized Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName, final boolean internalLoadMetaData,
                                                                                    final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+        ResourceMetaData effectiveResourceMetaData = getEffectiveResourceMetaData(metaDataContexts.get().getMetaData().getDatabase(databaseName), switchingResource);
         Collection<RuleConfiguration> toBeCreatedRuleConfigs = null == ruleConfigs
                 ? metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getConfigurations()
                 : ruleConfigs;
-        DatabaseConfiguration toBeCreatedDatabaseConfig = getDatabaseConfiguration(
-                metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), switchingResource, toBeCreatedRuleConfigs);
+        DatabaseConfiguration toBeCreatedDatabaseConfig = getDatabaseConfiguration(effectiveResourceMetaData, switchingResource, toBeCreatedRuleConfigs);
         ShardingSphereDatabase changedDatabase = createChangedDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(), internalLoadMetaData,
                 persistServiceFacade.getMetaDataPersistService(), toBeCreatedDatabaseConfig, metaDataContexts.get().getMetaData().getProps(), computeNodeInstanceContext);
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(metaDataContexts.get().getMetaData().getDatabases());

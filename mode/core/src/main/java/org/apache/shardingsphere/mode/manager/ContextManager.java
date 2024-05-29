@@ -173,7 +173,6 @@ public final class ContextManager implements AutoCloseable {
         ConfigurationManager configurationManager = metaDataContextManager.getConfigurationManager();
         Map<String, DataSourcePoolProperties> dataSourcePoolPropsFromRegCenter = metaDataPersistService.getDataSourceUnitService().load(database.getName());
         SwitchingResource switchingResource = new ResourceSwitchManager().alterStorageUnit(database.getResourceMetaData(), dataSourcePoolPropsFromRegCenter);
-        metaDataContexts.get().getMetaData().getDatabases().putAll(configurationManager.renewDatabase(database, switchingResource));
         Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(database.getName());
         Map<String, ShardingSphereDatabase> changedDatabases = configurationManager.createChangedDatabases(database.getName(), false, switchingResource, ruleConfigs);
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());

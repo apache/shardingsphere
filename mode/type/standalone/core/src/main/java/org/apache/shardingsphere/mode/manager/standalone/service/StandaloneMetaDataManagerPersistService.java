@@ -250,8 +250,6 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         SwitchingResource switchingResource =
                 new ResourceSwitchManager().unregisterStorageUnit(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeDroppedStorageUnitNames);
         ConfigurationManager configurationManager = contextManager.getMetaDataContextManager().getConfigurationManager();
-        contextManager.getMetaDataContexts().getMetaData().getDatabases()
-                .putAll(configurationManager.renewDatabase(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName), switchingResource));
         MetaDataContexts reloadMetaDataContexts = configurationManager.createMetaDataContexts(databaseName, false, switchingResource, null);
         configurationManager.alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
                 contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName), true);
