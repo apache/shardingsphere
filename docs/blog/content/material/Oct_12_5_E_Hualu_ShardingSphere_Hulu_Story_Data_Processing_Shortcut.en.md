@@ -68,5 +68,7 @@ Hulu App is the first to-customer product of E-hualu.
 **ShardingSphere Community:**
 
 ShardingSphere Github: [https://github.com/apache/shardingsphere]()
+
 ShardingSphere Twitter: [https://twitter.com/ShardingSphere]()
+
 ShardingSphere Slack Channel: [apacheshardingsphere.slack.com]()
