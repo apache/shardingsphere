@@ -250,7 +250,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (null == columnLabelAndIndexMap) {
             columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, selectContainsEnhancedTable, resultSets.get(0).getMetaData());
         }
-        return new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, executionContext, columnLabelAndIndexMap);
+        return new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, executionContext.getSqlStatementContext(), columnLabelAndIndexMap);
     }
     
     private List<QueryResult> executeQuery0(final ExecutionContext executionContext) throws SQLException {
@@ -447,7 +447,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             if (null == columnLabelAndIndexMap) {
                 columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, selectContainsEnhancedTable, resultSets.get(0).getMetaData());
             }
-            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, executionContext, columnLabelAndIndexMap);
+            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, sqlStatementContext, columnLabelAndIndexMap);
         }
         return currentResultSet;
     }

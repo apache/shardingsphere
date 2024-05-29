@@ -173,7 +173,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         MergedResult mergedResult = mergeQuery(queryResults, executionContext.getSqlStatementContext());
         boolean selectContainsEnhancedTable =
                 executionContext.getSqlStatementContext() instanceof SelectStatementContext && ((SelectStatementContext) executionContext.getSqlStatementContext()).isContainsEnhancedTable();
-        return new ShardingSphereResultSet(getResultSets(), mergedResult, this, selectContainsEnhancedTable, executionContext);
+        return new ShardingSphereResultSet(getResultSets(), mergedResult, this, selectContainsEnhancedTable, executionContext.getSqlStatementContext());
     }
     
     private List<QueryResult> executeQuery0(final ExecutionContext executionContext) throws SQLException {
@@ -513,7 +513,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets), sqlStatementContext);
             boolean selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
-            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, executionContext);
+            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, executionContext.getSqlStatementContext());
         }
         return currentResultSet;
     }
