@@ -79,7 +79,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttri
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.resoure.StorageConnectorReusableRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
@@ -110,7 +110,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Getter
     private final ShardingSphereConnection connection;
     
-    private final MetaDataContexts metaDataContexts;
+    private final MetaDataContext metaDataContext;
     
     private final String sql;
     
@@ -186,25 +186,25 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             throw new EmptySQLException().toSQLException();
         }
         this.connection = connection;
-        metaDataContexts = connection.getContextManager().getMetaDataContexts();
+        metaDataContext = connection.getContextManager().getMetaDataContext();
         hintValueContext = SQLHintUtils.extractHint(sql);
         this.sql = SQLHintUtils.removeHint(sql);
         statements = new ArrayList<>();
         parameterSets = new ArrayList<>();
-        SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType());
+        SQLParserRule sqlParserRule = metaDataContext.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(metaDataContext.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType());
         sqlStatement = sqlParserEngine.parse(this.sql, true);
-        sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), connection.getDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
+        sqlStatementContext = new SQLBindEngine(metaDataContext.getMetaData(), connection.getDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
         databaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(connection.getDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         executor = new DriverExecutor(connection);
         JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
-        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(metaDataContexts, jdbcExecutor, databaseName, connection.getProcessId());
+        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(metaDataContext, jdbcExecutor, databaseName, connection.getProcessId());
         kernelProcessor = new KernelProcessor();
-        statementsCacheable = isStatementsCacheable(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData());
-        trafficRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
+        statementsCacheable = isStatementsCacheable(metaDataContext.getMetaData().getDatabase(databaseName).getRuleMetaData());
+        trafficRule = metaDataContext.getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
         selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
         statementManager = new StatementManager();
     }
@@ -223,8 +223,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             clearPrevious();
             QueryContext queryContext = createQueryContext();
             handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
-            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-            Optional<ResultSet> advancedResultSet = executor.executeAdvanceQuery(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database));
+            ShardingSphereDatabase database = metaDataContext.getMetaData().getDatabase(databaseName);
+            Optional<ResultSet> advancedResultSet = executor.executeAdvanceQuery(metaDataContext.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database));
             if (advancedResultSet.isPresent()) {
                 currentResultSet = advancedResultSet.get();
                 return currentResultSet;
@@ -235,8 +235,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            handleExceptionInTransaction(connection, metaDataContexts);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
+            handleExceptionInTransaction(connection, metaDataContext);
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContext.getMetaData().getDatabase(databaseName).getProtocolType());
         } finally {
             batchPreparedStatementExecutor.clear();
             clearParameters();
@@ -273,13 +273,13 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(executionContext);
         cacheStatements(executionGroupContext.getInputGroups());
         return executor.getRegularExecutor().executeQuery(executionGroupContext, executionContext.getQueryContext(),
-                new PreparedStatementExecuteQueryCallback(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType(),
-                        metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), sqlStatement,
+                new PreparedStatementExecuteQueryCallback(metaDataContext.getMetaData().getDatabase(databaseName).getProtocolType(),
+                        metaDataContext.getMetaData().getDatabase(databaseName).getResourceMetaData(), sqlStatement,
                         SQLExecutorExceptionHandler.isExceptionThrown()));
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final ShardingSphereDatabase database) {
-        int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = metaDataContext.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT, maxConnectionsSizePerQuery, connection.getDatabaseConnectionManager(), statementManager, statementOption,
                 database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
     }
@@ -294,8 +294,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             clearPrevious();
             QueryContext queryContext = createQueryContext();
             handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
-            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-            Optional<Integer> updatedCount = executor.executeAdvanceUpdate(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database),
+            ShardingSphereDatabase database = metaDataContext.getMetaData().getDatabase(databaseName);
+            Optional<Integer> updatedCount = executor.executeAdvanceUpdate(metaDataContext.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database),
                     (statement, sql) -> ((PreparedStatement) statement).executeUpdate());
             if (updatedCount.isPresent()) {
                 return updatedCount.get();
@@ -310,8 +310,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            handleExceptionInTransaction(connection, metaDataContexts);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
+            handleExceptionInTransaction(connection, metaDataContext);
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContext.getMetaData().getDatabase(databaseName).getProtocolType());
         } finally {
             clearBatch();
         }
@@ -334,8 +334,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private JDBCExecutorCallback<Integer> createExecuteUpdateCallback() {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        return new JDBCExecutorCallback<Integer>(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), sqlStatement, isExceptionThrown) {
+        return new JDBCExecutorCallback<Integer>(metaDataContext.getMetaData().getDatabase(databaseName).getProtocolType(),
+                metaDataContext.getMetaData().getDatabase(databaseName).getResourceMetaData(), sqlStatement, isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
@@ -359,9 +359,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             clearPrevious();
             QueryContext queryContext = createQueryContext();
             handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
-            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+            ShardingSphereDatabase database = metaDataContext.getMetaData().getDatabase(databaseName);
             Optional<Boolean> advancedResult = executor.executeAdvance(
-                    metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database), (statement, sql) -> ((PreparedStatement) statement).execute());
+                    metaDataContext.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database), (statement, sql) -> ((PreparedStatement) statement).execute());
             if (advancedResult.isPresent()) {
                 return advancedResult.get();
             }
@@ -375,32 +375,32 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            handleExceptionInTransaction(connection, metaDataContexts);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
+            handleExceptionInTransaction(connection, metaDataContext);
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContext.getMetaData().getDatabase(databaseName).getProtocolType());
         } finally {
             clearBatch();
         }
     }
     
     private boolean hasRawExecutionRule() {
-        return !metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty();
+        return !metaDataContext.getMetaData().getDatabase(databaseName).getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty();
     }
     
     private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionGroupContext(final ExecutionContext executionContext) throws SQLException {
-        int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules())
+        int maxConnectionsSizePerQuery = metaDataContext.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        return new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, metaDataContext.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules())
                 .prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(), new ExecutionGroupReportContext(connection.getProcessId(), databaseName, new Grantee("", "")));
     }
     
     private boolean executeWithExecutionContext(final ExecutionContext executionContext) throws SQLException {
         return isNeedImplicitCommitTransaction(connection, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
-                ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(executionContext), connection, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType())
+                ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(executionContext), connection, metaDataContext.getMetaData().getDatabase(databaseName).getProtocolType())
                 : useDriverToExecute(executionContext);
     }
     
     private int executeUpdateWithExecutionContext(final ExecutionContext executionContext) throws SQLException {
         return isNeedImplicitCommitTransaction(connection, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
-                ? executeWithImplicitCommitTransaction(() -> useDriverToExecuteUpdate(executionContext), connection, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType())
+                ? executeWithImplicitCommitTransaction(() -> useDriverToExecuteUpdate(executionContext), connection, metaDataContext.getMetaData().getDatabase(databaseName).getProtocolType())
                 : useDriverToExecuteUpdate(executionContext);
     }
     
@@ -413,8 +413,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private JDBCExecutorCallback<Boolean> createExecuteCallback() {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        return new JDBCExecutorCallback<Boolean>(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), sqlStatement, isExceptionThrown) {
+        return new JDBCExecutorCallback<Boolean>(metaDataContext.getMetaData().getDatabase(databaseName).getProtocolType(),
+                metaDataContext.getMetaData().getDatabase(databaseName).getResourceMetaData(), sqlStatement, isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
@@ -429,7 +429,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private ExecutionGroupContext<JDBCExecutionUnit> createExecutionGroupContext(final ExecutionContext executionContext) throws SQLException {
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+        ShardingSphereDatabase database = metaDataContext.getMetaData().getDatabase(databaseName);
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(database);
         return prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(),
                 new ExecutionGroupReportContext(connection.getProcessId(), databaseName, new Grantee("", "")));
@@ -480,11 +480,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
-        RuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
-        ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(databaseName);
+        RuleMetaData globalRuleMetaData = metaDataContext.getMetaData().getGlobalRuleMetaData();
+        ShardingSphereDatabase currentDatabase = metaDataContext.getMetaData().getDatabase(databaseName);
         SQLAuditEngine.audit(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, currentDatabase, null, queryContext.getHintValueContext());
         ExecutionContext result = kernelProcessor.generateExecutionContext(
-                queryContext, currentDatabase, globalRuleMetaData, metaDataContexts.getMetaData().getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
+                queryContext, currentDatabase, globalRuleMetaData, metaDataContext.getMetaData().getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
         findGeneratedKey(result).ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
         return result;
     }
@@ -503,8 +503,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getDatabase(databaseName),
-                metaDataContexts.getMetaData().getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
+        MergeEngine mergeEngine = new MergeEngine(metaDataContext.getMetaData().getGlobalRuleMetaData(), metaDataContext.getMetaData().getDatabase(databaseName),
+                metaDataContext.getMetaData().getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
@@ -564,7 +564,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private String getGeneratedKeysColumnName(final String columnName) {
-        return metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType() instanceof MySQLDatabaseType ? "GENERATED_KEY" : columnName;
+        return metaDataContext.getMetaData().getDatabase(databaseName).getProtocolType() instanceof MySQLDatabaseType ? "GENERATED_KEY" : columnName;
     }
     
     @Override
@@ -591,8 +591,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            handleExceptionInTransaction(connection, metaDataContexts);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
+            handleExceptionInTransaction(connection, metaDataContext);
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContext.getMetaData().getDatabase(databaseName).getProtocolType());
         } finally {
             clearBatch();
         }
@@ -613,10 +613,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private void initBatchPreparedStatementExecutor(final BatchPreparedStatementExecutor batchExecutor) throws SQLException {
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT, metaDataContexts.getMetaData().getProps()
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT, metaDataContext.getMetaData().getProps()
                 .<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), connection.getDatabaseConnectionManager(), statementManager, statementOption,
-                metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits());
+                metaDataContext.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
+                metaDataContext.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits());
         List<ExecutionUnit> executionUnits = new ArrayList<>(batchExecutor.getBatchExecutionUnits().size());
         for (BatchExecutionUnit each : batchExecutor.getBatchExecutionUnits()) {
             ExecutionUnit executionUnit = each.getExecutionUnit();
@@ -662,7 +662,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public boolean isAccumulate() {
-        for (DataNodeRuleAttribute each : metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
+        for (DataNodeRuleAttribute each : metaDataContext.getMetaData().getDatabase(databaseName).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
             if (each.isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames())) {
                 return true;
             }

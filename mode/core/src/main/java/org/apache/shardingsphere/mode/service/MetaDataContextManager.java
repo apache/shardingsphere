@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.service;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.mode.service.manager.ConfigurationManager;
 import org.apache.shardingsphere.mode.service.manager.ResourceMetaDataManager;
 import org.apache.shardingsphere.mode.service.manager.ShardingSphereDatabaseManager;
@@ -38,10 +38,10 @@ public class MetaDataContextManager {
     
     private final ResourceMetaDataManager resourceMetaDataManager;
     
-    public MetaDataContextManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
+    public MetaDataContextManager(final AtomicReference<MetaDataContext> metaDataContext, final ComputeNodeInstanceContext computeNodeInstanceContext,
                                   final PersistServiceFacade persistServiceFacade) {
-        databaseManager = new ShardingSphereDatabaseManager(metaDataContexts);
-        configurationManager = new ConfigurationManager(metaDataContexts, computeNodeInstanceContext, persistServiceFacade);
-        resourceMetaDataManager = new ResourceMetaDataManager(metaDataContexts, persistServiceFacade);
+        databaseManager = new ShardingSphereDatabaseManager(metaDataContext);
+        configurationManager = new ConfigurationManager(metaDataContext, computeNodeInstanceContext, persistServiceFacade);
+        resourceMetaDataManager = new ResourceMetaDataManager(metaDataContext, persistServiceFacade);
     }
 }

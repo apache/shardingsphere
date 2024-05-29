@@ -37,7 +37,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,8 +80,8 @@ class ResourceMetaDataChangedSubscriberTest {
     @BeforeEach
     void setUp() throws SQLException {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter(), new EventBusContext());
-        contextManager.renewMetaDataContexts(MetaDataContextsFactory.create(contextManager.getPersistServiceFacade().getMetaDataPersistService(), new ShardingSphereMetaData(createDatabases(),
-                contextManager.getMetaDataContexts().getMetaData().getGlobalResourceMetaData(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
+        contextManager.renewMetaDataContext(MetaDataContextFactory.create(contextManager.getPersistServiceFacade().getMetaDataPersistService(), new ShardingSphereMetaData(createDatabases(),
+                contextManager.getMetaDataContext().getMetaData().getGlobalResourceMetaData(), contextManager.getMetaDataContext().getMetaData().getGlobalRuleMetaData(),
                 new ConfigurationProperties(new Properties()))));
         subscriber = new ResourceMetaDataChangedSubscriber(contextManager);
     }
@@ -107,7 +107,7 @@ class ResourceMetaDataChangedSubscriberTest {
         when(persistService.getDataSourceUnitService().load("db_added")).thenReturn(createDataSourcePoolPropertiesMap());
         when(persistService.getDatabaseRulePersistService().load("db_added")).thenReturn(Collections.emptyList());
         subscriber.renew(new DatabaseAddedEvent("db_added"));
-        assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db_added").getResourceMetaData().getStorageUnits());
+        assertNotNull(contextManager.getMetaDataContext().getMetaData().getDatabase("db_added").getResourceMetaData().getStorageUnits());
     }
     
     private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap() {
@@ -122,19 +122,19 @@ class ResourceMetaDataChangedSubscriberTest {
     @Test
     void assertRenewForDatabaseDeleted() {
         subscriber.renew(new DatabaseDeletedEvent("db"));
-        assertNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db"));
+        assertNull(contextManager.getMetaDataContext().getMetaData().getDatabase("db"));
     }
     
     @Test
     void assertRenewForSchemaAdded() {
         subscriber.renew(new SchemaAddedEvent("db", "foo_schema"));
-        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).addSchema(argThat("foo_schema"::equals), any(ShardingSphereSchema.class));
+        verify(contextManager.getMetaDataContext().getMetaData().getDatabase("db")).addSchema(argThat("foo_schema"::equals), any(ShardingSphereSchema.class));
     }
     
     @Test
     void assertRenewForSchemaDeleted() {
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("foo_schema")).thenReturn(true);
+        when(contextManager.getMetaDataContext().getMetaData().getDatabase("db").containsSchema("foo_schema")).thenReturn(true);
         subscriber.renew(new SchemaDeletedEvent("db", "foo_schema"));
-        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).dropSchema("foo_schema");
+        verify(contextManager.getMetaDataContext().getMetaData().getDatabase("db")).dropSchema("foo_schema");
     }
 }

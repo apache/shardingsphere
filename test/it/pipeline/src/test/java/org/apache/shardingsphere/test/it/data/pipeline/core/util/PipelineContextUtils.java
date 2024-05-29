@@ -62,8 +62,8 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSour
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.EmbedTestingServer;
@@ -106,8 +106,8 @@ public final class PipelineContextUtils {
         ModeConfiguration modeConfig = new YamlModeConfigurationSwapper().swapToObject(rootConfig.getMode());
         ContextManager contextManager = getContextManager(rootConfig);
         ClusterPersistRepository persistRepository = getClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository());
-        MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), new MetaDataPersistService(persistRepository));
-        PipelineContext pipelineContext = new PipelineContext(modeConfig, new ContextManager(metaDataContexts, contextManager.getComputeNodeInstanceContext(), contextManager.getRepository()));
+        MetaDataContext metaDataContext = renewMetaDataContext(contextManager.getMetaDataContext(), new MetaDataPersistService(persistRepository));
+        PipelineContext pipelineContext = new PipelineContext(modeConfig, new ContextManager(metaDataContext, contextManager.getComputeNodeInstanceContext(), contextManager.getRepository()));
         PipelineContextManager.putContext(contextKey, pipelineContext);
     }
     
@@ -129,7 +129,7 @@ public final class PipelineContextUtils {
         return result;
     }
     
-    private static MetaDataContexts renewMetaDataContexts(final MetaDataContexts old, final MetaDataPersistService persistService) {
+    private static MetaDataContext renewMetaDataContext(final MetaDataContext old, final MetaDataPersistService persistService) {
         Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1F);
         tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
@@ -142,7 +142,7 @@ public final class PipelineContextUtils {
                 new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         old.getMetaData().getDatabase("logic_db").getSchema("logic_db").putAll(tables);
-        return MetaDataContextsFactory.create(persistService, old.getMetaData());
+        return MetaDataContextFactory.create(persistService, old.getMetaData());
     }
     
     /**

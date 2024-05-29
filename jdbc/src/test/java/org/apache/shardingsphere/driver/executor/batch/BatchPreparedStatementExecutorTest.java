@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
@@ -92,20 +92,20 @@ class BatchPreparedStatementExecutorTest {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
         ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager());
         String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
-        executor = new BatchPreparedStatementExecutor(connection.getContextManager().getMetaDataContexts(),
+        executor = new BatchPreparedStatementExecutor(connection.getContextManager().getMetaDataContext(),
                 new JDBCExecutor(executorEngine, connection.getDatabaseConnectionManager().getConnectionContext()), "foo_db", processId);
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
     }
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = mockMetaDataContexts();
-        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        MetaDataContext metaDataContext = mockMetaDataContext();
+        when(result.getMetaDataContext()).thenReturn(metaDataContext);
         return result;
     }
     
-    private MetaDataContexts mockMetaDataContexts() {
-        MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+    private MetaDataContext mockMetaDataContext() {
+        MetaDataContext result = mock(MetaDataContext.class, RETURNS_DEEP_STUBS);
         RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(mockTransactionRule(), new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()), mock(AuthorityRule.class)));
         when(result.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         RuleMetaData databaseRuleMetaData = new RuleMetaData(Collections.singleton(mockShardingRule()));

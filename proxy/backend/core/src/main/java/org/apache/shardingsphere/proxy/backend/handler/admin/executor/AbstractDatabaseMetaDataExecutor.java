@@ -128,7 +128,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     }
     
     protected static boolean isAuthorized(final String databaseName, final Grantee grantee) {
-        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         return new AuthorityChecker(authorityRule, grantee).isAuthorized(databaseName);
     }
     
@@ -151,7 +151,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         
         @Override
         protected void processMetaData(final String databaseName, final Consumer<ResultSet> callback) throws SQLException {
-            ResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
+            ResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getDatabase(databaseName).getResourceMetaData();
             Optional<StorageUnit> storageUnit = resourceMetaData.getStorageUnits().values().stream().findFirst();
             if (!storageUnit.isPresent()) {
                 return;

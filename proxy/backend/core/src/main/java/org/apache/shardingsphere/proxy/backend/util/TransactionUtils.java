@@ -85,6 +85,6 @@ public final class TransactionUtils {
         if (transactionContext.getTransactionType().isPresent()) {
             return TransactionType.valueOf(transactionContext.getTransactionType().get());
         }
-        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
+        return ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
     }
 }

@@ -95,8 +95,8 @@ class MySQLSetVariableAdminExecutorTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(mock(ShardingSphereDatabase.class));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
+        when(result.getMetaDataContext().getMetaData().getDatabase("foo_db")).thenReturn(mock(ShardingSphereDatabase.class));
+        when(result.getMetaDataContext().getMetaData().getGlobalRuleMetaData())
                 .thenReturn(new RuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(1, 1L), new CacheOption(1, 1L))))));
         return result;
     }

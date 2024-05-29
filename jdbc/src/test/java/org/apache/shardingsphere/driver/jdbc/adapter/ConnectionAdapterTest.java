@@ -99,7 +99,7 @@ class ConnectionAdapterTest {
     
     private Connection createConnectionAdaptor() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
+        when(contextManager.getMetaDataContext().getMetaData().getGlobalRuleMetaData()).thenReturn(
                 new RuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()), mock(AuthorityRule.class))));
         return new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, contextManager);
     }

@@ -53,7 +53,7 @@ class ShowGlobalClockRuleExecutorTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         GlobalClockRule rule = mock(GlobalClockRule.class);
         when(rule.getConfiguration()).thenReturn(new GlobalClockRuleConfiguration("TSO", "local", false, PropertiesBuilder.build(new Property("key", "value"))));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(GlobalClockRule.class)).thenReturn(Optional.of(rule));
+        when(result.getMetaDataContext().getMetaData().getGlobalRuleMetaData().findSingleRule(GlobalClockRule.class)).thenReturn(Optional.of(rule));
         return result;
     }
     

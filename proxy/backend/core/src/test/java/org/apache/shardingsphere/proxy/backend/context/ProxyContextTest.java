@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextFactory;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,11 +69,11 @@ class ProxyContextTest {
     
     @Test
     void assertInit() {
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
-        ProxyContext.init(new ContextManager(metaDataContexts, mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS), mock(PersistRepository.class)));
+        MetaDataContext metaDataContext = MetaDataContextFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
+        ProxyContext.init(new ContextManager(metaDataContext, mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS), mock(PersistRepository.class)));
         assertThat(ProxyContext.getInstance().getContextManager().getStateContext(), is(ProxyContext.getInstance().getContextManager().getStateContext()));
         assertThat(ProxyContext.getInstance().getContextManager().getStateContext().getCurrentClusterState(), is(ClusterState.OK));
-        assertThat(ProxyContext.getInstance().getContextManager().getMetaDataContexts(), is(ProxyContext.getInstance().getContextManager().getMetaDataContexts()));
+        assertThat(ProxyContext.getInstance().getContextManager().getMetaDataContext(), is(ProxyContext.getInstance().getContextManager().getMetaDataContext()));
         assertTrue(ProxyContext.getInstance().getInstanceStateContext().isPresent());
         assertThat(ProxyContext.getInstance().getInstanceStateContext(), is(ProxyContext.getInstance().getInstanceStateContext()));
     }
@@ -82,9 +82,9 @@ class ProxyContextTest {
     void assertDatabaseExists() {
         Map<String, ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
+        MetaDataContext metaDataContext = MetaDataContextFactory.create(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(contextManager.getMetaDataContext()).thenReturn(metaDataContext);
         ProxyContext.init(contextManager);
         assertTrue(ProxyContext.getInstance().databaseExists("db"));
         assertFalse(ProxyContext.getInstance().databaseExists("db_1"));
@@ -94,9 +94,9 @@ class ProxyContextTest {
     void assertGetAllDatabaseNames() {
         Map<String, ShardingSphereDatabase> databases = createDatabases();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
+        MetaDataContext metaDataContext = MetaDataContextFactory.create(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(contextManager.getMetaDataContext()).thenReturn(metaDataContext);
         ProxyContext.init(contextManager);
         assertThat(new LinkedHashSet<>(ProxyContext.getInstance().getAllDatabaseNames()), is(databases.keySet()));
     }

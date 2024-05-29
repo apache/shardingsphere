@@ -48,7 +48,7 @@ public final class ParseDistSQLExecutor implements DistSQLQueryExecutor<ParseSta
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ParseStatement sqlStatement, final ContextManager contextManager) {
-        SQLStatement parsedSqlStatement = parseSQL(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
+        SQLStatement parsedSqlStatement = parseSQL(contextManager.getMetaDataContext().getMetaData(), sqlStatement);
         return Collections.singleton(new LocalDataQueryResultRow(parsedSqlStatement.getClass().getSimpleName(), JsonUtils.toJsonString(parsedSqlStatement)));
     }
     

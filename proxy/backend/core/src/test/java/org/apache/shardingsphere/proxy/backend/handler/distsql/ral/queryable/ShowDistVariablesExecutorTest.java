@@ -50,8 +50,8 @@ class ShowDistVariablesExecutorTest {
     
     @Test
     void assertExecute() {
-        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system-log-level", "INFO"))));
-        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps())
+        when(contextManager.getMetaDataContext().getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system-log-level", "INFO"))));
+        when(contextManager.getMetaDataContext().getMetaData().getTemporaryProps())
                 .thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         executor.setConnectionContext(new DistSQLConnectionContext(mock(ConnectionContext.class), 1,
@@ -65,10 +65,10 @@ class ShowDistVariablesExecutorTest {
     
     @Test
     void assertExecuteWithLike() {
-        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system-log-level", "INFO"))));
-        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps())
+        when(contextManager.getMetaDataContext().getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system-log-level", "INFO"))));
+        when(contextManager.getMetaDataContext().getMetaData().getTemporaryProps())
                 .thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
+        when(contextManager.getMetaDataContext().getMetaData().getGlobalRuleMetaData())
                 .thenReturn(new RuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         executor.setConnectionContext(new DistSQLConnectionContext(mock(ConnectionContext.class), 1,

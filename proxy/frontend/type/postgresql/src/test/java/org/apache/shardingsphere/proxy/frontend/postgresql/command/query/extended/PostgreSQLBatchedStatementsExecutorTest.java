@@ -129,9 +129,9 @@ class PostgreSQLBatchedStatementsExecutorTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
-        when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
-        when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(result.getMetaDataContext().getMetaData().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
+        when(result.getMetaDataContext().getMetaData().getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
+        when(result.getMetaDataContext().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
@@ -142,11 +142,11 @@ class PostgreSQLBatchedStatementsExecutorTest {
         when(database.getSchema("public").containsTable("t")).thenReturn(true);
         when(database.getSchema("public").getTable("t").getColumnValues()).thenReturn(Arrays.asList(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("col", Types.VARCHAR, false, false, false, true, false, false)));
-        when(result.getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
+        when(result.getMetaDataContext().getMetaData().containsDatabase("db")).thenReturn(true);
+        when(result.getMetaDataContext().getMetaData().getDatabase("db")).thenReturn(database);
         RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
                 new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(result.getMetaDataContext().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         return result;
     }
     

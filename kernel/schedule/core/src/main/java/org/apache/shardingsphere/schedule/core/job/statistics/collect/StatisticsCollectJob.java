@@ -56,9 +56,9 @@ public final class StatisticsCollectJob implements SimpleJob {
     @Override
     public void execute(final ShardingContext shardingContext) {
         try {
-            if (contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED)) {
-                ShardingSphereStatistics statistics = contextManager.getMetaDataContexts().getStatistics();
-                ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
+            if (contextManager.getMetaDataContext().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED)) {
+                ShardingSphereStatistics statistics = contextManager.getMetaDataContext().getStatistics();
+                ShardingSphereMetaData metaData = contextManager.getMetaDataContext().getMetaData();
                 ShardingSphereStatistics changedStatistics = new ShardingSphereStatistics();
                 statistics.getDatabaseData().forEach((key, value) -> {
                     if (metaData.containsDatabase(key)) {
@@ -100,7 +100,7 @@ public final class StatisticsCollectJob implements SimpleJob {
         }
         Optional<ShardingSphereTableData> tableData = Optional.empty();
         try {
-            tableData = dataCollector.get().collect(databaseName, table, databases, contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData());
+            tableData = dataCollector.get().collect(databaseName, table, databases, contextManager.getMetaDataContext().getMetaData().getGlobalRuleMetaData());
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

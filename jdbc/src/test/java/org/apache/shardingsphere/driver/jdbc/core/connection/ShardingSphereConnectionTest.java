@@ -251,7 +251,7 @@ class ShardingSphereConnectionTest {
         StorageUnit storageUnit = mock(StorageUnit.class);
         when(storageUnit.getDataSource()).thenReturn(dataSource);
         when(result.getStorageUnits(DefaultDatabase.LOGIC_NAME)).thenReturn(Collections.singletonMap("ds", storageUnit));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
+        when(result.getMetaDataContext().getMetaData().getGlobalRuleMetaData()).thenReturn(
                 new RuleMetaData(Arrays.asList(mockTransactionRule(), mock(TrafficRule.class), mock(AuthorityRule.class))));
         return result;
     }

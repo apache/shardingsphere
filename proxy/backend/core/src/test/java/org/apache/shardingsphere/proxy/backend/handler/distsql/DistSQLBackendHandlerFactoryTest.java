@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.AlterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -98,16 +98,16 @@ class DistSQLBackendHandlerFactoryTest {
     
     private ContextManager mockContextManager(final ShardingSphereDatabase database) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = mockMetaDataContexts(database);
+        MetaDataContext metaDataContext = mockMetaDataContext(database);
         when(result.getDatabase("foo_db")).thenReturn(database);
-        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getMetaDataContext()).thenReturn(metaDataContext);
         when(result.getPersistServiceFacade().getMetaDataManagerPersistService()).thenReturn(mock(MetaDataManagerPersistService.class));
         when(result.getComputeNodeInstanceContext().getModeConfiguration().getType()).thenReturn("Cluster");
         return result;
     }
     
-    private MetaDataContexts mockMetaDataContexts(final ShardingSphereDatabase database) {
-        MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+    private MetaDataContext mockMetaDataContext(final ShardingSphereDatabase database) {
+        MetaDataContext result = mock(MetaDataContext.class, RETURNS_DEEP_STUBS);
         when(result.getMetaData().getDatabase("foo_db")).thenReturn(database);
         return result;
     }

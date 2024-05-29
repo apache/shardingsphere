@@ -60,17 +60,17 @@ class ProxySSLContextTest {
     
     @Test
     void assertInitWithSSLNotEnabled() throws SSLException {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_ENABLED)).thenReturn(false);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_ENABLED)).thenReturn(false);
         ProxySSLContext.init();
         assertNull(getSslContext());
     }
     
     @Test
     void assertInitWithGeneratedSelfSignedCertificate() throws SSLException {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_ENABLED)).thenReturn(true);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_VERSION))
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_ENABLED)).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_VERSION))
                 .thenReturn("TLSv1.2,TLSv1.3");
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_CIPHER))
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_CIPHER))
                 .thenReturn("CIPHER1,CIPHER2");
         SslContextBuilder builder = mock(SslContextBuilder.class);
         SslContext expectedSslContext = mock(SslContext.class);

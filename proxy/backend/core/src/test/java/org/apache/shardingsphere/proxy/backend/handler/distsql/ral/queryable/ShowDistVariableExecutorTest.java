@@ -59,7 +59,7 @@ class ShowDistVariableExecutorTest {
     
     @Test
     void assertShowPropsVariable() {
-        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("sql-show", Boolean.TRUE.toString()))));
+        when(contextManager.getMetaDataContext().getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("sql-show", Boolean.TRUE.toString()))));
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariableStatement("SQL_SHOW"), contextManager);
         assertThat(actual.size(), is(1));
@@ -70,7 +70,7 @@ class ShowDistVariableExecutorTest {
     
     @Test
     void assertShowPropsVariableForTypedSPI() {
-        when(contextManager.getMetaDataContexts().getMetaData().getProps())
+        when(contextManager.getMetaDataContext().getMetaData().getProps())
                 .thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("proxy-frontend-database-protocol-type", "MySQL"))));
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariableStatement("PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE"), contextManager);
@@ -82,7 +82,7 @@ class ShowDistVariableExecutorTest {
     
     @Test
     void assertShowTemporaryPropsVariable() {
-        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps())
+        when(contextManager.getMetaDataContext().getMetaData().getTemporaryProps())
                 .thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariableStatement("PROXY_META_DATA_COLLECTOR_ENABLED"), contextManager);

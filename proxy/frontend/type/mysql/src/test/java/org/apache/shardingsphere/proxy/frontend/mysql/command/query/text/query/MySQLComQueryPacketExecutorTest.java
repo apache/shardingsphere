@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -125,8 +125,8 @@ class MySQLComQueryPacketExecutorTest {
         when(connectionSession.getDatabaseName()).thenReturn("foo_db");
         when(packet.getSQL()).thenReturn("update t set v=v+1 where id=1;update t set v=v+1 where id=2;update t set v=v+1 where id=3");
         ContextManager contextManager = mock(ContextManager.class);
-        MetaDataContexts metaDataContexts = mockMetaDataContexts();
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        MetaDataContext metaDataContext = mockMetaDataContext();
+        when(contextManager.getMetaDataContext()).thenReturn(metaDataContext);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         MySQLComQueryPacketExecutor actual = new MySQLComQueryPacketExecutor(packet, connectionSession);
         MemberAccessor accessor = Plugins.getMemberAccessor();
@@ -137,9 +137,9 @@ class MySQLComQueryPacketExecutorTest {
         assertThat(actualPackets.iterator().next(), instanceOf(MySQLOKPacket.class));
     }
     
-    private MetaDataContexts mockMetaDataContexts() {
+    private MetaDataContext mockMetaDataContext() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        MetaDataContext result = mock(MetaDataContext.class, RETURNS_DEEP_STUBS);
         when(result.getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(databaseType);
         RuleMetaData globalRuleMetaData = new RuleMetaData(
                 Arrays.asList(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()), new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),

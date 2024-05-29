@@ -53,11 +53,11 @@ class StatisticsCollectJobTest {
     void assertCollect() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereStatistics statistics = mockStatistics();
-        when(contextManager.getMetaDataContexts().getStatistics()).thenReturn(statistics);
+        when(contextManager.getMetaDataContext().getStatistics()).thenReturn(statistics);
         ShardingSphereMetaData metaData = mockMetaData();
-        when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(
+        when(contextManager.getMetaDataContext().getMetaData()).thenReturn(metaData);
+        when(contextManager.getMetaDataContext().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(contextManager.getMetaDataContext().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(
                 PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED.getKey(), Boolean.TRUE.toString()))));
         new StatisticsCollectJob(contextManager).execute(null);
         verify(contextManager.getPersistServiceFacade()).persist(any(ShardingSphereSchemaDataAlteredPOJO.class));

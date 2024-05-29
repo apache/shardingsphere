@@ -72,7 +72,7 @@ public final class DistSQLExecutorAwareSetter {
     }
     
     private Optional<ShardingSphereRule> findRule(final ContextManager contextManager, final ShardingSphereDatabase database, final Class<ShardingSphereRule> ruleClass) {
-        Optional<ShardingSphereRule> globalRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(ruleClass);
+        Optional<ShardingSphereRule> globalRule = contextManager.getMetaDataContext().getMetaData().getGlobalRuleMetaData().findSingleRule(ruleClass);
         return globalRule.isPresent() ? globalRule : database.getRuleMetaData().findSingleRule(ruleClass);
     }
 }

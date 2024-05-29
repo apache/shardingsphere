@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
@@ -102,17 +102,17 @@ class ProxyBackendHandlerFactoryTest {
     }
     
     private ContextManager mockContextManager() {
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        MetaDataContext metaDataContext = mock(MetaDataContext.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mockDatabase();
-        when(metaDataContexts.getMetaData().getDatabase("db")).thenReturn(database);
+        when(metaDataContext.getMetaData().getDatabase("db")).thenReturn(database);
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(result.getMetaDataContext()).thenReturn(metaDataContext);
+        when(metaDataContext.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(
                 new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build()),
                 new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()),
                 new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build(), Collections.emptyMap())));
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(metaDataContext.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         return result;
     }
     

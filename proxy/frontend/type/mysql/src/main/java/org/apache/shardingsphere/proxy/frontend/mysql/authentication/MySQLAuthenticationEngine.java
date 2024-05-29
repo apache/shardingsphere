@@ -89,7 +89,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     
     @Override
     public AuthenticationResult authenticate(final ChannelHandlerContext context, final PacketPayload payload) {
-        AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         if (MySQLConnectionPhase.AUTH_PHASE_FAST_PATH == connectionPhase) {
             currentAuthResult = authenticatePhaseFastPath(context, payload, rule);
             if (!currentAuthResult.isFinished()) {

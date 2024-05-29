@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Optional;
@@ -46,11 +46,11 @@ public final class FrontDatabaseProtocolTypeFactory {
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
         }
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        if (metaDataContexts.getMetaData().getDatabases().isEmpty()) {
+        MetaDataContext metaDataContext = ProxyContext.getInstance().getContextManager().getMetaDataContext();
+        if (metaDataContext.getMetaData().getDatabases().isEmpty()) {
             return TypedSPILoader.getService(DatabaseType.class, DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE);
         }
-        Optional<ShardingSphereDatabase> database = metaDataContexts.getMetaData().getDatabases().values().stream().filter(ShardingSphereDatabase::containsDataSource).findFirst();
+        Optional<ShardingSphereDatabase> database = metaDataContext.getMetaData().getDatabases().values().stream().filter(ShardingSphereDatabase::containsDataSource).findFirst();
         return database.isPresent()
                 ? database.get().getResourceMetaData().getStorageUnits().values().iterator().next().getStorageType()
                 : TypedSPILoader.getService(DatabaseType.class, DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE);
@@ -58,7 +58,7 @@ public final class FrontDatabaseProtocolTypeFactory {
     
     private static Optional<DatabaseType> findConfiguredDatabaseType() {
         DatabaseType configuredDatabaseType = ProxyContext.getInstance()
-                .getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
+                .getContextManager().getMetaDataContext().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         return null == configuredDatabaseType ? Optional.empty() : Optional.of(configuredDatabaseType.getTrunkDatabaseType().orElse(configuredDatabaseType));
     }
 }

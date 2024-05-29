@@ -23,6 +23,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.util.Attribute;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.authentication.Authenticator;
+import org.apache.shardingsphere.authentication.AuthenticatorFactory;
+import org.apache.shardingsphere.authentication.result.AuthenticationResultBuilder;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
@@ -50,12 +53,9 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.authentication.result.AuthenticationResultBuilder;
-import org.apache.shardingsphere.authentication.Authenticator;
-import org.apache.shardingsphere.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.proxy.frontend.mysql.ssl.MySQLSSLRequestHandler;
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -295,9 +295,9 @@ class MySQLAuthenticationEngineTest {
         ShardingSphereDataPersistService shardingSphereDataPersistService = mock(ShardingSphereDataPersistService.class);
         when(shardingSphereDataPersistService.load(any())).thenReturn(Optional.empty());
         when(metaDataPersistService.getShardingSphereDataPersistService()).thenReturn(shardingSphereDataPersistService);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, new ShardingSphereMetaData(databases,
+        MetaDataContext metaDataContext = MetaDataContextFactory.create(metaDataPersistService, new ShardingSphereMetaData(databases,
                 mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(rule)), new ConfigurationProperties(new Properties())));
-        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getMetaDataContext()).thenReturn(metaDataContext);
         return result;
     }
     

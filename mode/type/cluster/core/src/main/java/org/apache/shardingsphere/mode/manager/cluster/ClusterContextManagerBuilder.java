@@ -38,8 +38,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator.ClusterWorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.ClusterEventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.cluster.exception.MissingRequiredClusterRepositoryConfigurationException;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
@@ -66,8 +66,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
             ((ComputeNodeInstanceContextAware) repository).setComputeNodeInstanceContext(computeNodeInstanceContext);
         }
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, computeNodeInstanceContext, new QualifiedDataSourceStatusService(repository).loadStatus());
-        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
+        MetaDataContext metaDataContext = MetaDataContextFactory.create(metaDataPersistService, param, computeNodeInstanceContext, new QualifiedDataSourceStatusService(repository).loadStatus());
+        ContextManager result = new ContextManager(metaDataContext, computeNodeInstanceContext, repository);
         createSubscribers(eventBusContext, repository);
         registerOnline(eventBusContext, computeNodeInstanceContext, repository, param, result);
         setClusterState(result);

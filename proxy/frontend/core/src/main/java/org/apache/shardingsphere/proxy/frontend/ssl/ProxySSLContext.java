@@ -46,14 +46,14 @@ public final class ProxySSLContext {
      * @throws SSLException SSL exception
      */
     public static void init() throws SSLException {
-        if (!ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_ENABLED)) {
+        if (!ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_ENABLED)) {
             log.info("Proxy frontend SSL/TLS is not enabled.");
             return;
         }
         SslContextBuilder sslContextBuilder = prepareSslContextBuilder();
-        String versions = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_VERSION).trim();
+        String versions = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_VERSION).trim();
         sslContextBuilder.protocols(versions.split(","));
-        String ciphers = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_CIPHER).trim();
+        String ciphers = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_CIPHER).trim();
         if (!ciphers.isEmpty()) {
             sslContextBuilder.ciphers(Arrays.asList(ciphers.split(",")));
         }

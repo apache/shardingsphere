@@ -105,7 +105,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
         long dataRows = 0L;
         int flushCount = 0;
         int proxyFrontendFlushThreshold = ProxyContext.getInstance()
-                .getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
+                .getContextManager().getMetaDataContext().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
         while (queryCommandExecutor.next()) {
             flushCount++;
             databaseConnectionManager.getResourceLock().doAwait(context);

@@ -44,7 +44,7 @@ import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.ProxyJDBCExecutor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.connector.sane.SaneQueryResultEngine;
@@ -100,11 +100,11 @@ public final class ProxySQLExecutor {
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, connectionContext);
         regularExecutor = new ProxyJDBCExecutor(type, databaseConnectionManager.getConnectionSession(), databaseConnector, jdbcExecutor);
         rawExecutor = new RawExecutor(executorEngine, connectionContext);
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        MetaDataContext metaDataContext = ProxyContext.getInstance().getContextManager().getMetaDataContext();
         String databaseName = databaseConnectionManager.getConnectionSession().getDatabaseName();
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(queryContext.getSqlStatementContext().getDatabaseType()).getDefaultSchemaName(databaseName));
-        sqlFederationEngine = new SQLFederationEngine(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor);
+        sqlFederationEngine = new SQLFederationEngine(databaseName, schemaName, metaDataContext.getMetaData(), metaDataContext.getStatistics(), jdbcExecutor);
     }
     
     /**
@@ -170,9 +170,9 @@ public final class ProxySQLExecutor {
      */
     public List<ExecuteResult> execute(final ExecutionContext executionContext) throws SQLException {
         String databaseName = databaseConnectionManager.getConnectionSession().getDatabaseName();
-        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules();
+        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules();
         int maxConnectionsSizePerQuery = ProxyContext.getInstance()
-                .getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+                .getContextManager().getMetaDataContext().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isReturnGeneratedKeys = executionContext.getSqlStatementContext().getSqlStatement() instanceof MySQLInsertStatement;
         return hasRawExecutionRule(rules) ? rawExecute(executionContext, rules, maxConnectionsSizePerQuery)
                 : useDriverToExecute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());

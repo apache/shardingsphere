@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
@@ -68,15 +68,15 @@ public final class DriverExecutor implements AutoCloseable {
     
     public DriverExecutor(final ShardingSphereConnection connection) {
         this.connection = connection;
-        MetaDataContexts metaDataContexts = connection.getContextManager().getMetaDataContexts();
+        MetaDataContext metaDataContext = connection.getContextManager().getMetaDataContext();
         ExecutorEngine executorEngine = connection.getContextManager().getExecutorEngine();
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, connection.getDatabaseConnectionManager().getConnectionContext());
         regularExecutor = new DriverJDBCExecutor(connection.getDatabaseName(), connection.getContextManager(), jdbcExecutor);
         rawExecutor = new RawExecutor(executorEngine, connection.getDatabaseConnectionManager().getConnectionContext());
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName());
+        ShardingSphereDatabase database = metaDataContext.getMetaData().getDatabase(connection.getDatabaseName());
         String schemaName = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(connection.getDatabaseName());
         trafficExecutor = new TrafficExecutor();
-        sqlFederationEngine = new SQLFederationEngine(connection.getDatabaseName(), schemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor);
+        sqlFederationEngine = new SQLFederationEngine(connection.getDatabaseName(), schemaName, metaDataContext.getMetaData(), metaDataContext.getStatistics(), jdbcExecutor);
     }
     
     /**

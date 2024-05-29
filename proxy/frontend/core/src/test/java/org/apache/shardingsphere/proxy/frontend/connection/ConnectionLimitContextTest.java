@@ -59,7 +59,7 @@ class ConnectionLimitContextTest {
     
     private ContextManager mockContextManager(final int maxConnections) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS)).thenReturn(maxConnections);
+        when(result.getMetaDataContext().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS)).thenReturn(maxConnections);
         return result;
     }
 }

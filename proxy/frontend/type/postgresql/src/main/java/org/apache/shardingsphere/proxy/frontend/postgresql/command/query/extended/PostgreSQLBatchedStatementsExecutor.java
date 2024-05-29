@@ -44,7 +44,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -76,7 +76,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private final ConnectionSession connectionSession;
     
-    private final MetaDataContexts metaDataContexts;
+    private final MetaDataContext metaDataContext;
     
     private final PostgreSQLServerPreparedStatement preparedStatement;
     
@@ -89,7 +89,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     public PostgreSQLBatchedStatementsExecutor(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
         jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext());
         this.connectionSession = connectionSession;
-        metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        metaDataContext = ProxyContext.getInstance().getContextManager().getMetaDataContext();
         this.preparedStatement = preparedStatement;
         Iterator<List<Object>> parameterSetsIterator = parameterSets.iterator();
         SQLStatementContext sqlStatementContext = null;
@@ -107,7 +107,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private SQLStatementContext createSQLStatementContext(final List<Object> params, final HintValueContext hintValueContext) {
-        return new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getDatabaseName(), hintValueContext).bind(preparedStatement.getSqlStatementContext().getSqlStatement(), params);
+        return new SQLBindEngine(metaDataContext.getMetaData(), connectionSession.getDatabaseName(), hintValueContext).bind(preparedStatement.getSqlStatementContext().getSqlStatement(), params);
     }
     
     private void prepareForRestOfParametersSet(final Iterator<List<Object>> paramSetsIterator, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
@@ -128,10 +128,10 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
-        RuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
-        ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
+        RuleMetaData globalRuleMetaData = metaDataContext.getMetaData().getGlobalRuleMetaData();
+        ShardingSphereDatabase currentDatabase = metaDataContext.getMetaData().getDatabase(connectionSession.getDatabaseName());
         SQLAuditEngine.audit(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, currentDatabase, null, queryContext.getHintValueContext());
-        return kernelProcessor.generateExecutionContext(queryContext, currentDatabase, globalRuleMetaData, metaDataContexts.getMetaData().getProps(), connectionSession.getConnectionContext());
+        return kernelProcessor.generateExecutionContext(queryContext, currentDatabase, globalRuleMetaData, metaDataContext.getMetaData().getProps(), connectionSession.getConnectionContext());
     }
     
     /**
@@ -147,11 +147,11 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private void addBatchedParametersToPreparedStatements() throws SQLException {
-        Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
+        Collection<ShardingSphereRule> rules = metaDataContext.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT,
-                metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                metaDataContext.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 connectionSession.getDatabaseConnectionManager(), (JDBCBackendStatement) connectionSession.getStatementManager(),
-                new StatementOption(false), rules, metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageUnits());
+                new StatementOption(false), rules, metaDataContext.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageUnits());
         executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), executionUnitParams.keySet(),
                 new ExecutionGroupReportContext(connectionSession.getProcessId(), connectionSession.getDatabaseName(), connectionSession.getGrantee()));
         for (ExecutionGroup<JDBCExecutionUnit> eachGroup : executionGroupContext.getInputGroups()) {
@@ -179,7 +179,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private int executeBatchedPreparedStatements() throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
+        ShardingSphereDatabase database = metaDataContext.getMetaData().getDatabase(connectionSession.getDatabaseName());
         DatabaseType protocolType = database.getProtocolType();
         JDBCExecutorCallback<int[]> callback =
                 new BatchedStatementsJDBCExecutorCallback(protocolType, database.getResourceMetaData(), preparedStatement.getSqlStatementContext().getSqlStatement(), isExceptionThrown);

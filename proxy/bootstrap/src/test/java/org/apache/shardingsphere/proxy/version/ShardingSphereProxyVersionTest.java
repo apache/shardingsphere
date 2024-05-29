@@ -67,7 +67,7 @@ class ShardingSphereProxyVersionTest {
     private ContextManager mockContextManager(final String databaseProductName, final String databaseProductVersion) throws SQLException {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mockDatabase(databaseProductName, databaseProductVersion);
-        when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("foo_db", database));
+        when(result.getMetaDataContext().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("foo_db", database));
         return result;
     }
     

@@ -108,9 +108,9 @@ public final class ProxyJDBCExecutor {
     public List<ExecuteResult> execute(final QueryContext queryContext, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                                        final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         try {
-            MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+            MetaDataContexts metaDataContext = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
             EventBusContext eventBusContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext();
-            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
+            ShardingSphereDatabase database = metaDataContext.getMetaData().getDatabase(connectionSession.getDatabaseName());
             DatabaseType protocolType = database.getProtocolType();
             DatabaseType databaseType = database.getResource().getDatabaseType();
             ExecuteProcessEngine.initialize(queryContext, executionGroupContext, eventBusContext);

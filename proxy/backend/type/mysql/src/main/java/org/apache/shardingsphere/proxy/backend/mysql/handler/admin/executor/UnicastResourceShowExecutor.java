@@ -81,7 +81,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
         try {
             connectionSession.setCurrentDatabase(databaseName);
-            SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
+            SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData(),
                     connectionSession.getDefaultDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
             databaseConnector = databaseConnectorFactory.newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext),
                     connectionSession.getDatabaseConnectionManager(), false);

@@ -105,16 +105,16 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
     }
     
     private Map<String, DataSource> getTrafficDataSourceMap(final String databaseName, final ContextManager contextManager) {
-        TrafficRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
+        TrafficRule rule = contextManager.getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
         if (rule.getStrategyRules().isEmpty()) {
             return Collections.emptyMap();
         }
         MetaDataPersistService persistService = contextManager.getPersistServiceFacade().getMetaDataPersistService();
-        String actualDatabaseName = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName();
+        String actualDatabaseName = contextManager.getMetaDataContext().getMetaData().getDatabase(databaseName).getName();
         Map<String, DataSourcePoolProperties> propsMap = persistService.getDataSourceUnitService().load(actualDatabaseName);
         Preconditions.checkState(!propsMap.isEmpty(), "Can not get data source properties from meta data.");
         DataSourcePoolProperties propsSample = propsMap.values().iterator().next();
-        Collection<ShardingSphereUser> users = contextManager.getMetaDataContexts().getMetaData()
+        Collection<ShardingSphereUser> users = contextManager.getMetaDataContext().getMetaData()
                 .getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getConfiguration().getUsers();
         Collection<InstanceMetaData> instances = contextManager.getComputeNodeInstanceContext().getAllClusterInstances(InstanceType.PROXY, rule.getLabels()).values();
         return DataSourcePoolCreator.create(createDataSourcePoolPropertiesMap(instances, users, propsSample, actualDatabaseName), true);
@@ -152,7 +152,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
      * @return connection transaction
      */
     public ConnectionTransaction getConnectionTransaction() {
-        TransactionRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        TransactionRule rule = contextManager.getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         return new ConnectionTransaction(rule, connectionContext.getTransactionContext());
     }
     

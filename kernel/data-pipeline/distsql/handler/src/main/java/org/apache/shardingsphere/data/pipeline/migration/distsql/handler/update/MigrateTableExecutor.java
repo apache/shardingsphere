@@ -47,7 +47,7 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
         ShardingSpherePreconditions.checkState(computeNodeInstanceContext.isCluster(), () -> new PipelineInvalidParameterException(
                 String.format("Only `Cluster` is supported now, but current mode type is `%s`", computeNodeInstanceContext.getModeConfiguration().getType())));
         String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? database.getName() : sqlStatement.getTargetDatabaseName();
-        ShardingSpherePreconditions.checkState(contextManager.getMetaDataContexts().getMetaData().containsDatabase(targetDatabaseName),
+        ShardingSpherePreconditions.checkState(contextManager.getMetaDataContext().getMetaData().containsDatabase(targetDatabaseName),
                 () -> new MissingRequiredTargetDatabaseException(sqlStatement.getTargetDatabaseName()));
         MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
         jobAPI.start(new PipelineContextKey(InstanceType.PROXY), new MigrateTableStatement(sqlStatement.getSourceTargetEntries(), targetDatabaseName));

@@ -155,7 +155,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         sinkConfig.setSinkType(sinkType.name());
         sinkConfig.setProps(sinkProps);
         result.setSinkConfig(sinkConfig);
-        ShardingSphereDatabase database = PipelineContextManager.getContext(contextKey).getContextManager().getMetaDataContexts().getMetaData().getDatabase(param.getDatabaseName());
+        ShardingSphereDatabase database = PipelineContextManager.getContext(contextKey).getContextManager().getMetaDataContext().getMetaData().getDatabase(param.getDatabaseName());
         result.setDataSourceConfiguration(pipelineDataSourceConfigSwapper.swapToYamlConfiguration(getDataSourceConfiguration(database)));
         List<JobDataNodeLine> jobDataNodeLines = JobDataNodeLineConvertUtils.convertDataNodesToLines(param.getDataNodesMap());
         result.setJobShardingDataNodes(jobDataNodeLines.stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
@@ -283,7 +283,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
      */
     public List<CDCJobItemInfo> getJobItemInfos(final String jobId) {
         CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(jobType).getJobConfiguration(jobId);
-        ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(jobConfig.getDatabaseName());
+        ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContext().getMetaData().getDatabase(jobConfig.getDatabaseName());
         Collection<TransmissionJobItemInfo> jobItemInfos = new TransmissionJobManager(jobType).getJobItemInfos(jobId);
         List<CDCJobItemInfo> result = new LinkedList<>();
         for (TransmissionJobItemInfo each : jobItemInfos) {

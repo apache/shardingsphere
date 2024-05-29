@@ -26,7 +26,7 @@ import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.DistSQLStatementContext;
@@ -77,7 +77,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         }
         List<PostgreSQLColumnType> paddedColumnTypes = paddingColumnTypes(sqlStatement.getParameterCount(), packet.readParameterTypes());
         SQLStatementContext sqlStatementContext = sqlStatement instanceof DistSQLStatement ? new DistSQLStatementContext((DistSQLStatement) sqlStatement)
-                : new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), connectionSession.getDefaultDatabaseName(), packet.getHintValueContext())
+                : new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData(), connectionSession.getDefaultDatabaseName(), packet.getHintValueContext())
                         .bind(sqlStatement, Collections.emptyList());
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, packet.getHintValueContext(), paddedColumnTypes,
                 actualParameterMarkerIndexes);
@@ -86,9 +86,9 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     }
     
     private SQLParserEngine createShardingSphereSQLParserEngine(final String databaseName) {
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        return sqlParserRule.getSQLParserEngine(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
+        MetaDataContext metaDataContext = ProxyContext.getInstance().getContextManager().getMetaDataContext();
+        SQLParserRule sqlParserRule = metaDataContext.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        return sqlParserRule.getSQLParserEngine(metaDataContext.getMetaData().getDatabase(databaseName).getProtocolType());
     }
     
     private String escape(final SQLStatement sqlStatement, final String sql) {

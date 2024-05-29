@@ -22,7 +22,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeM
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.MetricsExporter;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Collections;
@@ -44,13 +44,13 @@ public final class ProxyMetaDataInfoExporter implements MetricsExporter {
         }
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
         result.cleanMetrics();
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        result.addMetric(Collections.singletonList("database_count"), metaDataContexts.getMetaData().getDatabases().size());
-        result.addMetric(Collections.singletonList("storage_unit_count"), getStorageUnitCount(metaDataContexts));
+        MetaDataContext metaDataContext = ProxyContext.getInstance().getContextManager().getMetaDataContext();
+        result.addMetric(Collections.singletonList("database_count"), metaDataContext.getMetaData().getDatabases().size());
+        result.addMetric(Collections.singletonList("storage_unit_count"), getStorageUnitCount(metaDataContext));
         return Optional.of(result);
     }
     
-    private int getStorageUnitCount(final MetaDataContexts metaDataContexts) {
-        return metaDataContexts.getMetaData().getDatabases().values().stream().map(each -> each.getResourceMetaData().getStorageUnits().size()).reduce(0, Integer::sum);
+    private int getStorageUnitCount(final MetaDataContext metaDataContext) {
+        return metaDataContext.getMetaData().getDatabases().values().stream().map(each -> each.getResourceMetaData().getStorageUnits().size()).reduce(0, Integer::sum);
     }
 }

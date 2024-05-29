@@ -27,16 +27,16 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Meta data contexts.
+ * Meta data context.
  */
 @Getter
-public final class MetaDataContexts implements AutoCloseable {
+public final class MetaDataContext implements AutoCloseable {
     
     private final ShardingSphereMetaData metaData;
     
     private final ShardingSphereStatistics statistics;
     
-    public MetaDataContexts(final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
+    public MetaDataContext(final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
         this.metaData = metaData;
         this.statistics = statistics;
     }

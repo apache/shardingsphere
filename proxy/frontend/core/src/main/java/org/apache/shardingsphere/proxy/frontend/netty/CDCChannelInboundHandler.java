@@ -140,7 +140,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         ShardingSpherePreconditions.checkState(request.hasLoginRequestBody() && request.getLoginRequestBody().hasBasicBody(),
                 () -> new CDCExceptionWrapper(request.getRequestId(), new EmptyCDCLoginRequestBodyException()));
         BasicBody body = request.getLoginRequestBody().getBasicBody();
-        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Optional<ShardingSphereUser> user = authorityRule.findUser(new Grantee(body.getUsername(), getHostAddress(ctx)));
         if (user.isPresent() && Objects.equals(Hashing.sha256().hashBytes(user.get().getPassword().getBytes()).toString().toUpperCase(), body.getPassword())) {
             ctx.channel().attr(CONNECTION_CONTEXT_KEY).set(new CDCConnectionContext(user.get()));
@@ -151,7 +151,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     }
     
     private void checkPrivileges(final String requestId, final Grantee grantee, final String currentDatabase) {
-        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(AuthorityRule.class)
+        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData().findSingleRule(AuthorityRule.class)
                 .orElseThrow(() -> new CDCExceptionWrapper(requestId, new MissingRequiredRuleException("authority")));
         ShardingSpherePrivileges privileges = authorityRule.findPrivileges(grantee)
                 .orElseThrow(() -> new CDCExceptionWrapper(requestId, new AccessDeniedException(grantee.getUsername(), grantee.getHostname(), false)));

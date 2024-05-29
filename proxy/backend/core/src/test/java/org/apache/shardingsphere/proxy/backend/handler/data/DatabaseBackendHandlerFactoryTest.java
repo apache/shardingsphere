@@ -96,8 +96,8 @@ class DatabaseBackendHandlerFactoryTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.isComplete()).thenReturn(true);
         when(database.containsDataSource()).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(result.getMetaDataContext().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(result.getMetaDataContext().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         return result;
     }
     

@@ -52,8 +52,8 @@ public final class ExportStorageNodesExecutor implements DistSQLQueryExecutor<Ex
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ExportStorageNodesStatement sqlStatement, final ContextManager contextManager) {
-        checkSQLStatement(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
-        String exportedData = generateExportData(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
+        checkSQLStatement(contextManager.getMetaDataContext().getMetaData(), sqlStatement);
+        String exportedData = generateExportData(contextManager.getMetaDataContext().getMetaData(), sqlStatement);
         if (sqlStatement.getFilePath().isPresent()) {
             String filePath = sqlStatement.getFilePath().get();
             ExportUtils.exportToFile(filePath, exportedData);

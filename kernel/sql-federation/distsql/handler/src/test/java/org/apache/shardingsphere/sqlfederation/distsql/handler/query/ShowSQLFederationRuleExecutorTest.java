@@ -52,7 +52,7 @@ class ShowSQLFederationRuleExecutorTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         SQLFederationRule rule = mock(SQLFederationRule.class);
         when(rule.getConfiguration()).thenReturn(new SQLFederationRuleConfiguration(true, true, new CacheOption(2000, 65535L)));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLFederationRule.class)).thenReturn(Optional.of(rule));
+        when(result.getMetaDataContext().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLFederationRule.class)).thenReturn(Optional.of(rule));
         return result;
     }
     

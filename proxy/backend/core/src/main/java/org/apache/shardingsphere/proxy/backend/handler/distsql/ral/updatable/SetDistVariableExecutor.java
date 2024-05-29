@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
@@ -64,15 +64,15 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
     }
     
     private void handleConfigurationProperty(final ContextManager contextManager, final TypedPropertyKey propertyKey, final String value) {
-        MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
+        MetaDataContext metaDataContext = contextManager.getMetaDataContext();
         Properties props = new Properties();
-        props.putAll(metaDataContexts.getMetaData().getProps().getProps());
-        props.putAll(metaDataContexts.getMetaData().getTemporaryProps().getProps());
+        props.putAll(metaDataContext.getMetaData().getProps().getProps());
+        props.putAll(metaDataContext.getMetaData().getTemporaryProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
         contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterProperties(props);
         refreshRootLogger(props);
-        syncSQLShowToLoggingRule(propertyKey, metaDataContexts, value, contextManager);
-        syncSQLSimpleToLoggingRule(propertyKey, metaDataContexts, value, contextManager);
+        syncSQLShowToLoggingRule(propertyKey, metaDataContext, value, contextManager);
+        syncSQLSimpleToLoggingRule(propertyKey, metaDataContext, value, contextManager);
     }
     
     private Object getValue(final TypedPropertyKey propertyKey, final String value) {
@@ -97,20 +97,20 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
         rootLogger.setLevel(Level.valueOf(props.getOrDefault(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getKey(), ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getDefaultValue()).toString()));
     }
     
-    private void syncSQLShowToLoggingRule(final TypedPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value, final ContextManager contextManager) {
+    private void syncSQLShowToLoggingRule(final TypedPropertyKey propertyKey, final MetaDataContext metaDataContext, final String value, final ContextManager contextManager) {
         if (LoggingConstants.SQL_SHOW.equalsIgnoreCase(propertyKey.getKey())) {
-            LoggingUtils.getSQLLogger(metaDataContexts.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
+            LoggingUtils.getSQLLogger(metaDataContext.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
                 option.getProps().setProperty(LoggingConstants.SQL_LOG_ENABLE, value);
-                contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().persist(metaDataContext.getMetaData().getGlobalRuleMetaData().getConfigurations());
             });
         }
     }
     
-    private void syncSQLSimpleToLoggingRule(final TypedPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value, final ContextManager contextManager) {
+    private void syncSQLSimpleToLoggingRule(final TypedPropertyKey propertyKey, final MetaDataContext metaDataContext, final String value, final ContextManager contextManager) {
         if (LoggingConstants.SQL_SIMPLE.equalsIgnoreCase(propertyKey.getKey())) {
-            LoggingUtils.getSQLLogger(metaDataContexts.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
+            LoggingUtils.getSQLLogger(metaDataContext.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
                 option.getProps().setProperty(LoggingConstants.SQL_LOG_SIMPLE, value);
-                contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().persist(metaDataContext.getMetaData().getGlobalRuleMetaData().getConfigurations());
             });
         }
     }

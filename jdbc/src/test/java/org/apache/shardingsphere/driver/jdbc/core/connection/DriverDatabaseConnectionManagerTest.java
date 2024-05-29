@@ -79,7 +79,7 @@ class DriverDatabaseConnectionManagerTest {
         when(result.getStorageUnits(DefaultDatabase.LOGIC_NAME)).thenReturn(storageUnits);
         MetaDataPersistService persistService = mockMetaDataPersistService();
         when(result.getPersistServiceFacade().getMetaDataPersistService()).thenReturn(persistService);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
+        when(result.getMetaDataContext().getMetaData().getGlobalRuleMetaData()).thenReturn(
                 new RuleMetaData(Arrays.asList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS), mock(TransactionRule.class, RETURNS_DEEP_STUBS),
                         mock(TrafficRule.class, RETURNS_DEEP_STUBS))));
         when(result.getComputeNodeInstanceContext().getAllClusterInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(

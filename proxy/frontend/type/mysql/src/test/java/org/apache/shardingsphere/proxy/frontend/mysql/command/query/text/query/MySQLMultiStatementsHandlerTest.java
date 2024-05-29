@@ -119,27 +119,27 @@ class MySQLMultiStatementsHandlerTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("foo_ds"));
+        when(result.getMetaDataContext().getMetaData().getDatabase("foo_db").getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("foo_ds"));
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnits())
+        when(result.getMetaDataContext().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnits())
                 .thenReturn(Collections.singletonMap("foo_ds", storageUnit));
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData())
+        when(result.getMetaDataContext().getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        when(result.getMetaDataContext().getMetaData().getDatabase("foo_db").getRuleMetaData())
                 .thenReturn(new RuleMetaData(Collections.emptyList()));
         RuleMetaData globalRuleMetaData = new RuleMetaData(
                 Arrays.asList(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()), new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
                         new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
-        when(result.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
-        when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
+        when(result.getMetaDataContext().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(result.getMetaDataContext().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
+        when(result.getMetaDataContext().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(result.getMetaDataContext().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         ShardingSphereTable table = new ShardingSphereTable("t", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
                 new ShardingSphereColumn("v", Types.INTEGER, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getSchema("foo_db").getTable("t")).thenReturn(table);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").containsSchema("foo_db")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getSchema("foo_db").containsTable("t")).thenReturn(true);
+        when(result.getMetaDataContext().getMetaData().getDatabase("foo_db").getSchema("foo_db").getTable("t")).thenReturn(table);
+        when(result.getMetaDataContext().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(result.getMetaDataContext().getMetaData().getDatabase("foo_db").containsSchema("foo_db")).thenReturn(true);
+        when(result.getMetaDataContext().getMetaData().getDatabase("foo_db").getSchema("foo_db").containsTable("t")).thenReturn(true);
         return result;
     }
 }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -79,7 +79,7 @@ class ShardingSphereDatabaseMetaDataTest {
     private ShardingSphereConnection shardingSphereConnection;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private MetaDataContexts metaDataContexts;
+    private MetaDataContext metaDataContext;
     
     private ShardingSphereDatabaseMetaData shardingSphereDatabaseMetaData;
     
@@ -90,10 +90,10 @@ class ShardingSphereDatabaseMetaDataTest {
         when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
         when(shardingSphereConnection.getDatabaseConnectionManager().getRandomPhysicalDataSourceName()).thenReturn(DATA_SOURCE_NAME);
         when(shardingSphereConnection.getDatabaseConnectionManager().getRandomConnection()).thenReturn(connection);
-        when(shardingSphereConnection.getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(shardingSphereConnection.getContextManager().getMetaDataContext()).thenReturn(metaDataContext);
         when(shardingSphereConnection.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabase(shardingSphereConnection.getDatabaseName())).thenReturn(database);
+        when(metaDataContext.getMetaData().getDatabase(shardingSphereConnection.getDatabaseName())).thenReturn(database);
         ShardingRule shardingRule = mockShardingRule();
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
         ConnectionProperties connectionProps = mock(ConnectionProperties.class);

@@ -110,7 +110,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
             return AuthenticationResultBuilder.continued();
         }
         payload.getByteBuf().resetReaderIndex();
-        AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         return startupMessageReceived ? processPasswordMessage(context, (PostgreSQLPacketPayload) payload, rule) : processStartupMessage(context, (PostgreSQLPacketPayload) payload, rule);
     }
     

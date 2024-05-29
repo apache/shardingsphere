@@ -59,7 +59,7 @@ public final class ExportMetaDataExecutor implements DistSQLQueryExecutor<Export
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ExportMetaDataStatement sqlStatement, final ContextManager contextManager) {
-        String exportedData = generateExportData(contextManager.getMetaDataContexts().getMetaData());
+        String exportedData = generateExportData(contextManager.getMetaDataContext().getMetaData());
         if (sqlStatement.getFilePath().isPresent()) {
             String filePath = sqlStatement.getFilePath().get();
             ExportUtils.exportToFile(filePath, exportedData);

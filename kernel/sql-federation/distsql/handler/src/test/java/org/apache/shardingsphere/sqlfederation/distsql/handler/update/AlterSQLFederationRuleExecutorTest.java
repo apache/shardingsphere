@@ -63,7 +63,7 @@ class AlterSQLFederationRuleExecutorTest {
         GlobalRuleDefinitionExecutor executor = mock(GlobalRuleDefinitionExecutor.class);
         when(executor.getRuleClass()).thenReturn(SQLFederationRule.class);
         when(rule.getConfiguration()).thenReturn(new DefaultSQLFederationRuleConfigurationBuilder().build());
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
+        when(result.getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
         return result;
     }
 }

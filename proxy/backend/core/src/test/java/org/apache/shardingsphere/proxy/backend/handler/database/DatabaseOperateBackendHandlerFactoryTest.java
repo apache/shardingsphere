@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.database;
 
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -79,16 +79,16 @@ class DatabaseOperateBackendHandlerFactoryTest {
     
     @BeforeEach
     void setUp() {
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
+        MetaDataContext metaDataContext = MetaDataContextFactory.create(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(contextManager.getMetaDataContext()).thenReturn(metaDataContext);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
     }
     
     @AfterEach
     void tearDown() {
-        setGovernanceMetaDataContexts(false);
+        setGovernanceMetaDataContext(false);
     }
     
     @Test
@@ -103,7 +103,7 @@ class DatabaseOperateBackendHandlerFactoryTest {
     
     private void assertExecuteCreateDatabaseContext(final CreateDatabaseStatement sqlStatement) throws SQLException {
         sqlStatement.setDatabaseName("new_db");
-        setGovernanceMetaDataContexts(true);
+        setGovernanceMetaDataContext(true);
         ResponseHeader response = DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
@@ -120,7 +120,7 @@ class DatabaseOperateBackendHandlerFactoryTest {
     
     private void assertExecuteDropDatabaseContext(final DropDatabaseStatement sqlStatement) throws SQLException {
         sqlStatement.setDatabaseName("foo_db");
-        setGovernanceMetaDataContexts(true);
+        setGovernanceMetaDataContext(true);
         ResponseHeader response = DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
@@ -137,7 +137,7 @@ class DatabaseOperateBackendHandlerFactoryTest {
     
     private void assertExecuteCreateDatabaseContextWithException(final CreateDatabaseStatement sqlStatement) {
         sqlStatement.setDatabaseName("foo_db");
-        setGovernanceMetaDataContexts(true);
+        setGovernanceMetaDataContext(true);
         try {
             DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession);
         } catch (final DatabaseCreateExistsException ex) {
@@ -151,13 +151,13 @@ class DatabaseOperateBackendHandlerFactoryTest {
         return Collections.singletonMap("foo_db", database);
     }
     
-    private void setGovernanceMetaDataContexts(final boolean isGovernance) {
-        MetaDataContexts metaDataContexts = isGovernance ? mockMetaDataContexts() : MetaDataContextsFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+    private void setGovernanceMetaDataContext(final boolean isGovernance) {
+        MetaDataContext metaDataContext = isGovernance ? mockMetaDataContext() : MetaDataContextFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
+        when(contextManager.getMetaDataContext()).thenReturn(metaDataContext);
     }
     
-    private MetaDataContexts mockMetaDataContexts() {
-        MetaDataContexts result = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+    private MetaDataContext mockMetaDataContext() {
+        MetaDataContext result = ProxyContext.getInstance().getContextManager().getMetaDataContext();
         when(result.getMetaData().getDatabase("foo_db").getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
         return result;
     }

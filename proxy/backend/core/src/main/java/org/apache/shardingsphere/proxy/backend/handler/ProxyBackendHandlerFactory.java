@@ -89,7 +89,7 @@ public final class ProxyBackendHandlerFactory {
             return new SkipBackendHandler(sqlStatement);
         }
         SQLStatementContext sqlStatementContext = sqlStatement instanceof DistSQLStatement ? new DistSQLStatementContext((DistSQLStatement) sqlStatement)
-                : new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), connectionSession.getDefaultDatabaseName(), hintValueContext).bind(sqlStatement,
+                : new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData(), connectionSession.getDefaultDatabaseName(), hintValueContext).bind(sqlStatement,
                         Collections.emptyList());
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
         connectionSession.setQueryContext(queryContext);
@@ -143,11 +143,11 @@ public final class ProxyBackendHandlerFactory {
         if (null == databaseName) {
             return DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
         }
-        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
+        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getDatabase(databaseName);
         ShardingSpherePreconditions.checkState(new AuthorityChecker(authorityRule, connectionSession.getGrantee()).isAuthorized(databaseName),
                 () -> new UnknownDatabaseException(databaseName));
-        SQLAuditEngine.audit(sqlStatementContext, queryContext.getParameters(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
+        SQLAuditEngine.audit(sqlStatementContext, queryContext.getParameters(), ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData(),
                 database, connectionSession.getGrantee(), queryContext.getHintValueContext());
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession);
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));

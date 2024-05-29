@@ -64,7 +64,7 @@ public final class DistSQLExecutorRequiredChecker {
     }
     
     private Optional<? extends ShardingSphereRule> findRule(final ContextManager contextManager, final ShardingSphereDatabase database, final Class<? extends ShardingSphereRule> ruleClass) {
-        Optional<? extends ShardingSphereRule> globalRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(ruleClass);
+        Optional<? extends ShardingSphereRule> globalRule = contextManager.getMetaDataContext().getMetaData().getGlobalRuleMetaData().findSingleRule(ruleClass);
         return null == database || globalRule.isPresent() ? globalRule : database.getRuleMetaData().findSingleRule(ruleClass);
     }
 }

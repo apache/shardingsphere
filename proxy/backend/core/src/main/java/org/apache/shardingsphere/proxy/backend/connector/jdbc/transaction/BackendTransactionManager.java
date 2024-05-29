@@ -54,7 +54,7 @@ public final class BackendTransactionManager implements TransactionManager {
     public BackendTransactionManager(final ProxyDatabaseConnectionManager databaseConnectionManager) {
         connection = databaseConnectionManager;
         localTransactionManager = new LocalTransactionManager(databaseConnectionManager);
-        TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         transactionType = transactionRule.getDefaultType();
         ShardingSphereTransactionManagerEngine engine = transactionRule.getResource();
         shardingSphereTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);

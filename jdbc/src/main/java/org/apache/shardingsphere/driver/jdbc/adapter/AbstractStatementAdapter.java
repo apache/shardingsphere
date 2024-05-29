@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -65,7 +65,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
         if (!connection.getAutoCommit()) {
             return false;
         }
-        TransactionType transactionType = connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
+        TransactionType transactionType = connection.getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
         boolean isInTransaction = connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction();
         if (!TransactionType.isDistributedTransaction(transactionType) || isInTransaction) {
             return false;
@@ -94,9 +94,9 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
         return sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement);
     }
     
-    protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final MetaDataContexts metaDataContexts) {
+    protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final MetaDataContext metaDataContext) {
         if (connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction()) {
-            DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
+            DatabaseType databaseType = metaDataContext.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
             if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
                 connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().setExceptionOccur(true);

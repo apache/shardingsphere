@@ -20,13 +20,13 @@ package org.apache.shardingsphere.proxy.frontend.command;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.command.CommandPacketType;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
@@ -95,10 +95,10 @@ class CommandExecutorTaskTest {
     void setup() {
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         when(handlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        when(metaDataContexts.getMetaData()).thenReturn(new ShardingSphereMetaData());
+        MetaDataContext metaDataContext = mock(MetaDataContext.class);
+        when(metaDataContext.getMetaData()).thenReturn(new ShardingSphereMetaData());
         ContextManager contextManager = mock(ContextManager.class);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(contextManager.getMetaDataContext()).thenReturn(metaDataContext);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
     

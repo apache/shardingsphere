@@ -107,13 +107,13 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     private DatabaseType getProtocolTypeType() {
         DatabaseType configuredDatabaseType = ProxyContext.getInstance()
-                .getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
+                .getContextManager().getMetaDataContext().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         if (null != configuredDatabaseType) {
             return configuredDatabaseType;
         }
-        if (ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().isEmpty()) {
+        if (ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getDatabases().isEmpty()) {
             return TypedSPILoader.getService(DatabaseType.class, "MySQL");
         }
-        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().values().iterator().next().getProtocolType();
+        return ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getDatabases().values().iterator().next().getProtocolType();
     }
 }

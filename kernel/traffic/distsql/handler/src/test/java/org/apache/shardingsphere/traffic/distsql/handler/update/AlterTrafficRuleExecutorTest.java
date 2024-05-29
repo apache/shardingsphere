@@ -90,7 +90,7 @@ class AlterTrafficRuleExecutorTest {
         GlobalRuleDefinitionExecutor executor = mock(GlobalRuleDefinitionExecutor.class);
         when(executor.getRuleClass()).thenReturn(TrafficRule.class);
         when(rule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
+        when(result.getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
         return result;
     }
     

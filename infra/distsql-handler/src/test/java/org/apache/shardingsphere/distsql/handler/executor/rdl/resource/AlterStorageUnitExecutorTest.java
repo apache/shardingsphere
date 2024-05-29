@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,7 +70,7 @@ class AlterStorageUnitExecutorTest {
         when(storageUnit.getConnectionProperties()).thenReturn(connectionProps);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        assertDoesNotThrow(() -> executor.executeUpdate(createAlterStorageUnitStatement("ds_0"), mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS))));
+        assertDoesNotThrow(() -> executor.executeUpdate(createAlterStorageUnitStatement("ds_0"), mockContextManager(mock(MetaDataContext.class, RETURNS_DEEP_STUBS))));
     }
     
     @Test
@@ -81,7 +81,7 @@ class AlterStorageUnitExecutorTest {
     @Test
     void assertExecuteUpdateWithNotExistedStorageUnitNames() {
         assertThrows(MissingRequiredStorageUnitsException.class,
-                () -> executor.executeUpdate(createAlterStorageUnitStatement("not_existed"), mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS))));
+                () -> executor.executeUpdate(createAlterStorageUnitStatement("not_existed"), mockContextManager(mock(MetaDataContext.class, RETURNS_DEEP_STUBS))));
     }
     
     @Test
@@ -93,12 +93,12 @@ class AlterStorageUnitExecutorTest {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         assertThrows(AlterStorageUnitConnectionInfoException.class,
-                () -> executor.executeUpdate(createAlterStorageUnitStatement("ds_0"), mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS))));
+                () -> executor.executeUpdate(createAlterStorageUnitStatement("ds_0"), mockContextManager(mock(MetaDataContext.class, RETURNS_DEEP_STUBS))));
     }
     
-    private ContextManager mockContextManager(final MetaDataContexts metaDataContexts) {
+    private ContextManager mockContextManager(final MetaDataContext metaDataContext) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getMetaDataContext()).thenReturn(metaDataContext);
         return result;
     }
     

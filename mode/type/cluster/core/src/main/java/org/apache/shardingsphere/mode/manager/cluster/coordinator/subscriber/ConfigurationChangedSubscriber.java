@@ -73,7 +73,7 @@ public final class ConfigurationChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public void renew(final UnregisterStorageUnitEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+        if (!contextManager.getMetaDataContext().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
         contextManager.getMetaDataContextManager().getConfigurationManager().unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());

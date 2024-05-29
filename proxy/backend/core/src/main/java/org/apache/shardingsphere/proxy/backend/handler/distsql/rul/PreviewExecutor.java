@@ -88,7 +88,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final PreviewStatement sqlStatement, final ContextManager contextManager) throws SQLException {
-        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContext().getMetaData();
         String toBePreviewedSQL = SQLHintUtils.removeHint(sqlStatement.getSql());
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sqlStatement.getSql());
         SQLStatement toBePreviewedStatement = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(database.getProtocolType()).parse(toBePreviewedSQL, false);
@@ -107,7 +107,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     private Collection<ExecutionUnit> getExecutionUnits(final ContextManager contextManager, final String schemaName, final ShardingSphereMetaData metaData,
                                                         final QueryContext queryContext) {
         JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionContext.getConnectionContext());
-        SQLFederationEngine federationEngine = new SQLFederationEngine(database.getName(), schemaName, metaData, contextManager.getMetaDataContexts().getStatistics(), jdbcExecutor);
+        SQLFederationEngine federationEngine = new SQLFederationEngine(database.getName(), schemaName, metaData, contextManager.getMetaDataContext().getStatistics(), jdbcExecutor);
         if (federationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaData.getGlobalRuleMetaData())) {
             return getFederationExecutionUnits(queryContext, metaData, federationEngine);
         }

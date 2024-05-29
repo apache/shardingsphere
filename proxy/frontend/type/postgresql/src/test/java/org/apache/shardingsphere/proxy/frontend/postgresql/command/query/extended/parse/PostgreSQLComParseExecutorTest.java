@@ -184,8 +184,8 @@ class PostgreSQLComParseExecutorTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
+        when(result.getMetaDataContext().getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(result.getMetaDataContext().getMetaData().getGlobalRuleMetaData())
                 .thenReturn(new RuleMetaData(Collections.singleton(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()))));
         ShardingSphereTable testTable = new ShardingSphereTable("t_test", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
@@ -200,8 +200,8 @@ class PostgreSQLComParseExecutorTest {
         schema.getTables().put("sbtest1", sbTestTable);
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"),
                 new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singletonMap("public", schema));
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(result.getMetaDataContext().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(result.getMetaDataContext().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         return result;
     }
 }

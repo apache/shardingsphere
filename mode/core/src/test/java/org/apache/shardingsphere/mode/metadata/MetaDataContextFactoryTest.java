@@ -65,7 +65,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ExternalMetaDataFactory.class, GlobalRulesBuilder.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
-class MetaDataContextsFactoryTest {
+class MetaDataContextFactoryTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataPersistService metaDataPersistService;
@@ -107,7 +107,7 @@ class MetaDataContextsFactoryTest {
     void assertCreateWithJDBCInstanceMetaData() throws SQLException {
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
         when(computeNodeInstanceContext.getInstance().getMetaData()).thenReturn(mock(JDBCInstanceMetaData.class));
-        try (MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), computeNodeInstanceContext)) {
+        try (MetaDataContext actual = MetaDataContextFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), computeNodeInstanceContext)) {
             assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(1));
             assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), instanceOf(MockedRule.class));
             assertTrue(actual.getMetaData().getDatabases().containsKey("foo_db"));
@@ -119,7 +119,7 @@ class MetaDataContextsFactoryTest {
     void assertCreateWithProxyInstanceMetaData() throws SQLException {
         when(databaseMetaDataPersistService.loadAllDatabaseNames()).thenReturn(Collections.singletonList("foo_db"));
         when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
-        try (MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS))) {
+        try (MetaDataContext actual = MetaDataContextFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS))) {
             assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(1));
             assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), instanceOf(MockedRule.class));
             assertTrue(actual.getMetaData().getDatabases().containsKey("foo_db"));

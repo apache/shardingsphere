@@ -37,7 +37,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class MetaDataContextsTest {
+class MetaDataContextTest {
     
     @Test
     void assertGetDefaultMetaData() {
@@ -46,6 +46,6 @@ class MetaDataContextsTest {
         Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class),
                 mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
-        assertThat(MetaDataContextsFactory.create(mock(MetaDataPersistService.class), metaData).getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME), is(database));
+        assertThat(MetaDataContextFactory.create(mock(MetaDataPersistService.class), metaData).getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME), is(database));
     }
 }

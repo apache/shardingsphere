@@ -81,7 +81,7 @@ class FrontendChannelInboundHandlerTest {
         when(authenticationEngine.handshake(any(ChannelHandlerContext.class))).thenReturn(CONNECTION_ID);
         channel = new EmbeddedChannel(false, true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(mock(TransactionRule.class), mock(AuthorityRule.class))));
+        when(contextManager.getMetaDataContext().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(mock(TransactionRule.class), mock(AuthorityRule.class))));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         frontendChannelInboundHandler = new FrontendChannelInboundHandler(frontendEngine, channel);
         channel.pipeline().addLast(frontendChannelInboundHandler);

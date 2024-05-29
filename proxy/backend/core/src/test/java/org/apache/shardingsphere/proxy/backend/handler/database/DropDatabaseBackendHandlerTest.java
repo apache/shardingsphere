@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.proxy.backend.handler.database;
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -80,14 +80,14 @@ class DropDatabaseBackendHandlerTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         databases.put("foo_db", database);
         databases.put("bar_db", database);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(databases);
-        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().getDatabase("bar_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().getDatabase("test_not_exist_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(AuthorityRule.class))));
+        MetaDataContext metaDataContext = mock(MetaDataContext.class, RETURNS_DEEP_STUBS);
+        when(metaDataContext.getMetaData().getDatabases()).thenReturn(databases);
+        when(metaDataContext.getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(metaDataContext.getMetaData().getDatabase("bar_db")).thenReturn(database);
+        when(metaDataContext.getMetaData().getDatabase("test_not_exist_db")).thenReturn(database);
+        when(metaDataContext.getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(AuthorityRule.class))));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getMetaDataContext()).thenReturn(metaDataContext);
         return result;
     }
     

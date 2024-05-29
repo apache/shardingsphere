@@ -24,12 +24,12 @@ import org.apache.shardingsphere.agent.plugin.core.recorder.MethodTimeRecorder;
 import java.lang.reflect.Method;
 
 /**
- * Meta data contexts factory advice.
+ * Meta data context factory advice.
  */
 @Slf4j
-public final class MetaDataContextsFactoryAdvice extends AbstractStaticMethodAdvice {
+public final class MetaDataContextFactoryAdvice extends AbstractStaticMethodAdvice {
     
-    private final MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(MetaDataContextsFactoryAdvice.class);
+    private final MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(MetaDataContextFactoryAdvice.class);
     
     @Override
     public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final String pluginType) {

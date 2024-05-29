@@ -65,7 +65,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     public void alterSchema(final AlterSchemaPOJO alterSchemaPOJO) {
         String databaseName = alterSchemaPOJO.getDatabaseName();
         String schemaName = alterSchemaPOJO.getSchemaName();
-        ShardingSphereSchema schema = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getSchema(schemaName);
+        ShardingSphereSchema schema = contextManager.getMetaDataContext().getMetaData().getDatabase(databaseName).getSchema(schemaName);
         DatabaseMetaDataPersistService databaseMetaDataService = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService();
         databaseMetaDataService.persistByAlterConfiguration(databaseName, alterSchemaPOJO.getRenameSchemaName(), schema);
         databaseMetaDataService.getViewMetaDataPersistService().persist(databaseName, alterSchemaPOJO.getRenameSchemaName(), schema.getViews());

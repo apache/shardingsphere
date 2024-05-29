@@ -29,8 +29,8 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.standalone.subscriber.StandaloneEventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextFactory;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 
 import java.sql.SQLException;
@@ -48,8 +48,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         ComputeNodeInstanceContext computeNodeInstanceContext = buildComputeNodeInstanceContext(param, eventBusContext);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, computeNodeInstanceContext);
-        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
+        MetaDataContext metaDataContext = MetaDataContextFactory.create(persistService, param, computeNodeInstanceContext);
+        ContextManager result = new ContextManager(metaDataContext, computeNodeInstanceContext, repository);
         new StandaloneEventSubscriberRegistry(result).register();
         return result;
     }

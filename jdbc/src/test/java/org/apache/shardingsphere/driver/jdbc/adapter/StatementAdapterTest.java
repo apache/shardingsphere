@@ -240,11 +240,11 @@ class StatementAdapterTest {
                 new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()),
                 new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyMap()),
                 new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build())));
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(connection.getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(connection.getContextManager().getMetaDataContext().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(connection.getDatabaseName()).thenReturn("db");
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(databaseType);
+        when(connection.getContextManager().getMetaDataContext().getMetaData().getDatabase("db").getProtocolType()).thenReturn(databaseType);
         ShardingSphereStatement result = new ShardingSphereStatement(connection);
         result.getRoutedStatements().addAll(Arrays.asList(statements));
         return result;
@@ -254,16 +254,16 @@ class StatementAdapterTest {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
         when(ruleAttribute.isNeedAccumulate(any())).thenReturn(true);
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class))
+        when(connection.getContextManager().getMetaDataContext().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class))
                 .thenReturn(Collections.singleton(ruleAttribute));
         when(connection.getDatabaseName()).thenReturn("db");
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(databaseType);
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(
+        when(connection.getContextManager().getMetaDataContext().getMetaData().getDatabase("db").getProtocolType()).thenReturn(databaseType);
+        when(connection.getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(
                 new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()),
                 new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyMap()),
                 new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()))));
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(connection.getContextManager().getMetaDataContext().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         ShardingSphereStatement result = new ShardingSphereStatement(connection);
         result.getRoutedStatements().addAll(Arrays.asList(statements));
         ExecutionContext executionContext = mock(ExecutionContext.class, RETURNS_DEEP_STUBS);

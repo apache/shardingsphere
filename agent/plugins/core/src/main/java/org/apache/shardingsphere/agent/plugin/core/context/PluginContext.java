@@ -61,7 +61,7 @@ public final class PluginContext {
         if (null == contextManager) {
             contextManager = getContextManager().orElse(null);
         }
-        return null == contextManager || contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED);
+        return null == contextManager || contextManager.getMetaDataContext().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED);
     }
     
     /**

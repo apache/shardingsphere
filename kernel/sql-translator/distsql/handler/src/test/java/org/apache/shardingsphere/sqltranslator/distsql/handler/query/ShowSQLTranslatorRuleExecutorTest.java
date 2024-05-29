@@ -52,7 +52,7 @@ class ShowSQLTranslatorRuleExecutorTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         SQLTranslatorRule rule = mock(SQLTranslatorRule.class);
         when(rule.getConfiguration()).thenReturn(createSQLTranslatorRuleConfiguration());
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLTranslatorRule.class)).thenReturn(Optional.of(rule));
+        when(result.getMetaDataContext().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLTranslatorRule.class)).thenReturn(Optional.of(rule));
         return result;
     }
     

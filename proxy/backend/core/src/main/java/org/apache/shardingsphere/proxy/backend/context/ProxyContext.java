@@ -67,7 +67,7 @@ public final class ProxyContext {
      * @return database exists or not
      */
     public boolean databaseExists(final String name) {
-        return contextManager.getMetaDataContexts().getMetaData().containsDatabase(name);
+        return contextManager.getMetaDataContext().getMetaData().containsDatabase(name);
     }
     
     /**
@@ -76,7 +76,7 @@ public final class ProxyContext {
      * @return all database names
      */
     public Collection<String> getAllDatabaseNames() {
-        return contextManager.getMetaDataContexts().getMetaData().getDatabases().values().stream().map(ShardingSphereDatabase::getName).collect(Collectors.toList());
+        return contextManager.getMetaDataContext().getMetaData().getDatabases().values().stream().map(ShardingSphereDatabase::getName).collect(Collectors.toList());
     }
     
     /**

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaD
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public final class ShardingSphereDatabaseManager {
     
-    private final AtomicReference<MetaDataContexts> metaDataContexts;
+    private final AtomicReference<MetaDataContext> metaDataContext;
     
     /**
      * Add ShardingSphere database data.
@@ -44,10 +44,10 @@ public final class ShardingSphereDatabaseManager {
      * @param databaseName database name
      */
     public synchronized void addShardingSphereDatabaseData(final String databaseName) {
-        if (metaDataContexts.get().getStatistics().containsDatabase(databaseName)) {
+        if (metaDataContext.get().getStatistics().containsDatabase(databaseName)) {
             return;
         }
-        metaDataContexts.get().getStatistics().putDatabase(databaseName, new ShardingSphereDatabaseData());
+        metaDataContext.get().getStatistics().putDatabase(databaseName, new ShardingSphereDatabaseData());
     }
     
     /**
@@ -56,10 +56,10 @@ public final class ShardingSphereDatabaseManager {
      * @param databaseName database name
      */
     public synchronized void dropShardingSphereDatabaseData(final String databaseName) {
-        if (!metaDataContexts.get().getStatistics().containsDatabase(databaseName)) {
+        if (!metaDataContext.get().getStatistics().containsDatabase(databaseName)) {
             return;
         }
-        metaDataContexts.get().getStatistics().dropDatabase(databaseName);
+        metaDataContext.get().getStatistics().dropDatabase(databaseName);
     }
     
     /**
@@ -69,10 +69,10 @@ public final class ShardingSphereDatabaseManager {
      * @param schemaName schema name
      */
     public synchronized void addShardingSphereSchemaData(final String databaseName, final String schemaName) {
-        if (metaDataContexts.get().getStatistics().getDatabase(databaseName).containsSchema(schemaName)) {
+        if (metaDataContext.get().getStatistics().getDatabase(databaseName).containsSchema(schemaName)) {
             return;
         }
-        metaDataContexts.get().getStatistics().getDatabase(databaseName).putSchema(schemaName, new ShardingSphereSchemaData());
+        metaDataContext.get().getStatistics().getDatabase(databaseName).putSchema(schemaName, new ShardingSphereSchemaData());
     }
     
     /**
@@ -82,7 +82,7 @@ public final class ShardingSphereDatabaseManager {
      * @param schemaName schema name
      */
     public synchronized void dropShardingSphereSchemaData(final String databaseName, final String schemaName) {
-        ShardingSphereDatabaseData databaseData = metaDataContexts.get().getStatistics().getDatabase(databaseName);
+        ShardingSphereDatabaseData databaseData = metaDataContext.get().getStatistics().getDatabase(databaseName);
         if (null == databaseData || !databaseData.containsSchema(schemaName)) {
             return;
         }
@@ -97,13 +97,13 @@ public final class ShardingSphereDatabaseManager {
      * @param tableName table name
      */
     public synchronized void addShardingSphereTableData(final String databaseName, final String schemaName, final String tableName) {
-        if (!metaDataContexts.get().getStatistics().containsDatabase(databaseName) || !metaDataContexts.get().getStatistics().getDatabase(databaseName).containsSchema(schemaName)) {
+        if (!metaDataContext.get().getStatistics().containsDatabase(databaseName) || !metaDataContext.get().getStatistics().getDatabase(databaseName).containsSchema(schemaName)) {
             return;
         }
-        if (metaDataContexts.get().getStatistics().getDatabase(databaseName).getSchema(schemaName).containsTable(tableName)) {
+        if (metaDataContext.get().getStatistics().getDatabase(databaseName).getSchema(schemaName).containsTable(tableName)) {
             return;
         }
-        metaDataContexts.get().getStatistics().getDatabase(databaseName).getSchema(schemaName).putTable(tableName, new ShardingSphereTableData(tableName));
+        metaDataContext.get().getStatistics().getDatabase(databaseName).getSchema(schemaName).putTable(tableName, new ShardingSphereTableData(tableName));
     }
     
     /**
@@ -114,10 +114,10 @@ public final class ShardingSphereDatabaseManager {
      * @param tableName table name
      */
     public synchronized void dropShardingSphereTableData(final String databaseName, final String schemaName, final String tableName) {
-        if (!metaDataContexts.get().getStatistics().containsDatabase(databaseName) || !metaDataContexts.get().getStatistics().getDatabase(databaseName).containsSchema(schemaName)) {
+        if (!metaDataContext.get().getStatistics().containsDatabase(databaseName) || !metaDataContext.get().getStatistics().getDatabase(databaseName).containsSchema(schemaName)) {
             return;
         }
-        metaDataContexts.get().getStatistics().getDatabase(databaseName).getSchema(schemaName).removeTable(tableName);
+        metaDataContext.get().getStatistics().getDatabase(databaseName).getSchema(schemaName).removeTable(tableName);
     }
     
     /**
@@ -129,16 +129,16 @@ public final class ShardingSphereDatabaseManager {
      * @param yamlRowData yaml row data
      */
     public synchronized void alterShardingSphereRowData(final String databaseName, final String schemaName, final String tableName, final YamlShardingSphereRowData yamlRowData) {
-        if (!metaDataContexts.get().getStatistics().containsDatabase(databaseName) || !metaDataContexts.get().getStatistics().getDatabase(databaseName).containsSchema(schemaName)
-                || !metaDataContexts.get().getStatistics().getDatabase(databaseName).getSchema(schemaName).containsTable(tableName)) {
+        if (!metaDataContext.get().getStatistics().containsDatabase(databaseName) || !metaDataContext.get().getStatistics().getDatabase(databaseName).containsSchema(schemaName)
+                || !metaDataContext.get().getStatistics().getDatabase(databaseName).getSchema(schemaName).containsTable(tableName)) {
             return;
         }
-        if (!metaDataContexts.get().getMetaData().containsDatabase(databaseName) || !metaDataContexts.get().getMetaData().getDatabase(databaseName).containsSchema(schemaName)
-                || !metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchema(schemaName).containsTable(tableName)) {
+        if (!metaDataContext.get().getMetaData().containsDatabase(databaseName) || !metaDataContext.get().getMetaData().getDatabase(databaseName).containsSchema(schemaName)
+                || !metaDataContext.get().getMetaData().getDatabase(databaseName).getSchema(schemaName).containsTable(tableName)) {
             return;
         }
-        ShardingSphereTableData tableData = metaDataContexts.get().getStatistics().getDatabase(databaseName).getSchema(schemaName).getTable(tableName);
-        List<ShardingSphereColumn> columns = new ArrayList<>(metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchema(schemaName).getTable(tableName).getColumnValues());
+        ShardingSphereTableData tableData = metaDataContext.get().getStatistics().getDatabase(databaseName).getSchema(schemaName).getTable(tableName);
+        List<ShardingSphereColumn> columns = new ArrayList<>(metaDataContext.get().getMetaData().getDatabase(databaseName).getSchema(schemaName).getTable(tableName).getColumnValues());
         tableData.getRows().add(new YamlShardingSphereRowDataSwapper(columns).swapToObject(yamlRowData));
     }
     
@@ -151,10 +151,10 @@ public final class ShardingSphereDatabaseManager {
      * @param uniqueKey row uniqueKey
      */
     public synchronized void deleteShardingSphereRowData(final String databaseName, final String schemaName, final String tableName, final String uniqueKey) {
-        if (!metaDataContexts.get().getStatistics().containsDatabase(databaseName) || !metaDataContexts.get().getStatistics().getDatabase(databaseName).containsSchema(schemaName)
-                || !metaDataContexts.get().getStatistics().getDatabase(databaseName).getSchema(schemaName).containsTable(tableName)) {
+        if (!metaDataContext.get().getStatistics().containsDatabase(databaseName) || !metaDataContext.get().getStatistics().getDatabase(databaseName).containsSchema(schemaName)
+                || !metaDataContext.get().getStatistics().getDatabase(databaseName).getSchema(schemaName).containsTable(tableName)) {
             return;
         }
-        metaDataContexts.get().getStatistics().getDatabase(databaseName).getSchema(schemaName).getTable(tableName).getRows().removeIf(each -> uniqueKey.equals(each.getUniqueKey()));
+        metaDataContext.get().getStatistics().getDatabase(databaseName).getSchema(schemaName).getTable(tableName).getRows().removeIf(each -> uniqueKey.equals(each.getUniqueKey()));
     }
 }

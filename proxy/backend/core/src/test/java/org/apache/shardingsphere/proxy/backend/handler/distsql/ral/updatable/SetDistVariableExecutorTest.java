@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextFactory;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -63,9 +63,9 @@ class SetDistVariableExecutorTest {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_flush_threshold", "1024");
         ContextManager contextManager = mockContextManager();
         executor.executeUpdate(statement, contextManager);
-        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-flush-threshold");
+        Object actualValue = contextManager.getMetaDataContext().getMetaData().getProps().getProps().get("proxy-frontend-flush-threshold");
         assertThat(actualValue.toString(), is("1024"));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(1024));
+        assertThat(contextManager.getMetaDataContext().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(1024));
     }
     
     @Test
@@ -73,9 +73,9 @@ class SetDistVariableExecutorTest {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_meta_data_collector_enabled", "false");
         ContextManager contextManager = mockContextManager();
         executor.executeUpdate(statement, contextManager);
-        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getProps().get("proxy-meta-data-collector-enabled");
+        Object actualValue = contextManager.getMetaDataContext().getMetaData().getTemporaryProps().getProps().get("proxy-meta-data-collector-enabled");
         assertThat(actualValue.toString(), is("false"));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED), is(false));
+        assertThat(contextManager.getMetaDataContext().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED), is(false));
     }
     
     @Test
@@ -83,9 +83,9 @@ class SetDistVariableExecutorTest {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_database_protocol_type", "MySQL");
         ContextManager contextManager = mockContextManager();
         executor.executeUpdate(statement, contextManager);
-        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-database-protocol-type");
+        Object actualValue = contextManager.getMetaDataContext().getMetaData().getProps().getProps().get("proxy-frontend-database-protocol-type");
         assertThat(actualValue.toString(), is("MySQL"));
-        assertInstanceOf(MySQLDatabaseType.class, contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE));
+        assertInstanceOf(MySQLDatabaseType.class, contextManager.getMetaDataContext().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE));
     }
     
     @Test
@@ -93,9 +93,9 @@ class SetDistVariableExecutorTest {
         SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "debug");
         ContextManager contextManager = mockContextManager();
         executor.executeUpdate(statement, contextManager);
-        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("system-log-level");
+        Object actualValue = contextManager.getMetaDataContext().getMetaData().getProps().getProps().get("system-log-level");
         assertThat(actualValue.toString(), is("DEBUG"));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(Level.DEBUG));
+        assertThat(contextManager.getMetaDataContext().getMetaData().getProps().getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(Level.DEBUG));
     }
     
     @Test
@@ -108,7 +108,7 @@ class SetDistVariableExecutorTest {
     private ContextManager mockContextManager() {
         MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getPropsService()).thenReturn(mock(PropertiesPersistService.class));
-        ContextManager result = new ContextManager(MetaDataContextsFactory.create(metaDataPersistService, new ShardingSphereMetaData()),
+        ContextManager result = new ContextManager(MetaDataContextFactory.create(metaDataPersistService, new ShardingSphereMetaData()),
                 new ComputeNodeInstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(WorkerIdGenerator.class),
                         new ModeConfiguration("Standalone", null), mock(LockContext.class), new EventBusContext()),
                 mock(PersistRepository.class));

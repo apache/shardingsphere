@@ -61,7 +61,7 @@ class ParseDistSQLExecutorTest {
     
     @BeforeEach
     void setUp() {
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(sqlParserRule)));
+        when(contextManager.getMetaDataContext().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(sqlParserRule)));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
     

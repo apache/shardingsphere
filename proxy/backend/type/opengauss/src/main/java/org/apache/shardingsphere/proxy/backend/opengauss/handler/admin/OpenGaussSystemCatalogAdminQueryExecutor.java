@@ -40,7 +40,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
@@ -82,14 +82,14 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
     
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        MetaDataContext metaDataContext = ProxyContext.getInstance().getContextManager().getMetaDataContext();
         JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext());
-        try (SQLFederationEngine sqlFederationEngine = new SQLFederationEngine(databaseName, PG_CATALOG, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor)) {
-            DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(metaDataContexts, connectionSession);
+        try (SQLFederationEngine sqlFederationEngine = new SQLFederationEngine(databaseName, PG_CATALOG, metaDataContext.getMetaData(), metaDataContext.getStatistics(), jdbcExecutor)) {
+            DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(metaDataContext, connectionSession);
             SQLFederationContext context =
-                    new SQLFederationContext(false, new QueryContext(sqlStatementContext, sql, parameters, SQLHintUtils.extractHint(sql)), metaDataContexts.getMetaData(),
+                    new SQLFederationContext(false, new QueryContext(sqlStatementContext, sql, parameters, SQLHintUtils.extractHint(sql)), metaDataContext.getMetaData(),
                             connectionSession.getProcessId());
-            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+            ShardingSphereDatabase database = metaDataContext.getMetaData().getDatabase(databaseName);
             ResultSet resultSet = sqlFederationEngine.executeQuery(prepareEngine,
                     createOpenGaussSystemCatalogAdminQueryCallback(database.getProtocolType(), database.getResourceMetaData(), sqlStatementContext.getSqlStatement()), context);
             queryResultMetaData = new JDBCQueryResultMetaData(resultSet.getMetaData());
@@ -98,12 +98,12 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final MetaDataContexts metaDataContexts, final ConnectionSession connectionSession) {
-        int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final MetaDataContext metaDataContext, final ConnectionSession connectionSession) {
+        int maxConnectionsSizePerQuery = metaDataContext.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connectionSession.getDatabaseConnectionManager(),
                 connectionSession.getStatementManager(), new StatementOption(false),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits());
+                metaDataContext.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
+                metaDataContext.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits());
     }
     
     private JDBCExecutorCallback<ExecuteResult> createOpenGaussSystemCatalogAdminQueryCallback(final DatabaseType protocolType, final ResourceMetaData resourceMetaData,

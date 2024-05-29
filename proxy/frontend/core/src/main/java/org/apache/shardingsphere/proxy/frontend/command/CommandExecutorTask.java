@@ -70,7 +70,7 @@ public final class CommandExecutorTask implements Runnable {
     @Override
     public void run() {
         boolean isNeedFlush = false;
-        boolean sqlShowEnabled = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW);
+        boolean sqlShowEnabled = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW);
         try {
             if (sqlShowEnabled) {
                 fillLogMDC();

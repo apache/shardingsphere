@@ -42,7 +42,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     @Override
     public List<Connection> getConnections(final String databaseName, final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         return getConnections(databaseName, dataSourceName, connectionSize, connectionMode,
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType());
+                ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType());
     }
     
     /**
@@ -58,7 +58,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
      */
     public List<Connection> getConnections(final String databaseName, final String dataSourceName,
                                            final int connectionSize, final ConnectionMode connectionMode, final TransactionType transactionType) throws SQLException {
-        DataSource dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()
+        DataSource dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData()
                 .getDatabase(databaseName).getResourceMetaData().getStorageUnits().get(dataSourceName).getDataSource();
         if (dataSourceName.contains(".")) {
             String dataSourceStr = dataSourceName.split("\\.")[0];
@@ -95,7 +95,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     }
     
     private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
-        TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         ShardingSphereTransactionManager transactionManager = transactionRule.getResource().getTransactionManager(transactionType);
         Connection result = isInTransaction(transactionManager) ? transactionManager.getConnection(databaseName, dataSourceName) : dataSource.getConnection();
         if (dataSourceName.contains(".")) {

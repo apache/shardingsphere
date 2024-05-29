@@ -45,8 +45,8 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl.PostgreSQLMD5PasswordAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
@@ -182,8 +182,8 @@ class PostgreSQLAuthenticationEngineTest {
         payload.writeInt1('p');
         payload.writeInt4(4 + md5Digest.length() + 1);
         payload.writeStringNul(md5Digest);
-        MetaDataContexts metaDataContexts = getMetaDataContexts(new ShardingSphereUser(username, password, ""));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        MetaDataContext metaDataContext = getMetaDataContext(new ShardingSphereUser(username, password, ""));
+        when(contextManager.getMetaDataContext()).thenReturn(metaDataContext);
         actual = engine.authenticate(channelHandlerContext, payload);
         assertThat(actual.isFinished(), is(password.equals(inputPassword)));
     }
@@ -194,12 +194,12 @@ class PostgreSQLAuthenticationEngineTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(AuthorityRule.class))));
+        when(result.getMetaDataContext().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(AuthorityRule.class))));
         return result;
     }
     
-    private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
-        return MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
+    private MetaDataContext getMetaDataContext(final ShardingSphereUser user) {
+        return MetaDataContextFactory.create(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(Collections.emptyMap(), mock(ResourceMetaData.class), buildGlobalRuleMetaData(user), new ConfigurationProperties(new Properties())));
     }
     

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownSystemVa
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -88,10 +88,10 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
             return;
         }
         String sql = "SET " + concatenatedGlobalVariables;
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        MetaDataContext metaDataContext = ProxyContext.getInstance().getContextManager().getMetaDataContext();
+        SQLParserRule sqlParserRule = metaDataContext.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData(),
                 connectionSession.getDefaultDatabaseName(), new HintValueContext()).bind(sqlStatement, Collections.emptyList());
         DatabaseBackendHandler databaseBackendHandler = DatabaseConnectorFactory.getInstance()
                 .newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext()), connectionSession.getDatabaseConnectionManager(), false);

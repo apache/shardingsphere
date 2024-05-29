@@ -149,9 +149,9 @@ class ImportDatabaseConfigurationExecutorTest {
         when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(new HashMap<>(Collections.singletonMap("foo_ds", storageUnit)));
         when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
-        when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(databaseName, database));
-        when(result.getMetaDataContexts().getMetaData().getDatabase(databaseName)).thenReturn(database);
-        when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(createProperties()));
+        when(result.getMetaDataContext().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(databaseName, database));
+        when(result.getMetaDataContext().getMetaData().getDatabase(databaseName)).thenReturn(database);
+        when(result.getMetaDataContext().getMetaData().getProps()).thenReturn(new ConfigurationProperties(createProperties()));
         return result;
     }
     

@@ -50,7 +50,7 @@ class AlterGlobalClockRuleExecutorTest {
         GlobalRuleDefinitionExecutor executor = mock(GlobalRuleDefinitionExecutor.class);
         when(executor.getRuleClass()).thenReturn(GlobalClockRule.class);
         when(rule.getConfiguration()).thenReturn(new DefaultGlobalClockRuleConfigurationBuilder().build());
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
+        when(result.getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
         return result;
     }
     

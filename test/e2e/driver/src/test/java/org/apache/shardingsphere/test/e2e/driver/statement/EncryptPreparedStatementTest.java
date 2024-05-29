@@ -56,7 +56,7 @@ class EncryptPreparedStatementTest extends AbstractEncryptDriverTest {
     
     @Test
     void assertSQLShow() {
-        assertTrue(getEncryptConnectionWithProps().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertTrue(getEncryptConnectionWithProps().getContextManager().getMetaDataContext().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     
     @Test

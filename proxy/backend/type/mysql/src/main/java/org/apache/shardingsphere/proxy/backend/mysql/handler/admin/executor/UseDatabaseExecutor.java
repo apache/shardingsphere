@@ -39,7 +39,7 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     @Override
     public void execute(final ConnectionSession connectionSession) {
         String databaseName = SQLUtils.getExactlyValue(useStatement.getSchema());
-        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getGrantee());
         ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(databaseName) && authorityChecker.isAuthorized(databaseName),
                 () -> new UnknownDatabaseException(databaseName));

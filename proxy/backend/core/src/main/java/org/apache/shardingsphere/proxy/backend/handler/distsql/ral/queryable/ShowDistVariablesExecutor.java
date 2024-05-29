@@ -57,7 +57,7 @@ public final class ShowDistVariablesExecutor implements DistSQLQueryExecutor<Sho
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowDistVariablesStatement sqlStatement, final ContextManager contextManager) {
-        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContext().getMetaData();
         Collection<LocalDataQueryResultRow> result = ConfigurationPropertyKey.getKeyNames().stream()
                 .filter(each -> !ConfigurationPropertyKey.SQL_SHOW.name().equals(each) && !ConfigurationPropertyKey.SQL_SIMPLE.name().equals(each))
                 .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), getStringResult(metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(each))))).collect(Collectors.toList());

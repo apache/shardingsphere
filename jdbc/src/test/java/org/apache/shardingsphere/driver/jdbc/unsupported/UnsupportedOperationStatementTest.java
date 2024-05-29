@@ -51,12 +51,12 @@ class UnsupportedOperationStatementTest {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         when(connection.getDatabaseName()).thenReturn("db");
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(databaseType);
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(
+        when(connection.getContextManager().getMetaDataContext().getMetaData().getDatabase("db").getProtocolType()).thenReturn(databaseType);
+        when(connection.getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(
                 Arrays.asList(new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()),
                         new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyMap()),
                         new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()))));
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(connection.getContextManager().getMetaDataContext().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         shardingSphereStatement = new ShardingSphereStatement(connection);
     }
     

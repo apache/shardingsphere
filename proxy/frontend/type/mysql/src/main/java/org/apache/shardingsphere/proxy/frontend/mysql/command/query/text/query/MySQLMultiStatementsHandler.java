@@ -46,7 +46,7 @@ import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
@@ -88,7 +88,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private final SQLStatement sqlStatementSample;
     
-    private final MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+    private final MetaDataContext metaDataContext = ProxyContext.getInstance().getContextManager().getMetaDataContext();
     
     private final Collection<QueryContext> multiSQLQueryContexts = new LinkedList<>();
     
@@ -106,8 +106,8 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     }
     
     private SQLParserEngine getSQLParserEngine() {
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        MetaDataContext metaDataContext = ProxyContext.getInstance().getContextManager().getMetaDataContext();
+        SQLParserRule sqlParserRule = metaDataContext.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         return sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     }
     
@@ -118,17 +118,17 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private QueryContext createQueryContext(final String sql, final SQLStatement sqlStatement) {
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContext.getMetaData(), connectionSession.getDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, metaDataContexts.getMetaData().getProps()
+        Collection<ShardingSphereRule> rules = metaDataContext.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, metaDataContext.getMetaData().getProps()
                 .<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), connectionSession.getDatabaseConnectionManager(),
                 (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(false), rules,
-                metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageUnits());
+                metaDataContext.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageUnits());
         return executeMultiStatements(prepareEngine);
     }
     
@@ -165,10 +165,10 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
-        RuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
-        ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
+        RuleMetaData globalRuleMetaData = metaDataContext.getMetaData().getGlobalRuleMetaData();
+        ShardingSphereDatabase currentDatabase = metaDataContext.getMetaData().getDatabase(connectionSession.getDatabaseName());
         SQLAuditEngine.audit(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, currentDatabase, null, queryContext.getHintValueContext());
-        return kernelProcessor.generateExecutionContext(queryContext, currentDatabase, globalRuleMetaData, metaDataContexts.getMetaData().getProps(), connectionSession.getConnectionContext());
+        return kernelProcessor.generateExecutionContext(queryContext, currentDatabase, globalRuleMetaData, metaDataContext.getMetaData().getProps(), connectionSession.getConnectionContext());
     }
     
     private Collection<ExecutionUnit> samplingExecutionUnit(final Map<String, List<ExecutionUnit>> dataSourcesToExecutionUnits) {
@@ -188,7 +188,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private UpdateResponseHeader executeBatchedStatements(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        ResourceMetaData resourceMetaData = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData();
+        ResourceMetaData resourceMetaData = metaDataContext.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData();
         JDBCExecutorCallback<int[]> callback = new BatchedJDBCExecutorCallback(resourceMetaData, sqlStatementSample, isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);
         int updated = 0;

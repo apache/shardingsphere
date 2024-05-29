@@ -176,7 +176,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         databaseConnectionManager.setAutoCommit(autoCommit);
         if (!autoCommit) {
             getConnectionContext().getTransactionContext()
-                    .beginTransaction(String.valueOf(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType()));
+                    .beginTransaction(String.valueOf(contextManager.getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType()));
         }
     }
     

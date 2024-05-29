@@ -30,8 +30,8 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.MetaDataContext;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextFactory;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -68,7 +68,7 @@ class FrontDatabaseProtocolTypeFactoryTest {
     }
     
     @Test
-    void assertGetDatabaseTypeInstanceOfMySQLDatabaseTypeFromMetaDataContextsSchemaName() {
+    void assertGetDatabaseTypeInstanceOfMySQLDatabaseTypeFromMetaDataContextSchemaName() {
         ContextManager contextManager = mockContextManager(mockDatabases(), new Properties());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         DatabaseType databaseType = FrontDatabaseProtocolTypeFactory.getDatabaseType();
@@ -77,7 +77,7 @@ class FrontDatabaseProtocolTypeFactoryTest {
     }
     
     @Test
-    void assertGetDatabaseTypeOfPostgreSQLDatabaseTypeFromMetaDataContextsProps() {
+    void assertGetDatabaseTypeOfPostgreSQLDatabaseTypeFromMetaDataContextProps() {
         ContextManager contextManager = mockContextManager(mockDatabases(),
                 PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "PostgreSQL")));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -97,10 +97,10 @@ class FrontDatabaseProtocolTypeFactoryTest {
         ShardingSphereDataPersistService shardingSphereDataPersistService = mock(ShardingSphereDataPersistService.class);
         when(shardingSphereDataPersistService.load(any())).thenReturn(Optional.empty());
         when(metaDataPersistService.getShardingSphereDataPersistService()).thenReturn(shardingSphereDataPersistService);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService,
+        MetaDataContext metaDataContext = MetaDataContextFactory.create(metaDataPersistService,
                 new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(props)));
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
-        return new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(PersistRepository.class));
+        return new ContextManager(metaDataContext, computeNodeInstanceContext, mock(PersistRepository.class));
     }
 }

@@ -53,7 +53,7 @@ class ShowTransactionRuleExecutorTest {
     
     private ContextManager mockContextManager(final TransactionRule rule) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(rule));
+        when(result.getMetaDataContext().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(rule));
         return result;
     }
     

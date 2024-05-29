@@ -46,7 +46,7 @@ public final class ProxySQLComQueryParser {
         if (SQLUtils.trimComment(sql).isEmpty()) {
             return new EmptyStatement();
         }
-        SQLParserRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        SQLParserRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         return rule.getSQLParserEngine(getProtocolType(databaseType, connectionSession)).parse(sql, false);
     }
     

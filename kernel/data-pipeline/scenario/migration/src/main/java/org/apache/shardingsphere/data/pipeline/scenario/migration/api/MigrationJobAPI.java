@@ -151,7 +151,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
             }
         }
         result.setSources(configSources);
-        ShardingSphereDatabase targetDatabase = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(param.getTargetDatabaseName());
+        ShardingSphereDatabase targetDatabase = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContext().getMetaData().getDatabase(param.getTargetDatabaseName());
         PipelineDataSourceConfiguration targetPipelineDataSourceConfig = buildTargetPipelineDataSourceConfiguration(targetDatabase);
         result.setTarget(buildYamlPipelineDataSourceConfiguration(targetPipelineDataSourceConfig.getType(), targetPipelineDataSourceConfig.getParameter()));
         result.setTargetDatabaseType(targetPipelineDataSourceConfig.getDatabaseType().getType());
@@ -287,7 +287,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     private void refreshTableMetadata(final String jobId, final String databaseName) {
         // TODO use origin database name now, wait reloadDatabaseMetaData fix case-sensitive problem
         ContextManager contextManager = PipelineContextManager.getContext(PipelineJobIdUtils.parseContextKey(jobId)).getContextManager();
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
+        ShardingSphereDatabase database = contextManager.getMetaDataContext().getMetaData().getDatabase(databaseName);
         contextManager.refreshTableMetaData(database);
     }
     

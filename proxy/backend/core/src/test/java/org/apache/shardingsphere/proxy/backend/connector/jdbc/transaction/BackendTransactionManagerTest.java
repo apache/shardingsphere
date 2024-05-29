@@ -167,7 +167,7 @@ class BackendTransactionManagerTest {
     }
     
     private void newBackendTransactionManager(final TransactionType transactionType, final boolean inTransaction) {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType())
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContext().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType())
                 .thenReturn(transactionType);
         when(transactionStatus.isInTransaction()).thenReturn(inTransaction);
         backendTransactionManager = new BackendTransactionManager(databaseConnectionManager);
@@ -188,7 +188,7 @@ class BackendTransactionManagerTest {
     private ContextManager mockContextManager(final TransactionType transactionType) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         RuleMetaData globalRuleMetaData = mockGlobalRuleMetaData(transactionType);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(result.getMetaDataContext().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         return result;
     }
     

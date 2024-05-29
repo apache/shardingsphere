@@ -118,8 +118,8 @@ class PortalTest {
     
     private ContextManager mockContextManager(final ShardingSphereDatabase database) {
         ContextManager result = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(result.getMetaDataContext().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(result.getMetaDataContext().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(result.getDatabase("foo_db")).thenReturn(database);
         return result;
     }

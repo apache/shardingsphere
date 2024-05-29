@@ -52,7 +52,7 @@ public final class RuleItemChangedSubscriber implements EventSubscriber {
                 contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
                         .getVersionPathByActiveVersion(event.getActiveVersionKey(), event.getActiveVersion());
         String databaseName = event.getDatabaseName();
-        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
+        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(contextManager.getMetaDataContext().getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.changeRuleItemConfiguration(event, currentRuleConfig, processor.swapRuleItemConfiguration(event, yamlContent));
             contextManager.getMetaDataContextManager().getConfigurationManager().alterRuleConfiguration(databaseName, currentRuleConfig);
@@ -68,11 +68,11 @@ public final class RuleItemChangedSubscriber implements EventSubscriber {
     @Subscribe
     public void renew(final DropRuleItemEvent event) {
         String databaseName = event.getDatabaseName();
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName)) {
+        if (!contextManager.getMetaDataContext().getMetaData().containsDatabase(databaseName)) {
             return;
         }
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
-        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
+        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(contextManager.getMetaDataContext().getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.dropRuleItemConfiguration(event, currentRuleConfig);
             contextManager.getMetaDataContextManager().getConfigurationManager().dropRuleConfiguration(databaseName, currentRuleConfig);
