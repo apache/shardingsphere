@@ -85,6 +85,6 @@ class ProxyStateExporterTest {
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null),
                 mock(LockContext.class), new EventBusContext());
-        return new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(PersistRepository.class));
+        return new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(PersistRepository.class), false);
     }
 }

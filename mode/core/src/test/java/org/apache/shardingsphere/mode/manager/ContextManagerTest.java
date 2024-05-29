@@ -89,7 +89,7 @@ class ContextManagerTest {
         when(metaDataContexts.getMetaData().getDatabases().values()).thenReturn(Collections.singleton(database));
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
-        contextManager = new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(PersistRepository.class));
+        contextManager = new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(PersistRepository.class), false);
     }
     
     private ShardingSphereDatabase mockDatabase() {

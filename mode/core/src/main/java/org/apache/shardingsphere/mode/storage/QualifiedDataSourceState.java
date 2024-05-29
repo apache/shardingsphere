@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 
 /**
- * Qualified data source status.
+ * Qualified data source state.
  */
 @RequiredArgsConstructor
 @Getter
-public final class QualifiedDataSourceStatus {
+public final class QualifiedDataSourceState {
     
     private final DataSourceState status;
 }
