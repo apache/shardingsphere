@@ -151,9 +151,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
             sqlStatementContext = queryContext.getSqlStatementContext();
-            currentResultSet = executor.executeAdvanceQuery(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database), this, null);
+            currentResultSet = executor.executeAdvanceQuery(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database), this, null,
+                    (StatementReplayCallback<Statement>) (statements, parameterSets) -> replay(statements));
             statements.addAll(executor.getStatements());
-            replay();
             return currentResultSet;
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
@@ -441,7 +441,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroups) {
             statements.addAll(each.getInputs().stream().map(JDBCExecutionUnit::getStorageResource).collect(Collectors.toList()));
         }
-        replay();
+        replay(statements);
     }
     
     private JDBCExecutorCallback<Boolean> createExecuteCallback(final ExecuteCallback executeCallback, final SQLStatement sqlStatement) {
@@ -461,7 +461,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         };
     }
     
-    private void replay() throws SQLException {
+    private void replay(final List<Statement> statements) throws SQLException {
         for (Statement each : statements) {
             getMethodInvocationRecorder().replay(each);
         }

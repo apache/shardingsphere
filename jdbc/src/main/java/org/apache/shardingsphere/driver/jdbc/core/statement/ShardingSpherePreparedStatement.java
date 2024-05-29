@@ -223,7 +223,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
-            currentResultSet = executor.executeAdvanceQuery(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database), this, columnLabelAndIndexMap);
+            currentResultSet = executor.executeAdvanceQuery(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database), this, columnLabelAndIndexMap,
+                    (StatementReplayCallback<PreparedStatement>) this::replay);
             if (currentResultSet instanceof ShardingSphereResultSet) {
                 columnLabelAndIndexMap = ((ShardingSphereResultSet) currentResultSet).getColumnLabelAndIndexMap();
             }
@@ -231,7 +232,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 statements.add((PreparedStatement) each);
             }
             parameterSets.addAll(executor.getParameterSets());
-            replay();
             return currentResultSet;
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
@@ -257,7 +257,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private void resetParameters() throws SQLException {
         parameterSets.clear();
         parameterSets.add(getParameters());
-        replaySetParameter();
+        replaySetParameter(statements, parameterSets);
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final ShardingSphereDatabase database) {
@@ -277,7 +277,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             QueryContext queryContext = createQueryContext();
             handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-            findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
             Optional<Integer> updatedCount = executor.executeAdvanceUpdate(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database),
                     (statement, sql) -> ((PreparedStatement) statement).executeUpdate());
             if (updatedCount.isPresent()) {
@@ -343,7 +342,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             QueryContext queryContext = createQueryContext();
             handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-            findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
             Optional<Boolean> advancedResult = executor.executeAdvance(
                     metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database), (statement, sql) -> ((PreparedStatement) statement).execute());
             if (advancedResult.isPresent()) {
@@ -456,8 +454,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         RuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
         ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(databaseName);
         SQLAuditEngine.audit(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, currentDatabase, null, queryContext.getHintValueContext());
-        return kernelProcessor.generateExecutionContext(
+        ExecutionContext result = kernelProcessor.generateExecutionContext(
                 queryContext, currentDatabase, globalRuleMetaData, metaDataContexts.getMetaData().getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
+        findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
+        return result;
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext, final String trafficInstanceId) {
@@ -492,17 +492,17 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 parameterSets.add(eachInput.getExecutionUnit().getSqlUnit().getParameters());
             });
         }
-        replay();
+        replay(statements, parameterSets);
     }
     
-    private void replay() throws SQLException {
-        replaySetParameter();
+    private void replay(final List<PreparedStatement> statements, final List<List<Object>> parameterSets) throws SQLException {
+        replaySetParameter(statements, parameterSets);
         for (Statement each : statements) {
             getMethodInvocationRecorder().replay(each);
         }
     }
     
-    private void replaySetParameter() throws SQLException {
+    private void replaySetParameter(final List<PreparedStatement> statements, final List<List<Object>> parameterSets) throws SQLException {
         for (int i = 0; i < statements.size(); i++) {
             replaySetParameter(statements.get(i), parameterSets.get(i));
         }
@@ -513,6 +513,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         statements.clear();
         parameterSets.clear();
         generatedValues.clear();
+        executor.clear();
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey() {
@@ -549,9 +550,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             Optional<String> trafficInstanceId = connection.getTrafficInstanceId(trafficRule, queryContext);
             executionContext = trafficInstanceId
                     .map(optional -> createExecutionContext(queryContext, optional)).orElseGet(() -> createExecutionContext(queryContext));
-            if (!trafficInstanceId.isPresent()) {
-                findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
-            }
             batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits());
         } finally {
             currentResultSet = null;
