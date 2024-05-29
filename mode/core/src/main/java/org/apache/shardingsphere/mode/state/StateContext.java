@@ -54,7 +54,7 @@ public final class StateContext {
     
     private void initDataSourceState(final ShardingSphereMetaData metaData, final Map<String, DataSourceState> storageDataSourceStates, final boolean force) {
         metaData.getDatabases().forEach((key, value) -> {
-            if (!value.getResourceMetaData().getStorageUnits().isEmpty()) {
+            if (value.getResourceMetaData() != null && !value.getResourceMetaData().getStorageUnits().isEmpty()) {
                 initDataSourceState(key, value.getResourceMetaData().getStorageUnits(), storageDataSourceStates, force);
             }
         });
