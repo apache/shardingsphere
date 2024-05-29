@@ -25,7 +25,7 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResult
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.sql.ResultSet;
@@ -47,24 +47,24 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     private final boolean selectContainsEnhancedTable;
     
-    private final ExecutionContext executionContext;
+    private final SQLStatementContext sqlStatementContext;
     
     private final ForceExecuteTemplate<ResultSet> forceExecuteTemplate;
     
     private boolean closed;
     
-    protected AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final boolean selectContainsEnhancedTable, final ExecutionContext executionContext) {
+    protected AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final boolean selectContainsEnhancedTable, final SQLStatementContext sqlStatementContext) {
         Preconditions.checkArgument(!resultSets.isEmpty());
         this.resultSets = resultSets;
         this.statement = statement;
         this.selectContainsEnhancedTable = selectContainsEnhancedTable;
-        this.executionContext = executionContext;
+        this.sqlStatementContext = sqlStatementContext;
         forceExecuteTemplate = new ForceExecuteTemplate<>();
     }
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingSphereResultSetMetaData(resultSets.get(0).getMetaData(), getDatabase(), selectContainsEnhancedTable, executionContext.getSqlStatementContext());
+        return new ShardingSphereResultSetMetaData(resultSets.get(0).getMetaData(), getDatabase(), selectContainsEnhancedTable, sqlStatementContext);
     }
     
     private ShardingSphereDatabase getDatabase() {

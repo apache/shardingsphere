@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.jupiter.api.Test;
 
@@ -441,8 +440,6 @@ class ResultSetGetterAdapterTest {
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        ExecutionContext executionContext = mock(ExecutionContext.class);
-        when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        return new ShardingSphereResultSet(Collections.singletonList(resultSet), mergedResult, mock(Statement.class), true, executionContext);
+        return new ShardingSphereResultSet(Collections.singletonList(resultSet), mergedResult, mock(Statement.class), true, sqlStatementContext);
     }
 }
