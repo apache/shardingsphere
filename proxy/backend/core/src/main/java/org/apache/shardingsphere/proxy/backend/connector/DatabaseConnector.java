@@ -169,7 +169,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
             return processExecuteFederation(resultSet, metaDataContexts);
         }
         ExecutionContext executionContext = generateExecutionContext();
-        return isNeedImplicitCommitTransaction(executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
+        return isNeedImplicitCommitTransaction(queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
                 ? doExecuteWithImplicitCommitTransaction(() -> doExecute(executionContext))
                 : doExecute(executionContext);
     }
@@ -216,14 +216,13 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private ResponseHeader doExecute(final ExecutionContext executionContext) throws SQLException {
         if (executionContext.getExecutionUnits().isEmpty()) {
-            return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
+            return new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement());
         }
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
         List result = proxySQLExecutor.execute(executionContext);
         refreshMetaData(executionContext);
         Object executeResultSample = result.iterator().next();
-        return executeResultSample instanceof QueryResult ? processExecuteQuery(queryContext.getSqlStatementContext(), result, (QueryResult) executeResultSample)
-                : processExecuteUpdate(executionContext, result);
+        return executeResultSample instanceof QueryResult ? processExecuteQuery(queryContext.getSqlStatementContext(), result, (QueryResult) executeResultSample) : processExecuteUpdate(result);
     }
     
     private ResultSet doExecuteFederation(final QueryContext queryContext, final MetaDataContexts metaDataContexts) {
@@ -284,7 +283,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     private void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         new MetaDataRefreshEngine(contextManager.getPersistServiceFacade().getMetaDataManagerPersistService(), database,
-                contextManager.getMetaDataContexts().getMetaData().getProps()).refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
+                contextManager.getMetaDataContexts().getMetaData().getProps()).refresh(queryContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
     }
     
     private QueryResponseHeader processExecuteQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
@@ -326,14 +325,14 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
-    private UpdateResponseHeader processExecuteUpdate(final ExecutionContext executionContext, final Collection<UpdateResult> updateResults) {
-        Optional<GeneratedKeyContext> generatedKeyContext = executionContext.getSqlStatementContext() instanceof InsertStatementContext
-                ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext()
+    private UpdateResponseHeader processExecuteUpdate(final Collection<UpdateResult> updateResults) {
+        Optional<GeneratedKeyContext> generatedKeyContext = queryContext.getSqlStatementContext() instanceof InsertStatementContext
+                ? ((InsertStatementContext) queryContext.getSqlStatementContext()).getGeneratedKeyContext()
                 : Optional.empty();
         Collection<Comparable<?>> autoIncrementGeneratedValues =
                 generatedKeyContext.filter(GeneratedKeyContext::isSupportAutoIncrement).map(GeneratedKeyContext::getGeneratedValues).orElseGet(Collections::emptyList);
-        UpdateResponseHeader result = new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement(), updateResults, autoIncrementGeneratedValues);
-        mergeUpdateCount(executionContext.getSqlStatementContext(), result);
+        UpdateResponseHeader result = new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement(), updateResults, autoIncrementGeneratedValues);
+        mergeUpdateCount(queryContext.getSqlStatementContext(), result);
         return result;
     }
     
