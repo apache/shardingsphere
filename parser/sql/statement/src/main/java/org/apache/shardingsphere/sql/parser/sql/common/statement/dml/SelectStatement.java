@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBy
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
@@ -50,6 +51,8 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
     private OrderBySegment orderBy;
     
     private CombineSegment combine;
+    
+    private WithSegment withSegment;
     
     /**
      * Get from.
@@ -103,5 +106,14 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
      */
     public Optional<CombineSegment> getCombine() {
         return Optional.ofNullable(combine);
+    }
+    
+    /**
+     * Get with segment.
+     *
+     * @return with segment.
+     */
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.ofNullable(withSegment);
     }
 }

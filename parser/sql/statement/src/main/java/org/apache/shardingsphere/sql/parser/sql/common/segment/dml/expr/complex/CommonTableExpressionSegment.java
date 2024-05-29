@@ -17,35 +17,47 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Common table expression segment.
  */
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
-public final class CommonTableExpressionSegment implements ExpressionSegment {
+public final class CommonTableExpressionSegment implements TableSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final IdentifierValue identifier;
+    private AliasSegment aliasSegment;
     
     private final SubquerySegment subquery;
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();
     
     @Override
-    public String getText() {
-        return identifier.getValue();
+    public Optional<String> getAliasName() {
+        return getAlias().map(IdentifierValue::getValue);
+    }
+    
+    @Override
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.of(aliasSegment).map(AliasSegment::getIdentifier);
+    }
+    
+    @Override
+    public void setAlias(final AliasSegment alias) {
+        this.aliasSegment = alias;
     }
 }

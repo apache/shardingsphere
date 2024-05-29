@@ -50,8 +50,8 @@ public final class WithSegmentBinder {
         for (CommonTableExpressionSegment each : segment.getCommonTableExpressions()) {
             CommonTableExpressionSegment boundedCommonTableExpression = CommonTableExpressionSegmentBinder.bind(each, statementBinderContext, tableBinderContexts);
             boundedCommonTableExpressions.add(boundedCommonTableExpression);
-            externalTableBinderContexts.put(each.getIdentifier().getValue(),
-                    new SimpleTableSegmentBinderContext(boundedCommonTableExpression.getSubquery().getSelect().getProjections().getProjections()));
+            each.getAliasName().ifPresent(aliasName -> externalTableBinderContexts.put(aliasName,
+                    new SimpleTableSegmentBinderContext(boundedCommonTableExpression.getSubquery().getSelect().getProjections().getProjections())));
         }
         return new WithSegment(segment.getStartIndex(), segment.getStopIndex(), boundedCommonTableExpressions);
     }

@@ -244,7 +244,7 @@ withClause
     ;
 
 cteClause
-    : identifier (LP_ columnNames RP_)? AS subquery
+    : alias (LP_ columnNames RP_)? AS subquery
     ;
 
 selectSpecification

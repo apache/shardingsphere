@@ -21,7 +21,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
@@ -41,8 +40,6 @@ public final class DorisSelectStatement extends SelectStatement implements Doris
     private LockSegment lock;
     
     private WindowSegment window;
-    
-    private WithSegment withSegment;
     
     /**
      * Get order by segment.
@@ -78,14 +75,5 @@ public final class DorisSelectStatement extends SelectStatement implements Doris
      */
     public Optional<SimpleTableSegment> getTable() {
         return Optional.ofNullable(table);
-    }
-    
-    /**
-     * Get with segment.
-     *
-     * @return with segment.
-     */
-    public Optional<WithSegment> getWithSegment() {
-        return Optional.ofNullable(withSegment);
     }
 }
