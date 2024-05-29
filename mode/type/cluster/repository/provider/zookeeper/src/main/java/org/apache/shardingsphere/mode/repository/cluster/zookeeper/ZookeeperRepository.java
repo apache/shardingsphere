@@ -28,7 +28,6 @@ import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContextAware;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -59,7 +58,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Registry repository of ZooKeeper.
  */
-public final class ZookeeperRepository implements ClusterPersistRepository, ComputeNodeInstanceContextAware {
+public final class ZookeeperRepository implements ClusterPersistRepository {
     
     private final Map<String, CuratorCache> caches = new ConcurrentHashMap<>();
     
@@ -256,6 +255,11 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Comp
     }
     
     @Override
+    public void watch(final ComputeNodeInstanceContext computeNodeInstanceContext) {
+        client.getConnectionStateListenable().addListener(new SessionConnectionReconnectListener(computeNodeInstanceContext, this));
+    }
+    
+    @Override
     public void close() {
         caches.values().forEach(CuratorCache::close);
         waitForCacheClose();
@@ -272,11 +276,6 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Comp
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
-    }
-    
-    @Override
-    public void setComputeNodeInstanceContext(final ComputeNodeInstanceContext computeNodeInstanceContext) {
-        client.getConnectionStateListenable().addListener(new SessionConnectionReconnectListener(computeNodeInstanceContext, this));
     }
     
     @Override
