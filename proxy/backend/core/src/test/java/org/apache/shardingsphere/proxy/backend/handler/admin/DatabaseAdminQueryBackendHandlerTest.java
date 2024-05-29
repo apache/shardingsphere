@@ -112,6 +112,7 @@ class DatabaseAdminQueryBackendHandlerTest {
     
     private ContextManager mockContextManager() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getResourceMetaData()).thenReturn(mock(ResourceMetaData.class));
         when(database.getProtocolType()).thenReturn(databaseType);
         when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenReturn(database);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class),
