@@ -40,7 +40,6 @@ import java.util.List;
  */
 public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperationResultSet {
     
-    @Getter
     private final List<ResultSet> resultSets;
     
     @Getter
@@ -48,12 +47,11 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     private final boolean selectContainsEnhancedTable;
     
-    private boolean closed;
-    
-    private final ForceExecuteTemplate<ResultSet> forceExecuteTemplate = new ForceExecuteTemplate<>();
-    
-    @Getter
     private final ExecutionContext executionContext;
+    
+    private final ForceExecuteTemplate<ResultSet> forceExecuteTemplate;
+    
+    private boolean closed;
     
     protected AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final boolean selectContainsEnhancedTable, final ExecutionContext executionContext) {
         Preconditions.checkArgument(!resultSets.isEmpty());
@@ -61,6 +59,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
         this.statement = statement;
         this.selectContainsEnhancedTable = selectContainsEnhancedTable;
         this.executionContext = executionContext;
+        forceExecuteTemplate = new ForceExecuteTemplate<>();
     }
     
     @Override
