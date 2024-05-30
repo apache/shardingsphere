@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
@@ -27,6 +28,7 @@ import java.util.Collection;
 /**
  * With segment.
  */
+@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
 public final class WithSegment implements SQLSegment {
@@ -36,4 +38,6 @@ public final class WithSegment implements SQLSegment {
     private final int stopIndex;
     
     private final Collection<CommonTableExpressionSegment> commonTableExpressions;
+    
+    private boolean recursive;
 }

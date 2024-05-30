@@ -745,7 +745,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         for (CteClauseContext each : ctx.cteClause()) {
             commonTableExpressions.add((CommonTableExpressionSegment) visit(each));
         }
-        return new WithSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), commonTableExpressions);
+        return new WithSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), commonTableExpressions, null != ctx.RECURSIVE());
     }
     
     @SuppressWarnings("unchecked")
