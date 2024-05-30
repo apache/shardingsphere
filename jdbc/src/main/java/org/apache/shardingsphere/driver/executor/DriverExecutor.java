@@ -115,7 +115,7 @@ public final class DriverExecutor implements AutoCloseable {
     }
     
     /**
-     * Execute advance query.
+     * Execute query.
      *
      * @param metaData meta data
      * @param database database
@@ -128,9 +128,9 @@ public final class DriverExecutor implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
-    public ResultSet executeAdvanceQuery(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
-                                         final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement,
-                                         final Map<String, Integer> columnLabelAndIndexMap, final StatementReplayCallback statementReplayCallback) throws SQLException {
+    public ResultSet executeQuery(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
+                                  final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement,
+                                  final Map<String, Integer> columnLabelAndIndexMap, final StatementReplayCallback statementReplayCallback) throws SQLException {
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
             return trafficExecutor.execute(
@@ -140,7 +140,15 @@ public final class DriverExecutor implements AutoCloseable {
             return sqlFederationEngine.executeQuery(
                     prepareEngine, getExecuteQueryCallback(database, queryContext, prepareEngine.getType()), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
         }
-        return doExecuteQuery(metaData, database, queryContext, prepareEngine, statement, columnLabelAndIndexMap, statementReplayCallback);
+        List<QueryResult> queryResults = executePushDownQuery(metaData, database, queryContext, prepareEngine, statementReplayCallback);
+        MergedResult mergedResult = mergeQuery(metaData, database, queryResults, queryContext.getSqlStatementContext());
+        boolean selectContainsEnhancedTable = queryContext.getSqlStatementContext() instanceof SelectStatementContext
+                && ((SelectStatementContext) queryContext.getSqlStatementContext()).isContainsEnhancedTable();
+        List<ResultSet> resultSets = getResultSets();
+        return new ShardingSphereResultSet(resultSets, mergedResult, statement, selectContainsEnhancedTable, queryContext.getSqlStatementContext(),
+                null == columnLabelAndIndexMap
+                        ? ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(queryContext.getSqlStatementContext(), selectContainsEnhancedTable, resultSets.get(0).getMetaData())
+                        : columnLabelAndIndexMap);
     }
     
     private TrafficExecutorCallback<ResultSet> getTrafficExecuteQueryCallback(final String jdbcDriverType) {
@@ -155,25 +163,10 @@ public final class DriverExecutor implements AutoCloseable {
                         queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
     }
     
-    @SuppressWarnings("rawtypes")
-    private ShardingSphereResultSet doExecuteQuery(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
-                                                   final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement,
-                                                   final Map<String, Integer> columnLabelAndIndexMap, final StatementReplayCallback statementReplayCallback) throws SQLException {
-        List<QueryResult> queryResults = executeQuery0(metaData, database, queryContext, prepareEngine, statementReplayCallback);
-        MergedResult mergedResult = mergeQuery(metaData, database, queryResults, queryContext.getSqlStatementContext());
-        boolean selectContainsEnhancedTable = queryContext.getSqlStatementContext() instanceof SelectStatementContext
-                && ((SelectStatementContext) queryContext.getSqlStatementContext()).isContainsEnhancedTable();
-        List<ResultSet> resultSets = getResultSets();
-        return new ShardingSphereResultSet(resultSets, mergedResult, statement, selectContainsEnhancedTable, queryContext.getSqlStatementContext(),
-                null == columnLabelAndIndexMap
-                        ? ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(queryContext.getSqlStatementContext(), selectContainsEnhancedTable, resultSets.get(0).getMetaData())
-                        : columnLabelAndIndexMap);
-    }
-    
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private List<QueryResult> executeQuery0(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
-                                            final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                            final StatementReplayCallback statementReplayCallback) throws SQLException {
+    private List<QueryResult> executePushDownQuery(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
+                                                   final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                                                   final StatementReplayCallback statementReplayCallback) throws SQLException {
         ExecutionContext executionContext = createExecutionContext(metaData, database, queryContext);
         if (hasRawExecutionRule(database)) {
             return rawExecutor.execute(createRawExecutionGroupContext(metaData, database, executionContext),
@@ -189,6 +182,10 @@ public final class DriverExecutor implements AutoCloseable {
         }
         statementReplayCallback.replay(statements, parameterSets);
         return regularExecutor.executeQuery(executionGroupContext, queryContext, getExecuteQueryCallback(database, queryContext, prepareEngine.getType()));
+    }
+    
+    private boolean hasRawExecutionRule(final ShardingSphereDatabase database) {
+        return !database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty();
     }
     
     private Collection<Statement> getStatements(final ExecutionGroup<JDBCExecutionUnit> executionGroup) {
@@ -219,10 +216,6 @@ public final class DriverExecutor implements AutoCloseable {
             each.close();
         }
         statements.clear();
-    }
-    
-    private boolean hasRawExecutionRule(final ShardingSphereDatabase database) {
-        return !database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty();
     }
     
     private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionGroupContext(final ShardingSphereMetaData metaData,
