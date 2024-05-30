@@ -29,6 +29,7 @@ import org.apache.curator.framework.api.ExistsBuilder;
 import org.apache.curator.framework.api.GetChildrenBuilder;
 import org.apache.curator.framework.api.ProtectACLCreateModeStatPathAndBytesable;
 import org.apache.curator.framework.api.SetDataBuilder;
+import org.apache.curator.framework.listen.Listenable;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
@@ -142,6 +143,7 @@ class ZookeeperRepositoryTest {
         when(client.delete()).thenReturn(deleteBuilder);
         when(deleteBuilder.deletingChildrenIfNeeded()).thenReturn(backgroundVersionable);
         when(client.getChildren()).thenReturn(getChildrenBuilder);
+        when(client.getConnectionStateListenable()).thenReturn(mock(Listenable.class));
     }
     
     @Test
