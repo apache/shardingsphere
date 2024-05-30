@@ -134,6 +134,22 @@ public final class AddressRepository {
     }
     
     /**
+     * delete by id in ClickHouse.
+     *
+     * @param id id
+     * @throws SQLException SQL exception
+     */
+    public void deleteInClickHouse(final Long id) throws SQLException {
+        String sql = "alter table t_address delete where address_id=?";
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setLong(1, id);
+            preparedStatement.executeUpdate();
+        }
+    }
+    
+    /**
      * select all.
      *
      * @return list of address

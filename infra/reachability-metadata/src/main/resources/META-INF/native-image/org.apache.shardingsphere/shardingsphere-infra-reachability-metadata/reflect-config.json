@@ -43,5 +43,15 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
   "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration",
   "allPublicMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.eventbus.EventBusContext"},
+  "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.ResourceMetaDataChangedSubscriber",
+  "methods":[{"name":"renew","parameterTypes":["org.apache.shardingsphere.mode.event.schema.table.CreateOrAlterTableEvent"] }, {"name":"renew","parameterTypes":["org.apache.shardingsphere.mode.event.schema.table.DropTableEvent"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.eventbus.EventBusContext"},
+  "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.StateChangedSubscriber",
+  "methods":[{"name":"renew","parameterTypes":["org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent"] }]
 }
 ]

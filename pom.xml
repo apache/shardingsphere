@@ -125,6 +125,7 @@
         <h2.version>2.2.224</h2.version>
         <opengauss.version>3.1.0-og</opengauss.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
+        <clickhouse-jdbc.version>0.6.0-patch5</clickhouse-jdbc.version>
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
         
@@ -469,6 +470,13 @@
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.clickhouse</groupId>
+                <artifactId>clickhouse-jdbc</artifactId>
+                <version>${clickhouse-jdbc.version}</version>
+                <classifier>http</classifier>
                 <scope>test</scope>
             </dependency>
             
