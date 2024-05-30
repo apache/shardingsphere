@@ -29,6 +29,7 @@ import org.apache.curator.framework.api.ExistsBuilder;
 import org.apache.curator.framework.api.GetChildrenBuilder;
 import org.apache.curator.framework.api.ProtectACLCreateModeStatPathAndBytesable;
 import org.apache.curator.framework.api.SetDataBuilder;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperDistributedLock;
@@ -107,7 +108,7 @@ class ZookeeperRepositoryTest {
         mockClient();
         mockBuilder();
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
-        REPOSITORY.init(config);
+        REPOSITORY.init(config, mock(ComputeNodeInstanceContext.class));
         mockDistributedLockHolder();
     }
     
@@ -188,25 +189,28 @@ class ZookeeperRepositoryTest {
                 new Property(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1"),
                 new Property(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000"),
                 new Property(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000"));
-        assertDoesNotThrow(() -> REPOSITORY.init(new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props)));
+        assertDoesNotThrow(() -> REPOSITORY.init(new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props),
+                mock(ComputeNodeInstanceContext.class)));
     }
     
     @Test
     void assertBuildCuratorClientWithTimeToLiveSecondsEqualsZero() {
         assertDoesNotThrow(() -> REPOSITORY.init(new ClusterPersistRepositoryConfiguration(
-                REPOSITORY.getType(), "governance", SERVER_LISTS, PropertiesBuilder.build(new Property(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0")))));
+                REPOSITORY.getType(), "governance", SERVER_LISTS, PropertiesBuilder.build(new Property(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0"))),
+                mock(ComputeNodeInstanceContext.class)));
     }
     
     @Test
     void assertBuildCuratorClientWithOperationTimeoutMillisecondsEqualsZero() {
         assertDoesNotThrow(() -> REPOSITORY.init(new ClusterPersistRepositoryConfiguration(
-                REPOSITORY.getType(), "governance", SERVER_LISTS, PropertiesBuilder.build(new Property(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0")))));
+                REPOSITORY.getType(), "governance", SERVER_LISTS, PropertiesBuilder.build(new Property(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0"))),
+                mock(ComputeNodeInstanceContext.class)));
     }
     
     @Test
     void assertBuildCuratorClientWithDigest() {
         REPOSITORY.init(new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS,
-                PropertiesBuilder.build(new Property(ZookeeperPropertyKey.DIGEST.getKey(), "any"))));
+                PropertiesBuilder.build(new Property(ZookeeperPropertyKey.DIGEST.getKey(), "any"))), mock(ComputeNodeInstanceContext.class));
         verify(builder).aclProvider(any(ACLProvider.class));
     }
     
