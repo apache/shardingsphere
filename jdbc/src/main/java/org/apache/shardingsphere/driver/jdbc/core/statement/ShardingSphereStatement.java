@@ -242,7 +242,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         boolean isNeedImplicitCommitTransaction = isNeedImplicitCommitTransaction(connection, sqlStatementContext.getSqlStatement(), executionContext.getExecutionUnits().size() > 1);
         int result = executor.executeAdvanceUpdate(
                 metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database), trafficCallback, updateCallback, isNeedImplicitCommitTransaction,
-                (StatementReplayCallback<Statement>) (statements, parameterSets) -> replay(statements));
+                (StatementReplayCallback<Statement>) (statements, parameterSets) -> replay(statements), executionContext);
         statements.addAll(executor.getStatements());
         replay(statements);
         return result;
