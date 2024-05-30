@@ -127,12 +127,14 @@ public final class DriverExecutor implements AutoCloseable {
      * @return result set
      * @throws SQLException SQL exception
      */
+    @SuppressWarnings("rawtypes")
     public ResultSet executeAdvanceQuery(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
                                          final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement,
                                          final Map<String, Integer> columnLabelAndIndexMap, final StatementReplayCallback statementReplayCallback) throws SQLException {
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
-            return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, getTrafficExecutorCallback(prepareEngine));
+            return trafficExecutor.execute(
+                    connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, getTrafficExecuteQueryCallback(prepareEngine.getType()));
         }
         if (sqlFederationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaData.getGlobalRuleMetaData())) {
             return sqlFederationEngine.executeQuery(
@@ -141,8 +143,8 @@ public final class DriverExecutor implements AutoCloseable {
         return doExecuteQuery(metaData, database, queryContext, prepareEngine, statement, columnLabelAndIndexMap, statementReplayCallback);
     }
     
-    private TrafficExecutorCallback<ResultSet> getTrafficExecutorCallback(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) {
-        return JDBCDriverType.STATEMENT.equals(prepareEngine.getType()) ? Statement::executeQuery : ((statement, sql) -> ((PreparedStatement) statement).executeQuery());
+    private TrafficExecutorCallback<ResultSet> getTrafficExecuteQueryCallback(final String jdbcDriverType) {
+        return JDBCDriverType.STATEMENT.equals(jdbcDriverType) ? Statement::executeQuery : ((statement, sql) -> ((PreparedStatement) statement).executeQuery());
     }
     
     private ExecuteQueryCallback getExecuteQueryCallback(final ShardingSphereDatabase database, final QueryContext queryContext, final String jdbcDriverType) {
@@ -153,6 +155,7 @@ public final class DriverExecutor implements AutoCloseable {
                         queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
     }
     
+    @SuppressWarnings("rawtypes")
     private ShardingSphereResultSet doExecuteQuery(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
                                                    final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement,
                                                    final Map<String, Integer> columnLabelAndIndexMap, final StatementReplayCallback statementReplayCallback) throws SQLException {
@@ -167,6 +170,7 @@ public final class DriverExecutor implements AutoCloseable {
                         : columnLabelAndIndexMap);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private List<QueryResult> executeQuery0(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
                                             final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                             final StatementReplayCallback statementReplayCallback) throws SQLException {
