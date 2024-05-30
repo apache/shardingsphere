@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture;
 
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
@@ -28,7 +29,7 @@ import java.util.List;
 public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config) {
+    public void init(final ClusterPersistRepositoryConfiguration config, final ComputeNodeInstanceContext computeNodeInstanceContext) {
     }
     
     @Override
