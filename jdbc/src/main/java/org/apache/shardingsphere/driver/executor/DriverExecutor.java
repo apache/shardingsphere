@@ -251,7 +251,7 @@ public final class DriverExecutor implements AutoCloseable {
     }
     
     /**
-     * Execute advance update.
+     * Execute update.
      *
      * @param metaData meta data
      * @param database database
@@ -266,10 +266,10 @@ public final class DriverExecutor implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
-    public int executeAdvanceUpdate(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
-                                    final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final TrafficExecutorCallback<Integer> trafficCallback,
-                                    final ExecuteUpdateCallback updateCallback, final boolean isNeedImplicitCommitTransaction,
-                                    final StatementReplayCallback statementReplayCallback, final ExecutionContext executionContext) throws SQLException {
+    public int executeUpdate(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
+                             final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                             final TrafficExecutorCallback<Integer> trafficCallback, final ExecuteUpdateCallback updateCallback, final StatementReplayCallback statementReplayCallback,
+                             final boolean isNeedImplicitCommitTransaction, final ExecutionContext executionContext) throws SQLException {
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
             return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, trafficCallback);
