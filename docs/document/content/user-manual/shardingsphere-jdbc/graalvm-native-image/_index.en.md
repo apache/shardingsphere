@@ -25,6 +25,17 @@ Users can still use the old versions of GraalVM CE such as `21.0.2-graalce` on S
 However, this will cause the failure of building the GraalVM Native Image when integrating some third-party dependencies. 
 A typical example is related to the `org.apache.hive:hive-jdbc:4.0.0` HiveServer2 JDBC Driver, which uses AWT-related classes. 
 GraalVM CE only supports AWT for GraalVM CE For JDK22 and higher versions.
+```shell
+com.sun.beans.introspect.ClassInfo was unintentionally initialized at build time. To see why com.sun.beans.introspect.ClassInfo got initialized use --trace-class-initialization=com.sun.beans.introspect.ClassInfo
+java.beans.Introspector was unintentionally initialized at build time. To see why java.beans.Introspector got initialized use --trace-class-initialization=java.beans.Introspector
+com.sun.beans.util.Cache$Kind$2 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$2 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$2
+com.sun.beans.TypeResolver was unintentionally initialized at build time. To see why com.sun.beans.TypeResolver got initialized use --trace-class-initialization=com.sun.beans.TypeResolver
+java.beans.ThreadGroupContext was unintentionally initialized at build time. To see why java.beans.ThreadGroupContext got initialized use --trace-class-initialization=java.beans.ThreadGroupContext
+com.sun.beans.util.Cache$Kind was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind
+com.sun.beans.introspect.MethodInfo was unintentionally initialized at build time. To see why com.sun.beans.introspect.MethodInfo got initialized use --trace-class-initialization=com.sun.beans.introspect.MethodInfo
+com.sun.beans.util.Cache$Kind$1 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$1 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$1
+com.sun.beans.util.Cache$Kind$3 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$3 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$3
+```
 
 ### Maven Ecology
 
@@ -305,6 +316,103 @@ Possible configuration examples are as follows,
 ```
 ClickHouse does not support local transactions, XA transactions, and Seata AT mode transactions at the ShardingSphere integration level. 
 More discussion is at https://github.com/ClickHouse/clickhouse-docs/issues/2300 .
+
+7. When using the Hive dialect via ShardingSphere JDBC, users are affected by the unresolved issue at https://github.com/apache/logging-log4j2/issues/1539,
+   necessitating the exclusion of libraries related to `apache/logging-log4j2` and `apache/logging-log4j1` from the HiveServer2 JDBC Driver.
+   Instead, they should employ alternative implementations from `qos-ch/slf4j` for any required logging functionalities.
+   Further, due to the impact of https://issues.apache.org/jira/browse/HIVE-28308,
+   users must refrain from using the `classifier` `standalone` version of `org.apache.hive:hive-jdbc:4.0.0` to circumvent dependency conflicts.
+   If opting for `qos-ch/logback` as the `qos-ch/slf4j` implementation, a possible configuration example could be structured as follows,
+```xml
+<project>
+   <dependencies>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-jdbc</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-parser-sql-hive</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.hive</groupId>
+         <artifactId>hive-jdbc</artifactId>
+         <version>4.0.0</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.hive</groupId>
+         <artifactId>hive-service</artifactId>
+         <version>4.0.0</version>
+         <exclusions>
+            <exclusion>
+               <groupId>org.apache.logging.log4j</groupId>
+               <artifactId>log4j-slf4j-impl</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.slf4j</groupId>
+               <artifactId>slf4j-reload4j</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.apache.logging.log4j</groupId>
+               <artifactId>log4j-api</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.antlr</groupId>
+               <artifactId>antlr4-runtime</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.codehaus.janino</groupId>
+               <artifactId>commons-compiler</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.apache.commons</groupId>
+               <artifactId>commons-dbcp2</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-io</groupId>
+               <artifactId>commons-io</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-lang</groupId>
+               <artifactId>commons-lang</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.apache.commons</groupId>
+               <artifactId>commons-pool2</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.codehaus.janino</groupId>
+               <artifactId>janino</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>com.fasterxml.woodstox</groupId>
+               <artifactId>woodstox-core</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.hadoop</groupId>
+         <artifactId>hadoop-client-api</artifactId>
+         <version>3.3.5</version>
+      </dependency>
+   </dependencies>
+</project>
+```
+Affected by https://github.com/grpc-java/issues/10601, should users incorporate `org.apache.hive:hive-service` into their project,
+it is imperative to create a file named `native-image.properties` within the directory `META-INF/native-image/io.grpc/grpc-netty-shaded` of the classpath,
+containing the following content,
+```properties
+Args=--initialize-at-run-time=\
+  io.grpc.netty.shaded.io.netty.channel.ChannelHandlerMask,\
+  io.grpc.netty.shaded.io.netty.channel.nio.AbstractNioChannel,\
+  io.grpc.netty.shaded.io.netty.channel.socket.nio.SelectorProviderUtil,\
+  io.grpc.netty.shaded.io.netty.util.concurrent.DefaultPromise,\
+  io.grpc.netty.shaded.io.netty.util.internal.MacAddressUtil,\
+  io.grpc.netty.shaded.io.netty.util.internal.SystemPropertyUtil,\
+  io.grpc.netty.shaded.io.netty.util.NetUtilInitializations
+```
 
 ## Contribute GraalVM Reachability Metadata
 

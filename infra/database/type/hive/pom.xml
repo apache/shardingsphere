@@ -38,14 +38,6 @@
             <artifactId>hive-jdbc</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.hive</groupId>
-            <artifactId>hive-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hive</groupId>
-            <artifactId>hive-metastore</artifactId>
-        </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
