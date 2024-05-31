@@ -27,8 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -47,7 +46,7 @@ class StandaloneProcessPersistServiceTest {
     }
     
     @Test
-    void getProcessList() {
+    void assertGetProcessList() {
         ProcessRegistry processRegistry = mock(ProcessRegistry.class);
         when(ProcessRegistry.getInstance()).thenReturn(processRegistry);
         processPersistService.getProcessList();
@@ -55,14 +54,12 @@ class StandaloneProcessPersistServiceTest {
     }
     
     @Test
-    void killProcess() throws SQLException {
+    void assertKillProcess() throws SQLException {
         ProcessRegistry processRegistry = mock(ProcessRegistry.class);
         when(ProcessRegistry.getInstance()).thenReturn(processRegistry);
         Process process = mock(Process.class);
         Statement statement = mock(Statement.class);
-        Map<Integer, Statement> processStatements = new ConcurrentHashMap<>();
-        processStatements.put(1, statement);
-        when(process.getProcessStatements()).thenReturn(processStatements);
+        when(process.getProcessStatements()).thenReturn(Collections.singletonMap(1, statement));
         when(processRegistry.get(any())).thenReturn(process);
         processPersistService.killProcess("foo_process_id");
         verify(statement).cancel();
