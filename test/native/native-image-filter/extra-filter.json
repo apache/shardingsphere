@@ -18,6 +18,7 @@
     {"excludeClasses": "com.arjuna.**"},
     {"excludeClasses": "com.atomikos.**"},
     {"excludeClasses": "com.alibaba.druid.**"},
+    {"excludeClasses": "com.clickhouse.jdbc.**"},
     {"excludeClasses": "com.ctc.wstx.stax.**"},
     {"excludeClasses": "com.fasterxml.jackson.databind.**"},
     {"excludeClasses": "com.github.benmanes.caffeine.cache.**"},

@@ -258,6 +258,36 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 </project>
 ```
 
+6. 当需要通过 ShardingSphere JDBC 使用 ClickHouse 方言时，
+用户需要手动引入相关的可选模块和 classifier 为 `http` 的 ClickHouse JDBC 驱动。
+原则上，ShardingSphere 的 GraalVM Native Image 集成不希望使用 classifier 为 `all` 的 `com.clickhouse:clickhouse-jdbc`，
+因为 Uber Jar 会导致采集重复的 GraalVM Reachability Metadata。
+可能的配置例子如下，
+```xml
+<project>
+    <dependencies>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-jdbc</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+       <dependency>
+          <groupId>org.apache.shardingsphere</groupId>
+          <artifactId>shardingsphere-parser-sql-clickhouse</artifactId>
+          <version>${shardingsphere.version}</version>
+      </dependency>
+       <dependency>
+          <groupId>com.clickhouse</groupId>
+          <artifactId>clickhouse-jdbc</artifactId>
+          <version>0.6.0-patch5</version>
+          <classifier>http</classifier>
+       </dependency>
+    </dependencies>
+</project>
+```
+
+ClickHouse 不支持 ShardingSphere 集成级别的本地事务，XA 事务和 Seata AT 模式事务，更多讨论位于 https://github.com/ClickHouse/clickhouse-docs/issues/2300 。
+
 ## 贡献 GraalVM Reachability Metadata
 
 ShardingSphere 对在 GraalVM Native Image 下的可用性的验证，是通过 GraalVM Native Build Tools 的 Maven Plugin 子项目来完成的。

@@ -15,25 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.clickhouse.type;
+package org.apache.shardingsphere.infra.database.clickhouse.metadata.database;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-
-import java.util.Arrays;
-import java.util.Collection;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 
 /**
- * Database type of ClickHouse.
+ * Database meta data of ClickHouse.
  */
-public final class ClickHouseDatabaseType implements DatabaseType {
+public final class ClickHouseDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
-    public Collection<String> getJdbcUrlPrefixes() {
-        return Arrays.asList("jdbc:ch:", "jdbc:clickhouse:");
+    public QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.QUOTE;
     }
     
     @Override
-    public String getType() {
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.FIRST;
+    }
+    
+    @Override
+    public String getDatabaseType() {
         return "ClickHouse";
     }
 }

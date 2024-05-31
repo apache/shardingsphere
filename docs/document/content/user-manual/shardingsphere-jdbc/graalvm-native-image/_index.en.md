@@ -269,6 +269,36 @@ Possible configuration examples are as follows,
 </project>
 ```
 
+6. When using the ClickHouse dialect through ShardingSphere JDBC, 
+users need to manually introduce the relevant optional modules and the ClickHouse JDBC driver with the classifier `http`.
+In principle, ShardingSphere's GraalVM Native Image integration does not want to use `com.clickhouse:clickhouse-jdbc` with classifier `all`, 
+because Uber Jar will cause the collection of duplicate GraalVM Reachability Metadata.
+Possible configuration examples are as follows,
+```xml
+<project>
+    <dependencies>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-jdbc</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+       <dependency>
+          <groupId>org.apache.shardingsphere</groupId>
+          <artifactId>shardingsphere-parser-sql-clickhouse</artifactId>
+          <version>${shardingsphere.version}</version>
+      </dependency>
+       <dependency>
+          <groupId>com.clickhouse</groupId>
+          <artifactId>clickhouse-jdbc</artifactId>
+          <version>0.6.0-patch5</version>
+          <classifier>http</classifier>
+       </dependency>
+    </dependencies>
+</project>
+```
+ClickHouse does not support local transactions, XA transactions, and Seata AT mode transactions at the ShardingSphere integration level. 
+More discussion is at https://github.com/ClickHouse/clickhouse-docs/issues/2300 .
+
 ## Contribute GraalVM Reachability Metadata
 
 The verification of ShardingSphere's availability under GraalVM Native Image is completed through the Maven Plugin subproject 
