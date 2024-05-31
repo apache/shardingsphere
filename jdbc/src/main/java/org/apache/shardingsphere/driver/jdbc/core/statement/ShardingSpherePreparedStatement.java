@@ -59,7 +59,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
@@ -277,18 +276,16 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             QueryContext queryContext = createQueryContext();
             handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-            Optional<Integer> updatedCount = executor.executeAdvanceUpdate(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database),
-                    (statement, sql) -> ((PreparedStatement) statement).executeUpdate());
-            if (updatedCount.isPresent()) {
-                return updatedCount.get();
-            }
             ExecutionContext executionContext = createExecutionContext(queryContext);
-            if (hasRawExecutionRule()) {
-                Collection<ExecuteResult> results =
-                        executor.getRawExecutor().execute(createRawExecutionGroupContext(executionContext), executionContext.getQueryContext(), new RawSQLExecutorCallback());
-                return accumulate(results);
+            boolean isNeedImplicitCommitTransaction = isNeedImplicitCommitTransaction(connection, sqlStatementContext.getSqlStatement(), executionContext.getExecutionUnits().size() > 1);
+            final int result = executor.executeAdvanceUpdate(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database),
+                    (statement, sql) -> ((PreparedStatement) statement).executeUpdate(), null, isNeedImplicitCommitTransaction, (StatementReplayCallback<PreparedStatement>) this::replay,
+                    executionContext);
+            for (Statement each : executor.getStatements()) {
+                statements.add((PreparedStatement) each);
             }
-            return executeUpdateWithExecutionContext(executionContext);
+            parameterSets.addAll(executor.getParameterSets());
+            return result;
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -297,38 +294,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         } finally {
             clearBatch();
         }
-    }
-    
-    private int useDriverToExecuteUpdate(final ExecutionContext executionContext) throws SQLException {
-        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(executionContext);
-        cacheStatements(executionGroupContext.getInputGroups());
-        return executor.getRegularExecutor().executeUpdate(executionGroupContext,
-                executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), createExecuteUpdateCallback());
-    }
-    
-    private int accumulate(final Collection<ExecuteResult> results) {
-        int result = 0;
-        for (ExecuteResult each : results) {
-            result += ((UpdateResult) each).getUpdateCount();
-        }
-        return result;
-    }
-    
-    private JDBCExecutorCallback<Integer> createExecuteUpdateCallback() {
-        boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        return new JDBCExecutorCallback<Integer>(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), sqlStatement, isExceptionThrown) {
-            
-            @Override
-            protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
-                return ((PreparedStatement) statement).executeUpdate();
-            }
-            
-            @Override
-            protected Optional<Integer> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
-                return Optional.empty();
-            }
-        };
     }
     
     @Override
@@ -368,12 +333,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return isNeedImplicitCommitTransaction(connection, sqlStatementContext.getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
                 ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(executionContext), connection, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType())
                 : useDriverToExecute(executionContext);
-    }
-    
-    private int executeUpdateWithExecutionContext(final ExecutionContext executionContext) throws SQLException {
-        return isNeedImplicitCommitTransaction(connection, sqlStatementContext.getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
-                ? executeWithImplicitCommitTransaction(() -> useDriverToExecuteUpdate(executionContext), connection, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType())
-                : useDriverToExecuteUpdate(executionContext);
     }
     
     private boolean useDriverToExecute(final ExecutionContext executionContext) throws SQLException {
