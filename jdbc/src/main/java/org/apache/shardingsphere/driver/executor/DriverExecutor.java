@@ -168,9 +168,9 @@ public final class DriverExecutor implements AutoCloseable {
     private ExecuteQueryCallback getExecuteQueryCallback(final ShardingSphereDatabase database, final QueryContext queryContext, final String jdbcDriverType) {
         return JDBCDriverType.STATEMENT.equals(jdbcDriverType)
                 ? new StatementExecuteQueryCallback(database.getProtocolType(), database.getResourceMetaData(),
-                queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown())
+                        queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown())
                 : new PreparedStatementExecuteQueryCallback(database.getProtocolType(), database.getResourceMetaData(),
-                queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
+                        queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -286,7 +286,7 @@ public final class DriverExecutor implements AutoCloseable {
                               final StatementReplayCallback statementReplayCallback) throws SQLException {
         return isNeedImplicitCommitTransaction
                 ? executeWithImplicitCommitTransaction(() -> useDriverToExecuteUpdate(
-                database, updateCallback, sqlStatementContext, executionContext, prepareEngine, statementReplayCallback), connection, database.getProtocolType())
+                        database, updateCallback, sqlStatementContext, executionContext, prepareEngine, statementReplayCallback), connection, database.getProtocolType())
                 : useDriverToExecuteUpdate(database, updateCallback, sqlStatementContext, executionContext, prepareEngine, statementReplayCallback);
     }
     
@@ -398,7 +398,7 @@ public final class DriverExecutor implements AutoCloseable {
                                                 final boolean isNeedImplicitCommitTransaction, final StatementReplayCallback statementReplayCallback) throws SQLException {
         return isNeedImplicitCommitTransaction
                 ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(database, executeCallback, executionContext, prepareEngine, statementReplayCallback), connection,
-                database.getProtocolType())
+                        database.getProtocolType())
                 : useDriverToExecute(database, executeCallback, executionContext, prepareEngine, statementReplayCallback);
     }
     
