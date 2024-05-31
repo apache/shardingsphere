@@ -64,5 +64,30 @@
   "name":"org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getDefaultType","parameterTypes":[] }, {"name":"getProps","parameterTypes":[] }, {"name":"getProviderType","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.hive.parser.HiveLexer"},
+  "name":"org.apache.shardingsphere.sql.parser.hive.parser.HiveLexer",
+  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.CharStream"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.hive.parser.HiveParser"},
+  "name":"org.apache.shardingsphere.sql.parser.hive.parser.HiveParser",
+  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.TokenStream"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor"},
+  "name":"org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveInsertStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveInsertStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveSelectStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 }
 ]

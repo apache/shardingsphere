@@ -126,6 +126,29 @@ public final class OrderItemRepository {
     }
     
     /**
+     * create table if not exists in Hive.
+     * Hive does not support `AUTO_INCREMENT`, refer to <a href="https://issues.apache.org/jira/browse/HIVE-6905">HIVE-6905</a> .
+     *
+     * @throws SQLException SQL exception
+     */
+    public void createTableIfNotExistsInHive() throws SQLException {
+        String sql = "CREATE TABLE IF NOT EXISTS t_order_item\n"
+                + "(\n"
+                + "    order_item_id BIGINT,\n"
+                + "    order_id      BIGINT NOT NULL,\n"
+                + "    user_id       INT    NOT NULL,\n"
+                + "    phone         VARCHAR(50),\n"
+                + "    status        VARCHAR(50),\n"
+                + "    PRIMARY KEY (order_item_id) disable novalidate\n"
+                + ") STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')";
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        }
+    }
+    
+    /**
      * drop table.
      *
      * @throws SQLException SQL exception

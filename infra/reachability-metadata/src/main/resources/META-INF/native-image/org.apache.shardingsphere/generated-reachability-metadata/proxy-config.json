@@ -6,5 +6,9 @@
   {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
     "interfaces":["java.sql.Connection"]
+  },
+  {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "interfaces":["org.apache.hive.service.rpc.thrift.TCLIService$Iface"]
   }
 ]
