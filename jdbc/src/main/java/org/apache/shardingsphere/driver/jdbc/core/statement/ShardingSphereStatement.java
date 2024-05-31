@@ -314,6 +314,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             each.close();
         }
         statements.clear();
+        executor.clear();
     }
     
     @Override
