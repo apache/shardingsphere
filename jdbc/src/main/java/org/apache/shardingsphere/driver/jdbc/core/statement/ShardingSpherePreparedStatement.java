@@ -294,7 +294,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             boolean isNeedImplicitCommitTransaction = isNeedImplicitCommitTransaction(connection, sqlStatementContext.getSqlStatement(), executionContext.getExecutionUnits().size() > 1);
             boolean result = executor.executeAdvance(
                     metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database), (statement, sql) -> ((PreparedStatement) statement).execute(),
-                    isNeedImplicitCommitTransaction, null, (StatementReplayCallback<PreparedStatement>) this::replay);
+                    isNeedImplicitCommitTransaction, null, (StatementReplayCallback<PreparedStatement>) this::replay, executionContext);
             for (Statement each : executor.getStatements()) {
                 statements.add((PreparedStatement) each);
             }
