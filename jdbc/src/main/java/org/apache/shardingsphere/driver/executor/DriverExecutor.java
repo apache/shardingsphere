@@ -64,12 +64,16 @@ import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttrib
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutorCallback;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.implicit.ImplicitTransactionCallback;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -260,21 +264,21 @@ public final class DriverExecutor implements AutoCloseable {
      * @param prepareEngine prepare engine
      * @param trafficCallback traffic callback
      * @param updateCallback update callback
-     * @param isNeedImplicitCommitTransaction is need implicit commit transaction
      * @param statementReplayCallback statement replay callback
-     * @param executionContext execution context
      * @return updated row count
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
     public int executeUpdate(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
-                             final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                             final TrafficExecutorCallback<Integer> trafficCallback, final ExecuteUpdateCallback updateCallback, final StatementReplayCallback statementReplayCallback,
-                             final boolean isNeedImplicitCommitTransaction, final ExecutionContext executionContext) throws SQLException {
+                             final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final TrafficExecutorCallback<Integer> trafficCallback,
+                             final ExecuteUpdateCallback updateCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
+        ExecutionContext executionContext = createExecutionContext(metaData, database, queryContext);
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
             return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, trafficCallback);
         }
+        boolean isNeedImplicitCommitTransaction = isNeedImplicitCommitTransaction(
+                connection, queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1);
         return database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()
                 ? executeUpdate(database, updateCallback, queryContext.getSqlStatementContext(), executionContext, prepareEngine, isNeedImplicitCommitTransaction, statementReplayCallback)
                 : accumulate(rawExecutor.execute(createRawExecutionGroupContext(metaData, database, executionContext), queryContext, new RawSQLExecutorCallback()));
@@ -362,18 +366,15 @@ public final class DriverExecutor implements AutoCloseable {
      * @param queryContext query context
      * @param prepareEngine prepare engine
      * @param trafficCallback traffic callback
-     * @param isNeedImplicitCommitTransaction is need implicit commit transaction
      * @param executeCallback execute callback
      * @param statementReplayCallback statement replay callback
-     * @param executionContext execution context
      * @return execute result
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
-    public boolean executeAdvance(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database,
-                                  final QueryContext queryContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                  final TrafficExecutorCallback<Boolean> trafficCallback, final boolean isNeedImplicitCommitTransaction,
-                                  final ExecuteCallback executeCallback, final StatementReplayCallback statementReplayCallback, final ExecutionContext executionContext) throws SQLException {
+    public boolean executeAdvance(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
+                                  final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final TrafficExecutorCallback<Boolean> trafficCallback,
+                                  final ExecuteCallback executeCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
             executeType = ExecuteType.TRAFFIC;
@@ -385,10 +386,13 @@ public final class DriverExecutor implements AutoCloseable {
                     prepareEngine, getExecuteQueryCallback(database, queryContext, prepareEngine.getType()), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
             return null != resultSet;
         }
+        ExecutionContext executionContext = createExecutionContext(metaData, database, queryContext);
         if (!database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()) {
             Collection<ExecuteResult> results = rawExecutor.execute(createRawExecutionGroupContext(metaData, database, executionContext), queryContext, new RawSQLExecutorCallback());
             return results.iterator().next() instanceof QueryResult;
         }
+        boolean isNeedImplicitCommitTransaction = isNeedImplicitCommitTransaction(
+                connection, queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1);
         return executeWithExecutionContext(database, executeCallback, executionContext, prepareEngine, isNeedImplicitCommitTransaction, statementReplayCallback);
     }
     
@@ -432,6 +436,22 @@ public final class DriverExecutor implements AutoCloseable {
                 return Optional.empty();
             }
         };
+    }
+    
+    private boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final SQLStatement sqlStatement, final boolean multiExecutionUnits) {
+        if (!connection.getAutoCommit()) {
+            return false;
+        }
+        TransactionType transactionType = connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
+        boolean isInTransaction = connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction();
+        if (!TransactionType.isDistributedTransaction(transactionType) || isInTransaction) {
+            return false;
+        }
+        return isWriteDMLStatement(sqlStatement) && multiExecutionUnits;
+    }
+    
+    private boolean isWriteDMLStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement);
     }
     
     /**

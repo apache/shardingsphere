@@ -26,16 +26,8 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.implicit.ImplicitTransactionCallback;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
@@ -60,39 +52,6 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     private boolean closed;
     
     private boolean closeOnCompletion;
-    
-    protected final boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final SQLStatement sqlStatement, final boolean multiExecutionUnits) {
-        if (!connection.getAutoCommit()) {
-            return false;
-        }
-        TransactionType transactionType = connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
-        boolean isInTransaction = connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction();
-        if (!TransactionType.isDistributedTransaction(transactionType) || isInTransaction) {
-            return false;
-        }
-        return isWriteDMLStatement(sqlStatement) && multiExecutionUnits;
-    }
-    
-    protected final <T> T executeWithImplicitCommitTransaction(final ImplicitTransactionCallback<T> callback, final Connection connection, final DatabaseType databaseType) throws SQLException {
-        T result;
-        try {
-            connection.setAutoCommit(false);
-            result = callback.execute();
-            connection.commit();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            connection.rollback();
-            throw SQLExceptionTransformEngine.toSQLException(ex, databaseType);
-        } finally {
-            connection.setAutoCommit(true);
-        }
-        return result;
-    }
-    
-    private boolean isWriteDMLStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement);
-    }
     
     protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final MetaDataContexts metaDataContexts) {
         if (connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction()) {

@@ -34,13 +34,10 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatem
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
-import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
@@ -52,7 +49,6 @@ import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -91,8 +87,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     @Getter(AccessLevel.PROTECTED)
     private final DriverExecutor executor;
     
-    private final KernelProcessor kernelProcessor;
-    
     @Getter(AccessLevel.PROTECTED)
     private final StatementManager statementManager;
     
@@ -120,7 +114,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         executor = new DriverExecutor(connection);
-        kernelProcessor = new KernelProcessor();
         statementManager = new StatementManager();
         batchStatementExecutor = new BatchStatementExecutor(this);
         databaseName = connection.getDatabaseName();
@@ -224,11 +217,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         sqlStatementContext = queryContext.getSqlStatementContext();
-        ExecutionContext executionContext = createExecutionContext(queryContext);
-        boolean isNeedImplicitCommitTransaction = isNeedImplicitCommitTransaction(connection, sqlStatementContext.getSqlStatement(), executionContext.getExecutionUnits().size() > 1);
+        clearStatements();
         int result = executor.executeUpdate(
                 metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database), trafficCallback, updateCallback,
-                (StatementReplayCallback<Statement>) (statements, parameterSets) -> replay(statements), isNeedImplicitCommitTransaction, executionContext);
+                (StatementReplayCallback<Statement>) (statements, parameterSets) -> replay(statements));
         statements.addAll(executor.getStatements());
         replay(statements);
         return result;
@@ -295,10 +287,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         sqlStatementContext = queryContext.getSqlStatementContext();
-        ExecutionContext executionContext = createExecutionContext(queryContext);
-        boolean isNeedImplicitCommitTransaction = isNeedImplicitCommitTransaction(connection, sqlStatementContext.getSqlStatement(), executionContext.getExecutionUnits().size() > 1);
         boolean result = executor.executeAdvance(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database), trafficCallback,
-                isNeedImplicitCommitTransaction, executeCallback, (StatementReplayCallback<Statement>) (statements, parameterSets) -> replay(statements), executionContext);
+                executeCallback, (StatementReplayCallback<Statement>) (statements, parameterSets) -> replay(statements));
         statements.addAll(executor.getStatements());
         return result;
     }
@@ -339,15 +329,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType()).parse(sql, false);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), databaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
-    }
-    
-    private ExecutionContext createExecutionContext(final QueryContext queryContext) throws SQLException {
-        clearStatements();
-        RuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
-        ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(databaseName);
-        SQLAuditEngine.audit(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, currentDatabase, null, queryContext.getHintValueContext());
-        return kernelProcessor.generateExecutionContext(queryContext, currentDatabase, globalRuleMetaData, metaDataContexts.getMetaData().getProps(),
-                connection.getDatabaseConnectionManager().getConnectionContext());
     }
     
     private void replay(final List<Statement> statements) throws SQLException {
