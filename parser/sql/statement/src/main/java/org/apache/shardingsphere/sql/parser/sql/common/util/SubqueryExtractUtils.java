@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Function
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
@@ -70,6 +71,16 @@ public final class SubqueryExtractUtils {
         }
         if (selectStatement.getCombine().isPresent()) {
             extractSubquerySegmentsFromCombine(result, selectStatement.getCombine().get());
+        }
+        if (selectStatement.getWithSegment().isPresent()) {
+            extractSubquerySegmentsFromCTEs(result, selectStatement.getWithSegment().get().getCommonTableExpressions());
+        }
+    }
+    
+    private static void extractSubquerySegmentsFromCTEs(final List<SubquerySegment> result, final Collection<CommonTableExpressionSegment> withSegment) {
+        for (CommonTableExpressionSegment each : withSegment) {
+            result.add(each.getSubquery());
+            extractSubquerySegments(result, each.getSubquery().getSelect());
         }
     }
     

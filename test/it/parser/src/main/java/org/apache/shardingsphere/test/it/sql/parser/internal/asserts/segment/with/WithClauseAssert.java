@@ -62,7 +62,7 @@ public final class WithClauseAssert {
         if (!expected.getColumns().isEmpty()) {
             assertThat(assertContext.getText("Common table expression column size assertion error: "), actual.getColumns().size(), is(expected.getColumns().size()));
         }
-        assertThat(assertContext.getText("Common table expression name assertion error: "), actual.getIdentifier().getValue(), is(expected.getName()));
+        assertThat(assertContext.getText("Common table expression name assertion error: "), actual.getAliasName().orElse(null), is(expected.getName()));
         int count = 0;
         for (ColumnSegment each : actual.getColumns()) {
             ColumnAssert.assertIs(assertContext, each, expected.getColumns().get(count));

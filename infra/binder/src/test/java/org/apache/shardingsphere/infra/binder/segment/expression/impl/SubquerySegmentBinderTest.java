@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnPr
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.ColumnSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -51,12 +52,12 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 class SubquerySegmentBinderTest {
     
@@ -116,7 +117,7 @@ class SubquerySegmentBinderTest {
         oracleSubquerySelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(43, 49, new IdentifierValue("t_order"))));
         ExpressionSegment whereExpressionSegment = new ColumnSegment(57, 62, new IdentifierValue("status"));
         oracleSubquerySelectStatement.setWhere(new WhereSegment(51, 73, whereExpressionSegment));
-        CommonTableExpressionSegment commonTableExpressionSegment = new CommonTableExpressionSegment(0, 1, new IdentifierValue("submit_order"),
+        CommonTableExpressionSegment commonTableExpressionSegment = new CommonTableExpressionSegment(0, 1, new AliasSegment(0, 1, new IdentifierValue("submit_order")),
                 new SubquerySegment(22, 73, oracleSubquerySelectStatement, "SELECT order_id FROM t_order WHERE status = 'SUBMIT'"));
         WithSegment withSegment = new WithSegment(0, 74, Collections.singleton(commonTableExpressionSegment));
         OracleSelectStatement oracleSelectStatement = new OracleSelectStatement();

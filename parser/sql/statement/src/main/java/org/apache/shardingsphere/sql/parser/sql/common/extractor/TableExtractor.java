@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -42,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Or
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.match.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -58,7 +60,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.match.MatchAgainstExpression;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -99,8 +100,17 @@ public final class TableExtractor {
         if (selectStatement.getOrderBy().isPresent()) {
             extractTablesFromOrderByItems(selectStatement.getOrderBy().get().getOrderByItems());
         }
+        if (selectStatement.getWithSegment().isPresent()) {
+            extractTablesFromCTEs(selectStatement.getWithSegment().get().getCommonTableExpressions());
+        }
         Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
         lockSegment.ifPresent(this::extractTablesFromLock);
+    }
+    
+    private void extractTablesFromCTEs(final Collection<CommonTableExpressionSegment> commonTableExpressionSegments) {
+        for (CommonTableExpressionSegment each : commonTableExpressionSegments) {
+            extractTablesFromSelect(each.getSubquery().getSelect());
+        }
     }
     
     private void extractTablesFromTableSegment(final TableSegment tableSegment) {
@@ -363,7 +373,7 @@ public final class TableExtractor {
     
     /**
      * Extract table that should be rewritten from create view statement.
-     * 
+     *
      * @param createViewStatement create view statement
      */
     public void extractTablesFromCreateViewStatement(final CreateViewStatement createViewStatement) {

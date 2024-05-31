@@ -15,29 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
+package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
-
-import java.util.Collection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 
 /**
- * With segment.
+ * Statement replay callback.
+ *
+ * @param <T> type of statement
  */
-@AllArgsConstructor
-@RequiredArgsConstructor
-@Getter
-public final class WithSegment implements SQLSegment {
+public interface StatementReplayCallback<T extends Statement> {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final Collection<CommonTableExpressionSegment> commonTableExpressions;
-    
-    private boolean recursive;
+    /**
+     * Replay statement.
+     *
+     * @param statements statements
+     * @param parameterSets parameter sets
+     * @throws SQLException SQL exception
+     */
+    void replay(List<T> statements, List<List<Object>> parameterSets) throws SQLException;
 }

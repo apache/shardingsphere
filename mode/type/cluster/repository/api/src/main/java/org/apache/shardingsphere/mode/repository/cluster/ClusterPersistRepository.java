@@ -31,8 +31,9 @@ public interface ClusterPersistRepository extends PersistRepository {
      * Initialize registry center.
      *
      * @param config cluster persist repository configuration
+     * @param computeNodeInstanceContext compute node instance context
      */
-    void init(ClusterPersistRepositoryConfiguration config);
+    void init(ClusterPersistRepositoryConfiguration config, ComputeNodeInstanceContext computeNodeInstanceContext);
     
     /**
      * Persist exclusive ephemeral data.
@@ -57,12 +58,4 @@ public interface ClusterPersistRepository extends PersistRepository {
      * @param listener data changed event listener
      */
     void watch(String key, DataChangedEventListener listener);
-    
-    /**
-     * Watch client status.
-     *
-     * @param computeNodeInstanceContext compute node instance context
-     */
-    default void watch(ComputeNodeInstanceContext computeNodeInstanceContext) {
-    }
 }

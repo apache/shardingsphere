@@ -223,7 +223,7 @@ cteClauseSet
     ;
 
 cteClause
-    : identifier columnNames? AS subquery
+    : alias columnNames? AS subquery
     ;
 
 outputClause

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenE
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.DatetimeProjectionSegment;
@@ -182,6 +183,9 @@ public final class ColumnExtractor {
         }
         if (tableSegment instanceof SubqueryTableSegment && containsSubQuery) {
             extractFromSelectStatement(columnSegments, ((SubqueryTableSegment) tableSegment).getSubquery().getSelect(), true);
+        }
+        if (tableSegment instanceof CommonTableExpressionSegment && containsSubQuery) {
+            extractFromSelectStatement(columnSegments, ((CommonTableExpressionSegment) tableSegment).getSubquery().getSelect(), true);
         }
     }
     

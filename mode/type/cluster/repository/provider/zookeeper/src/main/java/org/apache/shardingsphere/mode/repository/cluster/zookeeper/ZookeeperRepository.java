@@ -70,10 +70,11 @@ public final class ZookeeperRepository implements ClusterPersistRepository {
     private DistributedLockHolder distributedLockHolder;
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config) {
+    public void init(final ClusterPersistRepositoryConfiguration config, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(config.getProps());
         client = buildCuratorClient(config, zookeeperProps);
         distributedLockHolder = new DistributedLockHolder(getType(), client, zookeeperProps);
+        client.getConnectionStateListenable().addListener(new SessionConnectionReconnectListener(computeNodeInstanceContext, this));
         initCuratorClient(zookeeperProps);
     }
     
@@ -252,11 +253,6 @@ public final class ZookeeperRepository implements ClusterPersistRepository {
                 .build();
         cache.listenable().addListener(curatorCacheListener);
         cache.start();
-    }
-    
-    @Override
-    public void watch(final ComputeNodeInstanceContext computeNodeInstanceContext) {
-        client.getConnectionStateListenable().addListener(new SessionConnectionReconnectListener(computeNodeInstanceContext, this));
     }
     
     @Override
