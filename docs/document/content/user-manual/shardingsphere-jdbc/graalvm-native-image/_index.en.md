@@ -90,7 +90,7 @@ and the documentation of GraalVM Native Build Tools shall prevail.
 Users need to actively use the GraalVM Reachability Metadata central repository.
 The following configuration is for reference to configure additional Gradle Tasks for the project,
 and the documentation of GraalVM Native Build Tools shall prevail.
-Due to the limitations of Gradle 8.6, 
+Due to the limitations of https://github.com/gradle/gradle/issues/17559 , 
 users need to introduce the JSON file of Metadata Repository through Maven dependency. 
 Reference https://github.com/graalvm/native-build-tools/issues/572 .
 
@@ -349,6 +349,134 @@ Possible configuration examples are as follows,
 ClickHouse does not support local transactions, XA transactions, and Seata AT mode transactions at the ShardingSphere integration level. 
 More discussion is at https://github.com/ClickHouse/clickhouse-docs/issues/2300 .
 
+7. When using the Hive dialect through ShardingSphere JDBC, affected by https://issues.apache.org/jira/browse/HIVE-28308 ,
+   users should not use `org.apache.hive:hive-jdbc:4.0.0` with `classifier` as `standalone` to avoid dependency conflicts.
+   Possible configuration examples are as follows,
+
+```xml
+<project>
+   <dependencies>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-jdbc</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-infra-database-hive</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-parser-sql-hive</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.hive</groupId>
+         <artifactId>hive-jdbc</artifactId>
+         <version>4.0.0</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.hive</groupId>
+         <artifactId>hive-service</artifactId>
+         <version>4.0.0</version>
+         <exclusions>
+            <exclusion>
+               <groupId>org.apache.hadoop</groupId>
+               <artifactId>hadoop-client-api</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.apache.logging.log4j</groupId>
+               <artifactId>log4j-slf4j-impl</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.slf4j</groupId>
+               <artifactId>slf4j-log4j12</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.bouncycastle</groupId>
+               <artifactId>bcprov-jdk15on</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.antlr</groupId>
+               <artifactId>antlr4-runtime</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.codehaus.janino</groupId>
+               <artifactId>commons-compiler</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.apache.commons</groupId>
+               <artifactId>commons-dbcp2</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-io</groupId>
+               <artifactId>commons-io</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-lang</groupId>
+               <artifactId>commons-lang</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.apache.commons</groupId>
+               <artifactId>commons-pool2</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.codehaus.janino</groupId>
+               <artifactId>janino</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>com.google.code.findbugs</groupId>
+               <artifactId>jsr305</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>com.fasterxml.woodstox</groupId>
+               <artifactId>woodstox-core</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.hadoop</groupId>
+         <artifactId>hadoop-client-api</artifactId>
+         <version>3.3.6</version>
+      </dependency>
+   </dependencies>
+</project>
+```
+Affected by https://github.com/grpc-java/issues/10601, should users incorporate `org.apache.hive:hive-service` into their project,
+it is imperative to create a file named `native-image.properties` within the directory `META-INF/native-image/io.grpc/grpc-netty-shaded` of the classpath,
+containing the following content,
+```properties
+Args=--initialize-at-run-time=\
+    io.grpc.netty.shaded.io.netty.channel.ChannelHandlerMask,\
+    io.grpc.netty.shaded.io.netty.channel.nio.AbstractNioChannel,\
+    io.grpc.netty.shaded.io.netty.channel.socket.nio.SelectorProviderUtil,\
+    io.grpc.netty.shaded.io.netty.util.concurrent.DefaultPromise,\
+    io.grpc.netty.shaded.io.netty.util.internal.MacAddressUtil,\
+    io.grpc.netty.shaded.io.netty.util.internal.SystemPropertyUtil,\
+    io.grpc.netty.shaded.io.netty.util.NetUtilInitializations,\
+    io.grpc.netty.shaded.io.netty.channel.AbstractChannel,\
+    io.grpc.netty.shaded.io.netty.util.NetUtil,\
+    io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent,\
+    io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent0,\
+    io.grpc.netty.shaded.io.netty.channel.DefaultChannelPipeline,\
+    io.grpc.netty.shaded.io.netty.channel.DefaultChannelId,\
+    io.grpc.netty.shaded.io.netty.util.ResourceLeakDetector,\
+    io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext,\
+    io.grpc.netty.shaded.io.netty.channel.ChannelOutboundBuffer,\
+    io.grpc.netty.shaded.io.netty.util.internal.InternalThreadLocalMap,\
+    io.grpc.netty.shaded.io.netty.util.internal.CleanerJava9,\
+    io.grpc.netty.shaded.io.netty.util.internal.StringUtil,\
+    io.grpc.netty.shaded.io.netty.util.internal.CleanerJava6,\
+    io.grpc.netty.shaded.io.netty.buffer.ByteBufUtil$HexUtil,\
+    io.grpc.netty.shaded.io.netty.buffer.AbstractByteBufAllocator,\
+    io.grpc.netty.shaded.io.netty.util.concurrent.FastThreadLocalThread,\
+    io.grpc.netty.shaded.io.netty.buffer.PoolArena,\
+    io.grpc.netty.shaded.io.netty.buffer.EmptyByteBuf,\
+    io.grpc.netty.shaded.io.netty.buffer.PoolThreadCache,\
+    io.grpc.netty.shaded.io.netty.util.AttributeKey
+```
+
 ## Contribute GraalVM Reachability Metadata
 
 The verification of ShardingSphere's availability under GraalVM Native Image is completed through the Maven Plugin subproject 
@@ -362,7 +490,7 @@ This subset of unit tests avoids the use of third-party libraries such as Mockit
 
 ShardingSphere defines the Maven Profile of `nativeTestInShardingSphere` for executing nativeTest for the `shardingsphere-test-native` module.
 
-Assuming that the contributor is under a new Ubuntu 22.04.3 LTS instance, Contributors can manage the JDK and tool chain through 
+Assuming that the contributor is under a new Ubuntu 22.04.4 LTS instance, Contributors can manage the JDK and tool chain through 
 `SDKMAN!` through the following bash command, and execute nativeTest for the `shardingsphere-test-native` submodule.
 
 You must install Docker Engine to execute `testcontainers-java` related unit tests.
@@ -386,7 +514,7 @@ on https://github.com/oracle/graalvm-reachability-metadata . ShardingSphere acti
 some third-party libraries in the `shardingsphere-infra-reachability-metadata` submodule.
 
 If nativeTest execution fails, preliminary GraalVM Reachability Metadata should be generated for unit tests,
-and manually adjust the contents of the `META-INF/native-image/org.apache.shardingsphere/shardingsphere-infra-reachability-metadata` folder on the classpath of the `shardingsphere-infra-reachability-metadata` submodule to fix nativeTest.
+and manually adjust the contents of the `META-INF/native-image/org.apache.shardingsphere/shardingsphere-infra-reachability-metadata/` folder on the classpath of the `shardingsphere-infra-reachability-metadata` submodule to fix nativeTest.
 If necessary, 
 use the `org.junit.jupiter.api.condition.DisabledInNativeImage` annotation or the `org.graalvm.nativeimage.imagecode` System Property blocks some unit tests from running under GraalVM Native Image.
 
