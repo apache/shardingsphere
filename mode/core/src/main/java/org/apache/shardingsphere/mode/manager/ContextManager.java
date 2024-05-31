@@ -75,14 +75,14 @@ public final class ContextManager implements AutoCloseable {
     
     private final PersistRepository repository;
     
-    public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
+    public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository, final boolean force) {
         this.metaDataContexts = new AtomicReference<>(metaDataContexts);
         this.computeNodeInstanceContext = computeNodeInstanceContext;
         this.repository = repository;
         persistServiceFacade = new PersistServiceFacade(repository, computeNodeInstanceContext.getModeConfiguration(), this);
+        stateContext = new StateContext(this.metaDataContexts.get().getMetaData(), persistServiceFacade.getQualifiedDataSourceStatePersistService().loadStates(), force);
         metaDataContextManager = new MetaDataContextManager(this.metaDataContexts, computeNodeInstanceContext, persistServiceFacade);
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
-        stateContext = new StateContext();
     }
     
     /**

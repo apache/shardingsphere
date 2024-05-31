@@ -19,22 +19,22 @@ package org.apache.shardingsphere.mode.storage.yaml;
 
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.mode.storage.QualifiedDataSourceStatus;
+import org.apache.shardingsphere.mode.storage.QualifiedDataSourceState;
 
 /**
  * YAML qualified data source status swapper.
  */
-public final class YamlQualifiedDataSourceStatusSwapper implements YamlConfigurationSwapper<YamlQualifiedDataSourceStatus, QualifiedDataSourceStatus> {
+public final class YamlQualifiedDataSourceStatusSwapper implements YamlConfigurationSwapper<YamlQualifiedDataSourceStatus, QualifiedDataSourceState> {
     
     @Override
-    public YamlQualifiedDataSourceStatus swapToYamlConfiguration(final QualifiedDataSourceStatus data) {
+    public YamlQualifiedDataSourceStatus swapToYamlConfiguration(final QualifiedDataSourceState data) {
         YamlQualifiedDataSourceStatus result = new YamlQualifiedDataSourceStatus();
         result.setStatus(data.getStatus().name());
         return result;
     }
     
     @Override
-    public QualifiedDataSourceStatus swapToObject(final YamlQualifiedDataSourceStatus yamlConfig) {
-        return new QualifiedDataSourceStatus(DataSourceState.valueOf(yamlConfig.getStatus()));
+    public QualifiedDataSourceState swapToObject(final YamlQualifiedDataSourceStatus yamlConfig) {
+        return new QualifiedDataSourceState(DataSourceState.valueOf(yamlConfig.getStatus()));
     }
 }

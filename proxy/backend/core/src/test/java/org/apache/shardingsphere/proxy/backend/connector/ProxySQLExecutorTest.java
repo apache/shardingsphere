@@ -112,7 +112,8 @@ class ProxySQLExecutorTest {
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(mock(SQLFederationRule.class), transactionRule)));
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
-        ContextManager contextManager = new ContextManager(MetaDataContextsFactory.create(mock(MetaDataPersistService.class), metaData), computeNodeInstanceContext, mock(PersistRepository.class));
+        ContextManager contextManager = new ContextManager(MetaDataContextsFactory.create(mock(MetaDataPersistService.class), metaData), computeNodeInstanceContext,
+                mock(PersistRepository.class), false);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
     

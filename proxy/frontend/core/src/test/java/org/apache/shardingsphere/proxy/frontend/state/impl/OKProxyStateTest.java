@@ -97,7 +97,7 @@ class OKProxyStateTest {
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singletonList(transactionRule)));
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
-        return new ContextManager(MetaDataContextsFactory.create(mock(MetaDataPersistService.class), metaData), computeNodeInstanceContext, mock(PersistRepository.class));
+        return new ContextManager(MetaDataContextsFactory.create(mock(MetaDataPersistService.class), metaData), computeNodeInstanceContext, mock(PersistRepository.class), false);
     }
     
     @SuppressWarnings({"unchecked", "SameParameterValue"})

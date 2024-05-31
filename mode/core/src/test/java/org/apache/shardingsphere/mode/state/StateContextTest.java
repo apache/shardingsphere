@@ -17,15 +17,19 @@
 
 package org.apache.shardingsphere.mode.state;
 
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 class StateContextTest {
     
-    private final StateContext stateContext = new StateContext();
+    private final StateContext stateContext = new StateContext(mock(ShardingSphereMetaData.class), new HashMap<>(), false);
     
     @Test
     void assertGetCurrentClusterState() {

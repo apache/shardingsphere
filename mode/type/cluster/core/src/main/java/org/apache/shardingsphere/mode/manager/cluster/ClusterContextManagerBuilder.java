@@ -43,8 +43,8 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
+import org.apache.shardingsphere.mode.service.persist.QualifiedDataSourceStatePersistService;
 import org.apache.shardingsphere.mode.state.StatePersistService;
-import org.apache.shardingsphere.mode.storage.service.QualifiedDataSourceStatusService;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -64,8 +64,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ComputeNodeInstanceContext computeNodeInstanceContext = buildComputeNodeInstanceContext(modeConfig, param.getInstanceMetaData(), repository, eventBusContext);
         repository.init(config, computeNodeInstanceContext);
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, computeNodeInstanceContext, new QualifiedDataSourceStatusService(repository).loadStatus());
-        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, computeNodeInstanceContext,
+                new QualifiedDataSourceStatePersistService(repository).loadStates());
+        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository, param.isForce());
         createSubscribers(eventBusContext, repository);
         registerOnline(eventBusContext, computeNodeInstanceContext, repository, param, result);
         setClusterState(result);

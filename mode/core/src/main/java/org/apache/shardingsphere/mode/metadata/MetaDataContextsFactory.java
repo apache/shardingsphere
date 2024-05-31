@@ -50,7 +50,7 @@ import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.storage.QualifiedDataSourceStatus;
+import org.apache.shardingsphere.mode.storage.QualifiedDataSourceState;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -95,7 +95,7 @@ public final class MetaDataContextsFactory {
      * @throws SQLException SQL exception
      */
     public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
-                                          final ComputeNodeInstanceContext computeNodeInstanceContext, final Map<String, QualifiedDataSourceStatus> statusMap) throws SQLException {
+                                          final ComputeNodeInstanceContext computeNodeInstanceContext, final Map<String, QualifiedDataSourceState> statusMap) throws SQLException {
         boolean isDatabaseMetaDataExisted = !persistService.getDatabaseMetaDataService().loadAllDatabaseNames().isEmpty();
         Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = isDatabaseMetaDataExisted
                 ? createEffectiveDatabaseConfigurations(getDatabaseNames(computeNodeInstanceContext, param.getDatabaseConfigs(), persistService), param.getDatabaseConfigs(), persistService)
@@ -155,7 +155,7 @@ public final class MetaDataContextsFactory {
         }
     }
     
-    private static void checkDataSourceStates(final Map<String, DatabaseConfiguration> databaseConfigs, final Map<String, QualifiedDataSourceStatus> statusMap, final boolean force) {
+    private static void checkDataSourceStates(final Map<String, DatabaseConfiguration> databaseConfigs, final Map<String, QualifiedDataSourceState> statusMap, final boolean force) {
         Map<String, DataSourceState> storageDataSourceStates = getStorageDataSourceStates(statusMap);
         databaseConfigs.forEach((key, value) -> {
             if (!value.getStorageUnits().isEmpty()) {
@@ -164,7 +164,7 @@ public final class MetaDataContextsFactory {
         });
     }
     
-    private static Map<String, DataSourceState> getStorageDataSourceStates(final Map<String, QualifiedDataSourceStatus> statusMap) {
+    private static Map<String, DataSourceState> getStorageDataSourceStates(final Map<String, QualifiedDataSourceState> statusMap) {
         Map<String, DataSourceState> result = new HashMap<>(statusMap.size(), 1F);
         statusMap.forEach((key, value) -> {
             List<String> values = Splitter.on(".").splitToList(key);
