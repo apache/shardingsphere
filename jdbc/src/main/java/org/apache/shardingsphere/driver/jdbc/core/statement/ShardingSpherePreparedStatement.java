@@ -278,9 +278,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
             ExecutionContext executionContext = createExecutionContext(queryContext);
             boolean isNeedImplicitCommitTransaction = isNeedImplicitCommitTransaction(connection, sqlStatementContext.getSqlStatement(), executionContext.getExecutionUnits().size() > 1);
-            final int result = executor.executeAdvanceUpdate(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database),
-                    (statement, sql) -> ((PreparedStatement) statement).executeUpdate(), null, isNeedImplicitCommitTransaction, (StatementReplayCallback<PreparedStatement>) this::replay,
-                    executionContext);
+            int result = executor.executeUpdate(metaDataContexts.getMetaData(), database, queryContext, createDriverExecutionPrepareEngine(database),
+                    (statement, sql) -> ((PreparedStatement) statement).executeUpdate(), null, (StatementReplayCallback<PreparedStatement>) this::replay,
+                    isNeedImplicitCommitTransaction, executionContext);
             for (Statement each : executor.getStatements()) {
                 statements.add((PreparedStatement) each);
             }
