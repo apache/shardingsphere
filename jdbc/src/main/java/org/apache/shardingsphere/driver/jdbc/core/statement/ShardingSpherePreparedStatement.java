@@ -210,7 +210,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             ShardingSphereDatabase database = metaData.getDatabase(databaseName);
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
-            currentResultSet = executor.executeQuery(metaData, database, queryContext, createDriverExecutionPrepareEngine(database), this, columnLabelAndIndexMap,
+            currentResultSet = executor.executeQuery(database, queryContext, createDriverExecutionPrepareEngine(database), this, columnLabelAndIndexMap,
                     (StatementReplayCallback<PreparedStatement>) this::replay);
             if (currentResultSet instanceof ShardingSphereResultSet) {
                 columnLabelAndIndexMap = ((ShardingSphereResultSet) currentResultSet).getColumnLabelAndIndexMap();
@@ -260,7 +260,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             QueryContext queryContext = createQueryContext();
             handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-            final int result = executor.executeUpdate(metaData, database, queryContext, createDriverExecutionPrepareEngine(database),
+            final int result = executor.executeUpdate(database, queryContext, createDriverExecutionPrepareEngine(database),
                     (statement, sql) -> ((PreparedStatement) statement).executeUpdate(), null, (StatementReplayCallback<PreparedStatement>) this::replay);
             for (Statement each : executor.getStatements()) {
                 statements.add((PreparedStatement) each);
@@ -289,8 +289,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             QueryContext queryContext = createQueryContext();
             handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-            final boolean result = executor.executeAdvance(
-                    metaData, database, queryContext, createDriverExecutionPrepareEngine(database), (statement, sql) -> ((PreparedStatement) statement).execute(),
+            final boolean result = executor.executeAdvance(database, queryContext, createDriverExecutionPrepareEngine(database), (statement, sql) -> ((PreparedStatement) statement).execute(),
                     null, (StatementReplayCallback<PreparedStatement>) this::replay);
             for (Statement each : executor.getStatements()) {
                 statements.add((PreparedStatement) each);

@@ -129,7 +129,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
             ShardingSphereDatabase database = metaData.getDatabase(databaseName);
             sqlStatementContext = queryContext.getSqlStatementContext();
-            currentResultSet = executor.executeQuery(metaData, database, queryContext, createDriverExecutionPrepareEngine(database), this, null,
+            currentResultSet = executor.executeQuery(database, queryContext, createDriverExecutionPrepareEngine(database), this, null,
                     (StatementReplayCallback<Statement>) (statements, parameterSets) -> replay(statements));
             statements.addAll(executor.getStatements());
             return currentResultSet;
@@ -218,8 +218,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         sqlStatementContext = queryContext.getSqlStatementContext();
         clearStatements();
-        int result = executor.executeUpdate(
-                metaData, database, queryContext, createDriverExecutionPrepareEngine(database), trafficCallback, updateCallback,
+        int result = executor.executeUpdate(database, queryContext, createDriverExecutionPrepareEngine(database), trafficCallback, updateCallback,
                 (StatementReplayCallback<Statement>) (statements, parameterSets) -> replay(statements));
         statements.addAll(executor.getStatements());
         replay(statements);
@@ -288,7 +287,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         sqlStatementContext = queryContext.getSqlStatementContext();
         clearStatements();
-        boolean result = executor.executeAdvance(metaData, database, queryContext, createDriverExecutionPrepareEngine(database), trafficCallback,
+        boolean result = executor.executeAdvance(database, queryContext, createDriverExecutionPrepareEngine(database), trafficCallback,
                 executeCallback, (StatementReplayCallback<Statement>) (statements, parameterSets) -> replay(statements));
         statements.addAll(executor.getStatements());
         return result;
