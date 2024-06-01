@@ -95,10 +95,8 @@ public final class DriverExecutor implements AutoCloseable {
     
     private final ShardingSphereConnection connection;
     
-    @Getter
     private final DriverJDBCExecutor regularExecutor;
     
-    @Getter
     private final RawExecutor rawExecutor;
     
     private final TrafficExecutor trafficExecutor;
