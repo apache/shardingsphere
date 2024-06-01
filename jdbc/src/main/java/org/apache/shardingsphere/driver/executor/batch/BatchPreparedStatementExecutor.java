@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorEx
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -50,7 +50,7 @@ import java.util.Optional;
  */
 public final class BatchPreparedStatementExecutor {
     
-    private final ShardingSphereMetaData metaData;
+    private final ShardingSphereDatabase database;
     
     private final JDBCExecutor jdbcExecutor;
     
@@ -61,13 +61,10 @@ public final class BatchPreparedStatementExecutor {
     
     private int batchCount;
     
-    private final String databaseName;
-    
-    public BatchPreparedStatementExecutor(final ShardingSphereMetaData metaData, final JDBCExecutor jdbcExecutor, final String databaseName, final String processId) {
-        this.databaseName = databaseName;
-        this.metaData = metaData;
+    public BatchPreparedStatementExecutor(final ShardingSphereDatabase database, final JDBCExecutor jdbcExecutor, final String processId) {
+        this.database = database;
         this.jdbcExecutor = jdbcExecutor;
-        executionGroupContext = new ExecutionGroupContext<>(new LinkedList<>(), new ExecutionGroupReportContext(processId, databaseName, new Grantee("", "")));
+        executionGroupContext = new ExecutionGroupContext<>(new LinkedList<>(), new ExecutionGroupReportContext(processId, database.getName(), new Grantee("", "")));
         batchExecutionUnits = new LinkedList<>();
     }
     
@@ -135,8 +132,7 @@ public final class BatchPreparedStatementExecutor {
      */
     public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        JDBCExecutorCallback<int[]> callback = new JDBCExecutorCallback<int[]>(metaData.getDatabase(databaseName).getProtocolType(),
-                metaData.getDatabase(databaseName).getResourceMetaData(), sqlStatementContext.getSqlStatement(), isExceptionThrown) {
+        JDBCExecutorCallback<int[]> callback = new JDBCExecutorCallback<int[]>(database.getProtocolType(), database.getResourceMetaData(), sqlStatementContext.getSqlStatement(), isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
@@ -157,7 +153,7 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext sqlStatementContext) {
-        for (DataNodeRuleAttribute each : metaData.getDatabase(databaseName).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
+        for (DataNodeRuleAttribute each : database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
             if (each.isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
                 return true;
             }
