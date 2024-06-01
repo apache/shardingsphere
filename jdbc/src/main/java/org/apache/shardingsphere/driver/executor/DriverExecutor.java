@@ -272,15 +272,16 @@ public final class DriverExecutor implements AutoCloseable {
     public int executeUpdate(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
                              final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final TrafficExecutorCallback<Integer> trafficCallback,
                              final ExecuteUpdateCallback updateCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
-        ExecutionContext executionContext = createExecutionContext(metaData, database, queryContext);
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
             return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, trafficCallback);
         }
-        boolean isNeedImplicitCommitTransaction = isNeedImplicitCommitTransaction(
-                connection, queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1);
+        ExecutionContext executionContext = createExecutionContext(metaData, database, queryContext);
         return database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()
-                ? executeUpdate(database, updateCallback, queryContext.getSqlStatementContext(), executionContext, prepareEngine, isNeedImplicitCommitTransaction, statementReplayCallback)
+                ? executeUpdate(database, updateCallback, queryContext.getSqlStatementContext(), executionContext, prepareEngine,
+                        isNeedImplicitCommitTransaction(connection,
+                                queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1),
+                        statementReplayCallback)
                 : accumulate(rawExecutor.execute(createRawExecutionGroupContext(metaData, database, executionContext), queryContext, new RawSQLExecutorCallback()));
     }
     
