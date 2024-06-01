@@ -30,10 +30,10 @@ public interface TrafficExecutorCallback<T> {
     /**
      * Execute.
      *
-     * @param statement statement
      * @param sql SQL
+     * @param statement statement
      * @return execution result
      * @throws SQLException SQL exception
      */
-    T execute(Statement statement, String sql) throws SQLException;
+    T execute(String sql, Statement statement) throws SQLException;
 }
