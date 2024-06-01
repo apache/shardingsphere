@@ -101,7 +101,11 @@ public final class ExportMetaDataExecutor implements DistSQLQueryExecutor<Export
         }
         StringBuilder result = new StringBuilder();
         result.append("props:").append(System.lineSeparator());
-        props.forEach((key, value) -> result.append("  ").append(key).append(": ").append(value).append(System.lineSeparator()));
+        props.forEach((key, value) -> {
+            if (null != value && !"".equals(value)) {
+                result.append("  ").append(key).append(": ").append(value).append(System.lineSeparator());
+            }
+        });
         return result.toString();
     }
     
