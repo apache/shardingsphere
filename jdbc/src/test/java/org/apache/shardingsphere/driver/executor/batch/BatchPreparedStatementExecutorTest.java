@@ -92,7 +92,7 @@ class BatchPreparedStatementExecutorTest {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
         ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager());
         String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
-        executor = new BatchPreparedStatementExecutor(connection.getContextManager().getMetaDataContexts(),
+        executor = new BatchPreparedStatementExecutor(connection.getContextManager().getMetaDataContexts().getMetaData(),
                 new JDBCExecutor(executorEngine, connection.getDatabaseConnectionManager().getConnectionContext()), "foo_db", processId);
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
     }
