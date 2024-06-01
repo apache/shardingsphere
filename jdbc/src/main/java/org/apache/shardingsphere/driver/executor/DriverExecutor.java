@@ -164,7 +164,7 @@ public final class DriverExecutor implements AutoCloseable {
     }
     
     private TrafficExecutorCallback<ResultSet> getTrafficExecuteQueryCallback(final String jdbcDriverType) {
-        return JDBCDriverType.STATEMENT.equals(jdbcDriverType) ? Statement::executeQuery : ((statement, sql) -> ((PreparedStatement) statement).executeQuery());
+        return JDBCDriverType.STATEMENT.equals(jdbcDriverType) ? ((sql, statement) -> statement.executeQuery(sql)) : ((sql, statement) -> ((PreparedStatement) statement).executeQuery());
     }
     
     private ExecuteQueryCallback getExecuteQueryCallback(final ShardingSphereDatabase database, final QueryContext queryContext, final String jdbcDriverType) {
@@ -257,7 +257,6 @@ public final class DriverExecutor implements AutoCloseable {
      * @param database database
      * @param queryContext query context
      * @param prepareEngine prepare engine
-     * @param trafficCallback traffic callback
      * @param updateCallback update callback
      * @param statementReplayCallback statement replay callback
      * @return updated row count
@@ -265,11 +264,11 @@ public final class DriverExecutor implements AutoCloseable {
      */
     @SuppressWarnings("rawtypes")
     public int executeUpdate(final ShardingSphereDatabase database, final QueryContext queryContext,
-                             final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final TrafficExecutorCallback<Integer> trafficCallback,
+                             final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                              final ExecuteUpdateCallback updateCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
-            return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, trafficCallback);
+            return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, updateCallback::executeUpdate);
         }
         ExecutionContext executionContext = createExecutionContext(database, queryContext);
         return database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()
@@ -360,7 +359,6 @@ public final class DriverExecutor implements AutoCloseable {
      * @param database database
      * @param queryContext query context
      * @param prepareEngine prepare engine
-     * @param trafficCallback traffic callback
      * @param executeCallback execute callback
      * @param statementReplayCallback statement replay callback
      * @return execute result
@@ -368,12 +366,12 @@ public final class DriverExecutor implements AutoCloseable {
      */
     @SuppressWarnings("rawtypes")
     public boolean executeAdvance(final ShardingSphereDatabase database, final QueryContext queryContext,
-                                  final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final TrafficExecutorCallback<Boolean> trafficCallback,
+                                  final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final ExecuteCallback executeCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
             executeType = ExecuteType.TRAFFIC;
-            return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, trafficCallback);
+            return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, executeCallback::execute);
         }
         if (sqlFederationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaData.getGlobalRuleMetaData())) {
             executeType = ExecuteType.FEDERATION;
