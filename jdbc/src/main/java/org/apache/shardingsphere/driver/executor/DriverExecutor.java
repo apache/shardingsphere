@@ -279,8 +279,9 @@ public final class DriverExecutor implements AutoCloseable {
         ExecutionContext executionContext = createExecutionContext(metaData, database, queryContext);
         return database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()
                 ? executeUpdate(database, updateCallback, queryContext.getSqlStatementContext(), executionContext, prepareEngine,
-                            isNeedImplicitCommitTransaction(connection,
-                                    queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1), statementReplayCallback)
+                        isNeedImplicitCommitTransaction(connection,
+                                queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1),
+                        statementReplayCallback)
                 : accumulate(rawExecutor.execute(createRawExecutionGroupContext(metaData, database, executionContext), queryContext, new RawSQLExecutorCallback()));
     }
     
