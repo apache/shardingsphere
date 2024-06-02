@@ -266,7 +266,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         QueryContext queryContext = createQueryContext(sql);
         prepareExecute(queryContext);
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        boolean result = executor.executeAdvance(database, queryContext, createDriverExecutionPrepareEngine(database),
+        boolean result = executor.execute(database, queryContext, createDriverExecutionPrepareEngine(database),
                 executeCallback, (StatementReplayCallback<Statement>) (statements, parameterSets) -> replay(statements));
         statements.addAll(executor.getStatements());
         return result;

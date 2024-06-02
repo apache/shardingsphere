@@ -354,7 +354,7 @@ public final class DriverExecutor implements AutoCloseable {
     }
     
     /**
-     * Execute advance.
+     * Execute.
      *
      * @param database database
      * @param queryContext query context
@@ -365,9 +365,9 @@ public final class DriverExecutor implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
-    public boolean executeAdvance(final ShardingSphereDatabase database, final QueryContext queryContext,
-                                  final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                  final ExecuteCallback executeCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
+    public boolean execute(final ShardingSphereDatabase database, final QueryContext queryContext,
+                           final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                           final ExecuteCallback executeCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
             executeType = ExecuteType.TRAFFIC;
