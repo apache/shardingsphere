@@ -51,7 +51,7 @@ public final class SQLAuditEngine {
             rules.addAll(database.getRuleMetaData().getRules());
         }
         for (Entry<ShardingSphereRule, SQLAuditor> entry : OrderedSPILoader.getServices(SQLAuditor.class, rules).entrySet()) {
-            entry.getValue().audit(queryContext.getSqlStatementContext(), queryContext.getParameters(), grantee, globalRuleMetaData, database, entry.getKey(), queryContext.getHintValueContext());
+            entry.getValue().audit(queryContext, grantee, globalRuleMetaData, database, entry.getKey());
         }
     }
 }

@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.infra.executor.audit;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
-
-import java.util.List;
 
 /**
  * SQL auditor.
@@ -39,14 +36,11 @@ public interface SQLAuditor<T extends ShardingSphereRule> extends OrderedSPI<T> 
     /**
      * Audit SQL.
      * 
-     * @param sqlStatementContext SQL statement context
-     * @param params SQL parameters
+     * @param queryContext query context
      * @param grantee grantee
      * @param globalRuleMetaData global rule meta data
      * @param database current database
      * @param rule rule
-     * @param hintValueContext hint value context
      */
-    void audit(SQLStatementContext sqlStatementContext, List<Object> params, Grantee grantee, RuleMetaData globalRuleMetaData,
-               ShardingSphereDatabase database, T rule, HintValueContext hintValueContext);
+    void audit(QueryContext queryContext, Grantee grantee, RuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule);
 }
