@@ -137,12 +137,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
     }
     
-    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final ShardingSphereDatabase database) {
-        int maxConnectionsSizePerQuery = metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connection.getDatabaseConnectionManager(), statementManager, statementOption,
-                database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
-    }
-    
     @Override
     public int executeUpdate(final String sql) throws SQLException {
         try {
@@ -272,6 +266,16 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return result;
     }
     
+    private QueryContext createQueryContext(final String originSQL) throws SQLException {
+        ShardingSpherePreconditions.checkNotEmpty(originSQL, () -> new EmptySQLException().toSQLException());
+        SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        String sql = SQLHintUtils.removeHint(originSQL);
+        HintValueContext hintValueContext = SQLHintUtils.extractHint(originSQL);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(metaData.getDatabase(databaseName).getProtocolType()).parse(sql, false);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, databaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
+        return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
+    }
+    
     private void prepareExecute(final QueryContext queryContext) throws SQLException {
         handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
         databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
@@ -294,6 +298,18 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         executor.clear();
     }
     
+    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final ShardingSphereDatabase database) {
+        int maxConnectionsSizePerQuery = metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connection.getDatabaseConnectionManager(), statementManager, statementOption,
+                database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
+    }
+    
+    private void replay(final List<Statement> statements) throws SQLException {
+        for (Statement each : statements) {
+            getMethodInvocationRecorder().replay(each);
+        }
+    }
+    
     @Override
     public void addBatch(final String sql) throws SQLException {
         batchStatementExecutor.addBatch(sql);
@@ -309,28 +325,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return batchStatementExecutor.executeBatch();
     }
     
-    private QueryContext createQueryContext(final String originSQL) throws SQLException {
-        ShardingSpherePreconditions.checkNotEmpty(originSQL, () -> new EmptySQLException().toSQLException());
-        SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        String sql = SQLHintUtils.removeHint(originSQL);
-        HintValueContext hintValueContext = SQLHintUtils.extractHint(originSQL);
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(metaData.getDatabase(databaseName).getProtocolType()).parse(sql, false);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, databaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
-        return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
-    }
-    
-    private void replay(final List<Statement> statements) throws SQLException {
-        for (Statement each : statements) {
-            getMethodInvocationRecorder().replay(each);
-        }
-    }
-    
     @Override
     public ResultSet getResultSet() throws SQLException {
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        Optional<ResultSet> advancedResultSet = executor.getAdvancedResultSet();
+        Optional<ResultSet> advancedResultSet = executor.getResultSet();
         if (advancedResultSet.isPresent()) {
             return advancedResultSet.get();
         }
