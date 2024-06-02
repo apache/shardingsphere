@@ -219,7 +219,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         int result = executor.executeUpdate(database, queryContext, createDriverExecutionPrepareEngine(database), updateCallback,
                 (StatementReplayCallback<Statement>) (statements, parameterSets) -> replay(statements));
         statements.addAll(executor.getStatements());
-        replay(statements);
         return result;
     }
     
