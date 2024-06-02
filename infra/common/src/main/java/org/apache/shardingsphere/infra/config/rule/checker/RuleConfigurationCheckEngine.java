@@ -49,6 +49,10 @@ public final class RuleConfigurationCheckEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void check(final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        if (null == checker) {
+            // TODO Remove after implementing the checker of BroadcastRuleConfiguration and SingleRuleConfiguration
+            return;
+        }
         Collection<String> requiredDataSourceNames = checker.getRequiredDataSourceNames(ruleConfig);
         if (!requiredDataSourceNames.isEmpty()) {
             checkDataSourcesExisted(database, requiredDataSourceNames);
