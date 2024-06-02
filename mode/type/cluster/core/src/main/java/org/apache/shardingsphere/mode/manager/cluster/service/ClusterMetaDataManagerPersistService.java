@@ -29,7 +29,9 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourceUnitPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.service.enums.ListenerAssistedEnum;
 import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.service.pojo.ListenerAssistedPOJO;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
 import java.util.Collection;
@@ -48,12 +50,16 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     @Override
     public void createDatabase(final String databaseName) {
+        contextManager.getPersistServiceFacade().getListenerAssistedPersistService().persist(new ListenerAssistedPOJO(databaseName, ListenerAssistedEnum.CREATE_DATABASE));
         contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().addDatabase(databaseName);
+        contextManager.getPersistServiceFacade().getListenerAssistedPersistService().delete(databaseName);
     }
     
     @Override
     public void dropDatabase(final String databaseName) {
+        contextManager.getPersistServiceFacade().getListenerAssistedPersistService().persist(new ListenerAssistedPOJO(databaseName, ListenerAssistedEnum.DROP_DATABASE));
         contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().dropDatabase(databaseName);
+        contextManager.getPersistServiceFacade().getListenerAssistedPersistService().delete(databaseName);
     }
     
     @Override

@@ -41,7 +41,7 @@ import java.util.Optional;
 public final class QualifiedDataSourceChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys(final Collection<String> databaseNames) {
+    public Collection<String> getWatchingKeys() {
         return Collections.singleton(QualifiedDataSourceNode.getRootPath());
     }
     

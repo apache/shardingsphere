@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
-import java.util.Collection;
-
 /**
  * Governance watcher factory.
  */
@@ -33,8 +31,6 @@ public final class GovernanceWatcherFactory {
     private final ClusterPersistRepository repository;
     
     private final EventBusContext eventBusContext;
-    
-    private final Collection<String> databaseNames;
     
     /**
      * Watch listeners.
@@ -46,7 +42,7 @@ public final class GovernanceWatcherFactory {
     }
     
     private void watch(final GovernanceWatcher<?> listener) {
-        for (String each : listener.getWatchingKeys(databaseNames)) {
+        for (String each : listener.getWatchingKeys()) {
             watch(each, listener);
         }
     }

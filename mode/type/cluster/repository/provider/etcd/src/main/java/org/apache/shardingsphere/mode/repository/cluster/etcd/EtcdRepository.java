@@ -168,6 +168,11 @@ public final class EtcdRepository implements ClusterPersistRepository {
                 WatchOption.newBuilder().withRange(OptionsUtil.prefixEndOf(prefix)).build(), listener);
     }
     
+    @Override
+    public void removeDataListener(final String key) {
+        // TODO
+    }
+    
     private Type getEventChangedType(final WatchEvent event) {
         if (1 == event.getKeyValue().getVersion()) {
             return Type.ADDED;

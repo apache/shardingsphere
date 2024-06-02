@@ -50,6 +50,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,6 +62,8 @@ import java.util.concurrent.TimeUnit;
 public final class ZookeeperRepository implements ClusterPersistRepository {
     
     private final Map<String, CuratorCache> caches = new ConcurrentHashMap<>();
+    
+    private final Map<String, CuratorCacheListener> dataListeners = new ConcurrentHashMap<>();
     
     private final Builder builder = CuratorFrameworkFactory.builder();
     
@@ -236,6 +239,9 @@ public final class ZookeeperRepository implements ClusterPersistRepository {
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
+        if (null != dataListeners.get(key)) {
+            return;
+        }
         CuratorCache cache = caches.get(key);
         if (null == cache) {
             cache = CuratorCache.build(client, key);
@@ -253,6 +259,16 @@ public final class ZookeeperRepository implements ClusterPersistRepository {
                 .build();
         cache.listenable().addListener(curatorCacheListener);
         cache.start();
+        dataListeners.computeIfAbsent(key, curator -> curatorCacheListener);
+    }
+    
+    @Override
+    public void removeDataListener(final String key) {
+        CuratorCacheListener cacheListener = dataListeners.remove(key);
+        if (null == cacheListener) {
+            return;
+        }
+        Optional.ofNullable(caches.get(key)).ifPresent(optional -> optional.listenable().removeListener(cacheListener));
     }
     
     @Override
