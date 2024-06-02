@@ -55,6 +55,8 @@ rules:
       actualDataNodes: ds_${0..1}.t_order_${0..1}
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+  bindingTables:
+    - t_order, t_order_item
 ```
 
 ### 广播表
