@@ -103,8 +103,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final List<PreparedStatement> statements;
     
-    private final List<List<Object>> parameterSets;
-    
     private final SQLStatementContext sqlStatementContext;
     
     private final String databaseName;
@@ -172,7 +170,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         hintValueContext = SQLHintUtils.extractHint(sql);
         this.sql = SQLHintUtils.removeHint(sql);
         statements = new ArrayList<>();
-        parameterSets = new ArrayList<>();
         SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(metaData.getDatabase(connection.getDatabaseName()).getProtocolType());
         SQLStatement sqlStatement = sqlParserEngine.parse(this.sql, true);
@@ -216,7 +213,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             for (Statement each : executor.getStatements()) {
                 statements.add((PreparedStatement) each);
             }
-            parameterSets.addAll(executor.getParameterSets());
             return currentResultSet;
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
@@ -236,9 +232,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private void resetParameters() throws SQLException {
-        parameterSets.clear();
-        parameterSets.add(getParameters());
-        replaySetParameter(statements, parameterSets);
+        replaySetParameter(statements, Collections.singletonList(getParameters()));
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final ShardingSphereDatabase database) {
@@ -263,7 +257,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             for (Statement each : executor.getStatements()) {
                 statements.add((PreparedStatement) each);
             }
-            parameterSets.addAll(executor.getParameterSets());
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
             return result;
             // CHECKSTYLE:OFF
@@ -292,7 +285,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             for (Statement each : executor.getStatements()) {
                 statements.add((PreparedStatement) each);
             }
-            parameterSets.addAll(executor.getParameterSets());
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
             return result;
             // CHECKSTYLE:OFF
@@ -393,7 +385,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private void clearPrevious() {
         currentResultSet = null;
         statements.clear();
-        parameterSets.clear();
         generatedValues.clear();
         executor.clear();
     }
