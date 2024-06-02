@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.listener.ListenerAssistedAddDatabaseEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.listener.ListenerAssistedDeleteDatabaseEvent;
 import org.apache.shardingsphere.mode.service.enums.ListenerAssistedEnum;
 import org.apache.shardingsphere.mode.service.pojo.ListenerAssistedPOJO;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.path.ListenerAssistedNodePath;
 
 import java.util.Arrays;
@@ -56,10 +56,10 @@ public class ListenerAssistedChangedWatcher implements GovernanceWatcher<Governa
         }
         ListenerAssistedPOJO data = YamlEngine.unmarshal(event.getValue(), ListenerAssistedPOJO.class);
         if (ListenerAssistedEnum.CREATE_DATABASE == data.getListenerAssistedEnum()) {
-            return Optional.of(new DatabaseAddedEvent(databaseName.get()));
+            return Optional.of(new ListenerAssistedAddDatabaseEvent(databaseName.get()));
         }
         return ListenerAssistedEnum.DROP_DATABASE == data.getListenerAssistedEnum()
-                ? Optional.of(new DatabaseDeletedEvent(databaseName.get()))
+                ? Optional.of(new ListenerAssistedDeleteDatabaseEvent(databaseName.get()))
                 : Optional.empty();
     }
 }

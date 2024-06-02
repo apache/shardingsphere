@@ -37,8 +37,7 @@ public final class ListenerAssistedPersistService {
      * @param listenerAssistedPOJO listener assisted pojo
      */
     public void persist(final ListenerAssistedPOJO listenerAssistedPOJO) {
-        repository.persist(ListenerAssistedNodePath.getDatabaseNameNodePath(listenerAssistedPOJO.getDatabaseName()),
-                YamlEngine.marshal(listenerAssistedPOJO.getListenerAssistedEnum()));
+        repository.persist(ListenerAssistedNodePath.getDatabaseNameNodePath(listenerAssistedPOJO.getDatabaseName()), YamlEngine.marshal(listenerAssistedPOJO));
     }
     
     /**

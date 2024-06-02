@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -26,9 +27,11 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
+import org.apache.shardingsphere.infra.util.retry.RetryExecutor;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourceUnitPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.service.enums.ListenerAssistedEnum;
 import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.service.pojo.ListenerAssistedPOJO;
@@ -48,16 +51,22 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     private final ContextManager contextManager;
     
+    @SneakyThrows(InterruptedException.class)
     @Override
     public void createDatabase(final String databaseName) {
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().persist(new ListenerAssistedPOJO(databaseName, ListenerAssistedEnum.CREATE_DATABASE));
+        // TODO Use loop retry to instead of sleep
+        Thread.sleep(2000L);
         contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().addDatabase(databaseName);
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().delete(databaseName);
     }
     
+    @SneakyThrows(InterruptedException.class)
     @Override
     public void dropDatabase(final String databaseName) {
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().persist(new ListenerAssistedPOJO(databaseName, ListenerAssistedEnum.DROP_DATABASE));
+        // TODO Use loop retry to instead of sleep
+        Thread.sleep(2000L);
         contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().dropDatabase(databaseName);
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().delete(databaseName);
     }
