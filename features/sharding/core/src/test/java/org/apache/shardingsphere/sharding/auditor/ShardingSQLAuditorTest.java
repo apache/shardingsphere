@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.sharding.auditor;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.sharding.exception.audit.DMLWithoutShardingKeyException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
+import org.apache.shardingsphere.sharding.exception.audit.DMLWithoutShardingKeyException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
@@ -59,9 +58,6 @@ class ShardingSQLAuditorTest {
     private CommonSQLStatementContext sqlStatementContext;
     
     @Mock
-    private Grantee grantee;
-    
-    @Mock
     private ShardingAuditStrategyConfiguration auditStrategy;
     
     @Mock
@@ -82,26 +78,26 @@ class ShardingSQLAuditorTest {
     @Test
     void assertCheckSuccess() {
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
-        new ShardingSQLAuditor().audit(new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext), grantee, globalRuleMetaData, databases.get("foo_db"), rule);
-        verify(rule.getAuditors().get("auditor_1")).check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"));
+        new ShardingSQLAuditor().audit(new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext), globalRuleMetaData, databases.get("foo_db"), rule);
+        verify(rule.getAuditors().get("auditor_1")).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, databases.get("foo_db"));
     }
     
     @Test
     void assertCheckSuccessByDisableAuditNames() {
         when(auditStrategy.isAllowHintDisable()).thenReturn(true);
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
-        new ShardingSQLAuditor().audit(new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext), grantee, globalRuleMetaData, databases.get("foo_db"), rule);
-        verify(rule.getAuditors().get("auditor_1"), times(0)).check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"));
+        new ShardingSQLAuditor().audit(new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext), globalRuleMetaData, databases.get("foo_db"), rule);
+        verify(rule.getAuditors().get("auditor_1"), times(0)).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, databases.get("foo_db"));
     }
     
     @Test
     void assertCheckFailed() {
         ShardingAuditAlgorithm auditAlgorithm = rule.getAuditors().get("auditor_1");
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
-        doThrow(new DMLWithoutShardingKeyException()).when(auditAlgorithm).check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"));
+        doThrow(new DMLWithoutShardingKeyException()).when(auditAlgorithm).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, databases.get("foo_db"));
         DMLWithoutShardingKeyException ex = assertThrows(DMLWithoutShardingKeyException.class, () -> new ShardingSQLAuditor().audit(
-                new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext), grantee, globalRuleMetaData, databases.get("foo_db"), rule));
+                new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext), globalRuleMetaData, databases.get("foo_db"), rule));
         assertThat(ex.getMessage(), is("Not allow DML operation without sharding conditions."));
-        verify(rule.getAuditors().get("auditor_1")).check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"));
+        verify(rule.getAuditors().get("auditor_1")).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, databases.get("foo_db"));
     }
 }
