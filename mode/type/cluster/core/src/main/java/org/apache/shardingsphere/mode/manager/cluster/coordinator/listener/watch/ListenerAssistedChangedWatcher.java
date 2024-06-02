@@ -59,6 +59,7 @@ public class ListenerAssistedChangedWatcher implements GovernanceWatcher<Governa
             return Optional.of(new DatabaseAddedEvent(databaseName.get()));
         }
         return ListenerAssistedEnum.DROP_DATABASE == data.getListenerAssistedEnum()
-                ? Optional.of(new DatabaseDeletedEvent(databaseName.get())) : Optional.empty();
+                ? Optional.of(new DatabaseDeletedEvent(databaseName.get()))
+                : Optional.empty();
     }
 }

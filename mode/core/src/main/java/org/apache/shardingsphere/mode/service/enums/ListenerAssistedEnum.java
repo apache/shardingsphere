@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.mode.service.enums;
 
-/**
- * Listener assisted enum.
- */
 public enum ListenerAssistedEnum {
-
-    CREATE_DATABASE, DROP_DATABASE
+    CREATE_DATABASE,
+    
+    DROP_DATABASE
 }

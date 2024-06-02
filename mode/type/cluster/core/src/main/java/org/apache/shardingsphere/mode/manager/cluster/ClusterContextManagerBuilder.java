@@ -111,9 +111,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void watchDatabaseMetaDataListener(final ContextManagerBuilderParameter param, final MetaDataPersistService metaDataPersistService, final EventBusContext eventBusContext) {
-        getDatabaseNames(param, metaDataPersistService).forEach(each ->
-                new MetaDataWatchListenerManager((ClusterPersistRepository) metaDataPersistService.getRepository())
-                        .addListener(DatabaseMetaDataNode.getDatabaseNamePath(each), new MetaDataChangedListener(eventBusContext)));
+        getDatabaseNames(param, metaDataPersistService).forEach(each -> new MetaDataWatchListenerManager((ClusterPersistRepository) metaDataPersistService.getRepository())
+                .addListener(DatabaseMetaDataNode.getDatabaseNamePath(each), new MetaDataChangedListener(eventBusContext)));
     }
     
     private Collection<String> getDatabaseNames(final ContextManagerBuilderParameter param, final MetaDataPersistService metaDataPersistService) {
