@@ -163,9 +163,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         this(connection, sql, resultSetType, resultSetConcurrency, resultSetHoldability, false, null);
     }
     
-    private ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql,
-                                            final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
-                                            final String[] columns) throws SQLException {
+    private ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql, final int resultSetType,
+                                            final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final String[] columns) throws SQLException {
         ShardingSpherePreconditions.checkNotEmpty(sql, () -> new EmptySQLException().toSQLException());
         this.connection = connection;
         metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
@@ -351,7 +350,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
         RuleMetaData globalRuleMetaData = metaData.getGlobalRuleMetaData();
         ShardingSphereDatabase currentDatabase = metaData.getDatabase(databaseName);
-        SQLAuditEngine.audit(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, currentDatabase, null, queryContext.getHintValueContext());
+        SQLAuditEngine.audit(queryContext, globalRuleMetaData, currentDatabase, null);
         ExecutionContext result = kernelProcessor.generateExecutionContext(
                 queryContext, currentDatabase, globalRuleMetaData, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
         findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
