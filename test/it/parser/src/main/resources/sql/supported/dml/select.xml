@@ -277,4 +277,7 @@
     <sql-case id="select_hour_from_table" value="select hour from table1" db-types="SQLServer"/>
     <sql-case id="select_minute_from_table" value="select minute from table1" db-types="SQLServer"/>
     <sql-case id="select_with_collation_keyword" value="SELECT pg_get_expr  AS CONSTRAINT ,indcollation AS COLLATION FROM pg_index" db-types="PostgreSQL"/>
+    <sql-case id="select_ucase" value="SELECT UCASE('Hello World')" db-types="Doris"/>
+    <sql-case id="select_starts_with" value="SELECT STARTS_WITH('Hello World','Hello')" db-types="Doris"/>
+    <sql-case id="select_conv" value="SELECT CONV(15,10,2)" db-types="Doris"/>
 </sql-cases>

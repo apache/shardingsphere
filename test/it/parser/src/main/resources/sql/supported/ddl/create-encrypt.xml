@@ -16,18 +16,6 @@
   ~ limitations under the License.
   -->
 
-<project version="4">
-  <component name="IssueNavigationConfiguration">
-    <option name="links">
-      <list>
-        <IssueNavigationLink>
-          <option name="issueRegexp" value="#(\d+)" />
-          <option name="linkRegexp" value="https://github.com/apache/shardingsphere/pull/$1" />
-        </IssueNavigationLink>
-      </list>
-    </option>
-  </component>
-  <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="Git" />
-  </component>
-</project>
+<sql-cases>
+    <sql-case id="create_encrypt" value="CREATE ENCRYPTKEY my_key AS 'ABCD123456789'" db-types="Doris" />
+</sql-cases>

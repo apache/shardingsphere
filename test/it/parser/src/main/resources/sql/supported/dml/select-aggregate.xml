@@ -36,4 +36,6 @@
     <sql-case id="select_approx_count"
               value="select owner, approx_count(*) , approx_rank(partition by owner order by approx_count(*) desc) from t group by owner having approx_rank(partition by owner order by approx_count(*) desc) &lt;= 1 order by 1"
               db-types="Oracle"/>
+    <sql-case id="select_bitmap_intersect" value="select tag, bitmap_intersect(user_id) from t_order" db-types="Doris"/>
+    <sql-case id="select_bitmap_union" value="select tag, bitmap_union(user_id) from t_order" db-types="Doris"/>
 </sql-cases>
