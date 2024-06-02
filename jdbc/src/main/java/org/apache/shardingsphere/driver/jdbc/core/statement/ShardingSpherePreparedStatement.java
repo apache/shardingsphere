@@ -350,7 +350,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
         RuleMetaData globalRuleMetaData = metaData.getGlobalRuleMetaData();
         ShardingSphereDatabase currentDatabase = metaData.getDatabase(databaseName);
-        SQLAuditEngine.audit(queryContext, globalRuleMetaData, currentDatabase, null);
+        SQLAuditEngine.audit(queryContext, globalRuleMetaData, currentDatabase);
         ExecutionContext result = kernelProcessor.generateExecutionContext(
                 queryContext, currentDatabase, globalRuleMetaData, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
         findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));

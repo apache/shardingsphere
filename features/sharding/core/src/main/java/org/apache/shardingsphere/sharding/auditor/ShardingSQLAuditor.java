@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
@@ -36,7 +35,7 @@ import java.util.Collection;
 public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
     
     @Override
-    public void audit(final QueryContext queryContext, final Grantee grantee, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule) {
+    public void audit(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule) {
         Collection<ShardingAuditStrategyConfiguration> auditStrategies = getShardingAuditStrategies(queryContext.getSqlStatementContext(), rule);
         if (auditStrategies.isEmpty()) {
             return;
@@ -45,7 +44,7 @@ public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
         for (ShardingAuditStrategyConfiguration auditStrategy : auditStrategies) {
             for (String auditorName : auditStrategy.getAuditorNames()) {
                 if (!auditStrategy.isAllowHintDisable() || !disableAuditNames.contains(auditorName.toLowerCase())) {
-                    rule.getAuditors().get(auditorName).check(queryContext.getSqlStatementContext(), queryContext.getParameters(), grantee, globalRuleMetaData, database);
+                    rule.getAuditors().get(auditorName).check(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, database);
                 }
             }
         }

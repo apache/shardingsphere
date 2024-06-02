@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.e2e.fixture;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 
 import java.util.List;
@@ -28,8 +27,7 @@ import java.util.List;
 public final class ITShardingAuditAlgorithmFixture implements ShardingAuditAlgorithm {
     
     @Override
-    public void check(final SQLStatementContext sqlStatementContext, final List<Object> params,
-                      final Grantee grantee, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
+    public void check(final SQLStatementContext sqlStatementContext, final List<Object> params, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
     }
     
     @Override
