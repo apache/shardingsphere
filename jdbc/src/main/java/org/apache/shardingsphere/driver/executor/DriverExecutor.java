@@ -219,7 +219,7 @@ public final class DriverExecutor implements AutoCloseable {
     private ExecutionContext createExecutionContext(final ShardingSphereDatabase database, final QueryContext queryContext) throws SQLException {
         clearStatements();
         RuleMetaData globalRuleMetaData = metaData.getGlobalRuleMetaData();
-        SQLAuditEngine.audit(queryContext, globalRuleMetaData, database, null);
+        SQLAuditEngine.audit(queryContext, globalRuleMetaData, database);
         return kernelProcessor.generateExecutionContext(queryContext, database, globalRuleMetaData, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
     }
     

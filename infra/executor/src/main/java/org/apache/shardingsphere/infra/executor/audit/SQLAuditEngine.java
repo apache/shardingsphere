@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -42,16 +41,15 @@ public final class SQLAuditEngine {
      * @param queryContext query context
      * @param globalRuleMetaData global rule meta data
      * @param database database
-     * @param grantee grantee
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static void audit(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final Grantee grantee) {
+    public static void audit(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         Collection<ShardingSphereRule> rules = new LinkedList<>(globalRuleMetaData.getRules());
         if (null != database) {
             rules.addAll(database.getRuleMetaData().getRules());
         }
         for (Entry<ShardingSphereRule, SQLAuditor> entry : OrderedSPILoader.getServices(SQLAuditor.class, rules).entrySet()) {
-            entry.getValue().audit(queryContext, grantee, globalRuleMetaData, database, entry.getKey());
+            entry.getValue().audit(queryContext, globalRuleMetaData, database, entry.getKey());
         }
     }
 }

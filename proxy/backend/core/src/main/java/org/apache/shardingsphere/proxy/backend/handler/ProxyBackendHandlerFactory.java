@@ -147,7 +147,7 @@ public final class ProxyBackendHandlerFactory {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
         ShardingSpherePreconditions.checkState(new AuthorityChecker(authorityRule, connectionSession.getGrantee()).isAuthorized(databaseName),
                 () -> new UnknownDatabaseException(databaseName));
-        SQLAuditEngine.audit(queryContext, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), database, connectionSession.getGrantee());
+        SQLAuditEngine.audit(queryContext, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), database);
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession);
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
     }
