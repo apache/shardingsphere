@@ -448,11 +448,11 @@ public final class DriverExecutor implements AutoCloseable {
     }
     
     /**
-     * Get advanced result set.
+     * Get result set.
      *
-     * @return advanced result set
+     * @return result set
      */
-    public Optional<ResultSet> getAdvancedResultSet() {
+    public Optional<ResultSet> getResultSet() {
         switch (executeType) {
             case TRAFFIC:
                 return Optional.of(trafficExecutor.getResultSet());

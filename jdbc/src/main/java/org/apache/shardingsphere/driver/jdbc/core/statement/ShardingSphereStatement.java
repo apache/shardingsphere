@@ -330,7 +330,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        Optional<ResultSet> advancedResultSet = executor.getAdvancedResultSet();
+        Optional<ResultSet> advancedResultSet = executor.getResultSet();
         if (advancedResultSet.isPresent()) {
             return advancedResultSet.get();
         }
