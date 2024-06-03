@@ -28,9 +28,6 @@ import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
 
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Driver executor facade.
@@ -48,9 +45,11 @@ public final class DriverExecutorFacade implements AutoCloseable {
     
     private final SQLFederationEngine sqlFederationEngine;
     
-    private final List<Statement> statements = new ArrayList<>();
+    private final DriverExecuteQueryExecutor queryExecutor;
     
-    private final List<List<Object>> parameterSets = new ArrayList<>();
+    private final DriverExecuteUpdateExecutor updateExecutor;
+    
+    private final DriverExecuteExecutor executeExecutor;
     
     public DriverExecutorFacade(final ShardingSphereConnection connection) {
         this.connection = connection;
@@ -62,26 +61,9 @@ public final class DriverExecutorFacade implements AutoCloseable {
         ShardingSphereMetaData metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
         String schemaName = new DatabaseTypeRegistry(metaData.getDatabase(connection.getDatabaseName()).getProtocolType()).getDefaultSchemaName(connection.getDatabaseName());
         sqlFederationEngine = new SQLFederationEngine(connection.getDatabaseName(), schemaName, metaData, connection.getContextManager().getMetaDataContexts().getStatistics(), jdbcExecutor);
-    }
-    
-    /**
-     * Clear statements.
-     *
-     * @throws SQLException SQL exception
-     */
-    public void clearStatements() throws SQLException {
-        for (Statement each : statements) {
-            each.close();
-        }
-        statements.clear();
-    }
-    
-    /**
-     * Clear.
-     */
-    public void clear() {
-        statements.clear();
-        parameterSets.clear();
+        queryExecutor = new DriverExecuteQueryExecutor(this);
+        updateExecutor = new DriverExecuteUpdateExecutor(this);
+        executeExecutor = new DriverExecuteExecutor(this);
     }
     
     @Override

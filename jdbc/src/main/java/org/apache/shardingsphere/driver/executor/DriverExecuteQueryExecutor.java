@@ -23,7 +23,8 @@ import org.apache.shardingsphere.driver.executor.callback.impl.StatementExecuteQ
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtils;
-import org.apache.shardingsphere.driver.jdbc.core.statement.StatementReplayCallback;
+import org.apache.shardingsphere.driver.jdbc.core.statement.callback.StatementAddCallback;
+import org.apache.shardingsphere.driver.jdbc.core.statement.callback.StatementReplayCallback;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -63,6 +64,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -73,8 +75,6 @@ import java.util.stream.Collectors;
  * Driver execute query executor.
  */
 public final class DriverExecuteQueryExecutor {
-    
-    private final DriverExecutorFacade executorFacade;
     
     private final ShardingSphereConnection connection;
     
@@ -88,14 +88,16 @@ public final class DriverExecuteQueryExecutor {
     
     private final SQLFederationEngine sqlFederationEngine;
     
+    private final Collection<Statement> statements;
+    
     public DriverExecuteQueryExecutor(final DriverExecutorFacade executorFacade) {
-        this.executorFacade = executorFacade;
         connection = executorFacade.getConnection();
         metaData = executorFacade.getConnection().getContextManager().getMetaDataContexts().getMetaData();
         regularExecutor = executorFacade.getRegularExecutor();
         rawExecutor = executorFacade.getRawExecutor();
         trafficExecutor = executorFacade.getTrafficExecutor();
         sqlFederationEngine = executorFacade.getSqlFederationEngine();
+        statements = new LinkedList<>();
     }
     
     /**
@@ -107,13 +109,15 @@ public final class DriverExecuteQueryExecutor {
      * @param statement statement
      * @param columnLabelAndIndexMap column label and index map
      * @param statementReplayCallback statement replay callback
+     * @param statementAddCallback statement add callback
      * @return result set
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
     public ResultSet executeQuery(final ShardingSphereDatabase database, final QueryContext queryContext,
-                                  final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement,
-                                  final Map<String, Integer> columnLabelAndIndexMap, final StatementReplayCallback statementReplayCallback) throws SQLException {
+                                  final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement, final Map<String, Integer> columnLabelAndIndexMap,
+                                  final StatementReplayCallback statementReplayCallback, final StatementAddCallback statementAddCallback) throws SQLException {
+        statements.clear();
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
             return trafficExecutor.execute(
@@ -123,7 +127,7 @@ public final class DriverExecuteQueryExecutor {
             return sqlFederationEngine.executeQuery(
                     prepareEngine, getExecuteQueryCallback(database, queryContext, prepareEngine.getType()), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
         }
-        List<QueryResult> queryResults = executePushDownQuery(database, queryContext, prepareEngine, statementReplayCallback);
+        List<QueryResult> queryResults = executePushDownQuery(database, queryContext, prepareEngine, statementReplayCallback, statementAddCallback);
         MergedResult mergedResult = mergeQuery(database, queryResults, queryContext.getSqlStatementContext());
         boolean selectContainsEnhancedTable = queryContext.getSqlStatementContext() instanceof SelectStatementContext
                 && ((SelectStatementContext) queryContext.getSqlStatementContext()).isContainsEnhancedTable();
@@ -149,21 +153,20 @@ public final class DriverExecuteQueryExecutor {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private List<QueryResult> executePushDownQuery(final ShardingSphereDatabase database, final QueryContext queryContext,
                                                    final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                                   final StatementReplayCallback statementReplayCallback) throws SQLException {
+                                                   final StatementReplayCallback statementReplayCallback, final StatementAddCallback statementAddCallback) throws SQLException {
         ExecutionContext executionContext = createExecutionContext(database, queryContext);
         if (hasRawExecutionRule(database)) {
-            return rawExecutor.execute(createRawExecutionGroupContext(database, executionContext),
-                    queryContext, new RawSQLExecutorCallback()).stream().map(QueryResult.class::cast).collect(Collectors.toList());
+            return rawExecutor.execute(
+                    createRawExecutionGroupContext(database, executionContext), queryContext, new RawSQLExecutorCallback()).stream().map(QueryResult.class::cast).collect(Collectors.toList());
         }
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(),
                 new ExecutionGroupReportContext(connection.getProcessId(), database.getName(), new Grantee("", "")));
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
-            executorFacade.getStatements().addAll(getStatements(each));
-            if (JDBCDriverType.PREPARED_STATEMENT.equals(prepareEngine.getType())) {
-                executorFacade.getParameterSets().addAll(getParameterSets(each));
-            }
+            Collection<Statement> statements = getStatements(each);
+            this.statements.addAll(statements);
+            statementAddCallback.add(statements, JDBCDriverType.PREPARED_STATEMENT.equals(prepareEngine.getType()) ? getParameterSets(each) : Collections.emptyList());
         }
-        statementReplayCallback.replay(executorFacade.getStatements(), executorFacade.getParameterSets());
+        statementReplayCallback.replay();
         return regularExecutor.executeQuery(executionGroupContext, queryContext, getExecuteQueryCallback(database, queryContext, prepareEngine.getType()));
     }
     
@@ -187,8 +190,7 @@ public final class DriverExecuteQueryExecutor {
         return result;
     }
     
-    private ExecutionContext createExecutionContext(final ShardingSphereDatabase database, final QueryContext queryContext) throws SQLException {
-        executorFacade.clearStatements();
+    private ExecutionContext createExecutionContext(final ShardingSphereDatabase database, final QueryContext queryContext) {
         RuleMetaData globalRuleMetaData = metaData.getGlobalRuleMetaData();
         SQLAuditEngine.audit(queryContext, globalRuleMetaData, database);
         return new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
@@ -206,8 +208,8 @@ public final class DriverExecuteQueryExecutor {
     }
     
     private List<ResultSet> getResultSets() throws SQLException {
-        List<ResultSet> result = new ArrayList<>(executorFacade.getStatements().size());
-        for (Statement each : executorFacade.getStatements()) {
+        List<ResultSet> result = new ArrayList<>(statements.size());
+        for (Statement each : statements) {
             if (null != each.getResultSet()) {
                 result.add(each.getResultSet());
             }
