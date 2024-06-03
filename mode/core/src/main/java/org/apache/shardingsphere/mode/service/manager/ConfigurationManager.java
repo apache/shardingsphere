@@ -169,10 +169,8 @@ public final class ConfigurationManager {
         }
         try {
             rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
-            rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(),
-                    database.getResourceMetaData().getStorageUnits().entrySet().stream()
-                            .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
-                    database.getRuleMetaData().getRules(), ruleConfig, computeNodeInstanceContext));
+            rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(),
+                    ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
             refreshMetadata(databaseName, database, rules, false);
         } catch (final SQLException ex) {
             log.error("Alter database: {} rule configurations failed", databaseName, ex);
@@ -197,10 +195,8 @@ public final class ConfigurationManager {
         try {
             rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
             if (!((DatabaseRuleConfiguration) ruleConfig).isEmpty()) {
-                rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(),
-                        database.getResourceMetaData().getStorageUnits().entrySet().stream()
-                                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
-                        database.getRuleMetaData().getRules(), ruleConfig, computeNodeInstanceContext));
+                rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(),
+                        ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
             }
             refreshMetadata(databaseName, database, rules, true);
         } catch (final SQLException ex) {

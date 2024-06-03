@@ -160,7 +160,8 @@ public abstract class SQLRewriterIT {
     }
     
     private Collection<ShardingSphereRule> createDatabaseRules(final DatabaseConfiguration databaseConfig, final String schemaName, final SQLStatement sqlStatement, final DatabaseType databaseType) {
-        Collection<ShardingSphereRule> result = DatabaseRulesBuilder.build(DefaultDatabase.LOGIC_NAME, databaseType, databaseConfig, mock(ComputeNodeInstanceContext.class));
+        Collection<ShardingSphereRule> result = DatabaseRulesBuilder.build(DefaultDatabase.LOGIC_NAME, databaseType, databaseConfig, mock(ComputeNodeInstanceContext.class),
+                new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits()));
         mockRules(result, schemaName, sqlStatement);
         result.add(sqlParserRule);
         result.add(timestampServiceRule);
