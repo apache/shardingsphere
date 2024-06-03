@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.executor.DriverExecutor;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
@@ -66,8 +65,6 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     protected abstract boolean isAccumulate();
     
     protected abstract Collection<? extends Statement> getRoutedStatements();
-    
-    protected abstract DriverExecutor getExecutor();
     
     protected abstract StatementManager getStatementManager();
     
@@ -225,9 +222,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
         closed = true;
         try {
             forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::close);
-            if (null != getExecutor()) {
-                getExecutor().close();
-            }
+            closeExecutor();
             if (null != getStatementManager()) {
                 getStatementManager().close();
             }
@@ -235,4 +230,6 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
             getRoutedStatements().clear();
         }
     }
+    
+    protected abstract void closeExecutor() throws SQLException;
 }
