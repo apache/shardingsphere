@@ -270,8 +270,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private QueryContext createQueryContext(final String originSQL) throws SQLException {
         ShardingSpherePreconditions.checkNotEmpty(originSQL, () -> new EmptySQLException().toSQLException());
         SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        String sql = SQLHintUtils.removeHint(originSQL);
         HintValueContext hintValueContext = SQLHintUtils.extractHint(originSQL);
+        String sql = SQLHintUtils.removeHint(originSQL);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(metaData.getDatabase(databaseName).getProtocolType()).parse(sql, false);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, databaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
@@ -331,9 +331,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        Optional<ResultSet> advancedResultSet = executor.getResultSet();
-        if (advancedResultSet.isPresent()) {
-            return advancedResultSet.get();
+        Optional<ResultSet> resultSet = executor.getResultSet();
+        if (resultSet.isPresent()) {
+            return resultSet.get();
         }
         if (sqlStatementContext instanceof SelectStatementContext || sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
