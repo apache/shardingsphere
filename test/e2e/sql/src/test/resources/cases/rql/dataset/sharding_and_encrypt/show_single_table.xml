@@ -20,5 +20,5 @@
         <column name="table_name" />
         <column name="storage_unit_name" />
     </metadata>
-    <row values="t_single_table| encrypt_ds_0" />
+    <row values="t_product| encrypt_ds_0" />
 </dataset>
