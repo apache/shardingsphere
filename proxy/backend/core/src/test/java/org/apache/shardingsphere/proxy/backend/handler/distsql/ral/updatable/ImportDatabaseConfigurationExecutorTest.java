@@ -48,6 +48,7 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import javax.sql.DataSource;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -146,8 +147,10 @@ class ImportDatabaseConfigurationExecutorTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         StorageUnit storageUnit = mock(StorageUnit.class);
-        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
+        DataSource dataSource = new MockedDataSource();
+        when(storageUnit.getDataSource()).thenReturn(dataSource);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(new HashMap<>(Collections.singletonMap("foo_ds", storageUnit)));
+        when(database.getResourceMetaData().getDataSourceMap()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(databaseName, database));
         when(result.getMetaDataContexts().getMetaData().getDatabase(databaseName)).thenReturn(database);

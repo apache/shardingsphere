@@ -48,7 +48,6 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConf
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -58,7 +57,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 /**
  * Yaml database configuration import executor.
@@ -143,10 +141,8 @@ public final class YamlDatabaseConfigurationImportExecutor {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private ShardingSphereRule buildRule(final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
         DatabaseRuleBuilder ruleBuilder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         ComputeNodeInstanceContext computeNodeInstanceContext = ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext();
-        return ruleBuilder.build(ruleConfig, database.getName(), database.getProtocolType(), dataSources, database.getRuleMetaData().getRules(), computeNodeInstanceContext);
+        return ruleBuilder.build(ruleConfig, database.getName(), database.getProtocolType(), database.getResourceMetaData(), database.getRuleMetaData().getRules(), computeNodeInstanceContext);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

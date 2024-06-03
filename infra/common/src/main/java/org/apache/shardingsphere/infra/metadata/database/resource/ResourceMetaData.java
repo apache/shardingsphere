@@ -84,4 +84,13 @@ public final class ResourceMetaData {
     public Collection<String> getNotExistedDataSources(final Collection<String> resourceNames) {
         return resourceNames.stream().filter(each -> !storageUnits.containsKey(each)).collect(Collectors.toSet());
     }
+    
+    /**
+     * Get data source map.
+     *
+     * @return data source map
+     */
+    public Map<String, DataSource> getDataSourceMap() {
+        return storageUnits.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
 }
