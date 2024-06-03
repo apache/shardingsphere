@@ -302,9 +302,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        Optional<ResultSet> advancedResultSet = executor.getResultSet();
-        if (advancedResultSet.isPresent()) {
-            return advancedResultSet.get();
+        Optional<ResultSet> resultSet = executor.getResultSet();
+        if (resultSet.isPresent()) {
+            return resultSet.get();
         }
         if (sqlStatementContext instanceof SelectStatementContext || sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
