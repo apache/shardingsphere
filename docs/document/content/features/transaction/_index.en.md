@@ -73,13 +73,13 @@ ACID-based strong consistency transactions and BASE-based final consistency tran
 Apache ShardingSphere integrates the operational scheme taking SEATA as the flexible transaction.
 The following table can be used for comparison to help developers choose the suitable technology.
 
-|          | *LOCAL*       | *XA*              | *BASE*     |
-| -------- | ------------- | ---------------- | ------------ |
-| Business transformation  | None            | None               | Seata server needed|
-| Consistency    | Not supported         | Not supported             | Final consistency       |
-| Isolation    | Not supported        | Supported           | Business side guaranteed  |
-| Concurrent performance | no loss        | severe loss          | slight loss       |
-| Applied scenarios  | Inconsistent processing by the business side | short transaction & low-level concurrency | long transaction & high concurrency |
+|                         | *LOCAL*                                      | *XA*                                      | *BASE*                              |
+|-------------------------|----------------------------------------------|-------------------------------------------|-------------------------------------|
+| Business transformation | None                                         | None                                      | Seata Server needed                 |
+| Consistency             | Not supported                                | Supported                                 | Final consistency                   |
+| Isolation               | Not supported                                | Supported                                 | Business side guaranteed            |
+| Concurrent performance  | no loss                                      | severe loss                               | slight loss                         |
+| Applied scenarios       | Inconsistent processing by the business side | short transaction & low-level concurrency | long transaction & high concurrency |
 
 ## Application Scenarios
 

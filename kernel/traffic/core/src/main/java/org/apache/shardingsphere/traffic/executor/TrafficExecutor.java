@@ -65,7 +65,7 @@ public final class TrafficExecutor implements AutoCloseable {
         JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(processId, databaseName, trafficInstanceId, queryContext, prepareEngine);
         SQLUnit sqlUnit = executionUnit.getExecutionUnit().getSqlUnit();
         cacheStatement(sqlUnit.getParameters(), executionUnit.getStorageResource());
-        T result = callback.execute(statement, sqlUnit.getSql());
+        T result = callback.execute(sqlUnit.getSql(), statement);
         resultSet = statement.getResultSet();
         return result;
     }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.executor;
 
 import lombok.Getter;
+import org.apache.shardingsphere.driver.executor.callback.ExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteUpdateCallback;
 import org.apache.shardingsphere.driver.executor.callback.impl.PreparedStatementExecuteQueryCallback;
@@ -61,14 +62,17 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutorCallback;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.implicit.ImplicitTransactionCallback;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -90,10 +94,10 @@ public final class DriverExecutor implements AutoCloseable {
     
     private final ShardingSphereConnection connection;
     
-    @Getter
+    private final ShardingSphereMetaData metaData;
+    
     private final DriverJDBCExecutor regularExecutor;
     
-    @Getter
     private final RawExecutor rawExecutor;
     
     private final TrafficExecutor trafficExecutor;
@@ -112,21 +116,20 @@ public final class DriverExecutor implements AutoCloseable {
     
     public DriverExecutor(final ShardingSphereConnection connection) {
         this.connection = connection;
-        MetaDataContexts metaDataContexts = connection.getContextManager().getMetaDataContexts();
+        metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
         ExecutorEngine executorEngine = connection.getContextManager().getExecutorEngine();
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, connection.getDatabaseConnectionManager().getConnectionContext());
         regularExecutor = new DriverJDBCExecutor(connection.getDatabaseName(), connection.getContextManager(), jdbcExecutor);
         rawExecutor = new RawExecutor(executorEngine, connection.getDatabaseConnectionManager().getConnectionContext());
-        String schemaName = new DatabaseTypeRegistry(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType()).getDefaultSchemaName(connection.getDatabaseName());
+        String schemaName = new DatabaseTypeRegistry(metaData.getDatabase(connection.getDatabaseName()).getProtocolType()).getDefaultSchemaName(connection.getDatabaseName());
         trafficExecutor = new TrafficExecutor();
-        sqlFederationEngine = new SQLFederationEngine(connection.getDatabaseName(), schemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor);
+        sqlFederationEngine = new SQLFederationEngine(connection.getDatabaseName(), schemaName, metaData, connection.getContextManager().getMetaDataContexts().getStatistics(), jdbcExecutor);
         kernelProcessor = new KernelProcessor();
     }
     
     /**
      * Execute query.
      *
-     * @param metaData meta data
      * @param database database
      * @param queryContext query context
      * @param prepareEngine prepare engine
@@ -137,7 +140,7 @@ public final class DriverExecutor implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
-    public ResultSet executeQuery(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
+    public ResultSet executeQuery(final ShardingSphereDatabase database, final QueryContext queryContext,
                                   final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement,
                                   final Map<String, Integer> columnLabelAndIndexMap, final StatementReplayCallback statementReplayCallback) throws SQLException {
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
@@ -149,8 +152,8 @@ public final class DriverExecutor implements AutoCloseable {
             return sqlFederationEngine.executeQuery(
                     prepareEngine, getExecuteQueryCallback(database, queryContext, prepareEngine.getType()), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
         }
-        List<QueryResult> queryResults = executePushDownQuery(metaData, database, queryContext, prepareEngine, statementReplayCallback);
-        MergedResult mergedResult = mergeQuery(metaData, database, queryResults, queryContext.getSqlStatementContext());
+        List<QueryResult> queryResults = executePushDownQuery(database, queryContext, prepareEngine, statementReplayCallback);
+        MergedResult mergedResult = mergeQuery(database, queryResults, queryContext.getSqlStatementContext());
         boolean selectContainsEnhancedTable = queryContext.getSqlStatementContext() instanceof SelectStatementContext
                 && ((SelectStatementContext) queryContext.getSqlStatementContext()).isContainsEnhancedTable();
         List<ResultSet> resultSets = getResultSets();
@@ -161,7 +164,7 @@ public final class DriverExecutor implements AutoCloseable {
     }
     
     private TrafficExecutorCallback<ResultSet> getTrafficExecuteQueryCallback(final String jdbcDriverType) {
-        return JDBCDriverType.STATEMENT.equals(jdbcDriverType) ? Statement::executeQuery : ((statement, sql) -> ((PreparedStatement) statement).executeQuery());
+        return JDBCDriverType.STATEMENT.equals(jdbcDriverType) ? ((sql, statement) -> statement.executeQuery(sql)) : ((sql, statement) -> ((PreparedStatement) statement).executeQuery());
     }
     
     private ExecuteQueryCallback getExecuteQueryCallback(final ShardingSphereDatabase database, final QueryContext queryContext, final String jdbcDriverType) {
@@ -173,12 +176,12 @@ public final class DriverExecutor implements AutoCloseable {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private List<QueryResult> executePushDownQuery(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
+    private List<QueryResult> executePushDownQuery(final ShardingSphereDatabase database, final QueryContext queryContext,
                                                    final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                                    final StatementReplayCallback statementReplayCallback) throws SQLException {
-        ExecutionContext executionContext = createExecutionContext(metaData, database, queryContext);
+        ExecutionContext executionContext = createExecutionContext(database, queryContext);
         if (hasRawExecutionRule(database)) {
-            return rawExecutor.execute(createRawExecutionGroupContext(metaData, database, executionContext),
+            return rawExecutor.execute(createRawExecutionGroupContext(database, executionContext),
                     queryContext, new RawSQLExecutorCallback()).stream().map(QueryResult.class::cast).collect(Collectors.toList());
         }
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(),
@@ -213,10 +216,10 @@ public final class DriverExecutor implements AutoCloseable {
         return result;
     }
     
-    private ExecutionContext createExecutionContext(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext) throws SQLException {
+    private ExecutionContext createExecutionContext(final ShardingSphereDatabase database, final QueryContext queryContext) throws SQLException {
         clearStatements();
         RuleMetaData globalRuleMetaData = metaData.getGlobalRuleMetaData();
-        SQLAuditEngine.audit(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, database, null, queryContext.getHintValueContext());
+        SQLAuditEngine.audit(queryContext, globalRuleMetaData, database);
         return kernelProcessor.generateExecutionContext(queryContext, database, globalRuleMetaData, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
     }
     
@@ -227,15 +230,13 @@ public final class DriverExecutor implements AutoCloseable {
         statements.clear();
     }
     
-    private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionGroupContext(final ShardingSphereMetaData metaData,
-                                                                                      final ShardingSphereDatabase database, final ExecutionContext executionContext) throws SQLException {
+    private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionGroupContext(final ShardingSphereDatabase database, final ExecutionContext executionContext) throws SQLException {
         int maxConnectionsSizePerQuery = metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, database.getRuleMetaData().getRules()).prepare(
                 executionContext.getRouteContext(), executionContext.getExecutionUnits(), new ExecutionGroupReportContext(connection.getProcessId(), database.getName(), new Grantee("", "")));
     }
     
-    private MergedResult mergeQuery(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database,
-                                    final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
+    private MergedResult mergeQuery(final ShardingSphereDatabase database, final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(metaData.getGlobalRuleMetaData(), database, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
@@ -253,30 +254,29 @@ public final class DriverExecutor implements AutoCloseable {
     /**
      * Execute update.
      *
-     * @param metaData meta data
      * @param database database
      * @param queryContext query context
      * @param prepareEngine prepare engine
-     * @param trafficCallback traffic callback
      * @param updateCallback update callback
-     * @param isNeedImplicitCommitTransaction is need implicit commit transaction
      * @param statementReplayCallback statement replay callback
-     * @param executionContext execution context
      * @return updated row count
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
-    public int executeUpdate(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final QueryContext queryContext,
+    public int executeUpdate(final ShardingSphereDatabase database, final QueryContext queryContext,
                              final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                             final TrafficExecutorCallback<Integer> trafficCallback, final ExecuteUpdateCallback updateCallback, final StatementReplayCallback statementReplayCallback,
-                             final boolean isNeedImplicitCommitTransaction, final ExecutionContext executionContext) throws SQLException {
+                             final ExecuteUpdateCallback updateCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
-            return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, trafficCallback);
+            return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, updateCallback::executeUpdate);
         }
+        ExecutionContext executionContext = createExecutionContext(database, queryContext);
         return database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()
-                ? executeUpdate(database, updateCallback, queryContext.getSqlStatementContext(), executionContext, prepareEngine, isNeedImplicitCommitTransaction, statementReplayCallback)
-                : accumulate(rawExecutor.execute(createRawExecutionGroupContext(metaData, database, executionContext), queryContext, new RawSQLExecutorCallback()));
+                ? executeUpdate(database, updateCallback, queryContext.getSqlStatementContext(), executionContext, prepareEngine,
+                        isNeedImplicitCommitTransaction(connection,
+                                queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1),
+                        statementReplayCallback)
+                : accumulate(rawExecutor.execute(createRawExecutionGroupContext(database, executionContext), queryContext, new RawSQLExecutorCallback()));
     }
     
     @SuppressWarnings("rawtypes")
@@ -354,39 +354,105 @@ public final class DriverExecutor implements AutoCloseable {
     }
     
     /**
-     * Execute advance.
+     * Execute.
      *
-     * @param metaData meta data
      * @param database database
      * @param queryContext query context
      * @param prepareEngine prepare engine
-     * @param trafficCallback traffic callback
+     * @param executeCallback execute callback
+     * @param statementReplayCallback statement replay callback
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public Optional<Boolean> executeAdvance(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database,
-                                            final QueryContext queryContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                            final TrafficExecutorCallback<Boolean> trafficCallback) throws SQLException {
+    @SuppressWarnings("rawtypes")
+    public boolean execute(final ShardingSphereDatabase database, final QueryContext queryContext,
+                           final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                           final ExecuteCallback executeCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
             executeType = ExecuteType.TRAFFIC;
-            return Optional.of(trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, trafficCallback));
+            return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, executeCallback::execute);
         }
         if (sqlFederationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaData.getGlobalRuleMetaData())) {
             executeType = ExecuteType.FEDERATION;
             ResultSet resultSet = sqlFederationEngine.executeQuery(
                     prepareEngine, getExecuteQueryCallback(database, queryContext, prepareEngine.getType()), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
-            return Optional.of(null != resultSet);
+            return null != resultSet;
         }
-        return Optional.empty();
+        ExecutionContext executionContext = createExecutionContext(database, queryContext);
+        if (!database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()) {
+            Collection<ExecuteResult> results = rawExecutor.execute(createRawExecutionGroupContext(database, executionContext), queryContext, new RawSQLExecutorCallback());
+            return results.iterator().next() instanceof QueryResult;
+        }
+        boolean isNeedImplicitCommitTransaction = isNeedImplicitCommitTransaction(
+                connection, queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1);
+        return executeWithExecutionContext(database, executeCallback, executionContext, prepareEngine, isNeedImplicitCommitTransaction, statementReplayCallback);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private boolean executeWithExecutionContext(final ShardingSphereDatabase database, final ExecuteCallback executeCallback, final ExecutionContext executionContext,
+                                                final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                                                final boolean isNeedImplicitCommitTransaction, final StatementReplayCallback statementReplayCallback) throws SQLException {
+        return isNeedImplicitCommitTransaction
+                ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(database, executeCallback, executionContext, prepareEngine, statementReplayCallback), connection,
+                        database.getProtocolType())
+                : useDriverToExecute(database, executeCallback, executionContext, prepareEngine, statementReplayCallback);
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private boolean useDriverToExecute(final ShardingSphereDatabase database, final ExecuteCallback callback, final ExecutionContext executionContext,
+                                       final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final StatementReplayCallback statementReplayCallback) throws SQLException {
+        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(database, executionContext, prepareEngine);
+        for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
+            statements.addAll(getStatements(each));
+            if (JDBCDriverType.PREPARED_STATEMENT.equals(prepareEngine.getType())) {
+                parameterSets.addAll(getParameterSets(each));
+            }
+        }
+        statementReplayCallback.replay(statements, parameterSets);
+        JDBCExecutorCallback<Boolean> jdbcExecutorCallback = createExecuteCallback(database, callback, executionContext.getSqlStatementContext().getSqlStatement(), prepareEngine.getType());
+        return regularExecutor.execute(executionGroupContext, executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), jdbcExecutorCallback);
+    }
+    
+    private JDBCExecutorCallback<Boolean> createExecuteCallback(final ShardingSphereDatabase database, final ExecuteCallback executeCallback,
+                                                                final SQLStatement sqlStatement, final String jdbcDriverType) {
+        boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
+        return new JDBCExecutorCallback<Boolean>(database.getProtocolType(), database.getResourceMetaData(), sqlStatement, isExceptionThrown) {
+            
+            @Override
+            protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
+                return JDBCDriverType.STATEMENT.equals(jdbcDriverType) ? executeCallback.execute(sql, statement) : ((PreparedStatement) statement).execute();
+            }
+            
+            @Override
+            protected Optional<Boolean> getSaneResult(final SQLStatement sqlStatement1, final SQLException ex) {
+                return Optional.empty();
+            }
+        };
+    }
+    
+    private boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final SQLStatement sqlStatement, final boolean multiExecutionUnits) {
+        if (!connection.getAutoCommit()) {
+            return false;
+        }
+        TransactionType transactionType = connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
+        boolean isInTransaction = connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction();
+        if (!TransactionType.isDistributedTransaction(transactionType) || isInTransaction) {
+            return false;
+        }
+        return isWriteDMLStatement(sqlStatement) && multiExecutionUnits;
+    }
+    
+    private boolean isWriteDMLStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement);
     }
     
     /**
-     * Get advanced result set.
+     * Get result set.
      *
-     * @return advanced result set
+     * @return result set
      */
-    public Optional<ResultSet> getAdvancedResultSet() {
+    public Optional<ResultSet> getResultSet() {
         switch (executeType) {
             case TRAFFIC:
                 return Optional.of(trafficExecutor.getResultSet());

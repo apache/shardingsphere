@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.audit;
+package org.apache.shardingsphere.infra.database.core.keygen;
 
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
 
 /**
- * SQL auditor.
- * 
- * @param <T> type of rule
+ * Generated key column provider.
  */
 @SingletonSPI
-public interface SQLAuditor<T extends ShardingSphereRule> extends OrderedSPI<T> {
+public interface GeneratedKeyColumnProvider extends DatabaseTypedSPI {
     
     /**
-     * Audit SQL.
-     * 
-     * @param queryContext query context
-     * @param globalRuleMetaData global rule meta data
-     * @param database current database
-     * @param rule rule
+     * Get generated key column.
+     *
+     * @return generated key column
      */
-    void audit(QueryContext queryContext, RuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule);
+    String getColumnName();
 }

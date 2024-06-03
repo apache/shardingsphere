@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.fixture;
+package org.apache.shardingsphere.infra.database.mysql.keygen;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
+import org.apache.shardingsphere.infra.database.core.keygen.GeneratedKeyColumnProvider;
 
-import java.util.List;
-
-public final class ITShardingAuditAlgorithmFixture implements ShardingAuditAlgorithm {
+/**
+ * Generated key column provider for MySQL.
+ */
+public final class MySQLGeneratedKeyColumnProvider implements GeneratedKeyColumnProvider {
     
     @Override
-    public void check(final SQLStatementContext sqlStatementContext, final List<Object> params, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
+    public String getColumnName() {
+        return "GENERATED_KEY";
     }
     
     @Override
-    public String getType() {
-        return "IT.AUDITOR.FIXTURE";
+    public String getDatabaseType() {
+        return "MySQL";
     }
 }
