@@ -37,7 +37,6 @@ public interface ListenerAssistedProcessor<T extends GovernanceEvent> extends Ty
      * @param event event
      */
     default void preProcessor(ContextManager contextManager, T event) {
-    
     }
     
     /**
