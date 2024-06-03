@@ -271,12 +271,10 @@ public final class DriverExecutor implements AutoCloseable {
             return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, updateCallback::executeUpdate);
         }
         ExecutionContext executionContext = createExecutionContext(database, queryContext);
-        return database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()
-                ? executeUpdate(database, updateCallback, queryContext.getSqlStatementContext(), executionContext, prepareEngine,
-                        isNeedImplicitCommitTransaction(connection,
-                                queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1),
-                        statementReplayCallback)
-                : accumulate(rawExecutor.execute(createRawExecutionGroupContext(database, executionContext), queryContext, new RawSQLExecutorCallback()));
+        return hasRawExecutionRule(database)
+                ? accumulate(rawExecutor.execute(createRawExecutionGroupContext(database, executionContext), queryContext, new RawSQLExecutorCallback()))
+                : executeUpdate(database, updateCallback, queryContext.getSqlStatementContext(), executionContext, prepareEngine, isNeedImplicitCommitTransaction(
+                        connection, queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1), statementReplayCallback);
     }
     
     @SuppressWarnings("rawtypes")
@@ -380,7 +378,7 @@ public final class DriverExecutor implements AutoCloseable {
             return null != resultSet;
         }
         ExecutionContext executionContext = createExecutionContext(database, queryContext);
-        if (!database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()) {
+        if (hasRawExecutionRule(database)) {
             Collection<ExecuteResult> results = rawExecutor.execute(createRawExecutionGroupContext(database, executionContext), queryContext, new RawSQLExecutorCallback());
             return results.iterator().next() instanceof QueryResult;
         }
