@@ -20,8 +20,6 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -33,13 +31,10 @@ import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,12 +46,9 @@ import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
@@ -100,29 +92,6 @@ class ResourceMetaDataChangedSubscriberTest {
         when(database.getSchema("foo_schema")).thenReturn(mock(ShardingSphereSchema.class));
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("db", database);
-    }
-    
-    @Test
-    void assertRenewForDatabaseAdded() {
-        when(persistService.getDataSourceUnitService().load("db_added")).thenReturn(createDataSourcePoolPropertiesMap());
-        when(persistService.getDatabaseRulePersistService().load("db_added")).thenReturn(Collections.emptyList());
-        subscriber.renew(new DatabaseAddedEvent("db_added"));
-        assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db_added").getResourceMetaData().getStorageUnits());
-    }
-    
-    private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap() {
-        MockedDataSource dataSource = new MockedDataSource();
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(3, 1F);
-        result.put("primary_ds", DataSourcePoolPropertiesCreator.create(dataSource));
-        result.put("replica_ds_0", DataSourcePoolPropertiesCreator.create(dataSource));
-        result.put("replica_ds_1", DataSourcePoolPropertiesCreator.create(dataSource));
-        return result;
-    }
-    
-    @Test
-    void assertRenewForDatabaseDeleted() {
-        subscriber.renew(new DatabaseDeletedEvent("db"));
-        assertNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db"));
     }
     
     @Test

@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Database added event.
+ * Drop database listener assisted event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ListenerAssistedAddDatabaseEvent implements GovernanceEvent {
+public final class DropDatabaseListenerAssistedEvent implements GovernanceEvent {
     
     private final String databaseName;
 }

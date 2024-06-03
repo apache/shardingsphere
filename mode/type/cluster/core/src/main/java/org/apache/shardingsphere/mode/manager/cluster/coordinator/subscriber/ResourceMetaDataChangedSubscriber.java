@@ -27,8 +27,6 @@ import org.apache.shardingsphere.mode.event.schema.table.DropTableEvent;
 import org.apache.shardingsphere.mode.event.schema.view.CreateOrAlterViewEvent;
 import org.apache.shardingsphere.mode.event.schema.view.DropViewEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 
@@ -42,26 +40,6 @@ import java.util.Map;
 public final class ResourceMetaDataChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
-    
-    /**
-     * Renew to persist meta data.
-     *
-     * @param event database added event
-     */
-    @Subscribe
-    public synchronized void renew(final DatabaseAddedEvent event) {
-        contextManager.getMetaDataContextManager().getResourceMetaDataManager().addDatabase(event.getDatabaseName());
-    }
-    
-    /**
-     * Renew to delete database.
-     *
-     * @param event database delete event
-     */
-    @Subscribe
-    public synchronized void renew(final DatabaseDeletedEvent event) {
-        contextManager.getMetaDataContextManager().getResourceMetaDataManager().dropDatabase(event.getDatabaseName());
-    }
     
     /**
      * Renew to added schema.

@@ -19,18 +19,22 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.MetaDataWatchListenerManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.listener.ListenerAssistedAddDatabaseEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.listener.ListenerAssistedDeleteDatabaseEvent;
+import org.apache.shardingsphere.mode.processor.ListenerAssistedProcessor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.listener.DropDatabaseListenerAssistedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.listener.CreateDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.MetaDataChangedListener;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+
+import java.util.Optional;
 
 /**
  * Listener assisted meta data changed subscriber.
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 @RequiredArgsConstructor
 public final class ListenerAssistedMetaDataChangedSubscriber implements EventSubscriber {
     
@@ -42,10 +46,15 @@ public final class ListenerAssistedMetaDataChangedSubscriber implements EventSub
      * @param event database added event
      */
     @Subscribe
-    public synchronized void renew(final ListenerAssistedAddDatabaseEvent event) {
+    public synchronized void renew(final CreateDatabaseListenerAssistedEvent event) {
+        Optional<ListenerAssistedProcessor> processor = TypedSPILoader.findService(ListenerAssistedProcessor.class, event.getClass().getName());
+        if (!processor.isPresent()) {
+            return;
+        }
+        processor.get().preProcessor(contextManager, event);
         new MetaDataWatchListenerManager((ClusterPersistRepository) contextManager.getRepository())
-                .addListener(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName().toLowerCase()),
-                        new MetaDataChangedListener(contextManager.getComputeNodeInstanceContext().getEventBusContext()));
+                .addListener(processor.get().getListenerKey(event), new MetaDataChangedListener(contextManager.getComputeNodeInstanceContext().getEventBusContext()));
+        processor.get().postProcessor(contextManager, event);
     }
     
     /**
@@ -54,8 +63,12 @@ public final class ListenerAssistedMetaDataChangedSubscriber implements EventSub
      * @param event database delete event
      */
     @Subscribe
-    public synchronized void renew(final ListenerAssistedDeleteDatabaseEvent event) {
-        new MetaDataWatchListenerManager((ClusterPersistRepository) contextManager.getRepository())
-                .removeListener(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName().toLowerCase()));
+    public synchronized void renew(final DropDatabaseListenerAssistedEvent event) {
+        Optional<ListenerAssistedProcessor> processor = TypedSPILoader.findService(ListenerAssistedProcessor.class, event.getClass().getName());
+        if (!processor.isPresent()) {
+            return;
+        }
+        new MetaDataWatchListenerManager((ClusterPersistRepository) contextManager.getRepository()).removeListener(processor.get().getListenerKey(event));
+        processor.get().postProcessor(contextManager, event);
     }
 }

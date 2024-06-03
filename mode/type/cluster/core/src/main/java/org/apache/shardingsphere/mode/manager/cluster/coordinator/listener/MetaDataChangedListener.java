@@ -37,8 +37,6 @@ import org.apache.shardingsphere.mode.event.schema.table.CreateOrAlterTableEvent
 import org.apache.shardingsphere.mode.event.schema.table.DropTableEvent;
 import org.apache.shardingsphere.mode.event.schema.view.CreateOrAlterViewEvent;
 import org.apache.shardingsphere.mode.event.schema.view.DropViewEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.metadata.builder.RuleConfigurationEventBuilder;
@@ -63,11 +61,7 @@ public final class MetaDataChangedListener implements DataChangedEventListener {
     
     private Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         String key = event.getKey();
-        Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseName(key);
-        if (databaseName.isPresent()) {
-            return createDatabaseChangedEvent(databaseName.get(), event);
-        }
-        databaseName = DatabaseMetaDataNode.getDatabaseNameBySchemaNode(key);
+        Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseNameBySchemaNode(key);
         Optional<String> schemaName = DatabaseMetaDataNode.getSchemaName(key);
         if (databaseName.isPresent() && schemaName.isPresent()) {
             return createSchemaChangedEvent(databaseName.get(), schemaName.get(), event);
@@ -86,16 +80,6 @@ public final class MetaDataChangedListener implements DataChangedEventListener {
             return createDataSourceEvent(databaseName.get(), event);
         }
         return ruleConfigurationEventBuilder.build(databaseName.get(), event);
-    }
-    
-    private Optional<GovernanceEvent> createDatabaseChangedEvent(final String databaseName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new DatabaseAddedEvent(databaseName));
-        }
-        if (Type.DELETED == event.getType()) {
-            return Optional.of(new DatabaseDeletedEvent(databaseName));
-        }
-        return Optional.empty();
     }
     
     private Optional<GovernanceEvent> createSchemaChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {

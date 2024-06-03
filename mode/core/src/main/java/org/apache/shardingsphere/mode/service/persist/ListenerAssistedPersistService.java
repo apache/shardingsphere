@@ -32,20 +32,20 @@ public final class ListenerAssistedPersistService {
     private final PersistRepository repository;
     
     /**
-     * Persist.
+     * Persist database name listener assisted.
      *
      * @param listenerAssistedPOJO listener assisted pojo
      */
-    public void persist(final ListenerAssistedPOJO listenerAssistedPOJO) {
+    public void persistDatabaseNameListenerAssisted(final ListenerAssistedPOJO listenerAssistedPOJO) {
         repository.persist(ListenerAssistedNodePath.getDatabaseNameNodePath(listenerAssistedPOJO.getDatabaseName()), YamlEngine.marshal(listenerAssistedPOJO));
     }
     
     /**
-     * Delete.
+     * Delete database name listener assisted.
      *
      * @param databaseName database name
      */
-    public void delete(final String databaseName) {
+    public void deleteDatabaseNameListenerAssisted(final String databaseName) {
         repository.delete(ListenerAssistedNodePath.getDatabaseNameNodePath(databaseName));
     }
 }
