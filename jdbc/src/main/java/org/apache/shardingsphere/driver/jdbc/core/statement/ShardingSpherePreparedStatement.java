@@ -340,21 +340,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return result;
     }
     
-    private ExecutionContext createExecutionContext(final QueryContext queryContext) {
-        RuleMetaData globalRuleMetaData = metaData.getGlobalRuleMetaData();
-        ShardingSphereDatabase currentDatabase = metaData.getDatabase(databaseName);
-        SQLAuditEngine.audit(queryContext, globalRuleMetaData, currentDatabase);
-        ExecutionContext result = kernelProcessor.generateExecutionContext(
-                queryContext, currentDatabase, globalRuleMetaData, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
-        findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
-        return result;
-    }
-    
-    private ExecutionContext createExecutionContext(final QueryContext queryContext, final String trafficInstanceId) {
-        ExecutionUnit executionUnit = new ExecutionUnit(trafficInstanceId, new SQLUnit(queryContext.getSql(), queryContext.getParameters()));
-        return new ExecutionContext(queryContext, Collections.singletonList(executionUnit), new RouteContext());
-    }
-    
     private QueryContext createQueryContext() {
         List<Object> params = new ArrayList<>(getParameters());
         if (sqlStatementContext instanceof ParameterAware) {
@@ -422,13 +407,26 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         try {
             QueryContext queryContext = createQueryContext();
             Optional<String> trafficInstanceId = connection.getTrafficInstanceId(trafficRule, queryContext);
-            executionContext = trafficInstanceId
-                    .map(optional -> createExecutionContext(queryContext, optional)).orElseGet(() -> createExecutionContext(queryContext));
+            executionContext = trafficInstanceId.map(optional -> createExecutionContext(queryContext, optional)).orElseGet(() -> createExecutionContext(queryContext));
             batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits());
         } finally {
             currentResultSet = null;
             clearParameters();
         }
+    }
+    
+    private ExecutionContext createExecutionContext(final QueryContext queryContext, final String trafficInstanceId) {
+        return new ExecutionContext(queryContext, Collections.singleton(new ExecutionUnit(trafficInstanceId, new SQLUnit(queryContext.getSql(), queryContext.getParameters()))), new RouteContext());
+    }
+    
+    private ExecutionContext createExecutionContext(final QueryContext queryContext) {
+        RuleMetaData globalRuleMetaData = metaData.getGlobalRuleMetaData();
+        ShardingSphereDatabase currentDatabase = metaData.getDatabase(databaseName);
+        SQLAuditEngine.audit(queryContext, globalRuleMetaData, currentDatabase);
+        ExecutionContext result = kernelProcessor.generateExecutionContext(
+                queryContext, currentDatabase, globalRuleMetaData, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
+        findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
+        return result;
     }
     
     @Override
@@ -464,16 +462,13 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private void initBatchPreparedStatementExecutor(final BatchPreparedStatementExecutor batchExecutor) throws SQLException {
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT, metaData.getProps()
-                .<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), connection.getDatabaseConnectionManager(), statementManager, statementOption,
-                metaData.getDatabase(databaseName).getRuleMetaData().getRules(),
-                metaData.getDatabase(databaseName).getResourceMetaData().getStorageUnits());
         List<ExecutionUnit> executionUnits = new ArrayList<>(batchExecutor.getBatchExecutionUnits().size());
         for (BatchExecutionUnit each : batchExecutor.getBatchExecutionUnits()) {
             ExecutionUnit executionUnit = each.getExecutionUnit();
             executionUnits.add(executionUnit);
         }
-        batchExecutor.init(prepareEngine.prepare(executionContext.getRouteContext(), executionUnits, new ExecutionGroupReportContext(connection.getProcessId(), databaseName, new Grantee("", ""))));
+        batchExecutor.init(createDriverExecutionPrepareEngine(metaData.getDatabase(databaseName))
+                .prepare(executionContext.getRouteContext(), executionUnits, new ExecutionGroupReportContext(connection.getProcessId(), databaseName, new Grantee("", ""))));
         setBatchParametersForStatements(batchExecutor);
     }
     
