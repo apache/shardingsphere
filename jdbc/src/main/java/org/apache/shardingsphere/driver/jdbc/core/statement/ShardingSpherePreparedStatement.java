@@ -19,7 +19,10 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.executor.DriverExecutor;
+import org.apache.shardingsphere.driver.executor.DriverExecuteExecutor;
+import org.apache.shardingsphere.driver.executor.DriverExecuteQueryExecutor;
+import org.apache.shardingsphere.driver.executor.DriverExecuteUpdateExecutor;
+import org.apache.shardingsphere.driver.executor.DriverExecutorFacade;
 import org.apache.shardingsphere.driver.executor.batch.BatchExecutionUnit;
 import org.apache.shardingsphere.driver.executor.batch.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractPreparedStatementAdapter;
@@ -112,8 +115,13 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Getter
     private final ParameterMetaData parameterMetaData;
     
-    @Getter(AccessLevel.PROTECTED)
-    private final DriverExecutor executor;
+    private final DriverExecutorFacade driverExecutorFacade;
+    
+    private final DriverExecuteQueryExecutor executeQueryExecutor;
+    
+    private final DriverExecuteUpdateExecutor executeUpdateExecutor;
+    
+    private final DriverExecuteExecutor executeExecutor;
     
     private final BatchPreparedStatementExecutor batchPreparedStatementExecutor;
     
@@ -178,7 +186,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
-        executor = new DriverExecutor(connection);
+        driverExecutorFacade = new DriverExecutorFacade(connection);
+        executeQueryExecutor = new DriverExecuteQueryExecutor(driverExecutorFacade);
+        executeUpdateExecutor = new DriverExecuteUpdateExecutor(driverExecutorFacade);
+        executeExecutor = new DriverExecuteExecutor(driverExecutorFacade);
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(database, jdbcExecutor, connection.getProcessId());
@@ -205,12 +216,12 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             ShardingSphereDatabase database = metaData.getDatabase(databaseName);
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
-            currentResultSet = executor.executeQuery(database, queryContext, createDriverExecutionPrepareEngine(database), this, columnLabelAndIndexMap,
+            currentResultSet = executeQueryExecutor.executeQuery(database, queryContext, createDriverExecutionPrepareEngine(database), this, columnLabelAndIndexMap,
                     (StatementReplayCallback<PreparedStatement>) this::replay);
             if (currentResultSet instanceof ShardingSphereResultSet) {
                 columnLabelAndIndexMap = ((ShardingSphereResultSet) currentResultSet).getColumnLabelAndIndexMap();
             }
-            for (Statement each : executor.getStatements()) {
+            for (Statement each : driverExecutorFacade.getStatements()) {
                 statements.add((PreparedStatement) each);
             }
             return currentResultSet;
@@ -252,9 +263,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             QueryContext queryContext = createQueryContext();
             handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-            final int result = executor.executeUpdate(database, queryContext, createDriverExecutionPrepareEngine(database),
+            final int result = executeUpdateExecutor.executeUpdate(database, queryContext, createDriverExecutionPrepareEngine(database),
                     (sql, statement) -> ((PreparedStatement) statement).executeUpdate(), (StatementReplayCallback<PreparedStatement>) this::replay);
-            for (Statement each : executor.getStatements()) {
+            for (Statement each : driverExecutorFacade.getStatements()) {
                 statements.add((PreparedStatement) each);
             }
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
@@ -280,9 +291,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             QueryContext queryContext = createQueryContext();
             handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-            final boolean result = executor.execute(database, queryContext, createDriverExecutionPrepareEngine(database), (sql, statement) -> ((PreparedStatement) statement).execute(),
+            final boolean result = executeExecutor.execute(database, queryContext, createDriverExecutionPrepareEngine(database), (sql, statement) -> ((PreparedStatement) statement).execute(),
                     (StatementReplayCallback<PreparedStatement>) this::replay);
-            for (Statement each : executor.getStatements()) {
+            for (Statement each : driverExecutorFacade.getStatements()) {
                 statements.add((PreparedStatement) each);
             }
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
@@ -302,7 +313,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        Optional<ResultSet> resultSet = executor.getResultSet();
+        Optional<ResultSet> resultSet = executeExecutor.getResultSet();
         if (resultSet.isPresent()) {
             return resultSet.get();
         }
@@ -371,7 +382,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         currentResultSet = null;
         statements.clear();
         generatedValues.clear();
-        executor.clear();
+        driverExecutorFacade.clear();
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey() {
@@ -519,5 +530,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Override
     public Collection<PreparedStatement> getRoutedStatements() {
         return statements;
+    }
+    
+    @Override
+    protected void closeExecutor() throws SQLException {
+        driverExecutorFacade.close();
     }
 }

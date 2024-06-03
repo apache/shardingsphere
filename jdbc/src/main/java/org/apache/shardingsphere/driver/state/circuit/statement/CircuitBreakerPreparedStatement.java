@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.state.circuit.statement;
 
-import org.apache.shardingsphere.driver.executor.DriverExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
@@ -275,11 +274,6 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     }
     
     @Override
-    protected DriverExecutor getExecutor() {
-        return null;
-    }
-    
-    @Override
     protected StatementManager getStatementManager() {
         return null;
     }
@@ -292,5 +286,9 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     @Override
     public int executeUpdate() {
         return -1;
+    }
+    
+    @Override
+    protected void closeExecutor() {
     }
 }
