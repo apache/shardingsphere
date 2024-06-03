@@ -28,17 +28,12 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.liste
 public final class CreateDatabaseListenerAssistedProcessor implements ListenerAssistedProcessor<CreateDatabaseListenerAssistedEvent> {
     
     @Override
-    public void preProcessor(final ContextManager contextManager, final CreateDatabaseListenerAssistedEvent event) {
-        contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().addDatabase(event.getDatabaseName());
-    }
-    
-    @Override
     public String getListenerKey(final CreateDatabaseListenerAssistedEvent event) {
         return DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName());
     }
     
     @Override
-    public void postProcessor(final ContextManager contextManager, final CreateDatabaseListenerAssistedEvent event) {
+    public void processor(final ContextManager contextManager, final CreateDatabaseListenerAssistedEvent event) {
         contextManager.getMetaDataContextManager().getResourceMetaDataManager().addDatabase(event.getDatabaseName());
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(event.getDatabaseName());
     }

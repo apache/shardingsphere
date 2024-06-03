@@ -33,8 +33,7 @@ public final class DropDatabaseListenerAssistedProcessor implements ListenerAssi
     }
     
     @Override
-    public void postProcessor(final ContextManager contextManager, final DropDatabaseListenerAssistedEvent event) {
-        contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().dropDatabase(event.getDatabaseName());
+    public void processor(final ContextManager contextManager, final DropDatabaseListenerAssistedEvent event) {
         contextManager.getMetaDataContextManager().getResourceMetaDataManager().dropDatabase(event.getDatabaseName());
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(event.getDatabaseName());
     }

@@ -50,6 +50,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     @Override
     public void createDatabase(final String databaseName) {
+        contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().addDatabase(databaseName);
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().persistDatabaseNameListenerAssisted(new ListenerAssistedPOJO(databaseName, ListenerAssistedEnum.CREATE_DATABASE));
     }
     
@@ -57,6 +58,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     public void dropDatabase(final String databaseName) {
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService()
                 .persistDatabaseNameListenerAssisted(new ListenerAssistedPOJO(contextManager.getDatabase(databaseName).getName(), ListenerAssistedEnum.DROP_DATABASE));
+        contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().dropDatabase(contextManager.getDatabase(databaseName).getName());
     }
     
     @Override

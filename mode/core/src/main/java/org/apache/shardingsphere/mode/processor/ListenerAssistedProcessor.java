@@ -31,15 +31,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 public interface ListenerAssistedProcessor<T extends GovernanceEvent> extends TypedSPI {
     
     /**
-     * Pre-process.
-     *
-     * @param contextManager context manager
-     * @param event event
-     */
-    default void preProcessor(ContextManager contextManager, T event) {
-    }
-    
-    /**
      * Get listener key.
      *
      * @param event event
@@ -53,5 +44,5 @@ public interface ListenerAssistedProcessor<T extends GovernanceEvent> extends Ty
      * @param contextManager context manager
      * @param event event
      */
-    void postProcessor(ContextManager contextManager, T event);
+    void processor(ContextManager contextManager, T event);
 }
