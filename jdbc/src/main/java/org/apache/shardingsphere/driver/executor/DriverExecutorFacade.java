@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.executor;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -32,43 +31,37 @@ import java.sql.SQLException;
 /**
  * Driver executor facade.
  */
-@Getter
 public final class DriverExecutorFacade implements AutoCloseable {
-    
-    private final ShardingSphereConnection connection;
-    
-    private final DriverJDBCExecutor regularExecutor;
-    
-    private final RawExecutor rawExecutor;
     
     private final TrafficExecutor trafficExecutor;
     
     private final SQLFederationEngine sqlFederationEngine;
     
+    @Getter
     private final DriverExecuteQueryExecutor queryExecutor;
     
+    @Getter
     private final DriverExecuteUpdateExecutor updateExecutor;
     
+    @Getter
     private final DriverExecuteExecutor executeExecutor;
     
     public DriverExecutorFacade(final ShardingSphereConnection connection) {
-        this.connection = connection;
-        ExecutorEngine executorEngine = connection.getContextManager().getExecutorEngine();
-        JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, connection.getDatabaseConnectionManager().getConnectionContext());
-        regularExecutor = new DriverJDBCExecutor(connection.getDatabaseName(), connection.getContextManager(), jdbcExecutor);
-        rawExecutor = new RawExecutor(executorEngine, connection.getDatabaseConnectionManager().getConnectionContext());
+        JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
+        DriverJDBCExecutor regularExecutor = new DriverJDBCExecutor(connection.getDatabaseName(), connection.getContextManager(), jdbcExecutor);
+        RawExecutor rawExecutor = new RawExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
         trafficExecutor = new TrafficExecutor();
         ShardingSphereMetaData metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
         String schemaName = new DatabaseTypeRegistry(metaData.getDatabase(connection.getDatabaseName()).getProtocolType()).getDefaultSchemaName(connection.getDatabaseName());
         sqlFederationEngine = new SQLFederationEngine(connection.getDatabaseName(), schemaName, metaData, connection.getContextManager().getMetaDataContexts().getStatistics(), jdbcExecutor);
-        queryExecutor = new DriverExecuteQueryExecutor(this);
-        updateExecutor = new DriverExecuteUpdateExecutor(this);
-        executeExecutor = new DriverExecuteExecutor(this);
+        queryExecutor = new DriverExecuteQueryExecutor(connection, metaData, regularExecutor, rawExecutor, trafficExecutor, sqlFederationEngine);
+        updateExecutor = new DriverExecuteUpdateExecutor(connection, metaData, regularExecutor, rawExecutor, trafficExecutor);
+        executeExecutor = new DriverExecuteExecutor(connection, metaData, regularExecutor, rawExecutor, trafficExecutor, sqlFederationEngine);
     }
     
     @Override
     public void close() throws SQLException {
-        sqlFederationEngine.close();
         trafficExecutor.close();
+        sqlFederationEngine.close();
     }
 }

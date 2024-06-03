@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.executor;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
 import org.apache.shardingsphere.driver.executor.callback.impl.PreparedStatementExecuteQueryCallback;
@@ -76,6 +77,7 @@ import java.util.Optional;
 /**
  * Driver execute executor.
  */
+@RequiredArgsConstructor
 public final class DriverExecuteExecutor {
     
     private final ShardingSphereConnection connection;
@@ -91,15 +93,6 @@ public final class DriverExecuteExecutor {
     private final SQLFederationEngine sqlFederationEngine;
     
     private ExecuteType executeType = ExecuteType.REGULAR;
-    
-    public DriverExecuteExecutor(final DriverExecutorFacade executorFacade) {
-        connection = executorFacade.getConnection();
-        metaData = executorFacade.getConnection().getContextManager().getMetaDataContexts().getMetaData();
-        regularExecutor = executorFacade.getRegularExecutor();
-        rawExecutor = executorFacade.getRawExecutor();
-        trafficExecutor = executorFacade.getTrafficExecutor();
-        sqlFederationEngine = executorFacade.getSqlFederationEngine();
-    }
     
     /**
      * Execute.

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.driver.executor;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteUpdateCallback;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.callback.StatementAddCallback;
 import org.apache.shardingsphere.driver.jdbc.core.statement.callback.StatementReplayCallback;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -44,8 +44,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.update.Update
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -71,28 +71,18 @@ import java.util.Optional;
 /**
  * Driver execute update executor.
  */
+@RequiredArgsConstructor
 public final class DriverExecuteUpdateExecutor {
     
     private final ShardingSphereConnection connection;
     
-    private final RuleMetaData globalRuleMetaData;
-    
-    private final ConfigurationProperties props;
+    private final ShardingSphereMetaData metaData;
     
     private final DriverJDBCExecutor regularExecutor;
     
     private final RawExecutor rawExecutor;
     
     private final TrafficExecutor trafficExecutor;
-    
-    public DriverExecuteUpdateExecutor(final DriverExecutorFacade executorFacade) {
-        connection = executorFacade.getConnection();
-        globalRuleMetaData = executorFacade.getConnection().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData();
-        props = executorFacade.getConnection().getContextManager().getMetaDataContexts().getMetaData().getProps();
-        regularExecutor = executorFacade.getRegularExecutor();
-        rawExecutor = executorFacade.getRawExecutor();
-        trafficExecutor = executorFacade.getTrafficExecutor();
-    }
     
     /**
      * Execute update.
@@ -110,7 +100,7 @@ public final class DriverExecuteUpdateExecutor {
     public int executeUpdate(final ShardingSphereDatabase database, final QueryContext queryContext,
                              final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                              final ExecuteUpdateCallback updateCallback, final StatementReplayCallback statementReplayCallback, final StatementAddCallback statementAddCallback) throws SQLException {
-        Optional<String> trafficInstanceId = connection.getTrafficInstanceId(globalRuleMetaData.getSingleRule(TrafficRule.class), queryContext);
+        Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
             return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, updateCallback::executeUpdate);
         }
@@ -152,12 +142,13 @@ public final class DriverExecuteUpdateExecutor {
     }
     
     private ExecutionContext createExecutionContext(final ShardingSphereDatabase database, final QueryContext queryContext) {
-        SQLAuditEngine.audit(queryContext, globalRuleMetaData, database);
-        return new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, props, connection.getDatabaseConnectionManager().getConnectionContext());
+        SQLAuditEngine.audit(queryContext, metaData.getGlobalRuleMetaData(), database);
+        return new KernelProcessor().generateExecutionContext(
+                queryContext, database, metaData.getGlobalRuleMetaData(), metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
     }
     
     private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionGroupContext(final ShardingSphereDatabase database, final ExecutionContext executionContext) throws SQLException {
-        int maxConnectionsSizePerQuery = props.<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, database.getRuleMetaData().getRules()).prepare(
                 executionContext.getRouteContext(), executionContext.getExecutionUnits(), new ExecutionGroupReportContext(connection.getProcessId(), database.getName(), new Grantee("", "")));
     }
