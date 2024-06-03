@@ -134,9 +134,9 @@ public final class DriverExecuteExecutor {
     private ExecuteQueryCallback getExecuteQueryCallback(final ShardingSphereDatabase database, final QueryContext queryContext, final String jdbcDriverType) {
         return JDBCDriverType.STATEMENT.equals(jdbcDriverType)
                 ? new StatementExecuteQueryCallback(database.getProtocolType(), database.getResourceMetaData(),
-                queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown())
+                        queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown())
                 : new PreparedStatementExecuteQueryCallback(database.getProtocolType(), database.getResourceMetaData(),
-                queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
+                        queryContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
     }
     
     private boolean hasRawExecutionRule(final ShardingSphereDatabase database) {
