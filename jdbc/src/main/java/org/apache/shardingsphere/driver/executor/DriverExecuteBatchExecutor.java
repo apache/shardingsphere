@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.driver.executor;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import org.apache.shardingsphere.driver.executor.batch.BatchExecutionUnit;
 import org.apache.shardingsphere.driver.executor.batch.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.keygen.GeneratedKeyCallback;
-import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
+import org.apache.shardingsphere.driver.executor.callback.replay.PreparedStatementParametersReplayCallback;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -43,7 +44,9 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,14 +56,20 @@ import java.util.Optional;
 /**
  * Driver execute batch executor.
  */
-@RequiredArgsConstructor
 public final class DriverExecuteBatchExecutor {
     
     private final ShardingSphereConnection connection;
     
     private final ShardingSphereMetaData metaData;
     
+    @Getter
     private final BatchPreparedStatementExecutor batchPreparedStatementExecutor;
+    
+    public DriverExecuteBatchExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final JDBCExecutor jdbcExecutor) {
+        this.connection = connection;
+        this.metaData = metaData;
+        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(database, jdbcExecutor, connection.getProcessId());
+    }
     
     /**
      * Add batch.
@@ -96,7 +105,7 @@ public final class DriverExecuteBatchExecutor {
      * @param prepareEngine prepare engine
      * @param executionContext execution context
      * @param addCallback statement add callback
-     * @param replayCallback statement replay callback
+     * @param replayCallback prepared statement parameters replay callback
      * @param generatedKeyCallback generated key callback
      * @return generated keys
      * @throws SQLException SQL exception
@@ -104,7 +113,7 @@ public final class DriverExecuteBatchExecutor {
     @SuppressWarnings("rawtypes")
     public int[] executeBatch(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext, final Collection<Comparable<?>> generatedValues,
                               final StatementOption statementOption, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                              final ExecutionContext executionContext, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback,
+                              final ExecutionContext executionContext, final StatementAddCallback addCallback, final PreparedStatementParametersReplayCallback replayCallback,
                               final GeneratedKeyCallback generatedKeyCallback) throws SQLException {
         // TODO add raw SQL executor
         return doExecuteBatch(database, batchPreparedStatementExecutor,
@@ -115,7 +124,8 @@ public final class DriverExecuteBatchExecutor {
     private int[] doExecuteBatch(final ShardingSphereDatabase database, final BatchPreparedStatementExecutor batchExecutor,
                                  final SQLStatementContext sqlStatementContext, final Collection<Comparable<?>> generatedValues, final StatementOption statementOption,
                                  final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final ExecutionContext executionContext,
-                                 final StatementAddCallback addCallback, final StatementReplayCallback replayCallback, final GeneratedKeyCallback generatedKeyCallback) throws SQLException {
+                                 final StatementAddCallback addCallback, final PreparedStatementParametersReplayCallback replayCallback,
+                                 final GeneratedKeyCallback generatedKeyCallback) throws SQLException {
         initBatchPreparedStatementExecutor(database, batchExecutor, prepareEngine, executionContext, replayCallback);
         int[] result = batchExecutor.executeBatch(sqlStatementContext);
         if (statementOption.isReturnGeneratedKeys() && generatedValues.isEmpty()) {
@@ -127,7 +137,7 @@ public final class DriverExecuteBatchExecutor {
     
     private void initBatchPreparedStatementExecutor(final ShardingSphereDatabase database, final BatchPreparedStatementExecutor batchExecutor,
                                                     final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                                    final ExecutionContext executionContext, final StatementReplayCallback replayCallback) throws SQLException {
+                                                    final ExecutionContext executionContext, final PreparedStatementParametersReplayCallback replayCallback) throws SQLException {
         List<ExecutionUnit> executionUnits = new ArrayList<>(batchExecutor.getBatchExecutionUnits().size());
         for (BatchExecutionUnit each : batchExecutor.getBatchExecutionUnits()) {
             ExecutionUnit executionUnit = each.getExecutionUnit();
@@ -135,6 +145,22 @@ public final class DriverExecuteBatchExecutor {
         }
         batchExecutor.init(prepareEngine
                 .prepare(executionContext.getRouteContext(), executionUnits, new ExecutionGroupReportContext(connection.getProcessId(), database.getName(), new Grantee("", ""))));
-        replayCallback.replay();
+        setBatchParameters(replayCallback);
+    }
+    
+    private void setBatchParameters(final PreparedStatementParametersReplayCallback replayCallback) throws SQLException {
+        for (Statement each : batchPreparedStatementExecutor.getStatements()) {
+            for (List<Object> eachParams : batchPreparedStatementExecutor.getParameterSet(each)) {
+                replayCallback.replay((PreparedStatement) each, eachParams);
+                ((PreparedStatement) each).addBatch();
+            }
+        }
+    }
+    
+    /**
+     * Clear.
+     */
+    public void clear() {
+        batchPreparedStatementExecutor.clear();
     }
 }

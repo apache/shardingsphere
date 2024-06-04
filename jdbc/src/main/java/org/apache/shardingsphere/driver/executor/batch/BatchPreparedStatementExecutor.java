@@ -248,7 +248,6 @@ public final class BatchPreparedStatementExecutor {
      * Clear.
      */
     public void clear() {
-        getStatements().clear();
         executionGroupContext.getInputGroups().clear();
         batchCount = 0;
         batchExecutionUnits.clear();

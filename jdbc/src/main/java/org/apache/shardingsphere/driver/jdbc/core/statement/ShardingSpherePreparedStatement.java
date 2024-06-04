@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.executor.DriverExecutorFacade;
-import org.apache.shardingsphere.driver.executor.batch.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractPreparedStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
@@ -43,7 +42,6 @@ import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEn
 import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
@@ -108,8 +106,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final DriverExecutorFacade driverExecutorFacade;
     
-    private final BatchPreparedStatementExecutor batchPreparedStatementExecutor;
-    
     private final Collection<Comparable<?>> generatedValues = new LinkedList<>();
     
     private final boolean statementsCacheable;
@@ -167,9 +163,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
-        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(database, jdbcExecutor, connection.getProcessId());
-        driverExecutorFacade = new DriverExecutorFacade(connection, batchPreparedStatementExecutor);
+        driverExecutorFacade = new DriverExecutorFacade(connection, database);
         statementsCacheable = isStatementsCacheable(database.getRuleMetaData());
         selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
         statementManager = new StatementManager();
@@ -203,7 +197,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             handleExceptionInTransaction(connection, metaData);
             throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(databaseName).getProtocolType());
         } finally {
-            batchPreparedStatementExecutor.clear();
+            driverExecutorFacade.clear();
             clearParameters();
         }
     }
@@ -403,7 +397,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         try {
             return driverExecutorFacade.getExecuteBatchExecutor().executeBatch(database, sqlStatementContext, generatedValues, statementOption,
                     createDriverExecutionPrepareEngine(database), executionContext, (StatementAddCallback<PreparedStatement>) (statements, parameterSets) -> this.statements.addAll(statements),
-                    () -> setBatchParametersForStatements(batchPreparedStatementExecutor),
+                    this::replaySetParameter,
                     () -> {
                         currentBatchGeneratedKeysResultSet = getGeneratedKeys();
                         statements.clear();
@@ -418,20 +412,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
     }
     
-    private void setBatchParametersForStatements(final BatchPreparedStatementExecutor batchExecutor) throws SQLException {
-        for (Statement each : batchExecutor.getStatements()) {
-            List<List<Object>> paramSet = batchExecutor.getParameterSet(each);
-            for (List<Object> eachParams : paramSet) {
-                replaySetParameter((PreparedStatement) each, eachParams);
-                ((PreparedStatement) each).addBatch();
-            }
-        }
-    }
-    
     @Override
     public void clearBatch() {
         currentResultSet = null;
-        batchPreparedStatementExecutor.clear();
+        driverExecutorFacade.clear();
         clearParameters();
     }
     
