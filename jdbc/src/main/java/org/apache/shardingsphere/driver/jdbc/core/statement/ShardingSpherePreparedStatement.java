@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.executor.DriverExecutorFacade;
-import org.apache.shardingsphere.driver.executor.batch.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractPreparedStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
@@ -398,7 +397,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         try {
             return driverExecutorFacade.getExecuteBatchExecutor().executeBatch(database, sqlStatementContext, generatedValues, statementOption,
                     createDriverExecutionPrepareEngine(database), executionContext, (StatementAddCallback<PreparedStatement>) (statements, parameterSets) -> this.statements.addAll(statements),
-                    () -> setBatchParametersForStatements(driverExecutorFacade.getExecuteBatchExecutor().getBatchPreparedStatementExecutor()),
+                    this::replaySetParameter,
                     () -> {
                         currentBatchGeneratedKeysResultSet = getGeneratedKeys();
                         statements.clear();
@@ -410,16 +409,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             throw SQLExceptionTransformEngine.toSQLException(ex, database.getProtocolType());
         } finally {
             clearBatch();
-        }
-    }
-    
-    private void setBatchParametersForStatements(final BatchPreparedStatementExecutor batchExecutor) throws SQLException {
-        for (Statement each : batchExecutor.getStatements()) {
-            List<List<Object>> paramSet = batchExecutor.getParameterSet(each);
-            for (List<Object> eachParams : paramSet) {
-                replaySetParameter((PreparedStatement) each, eachParams);
-                ((PreparedStatement) each).addBatch();
-            }
         }
     }
     
