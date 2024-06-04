@@ -97,7 +97,7 @@ class ProxyBackendHandlerFactoryTest {
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         ContextManager contextManager = mockContextManager();
-        when(contextManager.getStateContext().getCurrentClusterState()).thenReturn(ClusterState.OK);
+        when(contextManager.getStateContext().getClusterState()).thenReturn(ClusterState.OK);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
     
