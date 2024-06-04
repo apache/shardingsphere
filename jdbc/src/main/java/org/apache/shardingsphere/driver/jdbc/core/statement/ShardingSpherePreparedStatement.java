@@ -27,7 +27,7 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtils;
-import org.apache.shardingsphere.driver.jdbc.core.statement.callback.StatementAddCallback;
+import org.apache.shardingsphere.driver.executor.callback.StatementAddCallback;
 import org.apache.shardingsphere.driver.jdbc.core.statement.metadata.ShardingSphereParameterMetaData;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
@@ -207,7 +207,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             ShardingSphereDatabase database = metaData.getDatabase(databaseName);
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
             currentResultSet = driverExecutorFacade.getQueryExecutor().executeQuery(database, queryContext, createDriverExecutionPrepareEngine(database), this, columnLabelAndIndexMap,
-                    this::replay, (StatementAddCallback<PreparedStatement>) this::addStatements);
+                    (StatementAddCallback<PreparedStatement>) this::addStatements, this::replay);
             if (currentResultSet instanceof ShardingSphereResultSet) {
                 columnLabelAndIndexMap = ((ShardingSphereResultSet) currentResultSet).getColumnLabelAndIndexMap();
             }
@@ -256,7 +256,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
             ShardingSphereDatabase database = metaData.getDatabase(databaseName);
             int result = driverExecutorFacade.getUpdateExecutor().executeUpdate(database, queryContext, createDriverExecutionPrepareEngine(database),
-                    (sql, statement) -> ((PreparedStatement) statement).executeUpdate(), this::replay, (StatementAddCallback<PreparedStatement>) this::addStatements);
+                    (sql, statement) -> ((PreparedStatement) statement).executeUpdate(), (StatementAddCallback<PreparedStatement>) this::addStatements, this::replay);
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
             return result;
             // CHECKSTYLE:OFF
@@ -282,7 +282,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             ShardingSphereDatabase database = metaData.getDatabase(databaseName);
             boolean result = driverExecutorFacade.getExecuteExecutor().execute(
                     database, queryContext, createDriverExecutionPrepareEngine(database), (sql, statement) -> ((PreparedStatement) statement).execute(),
-                    this::replay, (StatementAddCallback<PreparedStatement>) this::addStatements);
+                    (StatementAddCallback<PreparedStatement>) this::addStatements, this::replay);
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
             return result;
             // CHECKSTYLE:OFF
