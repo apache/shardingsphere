@@ -21,13 +21,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.executor.DriverExecutorFacade;
 import org.apache.shardingsphere.driver.executor.batch.BatchStatementExecutor;
-import org.apache.shardingsphere.driver.executor.callback.ExecuteCallback;
-import org.apache.shardingsphere.driver.executor.callback.ExecuteUpdateCallback;
+import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteCallback;
+import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
-import org.apache.shardingsphere.driver.executor.callback.StatementAddCallback;
+import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -191,7 +191,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
     }
     
-    private int executeUpdate(final String sql, final ExecuteUpdateCallback updateCallback) throws SQLException {
+    private int executeUpdate(final String sql, final StatementExecuteUpdateCallback updateCallback) throws SQLException {
         currentResultSet = null;
         QueryContext queryContext = createQueryContext(sql);
         prepareExecute(queryContext);
@@ -253,12 +253,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
     }
     
-    private boolean execute(final String sql, final ExecuteCallback executeCallback) throws SQLException {
+    private boolean execute(final String sql, final StatementExecuteCallback statementExecuteCallback) throws SQLException {
         currentResultSet = null;
         QueryContext queryContext = createQueryContext(sql);
         prepareExecute(queryContext);
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        return driverExecutorFacade.getExecuteExecutor().execute(database, queryContext, createDriverExecutionPrepareEngine(database), executeCallback,
+        return driverExecutorFacade.getExecuteExecutor().execute(database, queryContext, createDriverExecutionPrepareEngine(database), statementExecuteCallback,
                 (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), this::replay);
     }
     

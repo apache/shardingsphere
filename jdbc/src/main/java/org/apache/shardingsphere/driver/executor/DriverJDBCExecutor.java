@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.executor;
 
-import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
+import org.apache.shardingsphere.driver.executor.callback.execute.ExecuteQueryCallback;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;

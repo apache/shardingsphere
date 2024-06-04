@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.callback;
+package org.apache.shardingsphere.driver.executor.callback.execute;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
- * Statement replay callback.
+ * Statement execute callback.
  */
-public interface StatementReplayCallback {
+public interface StatementExecuteCallback {
     
     /**
-     * Replay statements.
-     *
+     * Execute.
+     * 
+     * @param sql SQL to be executed
+     * @param statement JDBC statement
+     * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    void replay() throws SQLException;
+    boolean execute(String sql, Statement statement) throws SQLException;
 }
