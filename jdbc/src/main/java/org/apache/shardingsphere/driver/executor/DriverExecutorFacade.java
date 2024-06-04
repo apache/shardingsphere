@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.executor;
 
 import lombok.Getter;
+import org.apache.shardingsphere.driver.executor.batch.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
@@ -46,7 +47,10 @@ public final class DriverExecutorFacade implements AutoCloseable {
     @Getter
     private final DriverExecuteExecutor executeExecutor;
     
-    public DriverExecutorFacade(final ShardingSphereConnection connection) {
+    @Getter
+    private final DriverExecuteBatchExecutor executeBatchExecutor;
+    
+    public DriverExecutorFacade(final ShardingSphereConnection connection, final BatchPreparedStatementExecutor batchPreparedStatementExecutor) {
         JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
         DriverJDBCExecutor regularExecutor = new DriverJDBCExecutor(connection.getDatabaseName(), connection.getContextManager(), jdbcExecutor);
         RawExecutor rawExecutor = new RawExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
@@ -57,6 +61,7 @@ public final class DriverExecutorFacade implements AutoCloseable {
         queryExecutor = new DriverExecuteQueryExecutor(connection, metaData, regularExecutor, rawExecutor, trafficExecutor, sqlFederationEngine);
         updateExecutor = new DriverExecuteUpdateExecutor(connection, metaData, regularExecutor, rawExecutor, trafficExecutor);
         executeExecutor = new DriverExecuteExecutor(connection, metaData, regularExecutor, rawExecutor, trafficExecutor, sqlFederationEngine);
+        executeBatchExecutor = new DriverExecuteBatchExecutor(connection, metaData, batchPreparedStatementExecutor);
     }
     
     @Override
