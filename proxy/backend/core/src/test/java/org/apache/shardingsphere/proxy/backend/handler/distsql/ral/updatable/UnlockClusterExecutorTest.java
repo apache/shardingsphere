@@ -41,7 +41,7 @@ class UnlockClusterExecutorTest {
     @Test
     void assertExecuteUpdateWithNotLockedCluster() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getStateContext().getCurrentClusterState()).thenReturn(ClusterState.OK);
+        when(contextManager.getStateContext().getClusterState()).thenReturn(ClusterState.OK);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertThrows(NotLockedClusterException.class, () -> executor.executeUpdate(new UnlockClusterStatement(), contextManager));
     }

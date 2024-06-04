@@ -19,14 +19,15 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.executor.DriverExecutor;
+import org.apache.shardingsphere.driver.executor.DriverExecutorFacade;
 import org.apache.shardingsphere.driver.executor.batch.BatchStatementExecutor;
-import org.apache.shardingsphere.driver.executor.callback.ExecuteCallback;
-import org.apache.shardingsphere.driver.executor.callback.ExecuteUpdateCallback;
+import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteCallback;
+import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
+import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -84,8 +85,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private final StatementOption statementOption;
     
-    @Getter(AccessLevel.PROTECTED)
-    private final DriverExecutor executor;
+    private final DriverExecutorFacade driverExecutorFacade;
     
     @Getter(AccessLevel.PROTECTED)
     private final StatementManager statementManager;
@@ -113,7 +113,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
         statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
-        executor = new DriverExecutor(connection);
+        driverExecutorFacade = new DriverExecutorFacade(connection, null);
         statementManager = new StatementManager();
         batchStatementExecutor = new BatchStatementExecutor(this);
         databaseName = connection.getDatabaseName();
@@ -125,9 +125,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             prepareExecute(queryContext);
             ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-            currentResultSet = executor.executeQuery(database, queryContext, createDriverExecutionPrepareEngine(database), this, null,
-                    (StatementReplayCallback<Statement>) (statements, parameterSets) -> replay(statements));
-            statements.addAll(executor.getStatements());
+            currentResultSet = driverExecutorFacade.getQueryExecutor().executeQuery(database, queryContext, createDriverExecutionPrepareEngine(database), this, null,
+                    (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), this::replay);
             return currentResultSet;
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
@@ -192,15 +191,13 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
     }
     
-    private int executeUpdate(final String sql, final ExecuteUpdateCallback updateCallback) throws SQLException {
+    private int executeUpdate(final String sql, final StatementExecuteUpdateCallback updateCallback) throws SQLException {
         currentResultSet = null;
         QueryContext queryContext = createQueryContext(sql);
         prepareExecute(queryContext);
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        int result = executor.executeUpdate(database, queryContext, createDriverExecutionPrepareEngine(database), updateCallback,
-                (StatementReplayCallback<Statement>) (statements, parameterSets) -> replay(statements));
-        statements.addAll(executor.getStatements());
-        return result;
+        return driverExecutorFacade.getUpdateExecutor().executeUpdate(database, queryContext, createDriverExecutionPrepareEngine(database),
+                updateCallback, (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), this::replay);
     }
     
     @Override
@@ -256,15 +253,13 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
     }
     
-    private boolean execute(final String sql, final ExecuteCallback executeCallback) throws SQLException {
+    private boolean execute(final String sql, final StatementExecuteCallback statementExecuteCallback) throws SQLException {
         currentResultSet = null;
         QueryContext queryContext = createQueryContext(sql);
         prepareExecute(queryContext);
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        boolean result = executor.execute(database, queryContext, createDriverExecutionPrepareEngine(database),
-                executeCallback, (StatementReplayCallback<Statement>) (statements, parameterSets) -> replay(statements));
-        statements.addAll(executor.getStatements());
-        return result;
+        return driverExecutorFacade.getExecuteExecutor().execute(database, queryContext, createDriverExecutionPrepareEngine(database), statementExecuteCallback,
+                (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), this::replay);
     }
     
     private QueryContext createQueryContext(final String originSQL) throws SQLException {
@@ -296,7 +291,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             each.close();
         }
         statements.clear();
-        executor.clear();
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final ShardingSphereDatabase database) {
@@ -305,7 +299,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
     }
     
-    private void replay(final List<Statement> statements) throws SQLException {
+    private void replay() throws SQLException {
         for (Statement each : statements) {
             getMethodInvocationRecorder().replay(each);
         }
@@ -331,7 +325,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        Optional<ResultSet> resultSet = executor.getResultSet();
+        Optional<ResultSet> resultSet = driverExecutorFacade.getExecuteExecutor().getResultSet();
         if (resultSet.isPresent()) {
             return resultSet.get();
         }
@@ -429,5 +423,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private String getGeneratedKeysColumnName(final String columnName) {
         return DatabaseTypedSPILoader.findService(GeneratedKeyColumnProvider.class, metaData.getDatabase(databaseName).getProtocolType())
                 .map(GeneratedKeyColumnProvider::getColumnName).orElse(columnName);
+    }
+    
+    @Override
+    protected void closeExecutor() throws SQLException {
+        driverExecutorFacade.close();
     }
 }

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 
 import java.util.Map;
@@ -51,8 +50,7 @@ public final class InternalMetaDataFactory {
     public static ShardingSphereDatabase create(final String databaseName, final MetaDataPersistService persistService, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseName, databaseConfig, props);
-        return ShardingSphereDatabase.create(databaseName, protocolType, databaseConfig, DatabaseRulesBuilder.build(databaseName, protocolType, databaseConfig, computeNodeInstanceContext),
-                persistService.getDatabaseMetaDataService().loadSchemas(databaseName));
+        return ShardingSphereDatabase.create(databaseName, protocolType, databaseConfig, computeNodeInstanceContext, persistService.getDatabaseMetaDataService().loadSchemas(databaseName));
     }
     
     /**

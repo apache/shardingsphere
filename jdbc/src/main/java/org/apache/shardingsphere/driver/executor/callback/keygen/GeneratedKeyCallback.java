@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.callback;
+package org.apache.shardingsphere.driver.executor.callback.keygen;
 
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
- * Execute update callback.
+ * Generated key callback.
  */
-public interface ExecuteUpdateCallback {
+public interface GeneratedKeyCallback {
     
     /**
-     * Execute update.
-     * 
-     * @param sql SQL to be executed
-     * @param statement JDBC statement
-     * @return effected records count
+     * generate keys.
+     *
      * @throws SQLException SQL exception
      */
-    int executeUpdate(String sql, Statement statement) throws SQLException;
+    void generateKeys() throws SQLException;
 }

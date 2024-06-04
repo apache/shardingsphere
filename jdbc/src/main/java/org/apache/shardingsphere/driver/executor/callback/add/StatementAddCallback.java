@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.callback;
+package org.apache.shardingsphere.driver.executor.callback.add;
 
-import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
+import java.util.List;
 
 /**
- * Execute callback.
+ * Statement add callback.
+ *
+ * @param <T> type of statement
  */
-public interface ExecuteCallback {
+public interface StatementAddCallback<T extends Statement> {
     
     /**
-     * Execute.
-     * 
-     * @param sql SQL to be executed
-     * @param statement JDBC statement
-     * @return return true if is DQL, false if is DML
-     * @throws SQLException SQL exception
+     * Add statements and parameter sets.
+     *
+     * @param statements statements
+     * @param parameterSets parameter sets
      */
-    boolean execute(String sql, Statement statement) throws SQLException;
+    void add(Collection<T> statements, Collection<List<Object>> parameterSets);
 }

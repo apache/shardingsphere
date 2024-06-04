@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.statement;
+package org.apache.shardingsphere.driver.executor.callback.execute;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 
 /**
- * Statement replay callback.
- *
- * @param <T> type of statement
+ * Statement execute update callback.
  */
-public interface StatementReplayCallback<T extends Statement> {
+public interface StatementExecuteUpdateCallback {
     
     /**
-     * Replay statement.
-     *
-     * @param statements statements
-     * @param parameterSets parameter sets
+     * Execute update.
+     * 
+     * @param sql SQL to be executed
+     * @param statement JDBC statement
+     * @return effected records count
      * @throws SQLException SQL exception
      */
-    void replay(List<T> statements, List<List<Object>> parameterSets) throws SQLException;
+    int executeUpdate(String sql, Statement statement) throws SQLException;
 }

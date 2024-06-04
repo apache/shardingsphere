@@ -30,8 +30,8 @@ import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -200,7 +200,7 @@ public final class ProxyBackendHandlerFactory {
     }
     
     private static void checkClusterState(final SQLStatement sqlStatement) {
-        ClusterState clusterCurrentState = ProxyContext.getInstance().getContextManager().getStateContext().getCurrentClusterState();
+        ClusterState clusterCurrentState = ProxyContext.getInstance().getContextManager().getStateContext().getClusterState();
         if (ClusterState.OK != clusterCurrentState) {
             TypedSPILoader.getService(ProxyClusterState.class, clusterCurrentState.name()).check(sqlStatement);
         }

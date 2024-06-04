@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
@@ -44,15 +43,13 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
-import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
 import org.apache.shardingsphere.mode.service.persist.QualifiedDataSourceStatePersistService;
-import org.apache.shardingsphere.mode.state.StatePersistService;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Collections;
 
 /**
  * Cluster context manager builder.
@@ -72,7 +69,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository, param.isForce());
         createSubscribers(eventBusContext, repository);
         registerOnline(eventBusContext, computeNodeInstanceContext, repository, param, result);
-        setClusterState(result);
         return result;
     }
     
@@ -85,12 +81,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                                                        final InstanceMetaData instanceMetaData, final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
         return new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData),
                 new ClusterWorkerIdGenerator(repository, instanceMetaData.getId()), modeConfig,
-                new GlobalLockContext(new GlobalLockPersistService(initDistributedLockHolder(repository))), eventBusContext);
-    }
-    
-    private DistributedLockHolder initDistributedLockHolder(final ClusterPersistRepository repository) {
-        DistributedLockHolder distributedLockHolder = repository.getDistributedLockHolder();
-        return null == distributedLockHolder ? new DistributedLockHolder("default", repository, new DefaultLockTypedProperties(new Properties())) : distributedLockHolder;
+                new GlobalLockContext(new GlobalLockPersistService(repository)), eventBusContext);
     }
     
     // TODO remove the method, only keep ZooKeeper's events, remove all decouple events

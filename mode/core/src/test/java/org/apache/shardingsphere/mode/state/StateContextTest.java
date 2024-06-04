@@ -29,17 +29,17 @@ import static org.mockito.Mockito.mock;
 
 class StateContextTest {
     
-    private final StateContext stateContext = new StateContext(mock(ShardingSphereMetaData.class), new HashMap<>(), false);
+    private final StateContext stateContext = new StateContext(mock(ShardingSphereMetaData.class), ClusterState.OK, new HashMap<>(), false);
     
     @Test
     void assertGetCurrentClusterState() {
-        assertThat(stateContext.getCurrentClusterState(), is(ClusterState.OK));
+        assertThat(stateContext.getClusterState(), is(ClusterState.OK));
     }
     
     @Test
-    void assertSwitchCurrentClusterState() {
-        assertThat(stateContext.getCurrentClusterState(), is(ClusterState.OK));
-        stateContext.switchCurrentClusterState(ClusterState.UNAVAILABLE);
-        assertThat(stateContext.getCurrentClusterState(), is(ClusterState.UNAVAILABLE));
+    void assertSwitchClusterState() {
+        assertThat(stateContext.getClusterState(), is(ClusterState.OK));
+        stateContext.switchClusterState(ClusterState.UNAVAILABLE);
+        assertThat(stateContext.getClusterState(), is(ClusterState.UNAVAILABLE));
     }
 }

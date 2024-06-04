@@ -98,7 +98,7 @@ client {
 }
 ```
 
-Modify the `file.conf` and `registry.conf` files of Seata as required.
+Modify the `registry.conf` file of Seata as required.
 
 ## Usage restrictions
 
@@ -184,7 +184,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ExampleApplication {
 
      public static void main(String[] args) {
-         SpringApplication.run(ShardingsphereSeataSpringBootTestApplication.class, args);
+         SpringApplication.run(ExampleApplication.class, args);
      }
 
 }
