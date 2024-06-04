@@ -24,8 +24,8 @@ import org.apache.shardingsphere.driver.executor.callback.impl.StatementExecuteQ
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtils;
-import org.apache.shardingsphere.driver.jdbc.core.statement.callback.StatementAddCallback;
-import org.apache.shardingsphere.driver.jdbc.core.statement.callback.StatementReplayCallback;
+import org.apache.shardingsphere.driver.executor.callback.StatementAddCallback;
+import org.apache.shardingsphere.driver.executor.callback.StatementReplayCallback;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -100,15 +100,15 @@ public final class DriverExecuteQueryExecutor {
      * @param prepareEngine prepare engine
      * @param statement statement
      * @param columnLabelAndIndexMap column label and index map
-     * @param statementReplayCallback statement replay callback
      * @param statementAddCallback statement add callback
+     * @param statementReplayCallback statement replay callback
      * @return result set
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
     public ResultSet executeQuery(final ShardingSphereDatabase database, final QueryContext queryContext,
                                   final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement, final Map<String, Integer> columnLabelAndIndexMap,
-                                  final StatementReplayCallback statementReplayCallback, final StatementAddCallback statementAddCallback) throws SQLException {
+                                  final StatementAddCallback statementAddCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
         statements.clear();
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
@@ -119,7 +119,7 @@ public final class DriverExecuteQueryExecutor {
             return sqlFederationEngine.executeQuery(
                     prepareEngine, getExecuteQueryCallback(database, queryContext, prepareEngine.getType()), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
         }
-        List<QueryResult> queryResults = executePushDownQuery(database, queryContext, prepareEngine, statementReplayCallback, statementAddCallback);
+        List<QueryResult> queryResults = executePushDownQuery(database, queryContext, prepareEngine, statementAddCallback, statementReplayCallback);
         MergedResult mergedResult = mergeQuery(database, queryResults, queryContext.getSqlStatementContext());
         boolean selectContainsEnhancedTable = queryContext.getSqlStatementContext() instanceof SelectStatementContext
                 && ((SelectStatementContext) queryContext.getSqlStatementContext()).isContainsEnhancedTable();
@@ -145,7 +145,7 @@ public final class DriverExecuteQueryExecutor {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private List<QueryResult> executePushDownQuery(final ShardingSphereDatabase database, final QueryContext queryContext,
                                                    final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                                   final StatementReplayCallback statementReplayCallback, final StatementAddCallback statementAddCallback) throws SQLException {
+                                                   final StatementAddCallback statementAddCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
         ExecutionContext executionContext = createExecutionContext(database, queryContext);
         if (hasRawExecutionRule(database)) {
             return rawExecutor.execute(
