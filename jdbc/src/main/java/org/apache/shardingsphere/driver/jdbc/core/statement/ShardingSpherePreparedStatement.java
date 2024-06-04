@@ -390,9 +390,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public int[] executeBatch() throws SQLException {
-        if (null == executionContext) {
-            return new int[0];
-        }
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         try {
             return driverExecutorFacade.getExecuteBatchExecutor().executeBatch(database, sqlStatementContext, generatedValues, statementOption,

@@ -115,6 +115,9 @@ public final class DriverExecuteBatchExecutor {
                               final StatementOption statementOption, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                               final ExecutionContext executionContext, final StatementAddCallback addCallback, final PreparedStatementParametersReplayCallback replayCallback,
                               final GeneratedKeyCallback generatedKeyCallback) throws SQLException {
+        if (null == executionContext) {
+            return new int[0];
+        }
         // TODO add raw SQL executor
         return doExecuteBatch(database, batchPreparedStatementExecutor,
                 sqlStatementContext, generatedValues, statementOption, prepareEngine, executionContext, addCallback, replayCallback, generatedKeyCallback);
