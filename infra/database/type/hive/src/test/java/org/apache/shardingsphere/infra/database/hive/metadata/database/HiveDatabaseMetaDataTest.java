@@ -34,7 +34,7 @@ class HiveDatabaseMetaDataTest {
     
     @Test
     void assertGetQuoteCharacter() {
-        assertThat(dialectDatabaseMetaData.getQuoteCharacter(), is(QuoteCharacter.QUOTE));
+        assertThat(dialectDatabaseMetaData.getQuoteCharacter(), is(QuoteCharacter.BACK_QUOTE));
     }
     
     @Test
