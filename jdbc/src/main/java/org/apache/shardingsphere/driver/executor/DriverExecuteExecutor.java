@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.driver.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.driver.executor.callback.ExecuteCallback;
-import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
-import org.apache.shardingsphere.driver.executor.callback.impl.PreparedStatementExecuteQueryCallback;
-import org.apache.shardingsphere.driver.executor.callback.impl.StatementExecuteQueryCallback;
+import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteCallback;
+import org.apache.shardingsphere.driver.executor.callback.execute.ExecuteQueryCallback;
+import org.apache.shardingsphere.driver.executor.callback.execute.impl.PreparedStatementExecuteQueryCallback;
+import org.apache.shardingsphere.driver.executor.callback.execute.impl.StatementExecuteQueryCallback;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.driver.executor.callback.StatementAddCallback;
-import org.apache.shardingsphere.driver.executor.callback.StatementReplayCallback;
+import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
+import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -100,15 +100,15 @@ public final class DriverExecuteExecutor {
      * @param database database
      * @param queryContext query context
      * @param prepareEngine prepare engine
-     * @param executeCallback execute callback
-     * @param statementAddCallback statement add callback
-     * @param statementReplayCallback statement replay callback
+     * @param executeCallback statement execute callback
+     * @param addCallback statement add callback
+     * @param replayCallback statement replay callback
      * @return execute result
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
     public boolean execute(final ShardingSphereDatabase database, final QueryContext queryContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                           final ExecuteCallback executeCallback, final StatementAddCallback statementAddCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
+                           final StatementExecuteCallback executeCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
             executeType = ExecuteType.TRAFFIC;
@@ -127,7 +127,7 @@ public final class DriverExecuteExecutor {
         }
         boolean isNeedImplicitCommitTransaction = isNeedImplicitCommitTransaction(
                 connection, queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1);
-        return executeWithExecutionContext(database, executeCallback, executionContext, prepareEngine, isNeedImplicitCommitTransaction, statementAddCallback, statementReplayCallback);
+        return executeWithExecutionContext(database, executeCallback, executionContext, prepareEngine, isNeedImplicitCommitTransaction, addCallback, replayCallback);
     }
     
     private ExecuteQueryCallback getExecuteQueryCallback(final ShardingSphereDatabase database, final QueryContext queryContext, final String jdbcDriverType) {
@@ -194,30 +194,30 @@ public final class DriverExecuteExecutor {
     }
     
     @SuppressWarnings("rawtypes")
-    private boolean executeWithExecutionContext(final ShardingSphereDatabase database, final ExecuteCallback executeCallback, final ExecutionContext executionContext,
+    private boolean executeWithExecutionContext(final ShardingSphereDatabase database, final StatementExecuteCallback statementExecuteCallback, final ExecutionContext executionContext,
                                                 final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final boolean isNeedImplicitCommitTransaction,
-                                                final StatementAddCallback statementAddCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
+                                                final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
         return isNeedImplicitCommitTransaction
-                ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(database, executeCallback, executionContext, prepareEngine, statementAddCallback, statementReplayCallback), connection,
+                ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(database, statementExecuteCallback, executionContext, prepareEngine, addCallback, replayCallback), connection,
                         database.getProtocolType())
-                : useDriverToExecute(database, executeCallback, executionContext, prepareEngine, statementAddCallback, statementReplayCallback);
+                : useDriverToExecute(database, statementExecuteCallback, executionContext, prepareEngine, addCallback, replayCallback);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private boolean useDriverToExecute(final ShardingSphereDatabase database, final ExecuteCallback callback, final ExecutionContext executionContext,
+    private boolean useDriverToExecute(final ShardingSphereDatabase database, final StatementExecuteCallback callback, final ExecutionContext executionContext,
                                        final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                       final StatementAddCallback statementAddCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
+                                       final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(database, executionContext, prepareEngine);
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
-            statementAddCallback.add(getStatements(each), JDBCDriverType.PREPARED_STATEMENT.equals(prepareEngine.getType()) ? getParameterSets(each) : Collections.emptyList());
+            addCallback.add(getStatements(each), JDBCDriverType.PREPARED_STATEMENT.equals(prepareEngine.getType()) ? getParameterSets(each) : Collections.emptyList());
         }
-        statementReplayCallback.replay();
+        replayCallback.replay();
         JDBCExecutorCallback<Boolean> jdbcExecutorCallback = createExecuteCallback(database, callback, executionContext.getSqlStatementContext().getSqlStatement(), prepareEngine.getType());
         return regularExecutor.execute(executionGroupContext, executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), jdbcExecutorCallback);
     }
     
-    private JDBCExecutorCallback<Boolean> createExecuteCallback(final ShardingSphereDatabase database, final ExecuteCallback executeCallback,
-                                                                final SQLStatement sqlStatement, final String jdbcDriverType) {
+    private JDBCExecutorCallback<Boolean> createExecuteCallback(final ShardingSphereDatabase database,
+                                                                final StatementExecuteCallback executeCallback, final SQLStatement sqlStatement, final String jdbcDriverType) {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         return new JDBCExecutorCallback<Boolean>(database.getProtocolType(), database.getResourceMetaData(), sqlStatement, isExceptionThrown) {
             

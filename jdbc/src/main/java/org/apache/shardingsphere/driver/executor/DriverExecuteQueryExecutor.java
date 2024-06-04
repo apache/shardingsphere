@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.driver.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
-import org.apache.shardingsphere.driver.executor.callback.impl.PreparedStatementExecuteQueryCallback;
-import org.apache.shardingsphere.driver.executor.callback.impl.StatementExecuteQueryCallback;
+import org.apache.shardingsphere.driver.executor.callback.execute.ExecuteQueryCallback;
+import org.apache.shardingsphere.driver.executor.callback.execute.impl.PreparedStatementExecuteQueryCallback;
+import org.apache.shardingsphere.driver.executor.callback.execute.impl.StatementExecuteQueryCallback;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtils;
-import org.apache.shardingsphere.driver.executor.callback.StatementAddCallback;
-import org.apache.shardingsphere.driver.executor.callback.StatementReplayCallback;
+import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
+import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -100,15 +100,15 @@ public final class DriverExecuteQueryExecutor {
      * @param prepareEngine prepare engine
      * @param statement statement
      * @param columnLabelAndIndexMap column label and index map
-     * @param statementAddCallback statement add callback
-     * @param statementReplayCallback statement replay callback
+     * @param addCallback statement add callback
+     * @param replayCallback statement replay callback
      * @return result set
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
     public ResultSet executeQuery(final ShardingSphereDatabase database, final QueryContext queryContext,
                                   final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement, final Map<String, Integer> columnLabelAndIndexMap,
-                                  final StatementAddCallback statementAddCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
+                                  final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
         statements.clear();
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
@@ -119,7 +119,7 @@ public final class DriverExecuteQueryExecutor {
             return sqlFederationEngine.executeQuery(
                     prepareEngine, getExecuteQueryCallback(database, queryContext, prepareEngine.getType()), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
         }
-        List<QueryResult> queryResults = executePushDownQuery(database, queryContext, prepareEngine, statementAddCallback, statementReplayCallback);
+        List<QueryResult> queryResults = executePushDownQuery(database, queryContext, prepareEngine, addCallback, replayCallback);
         MergedResult mergedResult = mergeQuery(database, queryResults, queryContext.getSqlStatementContext());
         boolean selectContainsEnhancedTable = queryContext.getSqlStatementContext() instanceof SelectStatementContext
                 && ((SelectStatementContext) queryContext.getSqlStatementContext()).isContainsEnhancedTable();
@@ -145,7 +145,7 @@ public final class DriverExecuteQueryExecutor {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private List<QueryResult> executePushDownQuery(final ShardingSphereDatabase database, final QueryContext queryContext,
                                                    final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                                   final StatementAddCallback statementAddCallback, final StatementReplayCallback statementReplayCallback) throws SQLException {
+                                                   final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
         ExecutionContext executionContext = createExecutionContext(database, queryContext);
         if (hasRawExecutionRule(database)) {
             return rawExecutor.execute(
@@ -156,9 +156,9 @@ public final class DriverExecuteQueryExecutor {
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
             Collection<Statement> statements = getStatements(each);
             this.statements.addAll(statements);
-            statementAddCallback.add(statements, JDBCDriverType.PREPARED_STATEMENT.equals(prepareEngine.getType()) ? getParameterSets(each) : Collections.emptyList());
+            addCallback.add(statements, JDBCDriverType.PREPARED_STATEMENT.equals(prepareEngine.getType()) ? getParameterSets(each) : Collections.emptyList());
         }
-        statementReplayCallback.replay();
+        replayCallback.replay();
         return regularExecutor.executeQuery(executionGroupContext, queryContext, getExecuteQueryCallback(database, queryContext, prepareEngine.getType()));
     }
     
