@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -47,10 +49,10 @@ public final class DatabaseTypeEngine {
     
     /**
      * Get protocol type.
-     * 
-     * @param databaseName database name
+     *
+     * @param databaseName   database name
      * @param databaseConfig database configuration
-     * @param props configuration properties
+     * @param props          configuration properties
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
@@ -66,7 +68,7 @@ public final class DatabaseTypeEngine {
      * Get protocol type.
      *
      * @param databaseConfigs database configurations
-     * @param props configuration properties
+     * @param props           configuration properties
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
@@ -94,7 +96,7 @@ public final class DatabaseTypeEngine {
     /**
      * Get storage types.
      *
-     * @param databaseName database name
+     * @param databaseName   database name
      * @param databaseConfig database configuration
      * @return storage types
      */
@@ -109,6 +111,8 @@ public final class DatabaseTypeEngine {
     
     /**
      * Get storage type.
+     * Similar to apache/hive 4.0.0's `org.apache.hive.jdbc.HiveDatabaseMetaData`, it does not implement {@link java.sql.DatabaseMetaData#getURL()}.
+     * So use {@link CatalogSwitchableDataSource#getUrl()} to try fuzzy matching.
      *
      * @param dataSource data source
      * @return storage type
@@ -117,6 +121,11 @@ public final class DatabaseTypeEngine {
     public static DatabaseType getStorageType(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypeFactory.get(connection.getMetaData().getURL());
+        } catch (final SQLFeatureNotSupportedException sqlFeatureNotSupportedException) {
+            if (dataSource instanceof CatalogSwitchableDataSource) {
+                return DatabaseTypeFactory.get(((CatalogSwitchableDataSource) dataSource).getUrl());
+            }
+            throw new SQLWrapperException(sqlFeatureNotSupportedException);
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }

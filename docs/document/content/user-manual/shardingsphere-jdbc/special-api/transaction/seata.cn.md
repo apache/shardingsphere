@@ -97,7 +97,7 @@ client {
 }
 ```
 
-根据实际场景修改 Seata 的 `file.conf` 和 `registry.conf` 文件。
+根据实际场景修改 Seata 的 `registry.conf` 文件。
 
 ## 使用限制
 
@@ -180,7 +180,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ExampleApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ShardingsphereSeataSpringBootTestApplication.class, args);
+        SpringApplication.run(ExampleApplication.class, args);
     }
 
 }

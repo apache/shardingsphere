@@ -31,7 +31,6 @@ All the built-in plugins for ShardingSphere-JDBC are listed below in the form of
 - `org.apache.shardingsphere:shardingsphere-sql-parser-oracle`, Oracle dialect implementation of SQL parsing
 - `org.apache.shardingsphere:shardingsphere-sql-parser-sqlserver`, SQL Server dialect implementation of SQL parsing
 - `org.apache.shardingsphere:shardingsphere-sql-parser-doris`， Doris dialect implementation of SQL parsing
-- `org.apache.shardingsphere:shardingsphere-sql-parser-hive`， Hive dialect implementation of SQL parsing
 - `org.apache.shardingsphere:shardingsphere-sql-parser-presto`， Presto dialect implementation of SQL parsing
 - `org.apache.shardingsphere:shardingsphere-sql-parser-sql92`,the SQL 92 dialect implementation of SQL parsing
 - `org.apache.shardingsphere:shardingsphere-standalone-mode-core`, the persistence definition core of single-machine mode configuration information
@@ -53,6 +52,7 @@ All optional plugins are listed below in the form of `groupId:artifactId`.
 - Database type identification
   - `org.apache.shardingsphere:shardingsphere-infra-database-testcontainers`, Adaptation of jdbcURL for `JDBC support` of `testcontainers-java`
 - SQL parsing
-  - `org.apache.shardingsphere:shardingsphere-sql-parser-clickhouse`, ClickHouse dialect implementation of SQL parsing
+  - `org.apache.shardingsphere:shardingsphere-parser-sql-clickhouse`, ClickHouse dialect implementation of SQL parsing
+  - `org.apache.shardingsphere:shardingsphere-parser-sql-hive`， Hive dialect implementation of SQL parsing
 
 In addition to the above optional plugins, ShardingSphere community developers have contributed a number of plugin implementations. These plugins can be found in [ShardingSphere Plugins] (https://github.com/apache/shardingsphere-plugin) repository. Plugins in ShardingSphere Plugin repository would remain the same release plan with ShardingSphere, they can be retrieved at https://central.sonatype.com/, and install into ShardingSphere.
