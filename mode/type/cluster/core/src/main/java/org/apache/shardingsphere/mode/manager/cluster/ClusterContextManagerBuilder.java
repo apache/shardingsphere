@@ -47,9 +47,6 @@ import org.apache.shardingsphere.mode.service.persist.QualifiedDataSourceStatePe
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Collections;
 
 /**
  * Cluster context manager builder.
@@ -108,16 +105,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private Collection<String> getDatabaseNames(final ContextManagerBuilderParameter param, final MetaDataPersistService metaDataPersistService) {
         return param.getInstanceMetaData() instanceof JDBCInstanceMetaData ? param.getDatabaseConfigs().keySet() : metaDataPersistService.getDatabaseMetaDataService().loadAllDatabaseNames();
-    }
-    
-    private void setClusterState(final ContextManager contextManager) {
-        StatePersistService statePersistService = contextManager.getPersistServiceFacade().getStatePersistService();
-        Optional<ClusterState> clusterState = statePersistService.loadClusterState();
-        if (clusterState.isPresent()) {
-            contextManager.getStateContext().switchCurrentClusterState(clusterState.get());
-        } else {
-            statePersistService.updateClusterState(ClusterState.OK);
-        }
     }
     
     @Override
