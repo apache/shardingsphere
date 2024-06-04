@@ -41,15 +41,12 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
-import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
 import org.apache.shardingsphere.mode.service.persist.QualifiedDataSourceStatePersistService;
 import org.apache.shardingsphere.mode.state.StatePersistService;
 
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Cluster context manager builder.
@@ -82,12 +79,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                                                        final InstanceMetaData instanceMetaData, final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
         return new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData),
                 new ClusterWorkerIdGenerator(repository, instanceMetaData.getId()), modeConfig,
-                new GlobalLockContext(new GlobalLockPersistService(initDistributedLockHolder(repository))), eventBusContext);
-    }
-    
-    private DistributedLockHolder initDistributedLockHolder(final ClusterPersistRepository repository) {
-        DistributedLockHolder distributedLockHolder = repository.getDistributedLockHolder();
-        return null == distributedLockHolder ? new DistributedLockHolder("default", repository, new DefaultLockTypedProperties(new Properties())) : distributedLockHolder;
+                new GlobalLockContext(new GlobalLockPersistService(repository)), eventBusContext);
     }
     
     // TODO remove the method, only keep ZooKeeper's events, remove all decouple events
