@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.executor;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import org.apache.shardingsphere.driver.executor.batch.BatchExecutionUnit;
 import org.apache.shardingsphere.driver.executor.batch.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -53,14 +54,20 @@ import java.util.Optional;
 /**
  * Driver execute batch executor.
  */
-@RequiredArgsConstructor
 public final class DriverExecuteBatchExecutor {
     
     private final ShardingSphereConnection connection;
     
     private final ShardingSphereMetaData metaData;
     
+    @Getter
     private final BatchPreparedStatementExecutor batchPreparedStatementExecutor;
+    
+    public DriverExecuteBatchExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final JDBCExecutor jdbcExecutor) {
+        this.connection = connection;
+        this.metaData = metaData;
+        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(database, jdbcExecutor, connection.getProcessId());
+    }
     
     /**
      * Add batch.
@@ -136,5 +143,12 @@ public final class DriverExecuteBatchExecutor {
         batchExecutor.init(prepareEngine
                 .prepare(executionContext.getRouteContext(), executionUnits, new ExecutionGroupReportContext(connection.getProcessId(), database.getName(), new Grantee("", ""))));
         replayCallback.replay();
+    }
+    
+    /**
+     * Clear.
+     */
+    public void clear() {
+        batchPreparedStatementExecutor.clear();
     }
 }
