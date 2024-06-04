@@ -20,14 +20,13 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.executor.DriverExecutorFacade;
-import org.apache.shardingsphere.driver.executor.batch.BatchExecutionUnit;
 import org.apache.shardingsphere.driver.executor.batch.BatchPreparedStatementExecutor;
+import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractPreparedStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtils;
-import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.jdbc.core.statement.metadata.ShardingSphereParameterMetaData;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
@@ -37,17 +36,12 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatem
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.keygen.GeneratedKeyColumnProvider;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
-import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -63,16 +57,13 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.resoure.StorageConnectorReusableRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.Connection;
@@ -121,11 +112,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final Collection<Comparable<?>> generatedValues = new LinkedList<>();
     
-    private final KernelProcessor kernelProcessor;
-    
     private final boolean statementsCacheable;
-    
-    private final TrafficRule trafficRule;
     
     @Getter(AccessLevel.PROTECTED)
     private final StatementManager statementManager;
@@ -179,13 +166,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
-        driverExecutorFacade = new DriverExecutorFacade(connection);
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(database, jdbcExecutor, connection.getProcessId());
-        kernelProcessor = new KernelProcessor();
+        driverExecutorFacade = new DriverExecutorFacade(connection, batchPreparedStatementExecutor);
         statementsCacheable = isStatementsCacheable(database.getRuleMetaData());
-        trafficRule = metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
         selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
         statementManager = new StatementManager();
     }
@@ -402,29 +387,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public void addBatch() {
-        try {
-            QueryContext queryContext = createQueryContext();
-            Optional<String> trafficInstanceId = connection.getTrafficInstanceId(trafficRule, queryContext);
-            executionContext = trafficInstanceId.map(optional -> createExecutionContext(queryContext, optional)).orElseGet(() -> createExecutionContext(queryContext));
-            batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits());
-        } finally {
-            currentResultSet = null;
-            clearParameters();
-        }
-    }
-    
-    private ExecutionContext createExecutionContext(final QueryContext queryContext, final String trafficInstanceId) {
-        return new ExecutionContext(queryContext, Collections.singleton(new ExecutionUnit(trafficInstanceId, new SQLUnit(queryContext.getSql(), queryContext.getParameters()))), new RouteContext());
-    }
-    
-    private ExecutionContext createExecutionContext(final QueryContext queryContext) {
-        RuleMetaData globalRuleMetaData = metaData.getGlobalRuleMetaData();
-        ShardingSphereDatabase currentDatabase = metaData.getDatabase(databaseName);
-        SQLAuditEngine.audit(queryContext, globalRuleMetaData, currentDatabase);
-        ExecutionContext result = kernelProcessor.generateExecutionContext(
-                queryContext, currentDatabase, globalRuleMetaData, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
+        currentResultSet = null;
+        QueryContext queryContext = createQueryContext();
+        executionContext = driverExecutorFacade.getExecuteBatchExecutor().addBatch(queryContext, metaData.getDatabase(databaseName));
         findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
-        return result;
+        clearParameters();
     }
     
     @Override
@@ -432,42 +399,23 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (null == executionContext) {
             return new int[0];
         }
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         try {
-            // TODO add raw SQL executor
-            return doExecuteBatch(batchPreparedStatementExecutor);
+            return driverExecutorFacade.getExecuteBatchExecutor().executeBatch(database, sqlStatementContext, generatedValues, statementOption,
+                    createDriverExecutionPrepareEngine(database), executionContext, (StatementAddCallback<PreparedStatement>) (statements, parameterSets) -> this.statements.addAll(statements),
+                    () -> setBatchParametersForStatements(batchPreparedStatementExecutor),
+                    () -> {
+                        currentBatchGeneratedKeysResultSet = getGeneratedKeys();
+                        statements.clear();
+                    });
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaData);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(databaseName).getProtocolType());
+            throw SQLExceptionTransformEngine.toSQLException(ex, database.getProtocolType());
         } finally {
             clearBatch();
         }
-    }
-    
-    private int[] doExecuteBatch(final BatchPreparedStatementExecutor batchExecutor) throws SQLException {
-        initBatchPreparedStatementExecutor(batchExecutor);
-        int[] result = batchExecutor.executeBatch(sqlStatementContext);
-        if (statementOption.isReturnGeneratedKeys() && generatedValues.isEmpty()) {
-            List<Statement> batchPreparedStatementExecutorStatements = batchExecutor.getStatements();
-            for (Statement statement : batchPreparedStatementExecutorStatements) {
-                statements.add((PreparedStatement) statement);
-            }
-            currentBatchGeneratedKeysResultSet = getGeneratedKeys();
-            statements.clear();
-        }
-        return result;
-    }
-    
-    private void initBatchPreparedStatementExecutor(final BatchPreparedStatementExecutor batchExecutor) throws SQLException {
-        List<ExecutionUnit> executionUnits = new ArrayList<>(batchExecutor.getBatchExecutionUnits().size());
-        for (BatchExecutionUnit each : batchExecutor.getBatchExecutionUnits()) {
-            ExecutionUnit executionUnit = each.getExecutionUnit();
-            executionUnits.add(executionUnit);
-        }
-        batchExecutor.init(createDriverExecutionPrepareEngine(metaData.getDatabase(databaseName))
-                .prepare(executionContext.getRouteContext(), executionUnits, new ExecutionGroupReportContext(connection.getProcessId(), databaseName, new Grantee("", ""))));
-        setBatchParametersForStatements(batchExecutor);
     }
     
     private void setBatchParametersForStatements(final BatchPreparedStatementExecutor batchExecutor) throws SQLException {
