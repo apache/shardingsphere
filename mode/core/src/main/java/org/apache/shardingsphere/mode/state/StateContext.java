@@ -44,11 +44,15 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public final class StateContext {
     
-    private final AtomicReference<ClusterState> currentClusterState = new AtomicReference<>(ClusterState.OK);
+    private final AtomicReference<ClusterState> clusterState = new AtomicReference<>(ClusterState.OK);
     
     private final Map<String, DataSourceState> dataSourceStates = new ConcurrentHashMap<>();
     
-    public StateContext(final ShardingSphereMetaData metaData, final Map<String, QualifiedDataSourceState> qualifiedDataSourceStates, final boolean force) {
+    public StateContext(final ShardingSphereMetaData metaData, final ClusterState repositoryClusterState,
+                        final Map<String, QualifiedDataSourceState> qualifiedDataSourceStates, final boolean force) {
+        if (clusterState.get() != repositoryClusterState) {
+            switchClusterState(repositoryClusterState);
+        }
         initDataSourceState(metaData, convert(qualifiedDataSourceStates), force);
     }
     
@@ -74,7 +78,7 @@ public final class StateContext {
         }
     }
     
-    private static Map<String, DataSourceState> convert(final Map<String, QualifiedDataSourceState> qualifiedDataSourceStates) {
+    private Map<String, DataSourceState> convert(final Map<String, QualifiedDataSourceState> qualifiedDataSourceStates) {
         Map<String, DataSourceState> result = new HashMap<>(qualifiedDataSourceStates.size(), 1F);
         qualifiedDataSourceStates.forEach((key, value) -> {
             List<String> values = Splitter.on(".").splitToList(key);
@@ -100,21 +104,21 @@ public final class StateContext {
     }
     
     /**
-     * Get current cluster state.
+     * Get cluster state.
      * 
-     * @return current cluster state
+     * @return cluster state
      */
-    public ClusterState getCurrentClusterState() {
-        return currentClusterState.get();
+    public ClusterState getClusterState() {
+        return clusterState.get();
     }
     
     /**
-     * Switch current cluster state.
+     * Switch cluster state.
      * 
      * @param state to be switched cluster state
      */
-    public void switchCurrentClusterState(final ClusterState state) {
-        currentClusterState.set(state);
+    public void switchClusterState(final ClusterState state) {
+        clusterState.set(state);
     }
     
     /**

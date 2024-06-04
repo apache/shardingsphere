@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
@@ -42,11 +41,9 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.service.persist.QualifiedDataSourceStatePersistService;
-import org.apache.shardingsphere.mode.state.StatePersistService;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Cluster context manager builder.
@@ -66,7 +63,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository, param.isForce());
         createSubscribers(eventBusContext, repository);
         registerOnline(eventBusContext, computeNodeInstanceContext, repository, param, result);
-        setClusterState(result);
         return result;
     }
     
@@ -97,16 +93,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         }
         contextManager.getComputeNodeInstanceContext().getAllClusterInstances().addAll(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllComputeNodeInstances());
         new ClusterEventSubscriberRegistry(contextManager, repository).register();
-    }
-    
-    private void setClusterState(final ContextManager contextManager) {
-        StatePersistService statePersistService = contextManager.getPersistServiceFacade().getStatePersistService();
-        Optional<ClusterState> clusterState = statePersistService.loadClusterState();
-        if (clusterState.isPresent()) {
-            contextManager.getStateContext().switchCurrentClusterState(clusterState.get());
-        } else {
-            statePersistService.updateClusterState(ClusterState.OK);
-        }
     }
     
     @Override
