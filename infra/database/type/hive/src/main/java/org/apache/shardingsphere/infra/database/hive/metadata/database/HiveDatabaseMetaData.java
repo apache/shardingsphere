@@ -21,19 +21,26 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 
+import java.util.Optional;
+
 /**
- * Database metadata of Hive.
+ * Database meta data of Hive.
  */
 public final class HiveDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
+        return QuoteCharacter.BACK_QUOTE;
     }
     
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
         return NullsOrderType.FIRST;
+    }
+    
+    @Override
+    public Optional<String> getDefaultSchema() {
+        return Optional.of("default");
     }
     
     @Override
