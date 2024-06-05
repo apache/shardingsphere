@@ -53,7 +53,7 @@ class DatabaseTypeEngineTest {
     void assertGetProtocolTypeFromConfiguredProperties() {
         Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "MySQL"));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
-        assertThat(DatabaseTypeEngine.getProtocolType("sharding_db", databaseConfig, new ConfigurationProperties(props)), instanceOf(MySQLDatabaseType.class));
+        assertThat(DatabaseTypeEngine.getProtocolType(databaseConfig, new ConfigurationProperties(props)), instanceOf(MySQLDatabaseType.class));
         assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(props)), instanceOf(MySQLDatabaseType.class));
     }
     
@@ -61,7 +61,7 @@ class DatabaseTypeEngineTest {
     void assertGetProtocolTypeFromDataSource() throws SQLException {
         DataSource datasource = mockDataSource(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", datasource), Collections.singleton(new FixtureRuleConfiguration()));
-        assertThat(DatabaseTypeEngine.getProtocolType("sharding_db", databaseConfig, new ConfigurationProperties(new Properties())), instanceOf(PostgreSQLDatabaseType.class));
+        assertThat(DatabaseTypeEngine.getProtocolType(databaseConfig, new ConfigurationProperties(new Properties())), instanceOf(PostgreSQLDatabaseType.class));
         assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties())), instanceOf(PostgreSQLDatabaseType.class));
     }
     
@@ -69,8 +69,8 @@ class DatabaseTypeEngineTest {
     void assertGetStorageTypes() throws SQLException {
         DataSource datasource = mockDataSource(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_db", datasource), Collections.singletonList(new FixtureRuleConfiguration()));
-        assertTrue(DatabaseTypeEngine.getStorageTypes("foo_db", databaseConfig).containsKey("foo_db"));
-        assertThat(DatabaseTypeEngine.getStorageTypes("foo_db", databaseConfig).get("foo_db"), instanceOf(MySQLDatabaseType.class));
+        assertTrue(DatabaseTypeEngine.getStorageTypes(databaseConfig).containsKey("foo_db"));
+        assertThat(DatabaseTypeEngine.getStorageTypes(databaseConfig).get("foo_db"), instanceOf(MySQLDatabaseType.class));
     }
     
     @Test

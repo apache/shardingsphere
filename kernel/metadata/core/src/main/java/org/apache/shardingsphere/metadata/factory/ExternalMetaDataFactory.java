@@ -51,8 +51,8 @@ public final class ExternalMetaDataFactory {
      */
     public static ShardingSphereDatabase create(final String databaseName, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
-        return ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseName, databaseConfig, props),
-                DatabaseTypeEngine.getStorageTypes(databaseName, databaseConfig), databaseConfig, props, computeNodeInstanceContext);
+        return ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseConfig, props),
+                DatabaseTypeEngine.getStorageTypes(databaseConfig), databaseConfig, props, computeNodeInstanceContext);
     }
     
     /**
@@ -81,7 +81,7 @@ public final class ExternalMetaDataFactory {
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
             if (!entry.getValue().getStorageUnits().isEmpty() || !systemDatabase.getSystemSchemas().contains(databaseName)) {
-                Map<String, DatabaseType> storageTypes = DatabaseTypeEngine.getStorageTypes(entry.getKey(), entry.getValue());
+                Map<String, DatabaseType> storageTypes = DatabaseTypeEngine.getStorageTypes(entry.getValue());
                 result.put(databaseName.toLowerCase(), ShardingSphereDatabase.create(databaseName, protocolType, storageTypes, entry.getValue(), props, computeNodeInstanceContext));
             }
         }
