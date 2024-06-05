@@ -267,6 +267,10 @@ public final class DriverExecuteExecutor {
     
     public enum ExecuteType {
         
-        TRAFFIC, FEDERATION, REGULAR
+        TRAFFIC,
+        
+        FEDERATION,
+        
+        REGULAR
     }
 }
