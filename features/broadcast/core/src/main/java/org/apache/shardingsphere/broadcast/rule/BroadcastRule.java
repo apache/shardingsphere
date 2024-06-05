@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.broadcast.rule;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastDataNodeRuleAttribute;
@@ -32,7 +33,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -87,9 +87,7 @@ public final class BroadcastRule implements DatabaseRule {
     }
     
     private Collection<String> createBroadcastTables(final Collection<String> broadcastTables) {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(broadcastTables);
-        return result;
+        return new CaseInsensitiveSet<>(broadcastTables);
     }
     
     /**
