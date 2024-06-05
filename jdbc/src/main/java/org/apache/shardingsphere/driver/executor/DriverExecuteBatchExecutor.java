@@ -81,9 +81,8 @@ public final class DriverExecuteBatchExecutor {
      */
     public void addBatch(final QueryContext queryContext, final ShardingSphereDatabase database) {
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
-        ExecutionContext result = trafficInstanceId.map(optional -> createExecutionContext(queryContext, optional)).orElseGet(() -> createExecutionContext(queryContext, database));
-        batchPreparedStatementExecutor.addBatchForExecutionUnits(result.getExecutionUnits());
-        executionContext = result;
+        executionContext = trafficInstanceId.map(optional -> createExecutionContext(queryContext, optional)).orElseGet(() -> createExecutionContext(queryContext, database));
+        batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits());
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext, final String trafficInstanceId) {
