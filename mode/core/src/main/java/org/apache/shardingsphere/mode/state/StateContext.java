@@ -17,25 +17,9 @@
 
 package org.apache.shardingsphere.mode.state;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
-import org.apache.shardingsphere.infra.state.datasource.exception.UnavailableDataSourceException;
-import org.apache.shardingsphere.mode.storage.QualifiedDataSourceState;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -46,61 +30,10 @@ public final class StateContext {
     
     private final AtomicReference<ClusterState> clusterState = new AtomicReference<>(ClusterState.OK);
     
-    private final Map<String, DataSourceState> dataSourceStates = new ConcurrentHashMap<>();
-    
-    public StateContext(final ShardingSphereMetaData metaData, final ClusterState repositoryClusterState,
-                        final Map<String, QualifiedDataSourceState> qualifiedDataSourceStates, final boolean force) {
+    public StateContext(final ClusterState repositoryClusterState) {
         if (clusterState.get() != repositoryClusterState) {
             switchClusterState(repositoryClusterState);
         }
-        initDataSourceState(metaData, convert(qualifiedDataSourceStates), force);
-    }
-    
-    private void initDataSourceState(final ShardingSphereMetaData metaData, final Map<String, DataSourceState> storageDataSourceStates, final boolean force) {
-        metaData.getDatabases().forEach((key, value) -> {
-            if (value.getResourceMetaData() != null && !value.getResourceMetaData().getStorageUnits().isEmpty()) {
-                initDataSourceState(key, value.getResourceMetaData().getStorageUnits(), storageDataSourceStates, force);
-            }
-        });
-    }
-    
-    private void initDataSourceState(final String databaseName, final Map<String, StorageUnit> storageUnits, final Map<String, DataSourceState> storageDataSourceStates, final boolean force) {
-        storageUnits.forEach((key, value) -> initDataSourceState(databaseName, storageDataSourceStates, key, value.getDataSource(), force));
-    }
-    
-    private void initDataSourceState(final String databaseName, final Map<String, DataSourceState> storageDataSourceStates, final String actualDataSourceName, final DataSource dataSource,
-                                     final boolean force) {
-        DataSourceState storageState = storageDataSourceStates.get(getCacheKey(databaseName, actualDataSourceName));
-        if (DataSourceState.DISABLED == storageState) {
-            dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), storageState);
-        } else {
-            checkState(databaseName, actualDataSourceName, dataSource, force);
-        }
-    }
-    
-    private Map<String, DataSourceState> convert(final Map<String, QualifiedDataSourceState> qualifiedDataSourceStates) {
-        Map<String, DataSourceState> result = new HashMap<>(qualifiedDataSourceStates.size(), 1F);
-        qualifiedDataSourceStates.forEach((key, value) -> {
-            List<String> values = Splitter.on(".").splitToList(key);
-            Preconditions.checkArgument(3 == values.size(), "Illegal data source of storage node.");
-            String databaseName = values.get(0);
-            String dataSourceName = values.get(2);
-            result.put(databaseName + "." + dataSourceName, DataSourceState.valueOf(value.getStatus().name()));
-        });
-        return result;
-    }
-    
-    private void checkState(final String databaseName, final String actualDataSourceName, final DataSource dataSource, final boolean force) {
-        try (Connection ignored = dataSource.getConnection()) {
-            dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), DataSourceState.ENABLED);
-        } catch (final SQLException ex) {
-            ShardingSpherePreconditions.checkState(force, () -> new UnavailableDataSourceException(actualDataSourceName, ex));
-            log.error("Data source unavailable, ignored with the -f parameter.", ex);
-        }
-    }
-    
-    private String getCacheKey(final String databaseName, final String dataSourceName) {
-        return databaseName + "." + dataSourceName;
     }
     
     /**
@@ -119,15 +52,5 @@ public final class StateContext {
      */
     public void switchClusterState(final ClusterState state) {
         clusterState.set(state);
-    }
-    
-    /**
-     * Update data source state.
-     *
-     * @param qualifiedDataSource qualified data source
-     * @param dataSourceState data source state
-     */
-    public void updateDataSourceState(final QualifiedDataSource qualifiedDataSource, final DataSourceState dataSourceState) {
-        dataSourceStates.put(getCacheKey(qualifiedDataSource.getDatabaseName(), qualifiedDataSource.getDataSourceName()), dataSourceState);
     }
 }

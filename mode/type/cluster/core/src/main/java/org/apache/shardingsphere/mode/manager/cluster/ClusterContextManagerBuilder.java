@@ -60,7 +60,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, computeNodeInstanceContext,
                 new QualifiedDataSourceStatePersistService(repository).loadStates());
-        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository, param.isForce());
+        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
         createSubscribers(eventBusContext, repository);
         registerOnline(eventBusContext, computeNodeInstanceContext, repository, param, result);
         return result;
