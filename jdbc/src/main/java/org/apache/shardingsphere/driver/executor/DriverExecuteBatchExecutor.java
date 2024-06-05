@@ -65,6 +65,8 @@ public final class DriverExecuteBatchExecutor {
     @Getter
     private final BatchPreparedStatementExecutor batchPreparedStatementExecutor;
     
+    private ExecutionContext executionContext;
+    
     public DriverExecuteBatchExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final JDBCExecutor jdbcExecutor) {
         this.connection = connection;
         this.metaData = metaData;
@@ -76,13 +78,12 @@ public final class DriverExecuteBatchExecutor {
      * 
      * @param queryContext query context
      * @param database database
-     * @return execution context
      */
-    public ExecutionContext addBatch(final QueryContext queryContext, final ShardingSphereDatabase database) {
+    public void addBatch(final QueryContext queryContext, final ShardingSphereDatabase database) {
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         ExecutionContext result = trafficInstanceId.map(optional -> createExecutionContext(queryContext, optional)).orElseGet(() -> createExecutionContext(queryContext, database));
         batchPreparedStatementExecutor.addBatchForExecutionUnits(result.getExecutionUnits());
-        return result;
+        executionContext = result;
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext, final String trafficInstanceId) {
@@ -103,7 +104,6 @@ public final class DriverExecuteBatchExecutor {
      * @param generatedValues generated values
      * @param statementOption statement option
      * @param prepareEngine prepare engine
-     * @param executionContext execution context
      * @param addCallback statement add callback
      * @param replayCallback prepared statement parameters replay callback
      * @param generatedKeyCallback generated key callback
@@ -113,7 +113,7 @@ public final class DriverExecuteBatchExecutor {
     @SuppressWarnings("rawtypes")
     public int[] executeBatch(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext, final Collection<Comparable<?>> generatedValues,
                               final StatementOption statementOption, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                              final ExecutionContext executionContext, final StatementAddCallback addCallback, final PreparedStatementParametersReplayCallback replayCallback,
+                              final StatementAddCallback addCallback, final PreparedStatementParametersReplayCallback replayCallback,
                               final GeneratedKeyCallback generatedKeyCallback) throws SQLException {
         if (null == executionContext) {
             return new int[0];
