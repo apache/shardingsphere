@@ -124,7 +124,7 @@ class PostgreSQLCommandExecuteEngineTest {
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
         ContextManager contextManager = new ContextManager(MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData()), computeNodeInstanceContext, mock(PersistRepository.class), false);
+                new ShardingSphereMetaData()), computeNodeInstanceContext, mock(PersistRepository.class));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         commandExecuteEngine.writeQueryData(channelHandlerContext, databaseConnectionManager, queryCommandExecutor, 0);
         verify(resourceLock).doAwait(channelHandlerContext);
