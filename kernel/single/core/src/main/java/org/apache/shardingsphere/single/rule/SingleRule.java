@@ -176,7 +176,7 @@ public final class SingleRule implements DatabaseRule {
     }
     
     private Collection<QualifiedTable> getQualifiedTables(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<SimpleTableSegment> tableSegments) {
-        Collection<QualifiedTable> result = new LinkedList<>();
+        Collection<QualifiedTable> result = new ArrayList<>(tableSegments.size());
         String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(database.getName());
         for (SimpleTableSegment each : tableSegments) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);

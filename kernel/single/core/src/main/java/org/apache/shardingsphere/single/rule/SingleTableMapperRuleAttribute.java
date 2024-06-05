@@ -32,7 +32,7 @@ public final class SingleTableMapperRuleAttribute implements TableMapperRuleAttr
     private final CaseInsensitiveSet<String> logicTableMapper;
     
     public SingleTableMapperRuleAttribute(final Collection<Collection<DataNode>> singleTableDataNodes) {
-        logicTableMapper = new CaseInsensitiveSet<>();
+        logicTableMapper = new CaseInsensitiveSet<>(singleTableDataNodes.size(), 1F);
         singleTableDataNodes.forEach(each -> logicTableMapper.add(each.iterator().next().getTableName()));
     }
     

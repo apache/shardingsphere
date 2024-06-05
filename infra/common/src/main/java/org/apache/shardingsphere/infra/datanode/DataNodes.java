@@ -53,6 +53,9 @@ public final class DataNodes {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection<DataNode> getDataNodes(final String tableName) {
         Collection<DataNode> result = getDataNodesByTableName(tableName);
+        if (result.isEmpty()) {
+            return result;
+        }
         for (Entry<ShardingSphereRule, DataNodeBuilder> entry : dataNodeBuilders.entrySet()) {
             result = entry.getValue().build(result, entry.getKey());
         }
