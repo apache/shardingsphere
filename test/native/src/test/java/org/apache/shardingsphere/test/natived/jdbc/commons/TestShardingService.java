@@ -63,16 +63,16 @@ public final class TestShardingService {
         final Collection<Long> orderIds = insertData();
         Collection<Order> orders = orderRepository.selectAll();
         assertThat(orders.stream().map(Order::getOrderType).collect(Collectors.toList()),
-                equalTo(Arrays.asList(1, 1, 1, 1, 1, 0, 0, 0, 0, 0)));
+                equalTo(Arrays.asList(0, 0, 0, 0, 0, 1, 1, 1, 1, 1)));
         assertThat(orders.stream().map(Order::getUserId).collect(Collectors.toList()),
-                equalTo(new ArrayList<>(Arrays.asList(1, 3, 5, 7, 9, 2, 4, 6, 8, 10))));
+                equalTo(new ArrayList<>(Arrays.asList(2, 4, 6, 8, 10, 1, 3, 5, 7, 9))));
         assertThat(orders.stream().map(Order::getAddressId).collect(Collectors.toList()),
-                equalTo(new ArrayList<>(Arrays.asList(1L, 3L, 5L, 7L, 9L, 2L, 4L, 6L, 8L, 10L))));
+                equalTo(new ArrayList<>(Arrays.asList(2L, 4L, 6L, 8L, 10L, 1L, 3L, 5L, 7L, 9L))));
         assertThat(orders.stream().map(Order::getStatus).collect(Collectors.toList()),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
         Collection<OrderItem> orderItems = orderItemRepository.selectAll();
         assertThat(orderItems.stream().map(OrderItem::getUserId).collect(Collectors.toList()),
-                equalTo(new ArrayList<>(Arrays.asList(1, 3, 5, 7, 9, 2, 4, 6, 8, 10))));
+                equalTo(new ArrayList<>(Arrays.asList(2, 4, 6, 8, 10, 1, 3, 5, 7, 9))));
         assertThat(orderItems.stream().map(OrderItem::getPhone).collect(Collectors.toList()),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "13800000001").collect(Collectors.toList())));
         assertThat(orderItems.stream().map(OrderItem::getStatus).collect(Collectors.toList()),
@@ -98,16 +98,16 @@ public final class TestShardingService {
         assertThat(orderIds, notNullValue());
         Collection<Order> orders = orderRepository.selectAll();
         assertThat(orders.stream().map(Order::getOrderType).collect(Collectors.toList()),
-                equalTo(Arrays.asList(1, 1, 1, 1, 1, 0, 0, 0, 0, 0)));
+                equalTo(Arrays.asList(0, 0, 0, 0, 0, 1, 1, 1, 1, 1)));
         assertThat(orders.stream().map(Order::getUserId).collect(Collectors.toList()),
-                equalTo(new ArrayList<>(Arrays.asList(1, 3, 5, 7, 9, 2, 4, 6, 8, 10))));
+                equalTo(new ArrayList<>(Arrays.asList(2, 4, 6, 8, 10, 1, 3, 5, 7, 9))));
         assertThat(orders.stream().map(Order::getAddressId).collect(Collectors.toList()),
-                equalTo(new ArrayList<>(Arrays.asList(1L, 3L, 5L, 7L, 9L, 2L, 4L, 6L, 8L, 10L))));
+                equalTo(new ArrayList<>(Arrays.asList(2L, 4L, 6L, 8L, 10L, 1L, 3L, 5L, 7L, 9L))));
         assertThat(orders.stream().map(Order::getStatus).collect(Collectors.toList()),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
         Collection<OrderItem> orderItems = orderItemRepository.selectAll();
         assertThat(orderItems.stream().map(OrderItem::getUserId).collect(Collectors.toList()),
-                equalTo(new ArrayList<>(Arrays.asList(1, 3, 5, 7, 9, 2, 4, 6, 8, 10))));
+                equalTo(new ArrayList<>(Arrays.asList(2, 4, 6, 8, 10, 1, 3, 5, 7, 9))));
         assertThat(orderItems.stream().map(OrderItem::getPhone).collect(Collectors.toList()),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "13800000001").collect(Collectors.toList())));
         assertThat(orderItems.stream().map(OrderItem::getStatus).collect(Collectors.toList()),
