@@ -40,7 +40,6 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
@@ -115,8 +114,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Getter
     private final boolean selectContainsEnhancedTable;
-    
-    private ExecutionContext executionContext;
     
     private Map<String, Integer> columnLabelAndIndexMap;
     
@@ -383,7 +380,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     public void addBatch() {
         currentResultSet = null;
         QueryContext queryContext = createQueryContext();
-        executionContext = driverExecutorFacade.getExecuteBatchExecutor().addBatch(queryContext, metaData.getDatabase(databaseName));
+        driverExecutorFacade.getExecuteBatchExecutor().addBatch(queryContext, metaData.getDatabase(databaseName));
         findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
         clearParameters();
     }
@@ -393,7 +390,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         try {
             return driverExecutorFacade.getExecuteBatchExecutor().executeBatch(database, sqlStatementContext, generatedValues, statementOption,
-                    createDriverExecutionPrepareEngine(database), executionContext, (StatementAddCallback<PreparedStatement>) (statements, parameterSets) -> this.statements.addAll(statements),
+                    createDriverExecutionPrepareEngine(database), (StatementAddCallback<PreparedStatement>) (statements, parameterSets) -> this.statements.addAll(statements),
                     this::replaySetParameter,
                     () -> {
                         currentBatchGeneratedKeysResultSet = getGeneratedKeys();
