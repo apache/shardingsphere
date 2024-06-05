@@ -30,11 +30,11 @@ import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 /**
  * Abstract execution prepare engine.
@@ -80,7 +80,7 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
     protected abstract List<ExecutionGroup<T>> group(String dataSourceName, int connectionOffset, List<List<ExecutionUnit>> executionUnitGroups, ConnectionMode connectionMode) throws SQLException;
     
     private Map<String, List<ExecutionUnit>> aggregateExecutionUnitGroups(final Collection<ExecutionUnit> executionUnits) {
-        Map<String, List<ExecutionUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1F);
+        Map<String, List<ExecutionUnit>> result = new TreeMap<>();
         for (ExecutionUnit each : executionUnits) {
             result.computeIfAbsent(each.getDataSourceName(), unused -> new LinkedList<>()).add(each);
         }
