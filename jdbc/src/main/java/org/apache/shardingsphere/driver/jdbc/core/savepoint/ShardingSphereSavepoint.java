@@ -20,10 +20,10 @@ package org.apache.shardingsphere.driver.jdbc.core.savepoint;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
-import java.rmi.server.UID;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Savepoint;
+import java.util.UUID;
 
 /**
  * ShardingSphere savepoint.
@@ -34,28 +34,12 @@ public final class ShardingSphereSavepoint implements Savepoint {
     private final String savepointName;
     
     public ShardingSphereSavepoint() {
-        savepointName = getUniqueId();
+        savepointName = UUID.randomUUID().toString().replaceAll("-", "_");
     }
     
     public ShardingSphereSavepoint(final String savepointName) throws SQLException {
         ShardingSpherePreconditions.checkNotEmpty(savepointName, () -> new SQLFeatureNotSupportedException("Savepoint name can not be NULL or empty"));
         this.savepointName = savepointName;
-    }
-    
-    private String getUniqueId() {
-        String uidStr = new UID().toString();
-        int uidLength = uidStr.length();
-        StringBuilder safeString = new StringBuilder(uidLength + 1);
-        safeString.append('_');
-        for (int i = 0; i < uidLength; i++) {
-            char c = uidStr.charAt(i);
-            if (Character.isLetter(c) || Character.isDigit(c)) {
-                safeString.append(c);
-            } else {
-                safeString.append('_');
-            }
-        }
-        return safeString.toString();
     }
     
     @Override
