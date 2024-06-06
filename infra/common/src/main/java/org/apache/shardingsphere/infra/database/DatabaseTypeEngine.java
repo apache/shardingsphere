@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -38,6 +37,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Database type engine.
@@ -50,18 +50,18 @@ public final class DatabaseTypeEngine {
     /**
      * Get protocol type.
      *
-     * @param databaseName database name
      * @param databaseConfig database configuration
      * @param props configuration properties
      * @return protocol type
      */
-    public static DatabaseType getProtocolType(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
+    public static DatabaseType getProtocolType(final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
         Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
         }
-        Collection<DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig).values();
-        return enabledDataSources.isEmpty() ? getDefaultStorageType() : getStorageType(enabledDataSources.iterator().next());
+        Collection<DataSource> dataSources = databaseConfig.getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)).values();
+        return dataSources.isEmpty() ? getDefaultStorageType() : getStorageType(dataSources.iterator().next());
     }
     
     /**
@@ -76,8 +76,8 @@ public final class DatabaseTypeEngine {
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
         }
-        Map<String, DataSource> enabledDataSources = getEnabledDataSources(databaseConfigs);
-        return enabledDataSources.isEmpty() ? getDefaultStorageType() : getStorageType(enabledDataSources.values().iterator().next());
+        Map<String, DataSource> dataSources = getDataSources(databaseConfigs);
+        return dataSources.isEmpty() ? getDefaultStorageType() : getStorageType(dataSources.values().iterator().next());
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
@@ -85,10 +85,12 @@ public final class DatabaseTypeEngine {
         return null == configuredDatabaseType ? Optional.empty() : Optional.of(configuredDatabaseType.getTrunkDatabaseType().orElse(configuredDatabaseType));
     }
     
-    private static Map<String, DataSource> getEnabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+    private static Map<String, DataSource> getDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSource> result = new LinkedHashMap<>();
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
-            result.putAll(DataSourceStateManager.getInstance().getEnabledDataSources(entry.getKey(), entry.getValue()));
+            Map<String, DataSource> dataSources = entry.getValue().getStorageUnits().entrySet().stream()
+                    .collect(Collectors.toMap(Entry::getKey, storageUnit -> storageUnit.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+            result.putAll(dataSources);
         }
         return result;
     }
@@ -96,14 +98,14 @@ public final class DatabaseTypeEngine {
     /**
      * Get storage types.
      *
-     * @param databaseName database name
      * @param databaseConfig database configuration
      * @return storage types
      */
-    public static Map<String, DatabaseType> getStorageTypes(final String databaseName, final DatabaseConfiguration databaseConfig) {
+    public static Map<String, DatabaseType> getStorageTypes(final DatabaseConfiguration databaseConfig) {
         Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getStorageUnits().size(), 1F);
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig);
-        for (Entry<String, DataSource> entry : enabledDataSources.entrySet()) {
+        Map<String, DataSource> dataSources = databaseConfig.getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
             result.put(entry.getKey(), getStorageType(entry.getValue()));
         }
         return result;

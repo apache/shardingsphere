@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 
@@ -66,7 +65,7 @@ public final class ShardingSphereProxyVersion {
     }
     
     private static void setDatabaseVersion(final ShardingSphereDatabase database) {
-        Optional<DataSource> dataSource = findDataSourceByProtocolType(database.getName(), database.getResourceMetaData(), database.getProtocolType());
+        Optional<DataSource> dataSource = findDataSourceByProtocolType(database.getResourceMetaData(), database.getProtocolType());
         if (!dataSource.isPresent()) {
             return;
         }
@@ -75,11 +74,11 @@ public final class ShardingSphereProxyVersion {
         DatabaseProtocolServerInfo.setProtocolVersion(database.getName(), databaseServerInfo.getDatabaseVersion());
     }
     
-    private static Optional<DataSource> findDataSourceByProtocolType(final String databaseName, final ResourceMetaData resourceMetaData, final DatabaseType protocolType) {
+    private static Optional<DataSource> findDataSourceByProtocolType(final ResourceMetaData resourceMetaData, final DatabaseType protocolType) {
         Optional<String> dataSourceName = resourceMetaData.getStorageUnits().entrySet()
                 .stream().filter(entry -> entry.getValue().getStorageType().equals(protocolType)).map(Entry::getKey).findFirst();
         Map<String, DataSource> dataSources = resourceMetaData.getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return dataSourceName.flatMap(optional -> Optional.ofNullable(DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, dataSources).get(optional)));
+        return dataSourceName.flatMap(optional -> Optional.ofNullable(dataSources.get(optional)));
     }
 }
