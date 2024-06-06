@@ -8,10 +8,13 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
 
 ## Development Guidelines
 
- - Write codes with heart. Pursue clean, simplified and extremely elegant codes. Agree with concepts in &lt;Refactoring: Improving the Design of Existing Code&gt; and &lt;Clean Code: A Handbook of Agile Software Craftsmanship&gt;.
- - Be familiar with codes already had, to keep consistent with the style and use.
- - Highly reusable, no duplicated codes or configurations.
- - Delete codes out of use in time.
+- **Dedication** Uphold a sense of responsibility and awe, continuously honing your craft.
+- **Readability** Code should be self-explanatory, revealing its purpose through reading, not debugging.
+- **Cleanliness** Embrace the principles of "Refactoring" and "Clean Code", striving for clean and elegant code.
+- **Consistency** Maintain complete consistency in code style, naming, and usage.
+- **Simplicity** Strive for minimalist code, conveying the correct meaning with the least amount of code. Aim for high reusability, no duplicate code or configurations. Promptly remove unused code.
+- **Abstraction** Ensure clear division of levels, reasonable abstraction of concepts. Maintain methods, classes, packages, and modules at the same level of abstraction.
+- **Excellence** Reject arbitrariness, every line of code, every character, every space must have its purpose.
 
 ## Contributor Covenant Submitting of Conduct
 
@@ -121,7 +124,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
 
   | Trunk Database | Branch Database |
   |----------------|-----------------|
-  | MySQL          | MariaDB、Doris   |
+  | MySQL          | MariaDB, Doris  |
   | PostgreSQL     | -               |
   | openGauss      | -               |
   | Oracle         | -               |
