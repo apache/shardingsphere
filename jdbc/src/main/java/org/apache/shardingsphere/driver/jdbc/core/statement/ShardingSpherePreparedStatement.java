@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.executor.DriverExecutorFacade;
+import org.apache.shardingsphere.driver.executor.batch.DriverExecuteBatchExecutor;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractPreparedStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
@@ -34,13 +35,18 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.keygen.GeneratedKeyColumnProvider;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -59,6 +65,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
+import java.sql.Connection;
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -99,6 +106,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private final ParameterMetaData parameterMetaData;
     
     private final DriverExecutorFacade driverExecutorFacade;
+    
+    private final DriverExecuteBatchExecutor executeBatchExecutor;
     
     private final Collection<Comparable<?>> generatedValues = new LinkedList<>();
     
@@ -156,7 +165,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         statementManager = new StatementManager();
-        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, database);
+        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, JDBCDriverType.PREPARED_STATEMENT);
+        executeBatchExecutor = null == database ? null
+                : new DriverExecuteBatchExecutor(connection, metaData, database,
+                        new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext()));
         statementsCacheable = isStatementsCacheable(database.getRuleMetaData());
         selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
     }
@@ -188,7 +200,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             handleExceptionInTransaction(connection, metaData);
             throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(databaseName).getProtocolType());
         } finally {
-            driverExecutorFacade.clear();
+            executeBatchExecutor.clear();
             clearParameters();
         }
     }
@@ -367,7 +379,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     public void addBatch() {
         currentResultSet = null;
         QueryContext queryContext = createQueryContext();
-        driverExecutorFacade.addBatch(queryContext, metaData.getDatabase(databaseName));
+        executeBatchExecutor.addBatch(queryContext, metaData.getDatabase(databaseName));
         findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
         clearParameters();
     }
@@ -376,7 +388,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     public int[] executeBatch() throws SQLException {
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         try {
-            return driverExecutorFacade.executeBatch(database, sqlStatementContext, generatedValues, statementOption,
+            return executeBatchExecutor.executeBatch(database, sqlStatementContext, generatedValues, statementOption, createDriverExecutionPrepareEngine(database),
                     (StatementAddCallback<PreparedStatement>) (statements, parameterSets) -> this.statements.addAll(statements),
                     this::replaySetParameter,
                     () -> {
@@ -393,10 +405,16 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
     }
     
+    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final ShardingSphereDatabase database) {
+        int maxConnectionsSizePerQuery = connection.getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        return new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT, maxConnectionsSizePerQuery, connection.getDatabaseConnectionManager(), statementManager, statementOption,
+                database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
+    }
+    
     @Override
     public void clearBatch() {
         currentResultSet = null;
-        driverExecutorFacade.clear();
+        executeBatchExecutor.clear();
         clearParameters();
     }
     

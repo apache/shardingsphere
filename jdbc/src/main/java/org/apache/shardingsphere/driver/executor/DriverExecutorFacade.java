@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.driver.executor;
 
-import org.apache.shardingsphere.driver.executor.batch.engine.DriverExecuteBatchExecutor;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
-import org.apache.shardingsphere.driver.executor.callback.keygen.GeneratedKeyCallback;
-import org.apache.shardingsphere.driver.executor.callback.replay.PreparedStatementParametersReplayCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
 import org.apache.shardingsphere.driver.executor.engine.DriverExecuteExecutor;
 import org.apache.shardingsphere.driver.executor.engine.DriverExecuteQueryExecutor;
@@ -30,14 +27,12 @@ import org.apache.shardingsphere.driver.executor.engine.DriverExecuteUpdateExecu
 import org.apache.shardingsphere.driver.executor.engine.DriverJDBCExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -49,7 +44,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -76,18 +70,7 @@ public final class DriverExecutorFacade implements AutoCloseable {
     
     private final DriverExecuteExecutor executeExecutor;
     
-    private final DriverExecuteBatchExecutor executeBatchExecutor;
-    
-    public DriverExecutorFacade(final ShardingSphereConnection connection, final StatementOption statementOption, final StatementManager statementManager) {
-        this(connection, statementOption, statementManager, null, JDBCDriverType.STATEMENT);
-    }
-    
-    public DriverExecutorFacade(final ShardingSphereConnection connection, final StatementOption statementOption, final StatementManager statementManager, final ShardingSphereDatabase database) {
-        this(connection, statementOption, statementManager, database, JDBCDriverType.PREPARED_STATEMENT);
-    }
-    
-    private DriverExecutorFacade(final ShardingSphereConnection connection, final StatementOption statementOption, final StatementManager statementManager,
-                                 final ShardingSphereDatabase database, final String jdbcDriverType) {
+    public DriverExecutorFacade(final ShardingSphereConnection connection, final StatementOption statementOption, final StatementManager statementManager, final String jdbcDriverType) {
         this.connection = connection;
         this.statementOption = statementOption;
         this.statementManager = statementManager;
@@ -102,7 +85,6 @@ public final class DriverExecutorFacade implements AutoCloseable {
         queryExecutor = new DriverExecuteQueryExecutor(connection, metaData, regularExecutor, rawExecutor, trafficExecutor, sqlFederationEngine);
         updateExecutor = new DriverExecuteUpdateExecutor(connection, metaData, regularExecutor, rawExecutor, trafficExecutor);
         executeExecutor = new DriverExecuteExecutor(connection, metaData, regularExecutor, rawExecutor, trafficExecutor, sqlFederationEngine);
-        executeBatchExecutor = null == database ? null : new DriverExecuteBatchExecutor(connection, metaData, database, jdbcExecutor);
     }
     
     /**
@@ -160,46 +142,6 @@ public final class DriverExecutorFacade implements AutoCloseable {
         return executeExecutor.execute(database, queryContext, prepareEngine, executeCallback, addCallback, replayCallback);
     }
     
-    /**
-     * Get result set.
-     *
-     * @return result set
-     */
-    public Optional<ResultSet> getResultSet() {
-        return executeExecutor.getResultSet();
-    }
-    
-    /**
-     * Add batch.
-     *
-     * @param queryContext query context
-     * @param database database
-     */
-    public void addBatch(final QueryContext queryContext, final ShardingSphereDatabase database) {
-        executeBatchExecutor.addBatch(queryContext, database);
-    }
-    
-    /**
-     * Execute batch.
-     *
-     * @param database database
-     * @param sqlStatementContext SQL statement context
-     * @param generatedValues generated values
-     * @param statementOption statement option
-     * @param addCallback statement add callback
-     * @param replayCallback prepared statement parameters replay callback
-     * @param generatedKeyCallback generated key callback
-     * @return generated keys
-     * @throws SQLException SQL exception
-     */
-    @SuppressWarnings("rawtypes")
-    public int[] executeBatch(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext, final Collection<Comparable<?>> generatedValues,
-                              final StatementOption statementOption, final StatementAddCallback addCallback, final PreparedStatementParametersReplayCallback replayCallback,
-                              final GeneratedKeyCallback generatedKeyCallback) throws SQLException {
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(database, jdbcDriverType);
-        return executeBatchExecutor.executeBatch(database, sqlStatementContext, generatedValues, statementOption, prepareEngine, addCallback, replayCallback, generatedKeyCallback);
-    }
-    
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final ShardingSphereDatabase database, final String jdbcDriverType) {
         int maxConnectionsSizePerQuery = connection.getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(jdbcDriverType, maxConnectionsSizePerQuery, connection.getDatabaseConnectionManager(), statementManager, statementOption,
@@ -207,12 +149,12 @@ public final class DriverExecutorFacade implements AutoCloseable {
     }
     
     /**
-     * Clear.
+     * Get result set.
+     *
+     * @return result set
      */
-    public void clear() {
-        if (null != executeBatchExecutor) {
-            executeBatchExecutor.clear();
-        }
+    public Optional<ResultSet> getResultSet() {
+        return executeExecutor.getResultSet();
     }
     
     @Override
