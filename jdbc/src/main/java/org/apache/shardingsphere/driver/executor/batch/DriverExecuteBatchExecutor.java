@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.batch.engine;
+package org.apache.shardingsphere.driver.executor.batch;
 
 import lombok.Getter;
 import org.apache.shardingsphere.driver.executor.batch.statement.BatchExecutionUnit;

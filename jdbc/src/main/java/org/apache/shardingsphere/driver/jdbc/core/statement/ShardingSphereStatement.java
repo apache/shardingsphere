@@ -41,6 +41,7 @@ import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEn
 import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
@@ -109,7 +110,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         statementManager = new StatementManager();
-        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager);
+        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, JDBCDriverType.STATEMENT);
         batchStatementExecutor = new BatchStatementExecutor(this);
         databaseName = connection.getDatabaseName();
     }
