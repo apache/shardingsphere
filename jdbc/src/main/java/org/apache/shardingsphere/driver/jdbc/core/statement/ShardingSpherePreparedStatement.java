@@ -166,8 +166,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         statementManager = new StatementManager();
         driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, JDBCDriverType.PREPARED_STATEMENT);
-        executeBatchExecutor = null == database ? null : new DriverExecuteBatchExecutor(connection, metaData, database,
-                new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext()));
+        executeBatchExecutor = null == database ? null
+                : new DriverExecuteBatchExecutor(connection, metaData, database,
+                        new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext()));
         statementsCacheable = isStatementsCacheable(database.getRuleMetaData());
         selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
     }
