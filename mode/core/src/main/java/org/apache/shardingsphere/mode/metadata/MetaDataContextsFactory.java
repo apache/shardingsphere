@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
@@ -44,7 +42,6 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableDa
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
@@ -55,9 +52,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -151,18 +146,6 @@ public final class MetaDataContextsFactory {
         if (databaseConfigs.containsKey(databaseName) && !databaseConfigs.get(databaseName).getStorageUnits().isEmpty()) {
             databaseConfigs.get(databaseName).getDataSources().values().forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
         }
-    }
-    
-    private static Map<String, DataSourceState> getStorageDataSourceStates(final Map<String, QualifiedDataSourceState> statusMap) {
-        Map<String, DataSourceState> result = new HashMap<>(statusMap.size(), 1F);
-        statusMap.forEach((key, value) -> {
-            List<String> values = Splitter.on(".").splitToList(key);
-            Preconditions.checkArgument(3 == values.size(), "Illegal data source of storage node.");
-            String databaseName = values.get(0);
-            String dataSourceName = values.get(2);
-            result.put(databaseName + "." + dataSourceName, DataSourceState.valueOf(value.getStatus().name()));
-        });
-        return result;
     }
     
     private static ShardingSphereStatistics initStatistics(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
