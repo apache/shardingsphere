@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.listener.DropDatabaseListenerAssistedEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -33,7 +33,7 @@ class CacheEvictedSubscriberTest {
         EventBusContext eventBusContext = new EventBusContext();
         eventBusContext.register(new CacheEvictedSubscriber());
         OrderedServicesCache.cacheServices(getClass(), Collections.emptyList(), Collections.emptyMap());
-        eventBusContext.post(new DatabaseDeletedEvent("db"));
+        eventBusContext.post(new DropDatabaseListenerAssistedEvent("db"));
         assertFalse(OrderedServicesCache.findCachedServices(getClass(), Collections.emptyList()).isPresent());
     }
 }

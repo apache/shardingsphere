@@ -58,4 +58,11 @@ public interface ClusterPersistRepository extends PersistRepository {
      * @param listener data changed event listener
      */
     void watch(String key, DataChangedEventListener listener);
+    
+    /**
+     * Remove listener by key.
+     *
+     * @param key key to be removed
+     */
+    void removeDataListener(String key);
 }

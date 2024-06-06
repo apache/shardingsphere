@@ -15,42 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry;
+package org.apache.shardingsphere.mode.processor;
 
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-
-import java.util.Collection;
-import java.util.Optional;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
- * Governance watcher.
- * 
- * @param <T> type of event
+ * Listener assisted processor.
+ *
+ * @param <T> class type of implemented governance event
  */
 @SingletonSPI
-public interface GovernanceWatcher<T> {
+public interface ListenerAssistedProcessor<T extends GovernanceEvent> extends TypedSPI {
     
     /**
-     * Get watching keys.
+     * Get listener key.
      *
-     * @return watching keys
+     * @param event event
+     * @return listener key
      */
-    Collection<String> getWatchingKeys();
+    String getListenerKey(T event);
     
     /**
-     * Get watching types.
+     * Post-process.
      *
-     * @return watching types
+     * @param contextManager context manager
+     * @param event event
      */
-    Collection<Type> getWatchingTypes();
-    
-    /**
-     * Create governance event.
-     * 
-     * @param event registry center data changed event
-     * @return governance event
-     */
-    Optional<T> createGovernanceEvent(DataChangedEvent event);
+    void processor(ContextManager contextManager, T event);
 }

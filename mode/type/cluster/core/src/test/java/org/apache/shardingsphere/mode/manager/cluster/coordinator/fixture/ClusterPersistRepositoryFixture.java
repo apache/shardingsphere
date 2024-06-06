@@ -76,6 +76,10 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
+    public void removeDataListener(final String key) {
+    }
+    
+    @Override
     public void close() {
     }
     

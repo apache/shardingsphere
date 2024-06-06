@@ -87,6 +87,10 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     }
     
     @Override
+    public void removeDataListener(final String key) {
+    }
+    
+    @Override
     public void close() {
         REGISTRY_DATA.clear();
     }

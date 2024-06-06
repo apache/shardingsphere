@@ -35,7 +35,7 @@ import java.util.Optional;
 public final class PropertiesChangedWatcher implements GovernanceWatcher<AlterPropertiesEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys(final Collection<String> databaseNames) {
+    public Collection<String> getWatchingKeys() {
         return Collections.singleton(GlobalNode.getPropsRootNode());
     }
     
