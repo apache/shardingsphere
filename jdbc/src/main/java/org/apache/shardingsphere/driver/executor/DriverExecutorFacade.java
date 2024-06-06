@@ -24,12 +24,15 @@ import org.apache.shardingsphere.driver.executor.callback.keygen.GeneratedKeyCal
 import org.apache.shardingsphere.driver.executor.callback.replay.PreparedStatementParametersReplayCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -50,6 +53,14 @@ import java.util.Optional;
  */
 public final class DriverExecutorFacade implements AutoCloseable {
     
+    private final ShardingSphereConnection connection;
+    
+    private final StatementOption statementOption;
+    
+    private final StatementManager statementManager;
+    
+    private final String jdbcDriverType;
+    
     private final TrafficExecutor trafficExecutor;
     
     private final SQLFederationEngine sqlFederationEngine;
@@ -62,11 +73,20 @@ public final class DriverExecutorFacade implements AutoCloseable {
     
     private final DriverExecuteBatchExecutor executeBatchExecutor;
     
-    public DriverExecutorFacade(final ShardingSphereConnection connection) {
-        this(connection, null);
+    public DriverExecutorFacade(final ShardingSphereConnection connection, final StatementOption statementOption, final StatementManager statementManager) {
+        this(connection, statementOption, statementManager, null, JDBCDriverType.STATEMENT);
     }
     
-    public DriverExecutorFacade(final ShardingSphereConnection connection, final ShardingSphereDatabase database) {
+    public DriverExecutorFacade(final ShardingSphereConnection connection, final StatementOption statementOption, final StatementManager statementManager, final ShardingSphereDatabase database) {
+        this(connection, statementOption, statementManager, database, JDBCDriverType.PREPARED_STATEMENT);
+    }
+    
+    private DriverExecutorFacade(final ShardingSphereConnection connection, final StatementOption statementOption, final StatementManager statementManager,
+                                 final ShardingSphereDatabase database, final String jdbcDriverType) {
+        this.connection = connection;
+        this.statementOption = statementOption;
+        this.statementManager = statementManager;
+        this.jdbcDriverType = jdbcDriverType;
         JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
         DriverJDBCExecutor regularExecutor = new DriverJDBCExecutor(connection.getDatabaseName(), connection.getContextManager(), jdbcExecutor);
         RawExecutor rawExecutor = new RawExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
@@ -85,7 +105,6 @@ public final class DriverExecutorFacade implements AutoCloseable {
      *
      * @param database database
      * @param queryContext query context
-     * @param prepareEngine prepare engine
      * @param statement statement
      * @param columnLabelAndIndexMap column label and index map
      * @param addCallback statement add callback
@@ -94,9 +113,9 @@ public final class DriverExecutorFacade implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
-    public ResultSet executeQuery(final ShardingSphereDatabase database, final QueryContext queryContext,
-                                  final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement, final Map<String, Integer> columnLabelAndIndexMap,
+    public ResultSet executeQuery(final ShardingSphereDatabase database, final QueryContext queryContext, final Statement statement, final Map<String, Integer> columnLabelAndIndexMap,
                                   final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(database, jdbcDriverType);
         return queryExecutor.executeQuery(database, queryContext, prepareEngine, statement, columnLabelAndIndexMap, addCallback, replayCallback);
     }
     
@@ -105,7 +124,6 @@ public final class DriverExecutorFacade implements AutoCloseable {
      *
      * @param database database
      * @param queryContext query context
-     * @param prepareEngine prepare engine
      * @param updateCallback statement execute update callback
      * @param replayCallback statement replay callback
      * @param addCallback statement add callback
@@ -113,8 +131,9 @@ public final class DriverExecutorFacade implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
-    public int executeUpdate(final ShardingSphereDatabase database, final QueryContext queryContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+    public int executeUpdate(final ShardingSphereDatabase database, final QueryContext queryContext,
                              final StatementExecuteUpdateCallback updateCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(database, jdbcDriverType);
         return updateExecutor.executeUpdate(database, queryContext, prepareEngine, updateCallback, addCallback, replayCallback);
     }
     
@@ -123,7 +142,6 @@ public final class DriverExecutorFacade implements AutoCloseable {
      *
      * @param database database
      * @param queryContext query context
-     * @param prepareEngine prepare engine
      * @param executeCallback statement execute callback
      * @param addCallback statement add callback
      * @param replayCallback statement replay callback
@@ -131,8 +149,9 @@ public final class DriverExecutorFacade implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
-    public boolean execute(final ShardingSphereDatabase database, final QueryContext queryContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+    public boolean execute(final ShardingSphereDatabase database, final QueryContext queryContext,
                            final StatementExecuteCallback executeCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(database, jdbcDriverType);
         return executeExecutor.execute(database, queryContext, prepareEngine, executeCallback, addCallback, replayCallback);
     }
     
@@ -162,7 +181,6 @@ public final class DriverExecutorFacade implements AutoCloseable {
      * @param sqlStatementContext SQL statement context
      * @param generatedValues generated values
      * @param statementOption statement option
-     * @param prepareEngine prepare engine
      * @param addCallback statement add callback
      * @param replayCallback prepared statement parameters replay callback
      * @param generatedKeyCallback generated key callback
@@ -171,10 +189,16 @@ public final class DriverExecutorFacade implements AutoCloseable {
      */
     @SuppressWarnings("rawtypes")
     public int[] executeBatch(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext, final Collection<Comparable<?>> generatedValues,
-                              final StatementOption statementOption, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                              final StatementAddCallback addCallback, final PreparedStatementParametersReplayCallback replayCallback,
+                              final StatementOption statementOption, final StatementAddCallback addCallback, final PreparedStatementParametersReplayCallback replayCallback,
                               final GeneratedKeyCallback generatedKeyCallback) throws SQLException {
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(database, jdbcDriverType);
         return executeBatchExecutor.executeBatch(database, sqlStatementContext, generatedValues, statementOption, prepareEngine, addCallback, replayCallback, generatedKeyCallback);
+    }
+    
+    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final ShardingSphereDatabase database, final String jdbcDriverType) {
+        int maxConnectionsSizePerQuery = connection.getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        return new DriverExecutionPrepareEngine<>(jdbcDriverType, maxConnectionsSizePerQuery, connection.getDatabaseConnectionManager(), statementManager, statementOption,
+                database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
     }
     
     /**
