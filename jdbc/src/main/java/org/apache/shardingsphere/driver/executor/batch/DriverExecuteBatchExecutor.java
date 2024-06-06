@@ -72,8 +72,8 @@ public final class DriverExecuteBatchExecutor {
     
     private ExecutionContext executionContext;
     
-    public DriverExecuteBatchExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final JDBCExecutor jdbcExecutor,
-                                      final StatementOption statementOption, final StatementManager statementManager) {
+    public DriverExecuteBatchExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final StatementOption statementOption, final StatementManager statementManager,
+                                      final ShardingSphereDatabase database, final JDBCExecutor jdbcExecutor) {
         this.connection = connection;
         this.metaData = metaData;
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(database, jdbcExecutor, connection.getProcessId());
@@ -130,8 +130,7 @@ public final class DriverExecuteBatchExecutor {
             return new int[0];
         }
         // TODO add raw SQL executor
-        return doExecuteBatch(database, batchPreparedStatementExecutor,
-                sqlStatementContext, generatedValues, statementOption, executionContext, addCallback, replayCallback, generatedKeyCallback);
+        return doExecuteBatch(database, batchPreparedStatementExecutor, sqlStatementContext, generatedValues, statementOption, executionContext, addCallback, replayCallback, generatedKeyCallback);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

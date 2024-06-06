@@ -70,12 +70,12 @@ public final class DriverExecutorFacade implements AutoCloseable {
     
     private final DriverExecuteExecutor executeExecutor;
     
-    public DriverExecutorFacade(final ShardingSphereConnection connection, final StatementOption statementOption, final StatementManager statementManager, final String jdbcDriverType) {
+    public DriverExecutorFacade(final ShardingSphereConnection connection, final StatementOption statementOption, final StatementManager statementManager,
+                                final JDBCExecutor jdbcExecutor, final String jdbcDriverType) {
         this.connection = connection;
         this.statementOption = statementOption;
         this.statementManager = statementManager;
         this.jdbcDriverType = jdbcDriverType;
-        JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
         DriverJDBCExecutor regularExecutor = new DriverJDBCExecutor(connection.getDatabaseName(), connection.getContextManager(), jdbcExecutor);
         RawExecutor rawExecutor = new RawExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
         trafficExecutor = new TrafficExecutor();
@@ -111,7 +111,7 @@ public final class DriverExecutorFacade implements AutoCloseable {
      *
      * @param database database
      * @param queryContext query context
-     * @param updateCallback statement execute update callback
+     * @param executeUpdateCallback statement execute update callback
      * @param replayCallback statement replay callback
      * @param addCallback statement add callback
      * @return updated row count
@@ -119,9 +119,9 @@ public final class DriverExecutorFacade implements AutoCloseable {
      */
     @SuppressWarnings("rawtypes")
     public int executeUpdate(final ShardingSphereDatabase database, final QueryContext queryContext,
-                             final StatementExecuteUpdateCallback updateCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
+                             final StatementExecuteUpdateCallback executeUpdateCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(database, jdbcDriverType);
-        return updateExecutor.executeUpdate(database, queryContext, prepareEngine, updateCallback, addCallback, replayCallback);
+        return updateExecutor.executeUpdate(database, queryContext, prepareEngine, executeUpdateCallback, addCallback, replayCallback);
     }
     
     /**
