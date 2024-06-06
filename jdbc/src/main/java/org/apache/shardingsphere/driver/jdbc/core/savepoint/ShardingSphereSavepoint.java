@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core;
+package org.apache.shardingsphere.driver.jdbc.core.savepoint;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.rmi.server.UID;
@@ -27,6 +28,7 @@ import java.sql.Savepoint;
 /**
  * ShardingSphere savepoint.
  */
+@Getter
 public final class ShardingSphereSavepoint implements Savepoint {
     
     private final String savepointName;
@@ -35,19 +37,9 @@ public final class ShardingSphereSavepoint implements Savepoint {
         savepointName = getUniqueId();
     }
     
-    public ShardingSphereSavepoint(final String name) throws SQLException {
-        ShardingSpherePreconditions.checkNotEmpty(name, () -> new SQLFeatureNotSupportedException("Savepoint name can not be NULL or empty"));
-        savepointName = name;
-    }
-    
-    @Override
-    public int getSavepointId() throws SQLException {
-        throw new SQLFeatureNotSupportedException("Only named savepoint are supported.");
-    }
-    
-    @Override
-    public String getSavepointName() {
-        return savepointName;
+    public ShardingSphereSavepoint(final String savepointName) throws SQLException {
+        ShardingSpherePreconditions.checkNotEmpty(savepointName, () -> new SQLFeatureNotSupportedException("Savepoint name can not be NULL or empty"));
+        this.savepointName = savepointName;
     }
     
     private String getUniqueId() {
@@ -64,5 +56,10 @@ public final class ShardingSphereSavepoint implements Savepoint {
             }
         }
         return safeString.toString();
+    }
+    
+    @Override
+    public int getSavepointId() throws SQLException {
+        throw new SQLFeatureNotSupportedException("Only named savepoint are supported.");
     }
 }
