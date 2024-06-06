@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor;
+package org.apache.shardingsphere.driver.executor.batch.engine;
 
 import lombok.Getter;
-import org.apache.shardingsphere.driver.executor.batch.BatchExecutionUnit;
-import org.apache.shardingsphere.driver.executor.batch.BatchPreparedStatementExecutor;
+import org.apache.shardingsphere.driver.executor.batch.statement.BatchExecutionUnit;
+import org.apache.shardingsphere.driver.executor.batch.statement.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.keygen.GeneratedKeyCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.PreparedStatementParametersReplayCallback;

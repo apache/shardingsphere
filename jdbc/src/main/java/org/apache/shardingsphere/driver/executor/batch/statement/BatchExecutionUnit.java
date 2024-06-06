@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.batch;
+package org.apache.shardingsphere.driver.executor.batch.statement;
 
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;

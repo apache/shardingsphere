@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.batch;
+package org.apache.shardingsphere.driver.executor.batch.statement;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
