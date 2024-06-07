@@ -39,11 +39,13 @@ public final class ProxyClusterContainerConfigurationFactory {
      *
      * @param scenario scenario
      * @param databaseType database type
+     * @param portBindings port bindings
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType, final List<String> portBindings) {
         String containerCommand = "readwrite-splitting".equals(scenario) ? "-f" : "";
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(scenario), portBindings, getMountedResource(scenario, databaseType), AdapterContainerUtils.getAdapterContainerImage(), containerCommand);
+        return new AdaptorContainerConfiguration(getProxyDatasourceName(scenario), portBindings, getMountedResource(scenario, databaseType), AdapterContainerUtils.getAdapterContainerImage(),
+                containerCommand);
     }
     
     private static String getProxyDatasourceName(final String scenario) {
