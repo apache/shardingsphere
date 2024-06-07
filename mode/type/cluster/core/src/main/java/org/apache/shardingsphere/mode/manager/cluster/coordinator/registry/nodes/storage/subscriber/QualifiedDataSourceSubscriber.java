@@ -37,7 +37,7 @@ public class QualifiedDataSourceSubscriber implements EventSubscriber {
     /**
      * Renew disabled data source names.
      *
-     * @param event Storage node changed event
+     * @param event qualified data source state event
      */
     @Subscribe
     public synchronized void renew(final QualifiedDataSourceStateEvent event) {
