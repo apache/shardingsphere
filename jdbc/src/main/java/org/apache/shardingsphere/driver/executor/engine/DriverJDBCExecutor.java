@@ -25,12 +25,12 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
 
@@ -46,7 +46,7 @@ public final class DriverJDBCExecutor {
     
     private final String databaseName;
     
-    private final MetaDataContexts metaDataContexts;
+    private final ShardingSphereMetaData metaData;
     
     private final MetaDataManagerPersistService metaDataManagerPersistService;
     
@@ -57,7 +57,7 @@ public final class DriverJDBCExecutor {
     public DriverJDBCExecutor(final String databaseName, final ContextManager contextManager, final JDBCExecutor jdbcExecutor) {
         this.databaseName = databaseName;
         this.jdbcExecutor = jdbcExecutor;
-        metaDataContexts = contextManager.getMetaDataContexts();
+        metaData = contextManager.getMetaDataContexts().getMetaData();
         metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
     }
     
@@ -94,9 +94,8 @@ public final class DriverJDBCExecutor {
                              final QueryContext queryContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
         try {
             processEngine.executeSQL(executionGroupContext, queryContext);
-            SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-            List<Integer> results = doExecute(executionGroupContext, sqlStatementContext, routeUnits, callback);
-            return isNeedAccumulate(metaDataContexts.getMetaData().getDatabase(queryContext.getDatabaseNameFromSQLStatement().orElse(databaseName)).getRuleMetaData().getRules(), sqlStatementContext)
+            List<Integer> results = doExecute(executionGroupContext, queryContext, routeUnits, callback);
+            return isNeedAccumulate(metaData.getDatabase(queryContext.getDatabaseNameFromSQLStatement().orElse(databaseName)).getRuleMetaData().getRules(), queryContext.getSqlStatementContext())
                     ? accumulate(results)
                     : results.get(0);
         } finally {
@@ -136,19 +135,18 @@ public final class DriverJDBCExecutor {
                            final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
         try {
             processEngine.executeSQL(executionGroupContext, queryContext);
-            List<Boolean> results = doExecute(executionGroupContext, queryContext.getSqlStatementContext(), routeUnits, callback);
+            List<Boolean> results = doExecute(executionGroupContext, queryContext, routeUnits, callback);
             return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
         } finally {
             processEngine.completeSQLExecution(executionGroupContext.getReportContext().getProcessId());
         }
     }
     
-    private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final SQLStatementContext sqlStatementContext, final Collection<RouteUnit> routeUnits,
+    private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final QueryContext queryContext, final Collection<RouteUnit> routeUnits,
                                   final JDBCExecutorCallback<T> callback) throws SQLException {
         List<T> results = jdbcExecutor.execute(executionGroupContext, callback);
-        new MetaDataRefreshEngine(metaDataManagerPersistService, metaDataContexts.getMetaData().getDatabase(sqlStatementContext.getTablesContext().getDatabaseName().orElse(databaseName)),
-                metaDataContexts.getMetaData().getProps())
-                        .refresh(sqlStatementContext, routeUnits);
+        new MetaDataRefreshEngine(metaDataManagerPersistService,
+                metaData.getDatabase(queryContext.getDatabaseNameFromSQLStatement().orElse(databaseName)), metaData.getProps()).refresh(queryContext.getSqlStatementContext(), routeUnits);
         return results;
     }
 }

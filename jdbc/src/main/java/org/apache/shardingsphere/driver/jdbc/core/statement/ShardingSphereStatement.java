@@ -19,8 +19,8 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.executor.DriverExecutorFacade;
-import org.apache.shardingsphere.driver.executor.batch.statement.BatchStatementExecutor;
+import org.apache.shardingsphere.driver.executor.engine.DriverExecutorFacade;
+import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchStatementExecutor;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
