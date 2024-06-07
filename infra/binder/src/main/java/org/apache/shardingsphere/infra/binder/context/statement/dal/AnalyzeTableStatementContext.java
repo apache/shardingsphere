@@ -45,7 +45,7 @@ public final class AnalyzeTableStatementContext extends CommonSQLStatementContex
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         return getSqlStatement().getTables();
     }
 }

@@ -396,7 +396,7 @@ class ShardingRouteEngineFactoryTest {
         when(cursorStatementContext.getSqlStatement()).thenReturn(cursorStatement);
         Collection<SimpleTableSegment> tableSegments = createSimpleTableSegments();
         Collection<String> tableNames = tableSegments.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet());
-        when(cursorStatementContext.getAllTables()).thenReturn(tableSegments);
+        when(cursorStatementContext.getSimpleTables()).thenReturn(tableSegments);
         when(cursorStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
         when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
@@ -413,7 +413,7 @@ class ShardingRouteEngineFactoryTest {
         OpenGaussCursorStatement cursorStatement = mock(OpenGaussCursorStatement.class);
         when(cursorStatementContext.getSqlStatement()).thenReturn(cursorStatement);
         Collection<SimpleTableSegment> tableSegments = createSimpleTableSegments();
-        when(cursorStatementContext.getAllTables()).thenReturn(tableSegments);
+        when(cursorStatementContext.getSimpleTables()).thenReturn(tableSegments);
         QueryContext queryContext = new QueryContext(cursorStatementContext, "", Collections.emptyList(), new HintValueContext());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(), mock(RuleMetaData.class));

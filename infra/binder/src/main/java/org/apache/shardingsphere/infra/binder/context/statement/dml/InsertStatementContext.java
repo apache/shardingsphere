@@ -265,7 +265,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         return tablesContext.getSimpleTables();
     }
     

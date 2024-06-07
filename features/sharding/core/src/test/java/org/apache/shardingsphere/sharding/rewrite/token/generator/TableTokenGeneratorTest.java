@@ -79,7 +79,7 @@ class TableTokenGeneratorTest {
         TableTokenGenerator generator = new TableTokenGenerator();
         generator.setShardingRule(shardingRule);
         CreateTableStatementContext sqlStatementContext = mock(CreateTableStatementContext.class);
-        when(sqlStatementContext.getAllTables()).thenReturn(Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
+        when(sqlStatementContext.getSimpleTables()).thenReturn(Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
         Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(TableToken.class));

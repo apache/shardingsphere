@@ -28,11 +28,11 @@ import java.util.Collection;
 public interface TableAvailable {
     
     /**
-     * Get all table segments.
+     * Get simple tables.
      * 
-     * @return all table segments
+     * @return all simple tables
      */
-    Collection<SimpleTableSegment> getAllTables();
+    Collection<SimpleTableSegment> getSimpleTables();
     
     /**
      * Get tables context.

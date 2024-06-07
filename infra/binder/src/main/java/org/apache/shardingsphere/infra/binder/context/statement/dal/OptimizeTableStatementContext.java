@@ -45,7 +45,7 @@ public final class OptimizeTableStatementContext extends CommonSQLStatementConte
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         return getSqlStatement().getTables();
     }
 }

@@ -126,7 +126,7 @@ class MergedEncryptShowCreateTableMergedResultTest {
         IdentifierValue identifierValue = new IdentifierValue("t_encrypt");
         TableNameSegment tableNameSegment = new TableNameSegment(1, 4, identifierValue);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableNameSegment);
-        when(sqlStatementContext.getAllTables()).thenReturn(Collections.singleton(simpleTableSegment));
+        when(sqlStatementContext.getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
         when(ruleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(2000, 65535L))));

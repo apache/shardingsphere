@@ -60,7 +60,7 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     
     @Override
     public final void route(final RouteContext routeContext, final ShadowRule rule) {
-        tableAliasNameMappings.putAll(getTableAliasNameMappings(((TableAvailable) sqlStatementContext).getAllTables()));
+        tableAliasNameMappings.putAll(getTableAliasNameMappings(((TableAvailable) sqlStatementContext).getSimpleTables()));
         decorateRouteContext(routeContext, rule, findShadowDataSourceMappings(rule));
     }
     

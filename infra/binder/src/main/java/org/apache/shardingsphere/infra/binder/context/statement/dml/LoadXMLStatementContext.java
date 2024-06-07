@@ -45,7 +45,7 @@ public final class LoadXMLStatementContext extends CommonSQLStatementContext imp
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         return tablesContext.getSimpleTables();
     }
 }

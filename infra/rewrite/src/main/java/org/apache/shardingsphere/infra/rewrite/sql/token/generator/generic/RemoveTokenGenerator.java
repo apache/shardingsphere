@@ -76,7 +76,7 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
     
     private Collection<RemoveToken> generateTableAvailableSQLTokens(final TableAvailable tableAvailable) {
         Collection<RemoveToken> result = new LinkedList<>();
-        for (SimpleTableSegment each : tableAvailable.getAllTables()) {
+        for (SimpleTableSegment each : tableAvailable.getSimpleTables()) {
             if (!each.getOwner().isPresent()) {
                 continue;
             }

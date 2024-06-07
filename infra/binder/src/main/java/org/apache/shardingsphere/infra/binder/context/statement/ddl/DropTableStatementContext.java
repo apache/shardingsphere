@@ -45,7 +45,7 @@ public final class DropTableStatementContext extends CommonSQLStatementContext i
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         return getSqlStatement().getTables();
     }
 }

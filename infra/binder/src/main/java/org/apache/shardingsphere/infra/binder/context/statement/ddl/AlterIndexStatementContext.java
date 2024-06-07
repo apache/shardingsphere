@@ -53,7 +53,7 @@ public final class AlterIndexStatementContext extends CommonSQLStatementContext 
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         Optional<SimpleTableSegment> simpleTableSegment = AlterIndexStatementHandler.getSimpleTableSegment(getSqlStatement());
         return simpleTableSegment.map(Collections::singletonList).orElseGet(Collections::emptyList);
     }

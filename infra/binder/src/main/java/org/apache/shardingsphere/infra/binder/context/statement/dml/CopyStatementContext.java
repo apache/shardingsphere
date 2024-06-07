@@ -45,7 +45,7 @@ public final class CopyStatementContext extends CommonSQLStatementContext implem
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         return tablesContext.getSimpleTables();
     }
 }

@@ -47,7 +47,7 @@ public final class PrepareStatementContext extends CommonSQLStatementContext imp
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         return extractTablesFromPreparedStatement(getSqlStatement());
     }
     
