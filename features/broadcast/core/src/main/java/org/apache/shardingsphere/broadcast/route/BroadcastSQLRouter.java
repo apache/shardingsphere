@@ -108,12 +108,11 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
             routeToAllDatabase(routeContext, broadcastRule);
             return;
         }
+        // TODO BEGIN extract db route logic to common database router, eg: DCL in instance route @duanzhengqiang
         if (sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement) {
-            if (broadcastRule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
-                routeToAllDatabaseInstance(routeContext, database, broadcastRule);
-            }
-            return;
+            routeToAllDatabaseInstance(routeContext, database, broadcastRule);
         }
+        // TODO END extract db route logic to common database router, eg: DCL in instance route
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? getTableNames((TableAvailable) sqlStatementContext) : sqlStatementContext.getTablesContext().getTableNames();
         if (broadcastRule.isAllBroadcastTables(tableNames)) {
             routeToAllDatabaseInstance(routeContext, database, broadcastRule);
