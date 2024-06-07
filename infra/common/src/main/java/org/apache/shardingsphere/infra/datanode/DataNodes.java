@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -66,7 +65,7 @@ public final class DataNodes {
         for (ShardingSphereRule each : rules) {
             Collection<DataNode> dataNodes = getDataNodesByTableName(each, tableName);
             if (!dataNodes.isEmpty()) {
-                return new ArrayList<>(dataNodes);
+                return Collections.unmodifiableCollection(dataNodes);
             }
         }
         return Collections.emptyList();
