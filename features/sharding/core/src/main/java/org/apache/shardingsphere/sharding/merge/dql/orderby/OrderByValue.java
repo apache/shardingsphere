@@ -69,7 +69,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     }
     
     private boolean getOrderValuesCaseSensitiveFromTables(final ShardingSphereSchema schema, final OrderByItem eachOrderByItem) throws SQLException {
-        for (SimpleTableSegment each : selectStatementContext.getSimpleTables()) {
+        for (SimpleTableSegment each : selectStatementContext.getTablesContext().getSimpleTables()) {
             String tableName = each.getTableName().getIdentifier().getValue();
             ShardingSphereTable table = schema.getTable(tableName);
             OrderByItemSegment orderByItemSegment = eachOrderByItem.getSegment();

@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexSta
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Drop index statement context.
@@ -49,12 +48,6 @@ public final class DropIndexStatementContext extends CommonSQLStatementContext i
     @Override
     public DropIndexStatement getSqlStatement() {
         return (DropIndexStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(getSqlStatement());
-        return simpleTableSegment.map(Collections::singletonList).orElseGet(Collections::emptyList);
     }
     
     @Override

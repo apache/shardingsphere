@@ -18,21 +18,11 @@
 package org.apache.shardingsphere.infra.binder.context.type;
 
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-
-import java.util.Collection;
 
 /**
  * Table available.
  */
 public interface TableAvailable {
-    
-    /**
-     * Get simple tables.
-     * 
-     * @return all simple tables
-     */
-    Collection<SimpleTableSegment> getSimpleTables();
     
     /**
      * Get tables context.

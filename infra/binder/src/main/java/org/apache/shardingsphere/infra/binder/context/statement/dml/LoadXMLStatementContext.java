@@ -21,10 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadXMLStatement;
-
-import java.util.Collection;
 
 /**
  * Load xml statement context.
@@ -42,10 +39,5 @@ public final class LoadXMLStatementContext extends CommonSQLStatementContext imp
     @Override
     public MySQLLoadXMLStatement getSqlStatement() {
         return (MySQLLoadXMLStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        return tablesContext.getSimpleTables();
     }
 }

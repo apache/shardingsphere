@@ -44,7 +44,7 @@ public final class ShardingRenameTableStatementValidator extends ShardingDDLStat
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final List<Object> params, final ShardingSphereDatabase database,
                             final ConfigurationProperties props) {
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
+                ? ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
                 : sqlStatementContext.getTablesContext().getTableNames();
         RenameTableStatement renameTableStatement = (RenameTableStatement) sqlStatementContext.getSqlStatement();
         List<SimpleTableSegment> renameTables = renameTableStatement.getRenameTables().stream().map(RenameTableDefinitionSegment::getRenameTable).collect(Collectors.toList());

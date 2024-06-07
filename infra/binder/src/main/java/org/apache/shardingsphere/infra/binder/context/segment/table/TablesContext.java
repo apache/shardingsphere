@@ -71,7 +71,7 @@ public final class TablesContext {
     private final Map<String, IdentifierValue> tableNameAliasMap = new HashMap<>();
     
     public TablesContext(final SimpleTableSegment tableSegment, final DatabaseType databaseType) {
-        this(Collections.singletonList(tableSegment), databaseType);
+        this(null == tableSegment ? Collections.emptyList() : Collections.singletonList(tableSegment), databaseType);
     }
     
     public TablesContext(final Collection<SimpleTableSegment> tables, final DatabaseType databaseType) {

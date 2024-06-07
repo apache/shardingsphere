@@ -43,6 +43,7 @@ class DenyUserStatementContextTest {
         DenyUserStatementContext actual = new DenyUserStatementContext(sqlServerDenyUserStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(sqlServerDenyUserStatement));
-        assertThat(actual.getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("tbl_1")));
+        assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
+                is(Collections.singletonList("tbl_1")));
     }
 }

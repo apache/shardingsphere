@@ -68,11 +68,6 @@ public final class UpdateStatementContext extends CommonSQLStatementContext impl
     }
     
     @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        return tablesContext.getSimpleTables();
-    }
-    
-    @Override
     public Collection<WhereSegment> getWhereSegments() {
         return whereSegments;
     }

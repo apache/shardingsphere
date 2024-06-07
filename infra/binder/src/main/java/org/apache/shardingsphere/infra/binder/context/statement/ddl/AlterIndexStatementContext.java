@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterIndexSt
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Alter index statement context.
@@ -50,12 +49,6 @@ public final class AlterIndexStatementContext extends CommonSQLStatementContext 
     @Override
     public AlterIndexStatement getSqlStatement() {
         return (AlterIndexStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        Optional<SimpleTableSegment> simpleTableSegment = AlterIndexStatementHandler.getSimpleTableSegment(getSqlStatement());
-        return simpleTableSegment.map(Collections::singletonList).orElseGet(Collections::emptyList);
     }
     
     @Override

@@ -61,7 +61,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Or
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -342,11 +341,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     @Override
     public SelectStatement getSqlStatement() {
         return (SelectStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        return tablesContext.getSimpleTables();
     }
     
     @Override

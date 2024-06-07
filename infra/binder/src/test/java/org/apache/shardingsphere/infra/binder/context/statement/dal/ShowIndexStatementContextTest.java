@@ -43,6 +43,7 @@ class ShowIndexStatementContextTest {
         ShowIndexStatementContext actual = new ShowIndexStatementContext(showIndexStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(showIndexStatement));
-        assertThat(actual.getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("tbl_1")));
+        assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
+                is(Collections.singletonList("tbl_1")));
     }
 }

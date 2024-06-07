@@ -156,8 +156,8 @@ public final class ProxySQLExecutor {
     }
     
     private String getTableName(final ExecutionContext executionContext) {
-        return executionContext.getSqlStatementContext() instanceof TableAvailable && !((TableAvailable) executionContext.getSqlStatementContext()).getSimpleTables().isEmpty()
-                ? ((TableAvailable) executionContext.getSqlStatementContext()).getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()
+        return executionContext.getSqlStatementContext() instanceof TableAvailable && !((TableAvailable) executionContext.getSqlStatementContext()).getTablesContext().getSimpleTables().isEmpty()
+                ? ((TableAvailable) executionContext.getSqlStatementContext()).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()
                 : "unknown_table";
     }
     

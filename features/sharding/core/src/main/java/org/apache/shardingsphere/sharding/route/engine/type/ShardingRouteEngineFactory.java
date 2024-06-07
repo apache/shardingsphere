@@ -125,7 +125,7 @@ public final class ShardingRouteEngineFactory {
             return new ShardingInstanceBroadcastRoutingEngine(database.getResourceMetaData());
         }
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
+                ? ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
                 : sqlStatementContext.getTablesContext().getTableNames();
         Collection<String> shardingRuleTableNames = shardingRule.getShardingRuleTableNames(tableNames);
         // TODO remove this logic when jdbc adapter can support executing create logic view
@@ -200,7 +200,8 @@ public final class ShardingRouteEngineFactory {
     private static boolean isDCLForSingleTable(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof TableAvailable) {
             TableAvailable tableSegmentsAvailable = (TableAvailable) sqlStatementContext;
-            return 1 == tableSegmentsAvailable.getSimpleTables().size() && !"*".equals(tableSegmentsAvailable.getSimpleTables().iterator().next().getTableName().getIdentifier().getValue());
+            return 1 == tableSegmentsAvailable.getTablesContext().getSimpleTables().size()
+                    && !"*".equals(tableSegmentsAvailable.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue());
         }
         return false;
     }

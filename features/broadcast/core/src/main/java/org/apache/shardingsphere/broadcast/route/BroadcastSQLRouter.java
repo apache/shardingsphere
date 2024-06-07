@@ -121,7 +121,7 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
     }
     
     private Collection<String> getTableNames(final TableAvailable sqlStatementContext) {
-        Collection<SimpleTableSegment> tableSegments = sqlStatementContext.getSimpleTables();
+        Collection<SimpleTableSegment> tableSegments = sqlStatementContext.getTablesContext().getSimpleTables();
         Collection<String> result = new LinkedHashSet<>(tableSegments.size());
         for (SimpleTableSegment each : tableSegments) {
             result.add(each.getTableName().getIdentifier().getValue());
@@ -146,7 +146,8 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
     private boolean isDCLForSingleTable(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof TableAvailable) {
             TableAvailable tableSegmentsAvailable = (TableAvailable) sqlStatementContext;
-            return 1 == tableSegmentsAvailable.getSimpleTables().size() && !"*".equals(tableSegmentsAvailable.getSimpleTables().iterator().next().getTableName().getIdentifier().getValue());
+            return 1 == tableSegmentsAvailable.getTablesContext().getSimpleTables().size()
+                    && !"*".equals(tableSegmentsAvailable.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue());
         }
         return false;
     }

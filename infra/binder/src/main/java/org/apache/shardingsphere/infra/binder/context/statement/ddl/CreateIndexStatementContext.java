@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDa
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateIndexStatementHandler;
@@ -56,17 +55,12 @@ public final class CreateIndexStatementContext extends CommonSQLStatementContext
     }
     
     @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        return null == getSqlStatement().getTable() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getTable());
-    }
-    
-    @Override
     public Collection<IndexSegment> getIndexes() {
         if (null == getSqlStatement().getIndex()) {
             return CreateIndexStatementHandler.getGeneratedIndexStartIndex(getSqlStatement()).map(each -> Collections.singletonList(new IndexSegment(each, each,
                     new IndexNameSegment(each, each, new IdentifierValue(IndexMetaDataUtils.getGeneratedLogicIndexName(getSqlStatement().getColumns())))))).orElseGet(Collections::emptyList);
         }
-        return Collections.singletonList(getSqlStatement().getIndex());
+        return Collections.singleton(getSqlStatement().getIndex());
     }
     
     @Override

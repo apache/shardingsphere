@@ -58,9 +58,4 @@ public final class ExplainStatementContext extends CommonSQLStatementContext imp
     public ExplainStatement getSqlStatement() {
         return (ExplainStatement) super.getSqlStatement();
     }
-    
-    @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        return extractTablesFromExplain(getSqlStatement());
-    }
 }

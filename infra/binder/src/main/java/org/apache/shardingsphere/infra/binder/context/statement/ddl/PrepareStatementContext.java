@@ -41,16 +41,6 @@ public final class PrepareStatementContext extends CommonSQLStatementContext imp
         tablesContext = new TablesContext(extractTablesFromPreparedStatement(sqlStatement), getDatabaseType());
     }
     
-    @Override
-    public PrepareStatement getSqlStatement() {
-        return (PrepareStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        return extractTablesFromPreparedStatement(getSqlStatement());
-    }
-    
     private Collection<SimpleTableSegment> extractTablesFromPreparedStatement(final PrepareStatement sqlStatement) {
         TableExtractor tableExtractor = new TableExtractor();
         sqlStatement.getSelect().ifPresent(tableExtractor::extractTablesFromSelect);
@@ -58,5 +48,10 @@ public final class PrepareStatementContext extends CommonSQLStatementContext imp
         sqlStatement.getUpdate().ifPresent(tableExtractor::extractTablesFromUpdate);
         sqlStatement.getDelete().ifPresent(tableExtractor::extractTablesFromDelete);
         return new LinkedList<>(tableExtractor.getRewriteTables());
+    }
+    
+    @Override
+    public PrepareStatement getSqlStatement() {
+        return (PrepareStatement) super.getSqlStatement();
     }
 }
