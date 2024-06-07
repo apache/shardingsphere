@@ -78,7 +78,7 @@ public final class CursorStatementContext extends CommonSQLStatementContext impl
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getSimpleTableSegments();
+        return tablesContext.getSimpleTables();
     }
     
     @Override

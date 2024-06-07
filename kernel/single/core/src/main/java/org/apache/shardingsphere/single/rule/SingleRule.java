@@ -166,7 +166,7 @@ public final class SingleRule implements DatabaseRule {
      * @return qualified tables
      */
     public Collection<QualifiedTable> getQualifiedTables(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        Collection<QualifiedTable> result = getQualifiedTables(database, protocolType, sqlStatementContext.getTablesContext().getSimpleTableSegments());
+        Collection<QualifiedTable> result = getQualifiedTables(database, protocolType, sqlStatementContext.getTablesContext().getSimpleTables());
         if (result.isEmpty() && sqlStatementContext instanceof IndexAvailable) {
             result = IndexMetaDataUtils.getTableNames(database, protocolType, ((IndexAvailable) sqlStatementContext).getIndexes());
         }

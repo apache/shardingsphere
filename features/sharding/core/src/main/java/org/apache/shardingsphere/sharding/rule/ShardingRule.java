@@ -610,7 +610,7 @@ public final class ShardingRule implements DatabaseRule {
             }
             ColumnSegment leftColumn = (ColumnSegment) ((BinaryOperationExpression) each).getLeft();
             ColumnSegment rightColumn = (ColumnSegment) ((BinaryOperationExpression) each).getRight();
-            Map<String, String> columnExpressionTableNames = select.getTablesContext().findTableNamesByColumnSegment(Arrays.asList(leftColumn, rightColumn), schema);
+            Map<String, String> columnExpressionTableNames = select.getTablesContext().findTableNames(Arrays.asList(leftColumn, rightColumn), schema);
             Optional<ShardingTable> leftShardingTable = findShardingTable(columnExpressionTableNames.get(leftColumn.getExpression()));
             Optional<ShardingTable> rightShardingTable = findShardingTable(columnExpressionTableNames.get(rightColumn.getExpression()));
             if (!leftShardingTable.isPresent() || !rightShardingTable.isPresent()) {

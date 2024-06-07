@@ -47,6 +47,6 @@ public final class CommentStatementContext extends CommonSQLStatementContext imp
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getSimpleTableSegments();
+        return tablesContext.getSimpleTables();
     }
 }

@@ -55,7 +55,7 @@ public final class SubqueryTableContextEngine {
                 result.computeIfAbsent(tableName.toLowerCase(), unused -> new SubqueryTableContext(tableName, aliasName)).getColumnNames().add(columnName);
             }
             if (tableSegment instanceof JoinTableSegment && ((ColumnProjection) each).getOwner().isPresent()) {
-                Optional<String> tableName = getTableNameByOwner(subqueryContext.getTablesContext().getSimpleTableSegments(), ((ColumnProjection) each).getOwner().get().getValue());
+                Optional<String> tableName = getTableNameByOwner(subqueryContext.getTablesContext().getSimpleTables(), ((ColumnProjection) each).getOwner().get().getValue());
                 tableName.ifPresent(optional -> result.computeIfAbsent(optional.toLowerCase(), unused -> new SubqueryTableContext(optional, aliasName)).getColumnNames().add(columnName));
             }
         }

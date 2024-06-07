@@ -131,10 +131,10 @@ public final class PipelineDDLGenerator {
     }
     
     private void appendFromIndexAndConstraint(final Map<SQLSegment, String> replaceMap, final String targetTableName, final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof TableAvailable) || ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTableSegments().isEmpty()) {
+        if (!(sqlStatementContext instanceof TableAvailable) || ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty()) {
             return;
         }
-        TableNameSegment tableNameSegment = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTableSegments().iterator().next().getTableName();
+        TableNameSegment tableNameSegment = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName();
         if (!tableNameSegment.getIdentifier().getValue().equals(targetTableName)) {
             if (sqlStatementContext instanceof IndexAvailable) {
                 for (IndexSegment each : ((IndexAvailable) sqlStatementContext).getIndexes()) {
@@ -187,14 +187,14 @@ public final class PipelineDDLGenerator {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         if (sqlStatementContext instanceof CreateTableStatementContext || sqlStatementContext instanceof CommentStatementContext
                 || sqlStatementContext instanceof CreateIndexStatementContext || sqlStatementContext instanceof AlterTableStatementContext) {
-            if (sqlStatementContext.getTablesContext().getSimpleTableSegments().isEmpty()) {
+            if (sqlStatementContext.getTablesContext().getSimpleTables().isEmpty()) {
                 return sql;
             }
             if (sqlStatementContext.getTablesContext().getSchemaName().isPresent()) {
                 return sql;
             }
             Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
-            TableNameSegment tableNameSegment = sqlStatementContext.getTablesContext().getSimpleTableSegments().iterator().next().getTableName();
+            TableNameSegment tableNameSegment = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName();
             replaceMap.put(tableNameSegment, prefix + tableNameSegment.getIdentifier().getValue());
             return doDecorateActualTable(replaceMap, sql);
         }

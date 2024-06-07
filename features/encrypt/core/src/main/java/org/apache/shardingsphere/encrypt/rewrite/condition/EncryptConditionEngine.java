@@ -94,7 +94,7 @@ public final class EncryptConditionEngine {
         Collection<EncryptCondition> result = new LinkedList<>();
         String defaultSchema = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName);
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> schemas.get(defaultSchema));
-        Map<String, String> expressionTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(columnSegments, schema);
+        Map<String, String> expressionTableNames = sqlStatementContext.getTablesContext().findTableNames(columnSegments, schema);
         for (WhereSegment each : whereSegments) {
             Collection<AndPredicate> andPredicates = ExpressionExtractUtils.getAndPredicates(each.getExpr());
             for (AndPredicate predicate : andPredicates) {
