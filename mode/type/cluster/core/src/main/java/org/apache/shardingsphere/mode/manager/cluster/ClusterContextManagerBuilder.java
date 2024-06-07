@@ -58,7 +58,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ModeConfiguration modeConfig = param.getModeConfiguration();
         ClusterPersistRepositoryConfiguration config = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
         ClusterPersistRepository repository = getClusterPersistRepository(config);
-        ComputeNodeInstanceContext computeNodeInstanceContext = buildComputeNodeInstanceContext(modeConfig, param.getInstanceMetaData(), repository, eventBusContext);
+        ComputeNodeInstanceContext computeNodeInstanceContext = buildComputeNodeInstanceContext(modeConfig, param.getInstanceMetaData(), repository, eventBusContext, param.getLabels());
         repository.init(config, computeNodeInstanceContext);
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, computeNodeInstanceContext,
@@ -74,9 +74,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return TypedSPILoader.getService(ClusterPersistRepository.class, config.getType(), config.getProps());
     }
     
-    private ComputeNodeInstanceContext buildComputeNodeInstanceContext(final ModeConfiguration modeConfig,
-                                                                       final InstanceMetaData instanceMetaData, final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
-        return new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData),
+    private ComputeNodeInstanceContext buildComputeNodeInstanceContext(final ModeConfiguration modeConfig, final InstanceMetaData instanceMetaData,
+                                                                       final ClusterPersistRepository repository, final EventBusContext eventBusContext, final Collection<String> labels) {
+        return new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData, labels),
                 new ClusterWorkerIdGenerator(repository, instanceMetaData.getId()), modeConfig,
                 new GlobalLockContext(new GlobalLockPersistService(repository)), eventBusContext);
     }
@@ -91,9 +91,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         contextManager.getPersistServiceFacade().getComputeNodePersistService().registerOnline(computeNodeInstanceContext.getInstance());
         new GovernanceWatcherFactory(repository, eventBusContext).watchListeners();
         watchDatabaseMetaDataListener(param, contextManager.getPersistServiceFacade().getMetaDataPersistService(), eventBusContext);
-        if (null != param.getLabels()) {
-            contextManager.getComputeNodeInstanceContext().getInstance().getLabels().addAll(param.getLabels());
-        }
         contextManager.getComputeNodeInstanceContext().getAllClusterInstances().addAll(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllComputeNodeInstances());
         new ClusterEventSubscriberRegistry(contextManager, repository).register();
     }
