@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
@@ -26,8 +25,6 @@ import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeInstanceStateChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
@@ -100,26 +97,5 @@ public final class StateChangedSubscriber implements EventSubscriber {
     public synchronized void renew(final LabelsEvent event) {
         // TODO labels may be empty
         contextManager.getComputeNodeInstanceContext().updateLabel(event.getInstanceId(), event.getLabels());
-    }
-    
-    /**
-     * Renew instance list.
-     *
-     * @param event compute node online event
-     */
-    @Subscribe
-    public synchronized void renew(final InstanceOnlineEvent event) {
-        contextManager.getComputeNodeInstanceContext().addComputeNodeInstance(contextManager.getPersistServiceFacade()
-                .getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceMetaData()));
-    }
-    
-    /**
-     * Renew instance list.
-     *
-     * @param event compute node offline event
-     */
-    @Subscribe
-    public synchronized void renew(final InstanceOfflineEvent event) {
-        contextManager.getComputeNodeInstanceContext().deleteComputeNodeInstance(new ComputeNodeInstance(event.getInstanceMetaData()));
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.subscriber.ComputeNodeOnlineSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessListChangedSubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.subsciber.EventSubscriberRegistry;
@@ -38,6 +39,7 @@ public final class ClusterEventSubscriberRegistry extends EventSubscriberRegistr
                 new StateChangedSubscriber(contextManager),
                 new DatabaseChangedSubscriber(contextManager),
                 new ProcessListChangedSubscriber(contextManager, repository),
-                new CacheEvictedSubscriber());
+                new CacheEvictedSubscriber(),
+                new ComputeNodeOnlineSubscriber(contextManager));
     }
 }
