@@ -56,9 +56,9 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
     private final SQLParserEngine sqlParserEngine;
     
     protected EncryptShowCreateTableMergedResult(final RuleMetaData globalRuleMetaData, final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
-        ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getSimpleTables().size(),
+        ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().size(),
                 () -> new UnsupportedEncryptSQLException("SHOW CREATE TABLE FOR MULTI TABLE"));
-        tableName = ((TableAvailable) sqlStatementContext).getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
+        tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
         this.encryptRule = encryptRule;
         sqlParserEngine = globalRuleMetaData.getSingleRule(SQLParserRule.class).getSQLParserEngine(sqlStatementContext.getDatabaseType());
     }

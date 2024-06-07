@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -72,6 +71,5 @@ class DropTableStatementContextTest {
         when(dropTableStatement.getTables()).thenReturn(Arrays.asList(table1, table2));
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(dropTableStatement));
-        assertThat(actual.getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
     }
 }

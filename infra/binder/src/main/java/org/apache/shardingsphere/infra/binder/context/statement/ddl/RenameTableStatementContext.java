@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTable
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 /**
  * Rename table statement context.
@@ -39,21 +38,20 @@ public final class RenameTableStatementContext extends CommonSQLStatementContext
     
     public RenameTableStatementContext(final RenameTableStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getRenameTables().stream().map(RenameTableDefinitionSegment::getRenameTable).collect(Collectors.toList()), getDatabaseType());
+        tablesContext = new TablesContext(getTables(sqlStatement), getDatabaseType());
+    }
+    
+    private Collection<SimpleTableSegment> getTables(final RenameTableStatement sqlStatement) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
+            result.add(each.getTable());
+            result.add(each.getRenameTable());
+        }
+        return result;
     }
     
     @Override
     public RenameTableStatement getSqlStatement() {
         return (RenameTableStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        for (RenameTableDefinitionSegment each : getSqlStatement().getRenameTables()) {
-            result.add(each.getTable());
-            result.add(each.getRenameTable());
-        }
-        return result;
     }
 }

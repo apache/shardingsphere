@@ -78,8 +78,8 @@ class TableTokenGeneratorTest {
         when(shardingRule.findShardingTable(anyString())).thenReturn(Optional.of(mock(ShardingTable.class)));
         TableTokenGenerator generator = new TableTokenGenerator();
         generator.setShardingRule(shardingRule);
-        CreateTableStatementContext sqlStatementContext = mock(CreateTableStatementContext.class);
-        when(sqlStatementContext.getSimpleTables()).thenReturn(Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
+        CreateTableStatementContext sqlStatementContext = mock(CreateTableStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
         Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(TableToken.class));

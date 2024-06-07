@@ -18,14 +18,10 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Show create table statement context.
@@ -43,10 +39,5 @@ public final class ShowCreateTableStatementContext extends CommonSQLStatementCon
     @Override
     public MySQLShowCreateTableStatement getSqlStatement() {
         return (MySQLShowCreateTableStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        return null == getSqlStatement().getTable() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getTable());
     }
 }

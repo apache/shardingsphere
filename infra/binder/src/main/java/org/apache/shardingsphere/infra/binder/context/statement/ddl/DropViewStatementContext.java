@@ -21,10 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
-
-import java.util.Collection;
 
 /**
  * Drop view statement context.
@@ -42,10 +39,5 @@ public final class DropViewStatementContext extends CommonSQLStatementContext im
     @Override
     public DropViewStatement getSqlStatement() {
         return (DropViewStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        return tablesContext.getSimpleTables();
     }
 }

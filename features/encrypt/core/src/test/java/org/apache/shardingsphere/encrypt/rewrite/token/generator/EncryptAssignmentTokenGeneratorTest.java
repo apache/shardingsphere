@@ -70,10 +70,10 @@ class EncryptAssignmentTokenGeneratorTest {
     @BeforeEach
     void setup() {
         tokenGenerator.setEncryptRule(mockEncryptRule());
-        when(updateStatement.getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
+        when(updateStatement.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         when(updateStatement.getSqlStatement().getSetAssignment().getAssignments()).thenReturn(Collections.singleton(assignmentSegment));
         when(assignmentSegment.getColumns().get(0).getIdentifier().getValue()).thenReturn("columns");
-        when(insertStatement.getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
+        when(insertStatement.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singleton(assignmentSegment));
     }
     

@@ -92,7 +92,7 @@ public final class BroadcastRouteEngineFactory {
             return new BroadcastDatabaseBroadcastRoutingEngine();
         }
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
+                ? ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
                 : sqlStatementContext.getTablesContext().getTableNames();
         if (broadcastRule.isAllBroadcastTables(tableNames)) {
             return new BroadcastUnicastRoutingEngine(sqlStatementContext, tableNames, connectionContext);
@@ -111,7 +111,7 @@ public final class BroadcastRouteEngineFactory {
     
     private static Collection<String> getTableNames(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
+                ? ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
                 : sqlStatementContext.getTablesContext().getTableNames();
         if (!tableNames.isEmpty()) {
             return tableNames;
@@ -155,7 +155,8 @@ public final class BroadcastRouteEngineFactory {
     private static boolean isDCLForSingleTable(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof TableAvailable) {
             TableAvailable tableSegmentsAvailable = (TableAvailable) sqlStatementContext;
-            return 1 == tableSegmentsAvailable.getSimpleTables().size() && !"*".equals(tableSegmentsAvailable.getSimpleTables().iterator().next().getTableName().getIdentifier().getValue());
+            return 1 == tableSegmentsAvailable.getTablesContext().getSimpleTables().size()
+                    && !"*".equals(tableSegmentsAvailable.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue());
         }
         return false;
     }

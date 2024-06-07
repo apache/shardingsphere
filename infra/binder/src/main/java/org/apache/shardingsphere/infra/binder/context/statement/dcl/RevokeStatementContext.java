@@ -21,10 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
-
-import java.util.Collection;
 
 /**
  * Revoke statement context.
@@ -42,10 +39,5 @@ public final class RevokeStatementContext extends CommonSQLStatementContext impl
     @Override
     public RevokeStatement getSqlStatement() {
         return (RevokeStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        return getSqlStatement().getTables();
     }
 }

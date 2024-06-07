@@ -57,9 +57,4 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext i
     public AlterViewStatement getSqlStatement() {
         return (AlterViewStatement) super.getSqlStatement();
     }
-    
-    @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        return tablesContext.getSimpleTables();
-    }
 }

@@ -69,7 +69,7 @@ class PrepareStatementContextTest {
         PrepareStatementContext actual = new PrepareStatementContext(prepareStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(prepareStatement));
-        assertThat(actual.getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
+        assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("tbl_1", "tbl_1", "tbl_1", "tbl_1")));
     }
     
