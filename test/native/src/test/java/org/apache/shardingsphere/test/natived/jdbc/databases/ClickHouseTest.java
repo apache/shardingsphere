@@ -31,8 +31,8 @@ class ClickHouseTest {
     private TestShardingService testShardingService;
     
     /**
-     * TODO Need to fix `shardingsphere-parser-sql-clickhouse` module to use `testShardingService.cleanEnvironment()`
-     *      after `testShardingService.processSuccessInClickHouse()`.
+     * TODO Need to fix `shardingsphere-parser-sql-clickhouse` module to use {@link TestShardingService#cleanEnvironment()}
+     *      after {@link TestShardingService#processSuccessInClickHouse()}.
      *
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
@@ -49,7 +49,7 @@ class ClickHouseTest {
     
     /**
      * TODO Need to fix `shardingsphere-parser-sql-clickhouse` module to use `initEnvironment()`
-     * before `testShardingService.processSuccess()`.
+     * before {@link TestShardingService#processSuccessInClickHouse()}.
      *
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
@@ -57,7 +57,7 @@ class ClickHouseTest {
     private void initEnvironment() throws SQLException {
         testShardingService.getOrderRepository().createTableIfNotExistsInClickHouse();
         testShardingService.getOrderItemRepository().createTableIfNotExistsInClickHouse();
-        testShardingService.getAddressRepository().createTableIfNotExists();
+        testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
         testShardingService.getOrderRepository().truncateTable();
         testShardingService.getOrderItemRepository().truncateTable();
         testShardingService.getAddressRepository().truncateTable();

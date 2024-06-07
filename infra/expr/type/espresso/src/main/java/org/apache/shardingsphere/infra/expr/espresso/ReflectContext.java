@@ -31,7 +31,6 @@ public final class ReflectContext implements AutoCloseable {
     
     /**
      * This method is a simulation of the following operation.
-     * // CHECKSTYLE:OFF
      * <pre class="code">
      * private final Context context = Context.newBuilder("java")
      *             .allowAllAccess(true)
@@ -39,7 +38,6 @@ public final class ReflectContext implements AutoCloseable {
      *             .option("java.Classpath", JAVA_CLASSPATH)
      *             .build();
      * </pre>
-     * // CHECKSTYLE:ON
      * TODO <a href="https://github.com/oracle/graal/issues/4555">oracle/graal#4555</a> not yet closed.
      * Maybe sometimes shardingsphere need `.option("java.Properties.org.graalvm.home", System.getenv("JAVA_HOME")).
      *

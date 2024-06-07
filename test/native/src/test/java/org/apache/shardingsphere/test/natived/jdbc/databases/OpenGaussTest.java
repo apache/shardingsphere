@@ -30,6 +30,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Duration;
 import java.util.Properties;
 
@@ -72,7 +73,7 @@ class OpenGaussTest {
     private void initEnvironment() throws SQLException {
         testShardingService.getOrderRepository().createTableIfNotExistsInPostgres();
         testShardingService.getOrderItemRepository().createTableIfNotExistsInPostgres();
-        testShardingService.getAddressRepository().createTableIfNotExists();
+        testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
         testShardingService.getOrderRepository().truncateTable();
         testShardingService.getOrderItemRepository().truncateTable();
         testShardingService.getAddressRepository().truncateTable();
@@ -86,17 +87,17 @@ class OpenGaussTest {
     }
     
     @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
-    private DataSource createDataSource() {
+    private DataSource createDataSource() throws SQLException {
         Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {
             openConnection().close();
             return true;
         });
-        try (Connection connection = openConnection()) {
-            connection.createStatement().executeUpdate("CREATE DATABASE demo_ds_0;");
-            connection.createStatement().executeUpdate("CREATE DATABASE demo_ds_1;");
-            connection.createStatement().executeUpdate("CREATE DATABASE demo_ds_2;");
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
+        try (
+                Connection connection = openConnection();
+                Statement statement = connection.createStatement()) {
+            statement.executeUpdate("CREATE DATABASE demo_ds_0");
+            statement.executeUpdate("CREATE DATABASE demo_ds_1");
+            statement.executeUpdate("CREATE DATABASE demo_ds_2");
         }
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");

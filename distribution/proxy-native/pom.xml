@@ -76,9 +76,6 @@
     <profiles>
         <profile>
             <id>release.native</id>
-            <properties>
-                <java.version>21</java.version>
-            </properties>
             <build>
                 <finalName>apache-shardingsphere-${project.version}</finalName>
                 <plugins>

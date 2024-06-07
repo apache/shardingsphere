@@ -1,11 +1,19 @@
 [
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+  "name":"JdkLogger"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
   "name":"[Lcom.fasterxml.jackson.databind.deser.BeanDeserializerModifier;"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
   "name":"[Lcom.fasterxml.jackson.databind.ser.BeanSerializerModifier;"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+  "name":"[Lcom.github.dockerjava.api.model.VolumesFrom;"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource"},
@@ -16,11 +24,11 @@
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.DatabaseTypeEngine"},
-  "name":"[Ljava.sql.Statement;"
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+  "name":"[Ljava.lang.String;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.DatabaseTypeEngine"},
   "name":"[Ljava.sql.Statement;"
 },
 {
@@ -90,10 +98,6 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.DatabaseTypeEngine"},
-  "name":"org.apache.shardingsphere.driver.ShardingSphereDriver"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager"},
   "name":"org.apache.shardingsphere.driver.ShardingSphereDriver"
 },
 {
@@ -365,6 +369,10 @@
   "name":"org.apache.shardingsphere.infra.database.mysql.connector.MySQLConnectionPropertiesParser"
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
+  "name":"org.apache.shardingsphere.infra.database.mysql.keygen.MySQLGeneratedKeyColumnProvider"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader"},
   "name":"org.apache.shardingsphere.infra.database.mysql.metadata.data.loader.MySQLMetaDataLoader"
 },
@@ -572,7 +580,7 @@
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.subsciber.EventSubscriberRegistry$$Lambda/0x00007ffa03398208"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.subsciber.EventSubscriberRegistry$$Lambda/0x00007fce3b398818"},
   "name":"org.apache.shardingsphere.infra.util.eventbus.EventSubscriber"
 },
 {
@@ -894,11 +902,24 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory"},
+  "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.watch.ListenerAssistedChangedWatcher"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.ShardingSphereDataChangedWatcher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.watcher.MetaDataChangedWatcher"
+  "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.watcher.ComputeNodeOnlineWatcher"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
+  "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.subscriber.internal.QualifiedDataSourceStatusSubscriber",
+  "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory"},
+  "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.watcher.QualifiedDataSourceWatcher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory"},
@@ -907,15 +928,6 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher.ComputeNodeStateChangedWatcher"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber.QualifiedDataSourceStatusSubscriber",
-  "queryAllDeclaredMethods":true
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.watcher.QualifiedDataSourceChangedWatcher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory"},
@@ -929,6 +941,14 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.eventbus.EventBusContext"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.CacheEvictedSubscriber",
   "methods":[{"name":"onGovernanceEvent","parameterTypes":["org.apache.shardingsphere.infra.rule.event.GovernanceEvent"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.eventbus.EventBusContext"},
+  "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.ResourceMetaDataChangedSubscriber"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.MetaDataChangedListener$$Lambda/0x00007fce3b8eaca0"},
+  "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.ResourceMetaDataChangedSubscriber"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.service.PersistServiceFacade"},
@@ -951,6 +971,58 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper"},
   "name":"org.apache.shardingsphere.mode.manager.standalone.yaml.StandaloneYamlPersistRepositoryConfigurationSwapper"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine"},
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.index.AlterIndexStatementSchemaRefresher"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine"},
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.index.CreateIndexStatementSchemaRefresher"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine"},
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.index.DropIndexStatementSchemaRefresher"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine"},
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.schema.AlterSchemaStatementSchemaRefresher"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine"},
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.schema.CreateSchemaStatementSchemaRefresher"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine"},
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.schema.DropSchemaStatementSchemaRefresher"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine"},
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.table.AlterTableStatementSchemaRefresher"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine"},
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.table.CreateTableStatementSchemaRefresher"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine"},
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.table.DropTableStatementSchemaRefresher"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine"},
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.table.RenameTableStatementSchemaRefresher"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine"},
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.view.AlterViewStatementSchemaRefresher"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine"},
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.view.CreateViewStatementSchemaRefresher"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine"},
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.view.DropViewStatementSchemaRefresher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
