@@ -63,7 +63,6 @@ class TablesContextTest {
         assertThat(tablesContext.getDatabaseName(), is(Optional.of("schema")));
         assertThat(tablesContext.getSchemaName(), is(Optional.of("schema")));
         assertThat(tablesContext.getTableNames(), is(Collections.singleton("tbl")));
-        assertTrue(tablesContext.getSubqueryTables().isEmpty());
     }
     
     @Test
@@ -71,7 +70,7 @@ class TablesContextTest {
         SimpleTableSegment tableSegment = createTableSegment("table_1", "tbl_1");
         ColumnSegment columnSegment = createColumnSegment(null, "col");
         Map<String, String> actual = new TablesContext(Collections.singletonList(tableSegment), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"))
-                .findTableNamesByColumnSegment(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
+                .findTableNames(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("table_1"));
     }
@@ -82,7 +81,7 @@ class TablesContextTest {
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         ColumnSegment columnSegment = createColumnSegment("table_1", "col");
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"))
-                .findTableNamesByColumnSegment(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
+                .findTableNames(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
         assertFalse(actual.isEmpty());
         assertThat(actual.get("table_1.col"), is("table_1"));
     }
@@ -93,7 +92,7 @@ class TablesContextTest {
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         ColumnSegment columnSegment = createColumnSegment(null, "col");
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"))
-                .findTableNamesByColumnSegment(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
+                .findTableNames(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
         assertTrue(actual.isEmpty());
     }
     
@@ -105,7 +104,7 @@ class TablesContextTest {
         when(schema.getAllColumnNames("table_1")).thenReturn(Collections.singletonList("col"));
         ColumnSegment columnSegment = createColumnSegment(null, "col");
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2),
-                TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
+                TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).findTableNames(Collections.singletonList(columnSegment), schema);
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("table_1"));
     }
@@ -119,7 +118,7 @@ class TablesContextTest {
         ShardingSphereSchema schema = new ShardingSphereSchema(Stream.of(table).collect(Collectors.toMap(ShardingSphereTable::getName, value -> value)), Collections.emptyMap());
         ColumnSegment columnSegment = createColumnSegment(null, "COL");
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2),
-                TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
+                TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).findTableNames(Collections.singletonList(columnSegment), schema);
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("TABLE_1"));
     }

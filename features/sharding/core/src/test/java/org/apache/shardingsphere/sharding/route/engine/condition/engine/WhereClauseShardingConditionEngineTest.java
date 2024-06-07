@@ -80,7 +80,7 @@ class WhereClauseShardingConditionEngineTest {
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment));
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        when(tablesContext.findTableNamesByColumnSegment(anyCollection(), any())).thenReturn(Maps.of("foo_sharding_col", "table_1"));
+        when(tablesContext.findTableNames(anyCollection(), any())).thenReturn(Maps.of("foo_sharding_col", "table_1"));
     }
     
     @Test

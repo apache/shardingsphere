@@ -86,7 +86,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
                 () -> new UnsupportedSQLOperationException("Can not use different encryptor in join condition"));
         String defaultSchema = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName);
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> schemas.get(defaultSchema));
-        Map<String, String> columnExpressionTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(columnSegments, schema);
+        Map<String, String> columnExpressionTableNames = sqlStatementContext.getTablesContext().findTableNames(columnSegments, schema);
         return generateSQLTokens(columnSegments, columnExpressionTableNames, whereSegments);
     }
     

@@ -82,7 +82,7 @@ public final class WhereClauseShardingConditionEngine {
         String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName()
                 .map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
-        Map<String, String> columnExpressionTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(columnSegments, schema);
+        Map<String, String> columnExpressionTableNames = sqlStatementContext.getTablesContext().findTableNames(columnSegments, schema);
         List<ShardingCondition> result = new ArrayList<>();
         for (WhereSegment each : ((WhereAvailable) sqlStatementContext).getWhereSegments()) {
             result.addAll(createShardingConditions(each.getExpr(), params, columnExpressionTableNames));
