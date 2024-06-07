@@ -26,6 +26,7 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Shadow data node builder.
@@ -35,8 +36,9 @@ public final class ShadowDataNodeBuilder implements DataNodeBuilder<ShadowRule> 
     @Override
     public Collection<DataNode> build(final Collection<DataNode> dataNodes, final ShadowRule rule) {
         Collection<DataNode> result = new LinkedList<>();
+        Map<String, Collection<String>> dataSourceMapper = rule.getAttributes().getAttribute(DataSourceMapperRuleAttribute.class).getDataSourceMapper();
         for (DataNode each : dataNodes) {
-            result.addAll(DataNodeUtils.buildDataNode(each, rule.getAttributes().getAttribute(DataSourceMapperRuleAttribute.class).getDataSourceMapper()));
+            result.addAll(DataNodeUtils.buildDataNode(each, dataSourceMapper));
         }
         return result;
     }
