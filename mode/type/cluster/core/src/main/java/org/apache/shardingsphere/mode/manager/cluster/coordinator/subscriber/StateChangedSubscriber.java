@@ -18,16 +18,12 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
-import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeInstanceStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
 
 /**
  * State changed subscriber.
@@ -39,23 +35,6 @@ public final class StateChangedSubscriber implements EventSubscriber {
     
     public StateChangedSubscriber(final ContextManager contextManager) {
         this.contextManager = contextManager;
-    }
-    
-    /**
-     * Renew disabled data source names.
-     * 
-     * @param event Storage node changed event
-     */
-    @Subscribe
-    public synchronized void renew(final StorageNodeChangedEvent event) {
-        QualifiedDataSource qualifiedDataSource = event.getQualifiedDataSource();
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(qualifiedDataSource.getDatabaseName())) {
-            return;
-        }
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDataSource.getDatabaseName());
-        for (StaticDataSourceRuleAttribute each : database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)) {
-            each.updateStatus(qualifiedDataSource, event.getStatus().getStatus());
-        }
     }
     
     /**

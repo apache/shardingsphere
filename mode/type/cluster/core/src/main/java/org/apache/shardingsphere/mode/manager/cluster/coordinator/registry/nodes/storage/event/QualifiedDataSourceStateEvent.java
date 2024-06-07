@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.storage.QualifiedDataSourceState;
  */
 @RequiredArgsConstructor
 @Getter
-public final class StorageNodeChangedEvent implements GovernanceEvent {
+public final class QualifiedDataSourceStateEvent implements GovernanceEvent {
     
     private final QualifiedDataSource qualifiedDataSource;
     

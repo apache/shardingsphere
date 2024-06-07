@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.subscriber.internal;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;

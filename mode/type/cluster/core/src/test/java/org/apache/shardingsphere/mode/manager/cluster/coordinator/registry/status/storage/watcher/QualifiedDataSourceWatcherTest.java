@@ -21,7 +21,8 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.event.QualifiedDataSourceStateEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.watcher.QualifiedDataSourceWatcher;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -31,35 +32,35 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class QualifiedDataSourceChangedWatcherTest {
+class QualifiedDataSourceWatcherTest {
     
     @Test
     void assertCreateEnabledQualifiedDataSourceChangedEvent() {
-        Optional<GovernanceEvent> actual = new QualifiedDataSourceChangedWatcher().createGovernanceEvent(
+        Optional<GovernanceEvent> actual = new QualifiedDataSourceWatcher().createGovernanceEvent(
                 new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "status: ENABLED\n", Type.ADDED));
         assertTrue(actual.isPresent());
-        StorageNodeChangedEvent actualEvent = (StorageNodeChangedEvent) actual.get();
+        QualifiedDataSourceStateEvent actualEvent = (QualifiedDataSourceStateEvent) actual.get();
         assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
         assertThat(actualEvent.getQualifiedDataSource().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedDataSource().getDataSourceName(), is("replica_ds_0"));
-        assertThat(actualEvent.getStatus().getStatus(), is(DataSourceState.ENABLED));
+        assertThat(actualEvent.getStatus().getState(), is(DataSourceState.ENABLED));
     }
     
     @Test
     void assertCreateDisabledQualifiedDataSourceChangedEvent() {
-        Optional<GovernanceEvent> actual = new QualifiedDataSourceChangedWatcher().createGovernanceEvent(
+        Optional<GovernanceEvent> actual = new QualifiedDataSourceWatcher().createGovernanceEvent(
                 new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "status: DISABLED\n", Type.DELETED));
         assertTrue(actual.isPresent());
-        StorageNodeChangedEvent actualEvent = (StorageNodeChangedEvent) actual.get();
+        QualifiedDataSourceStateEvent actualEvent = (QualifiedDataSourceStateEvent) actual.get();
         assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
         assertThat(actualEvent.getQualifiedDataSource().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedDataSource().getDataSourceName(), is("replica_ds_0"));
-        assertThat(actualEvent.getStatus().getStatus(), is(DataSourceState.DISABLED));
+        assertThat(actualEvent.getStatus().getState(), is(DataSourceState.DISABLED));
     }
     
     @Test
     void assertCreateEmptyEvent() {
-        Optional<GovernanceEvent> actual = new QualifiedDataSourceChangedWatcher().createGovernanceEvent(
+        Optional<GovernanceEvent> actual = new QualifiedDataSourceWatcher().createGovernanceEvent(
                 new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "", Type.ADDED));
         assertFalse(actual.isPresent());
     }

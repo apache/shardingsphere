@@ -29,7 +29,7 @@ public final class YamlQualifiedDataSourceStatusSwapper implements YamlConfigura
     @Override
     public YamlQualifiedDataSourceStatus swapToYamlConfiguration(final QualifiedDataSourceState data) {
         YamlQualifiedDataSourceStatus result = new YamlQualifiedDataSourceStatus();
-        result.setStatus(data.getStatus().name());
+        result.setStatus(data.getState().name());
         return result;
     }
     
