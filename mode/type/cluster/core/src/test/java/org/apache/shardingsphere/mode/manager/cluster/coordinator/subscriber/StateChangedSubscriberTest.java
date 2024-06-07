@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -38,8 +37,6 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeInstanceStateChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
@@ -62,7 +59,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -145,28 +141,5 @@ class StateChangedSubscriberTest {
         Collection<String> labels = Collections.singletonList("test");
         subscriber.renew(new LabelsEvent(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), labels));
         assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getLabels(), is(labels));
-    }
-    
-    @Test
-    void assertRenewInstanceOfflineEvent() {
-        subscriber.renew(new InstanceOfflineEvent(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData()));
-        assertThat(((ProxyInstanceMetaData) contextManager.getComputeNodeInstanceContext().getInstance().getMetaData()).getPort(), is(3307));
-    }
-    
-    @Test
-    void assertRenewInstanceOnlineEvent() {
-        InstanceMetaData instanceMetaData1 = new ProxyInstanceMetaData("foo_instance_3307", 3307);
-        InstanceOnlineEvent instanceOnlineEvent1 = new InstanceOnlineEvent(instanceMetaData1);
-        subscriber.renew(instanceOnlineEvent1);
-        assertThat(contextManager.getComputeNodeInstanceContext().getAllClusterInstances().size(), is(1));
-        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getComputeNodeInstanceContext().getAllClusterInstances()).get(0).getMetaData(), is(instanceMetaData1));
-        InstanceMetaData instanceMetaData2 = new ProxyInstanceMetaData("foo_instance_3308", 3308);
-        InstanceOnlineEvent instanceOnlineEvent2 = new InstanceOnlineEvent(instanceMetaData2);
-        subscriber.renew(instanceOnlineEvent2);
-        assertThat(contextManager.getComputeNodeInstanceContext().getAllClusterInstances().size(), is(2));
-        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getComputeNodeInstanceContext().getAllClusterInstances()).get(1).getMetaData(), is(instanceMetaData2));
-        subscriber.renew(instanceOnlineEvent1);
-        assertThat(contextManager.getComputeNodeInstanceContext().getAllClusterInstances().size(), is(2));
-        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getComputeNodeInstanceContext().getAllClusterInstances()).get(1).getMetaData(), is(instanceMetaData1));
     }
 }

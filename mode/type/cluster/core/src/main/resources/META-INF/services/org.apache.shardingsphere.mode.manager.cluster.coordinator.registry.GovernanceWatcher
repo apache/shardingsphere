@@ -22,3 +22,4 @@ org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.Shardin
 org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.watcher.GlobalRuleChangedWatcher
 org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.watcher.PropertiesChangedWatcher
 org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.watch.ListenerAssistedChangedWatcher
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.watcher.ComputeNodeOnlineWatcher
