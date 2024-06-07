@@ -36,6 +36,7 @@ import org.apache.shardingsphere.test.e2e.showprocesslist.parameter.ShowProcessL
 
 import javax.sql.DataSource;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -56,7 +57,7 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
         governanceContainer = isClusterMode(testParam.getRunMode()) ? containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper")) : null;
         StorageContainer storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "",
                 StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType(), testParam.getScenario())));
-        AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(),
+        AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(), new LinkedList<>(),
                 getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getRunMode(), testParam.getGovernanceCenter()), AdapterContainerUtils.getAdapterContainerImage(),
                 "");
         jdbcContainer = AdapterContainerFactory.newInstance(

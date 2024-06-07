@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyCo
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,9 +41,9 @@ public final class ProxyClusterContainerConfigurationFactory {
      * @param databaseType database type
      * @return created instance
      */
-    public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType) {
+    public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType, final List<String> portBindings) {
         String containerCommand = "readwrite-splitting".equals(scenario) ? "-f" : "";
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(scenario), getMountedResource(scenario, databaseType), AdapterContainerUtils.getAdapterContainerImage(), containerCommand);
+        return new AdaptorContainerConfiguration(getProxyDatasourceName(scenario), portBindings, getMountedResource(scenario, databaseType), AdapterContainerUtils.getAdapterContainerImage(), containerCommand);
     }
     
     private static String getProxyDatasourceName(final String scenario) {

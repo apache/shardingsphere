@@ -28,6 +28,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyCo
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -43,7 +44,7 @@ public final class PipelineProxyClusterContainerConfigurationFactory {
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final DatabaseType databaseType) {
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(databaseType), AdapterContainerUtils.getAdapterContainerImage(), "");
+        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), new LinkedList<>(), getMountedResource(databaseType), AdapterContainerUtils.getAdapterContainerImage(), "");
     }
     
     private static String getProxyDatasourceName(final DatabaseType databaseType) {
