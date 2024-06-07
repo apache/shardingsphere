@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.auditor;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -54,7 +55,7 @@ class ShardingSQLAuditorTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingRule rule;
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    @Mock(extraInterfaces = TableAvailable.class, answer = Answers.RETURNS_DEEP_STUBS)
     private CommonSQLStatementContext sqlStatementContext;
     
     @Mock
@@ -68,7 +69,7 @@ class ShardingSQLAuditorTest {
     @BeforeEach
     void setUp() {
         when(hintValueContext.getDisableAuditNames()).thenReturn(new HashSet<>(Collections.singletonList("auditor_1")));
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_table"));
+        when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_table"));
         ShardingTable shardingTable = mock(ShardingTable.class);
         when(rule.findShardingTable("foo_table")).thenReturn(Optional.of(shardingTable));
         when(rule.getAuditStrategyConfiguration(shardingTable)).thenReturn(auditStrategy);

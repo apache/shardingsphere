@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.context.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -34,8 +33,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.presto.PrestoS
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Statement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
-import java.util.Collections;
-
 /**
  * Common SQL statement context.
  */
@@ -44,14 +41,11 @@ public abstract class CommonSQLStatementContext implements SQLStatementContext {
     
     private final SQLStatement sqlStatement;
     
-    private final TablesContext tablesContext;
-    
     private final DatabaseType databaseType;
     
     protected CommonSQLStatementContext(final SQLStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         databaseType = getDatabaseType(sqlStatement);
-        tablesContext = new TablesContext(Collections.emptyList(), databaseType);
     }
     
     private DatabaseType getDatabaseType(final SQLStatement sqlStatement) {

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.single.route;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -75,7 +77,10 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
         String logicDataSource = rule.getDataSourceNames().iterator().next();
         String actualDataSource = database.getResourceMetaData().getStorageUnits().keySet().iterator().next();
         RouteContext result = new RouteContext();
-        result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), createTableMappers(queryContext.getSqlStatementContext().getTablesContext().getTableNames())));
+        Collection<String> tableNames = queryContext.getSqlStatementContext() instanceof TableAvailable
+                ? ((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getTableNames()
+                : Collections.emptyList();
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), createTableMappers(tableNames)));
         return result;
     }
     

@@ -21,6 +21,7 @@ import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -51,6 +52,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 class ShardingTableBroadcastRoutingEngineTest {
     
@@ -88,7 +90,7 @@ class ShardingTableBroadcastRoutingEngineTest {
         IndexSegment segment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
         when(segment.getIndexName().getIdentifier().getValue()).thenReturn("t_order");
         when(segment.getOwner()).thenReturn(Optional.empty());
-        SQLStatementContext sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
+        DropIndexStatementContext sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
         Collection<String> tableNames = Collections.emptyList();
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
@@ -112,7 +114,7 @@ class ShardingTableBroadcastRoutingEngineTest {
         when(schema.getTable(anyString()).containsIndex(anyString())).thenReturn(false);
         IndexSegment segment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
         when(segment.getIndexName().getIdentifier().getValue()).thenReturn("t_order");
-        SQLStatementContext sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
+        DropIndexStatementContext sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         Collection<String> tableNames = Collections.emptyList();
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
@@ -131,8 +133,8 @@ class ShardingTableBroadcastRoutingEngineTest {
     }
     
     private SQLStatementContext createSQLStatementContext(final Collection<String> tableNames) {
-        SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getTablesContext().getTableNames()).thenReturn(tableNames);
+        SQLStatementContext result = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
+        when(((TableAvailable) result).getTablesContext().getTableNames()).thenReturn(tableNames);
         return result;
     }
     

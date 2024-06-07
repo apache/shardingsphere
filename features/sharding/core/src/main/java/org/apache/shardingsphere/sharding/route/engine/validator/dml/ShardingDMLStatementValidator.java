@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -53,7 +54,7 @@ public abstract class ShardingDMLStatementValidator implements ShardingStatement
      * @param sqlStatementContext sqlStatementContext
      */
     protected void validateMultipleTable(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) {
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
         boolean isAllShardingTables = shardingRule.isAllShardingTables(tableNames) && (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames));
         boolean isAllSingleTables = !shardingRule.containsShardingTable(tableNames);
         ShardingSpherePreconditions.checkState(isAllShardingTables || isAllSingleTables, () -> new DMLWithMultipleShardingTablesException(tableNames));
@@ -116,7 +117,7 @@ public abstract class ShardingDMLStatementValidator implements ShardingStatement
     protected Optional<ShardingConditions> createShardingConditions(final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule,
                                                                     final Collection<ColumnAssignmentSegment> assignments, final List<Object> params) {
         Collection<ShardingConditionValue> values = new LinkedList<>();
-        String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
+        String tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().iterator().next();
         for (ColumnAssignmentSegment each : assignments) {
             String shardingColumn = each.getColumns().get(0).getIdentifier().getValue();
             if (shardingRule.findShardingColumn(shardingColumn, tableName).isPresent()) {

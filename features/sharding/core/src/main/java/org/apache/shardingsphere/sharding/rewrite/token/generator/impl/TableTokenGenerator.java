@@ -50,7 +50,9 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<SQ
     }
     
     private boolean isAllBindingTables(final SQLStatementContext sqlStatementContext) {
-        Collection<String> shardingLogicTableNames = shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames());
+        Collection<String> shardingLogicTableNames = sqlStatementContext instanceof TableAvailable
+                ? shardingRule.getShardingLogicTableNames(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())
+                : Collections.emptyList();
         return shardingLogicTableNames.size() > 1 && shardingRule.isAllBindingTables(shardingLogicTableNames);
     }
     

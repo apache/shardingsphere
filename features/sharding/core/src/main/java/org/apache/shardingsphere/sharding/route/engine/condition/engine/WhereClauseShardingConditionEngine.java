@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -79,10 +80,10 @@ public final class WhereClauseShardingConditionEngine {
             return Collections.emptyList();
         }
         Collection<ColumnSegment> columnSegments = ((WhereAvailable) sqlStatementContext).getColumnSegments();
-        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
-        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName()
-                .map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
-        Map<String, String> columnExpressionTableNames = sqlStatementContext.getTablesContext().findTableNames(columnSegments, schema);
+        ShardingSphereSchema schema = getSchema(sqlStatementContext, database);
+        Map<String, String> columnExpressionTableNames = sqlStatementContext instanceof TableAvailable
+                ? ((TableAvailable) sqlStatementContext).getTablesContext().findTableNames(columnSegments, schema)
+                : Collections.emptyMap();
         List<ShardingCondition> result = new ArrayList<>();
         for (WhereSegment each : ((WhereAvailable) sqlStatementContext).getWhereSegments()) {
             result.addAll(createShardingConditions(each.getExpr(), params, columnExpressionTableNames));
@@ -104,6 +105,13 @@ public final class WhereClauseShardingConditionEngine {
             result.add(shardingCondition);
         }
         return result;
+    }
+    
+    private ShardingSphereSchema getSchema(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
+        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
+        return sqlStatementContext instanceof TableAvailable
+                ? ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName))
+                : database.getSchema(defaultSchemaName);
     }
     
     private Map<Column, Collection<ShardingConditionValue>> createShardingConditionValueMap(final Collection<ExpressionSegment> predicates,

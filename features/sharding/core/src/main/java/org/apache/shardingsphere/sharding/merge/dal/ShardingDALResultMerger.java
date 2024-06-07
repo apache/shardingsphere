@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dal;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
@@ -62,9 +63,7 @@ public final class ShardingDALResultMerger implements ResultMerger {
         if (dalStatement instanceof MySQLShowDatabasesStatement) {
             return new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(databaseName)));
         }
-        String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
-        ShardingSphereSchema schema = database.getSchema(schemaName);
+        ShardingSphereSchema schema = getSchema(sqlStatementContext, database);
         if (dalStatement instanceof MySQLShowTablesStatement) {
             return new LogicTablesMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
         }
@@ -78,5 +77,12 @@ public final class ShardingDALResultMerger implements ResultMerger {
             return new ShowCreateTableMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
         }
         return new TransparentMergedResult(queryResults.get(0));
+    }
+    
+    private ShardingSphereSchema getSchema(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
+        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
+        return sqlStatementContext instanceof TableAvailable
+                ? ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName))
+                : database.getSchema(defaultSchemaName);
     }
 }

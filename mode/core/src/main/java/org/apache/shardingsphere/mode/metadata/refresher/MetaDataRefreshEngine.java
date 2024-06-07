@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.metadata.refresher;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -63,11 +64,14 @@ public final class MetaDataRefreshEngine {
         }
         Optional<MetaDataRefresher> schemaRefresher = TypedSPILoader.findService(MetaDataRefresher.class, sqlStatementClass.getSuperclass());
         if (schemaRefresher.isPresent()) {
-            String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
-                    .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName())).toLowerCase();
+            String schemaName = null;
+            if (sqlStatementContext instanceof TableAvailable) {
+                schemaName = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName()
+                        .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName())).toLowerCase();
+            }
             Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
-            schemaRefresher.get().refresh(metaDataManagerPersistService, database, logicDataSourceNames, schemaName, sqlStatementContext.getDatabaseType(),
-                    sqlStatementContext.getSqlStatement(), props);
+            schemaRefresher.get().refresh(metaDataManagerPersistService, database,
+                    logicDataSourceNames, schemaName, sqlStatementContext.getDatabaseType(), sqlStatementContext.getSqlStatement(), props);
             return;
         }
         IGNORED_SQL_STATEMENT_CLASSES.add(sqlStatementClass);

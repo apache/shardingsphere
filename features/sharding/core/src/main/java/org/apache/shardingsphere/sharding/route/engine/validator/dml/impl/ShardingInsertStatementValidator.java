@@ -68,7 +68,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
                 && !isContainsKeyGenerateColumn(shardingRule, insertStatement.getColumns(), tableName)) {
             throw new MissingGenerateKeyColumnWithInsertSelectException();
         }
-        TablesContext tablesContext = sqlStatementContext.getTablesContext();
+        TablesContext tablesContext = ((InsertStatementContext) sqlStatementContext).getTablesContext();
         if (insertSelectSegment.isPresent() && shardingRule.containsShardingTable(tablesContext.getTableNames())
                 && !isAllSameTables(tablesContext.getTableNames()) && !shardingRule.isAllBindingTables(tablesContext.getTableNames())) {
             throw new InsertSelectTableViolationException();

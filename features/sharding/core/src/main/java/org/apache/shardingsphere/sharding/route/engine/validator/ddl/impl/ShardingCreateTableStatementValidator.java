@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -41,10 +42,11 @@ public final class ShardingCreateTableStatementValidator extends ShardingDDLStat
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
-        CreateTableStatement createTableStatement = (CreateTableStatement) sqlStatementContext.getSqlStatement();
+        CreateTableStatementContext createTableStatementContext = (CreateTableStatementContext) sqlStatementContext;
+        CreateTableStatement createTableStatement = createTableStatementContext.getSqlStatement();
         if (!CreateTableStatementHandler.ifNotExists(createTableStatement)) {
             String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
-            ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName()
+            ShardingSphereSchema schema = createTableStatementContext.getTablesContext().getSchemaName()
                     .map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
             validateTableNotExist(schema, Collections.singleton(createTableStatement.getTable()));
         }
@@ -53,9 +55,10 @@ public final class ShardingCreateTableStatementValidator extends ShardingDDLStat
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
-        String primaryTable = ((CreateTableStatement) sqlStatementContext.getSqlStatement()).getTable().getTableName().getIdentifier().getValue();
+        CreateTableStatementContext createTableStatementContext = (CreateTableStatementContext) sqlStatementContext;
+        String primaryTable = (createTableStatementContext.getSqlStatement()).getTable().getTableName().getIdentifier().getValue();
         if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
-            throw new ShardingDDLRouteException("CREATE", "TABLE", sqlStatementContext.getTablesContext().getTableNames());
+            throw new ShardingDDLRouteException("CREATE", "TABLE", createTableStatementContext.getTablesContext().getTableNames());
         }
     }
 }
