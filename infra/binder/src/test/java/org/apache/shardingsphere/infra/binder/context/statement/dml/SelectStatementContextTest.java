@@ -410,7 +410,7 @@ class SelectStatementContextTest {
         SelectStatementContext actual =
                 new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
         assertThat(actual.getTablesContext().getTableNames(), is(Collections.emptySet()));
-        assertThat(actual.getSimpleTables(), is(Collections.emptyList()));
+        assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));
         assertThat(actual.getGroupByContext().getItems(), is(Collections.emptyList()));
         assertThat(actual.getWhereSegments(), is(Collections.singletonList(whereSegment)));
     }

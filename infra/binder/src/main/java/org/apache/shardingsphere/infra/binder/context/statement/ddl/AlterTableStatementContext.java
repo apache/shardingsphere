@@ -50,33 +50,32 @@ public final class AlterTableStatementContext extends CommonSQLStatementContext 
     
     public AlterTableStatementContext(final AlterTableStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
+        tablesContext = new TablesContext(getTables(sqlStatement), getDatabaseType());
+    }
+    
+    private Collection<SimpleTableSegment> getTables(final AlterTableStatement sqlStatement) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        result.add(sqlStatement.getTable());
+        if (sqlStatement.getRenameTable().isPresent()) {
+            result.add(sqlStatement.getRenameTable().get());
+        }
+        for (AddColumnDefinitionSegment each : sqlStatement.getAddColumnDefinitions()) {
+            for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
+                result.addAll(columnDefinition.getReferencedTables());
+            }
+        }
+        for (ModifyColumnDefinitionSegment each : sqlStatement.getModifyColumnDefinitions()) {
+            result.addAll(each.getColumnDefinition().getReferencedTables());
+        }
+        for (AddConstraintDefinitionSegment each : sqlStatement.getAddConstraintDefinitions()) {
+            each.getConstraintDefinition().getReferencedTable().ifPresent(result::add);
+        }
+        return result;
     }
     
     @Override
     public AlterTableStatement getSqlStatement() {
         return (AlterTableStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        result.add(getSqlStatement().getTable());
-        if (getSqlStatement().getRenameTable().isPresent()) {
-            result.add(getSqlStatement().getRenameTable().get());
-        }
-        for (AddColumnDefinitionSegment each : getSqlStatement().getAddColumnDefinitions()) {
-            for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
-                result.addAll(columnDefinition.getReferencedTables());
-            }
-        }
-        for (ModifyColumnDefinitionSegment each : getSqlStatement().getModifyColumnDefinitions()) {
-            result.addAll(each.getColumnDefinition().getReferencedTables());
-        }
-        for (AddConstraintDefinitionSegment each : getSqlStatement().getAddConstraintDefinitions()) {
-            each.getConstraintDefinition().getReferencedTable().ifPresent(result::add);
-        }
-        return result;
     }
     
     @Override

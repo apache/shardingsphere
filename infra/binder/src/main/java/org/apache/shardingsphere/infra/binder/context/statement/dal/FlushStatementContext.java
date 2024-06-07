@@ -18,14 +18,11 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dal.FlushStatementHandler;
-
-import java.util.Collection;
 
 /**
  * Flush statement context.
@@ -43,10 +40,5 @@ public final class FlushStatementContext extends CommonSQLStatementContext imple
     @Override
     public FlushStatement getSqlStatement() {
         return (FlushStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        return FlushStatementHandler.getSimpleTableSegment(getSqlStatement());
     }
 }

@@ -44,27 +44,26 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
     
     public CreateTableStatementContext(final CreateTableStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
+        tablesContext = new TablesContext(getTables(sqlStatement), getDatabaseType());
     }
     
-    @Override
-    public CreateTableStatement getSqlStatement() {
-        return (CreateTableStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
+    private Collection<SimpleTableSegment> getTables(final CreateTableStatement sqlStatement) {
         Collection<SimpleTableSegment> result = new LinkedList<>();
-        result.add(getSqlStatement().getTable());
-        for (ColumnDefinitionSegment each : getSqlStatement().getColumnDefinitions()) {
+        result.add(sqlStatement.getTable());
+        for (ColumnDefinitionSegment each : sqlStatement.getColumnDefinitions()) {
             result.addAll(each.getReferencedTables());
         }
-        for (ConstraintDefinitionSegment each : getSqlStatement().getConstraintDefinitions()) {
+        for (ConstraintDefinitionSegment each : sqlStatement.getConstraintDefinitions()) {
             if (each.getReferencedTable().isPresent()) {
                 result.add(each.getReferencedTable().get());
             }
         }
         return result;
+    }
+    
+    @Override
+    public CreateTableStatement getSqlStatement() {
+        return (CreateTableStatement) super.getSqlStatement();
     }
     
     @Override

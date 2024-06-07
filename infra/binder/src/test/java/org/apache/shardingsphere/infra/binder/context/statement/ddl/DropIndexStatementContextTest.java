@@ -72,7 +72,7 @@ class DropIndexStatementContextTest {
         DropIndexStatementContext actual = new DropIndexStatementContext(dropIndexStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(dropIndexStatement));
-        assertThat(actual.getSimpleTables(), is(Collections.emptyList()));
+        assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));
         assertThat(actual.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("idx_1", "idx_2")));
     }
 }

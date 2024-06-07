@@ -152,7 +152,7 @@ public final class PipelineDDLGenerator {
     }
     
     private void appendFromTable(final Map<SQLSegment, String> replaceMap, final String targetTableName, final TableAvailable sqlStatementContext) {
-        for (SimpleTableSegment each : sqlStatementContext.getSimpleTables()) {
+        for (SimpleTableSegment each : sqlStatementContext.getTablesContext().getSimpleTables()) {
             if (!targetTableName.equals(each.getTableName().getIdentifier().getValue())) {
                 replaceMap.put(each.getTableName(), targetTableName);
             }

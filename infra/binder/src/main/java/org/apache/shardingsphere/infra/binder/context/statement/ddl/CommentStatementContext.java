@@ -21,10 +21,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CommentStatement;
 
-import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -43,10 +41,5 @@ public final class CommentStatementContext extends CommonSQLStatementContext imp
     @Override
     public CommentStatement getSqlStatement() {
         return (CommentStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        return tablesContext.getSimpleTables();
     }
 }

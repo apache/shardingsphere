@@ -65,7 +65,7 @@ class CreateIndexStatementContextTest {
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(createIndexStatement));
         assertTrue(actual.isGeneratedIndex());
-        assertThat(actual.getSimpleTables(), is(Collections.emptyList()));
+        assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));
         assertThat(actual.getIndexes(), is(Collections.emptyList()));
         when(createIndexStatement.getIndex()).thenReturn(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("index_2"))));
         CreateIndexStatementContext actual2 = new CreateIndexStatementContext(createIndexStatement);

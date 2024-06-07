@@ -48,6 +48,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -141,11 +142,11 @@ class DecoratedEncryptShowCreateTableMergedResultTest {
     }
     
     private DecoratedEncryptShowCreateTableMergedResult createDecoratedEncryptShowCreateTableMergedResult(final MergedResult mergedResult, final EncryptRule encryptRule) {
-        ShowCreateTableStatementContext sqlStatementContext = mock(ShowCreateTableStatementContext.class);
+        ShowCreateTableStatementContext sqlStatementContext = mock(ShowCreateTableStatementContext.class, RETURNS_DEEP_STUBS);
         IdentifierValue identifierValue = new IdentifierValue("t_encrypt");
         TableNameSegment tableNameSegment = new TableNameSegment(1, 4, identifierValue);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableNameSegment);
-        when(sqlStatementContext.getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
+        when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
         when(ruleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(2000, 65535L))));

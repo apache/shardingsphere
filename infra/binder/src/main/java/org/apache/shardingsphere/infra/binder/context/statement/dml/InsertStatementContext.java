@@ -265,11 +265,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     }
     
     @Override
-    public Collection<SimpleTableSegment> getSimpleTables() {
-        return tablesContext.getSimpleTables();
-    }
-    
-    @Override
     public void setUpParameters(final List<Object> params) {
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(params, parametersOffset, valueExpressions);

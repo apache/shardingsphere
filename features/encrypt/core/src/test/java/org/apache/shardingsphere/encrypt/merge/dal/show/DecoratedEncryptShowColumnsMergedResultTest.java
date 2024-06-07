@@ -43,6 +43,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -134,8 +135,8 @@ class DecoratedEncryptShowColumnsMergedResultTest {
     }
     
     private DecoratedEncryptShowColumnsMergedResult createDecoratedEncryptShowColumnsMergedResult(final MergedResult mergedResult, final EncryptRule encryptRule) {
-        ShowColumnsStatementContext showColumnsStatementContext = mock(ShowColumnsStatementContext.class);
-        when(showColumnsStatementContext.getSimpleTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))));
+        ShowColumnsStatementContext showColumnsStatementContext = mock(ShowColumnsStatementContext.class, RETURNS_DEEP_STUBS);
+        when(showColumnsStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))));
         return new DecoratedEncryptShowColumnsMergedResult(mergedResult, showColumnsStatementContext, encryptRule);
     }
 }
