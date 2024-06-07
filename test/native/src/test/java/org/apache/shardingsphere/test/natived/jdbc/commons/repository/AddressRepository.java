@@ -38,11 +38,11 @@ public final class AddressRepository {
     }
     
     /**
-     * create table t_address if not exists.
+     * create table t_address if not exists in MySQL.
      *
      * @throws SQLException SQL exception
      */
-    public void createTableIfNotExists() throws SQLException {
+    public void createTableIfNotExistsInMySQL() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id))";
         try (
                 Connection connection = dataSource.getConnection();
@@ -62,7 +62,7 @@ public final class AddressRepository {
                 + "    address_id bigint NOT NULL,\n"
                 + "    address_name varchar(100) NOT NULL,\n"
                 + "    PRIMARY KEY (address_id)\n"
-                + ");";
+                + ")";
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
