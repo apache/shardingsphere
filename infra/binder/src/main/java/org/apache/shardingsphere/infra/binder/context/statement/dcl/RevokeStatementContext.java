@@ -45,7 +45,7 @@ public final class RevokeStatementContext extends CommonSQLStatementContext impl
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         return getSqlStatement().getTables();
     }
 }

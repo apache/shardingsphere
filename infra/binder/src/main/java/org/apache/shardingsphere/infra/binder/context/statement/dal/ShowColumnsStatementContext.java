@@ -49,7 +49,7 @@ public final class ShowColumnsStatementContext extends CommonSQLStatementContext
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         return null == getSqlStatement().getTable() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getTable());
     }
     

@@ -53,7 +53,7 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         result.add(getSqlStatement().getTable());
         for (ColumnDefinitionSegment each : getSqlStatement().getColumnDefinitions()) {

@@ -404,7 +404,7 @@ class SelectStatementContextTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext actual = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual.getTablesContext().getTableNames(), is(Collections.emptySet()));
-        assertThat(actual.getAllTables(), is(Collections.emptyList()));
+        assertThat(actual.getSimpleTables(), is(Collections.emptyList()));
         assertThat(actual.getGroupByContext().getItems(), is(Collections.emptyList()));
         assertThat(actual.getWhereSegments(), is(Collections.singletonList(whereSegment)));
     }

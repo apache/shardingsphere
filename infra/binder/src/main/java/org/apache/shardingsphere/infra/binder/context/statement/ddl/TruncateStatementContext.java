@@ -45,7 +45,7 @@ public final class TruncateStatementContext extends CommonSQLStatementContext im
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         return getSqlStatement().getTables();
     }
 }

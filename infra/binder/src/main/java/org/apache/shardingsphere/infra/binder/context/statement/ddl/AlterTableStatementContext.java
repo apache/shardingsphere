@@ -59,7 +59,7 @@ public final class AlterTableStatementContext extends CommonSQLStatementContext 
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         result.add(getSqlStatement().getTable());
         if (getSqlStatement().getRenameTable().isPresent()) {

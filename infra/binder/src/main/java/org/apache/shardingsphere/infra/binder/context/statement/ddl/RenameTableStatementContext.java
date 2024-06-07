@@ -48,7 +48,7 @@ public final class RenameTableStatementContext extends CommonSQLStatementContext
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         for (RenameTableDefinitionSegment each : getSqlStatement().getRenameTables()) {
             result.add(each.getTable());

@@ -135,7 +135,7 @@ class MergedEncryptShowColumnsMergedResultTest {
     
     private MergedEncryptShowColumnsMergedResult createMergedEncryptColumnsMergedResult(final QueryResult queryResult, final EncryptRule encryptRule) {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
-        when(sqlStatementContext.getAllTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))));
+        when(sqlStatementContext.getSimpleTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))));
         return new MergedEncryptShowColumnsMergedResult(queryResult, sqlStatementContext, encryptRule);
     }
 }

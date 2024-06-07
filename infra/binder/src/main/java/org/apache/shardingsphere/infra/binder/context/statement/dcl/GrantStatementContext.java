@@ -45,7 +45,7 @@ public final class GrantStatementContext extends CommonSQLStatementContext imple
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         return getSqlStatement().getTables();
     }
 }

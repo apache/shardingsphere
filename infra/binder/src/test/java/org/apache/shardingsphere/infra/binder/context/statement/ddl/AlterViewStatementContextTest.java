@@ -68,6 +68,6 @@ class AlterViewStatementContextTest {
         AlterViewStatementContext actual = new AlterViewStatementContext(alterViewStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(alterViewStatement));
-        assertThat(actual.getAllTables().size(), is(2));
+        assertThat(actual.getSimpleTables().size(), is(2));
     }
 }

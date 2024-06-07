@@ -44,7 +44,7 @@ public final class ShardingAlterTableStatementValidator extends ShardingDDLState
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
+                ? ((TableAvailable) sqlStatementContext).getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
                 : sqlStatementContext.getTablesContext().getTableNames();
         Optional<SimpleTableSegment> renameTable = ((AlterTableStatement) sqlStatementContext.getSqlStatement()).getRenameTable();
         if (renameTable.isPresent() && shardingRule.containsShardingTable(tableNames)) {

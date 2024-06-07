@@ -46,7 +46,7 @@ public final class FlushStatementContext extends CommonSQLStatementContext imple
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         return FlushStatementHandler.getSimpleTableSegment(getSqlStatement());
     }
 }

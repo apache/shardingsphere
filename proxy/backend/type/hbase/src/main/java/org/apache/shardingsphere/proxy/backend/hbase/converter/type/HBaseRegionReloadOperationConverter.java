@@ -37,7 +37,7 @@ public final class HBaseRegionReloadOperationConverter implements HBaseOperation
     
     @Override
     public HBaseOperation convert() {
-        List<String> tables = ((FlushStatementContext) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
+        List<String> tables = ((FlushStatementContext) sqlStatementContext).getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
         return new HBaseOperation(String.join(",", tables), new HBaseRegionReloadOperation());
     }
 }

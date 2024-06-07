@@ -52,6 +52,6 @@ class ExplainStatementContextTest {
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(explainStatement));
         assertThat(actual.getSqlStatement().getStatement().orElse(null), is(statement));
-        assertThat(actual.getAllTables(), is(Collections.emptyList()));
+        assertThat(actual.getSimpleTables(), is(Collections.emptyList()));
     }
 }

@@ -195,8 +195,8 @@ class InsertStatementContextTest {
     
     private void assertInsertStatementContext(final InsertStatementContext actual) {
         assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Collections.singleton("tbl"))));
-        assertThat(actual.getAllTables().size(), is(1));
-        SimpleTableSegment simpleTableSegment = actual.getAllTables().iterator().next();
+        assertThat(actual.getSimpleTables().size(), is(1));
+        SimpleTableSegment simpleTableSegment = actual.getSimpleTables().iterator().next();
         assertThat(simpleTableSegment.getTableName().getStartIndex(), is(0));
         assertThat(simpleTableSegment.getTableName().getStopIndex(), is(0));
         assertThat(simpleTableSegment.getTableName().getIdentifier().getValue(), is("tbl"));

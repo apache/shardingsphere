@@ -70,7 +70,7 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Se
         } else if (sqlStatement.getWhere().isPresent()) {
             stopIndex = sqlStatement.getWhere().get().getStopIndex();
         } else {
-            stopIndex = selectStatementContext.getAllTables().stream().mapToInt(SimpleTableSegment::getStopIndex).max().orElse(0);
+            stopIndex = selectStatementContext.getSimpleTables().stream().mapToInt(SimpleTableSegment::getStopIndex).max().orElse(0);
         }
         return stopIndex + 1;
     }

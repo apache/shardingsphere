@@ -60,7 +60,7 @@ public final class ExplainStatementContext extends CommonSQLStatementContext imp
     }
     
     @Override
-    public Collection<SimpleTableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getSimpleTables() {
         return extractTablesFromExplain(getSqlStatement());
     }
 }

@@ -135,7 +135,7 @@ class DecoratedEncryptShowColumnsMergedResultTest {
     
     private DecoratedEncryptShowColumnsMergedResult createDecoratedEncryptShowColumnsMergedResult(final MergedResult mergedResult, final EncryptRule encryptRule) {
         ShowColumnsStatementContext showColumnsStatementContext = mock(ShowColumnsStatementContext.class);
-        when(showColumnsStatementContext.getAllTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))));
+        when(showColumnsStatementContext.getSimpleTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))));
         return new DecoratedEncryptShowColumnsMergedResult(mergedResult, showColumnsStatementContext, encryptRule);
     }
 }

@@ -99,7 +99,7 @@ class EncryptDALResultDecoratorTest {
     private SQLStatementContext getDescribeStatementContext() {
         ExplainStatementContext result = mock(ExplainStatementContext.class);
         SimpleTableSegment simpleTableSegment = getSimpleTableSegment();
-        when(result.getAllTables()).thenReturn(Collections.singleton(simpleTableSegment));
+        when(result.getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
         when(result.getSqlStatement()).thenReturn(mock(MySQLExplainStatement.class));
         return result;
     }
@@ -107,7 +107,7 @@ class EncryptDALResultDecoratorTest {
     private SQLStatementContext getShowColumnsStatementContext() {
         ShowColumnsStatementContext result = mock(ShowColumnsStatementContext.class);
         SimpleTableSegment simpleTableSegment = getSimpleTableSegment();
-        when(result.getAllTables()).thenReturn(Collections.singleton(simpleTableSegment));
+        when(result.getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
         when(result.getSqlStatement()).thenReturn(mock(MySQLShowColumnsStatement.class));
         return result;
     }
@@ -116,7 +116,7 @@ class EncryptDALResultDecoratorTest {
         ShowCreateTableStatementContext result = mock(ShowCreateTableStatementContext.class);
         when(result.getDatabaseType()).thenReturn(databaseType);
         SimpleTableSegment simpleTableSegment = getSimpleTableSegment();
-        when(result.getAllTables()).thenReturn(Collections.singleton(simpleTableSegment));
+        when(result.getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
         when(result.getSqlStatement()).thenReturn(new MySQLShowCreateTableStatement());
         return result;
     }
