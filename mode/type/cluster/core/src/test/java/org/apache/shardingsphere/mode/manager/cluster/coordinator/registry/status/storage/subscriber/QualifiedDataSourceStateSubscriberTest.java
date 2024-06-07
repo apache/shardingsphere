@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.mode.event.node.QualifiedDataSourceDeletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.subscriber.internal.QualifiedDataSourceStatusSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.subscriber.internal.InternalQualifiedDataSourceSubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ class QualifiedDataSourceStateSubscriberTest {
         String groupName = "readwrite_ds";
         String dataSourceName = "replica_ds_0";
         QualifiedDataSourceDeletedEvent event = new QualifiedDataSourceDeletedEvent(new QualifiedDataSource(databaseName, groupName, dataSourceName));
-        new QualifiedDataSourceStatusSubscriber(repository).delete(event);
+        new InternalQualifiedDataSourceSubscriber(repository).delete(event);
         verify(repository).delete(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(new QualifiedDataSource(databaseName, groupName, dataSourceName)));
     }
 }
