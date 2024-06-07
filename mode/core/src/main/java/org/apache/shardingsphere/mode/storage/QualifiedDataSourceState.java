@@ -28,5 +28,5 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 @Getter
 public final class QualifiedDataSourceState {
     
-    private final DataSourceState status;
+    private final DataSourceState state;
 }

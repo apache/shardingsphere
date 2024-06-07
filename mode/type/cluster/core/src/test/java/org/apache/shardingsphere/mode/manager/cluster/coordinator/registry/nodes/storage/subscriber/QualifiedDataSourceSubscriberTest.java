@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.subscriber;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -24,20 +24,19 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.infra.state.instance.InstanceState;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeInstanceStateChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.event.QualifiedDataSourceStateEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.storage.QualifiedDataSourceState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,24 +47,22 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class StateChangedSubscriberTest {
+class QualifiedDataSourceSubscriberTest {
     
-    private StateChangedSubscriber subscriber;
-    
-    private ContextManager contextManager;
+    private QualifiedDataSourceSubscriber subscriber;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -73,11 +70,22 @@ class StateChangedSubscriberTest {
     @BeforeEach
     void setUp() throws SQLException {
         EventBusContext eventBusContext = new EventBusContext();
-        contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter(), eventBusContext);
+        ContextManager contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter(), eventBusContext);
         contextManager.renewMetaDataContexts(MetaDataContextsFactory.create(contextManager.getPersistServiceFacade().getMetaDataPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalResourceMetaData(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
                 new ConfigurationProperties(new Properties()))));
-        subscriber = new StateChangedSubscriber(contextManager);
+        subscriber = new QualifiedDataSourceSubscriber(contextManager);
+    }
+    
+    @Test
+    void assertRenewForDisableStateChanged() {
+        StaticDataSourceRuleAttribute ruleAttribute = mock(StaticDataSourceRuleAttribute.class);
+        when(database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
+        QualifiedDataSourceStateEvent event = new QualifiedDataSourceStateEvent(new QualifiedDataSource("db.readwrite_ds.ds_0"), new QualifiedDataSourceState(DataSourceState.DISABLED));
+        subscriber.renew(event);
+        verify(ruleAttribute).updateStatus(
+                argThat(qualifiedDataSource -> Objects.equals(event.getQualifiedDataSource(), qualifiedDataSource)),
+                argThat(dataSourceState -> event.getStatus().getState() == dataSourceState));
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
@@ -94,33 +102,5 @@ class StateChangedSubscriberTest {
         when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("db", database);
-    }
-    
-    @Test
-    void assertRenewClusterState() {
-        ClusterStateEvent mockClusterStateEvent = new ClusterStateEvent(ClusterState.READ_ONLY);
-        subscriber.renew(mockClusterStateEvent);
-        assertThat(contextManager.getStateContext().getClusterState(), is(ClusterState.READ_ONLY));
-    }
-    
-    @Test
-    void assertRenewInstanceState() {
-        ComputeNodeInstanceStateChangedEvent event = new ComputeNodeInstanceStateChangedEvent(
-                contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), InstanceState.OK.name());
-        subscriber.renew(event);
-        assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getState().getCurrentState(), is(InstanceState.OK));
-    }
-    
-    @Test
-    void assertRenewInstanceWorkerIdEvent() {
-        subscriber.renew(new WorkerIdEvent(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), 0));
-        assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getWorkerId(), is(0));
-    }
-    
-    @Test
-    void assertRenewInstanceLabels() {
-        Collection<String> labels = Collections.singletonList("test");
-        subscriber.renew(new LabelsEvent(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), labels));
-        assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getLabels(), is(labels));
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.watcher;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.event.QualifiedDataSourceStateEvent;
 import org.apache.shardingsphere.mode.storage.QualifiedDataSourceState;
 import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
 import org.apache.shardingsphere.mode.storage.yaml.YamlQualifiedDataSourceStatus;
@@ -36,9 +36,9 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Qualified data source changed watcher.
+ * Qualified data source watcher.
  */
-public final class QualifiedDataSourceChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class QualifiedDataSourceWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
     public Collection<String> getWatchingKeys() {
@@ -57,8 +57,8 @@ public final class QualifiedDataSourceChangedWatcher implements GovernanceWatche
         }
         Optional<QualifiedDataSource> qualifiedDataSource = QualifiedDataSourceNode.extractQualifiedDataSource(event.getKey());
         if (qualifiedDataSource.isPresent()) {
-            QualifiedDataSourceState status = new YamlQualifiedDataSourceStatusSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlQualifiedDataSourceStatus.class));
-            return Optional.of(new StorageNodeChangedEvent(qualifiedDataSource.get(), status));
+            QualifiedDataSourceState state = new YamlQualifiedDataSourceStatusSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlQualifiedDataSourceStatus.class));
+            return Optional.of(new QualifiedDataSourceStateEvent(qualifiedDataSource.get(), state));
         }
         return Optional.empty();
     }
