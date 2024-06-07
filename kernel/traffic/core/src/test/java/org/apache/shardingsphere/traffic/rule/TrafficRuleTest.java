@@ -91,7 +91,7 @@ class TrafficRuleTest {
         MySQLSelectStatement sqlStatement = mock(MySQLSelectStatement.class);
         when(sqlStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
         SQLStatementContext statementContext =
-                new SelectStatementContext(createShardingSphereMetaData(), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
+                new SelectStatementContext(createShardingSphereMetaData(), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setUseTraffic(includeComments);
         return new QueryContext(statementContext, "", Collections.emptyList(), hintValueContext);

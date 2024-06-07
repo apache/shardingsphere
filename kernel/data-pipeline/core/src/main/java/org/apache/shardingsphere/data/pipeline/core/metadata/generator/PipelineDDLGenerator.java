@@ -126,7 +126,7 @@ public final class PipelineDDLGenerator {
     }
     
     private QueryContext getQueryContext(final String databaseName, final SQLParserEngine parserEngine, final String sql) {
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(null, databaseName, new HintValueContext()).bind(parserEngine.parse(sql, false), Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(null, databaseName, new HintValueContext()).bind(parserEngine.parse(sql, true), Collections.emptyList());
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext());
     }
     

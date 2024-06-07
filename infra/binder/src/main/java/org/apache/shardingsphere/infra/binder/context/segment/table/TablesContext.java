@@ -62,7 +62,6 @@ public final class TablesContext {
     
     private final Collection<String> schemaNames = new CaseInsensitiveSet<>();
     
-    @Getter(AccessLevel.NONE)
     private final Collection<String> databaseNames = new CaseInsensitiveSet<>();
     
     @Getter(AccessLevel.NONE)

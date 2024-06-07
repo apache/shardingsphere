@@ -65,7 +65,8 @@ class TopAndRowNumberDecoratorMergedResultTest {
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext selectStatementContext =
+                new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
                 mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase(), mock(ConnectionContext.class));
@@ -80,7 +81,8 @@ class TopAndRowNumberDecoratorMergedResultTest {
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, null, new NumberLiteralLimitValueSegment(0, 0, 5L)));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext selectStatementContext =
+                new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
                 mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase(), mock(ConnectionContext.class));
         for (int i = 0; i < 5; i++) {
@@ -96,7 +98,8 @@ class TopAndRowNumberDecoratorMergedResultTest {
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2L, true), null));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext selectStatementContext =
+                new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
                 mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase(), mock(ConnectionContext.class));
@@ -114,7 +117,8 @@ class TopAndRowNumberDecoratorMergedResultTest {
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2L, false), new NumberLiteralLimitValueSegment(0, 0, 4L)));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext selectStatementContext =
+                new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
                 mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase(), mock(ConnectionContext.class));
         assertTrue(actual.next());
@@ -131,7 +135,7 @@ class TopAndRowNumberDecoratorMergedResultTest {
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2L, true), new NumberLiteralLimitValueSegment(0, 0, 4L)));
         SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database),
-                Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
+                Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
                 mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase(), mock(ConnectionContext.class));
         assertTrue(actual.next());

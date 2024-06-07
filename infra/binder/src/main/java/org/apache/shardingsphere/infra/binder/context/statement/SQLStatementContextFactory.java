@@ -19,6 +19,17 @@ package org.apache.shardingsphere.infra.binder.context.statement;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.AnalyzeTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.ExplainStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.FlushStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.KillStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.OptimizeTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowColumnsStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowCreateTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowTableStatusStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowTablesStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dcl.DenyUserStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dcl.GrantStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dcl.RevokeStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterIndexStatementContext;
@@ -48,22 +59,11 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.DoStatementC
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadDataStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadXMLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.AnalyzeTableStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.ExplainStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.FlushStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.KillStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.OptimizeTableStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowColumnsStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowCreateTableStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowTableStatusStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowTablesStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.MergeStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dcl.DenyUserStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
@@ -113,6 +113,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleMergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -149,7 +150,7 @@ public final class SQLStatementContextFactory {
     private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData,
                                                               final List<Object> params, final DMLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(metaData, params, (SelectStatement) sqlStatement, defaultDatabaseName);
+            return new SelectStatementContext(metaData, params, (SelectStatement) sqlStatement, defaultDatabaseName, Collections.emptyList());
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext((UpdateStatement) sqlStatement);

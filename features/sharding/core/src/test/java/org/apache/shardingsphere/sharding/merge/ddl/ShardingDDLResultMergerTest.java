@@ -94,7 +94,7 @@ class ShardingDDLResultMergerTest {
         SelectStatement selectStatement = createSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(),
-                selectStatement, DefaultDatabase.LOGIC_NAME);
+                selectStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
         when(result.getSelectStatementContext()).thenReturn(selectStatementContext);
         when(result.getSqlStatement().getSelect()).thenReturn(selectStatement);
         return result;
