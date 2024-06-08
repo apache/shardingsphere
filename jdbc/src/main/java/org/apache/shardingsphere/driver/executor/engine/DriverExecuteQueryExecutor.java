@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupRepor
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -82,7 +84,7 @@ public final class DriverExecuteQueryExecutor {
     
     private final ShardingSphereMetaData metaData;
     
-    private final DriverJDBCExecutor regularExecutor;
+    private final JDBCExecutor jdbcExecutor;
     
     private final RawExecutor rawExecutor;
     
@@ -159,7 +161,18 @@ public final class DriverExecuteQueryExecutor {
             addCallback.add(statements, JDBCDriverType.PREPARED_STATEMENT.equals(prepareEngine.getType()) ? getParameterSets(each) : Collections.emptyList());
         }
         replayCallback.replay();
-        return regularExecutor.executeQuery(executionGroupContext, queryContext, getExecuteQueryCallback(database, queryContext, prepareEngine.getType()));
+        return executePushDownQuery(executionGroupContext, queryContext, getExecuteQueryCallback(database, queryContext, prepareEngine.getType()));
+    }
+    
+    private List<QueryResult> executePushDownQuery(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
+                                                   final QueryContext queryContext, final ExecuteQueryCallback callback) throws SQLException {
+        ProcessEngine processEngine = new ProcessEngine();
+        try {
+            processEngine.executeSQL(executionGroupContext, queryContext);
+            return jdbcExecutor.execute(executionGroupContext, callback);
+        } finally {
+            processEngine.completeSQLExecution(executionGroupContext.getReportContext().getProcessId());
+        }
     }
     
     private boolean hasRawExecutionRule(final ShardingSphereDatabase database) {
