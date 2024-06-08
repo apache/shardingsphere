@@ -23,6 +23,7 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
@@ -44,11 +46,16 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.update.Update
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -78,7 +85,7 @@ public final class DriverExecuteUpdateExecutor {
     
     private final ShardingSphereMetaData metaData;
     
-    private final DriverJDBCExecutor regularExecutor;
+    private final JDBCExecutor jdbcExecutor;
     
     private final RawExecutor rawExecutor;
     
@@ -179,7 +186,56 @@ public final class DriverExecuteUpdateExecutor {
         }
         replayCallback.replay();
         JDBCExecutorCallback<Integer> callback = createExecuteUpdateCallback(database, updateCallback, sqlStatementContext, prepareEngine.getType());
-        return regularExecutor.executeUpdate(executionGroupContext, executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), callback);
+        return useDriverToExecuteUpdate(database, executionGroupContext, executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), callback);
+    }
+    
+    private int useDriverToExecuteUpdate(final ShardingSphereDatabase database, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
+                                         final QueryContext queryContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
+        ProcessEngine processEngine = new ProcessEngine();
+        try {
+            processEngine.executeSQL(executionGroupContext, queryContext);
+            List<Integer> results = doExecute(database, executionGroupContext, queryContext, routeUnits, callback);
+            return isNeedAccumulate(database.getRuleMetaData().getRules(), queryContext.getSqlStatementContext()) ? accumulate(results) : results.get(0);
+        } finally {
+            processEngine.completeSQLExecution(executionGroupContext.getReportContext().getProcessId());
+        }
+    }
+    
+    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
+        if (!(sqlStatementContext instanceof TableAvailable)) {
+            return false;
+        }
+        for (ShardingSphereRule each : rules) {
+            Optional<DataNodeRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataNodeRuleAttribute.class);
+            if (ruleAttribute.isPresent() && ruleAttribute.get().isNeedAccumulate(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private int accumulate(final List<Integer> updateResults) {
+        int result = 0;
+        for (Integer each : updateResults) {
+            result += null == each ? 0 : each;
+        }
+        return result;
+    }
+    
+    private int accumulate(final Collection<ExecuteResult> results) {
+        int result = 0;
+        for (ExecuteResult each : results) {
+            result += ((UpdateResult) each).getUpdateCount();
+        }
+        return result;
+    }
+    
+    private <T> List<T> doExecute(final ShardingSphereDatabase database, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final QueryContext queryContext,
+                                  final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<T> callback) throws SQLException {
+        List<T> results = jdbcExecutor.execute(executionGroupContext, callback);
+        new MetaDataRefreshEngine(
+                connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database, metaData.getProps()).refresh(queryContext.getSqlStatementContext(), routeUnits);
+        return results;
     }
     
     private ExecutionGroupContext<JDBCExecutionUnit> createExecutionGroupContext(final ShardingSphereDatabase database, final ExecutionContext executionContext,
@@ -203,14 +259,6 @@ public final class DriverExecuteUpdateExecutor {
                 return Optional.empty();
             }
         };
-    }
-    
-    private int accumulate(final Collection<ExecuteResult> results) {
-        int result = 0;
-        for (ExecuteResult each : results) {
-            result += ((UpdateResult) each).getUpdateCount();
-        }
-        return result;
     }
     
     private boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final SQLStatement sqlStatement, final boolean multiExecutionUnits) {

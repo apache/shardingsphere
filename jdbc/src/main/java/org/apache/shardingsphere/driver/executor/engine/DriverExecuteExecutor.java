@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
@@ -46,12 +47,15 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -84,7 +88,7 @@ public final class DriverExecuteExecutor {
     
     private final ShardingSphereMetaData metaData;
     
-    private final DriverJDBCExecutor regularExecutor;
+    private final JDBCExecutor jdbcExecutor;
     
     private final RawExecutor rawExecutor;
     
@@ -213,7 +217,27 @@ public final class DriverExecuteExecutor {
         }
         replayCallback.replay();
         JDBCExecutorCallback<Boolean> jdbcExecutorCallback = createExecuteCallback(database, callback, executionContext.getSqlStatementContext().getSqlStatement(), prepareEngine.getType());
-        return regularExecutor.execute(executionGroupContext, executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), jdbcExecutorCallback);
+        return useDriverToExecute(database, executionGroupContext, executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), jdbcExecutorCallback);
+    }
+    
+    private boolean useDriverToExecute(final ShardingSphereDatabase database, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final QueryContext queryContext,
+                                       final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
+        ProcessEngine processEngine = new ProcessEngine();
+        try {
+            processEngine.executeSQL(executionGroupContext, queryContext);
+            List<Boolean> results = doExecute(database, executionGroupContext, queryContext, routeUnits, callback);
+            return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
+        } finally {
+            processEngine.completeSQLExecution(executionGroupContext.getReportContext().getProcessId());
+        }
+    }
+    
+    private <T> List<T> doExecute(final ShardingSphereDatabase database, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
+                                  final QueryContext queryContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<T> callback) throws SQLException {
+        List<T> results = jdbcExecutor.execute(executionGroupContext, callback);
+        new MetaDataRefreshEngine(
+                connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database, metaData.getProps()).refresh(queryContext.getSqlStatementContext(), routeUnits);
+        return results;
     }
     
     private JDBCExecutorCallback<Boolean> createExecuteCallback(final ShardingSphereDatabase database,
