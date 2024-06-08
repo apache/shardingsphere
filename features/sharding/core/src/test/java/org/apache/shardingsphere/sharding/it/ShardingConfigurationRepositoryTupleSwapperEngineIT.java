@@ -38,15 +38,15 @@ class ShardingConfigurationRepositoryTupleSwapperEngineIT extends RepositoryTupl
     protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(19));
         assertRepositoryTuple(actualRepositoryTuples.get(0),
-                "algorithms/core_standard_fixture", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("core_standard_fixture"));
+                "sharding_algorithms/core_standard_fixture", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("core_standard_fixture"));
         assertRepositoryTuple(actualRepositoryTuples.get(1),
-                "algorithms/core_complex_fixture", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("core_complex_fixture"));
+                "sharding_algorithms/core_complex_fixture", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("core_complex_fixture"));
         assertRepositoryTuple(actualRepositoryTuples.get(2),
-                "algorithms/core_hint_fixture", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("core_hint_fixture"));
+                "sharding_algorithms/core_hint_fixture", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("core_hint_fixture"));
         assertRepositoryTuple(actualRepositoryTuples.get(3),
-                "algorithms/database_inline", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("database_inline"));
+                "sharding_algorithms/database_inline", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("database_inline"));
         assertRepositoryTuple(actualRepositoryTuples.get(4),
-                "algorithms/table_inline", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("table_inline"));
+                "sharding_algorithms/table_inline", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("table_inline"));
         assertRepositoryTuple(actualRepositoryTuples.get(5), "key_generators/snowflake", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getKeyGenerators().get("snowflake"));
         assertRepositoryTuple(actualRepositoryTuples.get(6),
                 "auditors/sharding_key_required_auditor", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getAuditors().get("sharding_key_required_auditor"));

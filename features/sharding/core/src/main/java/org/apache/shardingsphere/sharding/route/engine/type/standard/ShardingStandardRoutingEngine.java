@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.hint.HintManager;
@@ -111,7 +112,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     }
     
     private boolean isRoutingBySQLHint() {
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
         for (String each : tableNames) {
             if (hintValueContext.containsHintShardingValue(each)) {
                 return true;
@@ -201,7 +202,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private List<ShardingConditionValue> getDatabaseShardingValuesFromSQLHint() {
         Collection<Comparable<?>> shardingValues = new LinkedList<>();
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
         for (String each : tableNames) {
             if (each.equals(logicTableName) && hintValueContext.containsHintShardingDatabaseValue(each)) {
                 shardingValues.addAll(hintValueContext.getHintShardingDatabaseValue(each));
@@ -219,7 +220,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private List<ShardingConditionValue> getTableShardingValuesFromSQLHint() {
         Collection<Comparable<?>> shardingValues = new LinkedList<>();
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
         for (String each : tableNames) {
             if (each.equals(logicTableName) && hintValueContext.containsHintShardingTableValue(each)) {
                 shardingValues.addAll(hintValueContext.getHintShardingTableValue(each));

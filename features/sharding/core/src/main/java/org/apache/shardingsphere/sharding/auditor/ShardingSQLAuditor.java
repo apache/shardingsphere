@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.auditor;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Sharding SQL auditor.
@@ -51,7 +53,10 @@ public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
     }
     
     private Collection<ShardingAuditStrategyConfiguration> getShardingAuditStrategies(final SQLStatementContext sqlStatementContext, final ShardingRule rule) {
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        if (!(sqlStatementContext instanceof TableAvailable)) {
+            return Collections.emptyList();
+        }
+        Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
         Collection<ShardingAuditStrategyConfiguration> result = new ArrayList<>(tableNames.size());
         for (String each : tableNames) {
             rule.findShardingTable(each).ifPresent(optional -> result.add(rule.getAuditStrategyConfiguration(optional)));

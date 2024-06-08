@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCallStatement;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,6 +44,5 @@ class CallStatementContextTest {
         CallStatementContext actual = new CallStatementContext(callStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(callStatement));
-        assertThat(actual.getTablesContext().getTableNames(), is(Collections.emptySet()));
     }
 }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchExe
 import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -78,7 +79,7 @@ class BatchPreparedStatementExecutorTest {
     
     private BatchPreparedStatementExecutor executor;
     
-    @Mock
+    @Mock(extraInterfaces = TableAvailable.class)
     private SQLStatementContext sqlStatementContext;
     
     @BeforeEach
@@ -86,7 +87,7 @@ class BatchPreparedStatementExecutorTest {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
         String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
         executor = new BatchPreparedStatementExecutor(mockDatabase(), new JDBCExecutor(executorEngine, mock(ConnectionContext.class, RETURNS_DEEP_STUBS)), processId);
-        when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
+        when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(mock(TablesContext.class));
     }
     
     private ShardingSphereDatabase mockDatabase() {

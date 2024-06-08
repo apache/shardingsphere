@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -165,9 +166,9 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     }
     
     private ShardingSphereSchema getSchema(final SQLStatementContext sqlStatementContext) {
-        String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElseGet(connectionSession::getDefaultDatabaseName);
+        String databaseName = ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElseGet(connectionSession::getDefaultDatabaseName);
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
-        return sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema)
+        return ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().map(database::getSchema)
                 .orElseGet(() -> database.getSchema(new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName())));
     }
     

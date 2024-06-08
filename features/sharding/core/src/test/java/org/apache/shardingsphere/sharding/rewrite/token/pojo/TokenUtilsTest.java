@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -33,6 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 class TokenUtilsTest {
     
@@ -48,8 +50,8 @@ class TokenUtilsTest {
     }
     
     private static SQLStatementContext mockSQLStatementContext() {
-        SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getTablesContext().getTableNames()).thenReturn(Arrays.asList("foo_table", "bar_table"));
+        SQLStatementContext result = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
+        when(((TableAvailable) result).getTablesContext().getTableNames()).thenReturn(Arrays.asList("foo_table", "bar_table"));
         return result;
     }
     

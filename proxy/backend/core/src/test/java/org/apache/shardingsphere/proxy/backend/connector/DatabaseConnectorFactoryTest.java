@@ -58,7 +58,6 @@ class DatabaseConnectorFactoryTest {
         when(databaseConnectionManager.getConnectionSession().getDatabaseName()).thenReturn("foo_db");
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
-        when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         QueryContext queryContext = new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext());
         ShardingSphereDatabase database = mockDatabase();
         ContextManager contextManager = mockContextManager(database);
@@ -73,7 +72,6 @@ class DatabaseConnectorFactoryTest {
         when(databaseConnectionManager.getConnectionSession().getDatabaseName()).thenReturn("foo_db");
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
-        when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         ShardingSphereDatabase database = mockDatabase();
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
