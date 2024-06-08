@@ -49,17 +49,18 @@ public final class DriverJDBCExecutor {
     
     private final ShardingSphereMetaData metaData;
     
-    private final MetaDataManagerPersistService metaDataManagerPersistService;
+    private final MetaDataManagerPersistService persistService;
     
     private final JDBCExecutor jdbcExecutor;
     
-    private final ProcessEngine processEngine = new ProcessEngine();
+    private final ProcessEngine processEngine;
     
     public DriverJDBCExecutor(final String databaseName, final ContextManager contextManager, final JDBCExecutor jdbcExecutor) {
         this.databaseName = databaseName;
-        this.jdbcExecutor = jdbcExecutor;
         metaData = contextManager.getMetaDataContexts().getMetaData();
-        metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        persistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        this.jdbcExecutor = jdbcExecutor;
+        processEngine = new ProcessEngine();
     }
     
     /**
@@ -149,7 +150,7 @@ public final class DriverJDBCExecutor {
     private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final QueryContext queryContext, final Collection<RouteUnit> routeUnits,
                                   final JDBCExecutorCallback<T> callback) throws SQLException {
         List<T> results = jdbcExecutor.execute(executionGroupContext, callback);
-        new MetaDataRefreshEngine(metaDataManagerPersistService,
+        new MetaDataRefreshEngine(persistService,
                 metaData.getDatabase(queryContext.getDatabaseNameFromSQLStatement().orElse(databaseName)), metaData.getProps()).refresh(queryContext.getSqlStatementContext(), routeUnits);
         return results;
     }
