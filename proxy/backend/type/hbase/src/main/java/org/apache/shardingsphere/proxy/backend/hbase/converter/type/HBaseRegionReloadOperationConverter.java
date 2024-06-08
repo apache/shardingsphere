@@ -19,11 +19,13 @@ package org.apache.shardingsphere.proxy.backend.hbase.converter.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverter;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseRegionReloadOperation;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -36,7 +38,9 @@ public final class HBaseRegionReloadOperationConverter implements HBaseOperation
     
     @Override
     public HBaseOperation convert() {
-        List<String> tables = sqlStatementContext.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
+        Collection<String> tables = sqlStatementContext instanceof TableAvailable
+                ? ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
+                : Collections.emptyList();
         return new HBaseOperation(String.join(",", tables), new HBaseRegionReloadOperation());
     }
 }

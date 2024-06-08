@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dal;
 
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -53,6 +54,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 class ShardingDALResultMergerTest {
     
@@ -134,10 +136,10 @@ class ShardingDALResultMergerTest {
     }
     
     private SQLStatementContext mockSQLStatementContext(final DALStatement dalStatement) {
-        SQLStatementContext result = mock(SQLStatementContext.class);
+        SQLStatementContext result = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
         when(result.getSqlStatement()).thenReturn(dalStatement);
         TablesContext tablesContext = mock(TablesContext.class);
-        when(result.getTablesContext()).thenReturn(tablesContext);
+        when(((TableAvailable) result).getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.getSchemaName()).thenReturn(Optional.empty());
         when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         return result;

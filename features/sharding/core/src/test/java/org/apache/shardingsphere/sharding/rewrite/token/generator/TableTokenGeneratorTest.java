@@ -56,7 +56,7 @@ class TableTokenGeneratorTest {
         when(shardingRule.getShardingLogicTableNames(logicTableNames)).thenReturn(logicTableNames);
         when(shardingRule.isAllBindingTables(logicTableNames)).thenReturn(true);
         generator.setShardingRule(shardingRule);
-        SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(logicTableNames);
         assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
     }

@@ -349,8 +349,8 @@ public final class ShardingRule implements DatabaseRule {
             return false;
         }
         String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
-        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
+        ShardingSphereSchema schema = select.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
         return isJoinConditionContainsShardingColumns(schema, select, logicTableNames, select.getWhereSegments());
     }
     

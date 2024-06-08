@@ -113,7 +113,7 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
             routeToAllDatabaseInstance(routeContext, database, broadcastRule);
         }
         // TODO END extract db route logic to common database router, eg: DCL in instance route
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? getTableNames((TableAvailable) sqlStatementContext) : sqlStatementContext.getTablesContext().getTableNames();
+        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? getTableNames((TableAvailable) sqlStatementContext) : Collections.emptyList();
         if (broadcastRule.isAllBroadcastTables(tableNames)) {
             routeToAllDatabaseInstance(routeContext, database, broadcastRule);
         }
@@ -129,7 +129,7 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
     }
     
     private void putAllBroadcastTables(final RouteContext routeContext, final BroadcastRule broadcastRule, final SQLStatementContext sqlStatementContext) {
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
         for (String each : broadcastRule.getBroadcastRuleTableNames(tableNames)) {
             for (RouteUnit routeUnit : routeContext.getRouteUnits()) {
                 routeUnit.getTableMappers().add(new RouteMapper(each, each));
