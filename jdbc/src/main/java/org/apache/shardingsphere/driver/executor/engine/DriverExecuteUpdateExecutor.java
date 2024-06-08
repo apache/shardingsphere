@@ -189,7 +189,7 @@ public final class DriverExecuteUpdateExecutor {
         return useDriverToExecuteUpdate(database, executionGroupContext, executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), callback);
     }
     
-    public int useDriverToExecuteUpdate(final ShardingSphereDatabase database, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
+    private int useDriverToExecuteUpdate(final ShardingSphereDatabase database, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                                         final QueryContext queryContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
         ProcessEngine processEngine = new ProcessEngine();
         try {
@@ -218,6 +218,14 @@ public final class DriverExecuteUpdateExecutor {
         int result = 0;
         for (Integer each : updateResults) {
             result += null == each ? 0 : each;
+        }
+        return result;
+    }
+    
+    private int accumulate(final Collection<ExecuteResult> results) {
+        int result = 0;
+        for (ExecuteResult each : results) {
+            result += ((UpdateResult) each).getUpdateCount();
         }
         return result;
     }
@@ -251,14 +259,6 @@ public final class DriverExecuteUpdateExecutor {
                 return Optional.empty();
             }
         };
-    }
-    
-    private int accumulate(final Collection<ExecuteResult> results) {
-        int result = 0;
-        for (ExecuteResult each : results) {
-            result += ((UpdateResult) each).getUpdateCount();
-        }
-        return result;
     }
     
     private boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final SQLStatement sqlStatement, final boolean multiExecutionUnits) {

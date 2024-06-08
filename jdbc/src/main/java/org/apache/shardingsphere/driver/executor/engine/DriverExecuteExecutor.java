@@ -220,7 +220,7 @@ public final class DriverExecuteExecutor {
         return useDriverToExecute(database, executionGroupContext, executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), jdbcExecutorCallback);
     }
     
-    public boolean useDriverToExecute(final ShardingSphereDatabase database, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final QueryContext queryContext,
+    private boolean useDriverToExecute(final ShardingSphereDatabase database, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final QueryContext queryContext,
                                       final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
         ProcessEngine processEngine = new ProcessEngine();
         try {
