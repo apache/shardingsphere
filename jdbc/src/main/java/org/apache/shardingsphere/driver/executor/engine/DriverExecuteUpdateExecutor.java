@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.driver.executor.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
+import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -106,11 +106,13 @@ public final class DriverExecuteUpdateExecutor {
     @SuppressWarnings("rawtypes")
     public int executeUpdate(final ShardingSphereDatabase database, final QueryContext queryContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                              final StatementExecuteUpdateCallback updateCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
+        SQLAuditEngine.audit(queryContext, metaData.getGlobalRuleMetaData(), database);
         Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
         if (trafficInstanceId.isPresent()) {
             return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, updateCallback::executeUpdate);
         }
-        ExecutionContext executionContext = createExecutionContext(database, queryContext);
+        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(
+                queryContext, database, metaData.getGlobalRuleMetaData(), metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
         return hasRawExecutionRule(database)
                 ? accumulate(rawExecutor.execute(createRawExecutionGroupContext(database, executionContext), queryContext, new RawSQLExecutorCallback()))
                 : executeUpdate(database, updateCallback, queryContext.getSqlStatementContext(), executionContext, prepareEngine, isNeedImplicitCommitTransaction(
@@ -145,12 +147,6 @@ public final class DriverExecuteUpdateExecutor {
             result.add(each.getExecutionUnit().getSqlUnit().getParameters());
         }
         return result;
-    }
-    
-    private ExecutionContext createExecutionContext(final ShardingSphereDatabase database, final QueryContext queryContext) {
-        SQLAuditEngine.audit(queryContext, metaData.getGlobalRuleMetaData(), database);
-        return new KernelProcessor().generateExecutionContext(
-                queryContext, database, metaData.getGlobalRuleMetaData(), metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
     }
     
     private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionGroupContext(final ShardingSphereDatabase database, final ExecutionContext executionContext) throws SQLException {
