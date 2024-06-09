@@ -93,6 +93,19 @@ public final class DriverPushDownExecuteQueryExecutor {
         statements = new LinkedList<>();
     }
     
+    /**
+     * Execute query.
+     * 
+     * @param database database
+     * @param queryContext query context
+     * @param prepareEngine prepare engine
+     * @param statement statement
+     * @param columnLabelAndIndexMap column label and index map
+     * @param addCallback statement add callback
+     * @param replayCallback statement replay callback
+     * @return result set
+     * @throws SQLException SQL exception
+     */
     @SuppressWarnings("rawtypes")
     public ShardingSphereResultSet executeQuery(final ShardingSphereDatabase database, final QueryContext queryContext,
                                                 final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement,
