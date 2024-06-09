@@ -9419,4 +9419,60 @@
             <simple-table name="pg_index" start-index="66" stop-index="73"/>
         </from>
     </select>
+
+    <select sql-case-id="select_with_index_hints1">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t1" start-index="14" stop-index="15">
+                <index-hint origin-text="USE INDEX (i1)" start-index="17" stop-index="30">
+                    <hint-index-name name="i1" start-index="28" stop-index="29"/>
+                </index-hint>
+                <index-hint origin-text="IGNORE INDEX (i2)" start-index="32" stop-index="48">
+                    <hint-index-name name="i2" start-index="46" stop-index="47"/>
+                </index-hint>
+                <index-hint origin-text="USE INDEX (i2)" start-index="50" stop-index="63">
+                    <hint-index-name name="i2" start-index="61" stop-index="62"/>
+                </index-hint>
+            </simple-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_index_hints2">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t1" start-index="14" stop-index="15">
+                <index-hint origin-text="USE INDEX ()" start-index="17" stop-index="28"/>
+                <index-hint origin-text="IGNORE INDEX (i2)" start-index="30" stop-index="46">
+                    <hint-index-name name="i2" start-index="44" stop-index="45"/>
+                </index-hint>
+                <index-hint origin-text="USE INDEX (i1)" start-index="48" stop-index="61">
+                    <hint-index-name name="i1" start-index="59" stop-index="60"/>
+                </index-hint>
+                <index-hint origin-text="USE INDEX (i2)" start-index="63" stop-index="66">
+                    <hint-index-name name="i2" start-index="74" stop-index="75"/>
+                </index-hint>
+            </simple-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_index_hints3">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t1" start-index="14" stop-index="15">
+                <index-hint origin-text="USE INDEX (i1,i2)" start-index="17" stop-index="33">
+                    <hint-index-name name="i1" start-index="28" stop-index="29"/>
+                    <hint-index-name name="i2" start-index="31" stop-index="32"/>
+                </index-hint>
+                <index-hint origin-text="IGNORE INDEX (i2)" start-index="35" stop-index="51">
+                    <hint-index-name name="i2" start-index="49" stop-index="50"/>
+                </index-hint>
+            </simple-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
