@@ -165,7 +165,10 @@ public final class DriverExecuteQueryExecutor {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private List<QueryResult> getJDBCQueryResults(final ShardingSphereDatabase database, final QueryContext queryContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback, final ExecutionContext executionContext) throws SQLException {
+    private List<QueryResult> getJDBCQueryResults(final ShardingSphereDatabase database, final QueryContext queryContext,
+                                                  final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                                                  final StatementAddCallback addCallback, final StatementReplayCallback replayCallback,
+                                                  final ExecutionContext executionContext) throws SQLException {
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(),
                 new ExecutionGroupReportContext(connection.getProcessId(), database.getName(), new Grantee("", "")));
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
