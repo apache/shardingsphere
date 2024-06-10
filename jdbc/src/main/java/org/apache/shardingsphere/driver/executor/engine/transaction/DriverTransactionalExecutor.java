@@ -56,7 +56,7 @@ public final class DriverTransactionalExecutor {
         return isImplicitCommitTransaction ? executeWithImplicitCommit(database, callback) : callback.execute();
     }
     
-    private  <T> T executeWithImplicitCommit(final ShardingSphereDatabase database, final ImplicitTransactionCallback<T> callback) throws SQLException {
+    private <T> T executeWithImplicitCommit(final ShardingSphereDatabase database, final ImplicitTransactionCallback<T> callback) throws SQLException {
         try {
             connection.setAutoCommit(false);
             T result = callback.execute();
