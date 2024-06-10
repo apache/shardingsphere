@@ -55,13 +55,10 @@ import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttrib
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.implicit.ImplicitTransactionCallback;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
@@ -128,9 +125,10 @@ public final class DriverExecuteExecutor {
             Collection<ExecuteResult> results = rawExecutor.execute(createRawExecutionGroupContext(database, executionContext), queryContext, new RawSQLExecutorCallback());
             return results.iterator().next() instanceof QueryResult;
         }
-        boolean isNeedImplicitCommitTransaction = isNeedImplicitCommitTransaction(
-                connection, queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1);
-        return executeWithExecutionContext(database, executeCallback, executionContext, prepareEngine, isNeedImplicitCommitTransaction, addCallback, replayCallback);
+        boolean isImplicitCommitTransaction = metaData.getGlobalRuleMetaData().getSingleRule(TransactionRule.class).isImplicitCommitTransaction(
+                executionContext.getSqlStatementContext().getSqlStatement(),
+                connection.getDatabaseConnectionManager().getConnectionTransaction(), connection.getAutoCommit(), executionContext.getExecutionUnits().size() > 1);
+        return executeWithExecutionContext(database, executeCallback, executionContext, prepareEngine, isImplicitCommitTransaction, addCallback, replayCallback);
     }
     
     private ExecuteQueryCallback getExecuteQueryCallback(final ShardingSphereDatabase database, final QueryContext queryContext, final String jdbcDriverType) {
@@ -248,22 +246,6 @@ public final class DriverExecuteExecutor {
                 return Optional.empty();
             }
         };
-    }
-    
-    private boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final SQLStatement sqlStatement, final boolean multiExecutionUnits) {
-        if (!connection.getAutoCommit()) {
-            return false;
-        }
-        TransactionType transactionType = connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
-        boolean isInTransaction = connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction();
-        if (!TransactionType.isDistributedTransaction(transactionType) || isInTransaction) {
-            return false;
-        }
-        return isWriteDMLStatement(sqlStatement) && multiExecutionUnits;
-    }
-    
-    private boolean isWriteDMLStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement);
     }
     
     /**
