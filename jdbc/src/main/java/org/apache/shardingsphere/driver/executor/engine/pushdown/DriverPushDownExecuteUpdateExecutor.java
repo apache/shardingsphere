@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallba
 import org.apache.shardingsphere.driver.executor.callback.execute.ExecuteUpdateCallbackFactory;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
-import org.apache.shardingsphere.driver.executor.engine.transaction.DriverImplicitCommitTransactionalExecutor;
+import org.apache.shardingsphere.driver.executor.engine.transaction.DriverTransactionalExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
@@ -45,13 +45,11 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrep
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -71,8 +69,6 @@ public final class DriverPushDownExecuteUpdateExecutor {
     
     private final String processId;
     
-    private final RuleMetaData globalRuleMetaData;
-    
     private final ConfigurationProperties props;
     
     private final Grantee grantee;
@@ -85,7 +81,6 @@ public final class DriverPushDownExecuteUpdateExecutor {
                                                final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor) {
         this.connection = connection;
         processId = connection.getProcessId();
-        globalRuleMetaData = metaData.getGlobalRuleMetaData();
         props = metaData.getProps();
         this.grantee = grantee;
         this.jdbcExecutor = jdbcExecutor;
@@ -115,12 +110,8 @@ public final class DriverPushDownExecuteUpdateExecutor {
     @SuppressWarnings("rawtypes")
     private int executeJDBCUpdate(final ShardingSphereDatabase database, final ExecutionContext executionContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final StatementExecuteUpdateCallback updateCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
-        boolean isImplicitCommitTransaction = globalRuleMetaData.getSingleRule(TransactionRule.class).isImplicitCommitTransaction(
-                executionContext, connection.getDatabaseConnectionManager().getConnectionTransaction(), connection.getAutoCommit());
-        return isImplicitCommitTransaction
-                ? new DriverImplicitCommitTransactionalExecutor(connection).execute(
-                        database, () -> doExecuteJDBCUpdate(database, executionContext, prepareEngine, updateCallback, addCallback, replayCallback))
-                : doExecuteJDBCUpdate(database, executionContext, prepareEngine, updateCallback, addCallback, replayCallback);
+        return new DriverTransactionalExecutor(connection).execute(
+                database, executionContext, () -> doExecuteJDBCUpdate(database, executionContext, prepareEngine, updateCallback, addCallback, replayCallback));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
