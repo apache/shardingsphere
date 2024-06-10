@@ -81,7 +81,7 @@ public final class DriverExecutorFacade implements AutoCloseable {
         sqlFederationEngine = new SQLFederationEngine(connection.getDatabaseName(), schemaName, metaData, connection.getContextManager().getMetaDataContexts().getStatistics(), jdbcExecutor);
         queryExecutor = new DriverExecuteQueryExecutor(connection, metaData, grantee, jdbcExecutor, rawExecutor, trafficExecutor, sqlFederationEngine);
         updateExecutor = new DriverExecuteUpdateExecutor(connection, metaData, grantee, jdbcExecutor, rawExecutor, trafficExecutor);
-        executeExecutor = new DriverExecuteExecutor(connection, metaData, jdbcExecutor, rawExecutor, trafficExecutor, sqlFederationEngine);
+        executeExecutor = new DriverExecuteExecutor(connection, metaData, grantee, jdbcExecutor, rawExecutor, trafficExecutor, sqlFederationEngine);
     }
     
     /**
