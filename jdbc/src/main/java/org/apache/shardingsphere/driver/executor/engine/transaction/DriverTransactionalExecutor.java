@@ -17,32 +17,46 @@
 
 package org.apache.shardingsphere.driver.executor.engine.transaction;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.transaction.implicit.ImplicitTransactionCallback;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.SQLException;
 
 /**
- * Driver implicit commit transactional executor.
+ * Driver transactional executor.
  */
-@RequiredArgsConstructor
-public final class DriverImplicitCommitTransactionalExecutor {
+public final class DriverTransactionalExecutor {
     
     private final ShardingSphereConnection connection;
     
+    private final TransactionRule transactionRule;
+    
+    public DriverTransactionalExecutor(final ShardingSphereConnection connection) {
+        this.connection = connection;
+        transactionRule = connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+    }
+    
     /**
      * Execute.
-     * 
+     *
      * @param database database
+     * @param executionContext execution context
      * @param callback implicit transaction callback
      * @param <T> type of return value
      * @return execution result
      * @throws SQLException SQL exception
      */
-    public <T> T execute(final ShardingSphereDatabase database, final ImplicitTransactionCallback<T> callback) throws SQLException {
+    public <T> T execute(final ShardingSphereDatabase database, final ExecutionContext executionContext, final ImplicitTransactionCallback<T> callback) throws SQLException {
+        boolean isImplicitCommitTransaction = transactionRule.isImplicitCommitTransaction(
+                executionContext, connection.getDatabaseConnectionManager().getConnectionTransaction(), connection.getAutoCommit());
+        return isImplicitCommitTransaction ? executeWithImplicitCommit(database, callback) : callback.execute();
+    }
+    
+    private <T> T executeWithImplicitCommit(final ShardingSphereDatabase database, final ImplicitTransactionCallback<T> callback) throws SQLException {
         try {
             connection.setAutoCommit(false);
             T result = callback.execute();
