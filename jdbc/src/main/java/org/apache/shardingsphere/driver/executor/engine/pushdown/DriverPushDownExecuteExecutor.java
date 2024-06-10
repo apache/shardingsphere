@@ -107,8 +107,8 @@ public final class DriverPushDownExecuteExecutor {
     @SuppressWarnings("rawtypes")
     private boolean executeJDBC(final ShardingSphereDatabase database, final ExecutionContext executionContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                 final StatementExecuteCallback executeCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
-        boolean isImplicitCommitTransaction = globalRuleMetaData.getSingleRule(TransactionRule.class).isImplicitCommitTransaction(executionContext.getSqlStatementContext().getSqlStatement(),
-                connection.getDatabaseConnectionManager().getConnectionTransaction(), connection.getAutoCommit(), executionContext.getExecutionUnits().size() > 1);
+        boolean isImplicitCommitTransaction = globalRuleMetaData.getSingleRule(TransactionRule.class).isImplicitCommitTransaction(
+                executionContext, connection.getDatabaseConnectionManager().getConnectionTransaction(), connection.getAutoCommit());
         return isImplicitCommitTransaction
                 ? executeWithImplicitCommitTransaction(
                         () -> doExecuteJDBC(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback), connection, database.getProtocolType())
