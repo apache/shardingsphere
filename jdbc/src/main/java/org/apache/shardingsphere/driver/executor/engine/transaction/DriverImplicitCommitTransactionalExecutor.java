@@ -38,8 +38,8 @@ public final class DriverImplicitCommitTransactionalExecutor {
      * 
      * @param database database
      * @param callback implicit transaction callback
-     * @return execution result
      * @param <T> type of return value
+     * @return execution result
      * @throws SQLException SQL exception
      */
     public <T> T execute(final ShardingSphereDatabase database, final ImplicitTransactionCallback<T> callback) throws SQLException {
