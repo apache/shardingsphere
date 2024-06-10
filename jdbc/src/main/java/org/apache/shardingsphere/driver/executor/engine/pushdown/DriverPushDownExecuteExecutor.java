@@ -21,11 +21,10 @@ import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallba
 import org.apache.shardingsphere.driver.executor.callback.execute.ExecuteCallbackFactory;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
+import org.apache.shardingsphere.driver.executor.engine.transaction.DriverImplicitCommitTransactionalExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
@@ -46,7 +45,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine;
-import org.apache.shardingsphere.transaction.implicit.ImplicitTransactionCallback;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.Connection;
@@ -110,8 +108,8 @@ public final class DriverPushDownExecuteExecutor {
         boolean isImplicitCommitTransaction = globalRuleMetaData.getSingleRule(TransactionRule.class).isImplicitCommitTransaction(
                 executionContext, connection.getDatabaseConnectionManager().getConnectionTransaction(), connection.getAutoCommit());
         return isImplicitCommitTransaction
-                ? executeWithImplicitCommitTransaction(
-                        () -> doExecuteJDBC(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback), connection, database.getProtocolType())
+                ? new DriverImplicitCommitTransactionalExecutor(connection).execute(
+                        database, () -> doExecuteJDBC(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback))
                 : doExecuteJDBC(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback);
     }
     
@@ -149,23 +147,6 @@ public final class DriverPushDownExecuteExecutor {
         Collection<List<Object>> result = new LinkedList<>();
         for (JDBCExecutionUnit each : executionGroup.getInputs()) {
             result.add(each.getExecutionUnit().getSqlUnit().getParameters());
-        }
-        return result;
-    }
-    
-    private <T> T executeWithImplicitCommitTransaction(final ImplicitTransactionCallback<T> callback, final Connection connection, final DatabaseType databaseType) throws SQLException {
-        T result;
-        try {
-            connection.setAutoCommit(false);
-            result = callback.execute();
-            connection.commit();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            connection.rollback();
-            throw SQLExceptionTransformEngine.toSQLException(ex, databaseType);
-        } finally {
-            connection.setAutoCommit(true);
         }
         return result;
     }
