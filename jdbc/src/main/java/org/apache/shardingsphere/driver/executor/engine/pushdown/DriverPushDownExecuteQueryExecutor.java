@@ -72,17 +72,21 @@ public final class DriverPushDownExecuteQueryExecutor {
     
     private final ConfigurationProperties props;
     
+    private final Grantee grantee;
+    
     private final JDBCExecutor jdbcExecutor;
     
     private final RawExecutor rawExecutor;
     
     private final Collection<Statement> statements;
     
-    public DriverPushDownExecuteQueryExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor) {
+    public DriverPushDownExecuteQueryExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final Grantee grantee,
+                                              final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor) {
         connectionContext = connection.getDatabaseConnectionManager().getConnectionContext();
         processId = connection.getProcessId();
         globalRuleMetaData = metaData.getGlobalRuleMetaData();
         props = metaData.getProps();
+        this.grantee = grantee;
         this.jdbcExecutor = jdbcExecutor;
         this.rawExecutor = rawExecutor;
         statements = new LinkedList<>();
@@ -129,7 +133,7 @@ public final class DriverPushDownExecuteQueryExecutor {
                                                   final StatementAddCallback addCallback, final StatementReplayCallback replayCallback,
                                                   final ExecutionContext executionContext) throws SQLException {
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(),
-                new ExecutionGroupReportContext(processId, database.getName(), new Grantee("", "")));
+                new ExecutionGroupReportContext(processId, database.getName(), grantee));
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
             Collection<Statement> statements = getStatements(each);
             this.statements.addAll(statements);
@@ -169,6 +173,6 @@ public final class DriverPushDownExecuteQueryExecutor {
     private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionGroupContext(final ShardingSphereDatabase database, final ExecutionContext executionContext) throws SQLException {
         int maxConnectionsSizePerQuery = props.<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, database.getRuleMetaData().getRules()).prepare(
-                executionContext.getRouteContext(), executionContext.getExecutionUnits(), new ExecutionGroupReportContext(processId, database.getName(), new Grantee("", "")));
+                executionContext.getRouteContext(), executionContext.getExecutionUnits(), new ExecutionGroupReportContext(processId, database.getName(), grantee));
     }
 }
