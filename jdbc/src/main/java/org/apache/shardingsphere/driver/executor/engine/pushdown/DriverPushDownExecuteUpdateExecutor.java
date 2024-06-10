@@ -123,7 +123,6 @@ public final class DriverPushDownExecuteUpdateExecutor {
                 : doExecuteJDBCUpdate(database, executionContext, prepareEngine, updateCallback, addCallback, replayCallback);
     }
     
-    
     @SuppressWarnings({"rawtypes", "unchecked"})
     private int doExecuteJDBCUpdate(final ShardingSphereDatabase database, final ExecutionContext executionContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                     final StatementExecuteUpdateCallback updateCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {

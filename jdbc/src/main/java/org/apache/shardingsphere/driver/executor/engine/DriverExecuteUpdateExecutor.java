@@ -54,7 +54,7 @@ public final class DriverExecuteUpdateExecutor {
     private final TrafficExecutor trafficExecutor;
     
     public DriverExecuteUpdateExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor,
-                                      final TrafficExecutor trafficExecutor) {
+                                       final TrafficExecutor trafficExecutor) {
         this.connection = connection;
         this.metaData = metaData;
         pushDownExecuteUpdateExecutor = new DriverPushDownExecuteUpdateExecutor(connection, metaData, jdbcExecutor, rawExecutor);
