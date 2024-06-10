@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
@@ -68,7 +69,7 @@ public final class DriverExecutorFacade implements AutoCloseable {
     private final DriverExecuteExecutor executeExecutor;
     
     public DriverExecutorFacade(final ShardingSphereConnection connection, final StatementOption statementOption, final StatementManager statementManager,
-                                final JDBCExecutor jdbcExecutor, final String jdbcDriverType) {
+                                final JDBCExecutor jdbcExecutor, final String jdbcDriverType, final Grantee grantee) {
         this.connection = connection;
         this.statementOption = statementOption;
         this.statementManager = statementManager;
@@ -78,8 +79,8 @@ public final class DriverExecutorFacade implements AutoCloseable {
         ShardingSphereMetaData metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
         String schemaName = new DatabaseTypeRegistry(metaData.getDatabase(connection.getDatabaseName()).getProtocolType()).getDefaultSchemaName(connection.getDatabaseName());
         sqlFederationEngine = new SQLFederationEngine(connection.getDatabaseName(), schemaName, metaData, connection.getContextManager().getMetaDataContexts().getStatistics(), jdbcExecutor);
-        queryExecutor = new DriverExecuteQueryExecutor(connection, metaData, jdbcExecutor, rawExecutor, trafficExecutor, sqlFederationEngine);
-        updateExecutor = new DriverExecuteUpdateExecutor(connection, metaData, jdbcExecutor, rawExecutor, trafficExecutor);
+        queryExecutor = new DriverExecuteQueryExecutor(connection, metaData, grantee, jdbcExecutor, rawExecutor, trafficExecutor, sqlFederationEngine);
+        updateExecutor = new DriverExecuteUpdateExecutor(connection, metaData, grantee, jdbcExecutor, rawExecutor, trafficExecutor);
         executeExecutor = new DriverExecuteExecutor(connection, metaData, jdbcExecutor, rawExecutor, trafficExecutor, sqlFederationEngine);
     }
     
