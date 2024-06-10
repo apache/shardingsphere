@@ -96,7 +96,11 @@ public final class TransactionRule implements GlobalRule, AutoCloseable {
     /**
      * Judge whether to implicit commit transaction.
      * 
-     * @return need implicit commit transaction or not
+     * @param sqlStatement SQL statement
+     * @param connectionTransaction connection transaction
+     * @param isAutoCommit is auto commit
+     * @param multiExecutionUnits is multi execution units
+     * @return is implicit commit transaction or not
      */
     public boolean isImplicitCommitTransaction(final SQLStatement sqlStatement, final ConnectionTransaction connectionTransaction, final boolean isAutoCommit, final boolean multiExecutionUnits) {
         if (!isAutoCommit) {
