@@ -60,7 +60,7 @@ public final class DriverExecuteExecutor {
     
     private final SQLFederationEngine sqlFederationEngine;
     
-    private ExecuteType executeType = ExecuteType.REGULAR;
+    private ExecuteType executeType = ExecuteType.PUSH_DOWN;
     
     public DriverExecuteExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final Grantee grantee,
                                  final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor,
@@ -125,6 +125,6 @@ public final class DriverExecuteExecutor {
         
         FEDERATION,
         
-        REGULAR
+        PUSH_DOWN
     }
 }
