@@ -125,7 +125,16 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(getDatabaseType()).createProjectionsContext(getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine(getDatabaseType()).createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
-        containsEnhancedTable = tablesContext.getDatabaseNames().stream().anyMatch(each -> isContainsEnhancedTable(metaData, each, getTablesContext().getTableNames()));
+        containsEnhancedTable = isContainsEnhancedTable(metaData, tablesContext.getDatabaseNames(), defaultDatabaseName);
+    }
+    
+    private boolean isContainsEnhancedTable(final ShardingSphereMetaData metaData, final Collection<String> databaseNames, final String defaultDatabaseName) {
+        for (String each : databaseNames) {
+            if (isContainsEnhancedTable(metaData, each, getTablesContext().getTableNames())) {
+                return true;
+            }
+        }
+        return isContainsEnhancedTable(metaData, defaultDatabaseName, getTablesContext().getTableNames());
     }
     
     private boolean isContainsEnhancedTable(final ShardingSphereMetaData metaData, final String databaseName, final Collection<String> tableNames) {
