@@ -31,13 +31,13 @@ import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.MetaDataChangedListener;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.MetaDataWatchListenerManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.MetaDataChangedListener;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.subscriber.internal.QualifiedDataSourceStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator.ClusterWorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.ClusterEventSubscriberRegistry;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.InternalEventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.cluster.exception.MissingRequiredClusterRepositoryConfigurationException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
@@ -64,7 +64,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, computeNodeInstanceContext,
                 new QualifiedDataSourceStatePersistService(repository).loadStates());
         ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
-        createSubscribers(eventBusContext, repository);
         registerOnline(eventBusContext, computeNodeInstanceContext, repository, param, result);
         return result;
     }
@@ -81,17 +80,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                 new GlobalLockContext(new GlobalLockPersistService(repository)), eventBusContext);
     }
     
-    // TODO remove the method, only keep ZooKeeper's events, remove all decouple events
-    private void createSubscribers(final EventBusContext eventBusContext, final ClusterPersistRepository repository) {
-        eventBusContext.register(new QualifiedDataSourceStatusSubscriber(repository));
-    }
-    
     private void registerOnline(final EventBusContext eventBusContext, final ComputeNodeInstanceContext computeNodeInstanceContext,
                                 final ClusterPersistRepository repository, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
         contextManager.getPersistServiceFacade().getComputeNodePersistService().registerOnline(computeNodeInstanceContext.getInstance());
         new GovernanceWatcherFactory(repository, eventBusContext).watchListeners();
         watchDatabaseMetaDataListener(param, contextManager.getPersistServiceFacade().getMetaDataPersistService(), eventBusContext);
         contextManager.getComputeNodeInstanceContext().getAllClusterInstances().addAll(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllComputeNodeInstances());
+        new InternalEventSubscriberRegistry(contextManager, repository).register();
         new ClusterEventSubscriberRegistry(contextManager, repository).register();
     }
     
