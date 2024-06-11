@@ -18,6 +18,7 @@
 foo_ds:
   password: root
   closed: false
+  driverClassName: com.mysql.cj.jdbc.Driver
   dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
   connectionInitSqls:
 # No spaces after conversion
