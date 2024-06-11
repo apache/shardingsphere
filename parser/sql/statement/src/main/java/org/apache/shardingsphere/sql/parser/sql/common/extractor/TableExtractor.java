@@ -88,23 +88,15 @@ public final class TableExtractor {
         if (selectStatement.getFrom().isPresent() && !selectStatement.getCombine().isPresent()) {
             extractTablesFromTableSegment(selectStatement.getFrom().get());
         }
-        if (selectStatement.getWhere().isPresent()) {
-            extractTablesFromExpression(selectStatement.getWhere().get().getExpr());
-        }
+        selectStatement.getWhere().ifPresent(optional -> extractTablesFromExpression(optional.getExpr()));
         if (null != selectStatement.getProjections() && !selectStatement.getCombine().isPresent()) {
             extractTablesFromProjections(selectStatement.getProjections());
         }
-        if (selectStatement.getGroupBy().isPresent()) {
-            extractTablesFromOrderByItems(selectStatement.getGroupBy().get().getGroupByItems());
-        }
-        if (selectStatement.getOrderBy().isPresent()) {
-            extractTablesFromOrderByItems(selectStatement.getOrderBy().get().getOrderByItems());
-        }
-        if (selectStatement.getWithSegment().isPresent()) {
-            extractTablesFromCTEs(selectStatement.getWithSegment().get().getCommonTableExpressions());
-        }
-        Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
-        lockSegment.ifPresent(this::extractTablesFromLock);
+        selectStatement.getGroupBy().ifPresent(optional -> extractTablesFromOrderByItems(optional.getGroupByItems()));
+        selectStatement.getOrderBy().ifPresent(optional -> extractTablesFromOrderByItems(optional.getOrderByItems()));
+        selectStatement.getHaving().ifPresent(optional -> extractTablesFromExpression(optional.getExpr()));
+        selectStatement.getWithSegment().ifPresent(optional -> extractTablesFromCTEs(optional.getCommonTableExpressions()));
+        SelectStatementHandler.getLockSegment(selectStatement).ifPresent(this::extractTablesFromLock);
     }
     
     private void extractTablesFromCTEs(final Collection<CommonTableExpressionSegment> commonTableExpressionSegments) {

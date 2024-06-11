@@ -251,7 +251,7 @@ class ProxySQLExecutorTest {
         OpenGaussCursorStatement sqlStatement = new OpenGaussCursorStatement();
         sqlStatement.setSelect(selectStatement);
         SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(),
-                selectStatement, DefaultDatabase.LOGIC_NAME);
+                selectStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
         when(result.getSelectStatementContext()).thenReturn(selectStatementContext);
         when(result.getSqlStatement()).thenReturn(sqlStatement);
         return result;

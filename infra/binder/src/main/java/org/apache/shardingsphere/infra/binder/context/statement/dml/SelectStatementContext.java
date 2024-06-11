@@ -61,6 +61,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Or
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -111,19 +112,29 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private PaginationContext paginationContext;
     
-    public SelectStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final SelectStatement sqlStatement, final String defaultDatabaseName) {
+    public SelectStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final SelectStatement sqlStatement, final String defaultDatabaseName,
+                                  final Collection<TableSegment> inheritedTables) {
         super(sqlStatement);
         extractWhereSegments(whereSegments, sqlStatement);
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
+        Collection<TableSegment> tableSegments = getAllTableSegments(inheritedTables);
         ExpressionExtractUtils.extractJoinConditions(joinConditions, whereSegments);
-        subqueryContexts = createSubqueryContexts(metaData, params, defaultDatabaseName);
-        tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts, getDatabaseType());
+        subqueryContexts = createSubqueryContexts(metaData, params, defaultDatabaseName, tableSegments);
+        tablesContext = new TablesContext(tableSegments, subqueryContexts, getDatabaseType());
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(getDatabaseType()).createProjectionsContext(getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine(getDatabaseType()).createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
-        String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
-        containsEnhancedTable = isContainsEnhancedTable(metaData, databaseName, getTablesContext().getTableNames());
+        containsEnhancedTable = isContainsEnhancedTable(metaData, tablesContext.getDatabaseNames(), defaultDatabaseName);
+    }
+    
+    private boolean isContainsEnhancedTable(final ShardingSphereMetaData metaData, final Collection<String> databaseNames, final String defaultDatabaseName) {
+        for (String each : databaseNames) {
+            if (isContainsEnhancedTable(metaData, each, getTablesContext().getTableNames())) {
+                return true;
+            }
+        }
+        return isContainsEnhancedTable(metaData, defaultDatabaseName, getTablesContext().getTableNames());
     }
     
     private boolean isContainsEnhancedTable(final ShardingSphereMetaData metaData, final String databaseName, final Collection<String> tableNames) {
@@ -147,11 +158,12 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         return database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class);
     }
     
-    private Map<Integer, SelectStatementContext> createSubqueryContexts(final ShardingSphereMetaData metaData, final List<Object> params, final String defaultDatabaseName) {
+    private Map<Integer, SelectStatementContext> createSubqueryContexts(final ShardingSphereMetaData metaData, final List<Object> params, final String defaultDatabaseName,
+                                                                        final Collection<TableSegment> tableSegments) {
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtils.getSubquerySegments(getSqlStatement());
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1F);
         for (SubquerySegment each : subquerySegments) {
-            SelectStatementContext subqueryContext = new SelectStatementContext(metaData, params, each.getSelect(), defaultDatabaseName);
+            SelectStatementContext subqueryContext = new SelectStatementContext(metaData, params, each.getSelect(), defaultDatabaseName, tableSegments);
             subqueryContext.setSubqueryType(each.getSubqueryType());
             result.put(each.getStartIndex(), subqueryContext);
         }
@@ -364,8 +376,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         whereSegments.addAll(WhereExtractUtils.getJoinWhereSegments(selectStatement));
     }
     
-    private Collection<TableSegment> getAllTableSegments() {
+    private Collection<TableSegment> getAllTableSegments(final Collection<TableSegment> inheritedTables) {
         TableExtractor tableExtractor = new TableExtractor();
+        appendInheritedSimpleTables(inheritedTables, tableExtractor);
         tableExtractor.extractTablesFromSelect(getSqlStatement());
         Collection<TableSegment> result = new LinkedList<>(tableExtractor.getRewriteTables());
         for (TableSegment each : tableExtractor.getTableContext()) {
@@ -374,6 +387,14 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
             }
         }
         return result;
+    }
+    
+    private void appendInheritedSimpleTables(final Collection<TableSegment> inheritedTables, final TableExtractor tableExtractor) {
+        for (TableSegment each : inheritedTables) {
+            if (each instanceof SimpleTableSegment) {
+                tableExtractor.getTableContext().add(each);
+            }
+        }
     }
     
     /**
