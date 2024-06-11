@@ -48,6 +48,8 @@ public final class TransactionE2EEnvironment {
     
     private final TransactionE2EEnvTypeEnum itEnvType;
     
+    private final List<String> portBindings;
+    
     private final List<String> mysqlVersions;
     
     private final List<String> postgresqlVersions;
@@ -65,6 +67,7 @@ public final class TransactionE2EEnvironment {
     private TransactionE2EEnvironment() {
         props = loadProperties();
         itEnvType = TransactionE2EEnvTypeEnum.valueOf(props.getProperty("transaction.it.env.type", TransactionE2EEnvTypeEnum.NONE.name()).toUpperCase());
+        portBindings = splitProperty("transaction.it.proxy.port.bindings");
         mysqlVersions = splitProperty("transaction.it.docker.mysql.version");
         postgresqlVersions = splitProperty("transaction.it.docker.postgresql.version");
         openGaussVersions = splitProperty("transaction.it.docker.opengauss.version");
@@ -155,7 +158,7 @@ public final class TransactionE2EEnvironment {
     
     /**
      * Get proxy password.
-     * 
+     *
      * @return proxy password
      */
     public String getProxyPassword() {
@@ -165,7 +168,7 @@ public final class TransactionE2EEnvironment {
     
     /**
      * Get proxy userName.
-     * 
+     *
      * @return proxy userName
      */
     public String getProxyUserName() {

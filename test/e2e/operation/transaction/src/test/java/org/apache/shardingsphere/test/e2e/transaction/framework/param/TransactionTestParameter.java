@@ -34,6 +34,8 @@ public final class TransactionTestParameter {
     
     private final String adapter;
     
+    private final List<String> portBindings;
+    
     private final List<TransactionType> transactionTypes;
     
     private final List<String> providers;
