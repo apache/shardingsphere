@@ -110,6 +110,7 @@ class MySQLComStmtPrepareExecutorTest {
         when(packet.getSQL()).thenReturn(sql);
         when(packet.getHintValueContext()).thenReturn(new HintValueContext());
         when(connectionSession.getConnectionId()).thenReturn(1);
+        when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
         MySQLStatementIdGenerator.getInstance().registerConnection(1);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
