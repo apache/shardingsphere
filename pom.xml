@@ -979,9 +979,6 @@
         </profile>
         <profile>
             <id>generateMetadata</id>
-            <properties>
-                <java.version>21</java.version>
-            </properties>
             <build>
                 <pluginManagement>
                     <plugins>
@@ -1043,9 +1040,6 @@
         </profile>
         <profile>
             <id>nativeTestInShardingSphere</id>
-            <properties>
-                <java.version>21</java.version>
-            </properties>
             <build>
                 <pluginManagement>
                     <plugins>

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatem
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
@@ -143,8 +144,8 @@ public final class ShardingRouteCacheableChecker {
         return checkUpdateOrDeleteCacheable(statementContext, params, database);
     }
     
-    private ShardingRouteCacheableCheckResult checkUpdateOrDeleteCacheable(final SQLStatementContext statementContext, final List<Object> params, final ShardingSphereDatabase database) {
-        Collection<String> tableNames = statementContext.getTablesContext().getTableNames();
+    private ShardingRouteCacheableCheckResult checkUpdateOrDeleteCacheable(final SQLStatementContext sqlStatementContext, final List<Object> params, final ShardingSphereDatabase database) {
+        Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
         if (1 != tableNames.size()) {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
         }
@@ -152,7 +153,7 @@ public final class ShardingRouteCacheableChecker {
         if (!isShardingTable || containsNonCacheableShardingAlgorithm(tableNames)) {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
         }
-        List<ShardingCondition> shardingConditions = new WhereClauseShardingConditionEngine(database, shardingRule, timestampServiceRule).createShardingConditions(statementContext, params);
+        List<ShardingCondition> shardingConditions = new WhereClauseShardingConditionEngine(database, shardingRule, timestampServiceRule).createShardingConditions(sqlStatementContext, params);
         return checkShardingConditionsCacheable(shardingConditions);
     }
     

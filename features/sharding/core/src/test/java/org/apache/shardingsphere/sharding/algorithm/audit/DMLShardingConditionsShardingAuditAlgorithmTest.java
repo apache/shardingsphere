@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.audit;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 class DMLShardingConditionsShardingAuditAlgorithmTest {
     
@@ -51,10 +53,10 @@ class DMLShardingConditionsShardingAuditAlgorithmTest {
     @BeforeEach
     void setUp() {
         shardingAuditAlgorithm = TypedSPILoader.getService(ShardingAuditAlgorithm.class, "DML_SHARDING_CONDITIONS");
-        sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
         database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         rule = mock(ShardingRule.class);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
     }
     
     @Test

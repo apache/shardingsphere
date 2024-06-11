@@ -55,6 +55,18 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\QMETA-INF/services/com.atomikos.recovery.OltpLogFactory\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+    "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+    "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseRequestManager\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+    "pattern":"\\QMETA-INF/services/com.clickhouse.data.ClickHouseDataStreamFactory\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+    "pattern":"\\QMETA-INF/services/com.clickhouse.jdbc.JdbcTypeMapping\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
     "pattern":"\\QMETA-INF/services/io.grpc.LoadBalancerProvider\\E"
   }, {
@@ -100,6 +112,9 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository"},
     "pattern":"\\QMETA-INF/services/java.time.zone.ZoneRulesProvider\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+    "pattern":"\\QMETA-INF/services/javax.xml.datatype.DatatypeFactory\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
     "pattern":"\\QMETA-INF/services/javax.xml.stream.XMLInputFactory\\E"
   }, {
@@ -123,6 +138,9 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolReflection"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.keygen.GeneratedKeyColumnProvider\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.metadata.data.loader.DialectMetaDataLoader\\E"
@@ -202,6 +220,9 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository\\E"
   }, {
@@ -235,6 +256,12 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
     "pattern":"\\QMETA-INF/services/org.codehaus.groovy.runtime.ExtensionModule\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+    "pattern":"\\QMETA-INF/services/org.testcontainers.containers.JdbcDatabaseContainerProvider\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+    "pattern":"\\QMETA-INF/services/org.testcontainers.core.CreateContainerCmdModifier\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\Q\\E"
   }, {
@@ -247,6 +274,12 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qcom/atomikos/icatch/provider/imp/transactions.properties\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+    "pattern":"\\Qcom/clickhouse/client/internal/jpountz/util/linux/amd64/liblz4-java.so\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+    "pattern":"\\Qcontainer-license-acceptance.txt\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
     "pattern":"\\Qjndi.properties\\E"
   }, {
@@ -256,8 +289,14 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\Qlib/sqlparser/druid.jar\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+    "pattern":"\\Qorg/apache/hc/core5/version.properties\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository"},
     "pattern":"\\Qorg/h2/util/data.zip\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+    "pattern":"\\Qorg/postgresql/driverconfig.properties\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\Qregistry.conf\\E"
@@ -2719,6 +2758,12 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
     "pattern":"\\Qsql\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+    "pattern":"\\Qtest-native/sql/seata-script-client-at-postgresql.sql\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+    "pattern":"\\Qtest-native/sql/test-native-databases-clickhouse.sql\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
     "pattern":"\\Qtest-native/yaml/databases/clickhouse.yaml\\E"
   }, {
@@ -2772,8 +2817,14 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
     "pattern":"\\Qvertx-default-jul-logging.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory"},
+    "pattern":"java.base:\\Qjdk/internal/icu/impl/data/icudt74b/nfkc.nrm\\E"
   }]},
   "bundles":[{
+    "name":"com.microsoft.sqlserver.jdbc.SQLServerResource",
+    "locales":["zh-CN"]
+  }, {
     "name":"sun.text.resources.cldr.FormatData",
     "locales":["en"]
   }]

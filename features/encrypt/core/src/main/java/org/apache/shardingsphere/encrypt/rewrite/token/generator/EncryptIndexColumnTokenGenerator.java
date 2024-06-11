@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
@@ -59,10 +60,10 @@ public final class EncryptIndexColumnTokenGenerator implements CollectionSQLToke
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Preconditions.checkArgument(sqlStatementContext instanceof IndexAvailable, "SQLStatementContext must implementation IndexAvailable interface.");
-        if (sqlStatementContext.getTablesContext().getTableNames().isEmpty()) {
+        if (!(sqlStatementContext instanceof TableAvailable) || ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().isEmpty()) {
             return Collections.emptyList();
         }
-        String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
+        String tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().iterator().next();
         EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : ((IndexAvailable) sqlStatementContext).getIndexColumns()) {

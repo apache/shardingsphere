@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.Gene
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.keygen.GeneratedKeyColumnProvider;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
@@ -50,6 +51,7 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -112,7 +114,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         statementManager = new StatementManager();
         JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
-        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, jdbcExecutor, JDBCDriverType.STATEMENT);
+        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, jdbcExecutor, JDBCDriverType.STATEMENT, new Grantee("", ""));
         batchStatementExecutor = new BatchStatementExecutor(this);
         databaseName = connection.getDatabaseName();
     }
@@ -378,8 +380,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     @Override
     public boolean isAccumulate() {
+        if (!(sqlStatementContext instanceof TableAvailable)) {
+            return false;
+        }
         for (DataNodeRuleAttribute each : metaData.getDatabase(databaseName).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
-            if (each.isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
+            if (each.isNeedAccumulate(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())) {
                 return true;
             }
         }

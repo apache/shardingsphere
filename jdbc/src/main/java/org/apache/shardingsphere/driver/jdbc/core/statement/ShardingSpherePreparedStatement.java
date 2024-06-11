@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.Gene
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.keygen.GeneratedKeyColumnProvider;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
@@ -53,6 +54,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.resoure.StorageConnectorReusableRuleAttribute;
@@ -155,14 +157,16 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(metaData.getDatabase(connection.getDatabaseName()).getProtocolType());
         SQLStatement sqlStatement = sqlParserEngine.parse(this.sql, true);
         sqlStatementContext = new SQLBindEngine(metaData, connection.getDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
-        databaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(connection.getDatabaseName());
+        databaseName = sqlStatementContext instanceof TableAvailable
+                ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(connection.getDatabaseName())
+                : connection.getDatabaseName();
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         statementManager = new StatementManager();
         JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
-        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, jdbcExecutor, JDBCDriverType.PREPARED_STATEMENT);
+        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, jdbcExecutor, JDBCDriverType.PREPARED_STATEMENT, new Grantee("", ""));
         executeBatchExecutor = new DriverExecuteBatchExecutor(connection, metaData, statementOption, statementManager, database, jdbcExecutor);
         statementsCacheable = isStatementsCacheable(database.getRuleMetaData());
         selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
@@ -426,8 +430,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public boolean isAccumulate() {
+        if (!(sqlStatementContext instanceof TableAvailable)) {
+            return false;
+        }
         for (DataNodeRuleAttribute each : metaData.getDatabase(databaseName).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
-            if (each.isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
+            if (each.isNeedAccumulate(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())) {
                 return true;
             }
         }

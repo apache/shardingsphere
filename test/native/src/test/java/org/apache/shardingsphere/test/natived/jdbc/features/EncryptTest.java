@@ -63,7 +63,7 @@ class EncryptTest {
     private void initEnvironment() throws SQLException {
         orderRepository.createTableIfNotExistsInMySQL();
         orderItemRepository.createTableIfNotExistsInMySQL();
-        addressRepository.createTableIfNotExists();
+        addressRepository.createTableIfNotExistsInMySQL();
         orderRepository.truncateTable();
         orderItemRepository.truncateTable();
         addressRepository.truncateTable();

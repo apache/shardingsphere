@@ -20,6 +20,7 @@ package org.apache.shardingsphere.single.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -166,7 +168,8 @@ public final class SingleRule implements DatabaseRule {
      * @return qualified tables
      */
     public Collection<QualifiedTable> getQualifiedTables(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        Collection<QualifiedTable> result = getQualifiedTables(database, protocolType, sqlStatementContext.getTablesContext().getSimpleTables());
+        Collection<SimpleTableSegment> tables = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables() : Collections.emptyList();
+        Collection<QualifiedTable> result = getQualifiedTables(database, protocolType, tables);
         if (result.isEmpty() && sqlStatementContext instanceof IndexAvailable) {
             result = IndexMetaDataUtils.getTableNames(database, protocolType, ((IndexAvailable) sqlStatementContext).getIndexes());
         }

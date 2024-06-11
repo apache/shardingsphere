@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -79,7 +81,7 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     }
     
     private boolean isSQLFederationSystemCatalogQuery(final SQLStatementContext sqlStatementContext) {
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
         return !tableNames.isEmpty() && SYSTEM_CATALOG_TABLES.containsAll(tableNames);
     }
     
@@ -94,7 +96,7 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     }
     
     private boolean isPassThroughSystemCatalogQuery(final SQLStatementContext sqlStatementContext) {
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
         return !tableNames.isEmpty() && (SystemSchemaManager.isSystemTable("opengauss", "information_schema", tableNames)
                 || SystemSchemaManager.isSystemTable("opengauss", "pg_catalog", tableNames));
     }

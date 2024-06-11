@@ -22,6 +22,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -114,7 +115,7 @@ public final class ShardingConditions {
         boolean selectContainsSubquery = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsSubquery();
         boolean insertSelectContainsSubquery = sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()
                 && ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext().isContainsSubquery();
-        return (selectContainsSubquery || insertSelectContainsSubquery) && !rule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
+        return (selectContainsSubquery || insertSelectContainsSubquery) && !rule.getShardingLogicTableNames(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).isEmpty();
     }
     
     private boolean isSubqueryContainsShardingCondition(final List<ShardingCondition> conditions, final SQLStatementContext sqlStatementContext) {
@@ -183,8 +184,8 @@ public final class ShardingConditions {
     }
     
     private Collection<String> findHintStrategyTables(final SQLStatementContext sqlStatementContext) {
-        Collection<String> result = new HashSet<>(sqlStatementContext.getTablesContext().getTableNames().size(), 1F);
-        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
+        Collection<String> result = new HashSet<>(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().size(), 1F);
+        for (String each : ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()) {
             Optional<ShardingTable> shardingTable = rule.findShardingTable(each);
             if (!shardingTable.isPresent()) {
                 continue;

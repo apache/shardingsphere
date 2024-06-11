@@ -20,9 +20,14 @@ package org.apache.shardingsphere.transaction.rule;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
@@ -87,6 +92,28 @@ public final class TransactionRule implements GlobalRule, AutoCloseable {
      */
     public ShardingSphereTransactionManagerEngine getResource() {
         return resource.get();
+    }
+    
+    /**
+     * Judge whether to implicit commit transaction.
+     * 
+     * @param executionContext execution context
+     * @param connectionTransaction connection transaction
+     * @param isAutoCommit is auto commit
+     * @return is implicit commit transaction or not
+     */
+    public boolean isImplicitCommitTransaction(final ExecutionContext executionContext, final ConnectionTransaction connectionTransaction, final boolean isAutoCommit) {
+        if (!isAutoCommit) {
+            return false;
+        }
+        if (!TransactionType.isDistributedTransaction(defaultType) || connectionTransaction.isInTransaction()) {
+            return false;
+        }
+        return isWriteDMLStatement(executionContext.getSqlStatementContext().getSqlStatement()) && executionContext.getExecutionUnits().size() > 1;
+    }
+    
+    private boolean isWriteDMLStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement);
     }
     
     @Override

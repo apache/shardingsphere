@@ -26,6 +26,7 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALSta
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -137,8 +138,8 @@ public final class ProxyBackendHandlerFactory {
         if (databaseOperateHandler.isPresent()) {
             return databaseOperateHandler.get();
         }
-        String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().isPresent()
-                ? sqlStatementContext.getTablesContext().getDatabaseName().get()
+        String databaseName = sqlStatementContext instanceof TableAvailable && ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().isPresent()
+                ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().get()
                 : connectionSession.getDatabaseName();
         if (null == databaseName) {
             return DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);

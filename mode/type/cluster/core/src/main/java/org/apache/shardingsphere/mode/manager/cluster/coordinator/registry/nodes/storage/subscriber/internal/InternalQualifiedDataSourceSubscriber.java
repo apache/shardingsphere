@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
  * Qualified data source status subscriber.
  */
 @RequiredArgsConstructor
-public final class QualifiedDataSourceStatusSubscriber implements EventSubscriber {
+public final class InternalQualifiedDataSourceSubscriber implements EventSubscriber {
     
     private final ClusterPersistRepository repository;
     

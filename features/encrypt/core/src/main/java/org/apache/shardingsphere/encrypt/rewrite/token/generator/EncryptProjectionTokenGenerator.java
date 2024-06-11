@@ -68,7 +68,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && !sqlStatementContext.getTablesContext().getSimpleTables().isEmpty()
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty()
                 || sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext();
     }
     

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatem
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.TruncateStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -81,6 +82,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
@@ -206,9 +208,11 @@ class ProxySQLExecutorTest {
     }
     
     private QueryContext mockQueryContext() {
-        QueryContext result = mock(QueryContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSqlStatementContext().getDatabaseType()).thenReturn(databaseType);
-        when(result.getSqlStatementContext().getTablesContext().getSchemaName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
+        QueryContext result = mock(QueryContext.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
+        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
+        when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
         return result;
     }
     

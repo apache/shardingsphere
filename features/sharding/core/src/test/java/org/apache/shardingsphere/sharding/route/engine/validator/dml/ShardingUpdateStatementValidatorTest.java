@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -76,7 +75,7 @@ class ShardingUpdateStatementValidatorTest {
     void assertPreValidateWhenUpdateSingleTable() {
         UpdateStatement updateStatement = createUpdateStatement();
         updateStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
-        SQLStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement);
+        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement);
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
         when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
@@ -91,7 +90,7 @@ class ShardingUpdateStatementValidatorTest {
         joinTableSegment.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         joinTableSegment.setRight(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
         updateStatement.setTable(joinTableSegment);
-        SQLStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement);
+        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement);
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
         when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
