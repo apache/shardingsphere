@@ -23,6 +23,7 @@ import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecu
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
@@ -42,6 +43,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -148,10 +150,16 @@ public final class DriverExecutorFacade implements AutoCloseable {
     /**
      * Get result set.
      *
+     * @param database database
+     * @param sqlStatementContext SQL statement context
+     * @param statement statement
+     * @param statements statements
      * @return result set
+     * @throws SQLException SQL exception
      */
-    public Optional<ResultSet> getResultSet() {
-        return executeExecutor.getResultSet();
+    public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
+                                            final Statement statement, final List<? extends Statement> statements) throws SQLException {
+        return executeExecutor.getResultSet(database, sqlStatementContext, statement, statements);
     }
     
     @Override

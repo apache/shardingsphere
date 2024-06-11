@@ -24,6 +24,7 @@ import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecu
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
 import org.apache.shardingsphere.driver.executor.engine.pushdown.DriverPushDownExecuteExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -42,6 +43,8 @@ import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -106,14 +109,22 @@ public final class DriverExecuteExecutor {
     /**
      * Get result set.
      *
+     * @param database database
+     * @param sqlStatementContext SQL statement context
+     * @param statement statement
+     * @param statements statements
      * @return result set
+     * @throws SQLException SQL exception
      */
-    public Optional<ResultSet> getResultSet() {
+    public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
+                                            final Statement statement, final List<? extends Statement> statements) throws SQLException {
         switch (executeType) {
             case TRAFFIC:
                 return Optional.of(trafficExecutor.getResultSet());
             case FEDERATION:
                 return Optional.of(sqlFederationEngine.getResultSet());
+            case PUSH_DOWN:
+                return pushDownExecuteExecutor.getResultSet(database, sqlStatementContext, statement, statements);
             default:
                 return Optional.empty();
         }
