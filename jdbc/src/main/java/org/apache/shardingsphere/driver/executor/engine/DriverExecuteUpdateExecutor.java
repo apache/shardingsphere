@@ -21,7 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
-import org.apache.shardingsphere.driver.executor.engine.pushdown.DriverPushDownExecuteUpdateExecutor;
+import org.apache.shardingsphere.driver.executor.engine.pushdown.jdbc.DriverJDBCPushDownExecuteUpdateExecutor;
+import org.apache.shardingsphere.driver.executor.engine.pushdown.raw.DriverRawPushDownExecuteUpdateExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
@@ -50,7 +52,9 @@ public final class DriverExecuteUpdateExecutor {
     
     private final ShardingSphereMetaData metaData;
     
-    private final DriverPushDownExecuteUpdateExecutor pushDownExecuteUpdateExecutor;
+    private final DriverJDBCPushDownExecuteUpdateExecutor jdbcPushDownExecutor;
+    
+    private final DriverRawPushDownExecuteUpdateExecutor rawPushDownExecutor;
     
     private final TrafficExecutor trafficExecutor;
     
@@ -58,7 +62,8 @@ public final class DriverExecuteUpdateExecutor {
                                        final Grantee grantee, final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor, final TrafficExecutor trafficExecutor) {
         this.connection = connection;
         this.metaData = metaData;
-        pushDownExecuteUpdateExecutor = new DriverPushDownExecuteUpdateExecutor(connection, metaData, grantee, jdbcExecutor, rawExecutor);
+        jdbcPushDownExecutor = new DriverJDBCPushDownExecuteUpdateExecutor(connection, metaData, grantee, jdbcExecutor);
+        rawPushDownExecutor = new DriverRawPushDownExecuteUpdateExecutor(connection, metaData, grantee, rawExecutor);
         this.trafficExecutor = trafficExecutor;
     }
     
@@ -83,6 +88,8 @@ public final class DriverExecuteUpdateExecutor {
         }
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(
                 queryContext, database, metaData.getGlobalRuleMetaData(), metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
-        return pushDownExecuteUpdateExecutor.executeUpdate(database, executionContext, prepareEngine, updateCallback, addCallback, replayCallback);
+        return database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()
+                ? jdbcPushDownExecutor.executeUpdate(database, executionContext, prepareEngine, updateCallback, addCallback, replayCallback)
+                : rawPushDownExecutor.executeUpdate(database, executionContext);
     }
 }
