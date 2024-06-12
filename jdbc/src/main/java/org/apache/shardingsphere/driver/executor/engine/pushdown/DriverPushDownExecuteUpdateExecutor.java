@@ -18,73 +18,37 @@
 package org.apache.shardingsphere.driver.executor.engine.pushdown;
 
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
-import org.apache.shardingsphere.driver.executor.callback.execute.ExecuteUpdateCallbackFactory;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
-import org.apache.shardingsphere.driver.executor.engine.transaction.DriverTransactionalExecutor;
+import org.apache.shardingsphere.driver.executor.engine.pushdown.jdbc.DriverJDBCPushDownExecuteUpdateExecutor;
+import org.apache.shardingsphere.driver.executor.engine.pushdown.raw.DriverRawPushDownExecuteUpdateExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
-import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
-import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Driver push down execute update executor.
  */
 public final class DriverPushDownExecuteUpdateExecutor {
     
-    private final ShardingSphereConnection connection;
+    private final DriverJDBCPushDownExecuteUpdateExecutor jdbcPushDownExecutor;
     
-    private final String processId;
-    
-    private final ConfigurationProperties props;
-    
-    private final Grantee grantee;
-    
-    private final JDBCExecutor jdbcExecutor;
-    
-    private final RawExecutor rawExecutor;
+    private final DriverRawPushDownExecuteUpdateExecutor rawPushDownExecutor;
     
     public DriverPushDownExecuteUpdateExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final Grantee grantee,
                                                final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor) {
-        this.connection = connection;
-        processId = connection.getProcessId();
-        props = metaData.getProps();
-        this.grantee = grantee;
-        this.jdbcExecutor = jdbcExecutor;
-        this.rawExecutor = rawExecutor;
+        jdbcPushDownExecutor = new DriverJDBCPushDownExecuteUpdateExecutor(connection, metaData, grantee, jdbcExecutor);
+        rawPushDownExecutor = new DriverRawPushDownExecuteUpdateExecutor(connection, metaData, grantee, rawExecutor);
     }
     
     /**
@@ -103,92 +67,7 @@ public final class DriverPushDownExecuteUpdateExecutor {
     public int executeUpdate(final ShardingSphereDatabase database, final ExecutionContext executionContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                              final StatementExecuteUpdateCallback updateCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
         return database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()
-                ? executeJDBCUpdate(database, executionContext, prepareEngine, updateCallback, addCallback, replayCallback)
-                : executeRawUpdate(database, executionContext);
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private int executeJDBCUpdate(final ShardingSphereDatabase database, final ExecutionContext executionContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                  final StatementExecuteUpdateCallback updateCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
-        return new DriverTransactionalExecutor(connection).execute(
-                database, executionContext, () -> doExecuteJDBCUpdate(database, executionContext, prepareEngine, updateCallback, addCallback, replayCallback));
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private int doExecuteJDBCUpdate(final ShardingSphereDatabase database, final ExecutionContext executionContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                    final StatementExecuteUpdateCallback updateCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
-        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(
-                executionContext.getRouteContext(), executionContext.getExecutionUnits(), new ExecutionGroupReportContext(processId, database.getName(), grantee));
-        for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
-            addCallback.add(getStatements(each), JDBCDriverType.PREPARED_STATEMENT.equals(prepareEngine.getType()) ? getParameterSets(each) : Collections.emptyList());
-        }
-        replayCallback.replay();
-        ProcessEngine processEngine = new ProcessEngine();
-        try {
-            processEngine.executeSQL(executionGroupContext, executionContext.getQueryContext());
-            JDBCExecutorCallback<Integer> callback = new ExecuteUpdateCallbackFactory(prepareEngine.getType())
-                    .newInstance(database, executionContext.getQueryContext().getSqlStatementContext().getSqlStatement(), updateCallback);
-            List<Integer> updateCounts = jdbcExecutor.execute(executionGroupContext, callback);
-            new MetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database, props)
-                    .refresh(executionContext.getQueryContext().getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
-            return isNeedAccumulate(database.getRuleMetaData().getRules(), executionContext.getQueryContext().getSqlStatementContext()) ? accumulate(updateCounts) : updateCounts.get(0);
-        } finally {
-            processEngine.completeSQLExecution(executionGroupContext.getReportContext().getProcessId());
-        }
-    }
-    
-    private Collection<Statement> getStatements(final ExecutionGroup<JDBCExecutionUnit> executionGroup) {
-        Collection<Statement> result = new LinkedList<>();
-        for (JDBCExecutionUnit each : executionGroup.getInputs()) {
-            result.add(each.getStorageResource());
-        }
-        return result;
-    }
-    
-    private Collection<List<Object>> getParameterSets(final ExecutionGroup<JDBCExecutionUnit> executionGroup) {
-        Collection<List<Object>> result = new LinkedList<>();
-        for (JDBCExecutionUnit each : executionGroup.getInputs()) {
-            result.add(each.getExecutionUnit().getSqlUnit().getParameters());
-        }
-        return result;
-    }
-    
-    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof TableAvailable)) {
-            return false;
-        }
-        for (ShardingSphereRule each : rules) {
-            Optional<DataNodeRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataNodeRuleAttribute.class);
-            if (ruleAttribute.isPresent() && ruleAttribute.get().isNeedAccumulate(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private int accumulate(final List<Integer> updateResults) {
-        int result = 0;
-        for (Integer each : updateResults) {
-            result += null == each ? 0 : each;
-        }
-        return result;
-    }
-    
-    private int accumulate(final Collection<ExecuteResult> results) {
-        int result = 0;
-        for (ExecuteResult each : results) {
-            result += ((UpdateResult) each).getUpdateCount();
-        }
-        return result;
-    }
-    
-    private int executeRawUpdate(final ShardingSphereDatabase database, final ExecutionContext executionContext) throws SQLException {
-        return accumulate(rawExecutor.execute(createRawExecutionGroupContext(database, executionContext), executionContext.getQueryContext(), new RawSQLExecutorCallback()));
-    }
-    
-    private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionGroupContext(final ShardingSphereDatabase database, final ExecutionContext executionContext) throws SQLException {
-        int maxConnectionsSizePerQuery = props.<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, database.getRuleMetaData().getRules()).prepare(
-                executionContext.getRouteContext(), executionContext.getExecutionUnits(), new ExecutionGroupReportContext(processId, database.getName(), grantee));
+                ? jdbcPushDownExecutor.executeUpdate(database, executionContext, prepareEngine, updateCallback, addCallback, replayCallback)
+                : rawPushDownExecutor.executeUpdate(database, executionContext);
     }
 }
