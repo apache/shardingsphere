@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.keygen.GeneratedKeyColumnProvider;
@@ -40,7 +39,6 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.hint.HintManager;
@@ -50,7 +48,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.resoure.StorageConnectorReusableRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -84,15 +81,16 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final String sql;
     
-    private final List<PreparedStatement> statements = new ArrayList<>();
-    
-    private final List<List<Object>> parameterSets = new ArrayList<>();
+    private final HintValueContext hintValueContext;
     
     private final SQLStatementContext sqlStatementContext;
     
     private final String databaseName;
     
     private final StatementOption statementOption;
+    
+    @Getter(AccessLevel.PROTECTED)
+    private final StatementManager statementManager;
     
     @Getter
     private final ParameterMetaData parameterMetaData;
@@ -101,21 +99,17 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final DriverExecuteBatchExecutor executeBatchExecutor;
     
+    private final List<PreparedStatement> statements = new ArrayList<>();
+    
+    private final List<List<Object>> parameterSets = new ArrayList<>();
+    
     private final Collection<Comparable<?>> generatedValues = new LinkedList<>();
     
     private final boolean statementsCacheable;
     
-    @Getter(AccessLevel.PROTECTED)
-    private final StatementManager statementManager;
-    
-    @Getter
-    private final boolean selectContainsEnhancedTable;
-    
     private Map<String, Integer> columnLabelAndIndexMap;
     
     private ResultSet currentResultSet;
-    
-    private final HintValueContext hintValueContext;
     
     private ResultSet currentBatchGeneratedKeysResultSet;
     
@@ -145,25 +139,26 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         ShardingSpherePreconditions.checkNotEmpty(sql, () -> new EmptySQLException().toSQLException());
         this.connection = connection;
         metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
-        hintValueContext = SQLHintUtils.extractHint(sql);
         this.sql = SQLHintUtils.removeHint(sql);
-        SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(metaData.getDatabase(connection.getDatabaseName()).getProtocolType());
-        SQLStatement sqlStatement = sqlParserEngine.parse(this.sql, true);
+        hintValueContext = SQLHintUtils.extractHint(sql);
+        SQLStatement sqlStatement = parseSQL(connection);
         sqlStatementContext = new SQLBindEngine(metaData, connection.getDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
         databaseName = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(connection.getDatabaseName())
                 : connection.getDatabaseName();
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
-        parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         statementManager = new StatementManager();
-        JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
-        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, jdbcExecutor, JDBCDriverType.PREPARED_STATEMENT, new Grantee("", ""));
-        executeBatchExecutor = new DriverExecuteBatchExecutor(connection, metaData, statementOption, statementManager, database, jdbcExecutor);
+        parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, JDBCDriverType.PREPARED_STATEMENT, new Grantee("", ""));
+        executeBatchExecutor = new DriverExecuteBatchExecutor(connection, metaData, statementOption, statementManager, database);
         statementsCacheable = isStatementsCacheable(database.getRuleMetaData());
-        selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
+    }
+    
+    private SQLStatement parseSQL(final ShardingSphereConnection connection) {
+        SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        return sqlParserRule.getSQLParserEngine(metaData.getDatabase(connection.getDatabaseName()).getProtocolType()).parse(sql, true);
     }
     
     private boolean isStatementsCacheable(final RuleMetaData databaseRuleMetaData) {

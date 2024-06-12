@@ -70,12 +70,13 @@ public final class DriverExecutorFacade implements AutoCloseable {
     
     private final DriverExecuteExecutor executeExecutor;
     
-    public DriverExecutorFacade(final ShardingSphereConnection connection, final StatementOption statementOption, final StatementManager statementManager,
-                                final JDBCExecutor jdbcExecutor, final String jdbcDriverType, final Grantee grantee) {
+    public DriverExecutorFacade(final ShardingSphereConnection connection,
+                                final StatementOption statementOption, final StatementManager statementManager, final String jdbcDriverType, final Grantee grantee) {
         this.connection = connection;
         this.statementOption = statementOption;
         this.statementManager = statementManager;
         this.jdbcDriverType = jdbcDriverType;
+        JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
         RawExecutor rawExecutor = new RawExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
         trafficExecutor = new TrafficExecutor();
         ShardingSphereMetaData metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
