@@ -49,6 +49,7 @@ class DataSourcePoolCreatorTest {
         result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("username", "root");
         result.put("password", "root");
+        result.put("driverClassName", MockedDataSource.class.getName());
         return result;
     }
     
@@ -58,5 +59,6 @@ class DataSourcePoolCreatorTest {
         assertThat(actual.getPassword(), is("root"));
         assertThat(actual.getMaxPoolSize(), is(100));
         assertNull(actual.getMinPoolSize());
+        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getName()));
     }
 }
