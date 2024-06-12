@@ -38,7 +38,6 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -72,16 +71,16 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private final ShardingSphereMetaData metaData;
     
-    private final List<Statement> statements;
-    
     private final StatementOption statementOption;
-    
-    private final DriverExecutorFacade driverExecutorFacade;
     
     @Getter(AccessLevel.PROTECTED)
     private final StatementManager statementManager;
     
+    private final DriverExecutorFacade driverExecutorFacade;
+    
     private final BatchStatementExecutor batchStatementExecutor;
+    
+    private final List<Statement> statements;
     
     private String databaseName;
     
@@ -102,12 +101,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     public ShardingSphereStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         this.connection = connection;
         metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
-        statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         statementManager = new StatementManager();
-        JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
-        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, jdbcExecutor, JDBCDriverType.STATEMENT, new Grantee("", ""));
+        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, JDBCDriverType.STATEMENT, new Grantee("", ""));
         batchStatementExecutor = new BatchStatementExecutor(this);
+        statements = new LinkedList<>();
         databaseName = connection.getDatabaseName();
     }
     

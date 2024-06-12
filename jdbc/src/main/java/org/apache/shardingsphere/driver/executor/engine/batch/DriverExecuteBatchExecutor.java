@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.driver.executor.engine.batch;
 
-import lombok.Getter;
-import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchExecutionUnit;
-import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.keygen.GeneratedKeyCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.PreparedStatementParametersReplayCallback;
+import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchExecutionUnit;
+import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -65,7 +64,6 @@ public final class DriverExecuteBatchExecutor {
     
     private final ShardingSphereMetaData metaData;
     
-    @Getter
     private final BatchPreparedStatementExecutor batchPreparedStatementExecutor;
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
@@ -73,9 +71,10 @@ public final class DriverExecuteBatchExecutor {
     private ExecutionContext executionContext;
     
     public DriverExecuteBatchExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final StatementOption statementOption, final StatementManager statementManager,
-                                      final ShardingSphereDatabase database, final JDBCExecutor jdbcExecutor) {
+                                      final ShardingSphereDatabase database) {
         this.connection = connection;
         this.metaData = metaData;
+        JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(database, jdbcExecutor, connection.getProcessId());
         prepareEngine = createDriverExecutionPrepareEngine(statementOption, statementManager, database);
     }
