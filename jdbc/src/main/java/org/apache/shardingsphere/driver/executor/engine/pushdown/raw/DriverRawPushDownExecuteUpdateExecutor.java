@@ -56,6 +56,14 @@ public final class DriverRawPushDownExecuteUpdateExecutor {
         this.rawExecutor = rawExecutor;
     }
     
+    /**
+     * Execute update.
+     * 
+     * @param database database
+     * @param executionContext execution context
+     * @return updated row count
+     * @throws SQLException SQL exception
+     */
     public int executeUpdate(final ShardingSphereDatabase database, final ExecutionContext executionContext) throws SQLException {
         return accumulate(rawExecutor.execute(createRawExecutionGroupContext(database, executionContext), executionContext.getQueryContext(), new RawSQLExecutorCallback()));
     }
