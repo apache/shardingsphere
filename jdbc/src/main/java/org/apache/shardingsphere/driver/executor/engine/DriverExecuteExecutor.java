@@ -112,7 +112,7 @@ public final class DriverExecuteExecutor {
             return jdbcPushDownExecutor.execute(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback);
         }
         executeType = ExecuteType.RAW_PUSH_DOWN;
-        return rawPushDownExecutor.execute(database, executionContext); 
+        return rawPushDownExecutor.execute(database, executionContext);
     }
     
     /**
