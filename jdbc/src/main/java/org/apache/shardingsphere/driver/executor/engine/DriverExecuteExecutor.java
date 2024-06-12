@@ -112,9 +112,7 @@ public final class DriverExecuteExecutor {
             return jdbcPushDownExecutor.execute(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback); 
         }
         executeType = ExecuteType.RAW_PUSH_DOWN;
-        return database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()
-                ? jdbcPushDownExecutor.execute(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback)
-                : rawPushDownExecutor.execute(database, executionContext);
+        return rawPushDownExecutor.execute(database, executionContext); 
     }
     
     /**
@@ -129,6 +127,9 @@ public final class DriverExecuteExecutor {
      */
     public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
                                             final Statement statement, final List<? extends Statement> statements) throws SQLException {
+        if (null == executeType) {
+            return Optional.empty();
+        }
         switch (executeType) {
             case TRAFFIC:
                 return Optional.of(trafficExecutor.getResultSet());
