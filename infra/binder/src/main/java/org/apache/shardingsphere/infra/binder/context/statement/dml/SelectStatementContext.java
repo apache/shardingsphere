@@ -406,6 +406,15 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         return getSqlStatement().getFrom().isPresent() && getSqlStatement().getFrom().get() instanceof SubqueryTableSegment || getSqlStatement().getWithSegment().isPresent();
     }
     
+    /**
+     * Judge whether contains derived projections.
+     *
+     * @return contains derived projections or not
+     */
+    public boolean containsDerivedProjections() {
+        return containsEnhancedTable && !projectionsContext.getExpandProjections().isEmpty();
+    }
+    
     @Override
     public void setUpParameters(final List<Object> params) {
         paginationContext = new PaginationContextEngine(getDatabaseType()).createPaginationContext(getSqlStatement(), projectionsContext, params, whereSegments);
