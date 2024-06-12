@@ -20,7 +20,8 @@ package org.apache.shardingsphere.driver.executor.engine;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.ExecuteQueryCallbackFactory;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
-import org.apache.shardingsphere.driver.executor.engine.pushdown.DriverPushDownExecuteQueryExecutor;
+import org.apache.shardingsphere.driver.executor.engine.pushdown.jdbc.DriverJDBCPushDownExecuteQueryExecutor;
+import org.apache.shardingsphere.driver.executor.engine.pushdown.raw.DriverRawPushDownExecuteQueryExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
@@ -54,7 +56,9 @@ public final class DriverExecuteQueryExecutor {
     
     private final ShardingSphereMetaData metaData;
     
-    private final DriverPushDownExecuteQueryExecutor pushDownExecuteQueryExecutor;
+    private final DriverJDBCPushDownExecuteQueryExecutor driverJDBCPushDownExecutor;
+    
+    private final DriverRawPushDownExecuteQueryExecutor driverRawPushDownExecutor;
     
     private final TrafficExecutor trafficExecutor;
     
@@ -65,7 +69,8 @@ public final class DriverExecuteQueryExecutor {
                                       final TrafficExecutor trafficExecutor, final SQLFederationEngine sqlFederationEngine) {
         this.connection = connection;
         this.metaData = metaData;
-        pushDownExecuteQueryExecutor = new DriverPushDownExecuteQueryExecutor(connection, metaData, grantee, jdbcExecutor, rawExecutor);
+        driverJDBCPushDownExecutor = new DriverJDBCPushDownExecuteQueryExecutor(connection, metaData, grantee, jdbcExecutor);
+        driverRawPushDownExecutor = new DriverRawPushDownExecuteQueryExecutor(connection, metaData, grantee, rawExecutor);
         this.trafficExecutor = trafficExecutor;
         this.sqlFederationEngine = sqlFederationEngine;
     }
@@ -96,7 +101,9 @@ public final class DriverExecuteQueryExecutor {
             return sqlFederationEngine.executeQuery(prepareEngine,
                     new ExecuteQueryCallbackFactory(prepareEngine.getType()).newInstance(database, queryContext), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
         }
-        return pushDownExecuteQueryExecutor.executeQuery(database, queryContext, prepareEngine, statement, columnLabelAndIndexMap, addCallback, replayCallback);
+        return database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()
+                ? driverJDBCPushDownExecutor.executeQuery(database, queryContext, prepareEngine, statement, columnLabelAndIndexMap, addCallback, replayCallback)
+                : driverRawPushDownExecutor.executeQuery(database, queryContext, statement, columnLabelAndIndexMap);
     }
     
     private TrafficExecutorCallback<ResultSet> getTrafficExecuteQueryCallback(final String jdbcDriverType) {

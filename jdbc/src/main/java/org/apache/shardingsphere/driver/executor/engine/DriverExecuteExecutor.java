@@ -22,7 +22,8 @@ import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallba
 import org.apache.shardingsphere.driver.executor.callback.execute.ExecuteQueryCallbackFactory;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
-import org.apache.shardingsphere.driver.executor.engine.pushdown.DriverPushDownExecuteExecutor;
+import org.apache.shardingsphere.driver.executor.engine.pushdown.jdbc.DriverJDBCPushDownExecuteExecutor;
+import org.apache.shardingsphere.driver.executor.engine.pushdown.raw.DriverRawPushDownExecuteExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
@@ -57,20 +59,22 @@ public final class DriverExecuteExecutor {
     
     private final ShardingSphereMetaData metaData;
     
-    private final DriverPushDownExecuteExecutor pushDownExecuteExecutor;
+    private final DriverJDBCPushDownExecuteExecutor jdbcPushDownExecutor;
+    
+    private final DriverRawPushDownExecuteExecutor rawPushDownExecutor;
     
     private final TrafficExecutor trafficExecutor;
     
     private final SQLFederationEngine sqlFederationEngine;
     
-    private ExecuteType executeType = ExecuteType.PUSH_DOWN;
+    private ExecuteType executeType;
     
     public DriverExecuteExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final Grantee grantee,
-                                 final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor,
-                                 final TrafficExecutor trafficExecutor, final SQLFederationEngine sqlFederationEngine) {
+                                 final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor, final TrafficExecutor trafficExecutor, final SQLFederationEngine sqlFederationEngine) {
         this.connection = connection;
         this.metaData = metaData;
-        pushDownExecuteExecutor = new DriverPushDownExecuteExecutor(connection, metaData, grantee, jdbcExecutor, rawExecutor);
+        jdbcPushDownExecutor = new DriverJDBCPushDownExecuteExecutor(connection, metaData, grantee, jdbcExecutor);
+        rawPushDownExecutor = new DriverRawPushDownExecuteExecutor(connection, metaData, grantee, rawExecutor);
         this.trafficExecutor = trafficExecutor;
         this.sqlFederationEngine = sqlFederationEngine;
     }
@@ -103,7 +107,12 @@ public final class DriverExecuteExecutor {
         }
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(
                 queryContext, database, metaData.getGlobalRuleMetaData(), metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
-        return pushDownExecuteExecutor.execute(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback);
+        if (database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()) {
+            executeType = ExecuteType.JDBC_PUSH_DOWN;
+            return jdbcPushDownExecutor.execute(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback);
+        }
+        executeType = ExecuteType.RAW_PUSH_DOWN;
+        return rawPushDownExecutor.execute(database, executionContext);
     }
     
     /**
@@ -118,13 +127,16 @@ public final class DriverExecuteExecutor {
      */
     public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
                                             final Statement statement, final List<? extends Statement> statements) throws SQLException {
+        if (null == executeType) {
+            return Optional.empty();
+        }
         switch (executeType) {
             case TRAFFIC:
                 return Optional.of(trafficExecutor.getResultSet());
             case FEDERATION:
                 return Optional.of(sqlFederationEngine.getResultSet());
-            case PUSH_DOWN:
-                return pushDownExecuteExecutor.getResultSet(database, sqlStatementContext, statement, statements);
+            case JDBC_PUSH_DOWN:
+                return jdbcPushDownExecutor.getResultSet(database, sqlStatementContext, statement, statements);
             default:
                 return Optional.empty();
         }
@@ -136,6 +148,8 @@ public final class DriverExecuteExecutor {
         
         FEDERATION,
         
-        PUSH_DOWN
+        JDBC_PUSH_DOWN,
+        
+        RAW_PUSH_DOWN
     }
 }
