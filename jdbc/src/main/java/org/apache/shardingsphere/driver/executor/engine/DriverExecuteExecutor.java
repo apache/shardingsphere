@@ -109,7 +109,7 @@ public final class DriverExecuteExecutor {
                 queryContext, database, metaData.getGlobalRuleMetaData(), metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
         if (database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()) {
             executeType = ExecuteType.JDBC_PUSH_DOWN;
-            return jdbcPushDownExecutor.execute(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback); 
+            return jdbcPushDownExecutor.execute(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback);
         }
         executeType = ExecuteType.RAW_PUSH_DOWN;
         return rawPushDownExecutor.execute(database, executionContext); 
