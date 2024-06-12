@@ -1160,4 +1160,86 @@
             </column-item>
         </group-by>
     </select>
+
+    <select sql-case-id="select_add_date">
+        <projections start-index="7" stop-index="31">
+            <expression-projection text="ADDDATE('2008-01-02', 31)" start-index="7" stop-index="31">
+                <expr>
+                    <function function-name="ADDDATE" start-index="7" stop-index="31" text="ADDDATE('2008-01-02', 31)" >
+                        <parameter>
+                            <literal-expression value="2008-01-02" start-index="15" stop-index="26" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="31" start-index="29" stop-index="30" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_add_time">
+        <projections start-index="7" stop-index="61">
+            <expression-projection text="ADDTIME('2007-12-31 23:59:59.999999', '1 1:1:1.000002')" start-index="7" stop-index="61">
+                <expr>
+                    <function function-name="ADDTIME" start-index="7" stop-index="61" text="ADDTIME('2007-12-31 23:59:59.999999', '1 1:1:1.000002')" >
+                        <parameter>
+                            <literal-expression value="2007-12-31 23:59:59.999999" start-index="15" stop-index="42" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1 1:1:1.000002" start-index="45" stop-index="60" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_aes_decrypt">
+        <projections start-index="7" stop-index="43">
+            <expression-projection text="AES_DECRYPT('encrypt_text','key_str')" start-index="7" stop-index="43">
+                <expr>
+                    <function function-name="AES_DECRYPT" start-index="7" stop-index="43" text="AES_DECRYPT('encrypt_text','key_str')" >
+                        <parameter>
+                            <literal-expression value="encrypt_text" start-index="19" stop-index="32" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="key_str" start-index="34" stop-index="42" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_any_value">
+        <from>
+            <simple-table name="t" start-index="27" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="ANY_VALUE(age)" start-index="7" stop-index="20">
+                <expr>
+                    <function function-name="ANY_VALUE" start-index="7" stop-index="20" text="ANY_VALUE(age)" >
+                        <parameter>
+                            <column name="age" start-index="17" stop-index="19" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_ascii">
+        <projections start-index="7" stop-index="16">
+            <expression-projection text="ASCII('2')" start-index="7" stop-index="16">
+                <expr>
+                    <function function-name="ASCII" start-index="7" stop-index="16" text="ASCII('2')" >
+                        <parameter>
+                            <literal-expression value="2" start-index="13" stop-index="15" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
