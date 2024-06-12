@@ -105,7 +105,9 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitIndexHint(final IndexHintContext ctx) {
         Collection<String> indexNames = new LinkedList<>();
-        ctx.indexName().forEach(each -> indexNames.add(each.getText()));
+        if (null != ctx.indexNameList()) {
+            ctx.indexNameList().indexName().forEach(each -> indexNames.add(each.getText()));
+        }
         String useType;
         if (null != ctx.USE()) {
             useType = ctx.USE().getText();
@@ -116,11 +118,11 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
         }
         IndexHintSegment result = new IndexHintSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), indexNames, useType,
                 null == ctx.INDEX() ? ctx.KEY().getText() : ctx.INDEX().getText(), getOriginalText(ctx));
-        if (null != ctx.FOR()) {
+        if (null != ctx.indexHintClause().FOR()) {
             String hintScope;
-            if (null != ctx.JOIN()) {
+            if (null != ctx.indexHintClause().JOIN()) {
                 hintScope = "JOIN";
-            } else if (null != ctx.ORDER()) {
+            } else if (null != ctx.indexHintClause().ORDER()) {
                 hintScope = "ORDER BY";
             } else {
                 hintScope = "GROUP BY";
