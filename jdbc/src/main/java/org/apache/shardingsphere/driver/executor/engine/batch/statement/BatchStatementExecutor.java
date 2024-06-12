@@ -21,8 +21,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Batch executor for {@link Statement}.
@@ -32,12 +32,12 @@ public final class BatchStatementExecutor {
     
     private final Statement statement;
     
-    private final List<String> batchedSQLs = new LinkedList<>();
+    private final Collection<String> batchedSQLs = new LinkedList<>();
     
     /**
      * Add SQL for batched execution.
      *
-     * @param sql SQL 
+     * @param sql SQL
      */
     public void addBatch(final String sql) {
         batchedSQLs.add(sql);
