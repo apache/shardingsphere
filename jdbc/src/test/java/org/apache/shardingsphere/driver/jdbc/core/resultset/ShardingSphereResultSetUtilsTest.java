@@ -53,7 +53,7 @@ class ShardingSphereResultSetUtilsTest {
     @Test
     void assertCreateColumnLabelAndIndexMapWithSelectWithExpandProjections() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        when(selectStatementContext.isContainsEnhancedTable()).thenReturn(true);
+        when(selectStatementContext.containsDerivedProjections()).thenReturn(true);
         List<Projection> projections = new ArrayList<>(2);
         projections.add(new ColumnProjection(null, "col1", null, mock(DatabaseType.class)));
         projections.add(new ColumnProjection(null, "col2", null, mock(DatabaseType.class)));

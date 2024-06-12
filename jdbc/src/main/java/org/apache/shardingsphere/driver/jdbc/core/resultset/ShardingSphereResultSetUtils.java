@@ -45,7 +45,7 @@ public final class ShardingSphereResultSetUtils {
      * @throws SQLException SQL exception
      */
     public static Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
-        if (containsDerivedProjections(sqlStatementContext)) {
+        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
             return createColumnLabelAndIndexMapWithExpandProjections((SelectStatementContext) sqlStatementContext);
         }
         Map<String, Integer> result = new CaseInsensitiveMap<>(resultSetMetaData.getColumnCount(), 1F);
@@ -53,12 +53,6 @@ public final class ShardingSphereResultSetUtils {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
         }
         return result;
-    }
-    
-    private static boolean containsDerivedProjections(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext
-                && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable()
-                && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
     
     private static Map<String, Integer> createColumnLabelAndIndexMapWithExpandProjections(final SelectStatementContext statementContext) {
