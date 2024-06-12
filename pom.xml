@@ -867,6 +867,9 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
+                        <includes>
+                            <include>**/*IT.java</include>
+                        </includes>
                         <trimStackTrace>false</trimStackTrace>
                     </configuration>
                 </plugin>
