@@ -73,7 +73,6 @@
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-common</artifactId>
             <version>${hive.version}</version>
-            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>jdk.tools</groupId>
@@ -169,7 +168,6 @@
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-metastore</artifactId>
             <version>${hive.version}</version>
-            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
