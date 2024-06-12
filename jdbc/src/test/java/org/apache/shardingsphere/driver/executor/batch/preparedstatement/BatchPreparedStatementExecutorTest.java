@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.batch.statement;
+package org.apache.shardingsphere.driver.executor.batch.preparedstatement;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchExecutionUnit;
-import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchPreparedStatementExecutor;
+import org.apache.shardingsphere.driver.executor.engine.batch.preparedstatement.BatchExecutionUnit;
+import org.apache.shardingsphere.driver.executor.engine.batch.preparedstatement.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;

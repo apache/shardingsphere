@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.engine.batch;
+package org.apache.shardingsphere.driver.executor.engine.batch.preparedstatement;
 
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.keygen.GeneratedKeyCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.PreparedStatementParametersReplayCallback;
-import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchExecutionUnit;
-import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
