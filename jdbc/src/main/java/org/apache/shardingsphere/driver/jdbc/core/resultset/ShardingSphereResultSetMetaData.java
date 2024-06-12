@@ -48,13 +48,9 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public int getColumnCount() throws SQLException {
-        if (sqlStatementContext instanceof SelectStatementContext) {
-            if (selectContainsEnhancedTable && hasSelectExpandProjections()) {
-                return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size();
-            }
-            return resultSetMetaData.getColumnCount();
-        }
-        return resultSetMetaData.getColumnCount();
+        return selectContainsEnhancedTable && hasSelectExpandProjections()
+                ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size()
+                : resultSetMetaData.getColumnCount();
     }
     
     @Override
