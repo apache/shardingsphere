@@ -23,7 +23,6 @@ import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplay
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetFactory;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
@@ -100,10 +99,7 @@ public final class DriverJDBCPushDownExecuteQueryExecutor {
                                                 final Map<String, Integer> columnLabelAndIndexMap,
                                                 final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
         List<QueryResult> queryResults = getQueryResults(database, queryContext, prepareEngine, addCallback, replayCallback);
-        boolean isContainsEnhancedTable = queryContext.getSqlStatementContext() instanceof SelectStatementContext
-                && ((SelectStatementContext) queryContext.getSqlStatementContext()).isContainsEnhancedTable();
-        return new ShardingSphereResultSetFactory(connectionContext, globalRuleMetaData, props, statements)
-                .newInstance(database, queryContext, queryResults, statement, columnLabelAndIndexMap, isContainsEnhancedTable);
+        return new ShardingSphereResultSetFactory(connectionContext, globalRuleMetaData, props, statements).newInstance(database, queryContext, queryResults, statement, columnLabelAndIndexMap);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

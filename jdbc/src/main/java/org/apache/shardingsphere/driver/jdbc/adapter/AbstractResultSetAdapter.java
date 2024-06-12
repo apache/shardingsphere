@@ -45,26 +45,23 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     @Getter
     private final Statement statement;
     
-    private final boolean selectContainsEnhancedTable;
-    
     private final SQLStatementContext sqlStatementContext;
     
     private final ForceExecuteTemplate<ResultSet> forceExecuteTemplate;
     
     private boolean closed;
     
-    protected AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final boolean selectContainsEnhancedTable, final SQLStatementContext sqlStatementContext) {
+    protected AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final SQLStatementContext sqlStatementContext) {
         Preconditions.checkArgument(!resultSets.isEmpty());
         this.resultSets = resultSets;
         this.statement = statement;
-        this.selectContainsEnhancedTable = selectContainsEnhancedTable;
         this.sqlStatementContext = sqlStatementContext;
         forceExecuteTemplate = new ForceExecuteTemplate<>();
     }
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingSphereResultSetMetaData(resultSets.get(0).getMetaData(), getDatabase(), selectContainsEnhancedTable, sqlStatementContext);
+        return new ShardingSphereResultSetMetaData(resultSets.get(0).getMetaData(), getDatabase(), sqlStatementContext);
     }
     
     private ShardingSphereDatabase getDatabase() {

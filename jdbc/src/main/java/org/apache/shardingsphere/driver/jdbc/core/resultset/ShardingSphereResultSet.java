@@ -66,16 +66,15 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     @Getter
     private final Map<String, Integer> columnLabelAndIndexMap;
     
-    public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final boolean selectContainsEnhancedTable,
-                                   final SQLStatementContext sqlStatementContext) throws SQLException {
-        super(resultSets, statement, selectContainsEnhancedTable, sqlStatementContext);
+    public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final SQLStatementContext sqlStatementContext) throws SQLException {
+        super(resultSets, statement, sqlStatementContext);
         this.mergeResultSet = mergeResultSet;
-        columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, selectContainsEnhancedTable, resultSets.get(0).getMetaData());
+        columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData());
     }
     
-    public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final boolean selectContainsEnhancedTable,
+    public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement,
                                    final SQLStatementContext sqlStatementContext, final Map<String, Integer> columnLabelAndIndexMap) {
-        super(resultSets, statement, selectContainsEnhancedTable, sqlStatementContext);
+        super(resultSets, statement, sqlStatementContext);
         this.mergeResultSet = mergeResultSet;
         this.columnLabelAndIndexMap = columnLabelAndIndexMap;
     }

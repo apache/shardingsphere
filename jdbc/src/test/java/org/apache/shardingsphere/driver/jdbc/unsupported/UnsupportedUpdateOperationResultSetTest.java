@@ -48,7 +48,7 @@ class UnsupportedUpdateOperationResultSetTest {
     @BeforeEach
     void init() throws SQLException {
         shardingSphereResultSet = new ShardingSphereResultSet(
-                Collections.singletonList(mock(ResultSet.class, RETURNS_DEEP_STUBS)), mock(MergedResult.class), mock(Statement.class), true, mock(SQLStatementContext.class));
+                Collections.singletonList(mock(ResultSet.class, RETURNS_DEEP_STUBS)), mock(MergedResult.class), mock(Statement.class), mock(SQLStatementContext.class));
     }
     
     @Test

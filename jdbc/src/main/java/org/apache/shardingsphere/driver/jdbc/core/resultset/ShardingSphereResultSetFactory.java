@@ -59,17 +59,16 @@ public final class ShardingSphereResultSetFactory {
      * @param queryResults query results
      * @param statement statement
      * @param columnLabelAndIndexMap column label and index map
-     * @param isContainsEnhancedTable is contains enhanced table
      * @return created instance
      * @throws SQLException SQL exception
      */
-    public ShardingSphereResultSet newInstance(final ShardingSphereDatabase database, final QueryContext queryContext, final List<QueryResult> queryResults, final Statement statement,
-                                               final Map<String, Integer> columnLabelAndIndexMap, final boolean isContainsEnhancedTable) throws SQLException {
+    public ShardingSphereResultSet newInstance(final ShardingSphereDatabase database, final QueryContext queryContext, final List<QueryResult> queryResults,
+                                               final Statement statement, final Map<String, Integer> columnLabelAndIndexMap) throws SQLException {
         List<ResultSet> resultSets = getResultSets();
         MergedResult mergedResult = new MergeEngine(globalRuleMetaData, database, props, connectionContext).merge(queryResults, queryContext.getSqlStatementContext());
-        return new ShardingSphereResultSet(resultSets, mergedResult, statement, isContainsEnhancedTable, queryContext.getSqlStatementContext(),
+        return new ShardingSphereResultSet(resultSets, mergedResult, statement, queryContext.getSqlStatementContext(),
                 null == columnLabelAndIndexMap
-                        ? ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(queryContext.getSqlStatementContext(), isContainsEnhancedTable, resultSets.get(0).getMetaData())
+                        ? ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(queryContext.getSqlStatementContext(), resultSets.get(0).getMetaData())
                         : columnLabelAndIndexMap);
     }
     

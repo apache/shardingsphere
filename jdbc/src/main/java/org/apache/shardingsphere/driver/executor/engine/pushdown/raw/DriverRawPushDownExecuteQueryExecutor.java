@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.executor.engine.pushdown.raw;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetFactory;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
@@ -85,10 +84,8 @@ public final class DriverRawPushDownExecuteQueryExecutor {
     public ShardingSphereResultSet executeQuery(final ShardingSphereDatabase database, final QueryContext queryContext, final Statement statement,
                                                 final Map<String, Integer> columnLabelAndIndexMap) throws SQLException {
         List<QueryResult> queryResults = getQueryResults(database, queryContext);
-        boolean isContainsEnhancedTable = queryContext.getSqlStatementContext() instanceof SelectStatementContext
-                && ((SelectStatementContext) queryContext.getSqlStatementContext()).isContainsEnhancedTable();
         return new ShardingSphereResultSetFactory(connectionContext, globalRuleMetaData, props, Collections.emptyList())
-                .newInstance(database, queryContext, queryResults, statement, columnLabelAndIndexMap, isContainsEnhancedTable);
+                .newInstance(database, queryContext, queryResults, statement, columnLabelAndIndexMap);
     }
     
     private List<QueryResult> getQueryResults(final ShardingSphereDatabase database, final QueryContext queryContext) throws SQLException {

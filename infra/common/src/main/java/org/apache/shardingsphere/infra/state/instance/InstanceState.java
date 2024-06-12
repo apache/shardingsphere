@@ -34,7 +34,7 @@ public enum InstanceState {
      */
     public static Optional<InstanceState> get(final String state) {
         try {
-            return Optional.ofNullable(state).isPresent() ? Optional.of(InstanceState.valueOf(state)) : Optional.empty();
+            return Optional.ofNullable(state).isPresent() ? Optional.of(valueOf(state)) : Optional.empty();
         } catch (final IllegalArgumentException ignore) {
             return Optional.empty();
         }
