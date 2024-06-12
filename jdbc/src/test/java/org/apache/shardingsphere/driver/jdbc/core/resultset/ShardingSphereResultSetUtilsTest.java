@@ -46,7 +46,7 @@ class ShardingSphereResultSetUtilsTest {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("label");
-        Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(selectStatementContext, true, resultSetMetaData);
+        Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(selectStatementContext, resultSetMetaData);
         assertThat(actual, is(Collections.singletonMap("label", 1)));
     }
     
@@ -60,7 +60,7 @@ class ShardingSphereResultSetUtilsTest {
         Map<String, Integer> expected = new HashMap<>(2, 1F);
         expected.put("col1", 1);
         expected.put("col2", 2);
-        Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(selectStatementContext, true, null);
+        Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(selectStatementContext, null);
         assertThat(actual, is(expected));
     }
 }

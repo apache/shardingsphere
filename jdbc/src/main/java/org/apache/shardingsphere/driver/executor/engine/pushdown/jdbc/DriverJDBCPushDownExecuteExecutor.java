@@ -148,8 +148,7 @@ public final class DriverJDBCPushDownExecuteExecutor {
             List<QueryResult> queryResults = getQueryResults(resultSets);
             MergedResult mergedResult = new MergeEngine(metaData.getGlobalRuleMetaData(), database, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext())
                     .merge(queryResults, sqlStatementContext);
-            boolean selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
-            return Optional.of(new ShardingSphereResultSet(resultSets, mergedResult, statement, selectContainsEnhancedTable, sqlStatementContext));
+            return Optional.of(new ShardingSphereResultSet(resultSets, mergedResult, statement, sqlStatementContext));
         }
         return Optional.empty();
     }

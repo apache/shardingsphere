@@ -111,7 +111,6 @@ class ResultSetAdapterTest {
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("col");
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        return new ShardingSphereResultSet(Collections.singletonList(resultSet), mock(MergedResult.class), mock(ShardingSphereStatement.class, RETURNS_DEEP_STUBS),
-                true, mock(SQLStatementContext.class));
+        return new ShardingSphereResultSet(Collections.singletonList(resultSet), mock(MergedResult.class), mock(ShardingSphereStatement.class, RETURNS_DEEP_STUBS), mock(SQLStatementContext.class));
     }
 }

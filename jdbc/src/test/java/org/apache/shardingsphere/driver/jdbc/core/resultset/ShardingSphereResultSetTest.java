@@ -71,7 +71,7 @@ class ShardingSphereResultSetTest {
     @BeforeEach
     void setUp() throws SQLException {
         mergeResultSet = mock(MergedResult.class);
-        shardingSphereResultSet = new ShardingSphereResultSet(getResultSets(), mergeResultSet, getShardingSphereStatement(), true, createSQLStatementContext());
+        shardingSphereResultSet = new ShardingSphereResultSet(getResultSets(), mergeResultSet, getShardingSphereStatement(), createSQLStatementContext());
     }
     
     private SQLStatementContext createSQLStatementContext() {

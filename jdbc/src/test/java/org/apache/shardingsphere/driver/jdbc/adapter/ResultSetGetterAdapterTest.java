@@ -440,6 +440,6 @@ class ResultSetGetterAdapterTest {
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        return new ShardingSphereResultSet(Collections.singletonList(resultSet), mergedResult, mock(Statement.class), true, sqlStatementContext);
+        return new ShardingSphereResultSet(Collections.singletonList(resultSet), mergedResult, mock(Statement.class), sqlStatementContext);
     }
 }
