@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.engine.batch.statement;
+package org.apache.shardingsphere.driver.executor.engine.batch.preparedstatement;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
