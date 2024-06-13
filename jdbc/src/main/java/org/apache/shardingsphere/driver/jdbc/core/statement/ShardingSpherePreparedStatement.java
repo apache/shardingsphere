@@ -149,6 +149,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         database = metaData.getDatabase(databaseName);
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         statementManager = new StatementManager();
+        connection.getStatementManagers().add(statementManager);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, JDBCDriverType.PREPARED_STATEMENT, new Grantee("", ""));
         executeBatchExecutor = new DriverExecuteBatchExecutor(connection, metaData, statementOption, statementManager, database);

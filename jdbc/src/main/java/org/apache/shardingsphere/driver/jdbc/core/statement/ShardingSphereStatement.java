@@ -103,6 +103,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         statementManager = new StatementManager();
+        connection.getStatementManagers().add(statementManager);
         driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, JDBCDriverType.STATEMENT, new Grantee("", ""));
         batchStatementExecutor = new BatchStatementExecutor(this);
         statements = new LinkedList<>();
