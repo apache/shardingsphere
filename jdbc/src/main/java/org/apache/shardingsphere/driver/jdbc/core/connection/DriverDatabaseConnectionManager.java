@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.OnlineDatabas
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -67,7 +68,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
     
     private final ContextManager contextManager;
     
-    private final String databaseName;
+    private final ShardingSphereDatabase database;
     
     @Getter
     private final ConnectionContext connectionContext;
@@ -86,13 +87,13 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
     
     private final Random random = new SecureRandom();
     
-    public DriverDatabaseConnectionManager(final String databaseName, final ContextManager contextManager) {
+    public DriverDatabaseConnectionManager(final ShardingSphereDatabase database, final ContextManager contextManager) {
         this.contextManager = contextManager;
-        this.databaseName = databaseName;
+        this.database = database;
         connectionContext = new ConnectionContext(cachedConnections::keySet);
-        connectionContext.setCurrentDatabase(databaseName);
-        physicalDataSourceMap = getPhysicalDataSourceMap(databaseName, contextManager);
-        trafficDataSourceMap = getTrafficDataSourceMap(databaseName, contextManager);
+        connectionContext.setCurrentDatabase(database.getName());
+        physicalDataSourceMap = getPhysicalDataSourceMap(database.getName(), contextManager);
+        trafficDataSourceMap = getTrafficDataSourceMap(database.getName(), contextManager);
         dataSourceMap = new LinkedHashMap<>(physicalDataSourceMap.size() + trafficDataSourceMap.size(), 1F);
         dataSourceMap.putAll(physicalDataSourceMap);
         dataSourceMap.putAll(trafficDataSourceMap);
@@ -113,13 +114,12 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
             return Collections.emptyMap();
         }
         MetaDataPersistService persistService = contextManager.getPersistServiceFacade().getMetaDataPersistService();
-        String actualDatabaseName = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName();
-        Map<String, DataSourcePoolProperties> propsMap = persistService.getDataSourceUnitService().load(actualDatabaseName);
+        Map<String, DataSourcePoolProperties> propsMap = persistService.getDataSourceUnitService().load(databaseName);
         Preconditions.checkState(!propsMap.isEmpty(), "Can not get data source properties from meta data.");
         DataSourcePoolProperties propsSample = propsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getConfiguration().getUsers();
         Collection<InstanceMetaData> instances = contextManager.getComputeNodeInstanceContext().getAllClusterInstances(InstanceType.PROXY, rule.getLabels()).values();
-        Map<String, DataSource> trafficDataSourceMap = DataSourcePoolCreator.create(createDataSourcePoolPropertiesMap(instances, users, propsSample, actualDatabaseName), true);
+        Map<String, DataSource> trafficDataSourceMap = DataSourcePoolCreator.create(createDataSourcePoolPropertiesMap(instances, users, propsSample, databaseName), true);
         Map<String, DataSource> result = new LinkedHashMap<>(trafficDataSourceMap.size(), 1F);
         for (Entry<String, DataSource> entry : trafficDataSourceMap.entrySet()) {
             result.put(getKey(databaseName, entry.getKey()), entry.getValue());
@@ -347,13 +347,13 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionOffset, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return getConnections(connectionContext.getDatabaseName().orElse(databaseName), dataSourceName, connectionOffset, connectionSize, connectionMode);
+        return getConnections(connectionContext.getDatabaseName().orElse(database.getName()), dataSourceName, connectionOffset, connectionSize, connectionMode);
     }
     
     private List<Connection> getConnections(final String currentDatabaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
                                             final ConnectionMode connectionMode) throws SQLException {
         String cacheKey = getKey(currentDatabaseName, dataSourceName);
-        DataSource dataSource = databaseName.equals(currentDatabaseName)
+        DataSource dataSource = database.getName().equals(currentDatabaseName)
                 ? dataSourceMap.get(cacheKey)
                 : contextManager.getStorageUnits(currentDatabaseName).get(dataSourceName).getDataSource();
         Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);

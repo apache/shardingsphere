@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
@@ -70,7 +71,9 @@ class DriverDatabaseConnectionManagerTest {
     
     @BeforeEach
     void setUp() throws SQLException {
-        databaseConnectionManager = new DriverDatabaseConnectionManager(DefaultDatabase.LOGIC_NAME, mockContextManager());
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        databaseConnectionManager = new DriverDatabaseConnectionManager(database, mockContextManager());
     }
     
     private ContextManager mockContextManager() throws SQLException {
