@@ -57,19 +57,17 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     private final ContextManager contextManager;
     
     public ShardingSphereDataSource(final String databaseName, final ModeConfiguration modeConfig) throws SQLException {
-        this.databaseName = databaseName;
-        contextManager = createContextManager(databaseName, modeConfig, new LinkedHashMap<>(), new LinkedList<>(), new Properties());
-        contextManagerInitializedCallback(databaseName, contextManager);
+        this(databaseName, modeConfig, new LinkedHashMap<>(), new LinkedList<>(), new Properties());
     }
     
     public ShardingSphereDataSource(final String databaseName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.databaseName = databaseName;
-        contextManager = createContextManager(databaseName, modeConfig, dataSourceMap, ruleConfigs, null == props ? new Properties() : props);
-        contextManagerInitializedCallback(databaseName, contextManager);
+        contextManager = createContextManager(modeConfig, dataSourceMap, ruleConfigs, null == props ? new Properties() : props);
+        contextManagerInitializedCallback();
     }
     
-    private ContextManager createContextManager(final String databaseName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
+    private ContextManager createContextManager(final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                                 final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         InstanceMetaData instanceMetaData = TypedSPILoader.getService(InstanceMetaDataBuilder.class, "JDBC").build(-1);
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(GlobalRuleConfiguration.class::isInstance).collect(Collectors.toList());
@@ -80,7 +78,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         return TypedSPILoader.getService(ContextManagerBuilder.class, null == modeConfig ? null : modeConfig.getType()).build(param, new EventBusContext());
     }
     
-    private void contextManagerInitializedCallback(final String databaseName, final ContextManager contextManager) {
+    private void contextManagerInitializedCallback() {
         for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
             try {
                 each.onInitialized(databaseName, contextManager);
@@ -101,6 +99,19 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     @Override
     public Connection getConnection(final String username, final String password) {
         return getConnection();
+    }
+    
+    @Override
+    public int getLoginTimeout() throws SQLException {
+        Map<String, StorageUnit> storageUnits = contextManager.getStorageUnits(databaseName);
+        return storageUnits.isEmpty() ? 0 : storageUnits.values().iterator().next().getDataSource().getLoginTimeout();
+    }
+    
+    @Override
+    public void setLoginTimeout(final int seconds) throws SQLException {
+        for (StorageUnit each : contextManager.getStorageUnits(databaseName).values()) {
+            each.getDataSource().setLoginTimeout(seconds);
+        }
     }
     
     @Override
@@ -126,25 +137,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     private void contextManagerDestroyedCallback(final String databaseName) {
         for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
-            try {
-                each.onDestroyed(databaseName, InstanceType.JDBC);
-                // CHECKSTYLE:OFF
-            } catch (final RuntimeException ignored) {
-                // CHECKSTYLE:ON
-            }
-        }
-    }
-    
-    @Override
-    public int getLoginTimeout() throws SQLException {
-        Map<String, StorageUnit> storageUnits = contextManager.getStorageUnits(databaseName);
-        return storageUnits.isEmpty() ? 0 : storageUnits.values().iterator().next().getDataSource().getLoginTimeout();
-    }
-    
-    @Override
-    public void setLoginTimeout(final int seconds) throws SQLException {
-        for (StorageUnit each : contextManager.getStorageUnits(databaseName).values()) {
-            each.getDataSource().setLoginTimeout(seconds);
+            each.onDestroyed(databaseName, InstanceType.JDBC);
         }
     }
 }
