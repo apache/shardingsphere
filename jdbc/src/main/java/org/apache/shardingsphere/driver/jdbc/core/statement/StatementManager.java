@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -51,17 +52,12 @@ public final class StatementManager implements ExecutorJDBCStatementManager, Aut
     @Override
     public Statement createStorageResource(final ExecutionUnit executionUnit, final Connection connection, final ConnectionMode connectionMode, final StatementOption option,
                                            final DatabaseType databaseType) throws SQLException {
-        Statement result = cachedStatements.get(new CacheKey(executionUnit, connectionMode));
-        if (null == result || result.isClosed() || result.getConnection().isClosed()) {
-            String sql = executionUnit.getSqlUnit().getSql();
-            if (option.isReturnGeneratedKeys()) {
-                result = null == option.getColumns() || 0 == option.getColumns().length
-                        ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-                        : connection.prepareStatement(sql, option.getColumns());
-            } else {
-                result = prepareStatement(connection, option, sql);
-            }
-            cachedStatements.put(new CacheKey(executionUnit, connectionMode), result);
+        CacheKey cacheKey = new CacheKey(executionUnit, connectionMode);
+        Statement result = cachedStatements.get(cacheKey);
+        if (null == result || result.getConnection().isClosed() || result.isClosed()) {
+            Optional.ofNullable(result).ifPresent(optional -> cachedStatements.remove(cacheKey));
+            result = prepareStatement(executionUnit, connection, option);
+            cachedStatements.put(cacheKey, result);
         }
         return result;
     }
@@ -77,11 +73,24 @@ public final class StatementManager implements ExecutorJDBCStatementManager, Aut
         return result;
     }
     
-    @SuppressWarnings("MagicConstant")
-    private PreparedStatement prepareStatement(final Connection connection, final StatementOption option, final String sql) throws SQLException {
+    private PreparedStatement prepareStatement(final ExecutionUnit executionUnit, final Connection connection, final StatementOption option) throws SQLException {
+        PreparedStatement result;
+        String sql = executionUnit.getSqlUnit().getSql();
+        if (option.isReturnGeneratedKeys()) {
+            result = null == option.getColumns() || 0 == option.getColumns().length
+                    ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+                    : connection.prepareStatement(sql, option.getColumns());
+        } else {
+            result = prepareStatement(connection, sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
+        }
+        return result;
+    }
+    
+    private PreparedStatement prepareStatement(final Connection connection, final String sql, final int resultSetType, final int resultSetConcurrency,
+                                               final int resultSetHoldability) throws SQLException {
         PreparedStatement result;
         try {
-            result = connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
+            result = connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
         } catch (final SQLFeatureNotSupportedException ignore) {
             result = connection.prepareStatement(sql);
         }

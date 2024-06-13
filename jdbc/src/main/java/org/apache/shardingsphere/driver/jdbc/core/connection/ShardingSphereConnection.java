@@ -20,9 +20,11 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.exception.ConnectionClosedException;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
+import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
+import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
@@ -43,7 +45,9 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * ShardingSphere connection.
@@ -53,6 +57,8 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private final ProcessEngine processEngine = new ProcessEngine();
     
+    private final ForceExecuteTemplate<StatementManager> forceExecuteTemplate = new ForceExecuteTemplate<>();
+    
     @Getter
     private final String databaseName;
     
@@ -61,6 +67,9 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Getter
     private final DriverDatabaseConnectionManager databaseConnectionManager;
+    
+    @Getter
+    private final Collection<StatementManager> statementManagers = new CopyOnWriteArrayList<>();
     
     @Getter
     private final String processId;
@@ -344,8 +353,13 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             databaseConnectionManager.getConnectionTransaction().rollback();
         }
         closed = true;
-        databaseConnectionManager.close();
         processEngine.disconnect(processId);
+        try {
+            forceExecuteTemplate.execute(statementManagers, StatementManager::close);
+        } finally {
+            statementManagers.clear();
+            databaseConnectionManager.close();
+        }
     }
     
     private ConnectionContext getConnectionContext() {
