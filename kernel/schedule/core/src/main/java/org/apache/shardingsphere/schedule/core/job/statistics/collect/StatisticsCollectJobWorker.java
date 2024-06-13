@@ -19,6 +19,7 @@ package org.apache.shardingsphere.schedule.core.job.statistics.collect;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
@@ -35,6 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Statistics collect job worker.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class StatisticsCollectJobWorker {
     
     private static final String JOB_NAME = "statistics-collect";
@@ -61,7 +63,7 @@ public final class StatisticsCollectJobWorker {
             bootstrap.schedule();
             return;
         }
-        throw new IllegalArgumentException("Unsupported cluster type: " + modeConfig.getRepository().getType());
+        log.warn("Can not collect statistics because of unsupported cluster type: {}", modeConfig.getRepository().getType());
     }
     
     private static CoordinatorRegistryCenter createRegistryCenter(final ModeConfiguration modeConfig) {
