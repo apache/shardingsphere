@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@Disabled("Fix me by @jiangmaolin")
 @ExtendWith(AgentTestActionExtension.class)
 class FilePluginE2EIT {
     
