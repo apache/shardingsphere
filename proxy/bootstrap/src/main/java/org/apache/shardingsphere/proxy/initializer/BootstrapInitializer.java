@@ -22,14 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyConfigurationSwapper;
@@ -58,7 +56,6 @@ public final class BootstrapInitializer {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
         ContextManager contextManager = createContextManager(proxyConfig, modeConfig, port, force);
         ProxyContext.init(contextManager);
-        contextManagerInitializedCallback(contextManager);
         ShardingSphereProxyVersion.setVersion(contextManager);
     }
     
@@ -71,17 +68,5 @@ public final class BootstrapInitializer {
     
     private InstanceMetaData createInstanceMetaData(final int port) {
         return TypedSPILoader.getService(InstanceMetaDataBuilder.class, "Proxy").build(port);
-    }
-    
-    private void contextManagerInitializedCallback(final ContextManager contextManager) {
-        for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
-            try {
-                each.onInitialized(contextManager);
-                // CHECKSTYLE:OFF
-            } catch (final RuntimeException ex) {
-                // CHECKSTYLE:ON
-                log.error("contextManager onInitialized callback for '{}' failed", each.getClass().getName(), ex);
-            }
-        }
     }
 }

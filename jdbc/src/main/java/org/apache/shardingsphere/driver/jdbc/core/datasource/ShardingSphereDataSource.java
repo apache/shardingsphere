@@ -27,13 +27,11 @@ import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -63,7 +61,6 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.databaseName = databaseName;
         contextManager = createContextManager(modeConfig, dataSourceMap, ruleConfigs, null == props ? new Properties() : props);
-        contextManagerInitializedCallback();
     }
     
     private ContextManager createContextManager(final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
@@ -75,12 +72,6 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         ContextManagerBuilderParameter param = new ContextManagerBuilderParameter(modeConfig, Collections.singletonMap(databaseName,
                 new DataSourceProvidedDatabaseConfiguration(dataSourceMap, databaseRuleConfigs)), Collections.emptyMap(), globalRuleConfigs, props, Collections.emptyList(), instanceMetaData, false);
         return TypedSPILoader.getService(ContextManagerBuilder.class, null == modeConfig ? null : modeConfig.getType()).build(param, new EventBusContext());
-    }
-    
-    private void contextManagerInitializedCallback() {
-        for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
-            each.onInitialized(contextManager);
-        }
     }
     
     @HighFrequencyInvocation(canBeCached = true)
@@ -110,7 +101,6 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     @Override
     public void close() throws SQLException {
-        contextManagerDestroyedCallback();
         for (StorageUnit each : contextManager.getStorageUnits(databaseName).values()) {
             close(each.getDataSource());
         }
@@ -126,12 +116,6 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
                 // CHECKSTYLE:ON
                 throw new SQLException(ex);
             }
-        }
-    }
-    
-    private void contextManagerDestroyedCallback() {
-        for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
-            each.onDestroyed(contextManager);
         }
     }
 }
