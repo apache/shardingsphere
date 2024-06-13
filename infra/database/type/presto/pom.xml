@@ -26,10 +26,6 @@
     <artifactId>shardingsphere-infra-database-presto</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <presto.version>0.282</presto.version>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -39,7 +35,6 @@
         <dependency>
             <groupId>com.facebook.presto</groupId>
             <artifactId>presto-jdbc</artifactId>
-            <version>${presto.version}</version>
             <scope>runtime</scope>
         </dependency>
         
