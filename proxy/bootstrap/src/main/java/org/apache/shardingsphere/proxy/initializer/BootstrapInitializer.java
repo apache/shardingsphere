@@ -76,7 +76,7 @@ public final class BootstrapInitializer {
     private void contextManagerInitializedCallback(final ContextManager contextManager) {
         for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
             try {
-                each.onInitialized(null, contextManager);
+                each.onInitialized(contextManager);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
