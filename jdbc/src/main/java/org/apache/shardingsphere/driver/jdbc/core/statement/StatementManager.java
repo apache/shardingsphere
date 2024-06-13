@@ -86,7 +86,8 @@ public final class StatementManager implements ExecutorJDBCStatementManager, Aut
         return result;
     }
     
-    private PreparedStatement prepareStatement(Connection connection, String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+    private PreparedStatement prepareStatement(final Connection connection, final String sql, final int resultSetType, final int resultSetConcurrency,
+                                               final int resultSetHoldability) throws SQLException {
         PreparedStatement result;
         try {
             result = connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
