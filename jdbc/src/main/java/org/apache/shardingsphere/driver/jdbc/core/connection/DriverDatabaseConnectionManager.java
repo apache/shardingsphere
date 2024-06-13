@@ -65,11 +65,18 @@ import java.util.Random;
  */
 public final class DriverDatabaseConnectionManager implements OnlineDatabaseConnectionManager<Connection>, AutoCloseable {
     
-    private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
+    private final ContextManager contextManager;
     
-    private final Map<String, DataSource> physicalDataSourceMap = new LinkedHashMap<>();
+    private final String databaseName;
     
-    private final Map<String, DataSource> trafficDataSourceMap = new LinkedHashMap<>();
+    @Getter
+    private final ConnectionContext connectionContext;
+    
+    private final Map<String, DataSource> physicalDataSourceMap;
+    
+    private final Map<String, DataSource> trafficDataSourceMap;
+    
+    private final Map<String, DataSource> dataSourceMap;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
@@ -79,29 +86,25 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
     
     private final Random random = new SecureRandom();
     
-    @Getter
-    private final ConnectionContext connectionContext;
-    
-    private final ContextManager contextManager;
-    
-    private final String databaseName;
-    
     public DriverDatabaseConnectionManager(final String databaseName, final ContextManager contextManager) {
-        for (Entry<String, StorageUnit> entry : contextManager.getStorageUnits(databaseName).entrySet()) {
-            DataSource dataSource = entry.getValue().getDataSource();
-            String cacheKey = getKey(databaseName, entry.getKey());
-            dataSourceMap.put(cacheKey, dataSource);
-            physicalDataSourceMap.put(cacheKey, dataSource);
-        }
-        for (Entry<String, DataSource> entry : getTrafficDataSourceMap(databaseName, contextManager).entrySet()) {
-            String cacheKey = getKey(databaseName, entry.getKey());
-            dataSourceMap.put(cacheKey, entry.getValue());
-            trafficDataSourceMap.put(cacheKey, entry.getValue());
-        }
-        connectionContext = new ConnectionContext(cachedConnections::keySet);
-        connectionContext.setCurrentDatabase(databaseName);
         this.contextManager = contextManager;
         this.databaseName = databaseName;
+        connectionContext = new ConnectionContext(cachedConnections::keySet);
+        connectionContext.setCurrentDatabase(databaseName);
+        physicalDataSourceMap = getPhysicalDataSourceMap(databaseName, contextManager);
+        trafficDataSourceMap = getTrafficDataSourceMap(databaseName, contextManager);
+        dataSourceMap = new LinkedHashMap<>(physicalDataSourceMap.size() + trafficDataSourceMap.size(), 1F);
+        dataSourceMap.putAll(physicalDataSourceMap);
+        dataSourceMap.putAll(trafficDataSourceMap);
+    }
+    
+    private Map<String, DataSource> getPhysicalDataSourceMap(final String databaseName, final ContextManager contextManager) {
+        Map<String, StorageUnit> stringStorageUnits = contextManager.getStorageUnits(databaseName);
+        Map<String, DataSource> result = new LinkedHashMap<>(stringStorageUnits.size(), 1F);
+        for (Entry<String, StorageUnit> entry : stringStorageUnits.entrySet()) {
+            result.put(getKey(databaseName, entry.getKey()), entry.getValue().getDataSource());
+        }
+        return result;
     }
     
     private Map<String, DataSource> getTrafficDataSourceMap(final String databaseName, final ContextManager contextManager) {
@@ -114,10 +117,14 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
         Map<String, DataSourcePoolProperties> propsMap = persistService.getDataSourceUnitService().load(actualDatabaseName);
         Preconditions.checkState(!propsMap.isEmpty(), "Can not get data source properties from meta data.");
         DataSourcePoolProperties propsSample = propsMap.values().iterator().next();
-        Collection<ShardingSphereUser> users = contextManager.getMetaDataContexts().getMetaData()
-                .getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getConfiguration().getUsers();
+        Collection<ShardingSphereUser> users = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getConfiguration().getUsers();
         Collection<InstanceMetaData> instances = contextManager.getComputeNodeInstanceContext().getAllClusterInstances(InstanceType.PROXY, rule.getLabels()).values();
-        return DataSourcePoolCreator.create(createDataSourcePoolPropertiesMap(instances, users, propsSample, actualDatabaseName), true);
+        Map<String, DataSource> trafficDataSourceMap = DataSourcePoolCreator.create(createDataSourcePoolPropertiesMap(instances, users, propsSample, actualDatabaseName), true);
+        Map<String, DataSource> result = new LinkedHashMap<>(trafficDataSourceMap.size(), 1F);
+        for (Entry<String, DataSource> entry : trafficDataSourceMap.entrySet()) {
+            result.put(getKey(databaseName, entry.getKey()), entry.getValue());
+        }
+        return result;
     }
     
     private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap(final Collection<InstanceMetaData> instances, final Collection<ShardingSphereUser> users,
