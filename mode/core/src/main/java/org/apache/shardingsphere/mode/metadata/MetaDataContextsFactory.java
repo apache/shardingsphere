@@ -46,12 +46,10 @@ import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.storage.QualifiedDataSourceState;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -66,7 +64,7 @@ public final class MetaDataContextsFactory {
     
     /**
      * Create meta data contexts.
-     *
+     * 
      * @param persistService persist service
      * @param param context manager builder parameter
      * @param computeNodeInstanceContext compute node instance context
@@ -75,21 +73,6 @@ public final class MetaDataContextsFactory {
      */
     public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
                                           final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
-        return create(persistService, param, computeNodeInstanceContext, Collections.emptyMap());
-    }
-    
-    /**
-     * Create meta data contexts.
-     * 
-     * @param persistService persist service
-     * @param param context manager builder parameter
-     * @param computeNodeInstanceContext compute node instance context
-     * @param statusMap qualified data source status map
-     * @return meta data contexts
-     * @throws SQLException SQL exception
-     */
-    public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
-                                          final ComputeNodeInstanceContext computeNodeInstanceContext, final Map<String, QualifiedDataSourceState> statusMap) throws SQLException {
         boolean isDatabaseMetaDataExisted = !persistService.getDatabaseMetaDataService().loadAllDatabaseNames().isEmpty();
         Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = isDatabaseMetaDataExisted
                 ? createEffectiveDatabaseConfigurations(getDatabaseNames(computeNodeInstanceContext, param.getDatabaseConfigs(), persistService), param.getDatabaseConfigs(), persistService)
