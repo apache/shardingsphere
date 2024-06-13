@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -80,7 +79,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     private void contextManagerInitializedCallback() {
         for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
-            each.onInitialized(databaseName, contextManager);
+            each.onInitialized(contextManager);
         }
     }
     
@@ -111,7 +110,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     @Override
     public void close() throws SQLException {
-        contextManagerDestroyedCallback(databaseName);
+        contextManagerDestroyedCallback();
         for (StorageUnit each : contextManager.getStorageUnits(databaseName).values()) {
             close(each.getDataSource());
         }
@@ -130,9 +129,9 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         }
     }
     
-    private void contextManagerDestroyedCallback(final String databaseName) {
+    private void contextManagerDestroyedCallback() {
         for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
-            each.onDestroyed(databaseName, InstanceType.JDBC);
+            each.onDestroyed(contextManager);
         }
     }
 }
