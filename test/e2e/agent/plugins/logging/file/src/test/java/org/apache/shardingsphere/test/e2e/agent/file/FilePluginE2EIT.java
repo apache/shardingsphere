@@ -22,6 +22,7 @@ import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.file.asserts.ContentAssert;
 import org.apache.shardingsphere.test.e2e.agent.file.cases.IntegrationTestCasesLoader;
 import org.apache.shardingsphere.test.e2e.agent.file.cases.LogTestCase;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
