@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.state.circuit;
 
 import org.apache.shardingsphere.driver.state.DriverState;
-import org.apache.shardingsphere.driver.state.circuit.datasource.CircuitBreakerDataSource;
+import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.Connection;
@@ -30,11 +30,6 @@ public final class CircuitBreakDriverState implements DriverState {
     
     @Override
     public Connection getConnection(final String databaseName, final ContextManager contextManager) {
-        return new CircuitBreakerDataSource().getConnection();
-    }
-    
-    @Override
-    public String getType() {
-        return "CIRCUIT_BREAK";
+        return new CircuitBreakerConnection();
     }
 }
