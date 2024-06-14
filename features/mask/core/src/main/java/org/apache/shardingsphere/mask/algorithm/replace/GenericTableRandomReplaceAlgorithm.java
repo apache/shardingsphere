@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitial
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
-import java.security.SecureRandom;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -49,8 +49,6 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
     private static final String DEFAULT_DIGITAL_CODES = "0,1,2,3,4,5,6,7,8,9";
     
     private static final String DEFAULT_SPECIAL_CODES = "~,!,@,#,$,%,^,&,*,:,<,>,|";
-    
-    private final Random random = new SecureRandom();
     
     private List<Character> uppercaseLetterCodes;
     
@@ -81,6 +79,7 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
             return result;
         }
         char[] chars = result.toCharArray();
+        Random random = ThreadLocalRandom.current();
         for (int i = 0; i < chars.length; i++) {
             char c = chars[i];
             if ('A' <= c && c <= 'Z') {
