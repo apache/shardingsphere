@@ -46,7 +46,6 @@ import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import javax.sql.DataSource;
-import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
@@ -58,7 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Database connection manager of ShardingSphere-JDBC.
@@ -83,8 +82,6 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
     private final MethodInvocationRecorder<Connection> methodInvocationRecorder = new MethodInvocationRecorder<>();
     
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
-    
-    private final Random random = new SecureRandom();
     
     public DriverDatabaseConnectionManager(final String databaseName, final ContextManager contextManager) {
         this.contextManager = contextManager;
@@ -331,7 +328,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
     private String[] getRandomPhysicalDatabaseAndDataSourceName() {
         Collection<String> cachedPhysicalDataSourceNames = Sets.intersection(physicalDataSourceMap.keySet(), cachedConnections.keySet());
         Collection<String> databaseAndDatasourceNames = cachedPhysicalDataSourceNames.isEmpty() ? physicalDataSourceMap.keySet() : cachedPhysicalDataSourceNames;
-        return new ArrayList<>(databaseAndDatasourceNames).get(random.nextInt(databaseAndDatasourceNames.size())).split("\\.");
+        return new ArrayList<>(databaseAndDatasourceNames).get(ThreadLocalRandom.current().nextInt(databaseAndDatasourceNames.size())).split("\\.");
     }
     
     /**
