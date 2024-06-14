@@ -103,9 +103,9 @@ public final class ProxySQLExecutor {
         regularExecutor = new ProxyJDBCExecutor(type, databaseConnectionManager.getConnectionSession(), databaseConnector, jdbcExecutor);
         rawExecutor = new RawExecutor(executorEngine, connectionContext);
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        String databaseName = databaseConnectionManager.getConnectionSession().getDatabaseName();
-        String schemaName = getSchemaName(queryContext.getSqlStatementContext(), metaDataContexts.getMetaData().getDatabase(databaseName));
-        sqlFederationEngine = new SQLFederationEngine(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor);
+        String defaultDatabaseName = databaseConnectionManager.getConnectionSession().getDefaultDatabaseName();
+        String defaultSchemaName = getSchemaName(queryContext.getSqlStatementContext(), metaDataContexts.getMetaData().getDatabase(defaultDatabaseName));
+        sqlFederationEngine = new SQLFederationEngine(defaultDatabaseName, defaultSchemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor);
     }
     
     private String getSchemaName(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
