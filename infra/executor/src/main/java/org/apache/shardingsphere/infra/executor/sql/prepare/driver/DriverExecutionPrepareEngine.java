@@ -88,10 +88,10 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     }
     
     @Override
-    protected List<ExecutionGroup<T>> group(final String dataSourceName, final int connectionOffset, final List<List<ExecutionUnit>> executionUnitGroups,
+    protected List<ExecutionGroup<T>> group(final String databaseName, final String dataSourceName, final int connectionOffset, final List<List<ExecutionUnit>> executionUnitGroups,
                                             final ConnectionMode connectionMode) throws SQLException {
         List<ExecutionGroup<T>> result = new LinkedList<>();
-        List<C> connections = databaseConnectionManager.getConnections(dataSourceName, connectionOffset, executionUnitGroups.size(), connectionMode);
+        List<C> connections = databaseConnectionManager.getConnections(databaseName, dataSourceName, connectionOffset, executionUnitGroups.size(), connectionMode);
         int count = 0;
         for (List<ExecutionUnit> each : executionUnitGroups) {
             result.add(createExecutionGroup(dataSourceName, each, connections.get(count++), connectionMode));

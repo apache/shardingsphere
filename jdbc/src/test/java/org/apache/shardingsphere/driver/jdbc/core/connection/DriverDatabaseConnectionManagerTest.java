@@ -132,12 +132,12 @@ class DriverDatabaseConnectionManagerTest {
     @Test
     void assertGetRandomPhysicalDataSourceNameFromContextManager() {
         String actual = databaseConnectionManager.getRandomPhysicalDataSourceName();
-        assertTrue(Arrays.asList("ds", "invalid_ds").contains(actual));
+        assertTrue(Arrays.asList(DefaultDatabase.LOGIC_NAME, "ds", "invalid_ds").contains(actual));
     }
     
     @Test
     void assertGetRandomPhysicalDataSourceNameFromCache() throws SQLException {
-        databaseConnectionManager.getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(databaseConnectionManager.getRandomPhysicalDataSourceName(), is("ds"));
         assertThat(databaseConnectionManager.getRandomPhysicalDataSourceName(), is("ds"));
         assertThat(databaseConnectionManager.getRandomPhysicalDataSourceName(), is("ds"));
@@ -145,24 +145,24 @@ class DriverDatabaseConnectionManagerTest {
     
     @Test
     void assertGetConnection() throws SQLException {
-        assertThat(databaseConnectionManager.getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY),
-                is(databaseConnectionManager.getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
+        assertThat(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY),
+                is(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
     }
     
     @Test
     void assertGetConnectionWithConnectionOffset() throws SQLException {
-        assertThat(databaseConnectionManager.getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY),
-                is(databaseConnectionManager.getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
-        assertThat(databaseConnectionManager.getConnections("ds", 1, 1, ConnectionMode.MEMORY_STRICTLY),
-                is(databaseConnectionManager.getConnections("ds", 1, 1, ConnectionMode.MEMORY_STRICTLY)));
-        assertThat(databaseConnectionManager.getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY),
-                not(databaseConnectionManager.getConnections("ds", 1, 1, ConnectionMode.MEMORY_STRICTLY)));
+        assertThat(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY),
+                is(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
+        assertThat(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 1, 1, ConnectionMode.MEMORY_STRICTLY),
+                is(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 1, 1, ConnectionMode.MEMORY_STRICTLY)));
+        assertThat(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY),
+                not(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 1, 1, ConnectionMode.MEMORY_STRICTLY)));
     }
     
     @Test
     void assertGetConnectionWhenConfigTrafficRule() throws SQLException {
-        List<Connection> actual = databaseConnectionManager.getConnections("127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY);
-        assertThat(actual, is(databaseConnectionManager.getConnections("127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
+        List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        assertThat(actual, is(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
         assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false"));
@@ -170,16 +170,16 @@ class DriverDatabaseConnectionManagerTest {
     
     @Test
     void assertGetConnectionsWhenAllInCache() throws SQLException {
-        Connection expected = databaseConnectionManager.getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
-        List<Connection> actual = databaseConnectionManager.getConnections("ds", 0, 1, ConnectionMode.CONNECTION_STRICTLY);
+        Connection expected = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.CONNECTION_STRICTLY);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(expected));
     }
     
     @Test
     void assertGetConnectionsWhenConfigTrafficRuleAndAllInCache() throws SQLException {
-        Connection expected = databaseConnectionManager.getConnections("127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
-        List<Connection> actual = databaseConnectionManager.getConnections("127.0.0.1@3307", 0, 1, ConnectionMode.CONNECTION_STRICTLY);
+        Connection expected = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "127.0.0.1@3307", 0, 1, ConnectionMode.CONNECTION_STRICTLY);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(expected));
         assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
@@ -188,13 +188,13 @@ class DriverDatabaseConnectionManagerTest {
     
     @Test
     void assertGetConnectionsWhenEmptyCache() throws SQLException {
-        List<Connection> actual = databaseConnectionManager.getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
     }
     
     @Test
     void assertGetConnectionsWhenConfigTrafficRuleAndEmptyCache() throws SQLException {
-        List<Connection> actual = databaseConnectionManager.getConnections("127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
         assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false"));
@@ -202,21 +202,21 @@ class DriverDatabaseConnectionManagerTest {
     
     @Test
     void assertGetConnectionsWhenPartInCacheWithMemoryStrictlyMode() throws SQLException {
-        databaseConnectionManager.getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
-        List<Connection> actual = databaseConnectionManager.getConnections("ds", 0, 3, ConnectionMode.MEMORY_STRICTLY);
+        databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 3, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(3));
     }
     
     @Test
     void assertGetConnectionsWhenPartInCacheWithConnectionStrictlyMode() throws SQLException {
-        databaseConnectionManager.getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
-        List<Connection> actual = databaseConnectionManager.getConnections("ds", 0, 3, ConnectionMode.CONNECTION_STRICTLY);
+        databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 3, ConnectionMode.CONNECTION_STRICTLY);
         assertThat(actual.size(), is(3));
     }
     
     @Test
     void assertGetConnectionsWhenConnectionCreateFailed() {
-        SQLException ex = assertThrows(SQLException.class, () -> databaseConnectionManager.getConnections("invalid_ds", 0, 3, ConnectionMode.CONNECTION_STRICTLY));
+        SQLException ex = assertThrows(SQLException.class, () -> databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "invalid_ds", 0, 3, ConnectionMode.CONNECTION_STRICTLY));
         assertThat(ex.getMessage(), is("Can not get 3 connections one time, partition succeed connection(0) have released. "
                 + "Please consider increasing the 'maxPoolSize' of the data sources or decreasing the 'max-connections-size-per-query' in properties."));
     }
