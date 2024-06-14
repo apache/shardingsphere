@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver;
 
 import org.apache.shardingsphere.driver.exception.DriverRegisterException;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.driver.DriverDataSourceCache;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
@@ -26,12 +27,16 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere driver.
  */
+@SuppressWarnings("UseOfJDBCDriverClass")
 public final class ShardingSphereDriver implements Driver {
     
     private static final String DRIVER_URL_PREFIX = "jdbc:shardingsphere:";
@@ -48,6 +53,16 @@ public final class ShardingSphereDriver implements Driver {
         } catch (final SQLException ex) {
             throw new DriverRegisterException(ex);
         }
+    }
+    
+    /**
+     * Get ShardingSphere data sources.
+     *
+     * @return ShardingSphere data source map
+     */
+    public Map<String, ShardingSphereDataSource> getShardingSphereDataSources() {
+        return dataSourceCache.getDataSourceMap().entrySet().stream()
+                .filter(entry -> entry.getValue() instanceof ShardingSphereDataSource).collect(Collectors.toMap(Entry::getKey, entry -> (ShardingSphereDataSource) entry.getValue()));
     }
     
     @HighFrequencyInvocation(canBeCached = true)
