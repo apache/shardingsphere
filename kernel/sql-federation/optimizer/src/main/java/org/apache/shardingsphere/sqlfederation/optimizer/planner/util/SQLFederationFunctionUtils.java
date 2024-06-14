@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.ScalarFunctionImpl;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.MySQLBitCountFunction;
 
 /**
  * SQL federation function utility class.
@@ -48,6 +49,7 @@ public final class SQLFederationFunctionUtils {
         schemaPlus.add("pg_catalog.gs_password_deadline", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "gsPasswordDeadline"));
         schemaPlus.add("pg_catalog.intervaltonum", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "intervalToNum"));
         schemaPlus.add("pg_catalog.gs_password_notifyTime", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "gsPasswordNotifyTime"));
+        schemaPlus.add("bit_count", ScalarFunctionImpl.create(MySQLBitCountFunction.class, "bitCount"));
         if ("pg_catalog".equalsIgnoreCase(schemaName)) {
             schemaPlus.add("pg_catalog.pg_table_is_visible", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "pgTableIsVisible"));
             schemaPlus.add("pg_catalog.pg_get_userbyid", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "pgGetUserById"));
