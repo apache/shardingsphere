@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.api.yaml;
+package org.apache.shardingsphere.driver.yaml;
 
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.globalclock.yaml.config.YamlGlobalClockRuleConfiguration;
