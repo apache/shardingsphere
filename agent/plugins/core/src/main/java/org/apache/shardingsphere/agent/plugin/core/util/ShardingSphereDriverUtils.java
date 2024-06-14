@@ -21,16 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.ShardingSphereDriver;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.driver.jdbc.core.driver.DriverDataSourceCache;
 
-import javax.sql.DataSource;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -45,26 +41,14 @@ public final class ShardingSphereDriverUtils {
      * @return found data source
      */
     public static Map<String, ShardingSphereDataSource> findShardingSphereDataSources() {
-        return findShardingSphereDriver().map(ShardingSphereDriverUtils::findShardingSphereDataSources).orElse(Collections.emptyMap());
-    }
-    
-    private static Map<String, ShardingSphereDataSource> findShardingSphereDataSources(final Driver driver) {
-        DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(driver, "dataSourceCache");
-        Map<String, DataSource> dataSourceMap = AgentReflectionUtils.getFieldValue(dataSourceCache, "dataSourceMap");
-        Map<String, ShardingSphereDataSource> result = new LinkedHashMap<>(dataSourceMap.size(), 1F);
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (entry.getValue() instanceof ShardingSphereDataSource) {
-                result.put(entry.getKey(), (ShardingSphereDataSource) entry.getValue());
-            }
-        }
-        return result;
+        return findShardingSphereDriver().map(ShardingSphereDriver::getShardingSphereDataSources).orElse(Collections.emptyMap());
     }
     
     @SuppressWarnings("UseOfJDBCDriverClass")
     private static Optional<ShardingSphereDriver> findShardingSphereDriver() {
-        Enumeration<Driver> driverEnumeration = DriverManager.getDrivers();
-        while (driverEnumeration.hasMoreElements()) {
-            Driver driver = driverEnumeration.nextElement();
+        Enumeration<Driver> drivers = DriverManager.getDrivers();
+        while (drivers.hasMoreElements()) {
+            Driver driver = drivers.nextElement();
             if (driver instanceof ShardingSphereDriver) {
                 return Optional.of((ShardingSphereDriver) driver);
             }
