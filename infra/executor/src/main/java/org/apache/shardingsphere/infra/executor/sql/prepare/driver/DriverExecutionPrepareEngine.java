@@ -49,10 +49,8 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @Getter
     private final String type;
     
-    @Getter
     private final DatabaseConnectionManager<C> databaseConnectionManager;
     
-    @Getter
     private final ExecutorStatementManager<C, ?, ?> statementManager;
     
     private final StorageResourceOption option;
