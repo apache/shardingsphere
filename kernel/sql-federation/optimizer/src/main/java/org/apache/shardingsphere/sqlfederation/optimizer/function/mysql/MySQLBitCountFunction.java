@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.math.BigInteger;
 
 /**
- * MySQL bitCount function.
+ * MySQL bit count function.
  */
 public final class MySQLBitCountFunction {
     
