@@ -21,7 +21,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  * Random generator for MySQL.
@@ -37,6 +38,8 @@ public final class MySQLRandomGenerator {
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
     
+    private final Random random = new SecureRandom();
+    
     /**
      * Generate random bytes.
      *
@@ -46,7 +49,7 @@ public final class MySQLRandomGenerator {
     public byte[] generateRandomBytes(final int length) {
         byte[] result = new byte[length];
         for (int i = 0; i < length; i++) {
-            result[i] = SEED[ThreadLocalRandom.current().nextInt(SEED.length)];
+            result[i] = SEED[random.nextInt(SEED.length)];
         }
         return result;
     }
