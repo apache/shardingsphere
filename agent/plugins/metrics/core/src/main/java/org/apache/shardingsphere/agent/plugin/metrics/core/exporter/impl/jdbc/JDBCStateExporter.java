@@ -41,13 +41,10 @@ public final class JDBCStateExporter implements MetricsExporter {
     
     @Override
     public Optional<GaugeMetricFamilyMetricsCollector> export(final String pluginType) {
-        Optional<Map<String, ShardingSphereDataSource>> dataSourceMap = ShardingSphereDriverUtils.findShardingSphereDataSources();
-        if (!dataSourceMap.isPresent()) {
-            return Optional.empty();
-        }
+        Map<String, ShardingSphereDataSource> dataSourceMap = ShardingSphereDriverUtils.findShardingSphereDataSources();
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
         result.cleanMetrics();
-        for (Entry<String, ShardingSphereDataSource> entry : dataSourceMap.get().entrySet()) {
+        for (Entry<String, ShardingSphereDataSource> entry : dataSourceMap.entrySet()) {
             ShardingSphereDataSource dataSource = entry.getValue();
             ContextManager contextManager = AgentReflectionUtils.getFieldValue(dataSource, "contextManager");
             result.addMetric(Collections.emptyList(), contextManager.getComputeNodeInstanceContext().getInstance().getState().getCurrentState().ordinal());

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.driver.jdbc.core.driver.DriverDataSourceCache;
 import javax.sql.DataSource;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -43,22 +44,23 @@ public final class ShardingSphereDriverUtils {
      *
      * @return found data source
      */
-    public static Optional<Map<String, ShardingSphereDataSource>> findShardingSphereDataSources() {
-        return findShardingSphereDriver().flatMap(ShardingSphereDriverUtils::findShardingSphereDataSources);
+    public static Map<String, ShardingSphereDataSource> findShardingSphereDataSources() {
+        return findShardingSphereDriver().map(ShardingSphereDriverUtils::findShardingSphereDataSources).orElse(Collections.emptyMap());
     }
     
-    private static Optional<Map<String, ShardingSphereDataSource>> findShardingSphereDataSources(final Driver driver) {
+    private static Map<String, ShardingSphereDataSource> findShardingSphereDataSources(final Driver driver) {
         DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(driver, "dataSourceCache");
         Map<String, DataSource> dataSourceMap = AgentReflectionUtils.getFieldValue(dataSourceCache, "dataSourceMap");
-        Map<String, ShardingSphereDataSource> result = new LinkedHashMap<>();
+        Map<String, ShardingSphereDataSource> result = new LinkedHashMap<>(dataSourceMap.size(), 1F);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (entry.getValue() instanceof ShardingSphereDataSource) {
                 result.put(entry.getKey(), (ShardingSphereDataSource) entry.getValue());
             }
         }
-        return Optional.of(result);
+        return result;
     }
     
+    @SuppressWarnings("UseOfJDBCDriverClass")
     private static Optional<ShardingSphereDriver> findShardingSphereDriver() {
         Enumeration<Driver> driverEnumeration = DriverManager.getDrivers();
         while (driverEnumeration.hasMoreElements()) {
