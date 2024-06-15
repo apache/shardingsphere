@@ -27,13 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingSphereStatisticsTest {
-
+    
     public static final String TEST_DATABASE_NAME = "TEST_DATABASE_NAME";
-
+    
     public static final String TEST_DATABASE_NAME_2 = "TEST_DATABASE_NAME_2";
-
+    
     public static final String NON_EXISTENT_DATABASE_NAME = "NON_EXISTENT_DATABASE_NAME";
-
+    
     @Test
     void assertGetDatabase() {
         ShardingSphereStatistics shardingSphereStatistics = new ShardingSphereStatistics();
@@ -43,7 +43,7 @@ class ShardingSphereStatisticsTest {
         assertEquals(databaseData, shardingSphereDatabaseData);
         assertNull(shardingSphereStatistics.getDatabase(NON_EXISTENT_DATABASE_NAME));
     }
-
+    
     @Test
     void assertPutDatabase() {
         ShardingSphereStatistics shardingSphereStatistics = new ShardingSphereStatistics();
@@ -56,7 +56,7 @@ class ShardingSphereStatisticsTest {
         assertThat(shardingSphereStatistics.getDatabaseData().size(), is(2));
         assertTrue(shardingSphereStatistics.containsDatabase(TEST_DATABASE_NAME_2));
     }
-
+    
     @Test
     void assertDropDatabase() {
         ShardingSphereStatistics shardingSphereStatistics = new ShardingSphereStatistics();
@@ -67,7 +67,7 @@ class ShardingSphereStatisticsTest {
         assertThat(shardingSphereStatistics.getDatabaseData().size(), is(0));
         assertFalse(shardingSphereStatistics.containsDatabase(TEST_DATABASE_NAME));
     }
-
+    
     @Test
     void assertContainsTable() {
         ShardingSphereStatistics shardingSphereStatistics = new ShardingSphereStatistics();
