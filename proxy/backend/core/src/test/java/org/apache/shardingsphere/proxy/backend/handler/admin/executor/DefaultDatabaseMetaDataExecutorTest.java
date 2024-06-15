@@ -41,6 +41,7 @@ import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 
 import java.sql.Connection;
@@ -67,12 +68,12 @@ class DefaultDatabaseMetaDataExecutorTest {
     
     private final Grantee grantee = new Grantee("root", "127.0.0.1");
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
     @BeforeEach
     void setUp() {
-        when(connectionSession.getGrantee()).thenReturn(grantee);
+        when(connectionSession.getConnectionContext().getGrantee()).thenReturn(grantee);
     }
     
     @Test

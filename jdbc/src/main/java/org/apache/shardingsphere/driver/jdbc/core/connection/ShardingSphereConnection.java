@@ -85,7 +85,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     public ShardingSphereConnection(final String databaseName, final ContextManager contextManager) {
         this.databaseName = databaseName;
         this.contextManager = contextManager;
-        databaseConnectionManager = new DriverDatabaseConnectionManager(databaseName, contextManager);
+        databaseConnectionManager = new DriverDatabaseConnectionManager(databaseName, contextManager, new Grantee("", ""));
         processId = processEngine.connect(new Grantee("", ""), databaseName);
     }
     

@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
@@ -83,10 +84,10 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
     
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
-    public DriverDatabaseConnectionManager(final String databaseName, final ContextManager contextManager) {
+    public DriverDatabaseConnectionManager(final String databaseName, final ContextManager contextManager, final Grantee grantee) {
         this.contextManager = contextManager;
         this.databaseName = databaseName;
-        connectionContext = new ConnectionContext(cachedConnections::keySet);
+        connectionContext = new ConnectionContext(cachedConnections::keySet, grantee);
         connectionContext.setCurrentDatabase(databaseName);
         physicalDataSourceMap = getPhysicalDataSourceMap(databaseName, contextManager);
         trafficDataSourceMap = getTrafficDataSourceMap(databaseName, contextManager);
