@@ -71,7 +71,7 @@ class DriverDatabaseConnectionManagerTest {
     
     @BeforeEach
     void setUp() throws SQLException {
-        databaseConnectionManager = new DriverDatabaseConnectionManager(DefaultDatabase.LOGIC_NAME, mockContextManager(), new Grantee("", "'"));
+        databaseConnectionManager = new DriverDatabaseConnectionManager(DefaultDatabase.LOGIC_NAME, mockContextManager(), new Grantee("", ""));
     }
     
     private ContextManager mockContextManager() throws SQLException {
