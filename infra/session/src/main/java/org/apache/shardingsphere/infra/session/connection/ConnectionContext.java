@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.connection.cursor.CursorConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.datasource.UsedDataSourceProvider;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
@@ -44,13 +45,19 @@ public final class ConnectionContext implements AutoCloseable {
     @Getter(AccessLevel.NONE)
     private final UsedDataSourceProvider usedDataSourceProvider;
     
+    private final Grantee grantee;
+    
     private String databaseName;
     
     @Setter
     private String trafficInstanceId;
     
     public ConnectionContext() {
-        this(Collections::emptySet);
+        this(new Grantee("", ""));
+    }
+    
+    public ConnectionContext(final Grantee grantee) {
+        this(Collections::emptySet, grantee);
     }
     
     /**

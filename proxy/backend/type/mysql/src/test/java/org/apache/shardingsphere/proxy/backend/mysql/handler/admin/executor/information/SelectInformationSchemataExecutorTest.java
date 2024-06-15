@@ -45,6 +45,7 @@ import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -84,12 +85,12 @@ class SelectInformationSchemataExecutorTest {
     
     private SelectStatement statement;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
     @BeforeEach
     void setUp() {
-        when(connectionSession.getGrantee()).thenReturn(grantee);
+        when(connectionSession.getConnectionContext().getGrantee()).thenReturn(grantee);
         statement = (SelectStatement) new SQLParserRule(
                 new DefaultSQLParserRuleConfigurationBuilder().build()).getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
     }

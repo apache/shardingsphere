@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -93,7 +94,7 @@ class ShardingUnicastRoutingEngineTest {
     
     @Test
     void assertRoutingForBroadcastTableWithPreferredDataSource() {
-        ConnectionContext connectionContext = new ConnectionContext(() -> Collections.singleton("ds_1"));
+        ConnectionContext connectionContext = new ConnectionContext(() -> Collections.singleton("ds_1"), new Grantee("", ""));
         RouteContext actual = new ShardingUnicastRoutingEngine(mock(SelectStatementContext.class), Collections.singleton("t_config"), connectionContext).route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(actual.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_1"));

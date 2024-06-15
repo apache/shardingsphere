@@ -220,8 +220,8 @@ class ShowDatabasesExecutorTest {
     }
     
     private ConnectionSession mockConnectionSession() {
-        ConnectionSession result = mock(ConnectionSession.class);
-        when(result.getGrantee()).thenReturn(new Grantee("root", ""));
+        ConnectionSession result = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
+        when(result.getConnectionContext().getGrantee()).thenReturn(new Grantee("root", ""));
         return result;
     }
 }
