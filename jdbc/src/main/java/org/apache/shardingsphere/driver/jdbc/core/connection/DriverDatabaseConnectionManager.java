@@ -169,7 +169,11 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
      */
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
         methodInvocationRecorder.record("setAutoCommit", target -> target.setAutoCommit(autoCommit));
-        forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setAutoCommit(autoCommit));
+        forceExecuteTemplate.execute(getCachedConnections(), connection -> connection.setAutoCommit(autoCommit));
+    }
+    
+    private Collection<Connection> getCachedConnections() {
+        return cachedConnections.values();
     }
     
     /**
@@ -181,14 +185,14 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
         ConnectionTransaction connectionTransaction = getConnectionTransaction();
         try {
             if (connectionTransaction.isLocalTransaction() && connectionContext.getTransactionContext().isExceptionOccur()) {
-                forceExecuteTemplate.execute(cachedConnections.values(), Connection::rollback);
+                forceExecuteTemplate.execute(getCachedConnections(), Connection::rollback);
             } else if (connectionTransaction.isLocalTransaction()) {
-                forceExecuteTemplate.execute(cachedConnections.values(), Connection::commit);
+                forceExecuteTemplate.execute(getCachedConnections(), Connection::commit);
             } else {
                 connectionTransaction.commit();
             }
         } finally {
-            for (Connection each : cachedConnections.values()) {
+            for (Connection each : getCachedConnections()) {
                 ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
         }
@@ -203,12 +207,12 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
         ConnectionTransaction connectionTransaction = getConnectionTransaction();
         try {
             if (connectionTransaction.isLocalTransaction()) {
-                forceExecuteTemplate.execute(cachedConnections.values(), Connection::rollback);
+                forceExecuteTemplate.execute(getCachedConnections(), Connection::rollback);
             } else {
                 connectionTransaction.rollback();
             }
         } finally {
-            for (Connection each : cachedConnections.values()) {
+            for (Connection each : getCachedConnections()) {
                 ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
         }
@@ -221,7 +225,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
      * @throws SQLException SQL exception
      */
     public void rollback(final Savepoint savepoint) throws SQLException {
-        for (Connection each : cachedConnections.values()) {
+        for (Connection each : getCachedConnections()) {
             ConnectionSavepointManager.getInstance().rollbackToSavepoint(each, savepoint.getSavepointName());
         }
     }
@@ -235,7 +239,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
      */
     public Savepoint setSavepoint(final String savepointName) throws SQLException {
         ShardingSphereSavepoint result = new ShardingSphereSavepoint(savepointName);
-        for (Connection each : cachedConnections.values()) {
+        for (Connection each : getCachedConnections()) {
             ConnectionSavepointManager.getInstance().setSavepoint(each, savepointName);
         }
         methodInvocationRecorder.record("setSavepoint", target -> ConnectionSavepointManager.getInstance().setSavepoint(target, savepointName));
@@ -250,7 +254,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
      */
     public Savepoint setSavepoint() throws SQLException {
         ShardingSphereSavepoint result = new ShardingSphereSavepoint();
-        for (Connection each : cachedConnections.values()) {
+        for (Connection each : getCachedConnections()) {
             ConnectionSavepointManager.getInstance().setSavepoint(each, result.getSavepointName());
         }
         methodInvocationRecorder.record("setSavepoint", target -> ConnectionSavepointManager.getInstance().setSavepoint(target, result.getSavepointName()));
@@ -264,7 +268,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
      * @throws SQLException SQL exception
      */
     public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
-        for (Connection each : cachedConnections.values()) {
+        for (Connection each : getCachedConnections()) {
             ConnectionSavepointManager.getInstance().releaseSavepoint(each, savepoint.getSavepointName());
         }
     }
