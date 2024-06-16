@@ -24,6 +24,7 @@ import org.apache.shardingsphere.driver.state.circuit.statement.CircuitBreakerSt
 
 import java.sql.Array;
 import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -173,6 +174,11 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     @Override
     public boolean isValid(final int timeout) {
         return true;
+    }
+    
+    @Override
+    public Clob createClob() {
+        return null;
     }
     
     @Override
