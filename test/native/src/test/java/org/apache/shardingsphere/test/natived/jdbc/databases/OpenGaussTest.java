@@ -21,6 +21,9 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
 import org.awaitility.Awaitility;
+import org.junit.ClassRule;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.GenericContainer;
@@ -38,6 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+@EnabledInNativeImage
 class OpenGaussTest {
     
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.opengauss.";
@@ -48,26 +52,39 @@ class OpenGaussTest {
     
     private static final String DATABASE = "postgres";
     
+    @SuppressWarnings("resource")
+    @ClassRule
+    public static GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("opengauss/opengauss:5.0.0"))
+            .withEnv("GS_PASSWORD", PASSWORD)
+            .withExposedPorts(5432);
+    
     private String jdbcUrlPrefix;
     
     private TestShardingService testShardingService;
     
-    @SuppressWarnings("resource")
+    @BeforeAll
+    static void beforeAll() {
+        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url"), is(nullValue()));
+        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url"), is(nullValue()));
+        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url"), is(nullValue()));
+    }
+    
+    @AfterAll
+    static void afterAll() {
+        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url");
+        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url");
+        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url");
+    }
+    
     @Test
-    @EnabledInNativeImage
     void assertShardingInLocalTransactions() throws SQLException {
-        try (
-                GenericContainer<?> openGaussContainer = new GenericContainer<>(DockerImageName.parse("opengauss/opengauss:5.0.0"))
-                        .withEnv("GS_PASSWORD", PASSWORD)
-                        .withExposedPorts(5432)) {
-            openGaussContainer.start();
-            jdbcUrlPrefix = "jdbc:opengauss://localhost:" + openGaussContainer.getMappedPort(5432) + "/";
-            DataSource dataSource = createDataSource();
-            testShardingService = new TestShardingService(dataSource);
-            initEnvironment();
-            testShardingService.processSuccess();
-            testShardingService.cleanEnvironment();
-        }
+        container.start();
+        jdbcUrlPrefix = "jdbc:opengauss://localhost:" + container.getMappedPort(5432) + "/";
+        DataSource dataSource = createDataSource();
+        testShardingService = new TestShardingService(dataSource);
+        initEnvironment();
+        testShardingService.processSuccess();
+        testShardingService.cleanEnvironment();
     }
     
     private void initEnvironment() throws SQLException {
@@ -102,18 +119,9 @@ class OpenGaussTest {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/databases/opengauss.yaml?placeholder-type=system_props");
-        try {
-            assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url"), is(nullValue()));
-            assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url"), is(nullValue()));
-            assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url"), is(nullValue()));
-            System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0");
-            System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1");
-            System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2");
-            return new HikariDataSource(config);
-        } finally {
-            System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url");
-            System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url");
-            System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url");
-        }
+        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0");
+        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1");
+        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2");
+        return new HikariDataSource(config);
     }
 }

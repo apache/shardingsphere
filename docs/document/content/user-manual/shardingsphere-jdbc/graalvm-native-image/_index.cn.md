@@ -25,6 +25,18 @@ ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 
 典型的例子来自 HiveServer2 JDBC Driver 相关的 `org.apache.hive:hive-jdbc:4.0.0`，HiveServer2 JDBC Driver 使用了 AWT 相关的类，
 而 GraalVM CE 对 `java.beans.**` package 的支持仅位于 GraalVM CE For JDK22 及更高版本。
 
+```shell
+com.sun.beans.introspect.ClassInfo was unintentionally initialized at build time. To see why com.sun.beans.introspect.ClassInfo got initialized use --trace-class-initialization=com.sun.beans.introspect.ClassInfo
+java.beans.Introspector was unintentionally initialized at build time. To see why java.beans.Introspector got initialized use --trace-class-initialization=java.beans.Introspector
+com.sun.beans.util.Cache$Kind$2 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$2 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$2
+com.sun.beans.TypeResolver was unintentionally initialized at build time. To see why com.sun.beans.TypeResolver got initialized use --trace-class-initialization=com.sun.beans.TypeResolver
+java.beans.ThreadGroupContext was unintentionally initialized at build time. To see why java.beans.ThreadGroupContext got initialized use --trace-class-initialization=java.beans.ThreadGroupContext
+com.sun.beans.util.Cache$Kind was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind
+com.sun.beans.introspect.MethodInfo was unintentionally initialized at build time. To see why com.sun.beans.introspect.MethodInfo got initialized use --trace-class-initialization=com.sun.beans.introspect.MethodInfo
+com.sun.beans.util.Cache$Kind$1 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$1 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$1
+com.sun.beans.util.Cache$Kind$3 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$3 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$3
+```
+
 ### Maven 生态
 
 使用者需要主动使用 GraalVM Reachability Metadata 中央仓库。
@@ -280,6 +292,14 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
             <exclusion>
                <groupId>org.antlr</groupId>
                <artifactId>antlr4-runtime</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-lang</groupId>
+               <artifactId>commons-lang</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.apache.commons</groupId>
+               <artifactId>commons-pool2</artifactId>
             </exclusion>
          </exclusions>
       </dependency>
