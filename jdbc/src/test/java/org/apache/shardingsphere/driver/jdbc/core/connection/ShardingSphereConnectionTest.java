@@ -56,23 +56,6 @@ import static org.mockito.Mockito.when;
 class ShardingSphereConnectionTest {
     
     @Test
-    void assertIsHoldTransaction() throws SQLException {
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager())) {
-            connection.setAutoCommit(false);
-            assertTrue(connection.isHoldTransaction());
-        }
-    }
-    
-    @Test
-    void assertIsNotHoldTransaction() throws SQLException {
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager())) {
-            connection.setAutoCommit(true);
-            assertFalse(connection.isHoldTransaction());
-        }
-        
-    }
-    
-    @Test
     void assertSetAutoCommitWithLocalTransaction() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
         try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(physicalConnection))) {

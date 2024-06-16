@@ -91,15 +91,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         processId = processEngine.connect(grantee, databaseName);
     }
     
-    /**
-     * Whether hold transaction or not.
-     *
-     * @return true or false
-     */
-    public boolean isHoldTransaction() {
-        return databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit);
-    }
-    
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
         return new ShardingSphereDatabaseMetaData(this);
@@ -248,7 +239,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         if (existedTrafficInstanceId.isPresent()) {
             return existedTrafficInstanceId;
         }
-        boolean isHoldTransaction = isHoldTransaction();
+        boolean isHoldTransaction = databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit);
         Optional<String> result = new TrafficEngine(trafficRule, contextManager.getComputeNodeInstanceContext()).dispatch(queryContext, isHoldTransaction);
         if (isHoldTransaction && result.isPresent()) {
             databaseConnectionManager.getConnectionContext().setTrafficInstanceId(result.get());
@@ -285,26 +276,25 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public Savepoint setSavepoint(final String name) throws SQLException {
         checkClose();
-        if (!isHoldTransaction()) {
-            throw new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks.");
-        }
+        ShardingSpherePreconditions.checkState(databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit),
+                () -> new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks."));
         return databaseConnectionManager.setSavepoint(name);
     }
     
     @Override
     public Savepoint setSavepoint() throws SQLException {
         checkClose();
-        ShardingSpherePreconditions.checkState(isHoldTransaction(), () -> new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks."));
+        ShardingSpherePreconditions.checkState(databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit),
+                () -> new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks."));
         return databaseConnectionManager.setSavepoint();
     }
     
     @Override
     public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
         checkClose();
-        if (!isHoldTransaction()) {
-            return;
+        if (databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit)) {
+            databaseConnectionManager.releaseSavepoint(savepoint);
         }
-        databaseConnectionManager.releaseSavepoint(savepoint);
     }
     
     private void checkClose() throws SQLException {
