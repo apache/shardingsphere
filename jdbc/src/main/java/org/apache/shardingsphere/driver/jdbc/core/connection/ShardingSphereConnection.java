@@ -96,16 +96,20 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
      * @throws SQLException SQL exception
      */
     public void handleAutoCommit() throws SQLException {
-        if (!autoCommit && !databaseConnectionManager.getConnectionTransaction().isInTransaction()) {
-            if (TransactionType.isDistributedTransaction(databaseConnectionManager.getConnectionTransaction().getTransactionType())) {
-                beginDistributedTransaction();
-            } else {
-                if (!databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
-                    databaseConnectionManager.getConnectionContext()
-                            .getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
-                }
-            }
+        if (autoCommit || databaseConnectionManager.getConnectionTransaction().isInTransaction()) {
+            return;
         }
+        if (TransactionType.isDistributedTransaction(databaseConnectionManager.getConnectionTransaction().getTransactionType())) {
+            beginDistributedTransaction();
+        } else if (!databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
+            databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
+        }
+    }
+    
+    private void beginDistributedTransaction() throws SQLException {
+        databaseConnectionManager.close();
+        databaseConnectionManager.getConnectionTransaction().begin();
+        databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
     }
     
     /**
@@ -239,12 +243,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             default:
                 break;
         }
-    }
-    
-    private void beginDistributedTransaction() throws SQLException {
-        databaseConnectionManager.close();
-        databaseConnectionManager.getConnectionTransaction().begin();
-        databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
     }
     
     @Override
