@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
@@ -89,6 +88,47 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         Grantee grantee = new Grantee("", "");
         databaseConnectionManager = new DriverDatabaseConnectionManager(databaseName, contextManager, grantee);
         processId = processEngine.connect(grantee, databaseName);
+    }
+    
+    /**
+     * Handle auto commit.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void handleAutoCommit() throws SQLException {
+        if (!autoCommit && !databaseConnectionManager.getConnectionTransaction().isInTransaction()) {
+            if (TransactionType.isDistributedTransaction(databaseConnectionManager.getConnectionTransaction().getTransactionType())) {
+                beginDistributedTransaction();
+            } else {
+                if (!databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
+                    databaseConnectionManager.getConnectionContext()
+                            .getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
+                }
+            }
+        }
+    }
+    
+    /**
+     * Get traffic tnstance ID.
+     *
+     * @param trafficRule traffic rule
+     * @param queryContext query context
+     * @return traffic tnstance ID
+     */
+    public Optional<String> getTrafficInstanceId(final TrafficRule trafficRule, final QueryContext queryContext) {
+        if (null == trafficRule || trafficRule.getStrategyRules().isEmpty()) {
+            return Optional.empty();
+        }
+        Optional<String> existedTrafficInstanceId = databaseConnectionManager.getConnectionContext().getTrafficInstanceId();
+        if (existedTrafficInstanceId.isPresent()) {
+            return existedTrafficInstanceId;
+        }
+        boolean isHoldTransaction = databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit);
+        Optional<String> result = new TrafficEngine(trafficRule, contextManager.getComputeNodeInstanceContext()).dispatch(queryContext, isHoldTransaction);
+        if (isHoldTransaction && result.isPresent()) {
+            databaseConnectionManager.getConnectionContext().setTrafficInstanceId(result.get());
+        }
+        return result;
     }
     
     @Override
@@ -177,12 +217,12 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private void processLocalTransaction() throws SQLException {
         databaseConnectionManager.setAutoCommit(autoCommit);
         if (autoCommit) {
-            if (getConnectionContext().getTransactionContext().isInTransaction()) {
-                getConnectionContext().getTransactionContext().close();
+            if (databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
+                databaseConnectionManager.getConnectionContext().getTransactionContext().close();
             }
         } else {
-            if (!getConnectionContext().getTransactionContext().isInTransaction()) {
-                getConnectionContext().getTransactionContext()
+            if (!databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
+                databaseConnectionManager.getConnectionContext().getTransactionContext()
                         .beginTransaction(String.valueOf(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType()));
             }
         }
@@ -204,47 +244,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private void beginDistributedTransaction() throws SQLException {
         databaseConnectionManager.close();
         databaseConnectionManager.getConnectionTransaction().begin();
-        getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
-    }
-    
-    /**
-     * Handle auto commit.
-     *
-     * @throws SQLException SQL exception
-     */
-    public void handleAutoCommit() throws SQLException {
-        if (!autoCommit && !databaseConnectionManager.getConnectionTransaction().isInTransaction()) {
-            if (TransactionType.isDistributedTransaction(databaseConnectionManager.getConnectionTransaction().getTransactionType())) {
-                beginDistributedTransaction();
-            } else {
-                if (!getConnectionContext().getTransactionContext().isInTransaction()) {
-                    getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
-                }
-            }
-        }
-    }
-    
-    /**
-     * Get traffic tnstance ID.
-     *
-     * @param trafficRule traffic rule
-     * @param queryContext query context
-     * @return traffic tnstance ID
-     */
-    public Optional<String> getTrafficInstanceId(final TrafficRule trafficRule, final QueryContext queryContext) {
-        if (null == trafficRule || trafficRule.getStrategyRules().isEmpty()) {
-            return Optional.empty();
-        }
-        Optional<String> existedTrafficInstanceId = databaseConnectionManager.getConnectionContext().getTrafficInstanceId();
-        if (existedTrafficInstanceId.isPresent()) {
-            return existedTrafficInstanceId;
-        }
-        boolean isHoldTransaction = databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit);
-        Optional<String> result = new TrafficEngine(trafficRule, contextManager.getComputeNodeInstanceContext()).dispatch(queryContext, isHoldTransaction);
-        if (isHoldTransaction && result.isPresent()) {
-            databaseConnectionManager.getConnectionContext().setTrafficInstanceId(result.get());
-        }
-        return result;
+        databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
     }
     
     @Override
@@ -253,7 +253,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             databaseConnectionManager.commit();
         } finally {
             databaseConnectionManager.getConnectionContext().getTransactionContext().setExceptionOccur(false);
-            getConnectionContext().close();
+            databaseConnectionManager.getConnectionContext().close();
         }
     }
     
@@ -263,7 +263,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             databaseConnectionManager.rollback();
         } finally {
             databaseConnectionManager.getConnectionContext().getTransactionContext().setExceptionOccur(false);
-            getConnectionContext().close();
+            databaseConnectionManager.getConnectionContext().close();
         }
     }
     
@@ -363,9 +363,5 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             statementManagers.clear();
             databaseConnectionManager.close();
         }
-    }
-    
-    private ConnectionContext getConnectionContext() {
-        return databaseConnectionManager.getConnectionContext();
     }
 }
