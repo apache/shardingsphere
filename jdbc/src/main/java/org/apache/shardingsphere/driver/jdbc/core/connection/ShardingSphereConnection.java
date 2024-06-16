@@ -36,9 +36,6 @@ import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
-import java.sql.Array;
-import java.sql.CallableStatement;
-import java.sql.Clob;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -186,24 +183,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     }
     
     @Override
-    public CallableStatement prepareCall(final String sql) throws SQLException {
-        // TODO Support single DataSource scenario for now. Implement ShardingSphereCallableStatement to support multi DataSource scenarios.
-        return databaseConnectionManager.getRandomConnection().prepareCall(sql);
-    }
-    
-    @Override
-    public CallableStatement prepareCall(final String sql, final int resultSetType, final int resultSetConcurrency) throws SQLException {
-        // TODO Support single DataSource scenario for now. Implement ShardingSphereCallableStatement to support multi DataSource scenarios.
-        return databaseConnectionManager.getRandomConnection().prepareCall(sql, resultSetType, resultSetConcurrency);
-    }
-    
-    @Override
-    public CallableStatement prepareCall(final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
-        // TODO Support single DataSource scenario for now. Implement ShardingSphereCallableStatement to support multi DataSource scenarios.
-        return databaseConnectionManager.getRandomConnection().prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
-    }
-    
-    @Override
     public boolean getAutoCommit() {
         return autoCommit;
     }
@@ -325,16 +304,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public boolean isValid(final int timeout) throws SQLException {
         return databaseConnectionManager.isValid(timeout);
-    }
-    
-    @Override
-    public Clob createClob() throws SQLException {
-        return databaseConnectionManager.getRandomConnection().createClob();
-    }
-    
-    @Override
-    public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
-        return databaseConnectionManager.getRandomConnection().createArrayOf(typeName, elements);
     }
     
     @Override
