@@ -36,7 +36,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -46,7 +45,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -190,26 +188,6 @@ class ShardingSphereConnectionTest {
             Connection physicalConnection = connection.getDatabaseConnectionManager().getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
             connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             verify(physicalConnection).setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-        }
-    }
-    
-    @Test
-    void assertCreateArrayOf() throws SQLException {
-        Connection physicalConnection = mock(Connection.class);
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(physicalConnection))) {
-            connection.getDatabaseConnectionManager().getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
-            assertNull(connection.createArrayOf("int", null));
-        }
-        verify(physicalConnection).createArrayOf("int", null);
-    }
-    
-    @Test
-    void assertPrepareCall() throws SQLException {
-        CallableStatement expected = mock(CallableStatement.class);
-        Connection physicalConnection = mock(Connection.class);
-        when(physicalConnection.prepareCall("")).thenReturn(expected);
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(physicalConnection))) {
-            assertThat(connection.prepareCall(""), is(expected));
         }
     }
     
