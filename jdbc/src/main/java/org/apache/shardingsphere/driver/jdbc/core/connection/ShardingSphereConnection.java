@@ -184,9 +184,15 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private void processLocalTransaction() throws SQLException {
         databaseConnectionManager.setAutoCommit(autoCommit);
-        if (!autoCommit) {
-            getConnectionContext().getTransactionContext()
-                    .beginTransaction(String.valueOf(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType()));
+        if (autoCommit) {
+            if (getConnectionContext().getTransactionContext().isInTransaction()) {
+                getConnectionContext().getTransactionContext().close();
+            }
+        } else {
+            if (!getConnectionContext().getTransactionContext().isInTransaction()) {
+                getConnectionContext().getTransactionContext()
+                        .beginTransaction(String.valueOf(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType()));
+            }
         }
     }
     
