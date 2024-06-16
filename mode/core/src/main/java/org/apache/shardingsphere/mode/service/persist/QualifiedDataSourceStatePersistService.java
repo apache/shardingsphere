@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.storage.QualifiedDataSourceState;
 import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
-import org.apache.shardingsphere.mode.storage.yaml.YamlQualifiedDataSourceStatus;
-import org.apache.shardingsphere.mode.storage.yaml.YamlQualifiedDataSourceStatusSwapper;
+import org.apache.shardingsphere.mode.storage.yaml.YamlQualifiedDataSourceState;
+import org.apache.shardingsphere.mode.storage.yaml.YamlQualifiedDataSourceStateSwapper;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,7 +51,7 @@ public final class QualifiedDataSourceStatePersistService {
         qualifiedDataSourceNodes.forEach(each -> {
             String yamlContent = repository.query(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(new QualifiedDataSource(each)));
             if (!Strings.isNullOrEmpty(yamlContent)) {
-                result.put(each, new YamlQualifiedDataSourceStatusSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlQualifiedDataSourceStatus.class)));
+                result.put(each, new YamlQualifiedDataSourceStateSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlQualifiedDataSourceState.class)));
             }
         });
         return result;
@@ -68,6 +68,6 @@ public final class QualifiedDataSourceStatePersistService {
     public void updateState(final String databaseName, final String groupName, final String storageUnitName, final DataSourceState dataSourceState) {
         QualifiedDataSourceState status = new QualifiedDataSourceState(dataSourceState);
         repository.persist(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(
-                new QualifiedDataSource(databaseName, groupName, storageUnitName)), YamlEngine.marshal(new YamlQualifiedDataSourceStatusSwapper().swapToYamlConfiguration(status)));
+                new QualifiedDataSource(databaseName, groupName, storageUnitName)), YamlEngine.marshal(new YamlQualifiedDataSourceStateSwapper().swapToYamlConfiguration(status)));
     }
 }

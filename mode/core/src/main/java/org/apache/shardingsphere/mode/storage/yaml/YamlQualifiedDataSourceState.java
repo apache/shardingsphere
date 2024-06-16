@@ -22,11 +22,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * YAML qualified data source status.
+ * YAML qualified data source state.
  */
 @Getter
 @Setter
-public final class YamlQualifiedDataSourceStatus implements YamlConfiguration {
+public final class YamlQualifiedDataSourceState implements YamlConfiguration {
     
     private String status;
 }
