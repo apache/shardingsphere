@@ -77,11 +77,6 @@ class UnsupportedOperationConnectionTest {
     }
     
     @Test
-    void assertCreateClob() {
-        assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::createClob);
-    }
-    
-    @Test
     void assertCreateBlob() {
         assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::createBlob);
     }

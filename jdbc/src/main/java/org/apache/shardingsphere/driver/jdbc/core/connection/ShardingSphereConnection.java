@@ -39,6 +39,7 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.Array;
 import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -336,6 +337,11 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public boolean isValid(final int timeout) throws SQLException {
         return databaseConnectionManager.isValid(timeout);
+    }
+    
+    @Override
+    public Clob createClob() throws SQLException {
+        return databaseConnectionManager.getRandomConnection().createClob();
     }
     
     @Override

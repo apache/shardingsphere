@@ -21,7 +21,6 @@ import org.apache.shardingsphere.driver.jdbc.adapter.WrapperAdapter;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 
 import java.sql.Blob;
-import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.NClob;
 import java.sql.SQLException;
@@ -65,11 +64,6 @@ public abstract class AbstractUnsupportedOperationConnection extends WrapperAdap
     @Override
     public final void setNetworkTimeout(final Executor executor, final int milliseconds) throws SQLException {
         throw new SQLFeatureNotSupportedException("setNetworkTimeout");
-    }
-    
-    @Override
-    public final Clob createClob() throws SQLException {
-        throw new SQLFeatureNotSupportedException("createClob");
     }
     
     @Override
