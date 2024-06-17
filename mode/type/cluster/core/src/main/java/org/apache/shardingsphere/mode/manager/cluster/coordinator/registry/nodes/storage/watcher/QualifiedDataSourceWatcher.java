@@ -27,8 +27,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.event.QualifiedDataSourceStateEvent;
 import org.apache.shardingsphere.mode.storage.QualifiedDataSourceState;
 import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
-import org.apache.shardingsphere.mode.storage.yaml.YamlQualifiedDataSourceStatus;
-import org.apache.shardingsphere.mode.storage.yaml.YamlQualifiedDataSourceStatusSwapper;
+import org.apache.shardingsphere.mode.storage.yaml.YamlQualifiedDataSourceState;
+import org.apache.shardingsphere.mode.storage.yaml.YamlQualifiedDataSourceStateSwapper;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -57,7 +57,7 @@ public final class QualifiedDataSourceWatcher implements GovernanceWatcher<Gover
         }
         Optional<QualifiedDataSource> qualifiedDataSource = QualifiedDataSourceNode.extractQualifiedDataSource(event.getKey());
         if (qualifiedDataSource.isPresent()) {
-            QualifiedDataSourceState state = new YamlQualifiedDataSourceStatusSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlQualifiedDataSourceStatus.class));
+            QualifiedDataSourceState state = new YamlQualifiedDataSourceStateSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlQualifiedDataSourceState.class));
             return Optional.of(new QualifiedDataSourceStateEvent(qualifiedDataSource.get(), state));
         }
         return Optional.empty();

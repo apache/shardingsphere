@@ -35,6 +35,7 @@ import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -58,7 +59,7 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class DropDatabaseBackendHandlerTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
     @Mock
@@ -72,6 +73,7 @@ class DropDatabaseBackendHandlerTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
         when(ProxyContext.getInstance().databaseExists("bar_db")).thenReturn(true);
+        when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
         handler = new DropDatabaseBackendHandler(sqlStatement, connectionSession);
     }
     

@@ -137,7 +137,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
         Map<String, List<ExecutionUnit>> dataSourcesToExecutionUnits = buildDataSourcesToExecutionUnits(executionContexts);
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext =
                 prepareEngine.prepare(executionContexts.iterator().next().getRouteContext(), samplingExecutionUnit(dataSourcesToExecutionUnits),
-                        new ExecutionGroupReportContext(connectionSession.getProcessId(), connectionSession.getDatabaseName(), connectionSession.getGrantee()));
+                        new ExecutionGroupReportContext(connectionSession.getProcessId(), connectionSession.getDatabaseName(), connectionSession.getConnectionContext().getGrantee()));
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (JDBCExecutionUnit unit : each.getInputs()) {
                 prepareBatchedStatement(unit, dataSourcesToExecutionUnits);

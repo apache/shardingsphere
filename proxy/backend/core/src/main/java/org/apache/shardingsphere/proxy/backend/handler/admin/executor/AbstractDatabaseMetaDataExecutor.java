@@ -144,7 +144,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         
         @Override
         protected Collection<String> getDatabaseNames(final ConnectionSession connectionSession) {
-            Optional<String> database = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> isAuthorized(each, connectionSession.getGrantee()))
+            Optional<String> database = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> isAuthorized(each, connectionSession.getConnectionContext().getGrantee()))
                     .filter(AbstractDatabaseMetaDataExecutor::hasDataSource).findFirst();
             return database.map(Collections::singletonList).orElse(Collections.emptyList());
         }

@@ -44,13 +44,10 @@ public final class JDBCMetaDataInfoExporter implements MetricsExporter {
     
     @Override
     public Optional<GaugeMetricFamilyMetricsCollector> export(final String pluginType) {
-        Optional<Map<String, ShardingSphereDataSource>> dataSourceMap = ShardingSphereDriverUtils.findShardingSphereDataSources();
-        if (!dataSourceMap.isPresent()) {
-            return Optional.empty();
-        }
+        Map<String, ShardingSphereDataSource> dataSourceMap = ShardingSphereDriverUtils.findShardingSphereDataSources();
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
         result.cleanMetrics();
-        for (Entry<String, ShardingSphereDataSource> entry : dataSourceMap.get().entrySet()) {
+        for (Entry<String, ShardingSphereDataSource> entry : dataSourceMap.entrySet()) {
             ShardingSphereDataSource dataSource = entry.getValue();
             String databaseName = AgentReflectionUtils.getFieldValue(dataSource, "databaseName");
             ContextManager contextManager = AgentReflectionUtils.getFieldValue(dataSource, "contextManager");

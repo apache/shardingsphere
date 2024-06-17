@@ -34,6 +34,7 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Frontend channel inbound handler.
@@ -47,7 +48,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private final ProcessEngine processEngine = new ProcessEngine();
     
-    private volatile boolean authenticated;
+    private final AtomicBoolean authenticated = new AtomicBoolean(false);
     
     public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final Channel channel) {
         this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
@@ -63,8 +64,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
-        if (!authenticated) {
-            authenticated = authenticate(context, (ByteBuf) message);
+        if (!authenticated.get()) {
+            authenticated.set(authenticate(context, (ByteBuf) message));
             return;
         }
         ProxyStateContext.execute(context, message, databaseProtocolFrontendEngine, connectionSession);
@@ -77,7 +78,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             if (authResult.isFinished()) {
                 connectionSession.setGrantee(new Grantee(authResult.getUsername(), authResult.getHostname()));
                 connectionSession.setCurrentDatabase(authResult.getDatabase());
-                connectionSession.setProcessId(processEngine.connect(connectionSession.getGrantee(), connectionSession.getDatabaseName()));
+                connectionSession.setProcessId(processEngine.connect(connectionSession.getConnectionContext().getGrantee(), connectionSession.getDatabaseName()));
             }
             return authResult.isFinished();
             // CHECKSTYLE:OFF

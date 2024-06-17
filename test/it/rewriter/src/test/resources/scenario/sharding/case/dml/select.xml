@@ -17,6 +17,28 @@
   -->
 
 <rewrite-assertions yaml-rule="scenario/sharding/config/sharding-rule.yaml">
+    <rewrite-assertion id="select_over_aliased_shard_column" db-types="MySQL,SQLServer,SQL92,PostgreSQL">
+        <input sql="SELECT * FROM (SELECT account_id aliased_account_id FROM t_account) t1 WHERE aliased_account_id  = ?" parameters="100" />
+        <output sql="SELECT * FROM (SELECT account_id aliased_account_id FROM t_account_0) t1 WHERE aliased_account_id  = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_over_aliased_shard_column_oracle" db-types="Oracle">
+        <input sql="SELECT * FROM (SELECT account_id aliased_account_id FROM t_account) WHERE aliased_account_id  = ?" parameters="100" />
+        <output sql="SELECT * FROM (SELECT account_id aliased_account_id FROM t_account_0) WHERE aliased_account_id  = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_over_alias_as_shard_column" db-types="MySQL,SQLServer,SQL92,PostgreSQL">
+        <input sql="SELECT * FROM (SELECT amount account_id FROM t_account) t1 WHERE account_id  = ?" parameters="100" />
+        <output sql="SELECT * FROM (SELECT amount account_id FROM t_account_0) t1 WHERE account_id  = ?" parameters="100" />
+        <output sql="SELECT * FROM (SELECT amount account_id FROM t_account_1) t1 WHERE account_id  = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_over_alias_as_shard_column_oracle" db-types="Oracle">
+        <input sql="SELECT * FROM (SELECT amount account_id FROM t_account) WHERE account_id  = ?" parameters="100" />
+        <output sql="SELECT * FROM (SELECT amount account_id FROM t_account_0) WHERE account_id  = ?" parameters="100" />
+        <output sql="SELECT * FROM (SELECT amount account_id FROM t_account_1) WHERE account_id  = ?" parameters="100" />
+    </rewrite-assertion>
+
     <rewrite-assertion id="select_with_sharding_value_for_parameters">
         <input sql="SELECT * FROM t_account WHERE account_id = ?" parameters="100" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id = ?" parameters="100" />
