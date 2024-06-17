@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.config.database.impl;
 
-import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -38,8 +37,7 @@ class DataSourceProvidedDatabaseConfigurationTest {
     void assertGetDataSources() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
         DataSource dataSource = databaseConfig.getStorageUnits().get("foo_ds").getDataSource();
-        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
-        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof MockedDataSource);
+        assertTrue(dataSource instanceof MockedDataSource);
     }
     
     @Test
@@ -55,8 +53,7 @@ class DataSourceProvidedDatabaseConfigurationTest {
     void assertGetStorageUnits() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
         DataSource dataSource = databaseConfig.getStorageUnits().get("foo_ds").getDataSource();
-        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
-        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof MockedDataSource);
+        assertTrue(dataSource instanceof MockedDataSource);
     }
     
     @Test
