@@ -64,18 +64,18 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public final class DriverDatabaseConnectionManager implements OnlineDatabaseConnectionManager<Connection>, AutoCloseable {
     
-    private final ContextManager contextManager;
-    
     private final String databaseName;
     
-    @Getter
-    private final ConnectionContext connectionContext;
+    private final ContextManager contextManager;
     
     private final Map<String, DataSource> physicalDataSourceMap;
     
     private final Map<String, DataSource> trafficDataSourceMap;
     
     private final Map<String, DataSource> dataSourceMap;
+    
+    @Getter
+    private final ConnectionContext connectionContext;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
@@ -84,15 +84,13 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
     public DriverDatabaseConnectionManager(final String databaseName, final ContextManager contextManager) {
-        this.contextManager = contextManager;
         this.databaseName = databaseName;
-        connectionContext = new ConnectionContext(cachedConnections::keySet);
-        connectionContext.setCurrentDatabase(databaseName);
+        this.contextManager = contextManager;
         physicalDataSourceMap = getPhysicalDataSourceMap(databaseName, contextManager);
         trafficDataSourceMap = getTrafficDataSourceMap(databaseName, contextManager);
-        dataSourceMap = new LinkedHashMap<>(physicalDataSourceMap.size() + trafficDataSourceMap.size(), 1F);
-        dataSourceMap.putAll(physicalDataSourceMap);
-        dataSourceMap.putAll(trafficDataSourceMap);
+        dataSourceMap = getDataSourceMap();
+        connectionContext = new ConnectionContext(cachedConnections::keySet);
+        connectionContext.setCurrentDatabase(databaseName);
     }
     
     private Map<String, DataSource> getPhysicalDataSourceMap(final String databaseName, final ContextManager contextManager) {
@@ -148,6 +146,14 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
         String jdbcUrlPrefix = jdbcUrl.substring(0, jdbcUrl.indexOf("//"));
         String jdbcUrlSuffix = jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf('?')) : "";
         return String.format("%s//%s:%s/%s%s", jdbcUrlPrefix, instanceMetaData.getIp(), instanceMetaData.getPort(), schema, jdbcUrlSuffix);
+    }
+    
+    private Map<String, DataSource> getDataSourceMap() {
+        Map<String, DataSource> result;
+        result = new LinkedHashMap<>(physicalDataSourceMap.size() + trafficDataSourceMap.size(), 1F);
+        result.putAll(physicalDataSourceMap);
+        result.putAll(trafficDataSourceMap);
+        return result;
     }
     
     /**
