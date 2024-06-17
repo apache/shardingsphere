@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.function.mysql;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.util.BitString;
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,6 +27,7 @@ import java.math.BigInteger;
 /**
  * MySQL bit count function.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLBitCountFunction {
     
     /**
@@ -33,6 +36,7 @@ public final class MySQLBitCountFunction {
      * @param value value
      * @return bit count
      */
+    @SuppressWarnings("unused")
     public static Object bitCount(final Object value) {
         if (null == value) {
             return 0;
