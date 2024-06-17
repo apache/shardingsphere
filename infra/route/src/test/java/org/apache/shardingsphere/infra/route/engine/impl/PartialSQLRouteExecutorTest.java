@@ -61,7 +61,7 @@ class PartialSQLRouteExecutorTest {
     @Mock
     private HintValueContext hintValueContext;
     
-    private final ConnectionContext connectionContext = new ConnectionContext();
+    private final ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet);
     
     @BeforeEach
     void setup() {
