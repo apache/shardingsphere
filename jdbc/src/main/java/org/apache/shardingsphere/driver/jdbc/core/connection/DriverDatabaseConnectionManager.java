@@ -360,9 +360,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
     private List<Connection> getConnections(final String currentDatabaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
                                             final ConnectionMode connectionMode) throws SQLException {
         String cacheKey = getKey(currentDatabaseName, dataSourceName);
-        DataSource dataSource = databaseName.equals(currentDatabaseName)
-                ? dataSourceMap.get(cacheKey)
-                : contextManager.getStorageUnits(currentDatabaseName).get(dataSourceName).getDataSource();
+        DataSource dataSource = databaseName.equals(currentDatabaseName) ? dataSourceMap.get(cacheKey) : contextManager.getStorageUnits(currentDatabaseName).get(dataSourceName).getDataSource();
         Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
         synchronized (cachedConnections) {
@@ -431,8 +429,9 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
     
     private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource,
                                         final TransactionConnectionContext transactionConnectionContext) throws SQLException {
-        Optional<Connection> connectionInTransaction =
-                isRawJdbcDataSource(databaseName, dataSourceName) ? getConnectionTransaction().getConnection(databaseName, dataSourceName, transactionConnectionContext) : Optional.empty();
+        Optional<Connection> connectionInTransaction = isRawJdbcDataSource(databaseName, dataSourceName)
+                ? getConnectionTransaction().getConnection(databaseName, dataSourceName, transactionConnectionContext)
+                : Optional.empty();
         return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
     }
     
