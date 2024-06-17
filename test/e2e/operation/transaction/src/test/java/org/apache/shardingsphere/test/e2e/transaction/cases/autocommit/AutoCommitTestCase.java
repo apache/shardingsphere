@@ -129,17 +129,17 @@ public abstract class AutoCommitTestCase extends BaseTransactionTestCase {
         }
     }
     
-    private void executeUpdatePreparedStatement(PreparedStatement preparedStatement, int value) throws SQLException {
-        setPrepareStatementParameters(preparedStatement, value);
+    private void executeUpdatePreparedStatement(final PreparedStatement preparedStatement, final int value) throws SQLException {
+        setPreparedStatementParameters(preparedStatement, value);
         preparedStatement.executeUpdate();
     }
     
-    private void executePreparedStatement(PreparedStatement prepareStatement, int value) throws SQLException {
-        setPrepareStatementParameters(prepareStatement, value);
+    private void executePreparedStatement(final PreparedStatement prepareStatement, final int value) throws SQLException {
+        setPreparedStatementParameters(prepareStatement, value);
         prepareStatement.execute();
     }
     
-    private void setPrepareStatementParameters(final PreparedStatement prepareStatement, final int value) throws SQLException {
+    private void setPreparedStatementParameters(final PreparedStatement prepareStatement, final int value) throws SQLException {
         prepareStatement.setInt(1, value);
         prepareStatement.setInt(2, value);
         prepareStatement.setInt(3, value);
