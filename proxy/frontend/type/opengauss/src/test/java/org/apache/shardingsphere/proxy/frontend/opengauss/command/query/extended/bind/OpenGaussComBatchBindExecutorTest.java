@@ -102,7 +102,7 @@ class OpenGaussComBatchBindExecutorTest {
     
     private ConnectionSession mockConnectionSession() throws SQLException {
         ConnectionSession result = mock(ConnectionSession.class);
-        when(result.getConnectionContext()).thenReturn(new ConnectionContext());
+        when(result.getConnectionContext()).thenReturn(new ConnectionContext(Collections::emptySet));
         when(result.getDatabaseName()).thenReturn("foo_db");
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);

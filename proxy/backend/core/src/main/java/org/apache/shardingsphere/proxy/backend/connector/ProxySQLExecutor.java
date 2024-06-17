@@ -202,7 +202,7 @@ public final class ProxySQLExecutor {
             String databaseName = databaseConnectionManager.getConnectionSession().getDatabaseName();
             executionGroupContext = prepareEngine.prepare(databaseName, executionContext.getRouteContext(), executionContext.getExecutionUnits(),
                     new ExecutionGroupReportContext(databaseConnectionManager.getConnectionSession().getProcessId(),
-                            databaseName, databaseConnectionManager.getConnectionSession().getGrantee()));
+                            databaseName, databaseConnectionManager.getConnectionSession().getConnectionContext().getGrantee()));
         } catch (final SQLException ex) {
             return getSaneExecuteResults(executionContext, ex);
         }
@@ -221,7 +221,7 @@ public final class ProxySQLExecutor {
         try {
             executionGroupContext = prepareEngine.prepare(databaseName, executionContext.getRouteContext(), executionContext.getExecutionUnits(),
                     new ExecutionGroupReportContext(databaseConnectionManager.getConnectionSession().getProcessId(),
-                            databaseName, databaseConnectionManager.getConnectionSession().getGrantee()));
+                            databaseName, databaseConnectionManager.getConnectionSession().getConnectionContext().getGrantee()));
         } catch (final SQLException ex) {
             return getSaneExecuteResults(executionContext, ex);
         }

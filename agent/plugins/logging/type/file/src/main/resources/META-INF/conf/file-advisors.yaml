@@ -22,5 +22,9 @@ advisors:
       - name: create
         type: method
         params:
-          - index: 3
-            type: java.util.Map
+          - index: 0
+            type: org.apache.shardingsphere.metadata.persist.MetaDataPersistService
+          - index: 1
+            type: org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter
+          - index: 2
+            type: org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext

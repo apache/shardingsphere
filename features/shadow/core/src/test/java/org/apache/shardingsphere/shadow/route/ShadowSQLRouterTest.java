@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
@@ -33,6 +35,6 @@ class ShadowSQLRouterTest {
     @Test
     void assertCreateRouteContext() {
         assertNotNull(new ShadowSQLRouter().createRouteContext(mock(QueryContext.class),
-                mock(RuleMetaData.class), mock(ShardingSphereDatabase.class), mock(ShadowRule.class), mock(ConfigurationProperties.class), new ConnectionContext()));
+                mock(RuleMetaData.class), mock(ShardingSphereDatabase.class), mock(ShadowRule.class), mock(ConfigurationProperties.class), new ConnectionContext(Collections::emptySet)));
     }
 }

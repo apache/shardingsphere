@@ -46,7 +46,7 @@ public final class PostgreSQLAutoCommitTestCase extends AutoCommitTestCase {
             assertAutoCommit();
         }
         assertAutoCommitWithStatement();
-        assertAutoCommitWithPrepareStatement();
+        assertAutoCommitWithPreparedStatement();
     }
     
     private void assertAutoCommit() throws SQLException {

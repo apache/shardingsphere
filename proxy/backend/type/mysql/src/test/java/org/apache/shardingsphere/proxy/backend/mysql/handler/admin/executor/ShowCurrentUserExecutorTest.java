@@ -81,8 +81,8 @@ class ShowCurrentUserExecutorTest {
     }
     
     private ConnectionSession mockConnectionSession() {
-        ConnectionSession result = mock(ConnectionSession.class);
-        when(result.getGrantee()).thenReturn(GRANTEE);
+        ConnectionSession result = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
+        when(result.getConnectionContext().getGrantee()).thenReturn(GRANTEE);
         return result;
     }
 }

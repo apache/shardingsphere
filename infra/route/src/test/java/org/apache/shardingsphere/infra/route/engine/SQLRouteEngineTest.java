@@ -51,7 +51,7 @@ class SQLRouteEngineTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_schema",
                 mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
         SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(Collections.singleton(new RouteRuleFixture()), new ConfigurationProperties(new Properties()));
-        RouteContext actual = sqlRouteEngine.route(new ConnectionContext(), queryContext, mock(RuleMetaData.class), database);
+        RouteContext actual = sqlRouteEngine.route(new ConnectionContext(Collections::emptySet), queryContext, mock(RuleMetaData.class), database);
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("ds"));
@@ -66,6 +66,6 @@ class SQLRouteEngineTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_schema",
                 mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
         assertThrows(UnsupportedOperationException.class, () -> new SQLRouteEngine(Collections.singleton(new RouteFailureRuleFixture()),
-                new ConfigurationProperties(new Properties())).route(new ConnectionContext(), queryContext, mock(RuleMetaData.class), database));
+                new ConfigurationProperties(new Properties())).route(new ConnectionContext(Collections::emptySet), queryContext, mock(RuleMetaData.class), database));
     }
 }

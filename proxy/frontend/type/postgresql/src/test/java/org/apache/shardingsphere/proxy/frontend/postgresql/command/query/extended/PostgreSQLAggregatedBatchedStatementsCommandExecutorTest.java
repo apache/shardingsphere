@@ -114,7 +114,7 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(parserEngine.parse(SQL, false));
         when(result.getDatabaseName()).thenReturn("foo_db");
-        when(result.getConnectionContext()).thenReturn(new ConnectionContext());
+        when(result.getConnectionContext()).thenReturn(new ConnectionContext(Collections::emptySet));
         when(result.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         result.getServerPreparedStatementRegistry().addPreparedStatement(STATEMENT_ID,
                 new PostgreSQLServerPreparedStatement(SQL, sqlStatementContext, new HintValueContext(), Collections.singletonList(PostgreSQLColumnType.INT4), Collections.singletonList(0)));
