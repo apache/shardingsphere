@@ -358,7 +358,8 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         return getConnections0(databaseName, dataSourceName, connectionOffset, connectionSize, connectionMode);
     }
     
-    private List<Connection> getConnections0(final String databaseName, final String dataSourceName, final int connectionOffset, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+    private List<Connection> getConnections0(final String databaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
+                                             final ConnectionMode connectionMode) throws SQLException {
         String cacheKey = getKey(databaseName, dataSourceName);
         DataSource dataSource = defaultDatabaseName.equals(databaseName) ? dataSourceMap.get(cacheKey) : contextManager.getStorageUnits(databaseName).get(dataSourceName).getDataSource();
         Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
