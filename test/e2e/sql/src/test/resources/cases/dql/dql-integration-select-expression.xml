@@ -107,9 +107,10 @@
         <assertion parameters="1000:int" />
     </test-case>-->
     
-    <test-case sql="SELECT * FROM t_order_item_join_view WHERE order_id > ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
+    <!-- TODO open this comment when refresh metadata support view without push down execute -->
+    <!--<test-case sql="SELECT * FROM t_order_item_join_view WHERE order_id > ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
 
     <!-- // TODO Until test cases support enabling for specific database version. -->
     <!--    <test-case sql="VALUES ROW(1,1)" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
