@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.session.connection.datasource.UsedDataSou
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -52,14 +51,6 @@ public final class ConnectionContext implements AutoCloseable {
     private String databaseName;
     
     private String trafficInstanceId;
-    
-    public ConnectionContext() {
-        this((Grantee) null);
-    }
-    
-    public ConnectionContext(final Grantee grantee) {
-        this(Collections::emptySet, grantee);
-    }
     
     public ConnectionContext(final UsedDataSourceProvider usedDataSourceProvider) {
         this(usedDataSourceProvider, null);
