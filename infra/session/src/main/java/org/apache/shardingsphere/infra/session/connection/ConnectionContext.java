@@ -36,6 +36,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class ConnectionContext implements AutoCloseable {
     
     private final CursorConnectionContext cursorContext = new CursorConnectionContext();
@@ -47,9 +48,9 @@ public final class ConnectionContext implements AutoCloseable {
     
     private final Grantee grantee;
     
+    @Setter(AccessLevel.NONE)
     private String databaseName;
     
-    @Setter
     private String trafficInstanceId;
     
     public ConnectionContext() {
