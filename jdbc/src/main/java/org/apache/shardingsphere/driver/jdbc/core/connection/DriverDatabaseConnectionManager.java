@@ -349,7 +349,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      */
     public Connection getRandomConnection() throws SQLException {
         String[] databaseAndDataSourceName = getRandomPhysicalDatabaseAndDataSourceName();
-        return getConnections(databaseAndDataSourceName[0], databaseAndDataSourceName[1], 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        return getConnections0(databaseAndDataSourceName[0], databaseAndDataSourceName[1], 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
     }
     
     @Override
