@@ -57,6 +57,10 @@ public final class ConnectionContext implements AutoCloseable {
         this(new Grantee("", ""));
     }
     
+    public ConnectionContext(final UsedDataSourceProvider usedDataSourceProvider) {
+        this(usedDataSourceProvider, new Grantee("", ""));
+    }
+    
     public ConnectionContext(final Grantee grantee) {
         this(Collections::emptySet, grantee);
     }
