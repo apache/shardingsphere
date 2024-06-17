@@ -111,6 +111,7 @@ class DatabaseConnectorTest {
     @BeforeEach
     void setUp() {
         when(databaseConnectionManager.getConnectionSession().getDatabaseName()).thenReturn("foo_db");
+        when(databaseConnectionManager.getConnectionSession().getDefaultDatabaseName()).thenReturn("foo_db");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
