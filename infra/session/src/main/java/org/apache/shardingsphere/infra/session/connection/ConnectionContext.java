@@ -39,14 +39,14 @@ import java.util.Optional;
 @Setter
 public final class ConnectionContext implements AutoCloseable {
     
-    private final CursorConnectionContext cursorContext = new CursorConnectionContext();
-    
-    private final TransactionConnectionContext transactionContext = new TransactionConnectionContext();
-    
     @Getter(AccessLevel.NONE)
     private final UsedDataSourceProvider usedDataSourceProvider;
     
     private final Grantee grantee;
+    
+    private final CursorConnectionContext cursorContext = new CursorConnectionContext();
+    
+    private final TransactionConnectionContext transactionContext = new TransactionConnectionContext();
     
     @Setter(AccessLevel.NONE)
     private String databaseName;
@@ -54,15 +54,15 @@ public final class ConnectionContext implements AutoCloseable {
     private String trafficInstanceId;
     
     public ConnectionContext() {
-        this(new Grantee("", ""));
-    }
-    
-    public ConnectionContext(final UsedDataSourceProvider usedDataSourceProvider) {
-        this(usedDataSourceProvider, new Grantee("", ""));
+        this((Grantee) null);
     }
     
     public ConnectionContext(final Grantee grantee) {
         this(Collections::emptySet, grantee);
+    }
+    
+    public ConnectionContext(final UsedDataSourceProvider usedDataSourceProvider) {
+        this(usedDataSourceProvider, null);
     }
     
     /**
