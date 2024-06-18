@@ -161,11 +161,14 @@ public final class SQLFederationEngine implements AutoCloseable {
         return false;
     }
     
-    private boolean isQuerySystemSchema(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        return sqlStatementContext instanceof SelectStatementContext
-                && (SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), ((SelectStatementContext) sqlStatementContext).getTablesContext().getSchemaNames(), database)
-                        || SystemSchemaUtils.isOpenGaussSystemCatalogQuery(sqlStatementContext.getDatabaseType(),
-                                ((SelectStatementContext) sqlStatementContext).getSqlStatement().getProjections().getProjections()));
+    private boolean isQuerySystemSchema(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase defaultDatabase) {
+        if (!(sqlStatementContext instanceof SelectStatementContext)) {
+            return false;
+        }
+        SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
+        ShardingSphereDatabase database = selectStatementContext.getTablesContext().getDatabaseNames().stream().map(metaData::getDatabase).findFirst().orElse(defaultDatabase);
+        return SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), selectStatementContext.getTablesContext().getSchemaNames(), database)
+                || SystemSchemaUtils.isOpenGaussSystemCatalogQuery(sqlStatementContext.getDatabaseType(), selectStatementContext.getSqlStatement().getProjections().getProjections());
     }
     
     private Collection<String> getUsedDatabaseNames(final SelectStatementContext selectStatementContext, final ShardingSphereDatabase defaultDatabase) {
