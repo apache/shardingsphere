@@ -40,17 +40,32 @@ public final class ProcessEngine {
     /**
      * Connect.
      *
-     * @param grantee grantee
      * @param databaseName database name
      * @return process ID
      */
-    public String connect(final Grantee grantee, final String databaseName) {
-        String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
-        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext =
-                new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(processId, databaseName, grantee));
-        Process process = new Process(executionGroupContext);
-        ProcessRegistry.getInstance().add(process);
+    public String connect(final String databaseName) {
+        return connect(new ExecutionGroupReportContext(getProcessId(), databaseName));
+    }
+    
+    /**
+     * Connect.
+     *
+     * @param databaseName database name
+     * @param grantee grantee
+     * @return process ID
+     */
+    public String connect(final String databaseName, final Grantee grantee) {
+        return connect(new ExecutionGroupReportContext(getProcessId(), databaseName, grantee));
+    }
+    
+    private String connect(final ExecutionGroupReportContext reportContext) {
+        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
+        ProcessRegistry.getInstance().add(new Process(executionGroupContext));
         return executionGroupContext.getReportContext().getProcessId();
+    }
+    
+    private String getProcessId() {
+        return new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
     }
     
     /**

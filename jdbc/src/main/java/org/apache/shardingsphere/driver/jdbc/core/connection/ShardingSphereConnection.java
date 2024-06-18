@@ -28,7 +28,6 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
@@ -83,7 +82,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         this.databaseName = databaseName;
         this.contextManager = contextManager;
         databaseConnectionManager = new DriverDatabaseConnectionManager(databaseName, contextManager);
-        processId = processEngine.connect(new Grantee("", ""), databaseName);
+        processId = processEngine.connect(databaseName);
     }
     
     /**
