@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
@@ -42,9 +41,6 @@ public final class StorageUnit {
     
     private final DatabaseType storageType;
     
-    @Getter(AccessLevel.NONE)
-    private final String catalog;
-    
     private final DataSource dataSource;
     
     private final DataSourcePoolProperties dataSourcePoolProperties;
@@ -58,13 +54,13 @@ public final class StorageUnit {
         String username = standardProps.get("username").toString();
         storageType = DatabaseTypeFactory.get(url);
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(storageType).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-        catalog = isInstanceConnectionAvailable ? DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType).parse(url, username, null).getCatalog() : null;
+        String catalog = isInstanceConnectionAvailable ? DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType).parse(url, username, null).getCatalog() : null;
         this.dataSource = isInstanceConnectionAvailable ? new CatalogSwitchableDataSource(dataSource, catalog, url) : dataSource;
         dataSourcePoolProperties = dataSourcePoolProps;
-        connectionProperties = createConnectionProperties(standardProps);
+        connectionProperties = createConnectionProperties(catalog, standardProps);
     }
     
-    private ConnectionProperties createConnectionProperties(final Map<String, Object> standardProps) {
+    private ConnectionProperties createConnectionProperties(final String catalog, final Map<String, Object> standardProps) {
         ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
         return parser.parse(standardProps.get("url").toString(), standardProps.getOrDefault("username", "").toString(), catalog);
     }
