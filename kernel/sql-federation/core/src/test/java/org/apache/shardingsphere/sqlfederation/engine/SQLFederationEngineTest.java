@@ -63,13 +63,13 @@ class SQLFederationEngineTest {
     void assertDecideWhenSelectStatementContainsSystemSchema() throws SQLException {
         Collection<ShardingSphereRule> globalRules =
                 Collections.singleton(new SQLFederationRule(new SQLFederationRuleConfiguration(false, false, mock(CacheOption.class)), Collections.emptyMap()));
-        SQLFederationEngine engine = createSQLFederationEngine(globalRules, Collections.emptyList());
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.singletonList("information_schema"));
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.singletonList("information_schema"));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), mock(RuleMetaData.class), Collections.emptyMap());
+        SQLFederationEngine engine = createSQLFederationEngine(globalRules, Collections.emptyList());
         assertTrue(engine.decide(sqlStatementContext, Collections.emptyList(), database, mock(RuleMetaData.class)));
         engine.close();
     }
