@@ -3316,7 +3316,7 @@
                 </left>
                 <right>
                     <function-table start-index="57" stop-index="230" table-alias="tt">
-                        <table-function text="JSON_TABLE(m.c3,'$.*'COLUMNS(atVARCHAR(10)PATH'$.a'DEFAULT'1'ONEMPTY,btVARCHAR(10)PATH'$.b'DEFAULT'2'ONEMPTY,ctVARCHAR(10)PATH'$.c'DEFAULT'3'ONEMPTY))" function-name="JSON_TABLE">
+                        <table-function text="JSON_TABLE(m.c3, '$.*' COLUMNS(at VARCHAR(10) PATH '$.a' DEFAULT '1' ON EMPTY, bt VARCHAR(10) PATH '$.b'DEFAULT '2' ON EMPTY, ct VARCHAR(10) PATH '$.c' DEFAULT '3' ON EMPTY))" function-name="JSON_TABLE">
                             <parameter>
                                 <column name="c3" start-index="68" stop-index="71">
                                     <owner name="m" start-index="68" stop-index="68"/>
@@ -3326,7 +3326,7 @@
                                 <literal-expression value="'$.*'" start-index="74" stop-index="78"/>
                             </parameter>
                             <parameter>
-                                <literal-expression value="COLUMNS(atVARCHAR(10)PATH'$.a'DEFAULT'1'ONEMPTY,btVARCHAR(10)PATH'$.b'DEFAULT'2'ONEMPTY,ctVARCHAR(10)PATH'$.c'DEFAULT'3'ONEMPTY)" start-index="80" stop-index="229"/>
+                                <literal-expression value="COLUMNS(at VARCHAR(10) PATH '$.a' DEFAULT '1' ON EMPTY, bt VARCHAR(10) PATH '$.b'DEFAULT '2' ON EMPTY, ct VARCHAR(10) PATH '$.c' DEFAULT '3' ON EMPTY)" start-index="80" stop-index="229"/>
                             </parameter>
                         </table-function>
                     </function-table>
