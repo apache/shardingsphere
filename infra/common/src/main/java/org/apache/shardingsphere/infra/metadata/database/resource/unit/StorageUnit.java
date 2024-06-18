@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
@@ -42,6 +43,7 @@ public final class StorageUnit {
     
     private final DatabaseType storageType;
     
+    @Getter(AccessLevel.NONE)
     private final String catalog;
     
     private final DataSource dataSource;
