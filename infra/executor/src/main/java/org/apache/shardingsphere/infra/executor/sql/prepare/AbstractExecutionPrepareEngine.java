@@ -54,20 +54,20 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
     }
     
     @Override
-    public final ExecutionGroupContext<T> prepare(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits,
+    public final ExecutionGroupContext<T> prepare(final String databaseName, final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits,
                                                   final ExecutionGroupReportContext reportContext) throws SQLException {
-        return prepare(routeContext, Collections.emptyMap(), executionUnits, reportContext);
+        return prepare(databaseName, routeContext, Collections.emptyMap(), executionUnits, reportContext);
     }
     
     @Override
-    public final ExecutionGroupContext<T> prepare(final RouteContext routeContext, final Map<String, Integer> connectionOffsets, final Collection<ExecutionUnit> executionUnits,
-                                                  final ExecutionGroupReportContext reportContext) throws SQLException {
+    public final ExecutionGroupContext<T> prepare(final String databaseName, final RouteContext routeContext, final Map<String, Integer> connectionOffsets,
+                                                  final Collection<ExecutionUnit> executionUnits, final ExecutionGroupReportContext reportContext) throws SQLException {
         Collection<ExecutionGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<ExecutionUnit>> entry : aggregateExecutionUnitGroups(executionUnits).entrySet()) {
             String dataSourceName = entry.getKey();
             List<List<ExecutionUnit>> executionUnitGroups = group(entry.getValue());
             ConnectionMode connectionMode = maxConnectionsSizePerQuery < entry.getValue().size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
-            result.addAll(group(dataSourceName, connectionOffsets.getOrDefault(dataSourceName, 0), executionUnitGroups, connectionMode));
+            result.addAll(group(databaseName, dataSourceName, connectionOffsets.getOrDefault(dataSourceName, 0), executionUnitGroups, connectionMode));
         }
         return decorate(routeContext, result, reportContext);
     }
@@ -77,7 +77,8 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
         return Lists.partition(sqlUnits, desiredPartitionSize);
     }
     
-    protected abstract List<ExecutionGroup<T>> group(String dataSourceName, int connectionOffset, List<List<ExecutionUnit>> executionUnitGroups, ConnectionMode connectionMode) throws SQLException;
+    protected abstract List<ExecutionGroup<T>> group(String databaseName, String dataSourceName, int connectionOffset, List<List<ExecutionUnit>> executionUnitGroups,
+                                                     ConnectionMode connectionMode) throws SQLException;
     
     private Map<String, List<ExecutionUnit>> aggregateExecutionUnitGroups(final Collection<ExecutionUnit> executionUnits) {
         Map<String, List<ExecutionUnit>> result = new TreeMap<>();

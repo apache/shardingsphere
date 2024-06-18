@@ -57,7 +57,7 @@ class ShardingSphereConnectionTest {
     void assertSetAutoCommitWithLocalTransaction() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
         try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(physicalConnection))) {
-            connection.getDatabaseConnectionManager().getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+            connection.getDatabaseConnectionManager().getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
             connection.setAutoCommit(true);
             assertTrue(connection.getAutoCommit());
         }
@@ -81,7 +81,7 @@ class ShardingSphereConnectionTest {
     void assertCommitWithLocalTransaction() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
         try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(physicalConnection))) {
-            connection.getDatabaseConnectionManager().getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+            connection.getDatabaseConnectionManager().getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
             connection.setAutoCommit(false);
             assertFalse(connection.getAutoCommit());
             assertTrue(connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction());
@@ -114,7 +114,7 @@ class ShardingSphereConnectionTest {
     void assertRollbackWithLocalTransaction() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
         try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(physicalConnection))) {
-            connection.getDatabaseConnectionManager().getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+            connection.getDatabaseConnectionManager().getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
             connection.setAutoCommit(false);
             assertFalse(connection.getAutoCommit());
             connection.rollback();
@@ -158,7 +158,7 @@ class ShardingSphereConnectionTest {
     @Test
     void assertIsInvalid() throws SQLException {
         try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager())) {
-            connection.getDatabaseConnectionManager().getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+            connection.getDatabaseConnectionManager().getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
             assertFalse(connection.isValid(0));
         }
     }
@@ -167,7 +167,7 @@ class ShardingSphereConnectionTest {
     void assertSetReadOnly() throws SQLException {
         try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager())) {
             assertFalse(connection.isReadOnly());
-            Connection physicalConnection = connection.getDatabaseConnectionManager().getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+            Connection physicalConnection = connection.getDatabaseConnectionManager().getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
             connection.setReadOnly(true);
             assertTrue(connection.isReadOnly());
             verify(physicalConnection).setReadOnly(true);
@@ -185,7 +185,7 @@ class ShardingSphereConnectionTest {
     @Test
     void assertSetTransactionIsolation() throws SQLException {
         try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager())) {
-            Connection physicalConnection = connection.getDatabaseConnectionManager().getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+            Connection physicalConnection = connection.getDatabaseConnectionManager().getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
             connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             verify(physicalConnection).setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         }

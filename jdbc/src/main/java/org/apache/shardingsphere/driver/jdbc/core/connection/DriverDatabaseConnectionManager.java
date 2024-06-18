@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.kernel.connection.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.OnlineDatabaseConnectionManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
@@ -62,9 +62,9 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Database connection manager of ShardingSphere-JDBC.
  */
-public final class DriverDatabaseConnectionManager implements OnlineDatabaseConnectionManager<Connection>, AutoCloseable {
+public final class DriverDatabaseConnectionManager implements DatabaseConnectionManager<Connection>, AutoCloseable {
     
-    private final String databaseName;
+    private final String defaultDatabaseName;
     
     private final ContextManager contextManager;
     
@@ -83,14 +83,14 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
     
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
-    public DriverDatabaseConnectionManager(final String databaseName, final ContextManager contextManager) {
-        this.databaseName = databaseName;
+    public DriverDatabaseConnectionManager(final String defaultDatabaseName, final ContextManager contextManager) {
+        this.defaultDatabaseName = defaultDatabaseName;
         this.contextManager = contextManager;
-        physicalDataSourceMap = getPhysicalDataSourceMap(databaseName, contextManager);
-        trafficDataSourceMap = getTrafficDataSourceMap(databaseName, contextManager);
+        physicalDataSourceMap = getPhysicalDataSourceMap(defaultDatabaseName, contextManager);
+        trafficDataSourceMap = getTrafficDataSourceMap(defaultDatabaseName, contextManager);
         dataSourceMap = getDataSourceMap();
         connectionContext = new ConnectionContext(cachedConnections::keySet);
-        connectionContext.setCurrentDatabase(databaseName);
+        connectionContext.setCurrentDatabase(defaultDatabaseName);
     }
     
     private Map<String, DataSource> getPhysicalDataSourceMap(final String databaseName, final ContextManager contextManager) {
@@ -349,18 +349,19 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
      */
     public Connection getRandomConnection() throws SQLException {
         String[] databaseAndDataSourceName = getRandomPhysicalDatabaseAndDataSourceName();
-        return getConnections(databaseAndDataSourceName[0], databaseAndDataSourceName[1], 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        return getConnections0(databaseAndDataSourceName[0], databaseAndDataSourceName[1], 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
     }
     
     @Override
-    public List<Connection> getConnections(final String dataSourceName, final int connectionOffset, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return getConnections(connectionContext.getDatabaseName().orElse(databaseName), dataSourceName, connectionOffset, connectionSize, connectionMode);
+    public List<Connection> getConnections(final String databaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
+                                           final ConnectionMode connectionMode) throws SQLException {
+        return getConnections0(databaseName, dataSourceName, connectionOffset, connectionSize, connectionMode);
     }
     
-    private List<Connection> getConnections(final String currentDatabaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
-                                            final ConnectionMode connectionMode) throws SQLException {
-        String cacheKey = getKey(currentDatabaseName, dataSourceName);
-        DataSource dataSource = databaseName.equals(currentDatabaseName) ? dataSourceMap.get(cacheKey) : contextManager.getStorageUnits(currentDatabaseName).get(dataSourceName).getDataSource();
+    private List<Connection> getConnections0(final String databaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
+                                             final ConnectionMode connectionMode) throws SQLException {
+        String cacheKey = getKey(databaseName, dataSourceName);
+        DataSource dataSource = defaultDatabaseName.equals(databaseName) ? dataSourceMap.get(cacheKey) : contextManager.getStorageUnits(databaseName).get(dataSourceName).getDataSource();
         Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
         synchronized (cachedConnections) {
@@ -371,7 +372,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
         if (connections.size() >= maxConnectionSize) {
             result = new ArrayList<>(connections).subList(connectionOffset, maxConnectionSize);
         } else if (connections.isEmpty()) {
-            Collection<Connection> newConnections = createConnections(currentDatabaseName, dataSourceName, dataSource, maxConnectionSize, connectionMode);
+            Collection<Connection> newConnections = createConnections(databaseName, dataSourceName, dataSource, maxConnectionSize, connectionMode);
             result = new ArrayList<>(newConnections).subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
                 cachedConnections.putAll(cacheKey, newConnections);
@@ -379,7 +380,7 @@ public final class DriverDatabaseConnectionManager implements OnlineDatabaseConn
         } else {
             List<Connection> allConnections = new ArrayList<>(maxConnectionSize);
             allConnections.addAll(connections);
-            Collection<Connection> newConnections = createConnections(currentDatabaseName, dataSourceName, dataSource, maxConnectionSize - connections.size(), connectionMode);
+            Collection<Connection> newConnections = createConnections(databaseName, dataSourceName, dataSource, maxConnectionSize - connections.size(), connectionMode);
             allConnections.addAll(newConnections);
             result = allConnections.subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
