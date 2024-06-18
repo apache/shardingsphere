@@ -38,7 +38,6 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
@@ -152,7 +151,7 @@ public final class DriverExecuteBatchExecutor {
             executionUnits.add(executionUnit);
         }
         batchExecutor.init(prepareEngine
-                .prepare(database.getName(), executionContext.getRouteContext(), executionUnits, new ExecutionGroupReportContext(connection.getProcessId(), database.getName(), new Grantee("", ""))));
+                .prepare(database.getName(), executionContext.getRouteContext(), executionUnits, new ExecutionGroupReportContext(connection.getProcessId(), database.getName())));
         setBatchParameters(replayCallback);
     }
     

@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -65,7 +64,7 @@ public final class BatchPreparedStatementExecutor {
     public BatchPreparedStatementExecutor(final ShardingSphereDatabase database, final JDBCExecutor jdbcExecutor, final String processId) {
         this.database = database;
         this.jdbcExecutor = jdbcExecutor;
-        executionGroupContext = new ExecutionGroupContext<>(new LinkedList<>(), new ExecutionGroupReportContext(processId, database.getName(), new Grantee("", "")));
+        executionGroupContext = new ExecutionGroupContext<>(new LinkedList<>(), new ExecutionGroupReportContext(processId, database.getName()));
         batchExecutionUnits = new LinkedList<>();
     }
     

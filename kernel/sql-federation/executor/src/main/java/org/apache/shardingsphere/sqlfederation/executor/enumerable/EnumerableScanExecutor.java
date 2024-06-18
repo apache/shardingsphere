@@ -52,7 +52,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -131,9 +130,9 @@ public final class EnumerableScanExecutor implements ScanExecutor {
             public Enumerator<Object> enumerator() {
                 computeConnectionOffsets(context);
                 // TODO pass grantee from proxy and jdbc adapter
-                ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext =
-                        prepareEngine.prepare(database.getName(), context.getRouteContext(), executorContext.getConnectionOffsets(), context.getExecutionUnits(),
-                                new ExecutionGroupReportContext(federationContext.getProcessId(), database.getName(), new Grantee("", "")));
+                ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(
+                        database.getName(), context.getRouteContext(), executorContext.getConnectionOffsets(),
+                        context.getExecutionUnits(), new ExecutionGroupReportContext(federationContext.getProcessId(), database.getName()));
                 setParameters(executionGroupContext.getInputGroups());
                 ShardingSpherePreconditions.checkState(!ProcessRegistry.getInstance().get(federationContext.getProcessId()).isInterrupted(), SQLExecutionInterruptedException::new);
                 processEngine.executeSQL(executionGroupContext, federationContext.getQueryContext());
