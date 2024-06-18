@@ -949,10 +949,11 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public final ASTNode visitJsonTableFunction(final JsonTableFunctionContext ctx) {
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.JSON_TABLE().getText(), ctx.getText());
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.JSON_TABLE().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
-        result.getParameters().add(new LiteralExpressionSegment(ctx.path().getStart().getStartIndex(), ctx.path().getStop().getStopIndex(), ctx.path().getText()));
-        result.getParameters().add(new LiteralExpressionSegment(ctx.jsonTableColumns().getStart().getStartIndex(), ctx.jsonTableColumns().getStop().getStopIndex(), ctx.jsonTableColumns().getText()));
+        result.getParameters().add(new LiteralExpressionSegment(ctx.path().getStart().getStartIndex(), ctx.path().getStop().getStopIndex(), getOriginalText(ctx.path())));
+        result.getParameters().add(new LiteralExpressionSegment(ctx.jsonTableColumns().getStart().getStartIndex(), ctx.jsonTableColumns().getStop().getStopIndex(),
+                getOriginalText(ctx.jsonTableColumns())));
         return result;
     }
     
