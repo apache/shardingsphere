@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
@@ -43,8 +42,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     void assertGetDataSources() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         DataSource dataSource = databaseConfig.getStorageUnits().get("normal_db").getDataSource();
-        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
-        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof HikariDataSource);
+        assertTrue(dataSource instanceof HikariDataSource);
     }
     
     @Test
@@ -60,8 +58,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     void assertGetStorageUnits() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         DataSource dataSource = databaseConfig.getStorageUnits().get("normal_db").getDataSource();
-        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
-        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof HikariDataSource);
+        assertTrue(dataSource instanceof HikariDataSource);
     }
     
     @Test

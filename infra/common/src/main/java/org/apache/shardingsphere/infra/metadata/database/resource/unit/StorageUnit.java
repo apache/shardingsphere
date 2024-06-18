@@ -57,8 +57,8 @@ public final class StorageUnit {
         storageType = DatabaseTypeFactory.get(url);
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
         catalog = isInstanceConnectionAvailable ? new StandardJdbcUrlParser().parse(url).getDatabase() : null;
-        this.dataSource = new CatalogSwitchableDataSource(dataSource, catalog, url);
-        this.dataSourcePoolProperties = dataSourcePoolProps;
+        this.dataSource = isInstanceConnectionAvailable ? new CatalogSwitchableDataSource(dataSource, catalog, url) : dataSource;
+        dataSourcePoolProperties = dataSourcePoolProps;
         connectionProperties = createConnectionProperties(standardProps);
     }
     

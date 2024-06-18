@@ -131,11 +131,11 @@ public final class EnumerableScanExecutor implements ScanExecutor {
             public Enumerator<Object> enumerator() {
                 computeConnectionOffsets(context);
                 // TODO pass grantee from proxy and jdbc adapter
-                ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), executorContext.getConnectionOffsets(), context.getExecutionUnits(),
-                        new ExecutionGroupReportContext(federationContext.getProcessId(), database.getName(), new Grantee("", "")));
+                ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext =
+                        prepareEngine.prepare(database.getName(), context.getRouteContext(), executorContext.getConnectionOffsets(), context.getExecutionUnits(),
+                                new ExecutionGroupReportContext(federationContext.getProcessId(), database.getName(), new Grantee("", "")));
                 setParameters(executionGroupContext.getInputGroups());
-                ShardingSpherePreconditions.checkState(!ProcessRegistry.getInstance().get(federationContext.getProcessId()).isInterrupted(),
-                        SQLExecutionInterruptedException::new);
+                ShardingSpherePreconditions.checkState(!ProcessRegistry.getInstance().get(federationContext.getProcessId()).isInterrupted(), SQLExecutionInterruptedException::new);
                 processEngine.executeSQL(executionGroupContext, federationContext.getQueryContext());
                 List<QueryResult> queryResults = jdbcExecutor.execute(executionGroupContext, callback).stream().map(QueryResult.class::cast).collect(Collectors.toList());
                 MergeEngine mergeEngine = new MergeEngine(federationContext.getMetaData().getGlobalRuleMetaData(), database, executorContext.getProps(), new ConnectionContext(Collections::emptySet));

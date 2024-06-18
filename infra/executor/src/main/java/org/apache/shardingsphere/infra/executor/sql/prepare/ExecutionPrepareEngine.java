@@ -36,17 +36,19 @@ public interface ExecutionPrepareEngine<T> {
     /**
      * Prepare to execute.
      *
+     * @param databaseName database name
      * @param routeContext route context
      * @param executionUnits execution units
      * @param reportContext report context
      * @return execution group context
      * @throws SQLException SQL exception
      */
-    ExecutionGroupContext<T> prepare(RouteContext routeContext, Collection<ExecutionUnit> executionUnits, ExecutionGroupReportContext reportContext) throws SQLException;
+    ExecutionGroupContext<T> prepare(String databaseName, RouteContext routeContext, Collection<ExecutionUnit> executionUnits, ExecutionGroupReportContext reportContext) throws SQLException;
     
     /**
      * Prepare to execute.
      *
+     * @param databaseName database name
      * @param routeContext route context
      * @param connectionOffsets execution offsets
      * @param executionUnits execution units
@@ -54,6 +56,6 @@ public interface ExecutionPrepareEngine<T> {
      * @return execution group context
      * @throws SQLException SQL exception
      */
-    ExecutionGroupContext<T> prepare(RouteContext routeContext, Map<String, Integer> connectionOffsets, Collection<ExecutionUnit> executionUnits,
+    ExecutionGroupContext<T> prepare(String databaseName, RouteContext routeContext, Map<String, Integer> connectionOffsets, Collection<ExecutionUnit> executionUnits,
                                      ExecutionGroupReportContext reportContext) throws SQLException;
 }
