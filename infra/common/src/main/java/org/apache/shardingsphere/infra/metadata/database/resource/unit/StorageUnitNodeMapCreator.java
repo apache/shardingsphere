@@ -19,9 +19,10 @@ package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -56,8 +57,8 @@ public final class StorageUnitNodeMapCreator {
     private static StorageNode create(final String storageUnitName, final String url, final String username) {
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
         try {
-            JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-            return isInstanceConnectionAvailable ? new StorageNode(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : new StorageNode(storageUnitName);
+            ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(url)).parse(url, username, null);
+            return isInstanceConnectionAvailable ? new StorageNode(connectionProps.getHostname(), connectionProps.getPort(), username) : new StorageNode(storageUnitName);
         } catch (final UnrecognizedDatabaseURLException ex) {
             return new StorageNode(storageUnitName);
         }

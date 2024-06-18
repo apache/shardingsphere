@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.it.optimizer.converter;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
@@ -47,7 +46,6 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-@Slf4j
 class SQLNodeConverterEngineIT {
     
     private static final SQLCases SQL_CASES = SQLCasesRegistry.getInstance().getCases();
@@ -74,8 +72,7 @@ class SQLNodeConverterEngineIT {
         String expected;
         try {
             expected = SQL_NODE_CONVERTER_TEST_CASES.get(sqlCaseId, sqlCaseType, databaseType).getExpectedSQL();
-        } catch (final IllegalStateException ex) {
-            log.warn(ex.getMessage());
+        } catch (final IllegalStateException ignore) {
             return;
         }
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());

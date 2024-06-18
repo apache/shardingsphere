@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager;
 
+import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -106,7 +107,7 @@ class ContextManagerTest {
         when(storageUnit.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
-        when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/foo_db"));
+        when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Maps.of("url", "jdbc:mock://127.0.0.1/foo_db", "username", "test"));
         Map<String, StorageUnit> storageUnits = Collections.singletonMap("foo_ds", new StorageUnit(mock(StorageNode.class), dataSourcePoolProps, new MockedDataSource()));
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         return result;

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 
+import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.distsql.handler.fixture.DistSQLHandlerFixtureRule;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -77,7 +78,7 @@ class UnregisterStorageUnitExecutorTest {
     private static StorageUnit createStorageUnit() {
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
         when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.emptyMap());
-        when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/foo_db"));
+        when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Maps.of("url", "jdbc:mock://127.0.0.1/foo_db", "username", "test"));
         return new StorageUnit(mock(StorageNode.class), dataSourcePoolProps, new MockedDataSource());
     }
     
