@@ -70,7 +70,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-federation-core</artifactId>
+            <artifactId>shardingsphere-sql-federation-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

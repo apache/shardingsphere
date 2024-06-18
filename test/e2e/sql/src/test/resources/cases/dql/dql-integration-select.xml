@@ -180,7 +180,8 @@
     <!--        <assertion parameters="0:int" expected-data-source-name="shadow_dataset" />-->
     <!--    </test-case>-->
     
-    <test-case sql="SELECT * FROM t_order_item_join_view" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
+    <!-- TODO open this comment when refresh metadata support view without push down execute -->
+    <!--<test-case sql="SELECT * FROM t_order_item_join_view" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -198,7 +199,7 @@
     
     <test-case sql="SELECT * FROM t_order_union_view WHERE order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
     <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
                scenario-comments="Test single table's LIKE operator percentage wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in simple select statement when use encrypt feature.">

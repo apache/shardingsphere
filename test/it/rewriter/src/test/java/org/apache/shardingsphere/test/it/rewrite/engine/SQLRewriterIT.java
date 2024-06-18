@@ -57,10 +57,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
 import org.apache.shardingsphere.test.it.rewrite.engine.parameter.SQLRewriteEngineTestParameters;
@@ -171,7 +168,6 @@ public abstract class SQLRewriterIT {
     private Collection<ShardingSphereRule> createGlobalRules() {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         result.add(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()));
-        result.add(new SQLFederationRule(new SQLFederationRuleConfiguration(false, false, mock(CacheOption.class)), Collections.emptyMap()));
         result.add(new TimestampServiceRule(mock(TimestampServiceRuleConfiguration.class)));
         return result;
     }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.engine;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
 import org.apache.calcite.adapter.enumerable.EnumerableRel;
@@ -95,9 +96,9 @@ public final class SQLFederationEngine implements AutoCloseable {
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, SQLFederationDecider> deciders;
     
-    private final String databaseName;
+    private final String defaultDatabaseName;
     
-    private final String schemaName;
+    private final String defaultSchemaName;
     
     private final ShardingSphereMetaData metaData;
     
@@ -109,10 +110,11 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     private ResultSet resultSet;
     
-    public SQLFederationEngine(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics, final JDBCExecutor jdbcExecutor) {
-        deciders = OrderedSPILoader.getServices(SQLFederationDecider.class, metaData.getDatabase(databaseName).getRuleMetaData().getRules());
-        this.databaseName = databaseName;
-        this.schemaName = schemaName;
+    public SQLFederationEngine(final String defaultDatabaseName, final String defaultSchemaName, final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics,
+                               final JDBCExecutor jdbcExecutor) {
+        deciders = OrderedSPILoader.getServices(SQLFederationDecider.class, metaData.getDatabase(defaultDatabaseName).getRuleMetaData().getRules());
+        this.defaultDatabaseName = defaultDatabaseName;
+        this.defaultSchemaName = defaultSchemaName;
         this.metaData = metaData;
         this.statistics = statistics;
         this.jdbcExecutor = jdbcExecutor;
@@ -124,14 +126,14 @@ public final class SQLFederationEngine implements AutoCloseable {
      *
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
-     * @param database ShardingSphere database
+     * @param defaultDatabase default database
      * @param globalRuleMetaData global rule meta data
      * @return use SQL federation or not
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public boolean decide(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final ShardingSphereDatabase database, final RuleMetaData globalRuleMetaData) {
+    public boolean decide(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final ShardingSphereDatabase defaultDatabase, final RuleMetaData globalRuleMetaData) {
         // TODO BEGIN: move this logic to SQLFederationDecider implement class when we remove sql federation type
-        if (isQuerySystemSchema(sqlStatementContext, database)) {
+        if (isQuerySystemSchema(sqlStatementContext, defaultDatabase)) {
             return true;
         }
         // TODO END
@@ -143,9 +145,15 @@ public final class SQLFederationEngine implements AutoCloseable {
         if (allQueryUseSQLFederation) {
             return true;
         }
+        SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
+        Collection<String> usedDatabaseNames = getUsedDatabaseNames(selectStatementContext, defaultDatabase);
+        if (usedDatabaseNames.size() > 1) {
+            return true;
+        }
+        ShardingSphereDatabase currentDatabase = metaData.getDatabase(usedDatabaseNames.iterator().next());
         Collection<DataNode> includedDataNodes = new HashSet<>();
         for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
-            boolean isUseSQLFederation = entry.getValue().decide((SelectStatementContext) sqlStatementContext, parameters, globalRuleMetaData, database, entry.getKey(), includedDataNodes);
+            boolean isUseSQLFederation = entry.getValue().decide(selectStatementContext, parameters, globalRuleMetaData, currentDatabase, entry.getKey(), includedDataNodes);
             if (isUseSQLFederation) {
                 return true;
             }
@@ -153,11 +161,20 @@ public final class SQLFederationEngine implements AutoCloseable {
         return false;
     }
     
-    private boolean isQuerySystemSchema(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        return sqlStatementContext instanceof SelectStatementContext
-                && (SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), ((SelectStatementContext) sqlStatementContext).getTablesContext().getSchemaNames(), database)
-                        || SystemSchemaUtils.isOpenGaussSystemCatalogQuery(sqlStatementContext.getDatabaseType(),
-                                ((SelectStatementContext) sqlStatementContext).getSqlStatement().getProjections().getProjections()));
+    private boolean isQuerySystemSchema(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase defaultDatabase) {
+        if (!(sqlStatementContext instanceof SelectStatementContext)) {
+            return false;
+        }
+        SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
+        ShardingSphereDatabase database = selectStatementContext.getTablesContext().getDatabaseNames().stream().map(metaData::getDatabase).findFirst().orElse(defaultDatabase);
+        return SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), selectStatementContext.getTablesContext().getSchemaNames(), database)
+                || SystemSchemaUtils.isOpenGaussSystemCatalogQuery(sqlStatementContext.getDatabaseType(), selectStatementContext.getSqlStatement().getProjections().getProjections());
+    }
+    
+    private Collection<String> getUsedDatabaseNames(final SelectStatementContext selectStatementContext, final ShardingSphereDatabase defaultDatabase) {
+        Collection<String> result = new CaseInsensitiveSet<>(selectStatementContext.getTablesContext().getDatabaseNames());
+        result.add(defaultDatabase.getName());
+        return result;
     }
     
     /**
@@ -172,8 +189,8 @@ public final class SQLFederationEngine implements AutoCloseable {
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationContext federationContext) {
         try {
-            String databaseName = federationContext.getQueryContext().getDatabaseNameFromSQLStatement().orElse(this.databaseName);
-            String schemaName = federationContext.getQueryContext().getSchemaNameFromSQLStatement().orElse(this.schemaName);
+            String databaseName = federationContext.getQueryContext().getDatabaseNameFromSQLStatement().orElse(defaultDatabaseName);
+            String schemaName = federationContext.getQueryContext().getSchemaNameFromSQLStatement().orElse(defaultSchemaName);
             OptimizerMetaData optimizerMetaData = sqlFederationRule.getOptimizerContext().getMetaData(databaseName);
             CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(sqlFederationRule.getOptimizerContext().getParserContext(databaseName).getDialectProps());
             CalciteCatalogReader catalogReader = SQLFederationPlannerUtils.createCatalogReader(schemaName, optimizerMetaData.getSchema(schemaName), DEFAULT_DATA_TYPE_FACTORY, connectionConfig);
@@ -189,7 +206,7 @@ public final class SQLFederationEngine implements AutoCloseable {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            throw new SQLFederationUnsupportedSQLException(federationContext.getQueryContext().getSql());
+            throw new SQLFederationUnsupportedSQLException(federationContext.getQueryContext().getSql(), ex);
         }
     }
     
