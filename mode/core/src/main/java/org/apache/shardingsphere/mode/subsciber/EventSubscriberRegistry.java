@@ -17,31 +17,13 @@
 
 package org.apache.shardingsphere.mode.subsciber;
 
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-
-import java.util.Arrays;
-import java.util.Collection;
-
 /**
  * Event subscriber registry.
  */
-public abstract class EventSubscriberRegistry {
-    
-    private final EventBusContext eventBusContext;
-    
-    private final Collection<EventSubscriber> subscribers;
-    
-    protected EventSubscriberRegistry(final ContextManager contextManager, final EventSubscriber... subscribers) {
-        eventBusContext = contextManager.getComputeNodeInstanceContext().getEventBusContext();
-        this.subscribers = Arrays.asList(subscribers);
-    }
+public interface EventSubscriberRegistry {
     
     /**
      * Register subscribers.
      */
-    public void register() {
-        subscribers.forEach(eventBusContext::register);
-    }
+    void register();
 }
