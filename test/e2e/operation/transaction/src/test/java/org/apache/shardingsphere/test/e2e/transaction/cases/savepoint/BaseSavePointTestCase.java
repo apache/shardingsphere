@@ -43,6 +43,12 @@ public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
             assertAccountRowCount(connection, 2);
             connection.rollback(savepoint);
             assertAccountRowCount(connection, 1);
+            final Savepoint savepointWithoutName = connection.setSavepoint();
+            assertAccountRowCount(connection, 1);
+            executeWithLog(connection, "INSERT INTO account (id, balance, transaction_id) VALUES (2, 2, 2)");
+            assertAccountRowCount(connection, 2);
+            connection.rollback(savepointWithoutName);
+            assertAccountRowCount(connection, 1);
             connection.commit();
             assertAccountRowCount(connection, 1);
         }
