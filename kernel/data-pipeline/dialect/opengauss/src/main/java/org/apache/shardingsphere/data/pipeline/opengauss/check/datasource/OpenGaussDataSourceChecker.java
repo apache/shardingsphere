@@ -40,7 +40,9 @@ public final class OpenGaussDataSourceChecker implements DialectDataSourceChecke
     
     @Override
     public void checkPrivilege(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(SHOW_GRANTS_SQL)) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(SHOW_GRANTS_SQL)) {
             DatabaseMetaData metaData = connection.getMetaData();
             preparedStatement.setString(1, metaData.getUserName());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

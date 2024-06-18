@@ -75,7 +75,9 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
     
     private int getBalanceSum() throws SQLException {
         int result = 0;
-        try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = getDataSource().getConnection();
+                Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
             ResultSet resultSet = statement.executeQuery("select sum(balance) as a from account where transaction_id in (1, 2)");
             if (resultSet.next()) {

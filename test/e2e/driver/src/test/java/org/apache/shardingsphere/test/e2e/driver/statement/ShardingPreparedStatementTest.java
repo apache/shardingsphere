@@ -621,7 +621,9 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
     
     @Test
     void assertExecuteBatchRepeatedly() throws SQLException {
-        try (Connection connection = getShardingSphereDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL)) {
+        try (
+                Connection connection = getShardingSphereDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL)) {
             preparedStatement.setInt(1, 3101);
             preparedStatement.setInt(2, 11);
             preparedStatement.setInt(3, 11);

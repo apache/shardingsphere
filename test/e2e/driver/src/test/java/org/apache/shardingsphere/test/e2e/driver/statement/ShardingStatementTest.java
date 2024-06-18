@@ -129,7 +129,9 @@ class ShardingStatementTest extends AbstractShardingDriverTest {
     
     @Test
     void assertExecuteBatch() throws SQLException {
-        try (Connection connection = getShardingSphereDataSource().getConnection(); Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = getShardingSphereDataSource().getConnection();
+                Statement statement = connection.createStatement()) {
             statement.addBatch("UPDATE t_order SET status = 'closed' WHERE order_id = 1001");
             statement.addBatch("UPDATE t_order SET status = 'closed' WHERE order_id = 1100 OR order_id = 1101");
             statement.addBatch("DELETE FROM t_order WHERE order_id = 1000");
