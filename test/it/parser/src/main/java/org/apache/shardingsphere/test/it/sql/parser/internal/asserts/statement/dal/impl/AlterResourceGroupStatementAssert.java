@@ -42,6 +42,6 @@ public final class AlterResourceGroupStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterResourceGroupStatement actual, final AlterResourceGroupStatementTestCase expected) {
         assertNotNull(expected.getGroup(), assertContext.getText("expected alter resource group should be not null"));
-        assertThat(assertContext.getText("group name does not match."), actual.getGroupName(), is(expected.getGroup().getName()));
+        assertThat(assertContext.getText("group name does not match: "), actual.getGroupName(), is(expected.getGroup().getName()));
     }
 }

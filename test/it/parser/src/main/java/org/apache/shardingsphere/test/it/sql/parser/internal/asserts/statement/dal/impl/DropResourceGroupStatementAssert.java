@@ -42,6 +42,6 @@ public final class DropResourceGroupStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropResourceGroupStatement actual, final DropResourceGroupStatementTestCase expected) {
         assertNotNull(expected.getGroup(), assertContext.getText("expected drop resource group should be not null"));
-        assertThat(assertContext.getText("group name does not match."), actual.getGroupName(), is(expected.getGroup().getName()));
+        assertThat(assertContext.getText("group name does not match: "), actual.getGroupName(), is(expected.getGroup().getName()));
     }
 }

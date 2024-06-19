@@ -42,6 +42,6 @@ public final class CreateResourceGroupStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateResourceGroupStatement actual, final CreateResourceGroupStatementTestCase expected) {
         assertNotNull(expected.getGroup(), assertContext.getText("expected create resource group should be not null"));
-        assertThat(assertContext.getText("group name does not match."), actual.getGroupName(), is(expected.getGroup().getName()));
+        assertThat(assertContext.getText("group name does not match: "), actual.getGroupName(), is(expected.getGroup().getName()));
     }
 }

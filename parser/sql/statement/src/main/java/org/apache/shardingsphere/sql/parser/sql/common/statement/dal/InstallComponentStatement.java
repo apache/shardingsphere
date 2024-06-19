@@ -15,13 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.InstallComponentStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Doris install component statement.
+ * Install component statement.
  */
-public final class DorisInstallComponentStatement extends InstallComponentStatement implements DorisStatement {
+@Getter
+public abstract class InstallComponentStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private final List<String> components = new LinkedList<>();
 }
