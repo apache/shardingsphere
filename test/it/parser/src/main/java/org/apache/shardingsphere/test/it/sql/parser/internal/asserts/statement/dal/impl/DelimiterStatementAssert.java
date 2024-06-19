@@ -15,33 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DelimiterStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CreateResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DelimiterStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * MySQL create resource group statement assert.
+ * Delimiter statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLCreateResourceGroupStatementAssert {
+public final class DelimiterStatementAssert {
     
     /**
-     * Assert create resource group statement is correct with expected parser result.
+     * Assert delimiter index statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual create resource group statement
-     * @param expected expected create resource group statement test case
+     * @param actual actual delimiter statement
+     * @param expected expected delimiter statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCreateResourceGroupStatement actual, final CreateResourceGroupStatementTestCase expected) {
-        assertNotNull(expected.getGroup(), "expected create resource group should be not null");
-        assertThat(actual.getGroupName(), is(expected.getGroup().getName()));
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DelimiterStatement actual, final DelimiterStatementTestCase expected) {
+        assertThat(assertContext.getText("delimiter name assertion error: "), actual.getDelimiterName(), is(expected.getDelimiterName()));
     }
 }

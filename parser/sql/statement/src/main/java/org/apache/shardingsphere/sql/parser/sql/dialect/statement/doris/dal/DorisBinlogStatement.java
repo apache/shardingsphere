@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.BinlogStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris binlog statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DorisBinlogStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
+public final class DorisBinlogStatement extends BinlogStatement implements DorisStatement {
     
-    private final String base64Str;
+    public DorisBinlogStatement(final String base64Str) {
+        super(base64Str);
+    }
 }

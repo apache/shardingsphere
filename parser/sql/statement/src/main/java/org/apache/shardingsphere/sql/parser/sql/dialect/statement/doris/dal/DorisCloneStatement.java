@@ -17,19 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.CloneStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.CloneActionSegment;
 
 /**
  * Doris clone statement.
  */
-@Getter
-@Setter
-public final class DorisCloneStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private CloneActionSegment cloneActionSegment;
+public final class DorisCloneStatement extends CloneStatement implements DorisStatement {
 }

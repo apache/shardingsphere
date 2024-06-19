@@ -15,13 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DelimiterStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
- * MySQL delimiter statement.
+ * Clone instance segment.
  */
-public final class MySQLDelimiterStatement extends DelimiterStatement implements MySQLStatement {
+@RequiredArgsConstructor
+@Getter
+@Setter
+public final class CloneInstanceSegment implements SQLSegment {
+    
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private String username;
+    
+    private String hostname;
+    
+    private String password;
+    
+    private int port;
+    
+    private boolean sslRequired;
 }

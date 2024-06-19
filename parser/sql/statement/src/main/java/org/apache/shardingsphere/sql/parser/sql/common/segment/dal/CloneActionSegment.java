@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Partition definition segment.
+ * Clone action segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PartitionDefinitionSegment implements SQLSegment {
+@Setter
+public final class CloneActionSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final SimpleTableSegment table;
+    private String cloneDir;
     
-    private final Collection<PartitionSegment> partitions = new LinkedList<>();
+    private CloneInstanceSegment cloneInstance;
 }

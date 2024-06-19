@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PartitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.CacheTableIndexSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Load table index segment.
+ * Cache index statement.
  */
 @Getter
-public final class LoadTableIndexSegment extends TableIndexSegment {
+public abstract class CacheIndexStatement extends AbstractSQLStatement implements DALStatement {
     
-    private final Collection<IndexSegment> indexes = new LinkedList<>();
+    private final Collection<CacheTableIndexSegment> tableIndexes = new LinkedList<>();
     
-    private final Collection<PartitionSegment> partitions = new LinkedList<>();
+    @Setter
+    private PartitionDefinitionSegment partitionDefinition;
     
-    public LoadTableIndexSegment(final int startIndex, final int stopIndex, final SimpleTableSegment table) {
-        super(startIndex, stopIndex, table);
-    }
+    @Setter
+    private IdentifierValue name;
 }

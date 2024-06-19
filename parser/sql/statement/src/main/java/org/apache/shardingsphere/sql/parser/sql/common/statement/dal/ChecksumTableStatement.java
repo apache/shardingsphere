@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Clone action segment.
+ * Checksum table statement.
  */
-@RequiredArgsConstructor
-@Getter
 @Setter
-public final class CloneActionSegment implements SQLSegment {
+@Getter
+public abstract class ChecksumTableStatement extends AbstractSQLStatement implements DALStatement {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private String cloneDir;
-    
-    private CloneInstanceSegment cloneInstance;
+    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }

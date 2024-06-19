@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Cache table index segment.
+ * Partition definition segment.
  */
+@RequiredArgsConstructor
 @Getter
-public final class CacheTableIndexSegment extends TableIndexSegment {
+public final class PartitionDefinitionSegment implements SQLSegment {
     
-    private final Collection<IndexSegment> indexes = new LinkedList<>();
+    private final int startIndex;
     
-    public CacheTableIndexSegment(final int startIndex, final int stopIndex, final SimpleTableSegment table) {
-        super(startIndex, stopIndex, table);
-    }
+    private final int stopIndex;
+    
+    private final SimpleTableSegment table;
+    
+    private final Collection<PartitionSegment> partitions = new LinkedList<>();
 }

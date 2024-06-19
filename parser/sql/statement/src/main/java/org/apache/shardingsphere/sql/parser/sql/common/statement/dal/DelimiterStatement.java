@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Partition segment.
+ * Delimiter statement.
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
-public final class PartitionSegment implements SQLSegment {
+public abstract class DelimiterStatement extends AbstractSQLStatement implements DALStatement {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final IdentifierValue name;
+    private String delimiterName;
 }

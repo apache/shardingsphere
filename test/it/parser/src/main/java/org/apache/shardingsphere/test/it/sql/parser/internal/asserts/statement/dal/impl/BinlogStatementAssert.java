@@ -15,33 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLAlterResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.BinlogStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.AlterResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.BinlogStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * MySQL alter resource group statement assert.
+ * Binlog statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLAlterResourceGroupStatementAssert {
+public final class BinlogStatementAssert {
     
     /**
-     * Assert alter resource group statement is correct with expected parser result.
+     * Assert binlog statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual alter resource group statement
-     * @param expected expected alter resource group statement test case
+     * @param actual actual binlog statement
+     * @param expected expected binlog statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLAlterResourceGroupStatement actual, final AlterResourceGroupStatementTestCase expected) {
-        assertNotNull(expected.getGroup(), "expected alter resource group should be not null");
-        assertThat(actual.getGroupName(), is(expected.getGroup().getName()));
+    public static void assertIs(final SQLCaseAssertContext assertContext, final BinlogStatement actual, final BinlogStatementTestCase expected) {
+        assertThat(assertContext.getText("Binlog statement context does not match: "), actual.getBase64Str(), is(expected.getBase64Str()));
     }
 }

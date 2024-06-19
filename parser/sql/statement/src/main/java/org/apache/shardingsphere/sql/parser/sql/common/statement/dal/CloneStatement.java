@@ -15,32 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.CloneActionSegment;
 
 /**
- * Clone instance segment.
+ * Clone statement.
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
-public final class CloneInstanceSegment implements SQLSegment {
+public abstract class CloneStatement extends AbstractSQLStatement implements DALStatement {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private String username;
-    
-    private String hostname;
-    
-    private String password;
-    
-    private int port;
-    
-    private boolean sslRequired;
+    private CloneActionSegment cloneActionSegment;
 }

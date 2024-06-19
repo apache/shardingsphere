@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Cache table index segment.
+ * Check table statement.
  */
 @Getter
-public final class CacheTableIndexSegment extends TableIndexSegment {
+@Setter
+public abstract class CheckTableStatement extends AbstractSQLStatement implements DALStatement {
     
-    private final Collection<IndexSegment> indexes = new LinkedList<>();
-    
-    public CacheTableIndexSegment(final int startIndex, final int stopIndex, final SimpleTableSegment table) {
-        super(startIndex, stopIndex, table);
-    }
+    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }
