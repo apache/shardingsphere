@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.mode.manager.standalone.subscriber;
 
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.subsciber.EventSubscriberRegistry;
+import org.apache.shardingsphere.mode.subsciber.DeliverEventSubscriberRegistry;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscriber;
 
 /**
- * Standalone event subscriber registry.
+ * Standalone deliver event subscriber registry.
  */
-public final class StandaloneEventSubscriberRegistry extends EventSubscriberRegistry {
+public final class StandaloneDeliverEventSubscriberRegistry extends DeliverEventSubscriberRegistry {
     
-    public StandaloneEventSubscriberRegistry(final ContextManager contextManager) {
+    public StandaloneDeliverEventSubscriberRegistry(final ContextManager contextManager) {
         super(contextManager, new RuleItemChangedSubscriber(contextManager));
     }
 }

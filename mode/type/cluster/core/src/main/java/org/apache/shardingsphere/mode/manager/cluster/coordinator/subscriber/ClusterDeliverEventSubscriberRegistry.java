@@ -20,14 +20,14 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.subscriber.internal.InternalQualifiedDataSourceSubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.subsciber.EventSubscriberRegistry;
+import org.apache.shardingsphere.mode.subsciber.DeliverEventSubscriberRegistry;
 
 /**
- * Internal event subscriber registry.
+ * Cluster deliver event subscriber registry.
  */
-public class InternalEventSubscriberRegistry extends EventSubscriberRegistry {
+public class ClusterDeliverEventSubscriberRegistry extends DeliverEventSubscriberRegistry {
     
-    public InternalEventSubscriberRegistry(final ContextManager contextManager, final ClusterPersistRepository repository) {
+    public ClusterDeliverEventSubscriberRegistry(final ContextManager contextManager, final ClusterPersistRepository repository) {
         super(contextManager, new InternalQualifiedDataSourceSubscriber(repository));
     }
 }

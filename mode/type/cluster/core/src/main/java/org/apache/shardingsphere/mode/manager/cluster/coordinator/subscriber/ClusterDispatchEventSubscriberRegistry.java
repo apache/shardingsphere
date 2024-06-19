@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.subscriber.ComputeNodeOnlineSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.subscriber.QualifiedDataSourceSubscriber;
@@ -25,14 +27,21 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.subsciber.EventSubscriberRegistry;
 import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscriber;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
- * Cluster event subscriber registry.
+ * Cluster dispatch event subscriber registry.
  */
-public final class ClusterEventSubscriberRegistry extends EventSubscriberRegistry {
+public class ClusterDispatchEventSubscriberRegistry implements EventSubscriberRegistry {
     
-    public ClusterEventSubscriberRegistry(final ContextManager contextManager, final ClusterPersistRepository repository) {
-        super(contextManager,
-                new RuleItemChangedSubscriber(contextManager),
+    private final EventBusContext eventBusContext;
+    
+    private final Collection<EventSubscriber> subscribers;
+    
+    public ClusterDispatchEventSubscriberRegistry(final ContextManager contextManager, final ClusterPersistRepository repository) {
+        eventBusContext = contextManager.getComputeNodeInstanceContext().getEventBusContext();
+        subscribers = Arrays.asList(new RuleItemChangedSubscriber(contextManager),
                 new ConfigurationChangedSubscriber(contextManager),
                 new ConfigurationChangedSubscriber(contextManager),
                 new ResourceMetaDataChangedSubscriber(contextManager),
@@ -43,5 +52,10 @@ public final class ClusterEventSubscriberRegistry extends EventSubscriberRegistr
                 new CacheEvictedSubscriber(),
                 new ComputeNodeOnlineSubscriber(contextManager),
                 new QualifiedDataSourceSubscriber(contextManager));
+    }
+    
+    @Override
+    public void register() {
+        subscribers.forEach(eventBusContext::register);
     }
 }
