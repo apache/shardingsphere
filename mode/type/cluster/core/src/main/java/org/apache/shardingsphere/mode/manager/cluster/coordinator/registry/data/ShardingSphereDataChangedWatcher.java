@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.metadata.persist.node.ShardingSphereDataNode;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.DatabaseDataAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.DatabaseDataDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.SchemaDataAddedEvent;
@@ -42,20 +42,20 @@ import java.util.Optional;
 /**
  * ShardingSphere data changed watcher.
  */
-public final class ShardingSphereDataChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class ShardingSphereDataChangedWatcher implements DispatchEventBuilder<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getSubscribedKeys() {
         return Collections.singleton(ShardingSphereDataNode.getShardingSphereDataNodePath());
     }
     
     @Override
-    public Collection<Type> getWatchingTypes() {
+    public Collection<Type> getSubscribedTypes() {
         return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
     }
     
     @Override
-    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> build(final DataChangedEvent event) {
         if (isDatabaseChanged(event)) {
             return createDatabaseChangedEvent(event);
         }

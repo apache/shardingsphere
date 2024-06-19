@@ -22,7 +22,7 @@ import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.config.AlterPropertiesEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.DispatchEventBuilder;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,20 +32,20 @@ import java.util.Optional;
 /**
  * Properties changed watcher.
  */
-public final class PropertiesChangedWatcher implements GovernanceWatcher<AlterPropertiesEvent> {
+public final class PropertiesChangedWatcher implements DispatchEventBuilder<AlterPropertiesEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getSubscribedKeys() {
         return Collections.singleton(GlobalNode.getPropsRootNode());
     }
     
     @Override
-    public Collection<Type> getWatchingTypes() {
+    public Collection<Type> getSubscribedTypes() {
         return Arrays.asList(Type.ADDED, Type.UPDATED);
     }
     
     @Override
-    public Optional<AlterPropertiesEvent> createGovernanceEvent(final DataChangedEvent event) {
+    public Optional<AlterPropertiesEvent> build(final DataChangedEvent event) {
         if (GlobalNodePath.isPropsActiveVersionPath(event.getKey())) {
             return Optional.of(new AlterPropertiesEvent(event.getKey(), event.getValue()));
         }

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.event.InstanceOnlineEvent;
 
@@ -42,20 +42,20 @@ import java.util.regex.Pattern;
 /**
  * Compute node online watcher.
  */
-public final class ComputeNodeOnlineWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class ComputeNodeOnlineWatcher implements DispatchEventBuilder<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getSubscribedKeys() {
         return Collections.singleton(ComputeNode.getOnlineInstanceNodePath());
     }
     
     @Override
-    public Collection<Type> getWatchingTypes() {
+    public Collection<Type> getSubscribedTypes() {
         return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
     }
     
     @Override
-    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> build(final DataChangedEvent event) {
         if (event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath())) {
             return createInstanceEvent(event);
         }

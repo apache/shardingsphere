@@ -23,7 +23,7 @@ import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.config.AlterGlobalRuleConfigurationEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.DispatchEventBuilder;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,20 +33,20 @@ import java.util.Optional;
 /**
  * Global rule changed watcher.
  */
-public final class GlobalRuleChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class GlobalRuleChangedWatcher implements DispatchEventBuilder<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getSubscribedKeys() {
         return Collections.singleton(GlobalNode.getGlobalRuleRootNode());
     }
     
     @Override
-    public Collection<Type> getWatchingTypes() {
+    public Collection<Type> getSubscribedTypes() {
         return Arrays.asList(Type.ADDED, Type.UPDATED);
     }
     
     @Override
-    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> build(final DataChangedEvent event) {
         if (GlobalNodePath.isRuleActiveVersionPath(event.getKey())) {
             return GlobalNodePath.getRuleName(event.getKey()).map(optional -> new AlterGlobalRuleConfigurationEvent(optional, event.getKey(), event.getValue()));
         }

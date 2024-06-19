@@ -36,7 +36,7 @@ class QualifiedDataSourceWatcherTest {
     
     @Test
     void assertCreateEnabledQualifiedDataSourceChangedEvent() {
-        Optional<GovernanceEvent> actual = new QualifiedDataSourceWatcher().createGovernanceEvent(
+        Optional<GovernanceEvent> actual = new QualifiedDataSourceWatcher().build(
                 new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "status: ENABLED\n", Type.ADDED));
         assertTrue(actual.isPresent());
         QualifiedDataSourceStateEvent actualEvent = (QualifiedDataSourceStateEvent) actual.get();
@@ -48,7 +48,7 @@ class QualifiedDataSourceWatcherTest {
     
     @Test
     void assertCreateDisabledQualifiedDataSourceChangedEvent() {
-        Optional<GovernanceEvent> actual = new QualifiedDataSourceWatcher().createGovernanceEvent(
+        Optional<GovernanceEvent> actual = new QualifiedDataSourceWatcher().build(
                 new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "status: DISABLED\n", Type.DELETED));
         assertTrue(actual.isPresent());
         QualifiedDataSourceStateEvent actualEvent = (QualifiedDataSourceStateEvent) actual.get();
@@ -60,7 +60,7 @@ class QualifiedDataSourceWatcherTest {
     
     @Test
     void assertCreateEmptyEvent() {
-        Optional<GovernanceEvent> actual = new QualifiedDataSourceWatcher().createGovernanceEvent(
+        Optional<GovernanceEvent> actual = new QualifiedDataSourceWatcher().build(
                 new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "", Type.ADDED));
         assertFalse(actual.isPresent());
     }

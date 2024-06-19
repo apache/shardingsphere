@@ -36,7 +36,7 @@ class ComputeNodeOnlineWatcherTest {
     @Test
     void assertComputeNodeOnline() {
         Optional<GovernanceEvent> actual = new ComputeNodeOnlineWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.ADDED));
+                .build(new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.ADDED));
         assertTrue(actual.isPresent());
         InstanceOnlineEvent event = (InstanceOnlineEvent) actual.get();
         assertThat(event.getInstanceMetaData().getId(), is("foo_instance_id"));
@@ -49,7 +49,7 @@ class ComputeNodeOnlineWatcherTest {
     @Test
     void assertComputeNodeOffline() {
         Optional<GovernanceEvent> actual = new ComputeNodeOnlineWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.DELETED));
+                .build(new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.DELETED));
         assertTrue(actual.isPresent());
         InstanceOfflineEvent event = (InstanceOfflineEvent) actual.get();
         assertThat(event.getInstanceMetaData().getId(), is("foo_instance_id"));

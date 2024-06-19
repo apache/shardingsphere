@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.listener.DropDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.listener.CreateDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.service.enums.ListenerAssistedEnum;
@@ -35,20 +35,20 @@ import java.util.Optional;
 /**
  * Listener assisted changed watcher.
  */
-public class ListenerAssistedChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public class ListenerAssistedChangedWatcher implements DispatchEventBuilder<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getSubscribedKeys() {
         return Collections.singleton(ListenerAssistedNodePath.getRootNodePath());
     }
     
     @Override
-    public Collection<DataChangedEvent.Type> getWatchingTypes() {
+    public Collection<DataChangedEvent.Type> getSubscribedTypes() {
         return Collections.singletonList(Type.ADDED);
     }
     
     @Override
-    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> build(final DataChangedEvent event) {
         Optional<String> databaseName = ListenerAssistedNodePath.getDatabaseName(event.getKey());
         if (!databaseName.isPresent()) {
             return Optional.empty();

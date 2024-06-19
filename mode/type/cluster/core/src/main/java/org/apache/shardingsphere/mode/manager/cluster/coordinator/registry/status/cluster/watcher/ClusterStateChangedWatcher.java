@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent;
 
 import java.util.Arrays;
@@ -34,20 +34,20 @@ import java.util.Optional;
 /**
  * Cluster state changed watcher.
  */
-public final class ClusterStateChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class ClusterStateChangedWatcher implements DispatchEventBuilder<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getSubscribedKeys() {
         return Collections.singleton(ComputeNode.getClusterStateNodePath());
     }
     
     @Override
-    public Collection<Type> getWatchingTypes() {
+    public Collection<Type> getSubscribedTypes() {
         return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
     }
     
     @Override
-    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> build(final DataChangedEvent event) {
         String clusterStatePath = ComputeNode.getClusterStateNodePath();
         return Strings.isNullOrEmpty(clusterStatePath) || Type.DELETED == event.getType() || !event.getKey().equals(ComputeNode.getClusterStateNodePath())
                 ? Optional.empty()
