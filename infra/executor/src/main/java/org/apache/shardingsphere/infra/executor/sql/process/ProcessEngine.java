@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.process;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
@@ -31,6 +32,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Process engine.
  */
+@HighFrequencyInvocation
 public final class ProcessEngine {
     
     /**
