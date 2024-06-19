@@ -17,18 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DelimiterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris delimiter statement.
  */
-@Getter
-@Setter
-public final class DorisDelimiterStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private String delimiterName;
+public final class DorisDelimiterStatement extends DelimiterStatement implements DorisStatement {
 }

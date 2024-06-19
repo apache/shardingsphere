@@ -15,13 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DelimiterStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * MySQL delimiter statement.
+ * Delimiter statement.
  */
-public final class MySQLDelimiterStatement extends DelimiterStatement implements MySQLStatement {
+@Getter
+@Setter
+public abstract class DelimiterStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private String delimiterName;
 }

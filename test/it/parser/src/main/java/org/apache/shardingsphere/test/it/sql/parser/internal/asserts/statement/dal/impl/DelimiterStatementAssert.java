@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDelimiterStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DelimiterStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DelimiterStatementTestCase;
 
@@ -27,10 +27,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * delimiter statement assert.
+ * Delimiter statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLDelimiterStatementAssert {
+public final class DelimiterStatementAssert {
     
     /**
      * Assert delimiter index statement is correct with expected parser result.
@@ -39,7 +39,7 @@ public final class MySQLDelimiterStatementAssert {
      * @param actual actual delimiter statement
      * @param expected expected delimiter statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLDelimiterStatement actual, final DelimiterStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DelimiterStatement actual, final DelimiterStatementTestCase expected) {
         assertThat(assertContext.getText("delimiter name assertion error: "), actual.getDelimiterName(), is(expected.getDelimiterName()));
     }
 }
