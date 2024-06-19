@@ -17,29 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.CacheIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.CacheTableIndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.PartitionDefinitionSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Doris cache index statement.
  */
-@Getter
-public final class DorisCacheIndexStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private final Collection<CacheTableIndexSegment> tableIndexes = new LinkedList<>();
-    
-    @Setter
-    private PartitionDefinitionSegment partitionDefinition;
-    
-    @Setter
-    private IdentifierValue name;
+public final class DorisCacheIndexStatement extends CacheIndexStatement implements DorisStatement {
 }
