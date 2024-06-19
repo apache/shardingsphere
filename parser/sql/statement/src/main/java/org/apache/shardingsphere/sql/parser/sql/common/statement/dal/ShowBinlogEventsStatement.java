@@ -15,13 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowBinlogEventsStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * MySQL show binlog events statement.
+ * Show binlog events statement.
  */
-public final class MySQLShowBinlogEventsStatement extends ShowBinlogEventsStatement implements MySQLStatement {
+@Getter
+@Setter
+public abstract class ShowBinlogEventsStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private String logName;
+    
+    private LimitSegment limit;
 }

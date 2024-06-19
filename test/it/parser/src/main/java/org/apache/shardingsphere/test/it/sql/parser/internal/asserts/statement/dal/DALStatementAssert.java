@@ -43,9 +43,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetStatem
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.RestartStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowBinlogEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowBinlogEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCollationStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
@@ -298,8 +298,8 @@ public final class DALStatementAssert {
             ShowVariablesStatementAssert.assertIs(assertContext, (MySQLShowVariablesStatement) actual, (ShowVariablesStatementTestCase) expected);
         } else if (actual instanceof DelimiterStatement) {
             DelimiterStatementAssert.assertIs(assertContext, (DelimiterStatement) actual, (DelimiterStatementTestCase) expected);
-        } else if (actual instanceof MySQLShowBinlogEventsStatement) {
-            ShowBinlogEventsStatementAssert.assertIs(assertContext, (MySQLShowBinlogEventsStatement) actual, (ShowBinlogEventsStatementTestCase) expected);
+        } else if (actual instanceof ShowBinlogEventsStatement) {
+            ShowBinlogEventsStatementAssert.assertIs(assertContext, (ShowBinlogEventsStatement) actual, (ShowBinlogEventsStatementTestCase) expected);
         } else if (actual instanceof OracleSpoolStatement) {
             SpoolStatementAssert.assertIs(assertContext, (OracleSpoolStatement) actual, (SpoolStatementTestCase) expected);
         }
