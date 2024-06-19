@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.connection.SQLExecutionInterruptedException;
 
@@ -30,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Process registry.
  */
+@HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProcessRegistry {
     
@@ -53,11 +55,10 @@ public final class ProcessRegistry {
      */
     public void add(final Process process) {
         if (isSameExecutionProcess(process)) {
-            Process oldProcess = processes.get(process.getId());
-            merge(oldProcess, process);
-            return;
+            merge(processes.get(process.getId()), process);
+        } else {
+            processes.put(process.getId(), process);
         }
-        processes.put(process.getId(), process);
     }
     
     private boolean isSameExecutionProcess(final Process process) {
