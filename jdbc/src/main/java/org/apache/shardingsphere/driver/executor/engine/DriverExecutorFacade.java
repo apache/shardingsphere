@@ -36,7 +36,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
-import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -59,8 +58,6 @@ public final class DriverExecutorFacade implements AutoCloseable {
     
     private final String jdbcDriverType;
     
-    private final TrafficExecutor trafficExecutor;
-    
     private final SQLFederationEngine sqlFederationEngine;
     
     private final DriverExecuteQueryExecutor queryExecutor;
@@ -76,13 +73,12 @@ public final class DriverExecutorFacade implements AutoCloseable {
         this.jdbcDriverType = jdbcDriverType;
         JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
         RawExecutor rawExecutor = new RawExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
-        trafficExecutor = new TrafficExecutor();
         ShardingSphereMetaData metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
         String schemaName = new DatabaseTypeRegistry(metaData.getDatabase(connection.getDatabaseName()).getProtocolType()).getDefaultSchemaName(connection.getDatabaseName());
         sqlFederationEngine = new SQLFederationEngine(connection.getDatabaseName(), schemaName, metaData, connection.getContextManager().getMetaDataContexts().getStatistics(), jdbcExecutor);
-        queryExecutor = new DriverExecuteQueryExecutor(connection, metaData, jdbcExecutor, rawExecutor, trafficExecutor, sqlFederationEngine);
-        updateExecutor = new DriverExecuteUpdateExecutor(connection, metaData, jdbcExecutor, rawExecutor, trafficExecutor);
-        executeExecutor = new DriverExecuteExecutor(connection, metaData, jdbcExecutor, rawExecutor, trafficExecutor, sqlFederationEngine);
+        queryExecutor = new DriverExecuteQueryExecutor(connection, metaData, jdbcExecutor, rawExecutor, sqlFederationEngine);
+        updateExecutor = new DriverExecuteUpdateExecutor(connection, metaData, jdbcExecutor, rawExecutor);
+        executeExecutor = new DriverExecuteExecutor(connection, metaData, jdbcExecutor, rawExecutor, sqlFederationEngine);
     }
     
     /**
@@ -163,7 +159,6 @@ public final class DriverExecutorFacade implements AutoCloseable {
     
     @Override
     public void close() throws SQLException {
-        trafficExecutor.close();
         sqlFederationEngine.close();
     }
 }

@@ -36,7 +36,6 @@
         <module>sql-federation</module>
         <module>sql-parser</module>
         <module>sql-translator</module>
-        <module>traffic</module>
         <module>logging</module>
         <module>metadata</module>
         <module>global-clock</module>

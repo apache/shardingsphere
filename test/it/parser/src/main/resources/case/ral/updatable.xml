@@ -35,18 +35,6 @@
     <alter-xa-transaction-rule sql-case-id="alter-xa-transaction-rule" />
     <alter-xa-transaction-rule sql-case-id="alter-xa-transaction-rule-without-quote-on-build-in-default-type-name-and-provider-type-name" />
     
-    <alter-traffic-rule sql-case-id="alter-traffic-rule">
-        <rule name="sql_match_traffic">
-            <label>OLTP</label>
-            <traffic-algorithm algorithm-name="SQL_MATCH">
-                <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;" />
-            </traffic-algorithm>
-            <load-balancer algorithm-name="RANDOM">
-                <property key="key" value="value" />
-            </load-balancer>
-        </rule>
-    </alter-traffic-rule>
-    
     <alter-global-clock-rule sql-case-id="alter-global-clock-rule" type="TSO" provider="redis" enabled="false">
         <property key="host" value="127.0.0.1" />
         <property key="port" value="6379" />
