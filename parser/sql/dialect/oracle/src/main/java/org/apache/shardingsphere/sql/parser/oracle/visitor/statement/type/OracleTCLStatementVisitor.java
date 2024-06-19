@@ -70,7 +70,6 @@ public final class OracleTCLStatementVisitor extends OracleStatementVisitor impl
         return new OracleSetConstraintsStatement();
     }
     
-    
     @Override
     public ASTNode visitLock(final LockContext ctx) {
         return new OracleLockStatement();
