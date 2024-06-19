@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.update.Update
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -41,18 +40,18 @@ import java.util.Collection;
  */
 public final class DriverRawPushDownExecuteUpdateExecutor {
     
+    private final ShardingSphereConnection connection;
+    
     private final String processId;
     
     private final ConfigurationProperties props;
     
-    private final Grantee grantee;
-    
     private final RawExecutor rawExecutor;
     
-    public DriverRawPushDownExecuteUpdateExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final Grantee grantee, final RawExecutor rawExecutor) {
+    public DriverRawPushDownExecuteUpdateExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final RawExecutor rawExecutor) {
+        this.connection = connection;
         processId = connection.getProcessId();
         props = metaData.getProps();
-        this.grantee = grantee;
         this.rawExecutor = rawExecutor;
     }
     
@@ -78,7 +77,7 @@ public final class DriverRawPushDownExecuteUpdateExecutor {
     
     private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionGroupContext(final ShardingSphereDatabase database, final ExecutionContext executionContext) throws SQLException {
         int maxConnectionsSizePerQuery = props.<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, database.getRuleMetaData().getRules()).prepare(database.getName(),
-                executionContext.getRouteContext(), executionContext.getExecutionUnits(), new ExecutionGroupReportContext(processId, database.getName(), grantee));
+        return new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, database.getRuleMetaData().getRules()).prepare(database.getName(), executionContext.getRouteContext(),
+                executionContext.getExecutionUnits(), new ExecutionGroupReportContext(processId, database.getName(), connection.getDatabaseConnectionManager().getConnectionContext().getGrantee()));
     }
 }

@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.sql.SQLException;
 
@@ -43,8 +42,6 @@ public final class DriverRawPushDownExecuteExecutor {
     private final ShardingSphereConnection connection;
     
     private final ShardingSphereMetaData metaData;
-    
-    private final Grantee grantee;
     
     private final RawExecutor rawExecutor;
     
@@ -60,7 +57,7 @@ public final class DriverRawPushDownExecuteExecutor {
         int maxConnectionsSizePerQuery = metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext = new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, database.getRuleMetaData().getRules())
                 .prepare(database.getName(), executionContext.getRouteContext(), executionContext.getExecutionUnits(),
-                        new ExecutionGroupReportContext(connection.getProcessId(), database.getName(), grantee));
+                        new ExecutionGroupReportContext(connection.getProcessId(), database.getName(), connection.getDatabaseConnectionManager().getConnectionContext().getGrantee()));
         return rawExecutor.execute(executionGroupContext, executionContext.getQueryContext(), new RawSQLExecutorCallback()).iterator().next() instanceof QueryResult;
     }
 }
