@@ -24,6 +24,17 @@ ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 
 但这将导致集成部分第三方依赖时，构建 GraalVM Native Image 失败。
 典型的例子来自 HiveServer2 JDBC Driver 相关的 `org.apache.hive:hive-jdbc:4.0.0`，HiveServer2 JDBC Driver 使用了 AWT 相关的类，
 而 GraalVM CE 对 `java.beans.**` package 的支持仅位于 GraalVM CE For JDK22 及更高版本。
+```shell
+com.sun.beans.introspect.ClassInfo was unintentionally initialized at build time. To see why com.sun.beans.introspect.ClassInfo got initialized use --trace-class-initialization=com.sun.beans.introspect.ClassInfo
+java.beans.Introspector was unintentionally initialized at build time. To see why java.beans.Introspector got initialized use --trace-class-initialization=java.beans.Introspector
+com.sun.beans.util.Cache$Kind$2 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$2 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$2
+com.sun.beans.TypeResolver was unintentionally initialized at build time. To see why com.sun.beans.TypeResolver got initialized use --trace-class-initialization=com.sun.beans.TypeResolver
+java.beans.ThreadGroupContext was unintentionally initialized at build time. To see why java.beans.ThreadGroupContext got initialized use --trace-class-initialization=java.beans.ThreadGroupContext
+com.sun.beans.util.Cache$Kind was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind
+com.sun.beans.introspect.MethodInfo was unintentionally initialized at build time. To see why com.sun.beans.introspect.MethodInfo got initialized use --trace-class-initialization=com.sun.beans.introspect.MethodInfo
+com.sun.beans.util.Cache$Kind$1 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$1 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$1
+com.sun.beans.util.Cache$Kind$3 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$3 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$3
+```
 
 ### Maven 生态
 
@@ -294,6 +305,101 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 ```
 
 ClickHouse 不支持 ShardingSphere 集成级别的本地事务，XA 事务和 Seata AT 模式事务，更多讨论位于 https://github.com/ClickHouse/clickhouse-docs/issues/2300 。
+
+7. 当需要通过 ShardingSphere JDBC 使用 Hive 方言时，受未关闭的 https://github.com/apache/logging-log4j2/issues/1539 影响，
+用户应排除 HiveServer2 JDBC Driver 中的 apache/logging-log4j2 和 apache/logging-log4j1 相关的库，
+并使用 qos-ch/slf4j 的其他实现来完成可能需要的日志记录。受 https://issues.apache.org/jira/browse/HIVE-28308 影响，
+用户不应该使用 `classifier` 为 `standalone` 的 `org.apache.hive:hive-jdbc:4.0.0`，以避免依赖冲突。
+若用户使用 qos-ch/logback 作为 qos-ch/slf4j 实现，则可能的配置例子如下，
+```xml
+<project>
+    <dependencies>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-jdbc</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+       <dependency>
+          <groupId>org.apache.shardingsphere</groupId>
+          <artifactId>shardingsphere-parser-sql-hive</artifactId>
+          <version>${shardingsphere.version}</version>
+      </dependency>
+       <dependency>
+          <groupId>org.apache.hive</groupId>
+          <artifactId>hive-jdbc</artifactId>
+          <version>4.0.0</version>
+       </dependency>
+       <dependency>
+          <groupId>org.apache.hive</groupId>
+          <artifactId>hive-service</artifactId>
+          <version>4.0.0</version>
+          <exclusions>
+             <exclusion>
+                 <groupId>org.apache.logging.log4j</groupId>
+                 <artifactId>log4j-slf4j-impl</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>org.slf4j</groupId>
+                 <artifactId>slf4j-reload4j</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>org.apache.logging.log4j</groupId>
+                 <artifactId>log4j-api</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>org.antlr</groupId>
+                 <artifactId>antlr4-runtime</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>org.codehaus.janino</groupId>
+                 <artifactId>commons-compiler</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>org.apache.commons</groupId>
+                 <artifactId>commons-dbcp2</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>commons-io</groupId>
+                 <artifactId>commons-io</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>commons-lang</groupId>
+                 <artifactId>commons-lang</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>org.apache.commons</groupId>
+                 <artifactId>commons-pool2</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>org.codehaus.janino</groupId>
+                 <artifactId>janino</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>com.fasterxml.woodstox</groupId>
+                 <artifactId>woodstox-core</artifactId>
+             </exclusion>
+          </exclusions>
+       </dependency>
+       <dependency>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-client-api</artifactId>
+          <version>3.3.5</version>
+       </dependency>
+    </dependencies>
+</project>
+```
+受 https://github.com/grpc/grpc-java/issues/10601 影响，用户如果在项目中引入了 `org.apache.hive:hive-service`，
+则需要在项目的 classpath 的 `META-INF/native-image/io.grpc/grpc-netty-shaded` 文件夹下创建包含如下内容的文件 `native-image.properties`，
+```properties
+Args=--initialize-at-run-time=\
+  io.grpc.netty.shaded.io.netty.channel.ChannelHandlerMask,\
+  io.grpc.netty.shaded.io.netty.channel.nio.AbstractNioChannel,\
+  io.grpc.netty.shaded.io.netty.channel.socket.nio.SelectorProviderUtil,\
+  io.grpc.netty.shaded.io.netty.util.concurrent.DefaultPromise,\
+  io.grpc.netty.shaded.io.netty.util.internal.MacAddressUtil,\
+  io.grpc.netty.shaded.io.netty.util.internal.SystemPropertyUtil,\
+  io.grpc.netty.shaded.io.netty.util.NetUtilInitializations
+```
 
 ## 贡献 GraalVM Reachability Metadata
 

@@ -53,5 +53,25 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.eventbus.EventBusContext"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.StateChangedSubscriber",
   "methods":[{"name":"renew","parameterTypes":["org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.hive.parser.HiveLexer"},
+  "name":"org.apache.shardingsphere.sql.parser.hive.parser.HiveLexer",
+  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.CharStream"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.hive.parser.HiveParser"},
+  "name":"org.apache.shardingsphere.sql.parser.hive.parser.HiveParser",
+  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.TokenStream"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor"},
+  "name":"org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.sql.dialect.statement.hive.dml.HiveInsertStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.sql.dialect.statement.hive.dml.HiveInsertStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 }
 ]
