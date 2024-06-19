@@ -99,7 +99,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             databaseConnectionManager.getConnectionContext().getTransactionContext().setInTransaction(String.valueOf(connectionTransaction.getTransactionType()));
         } else {
             beginDistributedTransaction();
-        } 
+        }
     }
     
     private void beginDistributedTransaction() throws SQLException {
