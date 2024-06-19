@@ -15,13 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Doris show create database statement.
+ * Show create database statement.
  */
-public final class DorisShowCreateDatabaseStatement extends ShowCreateDatabaseStatement implements DorisStatement {
+@Getter
+@Setter
+public abstract class ShowCreateDatabaseStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private String databaseName;
 }

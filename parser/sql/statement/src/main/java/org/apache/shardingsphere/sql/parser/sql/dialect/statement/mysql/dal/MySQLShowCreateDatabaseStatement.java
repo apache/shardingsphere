@@ -17,18 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL show create database statement.
  */
-@Getter
-@Setter
-public final class MySQLShowCreateDatabaseStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-    
-    private String databaseName;
+public final class MySQLShowCreateDatabaseStatement extends ShowCreateDatabaseStatement implements MySQLStatement {
 }
