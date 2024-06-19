@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.CreateLoadableFunctionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * MySQL create loadable function statement.
+ * Create loadable function statement.
  */
-public final class MySQLCreateLoadableFunctionStatement extends CreateLoadableFunctionStatement implements MySQLStatement {
+public abstract class CreateLoadableFunctionStatement extends AbstractSQLStatement implements DALStatement {
 }

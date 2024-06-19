@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.CreateLoadableFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris create loadable function statement.
  */
-public final class DorisCreateLoadableFunctionStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
+public final class DorisCreateLoadableFunctionStatement extends CreateLoadableFunctionStatement implements DorisStatement {
 }
