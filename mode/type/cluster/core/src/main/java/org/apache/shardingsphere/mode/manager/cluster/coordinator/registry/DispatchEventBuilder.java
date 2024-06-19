@@ -25,32 +25,32 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Governance watcher.
+ * Dispatch event builder.
  * 
  * @param <T> type of event
  */
 @SingletonSPI
-public interface GovernanceWatcher<T> {
+public interface DispatchEventBuilder<T> {
     
     /**
-     * Get watching keys.
+     * Get subscribed keys.
      *
-     * @return watching keys
+     * @return subscribed keys
      */
-    Collection<String> getWatchingKeys();
+    Collection<String> getSubscribedKeys();
     
     /**
-     * Get watching types.
+     * Get subscribed types.
      *
-     * @return watching types
+     * @return subscribed types
      */
-    Collection<Type> getWatchingTypes();
+    Collection<Type> getSubscribedTypes();
     
     /**
-     * Create governance event.
+     * Create dispatch event.
      * 
      * @param event registry center data changed event
-     * @return governance event
+     * @return dispatch event
      */
-    Optional<T> createGovernanceEvent(DataChangedEvent event);
+    Optional<T> build(DataChangedEvent event);
 }

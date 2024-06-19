@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.event.QualifiedDataSourceStateEvent;
 import org.apache.shardingsphere.mode.storage.QualifiedDataSourceState;
 import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
@@ -38,20 +38,20 @@ import java.util.Optional;
 /**
  * Qualified data source watcher.
  */
-public final class QualifiedDataSourceWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class QualifiedDataSourceWatcher implements DispatchEventBuilder<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getSubscribedKeys() {
         return Collections.singleton(QualifiedDataSourceNode.getRootPath());
     }
     
     @Override
-    public Collection<Type> getWatchingTypes() {
+    public Collection<Type> getSubscribedTypes() {
         return Arrays.asList(Type.ADDED, Type.UPDATED);
     }
     
     @Override
-    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> build(final DataChangedEvent event) {
         if (Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }

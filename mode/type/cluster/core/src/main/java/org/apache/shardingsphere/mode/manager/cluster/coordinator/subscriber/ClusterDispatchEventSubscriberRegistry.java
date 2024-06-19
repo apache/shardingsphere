@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.subscriber.ComputeNodeOnlineSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.subscriber.QualifiedDataSourceSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessListChangedSubscriber;
@@ -39,10 +41,12 @@ public class ClusterDispatchEventSubscriberRegistry implements EventSubscriberRe
     
     private final Collection<EventSubscriber> subscribers;
     
+    private final ClusterPersistRepository repository;
+    
     public ClusterDispatchEventSubscriberRegistry(final ContextManager contextManager, final ClusterPersistRepository repository) {
         eventBusContext = contextManager.getComputeNodeInstanceContext().getEventBusContext();
+        this.repository = repository;
         subscribers = Arrays.asList(new RuleItemChangedSubscriber(contextManager),
-                new ConfigurationChangedSubscriber(contextManager),
                 new ConfigurationChangedSubscriber(contextManager),
                 new ResourceMetaDataChangedSubscriber(contextManager),
                 new ListenerAssistedMetaDataChangedSubscriber(contextManager),
@@ -56,6 +60,24 @@ public class ClusterDispatchEventSubscriberRegistry implements EventSubscriberRe
     
     @Override
     public void register() {
+        for (DispatchEventBuilder<?> each : ShardingSphereServiceLoader.getServiceInstances(DispatchEventBuilder.class)) {
+            register(each);
+        }
+        // TODO use call subscruber instead of event bus
         subscribers.forEach(eventBusContext::register);
+    }
+    
+    private void register(final DispatchEventBuilder<?> listener) {
+        for (String each : listener.getSubscribedKeys()) {
+            register(each, listener);
+        }
+    }
+    
+    private void register(final String subscribedKey, final DispatchEventBuilder<?> listener) {
+        repository.watch(subscribedKey, dataChangedEvent -> {
+            if (listener.getSubscribedTypes().contains(dataChangedEvent.getType())) {
+                listener.build(dataChangedEvent).ifPresent(eventBusContext::post);
+            }
+        });
     }
 }

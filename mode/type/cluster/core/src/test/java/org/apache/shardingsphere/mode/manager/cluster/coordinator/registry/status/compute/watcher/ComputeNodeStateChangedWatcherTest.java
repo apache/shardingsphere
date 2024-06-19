@@ -38,7 +38,7 @@ class ComputeNodeStateChangedWatcherTest {
     @Test
     void assertCreateEventWhenDisabled() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", InstanceState.CIRCUIT_BREAK.name(), Type.ADDED));
+                .build(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", InstanceState.CIRCUIT_BREAK.name(), Type.ADDED));
         assertTrue(actual.isPresent());
         assertThat(((ComputeNodeInstanceStateChangedEvent) actual.get()).getStatus(), is(InstanceState.CIRCUIT_BREAK.name()));
         assertThat(((ComputeNodeInstanceStateChangedEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
@@ -47,7 +47,7 @@ class ComputeNodeStateChangedWatcherTest {
     @Test
     void assertCreateEventWhenEnabled() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", "", Type.UPDATED));
+                .build(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", "", Type.UPDATED));
         assertTrue(actual.isPresent());
         assertTrue(((ComputeNodeInstanceStateChangedEvent) actual.get()).getStatus().isEmpty());
         assertThat(((ComputeNodeInstanceStateChangedEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
@@ -56,7 +56,7 @@ class ComputeNodeStateChangedWatcherTest {
     @Test
     void assertCreateAddLabelEvent() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id",
+                .build(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id",
                         YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.ADDED));
         assertTrue(actual.isPresent());
         assertThat(((LabelsEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
@@ -66,7 +66,7 @@ class ComputeNodeStateChangedWatcherTest {
     @Test
     void assertCreateUpdateLabelsEvent() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id",
+                .build(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id",
                         YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((LabelsEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));

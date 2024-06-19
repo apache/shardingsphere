@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeInstanceStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillLocalProcessCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillLocalProcessEvent;
@@ -43,20 +43,20 @@ import java.util.regex.Pattern;
 /**
  * Compute node state changed watcher.
  */
-public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class ComputeNodeStateChangedWatcher implements DispatchEventBuilder<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getSubscribedKeys() {
         return Collections.singleton(ComputeNode.getComputeNodePath());
     }
     
     @Override
-    public Collection<Type> getWatchingTypes() {
+    public Collection<Type> getSubscribedTypes() {
         return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
     }
     
     @Override
-    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> build(final DataChangedEvent event) {
         String instanceId = ComputeNode.getInstanceIdByComputeNode(event.getKey());
         if (!Strings.isNullOrEmpty(instanceId)) {
             Optional<GovernanceEvent> result = createInstanceGovernanceEvent(event, instanceId);

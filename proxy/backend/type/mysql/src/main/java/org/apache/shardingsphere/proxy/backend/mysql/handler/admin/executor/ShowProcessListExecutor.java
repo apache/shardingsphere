@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.me
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -43,7 +43,8 @@ import java.util.stream.Collectors;
 /**
  * Show process list executor.
  */
-public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor, EventSubscriber {
+@RequiredArgsConstructor
+public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor {
     
     private final boolean showFullProcesslist;
     
@@ -52,11 +53,6 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
     
     @Getter
     private MergedResult mergedResult;
-    
-    public ShowProcessListExecutor(final boolean showFullProcesslist) {
-        this.showFullProcesslist = showFullProcesslist;
-        ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getEventBusContext().register(this);
-    }
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
