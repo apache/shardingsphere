@@ -33,7 +33,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.DatabaseMetaData;
@@ -92,17 +91,15 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
      * @throws SQLException SQL exception
      */
     public void beginTransactionIfNeededWhenAutoCommitFalse() throws SQLException {
-        if (autoCommit) {
+        if (autoCommit || databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
             return;
         }
         ConnectionTransaction connectionTransaction = databaseConnectionManager.getConnectionTransaction();
-        if (TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) && !connectionTransaction.isInTransaction()) {
-            beginDistributedTransaction();
-            return;
-        }
-        if (connectionTransaction.isLocalTransaction() && !databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
+        if (connectionTransaction.isLocalTransaction()) {
             databaseConnectionManager.getConnectionContext().getTransactionContext().setInTransaction(String.valueOf(connectionTransaction.getTransactionType()));
-        }
+        } else {
+            beginDistributedTransaction();
+        } 
     }
     
     private void beginDistributedTransaction() throws SQLException {
