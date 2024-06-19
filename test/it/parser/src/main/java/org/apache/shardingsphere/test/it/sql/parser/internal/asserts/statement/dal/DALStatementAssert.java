@@ -48,9 +48,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCollati
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateTriggerStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowFunctionStatusStatement;
@@ -212,8 +212,8 @@ public final class DALStatementAssert {
             ShowCreateTableStatementAssert.assertIs(assertContext, (ShowCreateTableStatement) actual, (ShowCreateTableStatementTestCase) expected);
         } else if (actual instanceof ShowCreateTriggerStatement) {
             ShowCreateTriggerStatementAssert.assertIs(assertContext, (ShowCreateTriggerStatement) actual, (ShowCreateTriggerStatementTestCase) expected);
-        } else if (actual instanceof MySQLShowCreateUserStatement) {
-            ShowCreateUserStatementAssert.assertIs(assertContext, (MySQLShowCreateUserStatement) actual, (ShowCreateUserStatementTestCase) expected);
+        } else if (actual instanceof ShowCreateUserStatement) {
+            ShowCreateUserStatementAssert.assertIs(assertContext, (ShowCreateUserStatement) actual, (ShowCreateUserStatementTestCase) expected);
         } else if (actual instanceof MySQLShowTableStatusStatement) {
             ShowTableStatusStatementAssert.assertIs(assertContext, (MySQLShowTableStatusStatement) actual, (ShowTableStatusStatementTestCase) expected);
         } else if (actual instanceof MySQLShowIndexStatement) {
