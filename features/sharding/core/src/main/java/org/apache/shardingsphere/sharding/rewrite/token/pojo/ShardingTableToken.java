@@ -27,9 +27,9 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
- * Table token.
+ * Sharding table token.
  */
-public final class TableToken extends SQLToken implements Substitutable, RouteUnitAware {
+public final class ShardingTableToken extends SQLToken implements Substitutable, RouteUnitAware {
     
     @Getter
     private final int stopIndex;
@@ -40,7 +40,7 @@ public final class TableToken extends SQLToken implements Substitutable, RouteUn
     
     private final ShardingRule shardingRule;
     
-    public TableToken(final int startIndex, final int stopIndex, final IdentifierValue tableSegment, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
+    public ShardingTableToken(final int startIndex, final int stopIndex, final IdentifierValue tableSegment, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
         super(startIndex);
         this.stopIndex = stopIndex;
         tableName = tableSegment;
@@ -50,7 +50,11 @@ public final class TableToken extends SQLToken implements Substitutable, RouteUn
     
     @Override
     public String toString(final RouteUnit routeUnit) {
-        String actualTableName = TokenUtils.getLogicAndActualTableMap(routeUnit, sqlStatementContext, shardingRule).get(tableName.getValue().toLowerCase());
+        return getActualTableName(routeUnit);
+    }
+    
+    private String getActualTableName(final RouteUnit routeUnit) {
+        String actualTableName = TokenUtils.getLogicAndActualTableMap(routeUnit, sqlStatementContext, shardingRule).get(tableName.getValue());
         actualTableName = null == actualTableName ? tableName.getValue() : actualTableName;
         return tableName.getQuoteCharacter().wrap(actualTableName);
     }

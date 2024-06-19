@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQL
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.TableToken;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingTableToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -36,10 +36,10 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Table token generator.
+ * Sharding table token generator.
  */
 @Setter
-public final class TableTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ShardingRuleAware, RouteContextAware {
+public final class ShardingTableTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ShardingRuleAware, RouteContextAware {
     
     private ShardingRule shardingRule;
     
@@ -67,7 +67,7 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<SQ
         for (SimpleTableSegment each : sqlStatementContext.getTablesContext().getSimpleTables()) {
             TableNameSegment tableName = each.getTableName();
             if (shardingRule.findShardingTable(tableName.getIdentifier().getValue()).isPresent()) {
-                result.add(new TableToken(tableName.getStartIndex(), tableName.getStopIndex(), tableName.getIdentifier(), (SQLStatementContext) sqlStatementContext, shardingRule));
+                result.add(new ShardingTableToken(tableName.getStartIndex(), tableName.getStopIndex(), tableName.getIdentifier(), (SQLStatementContext) sqlStatementContext, shardingRule));
             }
         }
         return result;
