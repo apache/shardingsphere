@@ -69,6 +69,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTabl
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.KillStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
@@ -100,8 +102,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLKillStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
@@ -285,11 +285,11 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof FlushStatement) {
             return new FlushStatementContext((FlushStatement) sqlStatement);
         }
-        if (sqlStatement instanceof MySQLOptimizeTableStatement) {
-            return new OptimizeTableStatementContext((MySQLOptimizeTableStatement) sqlStatement);
+        if (sqlStatement instanceof OptimizeTableStatement) {
+            return new OptimizeTableStatementContext((OptimizeTableStatement) sqlStatement);
         }
-        if (sqlStatement instanceof MySQLKillStatement) {
-            return new KillStatementContext((MySQLKillStatement) sqlStatement);
+        if (sqlStatement instanceof KillStatement) {
+            return new KillStatementContext((KillStatement) sqlStatement);
         }
         return new UnknownSQLStatementContext(sqlStatement);
     }

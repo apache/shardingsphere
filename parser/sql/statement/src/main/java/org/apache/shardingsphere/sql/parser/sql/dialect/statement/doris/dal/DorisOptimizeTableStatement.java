@@ -17,20 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Doris optimize table statement.
  */
-@Getter
-public final class DorisOptimizeTableStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+public final class DorisOptimizeTableStatement extends OptimizeTableStatement implements DorisStatement {
 }
