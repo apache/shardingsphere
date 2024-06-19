@@ -15,13 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetResourceGroupStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Doris set resource group statement.
+ * Set resource group statement.
  */
-public final class DorisSetResourceGroupStatement extends SetResourceGroupStatement implements DorisStatement {
+@Getter
+@Setter
+public abstract class SetResourceGroupStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private String groupName;
 }
