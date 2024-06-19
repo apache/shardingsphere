@@ -40,10 +40,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.RepairTable
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetPersistStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.RestartStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLRestartStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowBinlogEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCollationStatement;
@@ -240,8 +240,8 @@ public final class DALStatementAssert {
             CreateResourceGroupStatementAssert.assertIs(assertContext, (CreateResourceGroupStatement) actual, (CreateResourceGroupStatementTestCase) expected);
         } else if (actual instanceof MySQLUninstallPluginStatement) {
             UninstallPluginStatementAssert.assertIs(assertContext, (MySQLUninstallPluginStatement) actual, (UninstallPluginStatementTestCase) expected);
-        } else if (actual instanceof MySQLRestartStatement) {
-            RestartStatementAssert.assertIs(assertContext, (MySQLRestartStatement) actual, (RestartStatementTestCase) expected);
+        } else if (actual instanceof RestartStatement) {
+            RestartStatementAssert.assertIs(assertContext, (RestartStatement) actual, (RestartStatementTestCase) expected);
         } else if (actual instanceof MySQLSetResourceGroupStatement) {
             MySQLSetResourceGroupStatementAssert.assertIs(assertContext, (MySQLSetResourceGroupStatement) actual, (SetResourceGroupStatementTestCase) expected);
         } else if (actual instanceof OptimizeTableStatement) {

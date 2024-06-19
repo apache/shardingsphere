@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.RestartStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Doris restart statement.
+ * Restart statement.
  */
-public final class DorisRestartStatement extends RestartStatement implements DorisStatement {
+public abstract class RestartStatement extends AbstractSQLStatement implements DALStatement {
 }
