@@ -207,8 +207,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal.Dori
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal.DorisUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal.DorisUseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.CacheTableIndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.CloneActionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.CloneInstanceSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.CloneActionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.CloneInstanceSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.LoadTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PartitionSegment;
