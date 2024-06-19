@@ -142,26 +142,6 @@ public final class Process {
     }
     
     /**
-     * Put process statement.
-     *
-     * @param executionUnit execution unit
-     * @param statement statement
-     */
-    public void putProcessStatement(final ExecutionUnit executionUnit, final Statement statement) {
-        putProcessStatement(System.identityHashCode(executionUnit), statement);
-    }
-    
-    /**
-     * Put process statement.
-     *
-     * @param executionUnitIdentityHashCode execution unit identity hash code
-     * @param statement statement
-     */
-    public void putProcessStatement(final Integer executionUnitIdentityHashCode, final Statement statement) {
-        processStatements.put(executionUnitIdentityHashCode, statement);
-    }
-    
-    /**
      * Remove process statement.
      *
      * @param executionUnit execution unit
