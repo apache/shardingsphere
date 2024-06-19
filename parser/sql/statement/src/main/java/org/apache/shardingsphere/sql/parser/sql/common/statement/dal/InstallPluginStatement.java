@@ -15,27 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PartitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Load table index segment.
+ * Install plugin statement.
  */
 @Getter
-public final class LoadTableIndexSegment extends TableIndexSegment {
+@Setter
+public abstract class InstallPluginStatement extends AbstractSQLStatement implements DALStatement {
     
-    private final Collection<IndexSegment> indexes = new LinkedList<>();
-    
-    private final Collection<PartitionSegment> partitions = new LinkedList<>();
-    
-    public LoadTableIndexSegment(final int startIndex, final int stopIndex, final SimpleTableSegment table) {
-        super(startIndex, stopIndex, table);
-    }
+    private String pluginName;
 }

@@ -17,20 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.LoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.LoadTableIndexSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * MySQL load index info statement.
  */
-@Getter
-public final class MySQLLoadIndexInfoStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-    
-    private final Collection<LoadTableIndexSegment> tableIndexes = new LinkedList<>();
+public final class MySQLLoadIndexInfoStatement extends LoadIndexInfoStatement implements MySQLStatement {
 }
