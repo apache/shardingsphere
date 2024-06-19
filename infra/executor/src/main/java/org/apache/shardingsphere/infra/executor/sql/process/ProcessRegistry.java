@@ -64,17 +64,13 @@ public final class ProcessRegistry {
         return !Strings.isNullOrEmpty(process.getSql()) && processes.containsKey(process.getId()) && processes.get(process.getId()).getSql().equalsIgnoreCase(process.getSql());
     }
     
-    private Process merge(final Process oldProcess, final Process newProcess) {
-        if (Strings.isNullOrEmpty(newProcess.getSql()) || !newProcess.getSql().equalsIgnoreCase(oldProcess.getSql())) {
-            return newProcess;
-        }
+    private void merge(final Process oldProcess, final Process newProcess) {
         ShardingSpherePreconditions.checkState(!oldProcess.isInterrupted(), SQLExecutionInterruptedException::new);
         oldProcess.getTotalUnitCount().addAndGet(newProcess.getTotalUnitCount().get());
         oldProcess.getCompletedUnitCount().addAndGet(newProcess.getCompletedUnitCount().get());
         oldProcess.getIdle().set(newProcess.getIdle().get());
         oldProcess.getInterrupted().compareAndSet(false, newProcess.getInterrupted().get());
         oldProcess.getProcessStatements().putAll(newProcess.getProcessStatements());
-        return oldProcess;
     }
     
     /**
