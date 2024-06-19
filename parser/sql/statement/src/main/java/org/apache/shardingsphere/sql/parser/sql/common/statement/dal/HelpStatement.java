@@ -15,13 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.HelpStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * MySQL help statement.
+ * Help statement.
  */
-public final class MySQLHelpStatement extends HelpStatement implements MySQLStatement {
+@Getter
+@Setter
+public abstract class HelpStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private String searchString;
 }
