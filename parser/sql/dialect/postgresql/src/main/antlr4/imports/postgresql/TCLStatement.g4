@@ -102,3 +102,7 @@ lockType
 prepareTransaction
     : PREPARE TRANSACTION STRING_
     ;
+
+checkpoint
+    : CHECKPOINT
+    ;

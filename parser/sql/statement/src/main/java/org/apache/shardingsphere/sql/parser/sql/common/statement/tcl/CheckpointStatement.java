@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CheckpointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * OpenGauss checkpoint statement.
+ * Checkpoint statement.
  */
-public final class OpenGaussCheckpointStatement extends CheckpointStatement implements OpenGaussStatement {
+public abstract class CheckpointStatement extends AbstractSQLStatement implements TCLStatement {
 }

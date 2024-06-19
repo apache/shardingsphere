@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.LockTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.LockStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Oracle lock table statement.
+ * Oracle lock statement.
  */
-public final class OracleLockTableStatement extends LockTableStatement implements OracleStatement {
+public final class OracleLockStatement extends LockStatement implements OracleStatement {
 }

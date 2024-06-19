@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CheckpointStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CheckpointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**

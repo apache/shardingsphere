@@ -185,7 +185,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlSe
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlTableFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleLockTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleLockStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleMergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleUpdateStatement;
@@ -1455,7 +1455,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitLockTable(final LockTableContext ctx) {
-        return new OracleLockTableStatement();
+        return new OracleLockStatement();
     }
     
 }
