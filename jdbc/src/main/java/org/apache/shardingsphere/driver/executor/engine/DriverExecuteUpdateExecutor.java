@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecut
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
@@ -59,11 +58,11 @@ public final class DriverExecuteUpdateExecutor {
     private final TrafficExecutor trafficExecutor;
     
     public DriverExecuteUpdateExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData,
-                                       final Grantee grantee, final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor, final TrafficExecutor trafficExecutor) {
+                                       final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor, final TrafficExecutor trafficExecutor) {
         this.connection = connection;
         this.metaData = metaData;
-        jdbcPushDownExecutor = new DriverJDBCPushDownExecuteUpdateExecutor(connection, metaData, grantee, jdbcExecutor);
-        rawPushDownExecutor = new DriverRawPushDownExecuteUpdateExecutor(connection, metaData, grantee, rawExecutor);
+        jdbcPushDownExecutor = new DriverJDBCPushDownExecuteUpdateExecutor(connection, metaData, jdbcExecutor);
+        rawPushDownExecutor = new DriverRawPushDownExecuteUpdateExecutor(connection, metaData, rawExecutor);
         this.trafficExecutor = trafficExecutor;
     }
     

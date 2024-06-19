@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
@@ -64,13 +63,12 @@ public final class DriverExecuteQueryExecutor {
     
     private final SQLFederationEngine sqlFederationEngine;
     
-    public DriverExecuteQueryExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final Grantee grantee,
-                                      final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor,
+    public DriverExecuteQueryExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor,
                                       final TrafficExecutor trafficExecutor, final SQLFederationEngine sqlFederationEngine) {
         this.connection = connection;
         this.metaData = metaData;
-        driverJDBCPushDownExecutor = new DriverJDBCPushDownExecuteQueryExecutor(connection, metaData, grantee, jdbcExecutor);
-        driverRawPushDownExecutor = new DriverRawPushDownExecuteQueryExecutor(connection, metaData, grantee, rawExecutor);
+        driverJDBCPushDownExecutor = new DriverJDBCPushDownExecuteQueryExecutor(connection, metaData, jdbcExecutor);
+        driverRawPushDownExecutor = new DriverRawPushDownExecuteQueryExecutor(connection, metaData, rawExecutor);
         this.trafficExecutor = trafficExecutor;
         this.sqlFederationEngine = sqlFederationEngine;
     }
