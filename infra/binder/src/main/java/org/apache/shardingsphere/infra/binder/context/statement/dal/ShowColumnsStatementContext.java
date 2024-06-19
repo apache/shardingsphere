@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStateme
 import org.apache.shardingsphere.infra.binder.context.type.RemoveAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowColumnsStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,14 +36,14 @@ public final class ShowColumnsStatementContext extends CommonSQLStatementContext
     
     private final TablesContext tablesContext;
     
-    public ShowColumnsStatementContext(final MySQLShowColumnsStatement sqlStatement) {
+    public ShowColumnsStatementContext(final ShowColumnsStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
     }
     
     @Override
-    public MySQLShowColumnsStatement getSqlStatement() {
-        return (MySQLShowColumnsStatement) super.getSqlStatement();
+    public ShowColumnsStatement getSqlStatement() {
+        return (ShowColumnsStatement) super.getSqlStatement();
     }
     
     @Override

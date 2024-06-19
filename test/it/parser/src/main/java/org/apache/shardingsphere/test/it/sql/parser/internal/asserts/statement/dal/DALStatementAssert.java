@@ -45,9 +45,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetResource
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowBinlogEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCollationStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateUserStatement;
@@ -206,8 +206,8 @@ public final class DALStatementAssert {
             ShowDatabasesStatementAssert.assertIs(assertContext, (MySQLShowDatabasesStatement) actual, (ShowDatabasesStatementTestCase) expected);
         } else if (actual instanceof MySQLShowTablesStatement) {
             ShowTablesStatementAssert.assertIs(assertContext, (MySQLShowTablesStatement) actual, (ShowTablesStatementTestCase) expected);
-        } else if (actual instanceof MySQLShowColumnsStatement) {
-            ShowColumnsStatementAssert.assertIs(assertContext, (MySQLShowColumnsStatement) actual, (ShowColumnsStatementTestCase) expected);
+        } else if (actual instanceof ShowColumnsStatement) {
+            ShowColumnsStatementAssert.assertIs(assertContext, (ShowColumnsStatement) actual, (ShowColumnsStatementTestCase) expected);
         } else if (actual instanceof MySQLShowCreateTableStatement) {
             ShowCreateTableStatementAssert.assertIs(assertContext, (MySQLShowCreateTableStatement) actual, (ShowCreateTableStatementTestCase) expected);
         } else if (actual instanceof MySQLShowCreateTriggerStatement) {
