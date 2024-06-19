@@ -36,11 +36,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.InstallPlug
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.KillStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.LoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.OptimizeTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.RepairTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLRepairTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLResetPersistStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLResetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLRestartStatement;
@@ -90,6 +90,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.InstallPluginStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.KillStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.LoadIndexInfoStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.OptimizeTableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.ResetParameterStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.RestartStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.SetParameterStatementAssert;
@@ -121,12 +122,11 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.SpoolStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.UninstallComponentStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.UninstallPluginStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql.MySQLRepairTableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql.MySQLResetPersistStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql.MySQLResetStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql.MySQLSetResourceGroupStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql.MySQLUseStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.OptimizeTableStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql.RepairTableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.AlterResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.BinlogStatementTestCase;
@@ -246,8 +246,8 @@ public final class DALStatementAssert {
             MySQLSetResourceGroupStatementAssert.assertIs(assertContext, (MySQLSetResourceGroupStatement) actual, (SetResourceGroupStatementTestCase) expected);
         } else if (actual instanceof OptimizeTableStatement) {
             OptimizeTableStatementAssert.assertIs(assertContext, (OptimizeTableStatement) actual, (OptimizeTableStatementTestCase) expected);
-        } else if (actual instanceof MySQLRepairTableStatement) {
-            MySQLRepairTableStatementAssert.assertIs(assertContext, (MySQLRepairTableStatement) actual, (RepairTableStatementTestCase) expected);
+        } else if (actual instanceof RepairTableStatement) {
+            RepairTableStatementAssert.assertIs(assertContext, (RepairTableStatement) actual, (RepairTableStatementTestCase) expected);
         } else if (actual instanceof BinlogStatement) {
             BinlogStatementAssert.assertIs(assertContext, (BinlogStatement) actual, (BinlogStatementTestCase) expected);
         } else if (actual instanceof MySQLShowFunctionStatusStatement) {
