@@ -15,13 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DropResourceGroupStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.LoadTableIndexSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Doris drop resource group statement.
+ * Load index info statement.
  */
-public final class DorisDropResourceGroupStatement extends DropResourceGroupStatement implements DorisStatement {
+@Getter
+public abstract class LoadIndexInfoStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private final Collection<LoadTableIndexSegment> tableIndexes = new LinkedList<>();
 }

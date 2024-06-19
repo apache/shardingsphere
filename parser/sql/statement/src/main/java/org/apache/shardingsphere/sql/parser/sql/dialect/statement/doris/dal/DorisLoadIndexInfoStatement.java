@@ -17,20 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.LoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.LoadTableIndexSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Doris load index info statement.
  */
-@Getter
-public final class DorisLoadIndexInfoStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private final Collection<LoadTableIndexSegment> tableIndexes = new LinkedList<>();
+public final class DorisLoadIndexInfoStatement extends LoadIndexInfoStatement implements DorisStatement {
 }

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PartitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.TableIndexSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
