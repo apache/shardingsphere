@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.event.builder.ComputeNodeOnlineDispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.event.InstanceOnlineEvent;
 import org.junit.jupiter.api.Test;
@@ -31,11 +32,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ComputeNodeOnlineWatcherTest {
+class ComputeNodeOnlineDispatchEventBuilderTest {
     
     @Test
     void assertComputeNodeOnline() {
-        Optional<GovernanceEvent> actual = new ComputeNodeOnlineWatcher()
+        Optional<GovernanceEvent> actual = new ComputeNodeOnlineDispatchEventBuilder()
                 .build(new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.ADDED));
         assertTrue(actual.isPresent());
         InstanceOnlineEvent event = (InstanceOnlineEvent) actual.get();
@@ -48,7 +49,7 @@ class ComputeNodeOnlineWatcherTest {
     
     @Test
     void assertComputeNodeOffline() {
-        Optional<GovernanceEvent> actual = new ComputeNodeOnlineWatcher()
+        Optional<GovernanceEvent> actual = new ComputeNodeOnlineDispatchEventBuilder()
                 .build(new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.DELETED));
         assertTrue(actual.isPresent());
         InstanceOfflineEvent event = (InstanceOfflineEvent) actual.get();

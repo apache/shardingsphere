@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.global.event.builder;
 
 import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
@@ -30,9 +30,9 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Properties changed watcher.
+ * Properties dispatch event builder.
  */
-public final class PropertiesChangedWatcher implements DispatchEventBuilder<AlterPropertiesEvent> {
+public final class PropertiesDispatchEventBuilder implements DispatchEventBuilder<AlterPropertiesEvent> {
     
     @Override
     public Collection<String> getSubscribedKeys() {

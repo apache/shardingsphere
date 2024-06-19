@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.event.builder;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
@@ -36,9 +36,9 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Qualified data source watcher.
+ * Qualified data source dispatch event builder.
  */
-public final class QualifiedDataSourceWatcher implements DispatchEventBuilder<GovernanceEvent> {
+public final class QualifiedDataSourceDispatchEventBuilder implements DispatchEventBuilder<GovernanceEvent> {
     
     @Override
     public Collection<String> getSubscribedKeys() {

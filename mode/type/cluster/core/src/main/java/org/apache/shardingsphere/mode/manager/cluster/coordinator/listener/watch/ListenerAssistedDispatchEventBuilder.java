@@ -33,9 +33,9 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Listener assisted changed watcher.
+ * Listener assisted dispatch event builder.
  */
-public class ListenerAssistedChangedWatcher implements DispatchEventBuilder<GovernanceEvent> {
+public class ListenerAssistedDispatchEventBuilder implements DispatchEventBuilder<GovernanceEvent> {
     
     @Override
     public Collection<String> getSubscribedKeys() {

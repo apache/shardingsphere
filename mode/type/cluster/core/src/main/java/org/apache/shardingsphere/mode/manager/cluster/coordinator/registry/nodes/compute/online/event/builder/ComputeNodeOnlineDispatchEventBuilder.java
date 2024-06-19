@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.event.builder;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -40,9 +40,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Compute node online watcher.
+ *  Compute node online dispatch event builder.
  */
-public final class ComputeNodeOnlineWatcher implements DispatchEventBuilder<GovernanceEvent> {
+public final class ComputeNodeOnlineDispatchEventBuilder implements DispatchEventBuilder<GovernanceEvent> {
     
     @Override
     public Collection<String> getSubscribedKeys() {

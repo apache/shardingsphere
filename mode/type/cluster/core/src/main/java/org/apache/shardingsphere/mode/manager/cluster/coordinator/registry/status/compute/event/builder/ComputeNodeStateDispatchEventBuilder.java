@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.builder;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
@@ -41,9 +41,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Compute node state changed watcher.
+ * Compute node state dispatch event builder.
  */
-public final class ComputeNodeStateChangedWatcher implements DispatchEventBuilder<GovernanceEvent> {
+public final class ComputeNodeStateDispatchEventBuilder implements DispatchEventBuilder<GovernanceEvent> {
     
     @Override
     public Collection<String> getSubscribedKeys() {
