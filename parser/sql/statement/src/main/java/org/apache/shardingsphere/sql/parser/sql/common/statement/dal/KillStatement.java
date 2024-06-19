@@ -15,13 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.KillStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * MySQL kill statement.
+ * Kill statement.
  */
-public final class MySQLKillStatement extends KillStatement implements MySQLStatement {
+@Getter
+@Setter
+public abstract class KillStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private String processId;
 }
