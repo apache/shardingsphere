@@ -56,7 +56,8 @@ public final class AlterTransactionRuleExecutor implements GlobalRuleDefinitionE
     
     private void checkTransactionManager(final AlterTransactionRuleStatement statement, final TransactionType transactionType) {
         Collection<ShardingSphereDistributionTransactionManager> distributionTransactionManagers = ShardingSphereServiceLoader.getServiceInstances(ShardingSphereDistributionTransactionManager.class);
-        Optional<ShardingSphereDistributionTransactionManager> distributionTransactionManager = distributionTransactionManagers.stream().filter(each -> transactionType == each.getTransactionType()).findFirst();
+        Optional<ShardingSphereDistributionTransactionManager> distributionTransactionManager =
+                distributionTransactionManagers.stream().filter(each -> transactionType == each.getTransactionType()).findFirst();
         ShardingSpherePreconditions.checkState(distributionTransactionManager.isPresent(),
                 () -> new InvalidRuleConfigurationException("Transaction", String.format("No transaction manager with type `%s`", statement.getDefaultType())));
         if (TransactionType.XA == transactionType) {
