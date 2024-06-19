@@ -72,6 +72,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatem
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.KillStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
@@ -103,7 +104,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
@@ -264,8 +264,8 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof ExplainStatement) {
             return new ExplainStatementContext((ExplainStatement) sqlStatement);
         }
-        if (sqlStatement instanceof MySQLShowCreateTableStatement) {
-            return new ShowCreateTableStatementContext((MySQLShowCreateTableStatement) sqlStatement);
+        if (sqlStatement instanceof ShowCreateTableStatement) {
+            return new ShowCreateTableStatementContext((ShowCreateTableStatement) sqlStatement);
         }
         if (sqlStatement instanceof ShowColumnsStatement) {
             return new ShowColumnsStatementContext((ShowColumnsStatement) sqlStatement);
