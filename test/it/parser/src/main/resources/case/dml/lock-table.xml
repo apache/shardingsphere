@@ -18,6 +18,6 @@
 
 
 <sql-parser-test-cases>
-    <lock-table sql-case-id="lock-table" />
-    <lock-table sql-case-id="lock-table-remote" />
+    <lock sql-case-id="lock-table" />
+    <lock sql-case-id="lock-table-remote" />
 </sql-parser-test-cases>

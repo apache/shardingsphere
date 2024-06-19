@@ -60,7 +60,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Insert
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JoinClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LockTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeAssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeAssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeColumnValueContext;
@@ -1452,10 +1452,4 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         ASTNode segment = visit(ctx.whereClause().expr());
         return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) segment);
     }
-    
-    @Override
-    public ASTNode visitLockTable(final LockTableContext ctx) {
-        return new OracleLockStatement();
-    }
-    
 }

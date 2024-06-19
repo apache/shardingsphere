@@ -117,6 +117,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropCo
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropConstraintClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropContextContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDatabaseLinkContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDimensionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDirectoryContext;
@@ -194,7 +195,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Trunca
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.VariableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.VarrayTypeSpecContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDatabaseContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
@@ -308,6 +308,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropClusterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropContextStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDatabaseLinkStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDimensionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDirectoryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDiskgroupStatement;
@@ -347,7 +348,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleSwitchStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleSystemActionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleTruncateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.CursorForLoopStatementSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureBodyEndNameSegment;
@@ -1547,10 +1547,10 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             getSqlStatementsInPlsql().add(new SQLStatementSegment(ctx.insert().start.getStartIndex(), ctx.insert().stop.getStopIndex(), result));
             addToTempCursorForLoopStatements(result);
         }
-        if (null != ctx.lockTable()) {
+        if (null != ctx.lock()) {
             OracleStatementVisitor visitor = createOracleDMLStatementVisitor();
-            SQLStatement result = (SQLStatement) visitor.visitLockTable(ctx.lockTable());
-            getSqlStatementsInPlsql().add(new SQLStatementSegment(ctx.lockTable().start.getStartIndex(), ctx.lockTable().stop.getStopIndex(), result));
+            SQLStatement result = (SQLStatement) visitor.visitLock(ctx.lock());
+            getSqlStatementsInPlsql().add(new SQLStatementSegment(ctx.lock().start.getStartIndex(), ctx.lock().stop.getStopIndex(), result));
             addToTempCursorForLoopStatements(result);
         }
         if (null != ctx.merge()) {
