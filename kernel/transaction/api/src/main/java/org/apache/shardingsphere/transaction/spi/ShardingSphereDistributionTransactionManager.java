@@ -27,12 +27,12 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * ShardingSphere transaction manager.
+ * ShardingSphere distribution transaction manager.
  */
-public interface ShardingSphereTransactionManager extends TypedSPI, AutoCloseable {
+public interface ShardingSphereDistributionTransactionManager extends TypedSPI, AutoCloseable {
     
     /**
-     * Initialize transaction manager.
+     * Initialize distribution transaction manager.
      *
      * @param databaseTypes database types
      * @param dataSources data sources

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.DatabaseMetaData;
@@ -94,18 +95,15 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         if (autoCommit || databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
             return;
         }
-        ConnectionTransaction connectionTransaction = databaseConnectionManager.getConnectionTransaction();
-        if (connectionTransaction.isLocalTransaction()) {
-            databaseConnectionManager.getConnectionContext().getTransactionContext().setInTransaction(String.valueOf(connectionTransaction.getTransactionType()));
-        } else {
+        if (TransactionType.isDistributedTransaction(databaseConnectionManager.getConnectionTransaction().getTransactionType())) {
             beginDistributedTransaction();
         }
+        databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
     }
     
     private void beginDistributedTransaction() throws SQLException {
         databaseConnectionManager.close();
         databaseConnectionManager.getConnectionTransaction().begin();
-        databaseConnectionManager.getConnectionContext().getTransactionContext().setInTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
     }
     
     /**
@@ -204,7 +202,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         }
         if (!autoCommit && !databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
             databaseConnectionManager.getConnectionContext().getTransactionContext()
-                    .setInTransaction(String.valueOf(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType()));
+                    .beginTransaction(String.valueOf(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType()));
         }
     }
     

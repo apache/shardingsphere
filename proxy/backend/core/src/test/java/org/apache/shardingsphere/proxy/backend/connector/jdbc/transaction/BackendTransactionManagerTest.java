@@ -31,7 +31,7 @@ import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributionTransactionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,7 +67,7 @@ class BackendTransactionManagerTest {
     private LocalTransactionManager localTransactionManager;
     
     @Mock
-    private ShardingSphereTransactionManager shardingSphereTransactionManager;
+    private ShardingSphereDistributionTransactionManager distributionTransactionManager;
     
     private BackendTransactionManager backendTransactionManager;
     
@@ -101,7 +101,7 @@ class BackendTransactionManagerTest {
         backendTransactionManager.begin();
         verify(transactionStatus, times(0)).setInTransaction(true);
         verify(databaseConnectionManager, times(0)).closeConnections(false);
-        verify(shardingSphereTransactionManager).begin();
+        verify(distributionTransactionManager).begin();
     }
     
     @Test
@@ -121,7 +121,7 @@ class BackendTransactionManagerTest {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.commit();
         verify(transactionStatus).setInTransaction(false);
-        verify(shardingSphereTransactionManager).commit(false);
+        verify(distributionTransactionManager).commit(false);
     }
     
     @Test
@@ -132,7 +132,7 @@ class BackendTransactionManagerTest {
         backendTransactionManager.commit();
         verify(transactionStatus, times(0)).setInTransaction(false);
         verify(localTransactionManager, times(0)).commit();
-        verify(shardingSphereTransactionManager, times(0)).commit(false);
+        verify(distributionTransactionManager, times(0)).commit(false);
     }
     
     @Test
@@ -152,7 +152,7 @@ class BackendTransactionManagerTest {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.rollback();
         verify(transactionStatus).setInTransaction(false);
-        verify(shardingSphereTransactionManager).rollback();
+        verify(distributionTransactionManager).rollback();
     }
     
     @Test
@@ -163,7 +163,7 @@ class BackendTransactionManagerTest {
         backendTransactionManager.rollback();
         verify(transactionStatus, times(0)).setInTransaction(false);
         verify(localTransactionManager, times(0)).rollback();
-        verify(shardingSphereTransactionManager, times(0)).rollback();
+        verify(distributionTransactionManager, times(0)).rollback();
     }
     
     private void newBackendTransactionManager(final TransactionType transactionType, final boolean inTransaction) {
@@ -194,7 +194,7 @@ class BackendTransactionManagerTest {
     
     private RuleMetaData mockGlobalRuleMetaData(final TransactionType transactionType) {
         ShardingSphereTransactionManagerEngine transactionManagerEngine = mock(ShardingSphereTransactionManagerEngine.class);
-        when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(shardingSphereTransactionManager);
+        when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(distributionTransactionManager);
         TransactionRule transactionRule = mock(TransactionRule.class);
         when(transactionRule.getDefaultType()).thenReturn(transactionType);
         when(transactionRule.getResource()).thenReturn(transactionManagerEngine);
