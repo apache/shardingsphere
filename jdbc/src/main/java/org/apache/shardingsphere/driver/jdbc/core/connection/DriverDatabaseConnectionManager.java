@@ -173,7 +173,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @throws SQLException SQL exception
      */
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
-        methodInvocationRecorder.record("setAutoCommit", target -> target.setAutoCommit(autoCommit));
+        methodInvocationRecorder.record("setAutoCommit", connection -> connection.setAutoCommit(autoCommit));
         forceExecuteTemplate.execute(getCachedConnections(), connection -> connection.setAutoCommit(autoCommit));
     }
     
