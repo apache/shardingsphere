@@ -42,7 +42,7 @@ public final class ConfigurationChangedSubscriber implements EventSubscriber {
      * @param event register storage unit event
      */
     @Subscribe
-    public void renew(final RegisterStorageUnitEvent event) {
+    public synchronized void renew(final RegisterStorageUnitEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
                 .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
@@ -57,7 +57,7 @@ public final class ConfigurationChangedSubscriber implements EventSubscriber {
      * @param event register storage unit event
      */
     @Subscribe
-    public void renew(final AlterStorageUnitEvent event) {
+    public synchronized void renew(final AlterStorageUnitEvent event) {
         if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
                 .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
@@ -72,7 +72,7 @@ public final class ConfigurationChangedSubscriber implements EventSubscriber {
      * @param event register storage unit event
      */
     @Subscribe
-    public void renew(final UnregisterStorageUnitEvent event) {
+    public synchronized void renew(final UnregisterStorageUnitEvent event) {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }

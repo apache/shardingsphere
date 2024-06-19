@@ -150,7 +150,7 @@ public final class MetaDataChangedListener implements DataChangedEventListener {
         }
         dataSourceUnitName = DataSourceMetaDataNode.getDataSourceNameByDataSourceUnitNode(event.getKey());
         if (Type.DELETED == event.getType() && dataSourceUnitName.isPresent()) {
-            return dataSourceUnitName.map(optional -> new UnregisterStorageUnitEvent(databaseName, optional));
+            return Optional.of(new UnregisterStorageUnitEvent(databaseName, dataSourceUnitName.get()));
         }
         return Optional.empty();
     }
@@ -167,7 +167,7 @@ public final class MetaDataChangedListener implements DataChangedEventListener {
         }
         dataSourceNodeName = DataSourceMetaDataNode.getDataSourceNameByDataSourceNodeNode(event.getKey());
         if (Type.DELETED == event.getType() && dataSourceNodeName.isPresent()) {
-            return dataSourceNodeName.map(optional -> new UnregisterStorageNodeEvent(databaseName, optional));
+            return Optional.of(new UnregisterStorageNodeEvent(databaseName, dataSourceNodeName.get()));
         }
         return Optional.empty();
     }
