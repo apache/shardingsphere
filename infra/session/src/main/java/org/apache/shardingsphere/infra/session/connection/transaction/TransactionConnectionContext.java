@@ -42,11 +42,11 @@ public final class TransactionConnectionContext implements AutoCloseable {
     private volatile String readWriteSplitReplicaRoute;
     
     /**
-     * Begin transaction.
+     * Set in transaction.
      *
      * @param transactionType transaction type 
      */
-    public void beginTransaction(final String transactionType) {
+    public void setInTransaction(final String transactionType) {
         this.transactionType = transactionType;
         inTransaction = true;
     }

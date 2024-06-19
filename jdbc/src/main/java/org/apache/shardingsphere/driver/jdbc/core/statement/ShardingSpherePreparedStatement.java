@@ -194,7 +194,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private void handleAutoCommit(final SQLStatement sqlStatement) throws SQLException {
         if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
-            connection.handleAutoCommit();
+            connection.beginTransactionIfNeededWhenAutoCommitFalse();
         }
     }
     

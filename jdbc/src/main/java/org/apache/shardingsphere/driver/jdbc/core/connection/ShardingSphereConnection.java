@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
@@ -86,33 +87,36 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     }
     
     /**
-     * Handle auto commit.
+     * Begin transaction if needed when auto commit is false.
      *
      * @throws SQLException SQL exception
      */
-    public void handleAutoCommit() throws SQLException {
-        if (autoCommit || databaseConnectionManager.getConnectionTransaction().isInTransaction()) {
+    public void beginTransactionIfNeededWhenAutoCommitFalse() throws SQLException {
+        if (autoCommit) {
             return;
         }
-        if (TransactionType.isDistributedTransaction(databaseConnectionManager.getConnectionTransaction().getTransactionType())) {
+        ConnectionTransaction connectionTransaction = databaseConnectionManager.getConnectionTransaction();
+        if (TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) && !connectionTransaction.isInTransaction()) {
             beginDistributedTransaction();
-        } else if (!databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
-            databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
+            return;
+        }
+        if (TransactionType.LOCAL == connectionTransaction.getTransactionType() && !databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
+            databaseConnectionManager.getConnectionContext().getTransactionContext().setInTransaction(String.valueOf(connectionTransaction.getTransactionType()));
         }
     }
     
     private void beginDistributedTransaction() throws SQLException {
         databaseConnectionManager.close();
         databaseConnectionManager.getConnectionTransaction().begin();
-        databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
+        databaseConnectionManager.getConnectionContext().getTransactionContext().setInTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
     }
     
     /**
-     * Get traffic tnstance ID.
+     * Get traffic instance ID.
      *
      * @param trafficRule traffic rule
      * @param queryContext query context
-     * @return traffic tnstance ID
+     * @return traffic instance ID
      */
     public Optional<String> getTrafficInstanceId(final TrafficRule trafficRule, final QueryContext queryContext) {
         if (null == trafficRule || trafficRule.getStrategyRules().isEmpty()) {
@@ -203,7 +207,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         }
         if (!autoCommit && !databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
             databaseConnectionManager.getConnectionContext().getTransactionContext()
-                    .beginTransaction(String.valueOf(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType()));
+                    .setInTransaction(String.valueOf(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType()));
         }
     }
     
