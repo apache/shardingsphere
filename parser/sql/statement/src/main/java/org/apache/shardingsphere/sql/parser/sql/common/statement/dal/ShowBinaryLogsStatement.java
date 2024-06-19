@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowBinaryLogsStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Doris show binary logs statement.
+ * Show binary logs statement.
  */
-public final class DorisShowBinaryLogsStatement extends ShowBinaryLogsStatement implements DorisStatement {
+public abstract class ShowBinaryLogsStatement extends AbstractSQLStatement implements DALStatement {
 }
