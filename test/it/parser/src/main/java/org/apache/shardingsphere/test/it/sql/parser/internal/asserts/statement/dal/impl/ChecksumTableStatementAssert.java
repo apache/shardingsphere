@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLChecksumTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ChecksumTableStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ChecksumTableStatementTestCase;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
  * MySQL checksum table statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLChecksumTableStatementAssert {
+public final class ChecksumTableStatementAssert {
     
     /**
      * Assert checksum table statement is correct with expected parser result.
@@ -37,11 +37,11 @@ public final class MySQLChecksumTableStatementAssert {
      * @param actual actual checksum table statement
      * @param expected expected checksum table statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLChecksumTableStatement actual, final ChecksumTableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ChecksumTableStatement actual, final ChecksumTableStatementTestCase expected) {
         assertTables(assertContext, actual, expected);
     }
     
-    private static void assertTables(final SQLCaseAssertContext assertContext, final MySQLChecksumTableStatement actual, final ChecksumTableStatementTestCase expected) {
+    private static void assertTables(final SQLCaseAssertContext assertContext, final ChecksumTableStatement actual, final ChecksumTableStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }

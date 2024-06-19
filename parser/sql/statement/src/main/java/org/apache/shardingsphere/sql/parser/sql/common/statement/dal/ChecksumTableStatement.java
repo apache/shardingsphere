@@ -15,13 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ChecksumTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Doris checksum table statement.
+ * Checksum table statement.
  */
-public final class DorisChecksumTableStatement extends ChecksumTableStatement implements DorisStatement {
+@Setter
+@Getter
+public abstract class ChecksumTableStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }
