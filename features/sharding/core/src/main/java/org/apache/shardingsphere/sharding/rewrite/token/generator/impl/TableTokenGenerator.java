@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import lombok.Setter;
+import org.apache.shardingsphere.infra.binder.context.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
@@ -46,7 +47,7 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<SQ
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return isAllBindingTables(sqlStatementContext) || routeContext.containsTableSharding();
+        return !(sqlStatementContext instanceof CursorDefinitionAware) && (isAllBindingTables(sqlStatementContext) || routeContext.containsTableSharding());
     }
     
     private boolean isAllBindingTables(final SQLStatementContext sqlStatementContext) {
