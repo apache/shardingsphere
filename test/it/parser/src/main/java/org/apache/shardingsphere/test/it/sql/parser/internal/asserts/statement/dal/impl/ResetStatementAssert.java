@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLResetStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetMasterOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetSlaveOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ResetMasterOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ResetOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ResetSlaveOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.reset.ExpectedResetOptionSegment;
@@ -34,10 +34,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * MySQL reset statement assert.
+ * Reset statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLResetStatementAssert {
+public final class ResetStatementAssert {
     
     /**
      * Assert reset statement is correct with expected reset statement test case.
@@ -46,7 +46,7 @@ public final class MySQLResetStatementAssert {
      * @param actual actual reset statement
      * @param expected expected reset statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLResetStatement actual, final ResetStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ResetStatement actual, final ResetStatementTestCase expected) {
         assertThat(assertContext.getText("Actual options size assertion error: "), actual.getOptions().size(), is(expected.getOptions().size()));
         assertOptions(assertContext, actual.getOptions(), expected.getOptions());
     }

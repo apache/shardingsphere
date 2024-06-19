@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
- * MySQL reset option segment.
+ * Reset master option segment.
  */
 @Getter
 @Setter
-public abstract class ResetOptionSegment implements SQLSegment {
+public final class ResetSlaveOptionSegment extends ResetOptionSegment {
     
-    private int startIndex;
+    private boolean all;
     
-    private int stopIndex;
+    private String channelOption;
 }

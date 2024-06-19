@@ -17,20 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.ResetOptionSegment;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Doris reset statement.
  */
-@Getter
-public final class DorisResetStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private final List<ResetOptionSegment> options = new LinkedList<>();
+public final class DorisResetStatement extends ResetStatement implements DorisStatement {
 }

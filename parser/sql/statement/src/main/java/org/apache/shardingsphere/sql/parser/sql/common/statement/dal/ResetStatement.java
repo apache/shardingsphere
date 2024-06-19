@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ResetOptionSegment;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Doris reset master option segment.
+ * Reset statement.
  */
 @Getter
-@Setter
-public final class ResetSlaveOptionSegment extends ResetOptionSegment {
+public abstract class ResetStatement extends AbstractSQLStatement implements DALStatement {
     
-    private boolean all;
-    
-    private String channelOption;
+    private final List<ResetOptionSegment> options = new LinkedList<>();
 }

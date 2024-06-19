@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
- * Doris reset option segment.
+ * Reset master option segment.
  */
 @Getter
 @Setter
-public abstract class ResetOptionSegment implements SQLSegment {
+public final class ResetMasterOptionSegment extends ResetOptionSegment {
     
     private int startIndex;
     
     private int stopIndex;
+    
+    private Long binaryLogFileIndexNumber;
 }
