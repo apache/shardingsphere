@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLBinlogStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.BinlogStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.BinlogStatementTestCase;
 
@@ -27,10 +27,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * MySQL binlog statement assert.
+ * Binlog statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLBinlogStatementAssert {
+public final class BinlogStatementAssert {
     
     /**
      * Assert binlog statement is correct with expected parser result.
@@ -39,7 +39,7 @@ public final class MySQLBinlogStatementAssert {
      * @param actual actual binlog statement
      * @param expected expected binlog statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLBinlogStatement actual, final BinlogStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final BinlogStatement actual, final BinlogStatementTestCase expected) {
         assertThat(assertContext.getText("Binlog statement context does not match: "), actual.getBase64Str(), is(expected.getBase64Str()));
     }
 }

@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.BinlogStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Doris binlog statement.
+ * Binlog statement.
  */
-public final class DorisBinlogStatement extends BinlogStatement implements DorisStatement {
+@RequiredArgsConstructor
+@Getter
+public abstract class BinlogStatement extends AbstractSQLStatement implements DALStatement {
     
-    public DorisBinlogStatement(final String base64Str) {
-        super(base64Str);
-    }
+    private final String base64Str;
 }

@@ -20,13 +20,13 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AlterResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.BinlogStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLBinlogStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCacheIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCheckTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLChecksumTableStatement;
@@ -116,7 +116,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.SpoolStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.UninstallComponentStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.UninstallPluginStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql.MySQLBinlogStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.BinlogStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql.MySQLChecksumTableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql.MySQLCreateResourceGroupStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql.MySQLDelimiterStatementAssert;
@@ -248,8 +248,8 @@ public final class DALStatementAssert {
             MySQLOptimizeTableStatementAssert.assertIs(assertContext, (MySQLOptimizeTableStatement) actual, (OptimizeTableStatementTestCase) expected);
         } else if (actual instanceof MySQLRepairTableStatement) {
             MySQLRepairTableStatementAssert.assertIs(assertContext, (MySQLRepairTableStatement) actual, (RepairTableStatementTestCase) expected);
-        } else if (actual instanceof MySQLBinlogStatement) {
-            MySQLBinlogStatementAssert.assertIs(assertContext, (MySQLBinlogStatement) actual, (BinlogStatementTestCase) expected);
+        } else if (actual instanceof BinlogStatement) {
+            BinlogStatementAssert.assertIs(assertContext, (BinlogStatement) actual, (BinlogStatementTestCase) expected);
         } else if (actual instanceof MySQLShowFunctionStatusStatement) {
             ShowFunctionStatusStatementAssert.assertIs(assertContext, (MySQLShowFunctionStatusStatement) actual, (ShowFunctionStatusStatementTestCase) expected);
         } else if (actual instanceof MySQLShowProcedureStatusStatement) {
