@@ -15,13 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCollationStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
+import java.util.Optional;
 
 /**
- * Doris show collation statement.
+ * Show collation statement.
  */
-public final class DorisShowCollationStatement extends ShowCollationStatement implements DorisStatement {
+@Setter
+public abstract class ShowCollationStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private ShowFilterSegment filter;
+    
+    /**
+     * Get filter segment.
+     *
+     * @return filter segment
+     */
+    public Optional<ShowFilterSegment> getFilter() {
+        return Optional.ofNullable(filter);
+    }
 }

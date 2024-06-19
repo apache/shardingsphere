@@ -44,9 +44,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.RestartStat
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowBinlogEventsStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCollationStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCollationStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTriggerStatement;
@@ -292,8 +292,8 @@ public final class DALStatementAssert {
             AlterResourceGroupStatementAssert.assertIs(assertContext, (AlterResourceGroupStatement) actual, (AlterResourceGroupStatementTestCase) expected);
         } else if (actual instanceof ChecksumTableStatement) {
             ChecksumTableStatementAssert.assertIs(assertContext, (ChecksumTableStatement) actual, (ChecksumTableStatementTestCase) expected);
-        } else if (actual instanceof MySQLShowCollationStatement) {
-            ShowCollationStatementAssert.assertIs(assertContext, (MySQLShowCollationStatement) actual, (ShowCollationStatementTestCase) expected);
+        } else if (actual instanceof ShowCollationStatement) {
+            ShowCollationStatementAssert.assertIs(assertContext, (ShowCollationStatement) actual, (ShowCollationStatementTestCase) expected);
         } else if (actual instanceof MySQLShowVariablesStatement) {
             ShowVariablesStatementAssert.assertIs(assertContext, (MySQLShowVariablesStatement) actual, (ShowVariablesStatementTestCase) expected);
         } else if (actual instanceof DelimiterStatement) {
