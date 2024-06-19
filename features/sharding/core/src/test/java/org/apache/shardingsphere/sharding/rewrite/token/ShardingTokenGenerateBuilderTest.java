@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.AggregationDistinctTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.DistinctProjectionPrefixTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingRemoveTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.TableTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingTableTokenGenerator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +63,7 @@ class ShardingTokenGenerateBuilderTest {
         assertThat(sqlTokenGenerators.size(), is(4));
         Iterator<SQLTokenGenerator> iterator = sqlTokenGenerators.iterator();
         SQLTokenGenerator tableTokenGenerator = iterator.next();
-        assertThat(tableTokenGenerator, instanceOf(TableTokenGenerator.class));
+        assertThat(tableTokenGenerator, instanceOf(ShardingTableTokenGenerator.class));
         assertSqlTokenGenerator(tableTokenGenerator);
         SQLTokenGenerator distinctProjectionPrefixTokenGenerator = iterator.next();
         assertThat(distinctProjectionPrefixTokenGenerator, instanceOf(DistinctProjectionPrefixTokenGenerator.class));

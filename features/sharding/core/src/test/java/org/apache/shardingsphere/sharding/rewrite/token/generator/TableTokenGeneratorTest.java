@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableS
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.TableTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.TableToken;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingTableTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingTableToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -50,7 +50,7 @@ class TableTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLTokenWhenConfigAllBindingTables() {
-        TableTokenGenerator generator = new TableTokenGenerator();
+        ShardingTableTokenGenerator generator = new ShardingTableTokenGenerator();
         ShardingRule shardingRule = mock(ShardingRule.class);
         Collection<String> logicTableNames = Arrays.asList("t_order", "t_order_item");
         when(shardingRule.getShardingLogicTableNames(logicTableNames)).thenReturn(logicTableNames);
@@ -63,7 +63,7 @@ class TableTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLTokenWhenContainsTableSharding() {
-        TableTokenGenerator generator = new TableTokenGenerator();
+        ShardingTableTokenGenerator generator = new ShardingTableTokenGenerator();
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.containsTableSharding()).thenReturn(true);
         generator.setShardingRule(mock(ShardingRule.class));
@@ -76,18 +76,18 @@ class TableTokenGeneratorTest {
     void assertGenerateSQLTokenWhenSQLStatementIsTableAvailable() {
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findShardingTable(anyString())).thenReturn(Optional.of(mock(ShardingTable.class)));
-        TableTokenGenerator generator = new TableTokenGenerator();
+        ShardingTableTokenGenerator generator = new ShardingTableTokenGenerator();
         generator.setShardingRule(shardingRule);
         CreateTableStatementContext sqlStatementContext = mock(CreateTableStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
         Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(TableToken.class));
+        assertThat(actual.iterator().next(), instanceOf(ShardingTableToken.class));
     }
     
     @Test
     void assertGenerateSQLTokenWhenSQLStatementIsNotTableAvailable() {
-        TableTokenGenerator generator = new TableTokenGenerator();
+        ShardingTableTokenGenerator generator = new ShardingTableTokenGenerator();
         SQLStatementContext sqlStatementContext = mock(CreateDatabaseStatementContext.class);
         assertThat(generator.generateSQLTokens(sqlStatementContext), is(Collections.emptyList()));
     }

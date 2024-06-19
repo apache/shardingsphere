@@ -39,7 +39,7 @@ class TableTokenTest {
     
     @Test
     void assertToString() {
-        TableToken tableToken = new TableToken(0, 0, new IdentifierValue("t_order"),
+        ShardingTableToken tableToken = new ShardingTableToken(0, 0, new IdentifierValue("t_order"),
                 mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS)), mock(ShardingRule.class));
         RouteUnit routeUnit = mock(RouteUnit.class);
         when(routeUnit.getTableMappers()).thenReturn(Collections.singletonList(new RouteMapper("t_order", "t_order_0")));
