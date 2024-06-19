@@ -48,7 +48,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.SetParameterStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.SetResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowBinlogEventsStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCharacterSetStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCollationStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowColumnsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCreateTableStatementTestCase;
@@ -1255,9 +1254,6 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "show-events")
     private final List<ShowEventsStatementTestCase> showEventsTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "show-character-set")
-    private final List<ShowCharacterSetStatementTestCase> showCharacterSetTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-collation")
     private final List<ShowCollationStatementTestCase> showCollationTestCases = new LinkedList<>();

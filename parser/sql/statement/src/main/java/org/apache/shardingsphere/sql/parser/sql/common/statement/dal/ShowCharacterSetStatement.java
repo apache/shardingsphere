@@ -15,22 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.show.ExpectedShowFilter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-import javax.xml.bind.annotation.XmlElement;
+import java.util.Optional;
 
 /**
- * Show character set statement test case.
+ * Show character set statement.
  */
-@Getter
 @Setter
-public final class ShowCharacterSetStatementTestCase extends SQLParserTestCase {
+public abstract class ShowCharacterSetStatement extends AbstractSQLStatement implements DALStatement {
     
-    @XmlElement
-    private ExpectedShowFilter filter;
+    private ShowFilterSegment filter;
+    
+    /**
+     * Get filter segment.
+     *
+     * @return filter segment
+     */
+    public Optional<ShowFilterSegment> getFilter() {
+        return Optional.ofNullable(filter);
+    }
 }
