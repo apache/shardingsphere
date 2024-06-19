@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.tab
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ChecksumTableStatementTestCase;
 
 /**
- * MySQL checksum table statement assert.
+ * Checksum table statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ChecksumTableStatementAssert {
