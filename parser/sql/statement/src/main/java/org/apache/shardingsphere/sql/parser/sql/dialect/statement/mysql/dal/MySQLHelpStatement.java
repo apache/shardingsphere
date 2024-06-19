@@ -17,18 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.HelpStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL help statement.
  */
-@Getter
-@Setter
-public final class MySQLHelpStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-    
-    private String searchString;
+public final class MySQLHelpStatement extends HelpStatement implements MySQLStatement {
 }

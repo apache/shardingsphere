@@ -116,8 +116,14 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Uninsta
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.CacheTableIndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.CloneActionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.CloneInstanceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.LoadTableIndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
@@ -206,12 +212,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal.Dori
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal.DorisUninstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal.DorisUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal.DorisUseStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.CacheTableIndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.CloneActionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.CloneInstanceSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.LoadTableIndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PartitionDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.ResetMasterOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.ResetOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.ResetSlaveOptionSegment;

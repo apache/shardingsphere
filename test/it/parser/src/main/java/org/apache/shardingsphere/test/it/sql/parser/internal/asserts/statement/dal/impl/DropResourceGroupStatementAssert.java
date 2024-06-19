@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDropResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DropResourceGroupStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DropResourceGroupStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * MySQL drop resource group statement assert.
+ * Drop resource group statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLDropResourceGroupStatementAssert {
+public final class DropResourceGroupStatementAssert {
     
     /**
      * Assert create resource group statement is correct with expected parser result.
@@ -40,8 +40,8 @@ public final class MySQLDropResourceGroupStatementAssert {
      * @param actual actual create resource group statement
      * @param expected expected create resource group statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLDropResourceGroupStatement actual, final DropResourceGroupStatementTestCase expected) {
-        assertNotNull(expected.getGroup(), "expected drop resource group should be not null");
-        assertThat(actual.getGroupName(), is(expected.getGroup().getName()));
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DropResourceGroupStatement actual, final DropResourceGroupStatementTestCase expected) {
+        assertNotNull(expected.getGroup(), assertContext.getText("expected drop resource group should be not null"));
+        assertThat(assertContext.getText("group name does not match: "), actual.getGroupName(), is(expected.getGroup().getName()));
     }
 }
