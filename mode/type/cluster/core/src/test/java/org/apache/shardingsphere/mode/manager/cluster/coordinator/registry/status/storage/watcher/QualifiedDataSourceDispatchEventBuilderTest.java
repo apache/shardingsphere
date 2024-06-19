@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.event.QualifiedDataSourceStateEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.watcher.QualifiedDataSourceWatcher;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.event.builder.QualifiedDataSourceDispatchEventBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -32,11 +32,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class QualifiedDataSourceWatcherTest {
+class QualifiedDataSourceDispatchEventBuilderTest {
     
     @Test
     void assertCreateEnabledQualifiedDataSourceChangedEvent() {
-        Optional<GovernanceEvent> actual = new QualifiedDataSourceWatcher().build(
+        Optional<GovernanceEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
                 new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "status: ENABLED\n", Type.ADDED));
         assertTrue(actual.isPresent());
         QualifiedDataSourceStateEvent actualEvent = (QualifiedDataSourceStateEvent) actual.get();
@@ -48,7 +48,7 @@ class QualifiedDataSourceWatcherTest {
     
     @Test
     void assertCreateDisabledQualifiedDataSourceChangedEvent() {
-        Optional<GovernanceEvent> actual = new QualifiedDataSourceWatcher().build(
+        Optional<GovernanceEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
                 new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "status: DISABLED\n", Type.DELETED));
         assertTrue(actual.isPresent());
         QualifiedDataSourceStateEvent actualEvent = (QualifiedDataSourceStateEvent) actual.get();
@@ -60,7 +60,7 @@ class QualifiedDataSourceWatcherTest {
     
     @Test
     void assertCreateEmptyEvent() {
-        Optional<GovernanceEvent> actual = new QualifiedDataSourceWatcher().build(
+        Optional<GovernanceEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
                 new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "", Type.ADDED));
         assertFalse(actual.isPresent());
     }

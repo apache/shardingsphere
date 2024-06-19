@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.builder;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.mode.path.GlobalNodePath;
-import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
+import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.config.AlterGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.DispatchEventBuilder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,25 +32,33 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Global rule changed watcher.
+ * Cluster state dispatch event builder.
  */
-public final class GlobalRuleChangedWatcher implements DispatchEventBuilder<GovernanceEvent> {
+public final class ClusterStateDispatchEventBuilder implements DispatchEventBuilder<GovernanceEvent> {
     
     @Override
     public Collection<String> getSubscribedKeys() {
-        return Collections.singleton(GlobalNode.getGlobalRuleRootNode());
+        return Collections.singleton(ComputeNode.getClusterStateNodePath());
     }
     
     @Override
     public Collection<Type> getSubscribedTypes() {
-        return Arrays.asList(Type.ADDED, Type.UPDATED);
+        return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
     }
     
     @Override
     public Optional<GovernanceEvent> build(final DataChangedEvent event) {
-        if (GlobalNodePath.isRuleActiveVersionPath(event.getKey())) {
-            return GlobalNodePath.getRuleName(event.getKey()).map(optional -> new AlterGlobalRuleConfigurationEvent(optional, event.getKey(), event.getValue()));
+        String clusterStatePath = ComputeNode.getClusterStateNodePath();
+        return Strings.isNullOrEmpty(clusterStatePath) || Type.DELETED == event.getType() || !event.getKey().equals(ComputeNode.getClusterStateNodePath())
+                ? Optional.empty()
+                : Optional.of(new ClusterStateEvent(getClusterState(event)));
+    }
+    
+    private ClusterState getClusterState(final DataChangedEvent event) {
+        try {
+            return ClusterState.valueOf(event.getValue());
+        } catch (final IllegalArgumentException ignore) {
+            return ClusterState.OK;
         }
-        return Optional.empty();
     }
 }

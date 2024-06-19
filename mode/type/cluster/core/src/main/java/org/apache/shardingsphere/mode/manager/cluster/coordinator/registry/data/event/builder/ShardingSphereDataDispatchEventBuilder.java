@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.builder;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -40,9 +40,9 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * ShardingSphere data changed watcher.
+ * ShardingSphere data dispatch event builder.
  */
-public final class ShardingSphereDataChangedWatcher implements DispatchEventBuilder<GovernanceEvent> {
+public final class ShardingSphereDataDispatchEventBuilder implements DispatchEventBuilder<GovernanceEvent> {
     
     @Override
     public Collection<String> getSubscribedKeys() {

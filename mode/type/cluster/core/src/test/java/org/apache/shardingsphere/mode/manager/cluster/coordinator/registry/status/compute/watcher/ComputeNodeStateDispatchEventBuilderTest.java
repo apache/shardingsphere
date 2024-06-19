@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.builder.ComputeNodeStateDispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeInstanceStateChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
@@ -33,11 +34,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ComputeNodeStateChangedWatcherTest {
+class ComputeNodeStateDispatchEventBuilderTest {
     
     @Test
     void assertCreateEventWhenDisabled() {
-        Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
+        Optional<GovernanceEvent> actual = new ComputeNodeStateDispatchEventBuilder()
                 .build(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", InstanceState.CIRCUIT_BREAK.name(), Type.ADDED));
         assertTrue(actual.isPresent());
         assertThat(((ComputeNodeInstanceStateChangedEvent) actual.get()).getStatus(), is(InstanceState.CIRCUIT_BREAK.name()));
@@ -46,7 +47,7 @@ class ComputeNodeStateChangedWatcherTest {
     
     @Test
     void assertCreateEventWhenEnabled() {
-        Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
+        Optional<GovernanceEvent> actual = new ComputeNodeStateDispatchEventBuilder()
                 .build(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", "", Type.UPDATED));
         assertTrue(actual.isPresent());
         assertTrue(((ComputeNodeInstanceStateChangedEvent) actual.get()).getStatus().isEmpty());
@@ -55,7 +56,7 @@ class ComputeNodeStateChangedWatcherTest {
     
     @Test
     void assertCreateAddLabelEvent() {
-        Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
+        Optional<GovernanceEvent> actual = new ComputeNodeStateDispatchEventBuilder()
                 .build(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id",
                         YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.ADDED));
         assertTrue(actual.isPresent());
@@ -65,7 +66,7 @@ class ComputeNodeStateChangedWatcherTest {
     
     @Test
     void assertCreateUpdateLabelsEvent() {
-        Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
+        Optional<GovernanceEvent> actual = new ComputeNodeStateDispatchEventBuilder()
                 .build(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id",
                         YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.UPDATED));
         assertTrue(actual.isPresent());

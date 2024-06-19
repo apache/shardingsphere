@@ -15,11 +15,11 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.watcher.QualifiedDataSourceWatcher
-org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher.ComputeNodeStateChangedWatcher
-org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.watcher.ClusterStateChangedWatcher
-org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.ShardingSphereDataChangedWatcher
-org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.watcher.GlobalRuleChangedWatcher
-org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.watcher.PropertiesChangedWatcher
-org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.watch.ListenerAssistedChangedWatcher
-org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.watcher.ComputeNodeOnlineWatcher
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.event.builder.QualifiedDataSourceDispatchEventBuilder
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.builder.ComputeNodeStateDispatchEventBuilder
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.builder.ClusterStateDispatchEventBuilder
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.builder.ShardingSphereDataDispatchEventBuilder
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.global.event.builder.GlobalRuleDispatchEventBuilder
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.global.event.builder.PropertiesDispatchEventBuilder
+org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.watch.ListenerAssistedDispatchEventBuilder
+org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.event.builder.ComputeNodeOnlineDispatchEventBuilder
