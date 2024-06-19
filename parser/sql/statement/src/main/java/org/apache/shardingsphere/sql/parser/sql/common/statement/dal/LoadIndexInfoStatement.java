@@ -15,27 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PartitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.LoadTableIndexSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Load table index segment.
+ * Load index info statement.
  */
 @Getter
-public final class LoadTableIndexSegment extends TableIndexSegment {
+public abstract class LoadIndexInfoStatement extends AbstractSQLStatement implements DALStatement {
     
-    private final Collection<IndexSegment> indexes = new LinkedList<>();
-    
-    private final Collection<PartitionSegment> partitions = new LinkedList<>();
-    
-    public LoadTableIndexSegment(final int startIndex, final int stopIndex, final SimpleTableSegment table) {
-        super(startIndex, stopIndex, table);
-    }
+    private final Collection<LoadTableIndexSegment> tableIndexes = new LinkedList<>();
 }

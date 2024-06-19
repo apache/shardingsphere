@@ -34,11 +34,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStat
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.InstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.InstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.KillStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.LoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLLoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLRepairTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLResetPersistStatement;
@@ -272,8 +272,8 @@ public final class DALStatementAssert {
             KillStatementAssert.assertIs(assertContext, (KillStatement) actual, (KillStatementTestCase) expected);
         } else if (actual instanceof CacheIndexStatement) {
             CacheIndexStatementAssert.assertIs(assertContext, (CacheIndexStatement) actual, (CacheIndexStatementTestCase) expected);
-        } else if (actual instanceof MySQLLoadIndexInfoStatement) {
-            LoadIndexInfoStatementAssert.assertIs(assertContext, (MySQLLoadIndexInfoStatement) actual, (LoadIndexInfoStatementTestCase) expected);
+        } else if (actual instanceof LoadIndexInfoStatement) {
+            LoadIndexInfoStatementAssert.assertIs(assertContext, (LoadIndexInfoStatement) actual, (LoadIndexInfoStatementTestCase) expected);
         } else if (actual instanceof MySQLShutdownStatement) {
             ShutdownStatementAssert.assertIs(assertContext, (MySQLShutdownStatement) actual, (ShutdownStatementTestCase) expected);
         } else if (actual instanceof MySQLShowOpenTablesStatement) {
