@@ -100,7 +100,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             beginDistributedTransaction();
             return;
         }
-        if (TransactionType.LOCAL == connectionTransaction.getTransactionType() && !databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
+        if (connectionTransaction.isLocalTransaction() && !databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
             databaseConnectionManager.getConnectionContext().getTransactionContext().setInTransaction(String.valueOf(connectionTransaction.getTransactionType()));
         }
     }
