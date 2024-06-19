@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml;
 
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.LockStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Lock table statement test case.
+ * Oracle lock statement.
  */
-public final class LockTableStatementTestCase extends SQLParserTestCase {
+public final class OracleLockStatement extends LockStatement implements OracleStatement {
 }

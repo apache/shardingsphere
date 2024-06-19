@@ -60,7 +60,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Insert
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JoinClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LockTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeAssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeAssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeColumnValueContext;
@@ -185,7 +184,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlSe
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlTableFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleLockTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleMergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleUpdateStatement;
@@ -1452,10 +1450,4 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         ASTNode segment = visit(ctx.whereClause().expr());
         return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) segment);
     }
-    
-    @Override
-    public ASTNode visitLockTable(final LockTableContext ctx) {
-        return new OracleLockTableStatement();
-    }
-    
 }

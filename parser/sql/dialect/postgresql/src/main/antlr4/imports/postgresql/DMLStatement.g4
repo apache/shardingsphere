@@ -447,10 +447,6 @@ dostmtOptItem
     : STRING_ | LANGUAGE nonReservedWordOrSconst
     ;
 
-checkpoint
-    : CHECKPOINT
-    ;
-
 copy
     : copyWithTableOrQuery | copyWithTableOrQueryBinaryCsv | copyWithTableBinary
     ;

@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.LockTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Oracle lock table statement.
+ * Checkpoint statement.
  */
-public final class OracleLockTableStatement extends LockTableStatement implements OracleStatement {
+public abstract class CheckpointStatement extends AbstractSQLStatement implements TCLStatement {
 }

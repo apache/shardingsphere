@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CallArgumentContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CallContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CheckpointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CopyContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CopyWithTableBinaryContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CopyWithTableOrQueryBinaryCsvContext;
@@ -45,7 +44,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCallStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCheckpointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCopyStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDoStatement;
 
@@ -147,11 +145,6 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
             result.setTableSegment((SimpleTableSegment) visit(ctx.qualifiedName()));
         }
         return result;
-    }
-    
-    @Override
-    public ASTNode visitCheckpoint(final CheckpointContext ctx) {
-        return new PostgreSQLCheckpointStatement();
     }
     
     @Override

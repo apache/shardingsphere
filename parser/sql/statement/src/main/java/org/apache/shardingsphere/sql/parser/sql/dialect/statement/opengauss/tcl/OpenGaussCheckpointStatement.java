@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CheckpointStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CheckpointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
