@@ -32,11 +32,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DropResourc
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.InstallComponentStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.InstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLInstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLKillStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLLoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
@@ -230,8 +230,8 @@ public final class DALStatementAssert {
             InstallComponentStatementAssert.assertIs(assertContext, (InstallComponentStatement) actual, (InstallComponentStatementTestCase) expected);
         } else if (actual instanceof MySQLFlushStatement) {
             FlushStatementAssert.assertIs(assertContext, (MySQLFlushStatement) actual, (FlushStatementTestCase) expected);
-        } else if (actual instanceof MySQLInstallPluginStatement) {
-            InstallPluginStatementAssert.assertIs(assertContext, (MySQLInstallPluginStatement) actual, (InstallPluginStatementTestCase) expected);
+        } else if (actual instanceof InstallPluginStatement) {
+            InstallPluginStatementAssert.assertIs(assertContext, (InstallPluginStatement) actual, (InstallPluginStatementTestCase) expected);
         } else if (actual instanceof CloneStatement) {
             CloneStatementAssert.assertIs(assertContext, (CloneStatement) actual, (CloneStatementTestCase) expected);
         } else if (actual instanceof MySQLUninstallComponentStatement) {

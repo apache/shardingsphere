@@ -15,13 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.InstallPluginStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * MySQL install plugin statement.
+ * Install plugin statement.
  */
-public final class MySQLInstallPluginStatement extends InstallPluginStatement implements MySQLStatement {
+@Getter
+@Setter
+public abstract class InstallPluginStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private String pluginName;
 }
