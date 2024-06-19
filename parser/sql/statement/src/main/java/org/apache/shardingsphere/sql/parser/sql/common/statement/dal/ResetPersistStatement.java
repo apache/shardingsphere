@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetPersistStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
- * Doris reset persist statement.
+ * Reset persist statement.
  */
-public final class DorisResetPersistStatement extends ResetPersistStatement implements DorisStatement {
+@RequiredArgsConstructor
+@Getter
+public abstract class ResetPersistStatement extends AbstractSQLStatement implements DALStatement {
     
-    public DorisResetPersistStatement(final boolean ifExists, final IdentifierValue identifier) {
-        super(ifExists, identifier);
-    }
+    private final boolean ifExists;
+    
+    private final IdentifierValue identifier;
 }
