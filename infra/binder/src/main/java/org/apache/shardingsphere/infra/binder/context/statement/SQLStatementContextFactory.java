@@ -77,6 +77,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowIndexSt
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DenyUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
@@ -111,7 +112,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadXMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleMergeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
 import java.util.Collections;
 import java.util.List;
@@ -254,8 +254,8 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof RevokeStatement) {
             return new RevokeStatementContext((RevokeStatement) sqlStatement);
         }
-        if (sqlStatement instanceof SQLServerDenyUserStatement) {
-            return new DenyUserStatementContext((SQLServerDenyUserStatement) sqlStatement);
+        if (sqlStatement instanceof DenyUserStatement) {
+            return new DenyUserStatementContext((DenyUserStatement) sqlStatement);
         }
         return new UnknownSQLStatementContext(sqlStatement);
     }

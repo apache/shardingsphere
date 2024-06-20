@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris set password statement.
  */
-public final class DorisSetPasswordStatement extends AbstractSQLStatement implements DCLStatement, DorisStatement {
+public final class DorisSetPasswordStatement extends SetPasswordStatement implements DorisStatement {
 }

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DelimiterSt
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DropResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.InstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.InstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.KillStatement;
@@ -68,11 +69,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowTablesS
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowTriggersStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowVariablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShutdownStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SpoolStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UninstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UninstallPluginStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleSpoolStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.AlterResourceGroupStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.BinlogStatementAssert;
@@ -124,9 +124,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.SpoolStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.UninstallComponentStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.UninstallPluginStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql.MySQLUseStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql.RepairTableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql.SetResourceGroupStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.mysql.UseStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.AlterResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.BinlogStatementTestCase;
@@ -196,8 +196,8 @@ public final class DALStatementAssert {
      * @param expected expected DAL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DALStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof MySQLUseStatement) {
-            MySQLUseStatementAssert.assertIs(assertContext, (MySQLUseStatement) actual, (UseStatementTestCase) expected);
+        if (actual instanceof UseStatement) {
+            UseStatementAssert.assertIs(assertContext, (UseStatement) actual, (UseStatementTestCase) expected);
         } else if (actual instanceof EmptyStatement) {
             EmptyStatementAssert.assertIs(assertContext, (EmptyStatement) actual, (EmptyStatementTestCase) expected);
         } else if (actual instanceof ExplainStatement) {
@@ -228,8 +228,8 @@ public final class DALStatementAssert {
             ResetParameterStatementAssert.assertIs(assertContext, (ResetParameterStatement) actual, (ResetParameterStatementTestCase) expected);
         } else if (actual instanceof InstallComponentStatement) {
             InstallComponentStatementAssert.assertIs(assertContext, (InstallComponentStatement) actual, (InstallComponentStatementTestCase) expected);
-        } else if (actual instanceof MySQLFlushStatement) {
-            FlushStatementAssert.assertIs(assertContext, (MySQLFlushStatement) actual, (FlushStatementTestCase) expected);
+        } else if (actual instanceof FlushStatement) {
+            FlushStatementAssert.assertIs(assertContext, (FlushStatement) actual, (FlushStatementTestCase) expected);
         } else if (actual instanceof InstallPluginStatement) {
             InstallPluginStatementAssert.assertIs(assertContext, (InstallPluginStatement) actual, (InstallPluginStatementTestCase) expected);
         } else if (actual instanceof CloneStatement) {
@@ -300,8 +300,8 @@ public final class DALStatementAssert {
             DelimiterStatementAssert.assertIs(assertContext, (DelimiterStatement) actual, (DelimiterStatementTestCase) expected);
         } else if (actual instanceof ShowBinlogEventsStatement) {
             ShowBinlogEventsStatementAssert.assertIs(assertContext, (ShowBinlogEventsStatement) actual, (ShowBinlogEventsStatementTestCase) expected);
-        } else if (actual instanceof OracleSpoolStatement) {
-            SpoolStatementAssert.assertIs(assertContext, (OracleSpoolStatement) actual, (SpoolStatementTestCase) expected);
+        } else if (actual instanceof SpoolStatement) {
+            SpoolStatementAssert.assertIs(assertContext, (SpoolStatement) actual, (SpoolStatementTestCase) expected);
         }
     }
 }

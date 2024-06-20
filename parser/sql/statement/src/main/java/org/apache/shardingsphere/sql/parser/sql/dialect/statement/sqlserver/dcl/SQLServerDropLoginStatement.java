@@ -17,19 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.LoginSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropLoginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer drop login statement.
  */
-@Getter
-@Setter
-public final class SQLServerDropLoginStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
-    
-    private LoginSegment loginSegment;
+public final class SQLServerDropLoginStatement extends DropLoginStatement implements SQLServerStatement {
 }
