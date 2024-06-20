@@ -52,9 +52,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateU
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowFunctionStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOpenTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureCodeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureStatusStatement;
@@ -216,8 +216,8 @@ public final class DALStatementAssert {
             ShowCreateUserStatementAssert.assertIs(assertContext, (ShowCreateUserStatement) actual, (ShowCreateUserStatementTestCase) expected);
         } else if (actual instanceof MySQLShowTableStatusStatement) {
             ShowTableStatusStatementAssert.assertIs(assertContext, (MySQLShowTableStatusStatement) actual, (ShowTableStatusStatementTestCase) expected);
-        } else if (actual instanceof MySQLShowIndexStatement) {
-            ShowIndexStatementAssert.assertIs(assertContext, (MySQLShowIndexStatement) actual, (ShowIndexStatementTestCase) expected);
+        } else if (actual instanceof ShowIndexStatement) {
+            ShowIndexStatementAssert.assertIs(assertContext, (ShowIndexStatement) actual, (ShowIndexStatementTestCase) expected);
         } else if (actual instanceof MySQLShowRelayLogEventsStatement) {
             ShowRelaylogEventsStatementAssert.assertIs(assertContext, (MySQLShowRelayLogEventsStatement) actual, (ShowRelayLogEventsStatementTestCase) expected);
         } else if (actual instanceof ShowStatement) {

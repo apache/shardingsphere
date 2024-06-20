@@ -73,6 +73,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.KillStateme
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
@@ -104,7 +105,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadDataStatement;
@@ -276,8 +276,8 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof MySQLShowTableStatusStatement) {
             return new ShowTableStatusStatementContext((MySQLShowTableStatusStatement) sqlStatement);
         }
-        if (sqlStatement instanceof MySQLShowIndexStatement) {
-            return new ShowIndexStatementContext((MySQLShowIndexStatement) sqlStatement);
+        if (sqlStatement instanceof ShowIndexStatement) {
+            return new ShowIndexStatementContext((ShowIndexStatement) sqlStatement);
         }
         if (sqlStatement instanceof AnalyzeTableStatement) {
             return new AnalyzeTableStatementContext((AnalyzeTableStatement) sqlStatement);
