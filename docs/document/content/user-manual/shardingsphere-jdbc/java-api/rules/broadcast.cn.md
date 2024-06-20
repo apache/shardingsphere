@@ -7,13 +7,13 @@ weight = 2
 
 ## 参数解释
 
-类名称：org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration
+类名称：org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration
 
 可配置属性：
 
-| *名称*                      | *数据类型*                                      | *说明*       | *默认值* |
-|---------------------------|---------------------------------------------|------------|-------|
-| tables (+)                | Collection\<String\> | 广播表规则配置    |       |
+| *名称*       | *数据类型*               | *说明*    | *默认值* |
+|------------|----------------------|---------|-------|
+| tables (+) | Collection\<String\> | 广播表规则配置 |       |
 
 ## 配置示例
 

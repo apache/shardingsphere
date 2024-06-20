@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.broadcast.distsql.handler.provider;
 
-import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

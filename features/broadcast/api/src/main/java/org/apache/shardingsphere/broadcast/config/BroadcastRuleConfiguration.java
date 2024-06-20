@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.api.config;
+package org.apache.shardingsphere.broadcast.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

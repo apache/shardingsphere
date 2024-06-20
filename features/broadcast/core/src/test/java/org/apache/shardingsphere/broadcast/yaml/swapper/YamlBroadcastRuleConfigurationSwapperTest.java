@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.broadcast.yaml.swapper;
 
-import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
