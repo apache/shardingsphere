@@ -9,7 +9,7 @@ Single rule is used to specify which single tables need to be managed by Shardin
 
 ## Parameters
 
-Class：org.apache.shardingsphere.single.api.config.SingleRuleConfiguration
+Class：org.apache.shardingsphere.single.config.SingleRuleConfiguration
 
 Attributes：
 

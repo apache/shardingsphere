@@ -9,7 +9,7 @@ weight = 12
 
 ## 参数解释
 
-类名称：org.apache.shardingsphere.single.api.config.SingleRuleConfiguration
+类名称：org.apache.shardingsphere.single.config.SingleRuleConfiguration
 
 可配置属性：
 
