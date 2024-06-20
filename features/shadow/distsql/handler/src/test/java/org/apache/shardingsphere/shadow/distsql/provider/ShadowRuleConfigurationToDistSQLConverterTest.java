@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shadow.distsql.provider;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.provider.ShadowRuleConfigurationToDistSQLConverter;
 import org.junit.jupiter.api.Test;
 
@@ -58,6 +58,6 @@ class ShadowRuleConfigurationToDistSQLConverterTest {
     @Test
     void assertGetType() {
         ShadowRuleConfigurationToDistSQLConverter shadowRuleConfigurationToDistSQLConverter = new ShadowRuleConfigurationToDistSQLConverter();
-        assertThat(shadowRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration"));
+        assertThat(shadowRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration"));
     }
 }

@@ -15,10 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.api.shadow;
+package org.apache.shardingsphere.shadow.spi.column;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
+import org.apache.shardingsphere.shadow.spi.ShadowValue;
 
 /**
- * Shadow value.
+ * Precise value of shadow column.
+ *
+ * @param <T> class type of shadow column value
  */
-public interface ShadowValue {
+@RequiredArgsConstructor
+@Getter
+public final class PreciseColumnShadowValue<T extends Comparable<?>> implements ShadowValue {
+    
+    private final String logicTableName;
+    
+    private final ShadowOperationType shadowOperationType;
+    
+    private final String columnName;
+    
+    private final T value;
 }

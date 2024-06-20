@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.column.PreciseColumnShadowValue;
+import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
+import org.apache.shardingsphere.shadow.spi.column.PreciseColumnShadowValue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.api.config.datasource;
+package org.apache.shardingsphere.shadow.config.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

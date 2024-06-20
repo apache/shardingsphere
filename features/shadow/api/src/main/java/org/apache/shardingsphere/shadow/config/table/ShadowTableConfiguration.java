@@ -15,37 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.api.shadow.column;
+package org.apache.shardingsphere.shadow.config.table;
 
-import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+import java.util.Collection;
 
 /**
- * Column shadow algorithm.
- * 
- * @param <T> type of column shadow value
+ * Shadow table configuration.
  */
-public interface ColumnShadowAlgorithm<T extends Comparable<?>> extends ShadowAlgorithm {
+@RequiredArgsConstructor
+@Getter
+@Setter
+public final class ShadowTableConfiguration {
     
-    /**
-     * Is need shadow.
-     *
-     * @param columnShadowValue column shadow value
-     * @return is need shadow or not
-     */
-    boolean isShadow(PreciseColumnShadowValue<T> columnShadowValue);
+    private final Collection<String> dataSourceNames;
     
-    /**
-     * Get shadow column.
-     * 
-     * @return shadow column
-     */
-    String getShadowColumn();
-    
-    /**
-     * Get shadow operation type.
-     *
-     * @return shadow operation type
-     */
-    ShadowOperationType getShadowOperationType();
+    private final Collection<String> shadowAlgorithmNames;
 }

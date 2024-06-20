@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
