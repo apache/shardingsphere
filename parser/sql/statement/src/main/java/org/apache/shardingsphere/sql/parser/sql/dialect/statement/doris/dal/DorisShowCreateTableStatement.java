@@ -17,19 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris show create table statement.
  */
-@Getter
-@Setter
-public final class DorisShowCreateTableStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private SimpleTableSegment table;
+public final class DorisShowCreateTableStatement extends ShowCreateTableStatement implements DorisStatement {
 }

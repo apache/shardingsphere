@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * MySQL reset option segment.
+ * Show binlog events statement.
  */
 @Getter
 @Setter
-public abstract class ResetOptionSegment implements SQLSegment {
+public abstract class ShowBinlogEventsStatement extends AbstractSQLStatement implements DALStatement {
     
-    private int startIndex;
+    private String logName;
     
-    private int stopIndex;
+    private LimitSegment limit;
 }

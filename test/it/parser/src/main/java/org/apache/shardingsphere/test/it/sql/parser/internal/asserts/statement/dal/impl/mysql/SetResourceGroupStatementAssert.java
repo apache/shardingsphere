@@ -19,29 +19,29 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetResourceGroupStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.OptimizeTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.SetResourceGroupStatementTestCase;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * MySQL optimize table statement assert.
+ * Set resource group statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLOptimizeTableStatementAssert {
+public final class SetResourceGroupStatementAssert {
     
     /**
-     * Assert optimize table statement is correct with expected parser result.
+     * Assert set resource group statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual optimize table statement
-     * @param expected expected optimize table statement test case
+     * @param actual actual set resource group statement
+     * @param expected expected set resource group statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLOptimizeTableStatement actual, final OptimizeTableStatementTestCase expected) {
-        assertTables(assertContext, actual, expected);
-    }
-    
-    private static void assertTables(final SQLCaseAssertContext assertContext, final MySQLOptimizeTableStatement actual, final OptimizeTableStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SetResourceGroupStatement actual, final SetResourceGroupStatementTestCase expected) {
+        assertNotNull(expected.getGroup(), assertContext.getText("expected set resource group should be not null"));
+        assertThat(assertContext.getText("group name does not match: "), actual.getGroupName(), is(expected.getGroup().getName()));
     }
 }

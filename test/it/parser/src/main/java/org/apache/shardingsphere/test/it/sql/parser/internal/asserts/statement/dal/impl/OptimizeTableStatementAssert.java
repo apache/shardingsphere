@@ -19,27 +19,29 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCharacterSetStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.show.ShowFilterAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCharacterSetStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.OptimizeTableStatementTestCase;
 
 /**
- * Show character set statement assert.
+ * Optimize table statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShowCharacterSetStatementAssert {
+public final class OptimizeTableStatementAssert {
     
     /**
-     * Assert show character set statement is correct with expected parser result.
+     * Assert optimize table statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show character set statement
-     * @param expected expected show character set statement test case
+     * @param actual actual optimize table statement
+     * @param expected expected optimize table statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowCharacterSetStatement actual, final ShowCharacterSetStatementTestCase expected) {
-        if (actual.getFilter().isPresent()) {
-            ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
-        }
+    public static void assertIs(final SQLCaseAssertContext assertContext, final OptimizeTableStatement actual, final OptimizeTableStatementTestCase expected) {
+        assertTables(assertContext, actual, expected);
+    }
+    
+    private static void assertTables(final SQLCaseAssertContext assertContext, final OptimizeTableStatement actual, final OptimizeTableStatementTestCase expected) {
+        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }

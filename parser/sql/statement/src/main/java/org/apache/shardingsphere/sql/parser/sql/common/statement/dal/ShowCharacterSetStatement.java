@@ -15,13 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.RepairTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
+import java.util.Optional;
 
 /**
- * MySQL repair table statement.
+ * Show character set statement.
  */
-public final class MySQLRepairTableStatement extends RepairTableStatement implements MySQLStatement {
+@Setter
+public abstract class ShowCharacterSetStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private ShowFilterSegment filter;
+    
+    /**
+     * Get filter segment.
+     *
+     * @return filter segment
+     */
+    public Optional<ShowFilterSegment> getFilter() {
+        return Optional.ofNullable(filter);
+    }
 }

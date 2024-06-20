@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Doris reset option segment.
+ * Set resource group statement.
  */
 @Getter
 @Setter
-public abstract class ResetOptionSegment implements SQLSegment {
+public abstract class SetResourceGroupStatement extends AbstractSQLStatement implements DALStatement {
     
-    private int startIndex;
-    
-    private int stopIndex;
+    private String groupName;
 }

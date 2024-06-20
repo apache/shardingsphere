@@ -15,14 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
- * MySQL show charset statement.
+ * Reset persist statement.
  */
-public final class MySQLShowCharsetStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+@RequiredArgsConstructor
+@Getter
+public abstract class ResetPersistStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private final boolean ifExists;
+    
+    private final IdentifierValue identifier;
 }

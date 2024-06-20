@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * MySQL reset master option segment.
+ * Reset master option segment.
  */
 @Getter
 @Setter

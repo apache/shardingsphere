@@ -15,13 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.RepairTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * MySQL repair table statement.
+ * Reset master option segment.
  */
-public final class MySQLRepairTableStatement extends RepairTableStatement implements MySQLStatement {
+@Getter
+@Setter
+public final class ResetMasterOptionSegment extends ResetOptionSegment {
+    
+    private int startIndex;
+    
+    private int stopIndex;
+    
+    private Long binaryLogFileIndexNumber;
 }

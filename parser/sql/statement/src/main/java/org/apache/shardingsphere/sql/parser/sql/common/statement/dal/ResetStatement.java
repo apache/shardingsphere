@@ -15,13 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.RepairTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ResetOptionSegment;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * MySQL repair table statement.
+ * Reset statement.
  */
-public final class MySQLRepairTableStatement extends RepairTableStatement implements MySQLStatement {
+@Getter
+public abstract class ResetStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private final List<ResetOptionSegment> options = new LinkedList<>();
 }

@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
+import java.util.Optional;
 
 /**
- * Doris reset master option segment.
+ * Show collation statement.
  */
-@Getter
 @Setter
-public final class ResetMasterOptionSegment extends ResetOptionSegment {
+public abstract class ShowCollationStatement extends AbstractSQLStatement implements DALStatement {
     
-    private int startIndex;
+    private ShowFilterSegment filter;
     
-    private int stopIndex;
-    
-    private Long binaryLogFileIndexNumber;
+    /**
+     * Get filter segment.
+     *
+     * @return filter segment
+     */
+    public Optional<ShowFilterSegment> getFilter() {
+        return Optional.ofNullable(filter);
+    }
 }
