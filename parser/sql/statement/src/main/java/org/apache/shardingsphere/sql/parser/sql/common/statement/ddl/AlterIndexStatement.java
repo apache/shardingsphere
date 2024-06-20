@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.Optional;
@@ -38,5 +39,23 @@ public abstract class AlterIndexStatement extends AbstractSQLStatement implement
      */
     public Optional<IndexSegment> getIndex() {
         return Optional.ofNullable(index);
+    }
+    
+    /**
+     * Get simple table segment.
+     *
+     * @return simple table segment
+     */
+    public Optional<SimpleTableSegment> getSimpleTable() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get rename index segment.
+     *
+     * @return rename index segment
+     */
+    public Optional<IndexSegment> getRenameIndex() {
+        return Optional.empty();
     }
 }

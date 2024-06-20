@@ -32,11 +32,7 @@ public final class OpenGaussAlterIndexStatement extends AlterIndexStatement impl
     
     private IndexSegment renameIndex;
     
-    /**
-     * Get rename index segment.
-     *
-     * @return rename index segment
-     */
+    @Override
     public Optional<IndexSegment> getRenameIndex() {
         return Optional.ofNullable(renameIndex);
     }
