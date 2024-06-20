@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
@@ -38,9 +37,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -50,7 +47,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Driver execute batch executor.
@@ -90,13 +86,8 @@ public final class DriverExecuteBatchExecutor {
      * @param database database
      */
     public void addBatch(final QueryContext queryContext, final ShardingSphereDatabase database) {
-        Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
-        executionContext = trafficInstanceId.map(optional -> createExecutionContext(queryContext, optional)).orElseGet(() -> createExecutionContext(queryContext, database));
+        executionContext = createExecutionContext(queryContext, database);
         batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits());
-    }
-    
-    private ExecutionContext createExecutionContext(final QueryContext queryContext, final String trafficInstanceId) {
-        return new ExecutionContext(queryContext, Collections.singleton(new ExecutionUnit(trafficInstanceId, new SQLUnit(queryContext.getSql(), queryContext.getParameters()))), new RouteContext());
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext, final ShardingSphereDatabase database) {

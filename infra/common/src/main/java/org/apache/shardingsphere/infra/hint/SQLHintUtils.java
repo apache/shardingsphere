@@ -65,9 +65,6 @@ public final class SQLHintUtils {
         if (containsPropertyKey(hintProps, SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY)) {
             result.setWriteRouteOnly(Boolean.parseBoolean(getProperty(hintProps, SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY)));
         }
-        if (containsPropertyKey(hintProps, SQLHintPropertiesKey.USE_TRAFFIC_KEY)) {
-            result.setUseTraffic(Boolean.parseBoolean(getProperty(hintProps, SQLHintPropertiesKey.USE_TRAFFIC_KEY)));
-        }
         if (containsPropertyKey(hintProps, SQLHintPropertiesKey.SKIP_SQL_REWRITE_KEY)) {
             result.setSkipSQLRewrite(Boolean.parseBoolean(getProperty(hintProps, SQLHintPropertiesKey.SKIP_SQL_REWRITE_KEY)));
         }

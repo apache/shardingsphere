@@ -32,7 +32,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
-import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,8 +54,6 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -80,12 +77,9 @@ class DriverDatabaseConnectionManagerTest {
         MetaDataPersistService persistService = mockMetaDataPersistService();
         when(result.getPersistServiceFacade().getMetaDataPersistService()).thenReturn(persistService);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
-                new RuleMetaData(Arrays.asList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS), mock(TransactionRule.class, RETURNS_DEEP_STUBS),
-                        mock(TrafficRule.class, RETURNS_DEEP_STUBS))));
+                new RuleMetaData(Arrays.asList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS), mock(TransactionRule.class, RETURNS_DEEP_STUBS))));
         when(result.getComputeNodeInstanceContext().getAllClusterInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(
                 Collections.singletonMap("foo_id", new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_version")));
-        Map<String, DataSource> trafficDataSourceMap = mockTrafficDataSourceMap();
-        when(DataSourcePoolCreator.create(any(), eq(true))).thenReturn(trafficDataSourceMap);
         return result;
     }
     
@@ -119,16 +113,6 @@ class DriverDatabaseConnectionManagerTest {
         return result;
     }
     
-    private Map<String, DataSource> mockTrafficDataSourceMap() throws SQLException {
-        MockedDataSource result = new MockedDataSource(mock(Connection.class, RETURNS_DEEP_STUBS));
-        result.setUrl("jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false");
-        result.setUsername("root");
-        result.setPassword("123456");
-        when(result.getConnection().getMetaData().getURL()).thenReturn(result.getUrl());
-        when(result.getConnection().getMetaData().getUserName()).thenReturn(result.getUsername());
-        return Collections.singletonMap("127.0.0.1@3307", result);
-    }
-    
     @Test
     void assertGetRandomPhysicalDataSourceNameFromContextManager() {
         String actual = databaseConnectionManager.getRandomPhysicalDataSourceName();
@@ -160,15 +144,6 @@ class DriverDatabaseConnectionManagerTest {
     }
     
     @Test
-    void assertGetConnectionWhenConfigTrafficRule() throws SQLException {
-        List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY);
-        assertThat(actual, is(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
-        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false"));
-    }
-    
-    @Test
     void assertGetConnectionsWhenAllInCache() throws SQLException {
         Connection expected = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
         List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.CONNECTION_STRICTLY);
@@ -177,27 +152,9 @@ class DriverDatabaseConnectionManagerTest {
     }
     
     @Test
-    void assertGetConnectionsWhenConfigTrafficRuleAndAllInCache() throws SQLException {
-        Connection expected = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
-        List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "127.0.0.1@3307", 0, 1, ConnectionMode.CONNECTION_STRICTLY);
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), is(expected));
-        assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
-        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false"));
-    }
-    
-    @Test
     void assertGetConnectionsWhenEmptyCache() throws SQLException {
         List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
-    }
-    
-    @Test
-    void assertGetConnectionsWhenConfigTrafficRuleAndEmptyCache() throws SQLException {
-        List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY);
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
-        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false"));
     }
     
     @Test

@@ -28,10 +28,7 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.traffic.engine.TrafficEngine;
-import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
@@ -42,7 +39,6 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -105,29 +101,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         databaseConnectionManager.close();
         databaseConnectionManager.getConnectionTransaction().begin();
         databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
-    }
-    
-    /**
-     * Get traffic tnstance ID.
-     *
-     * @param trafficRule traffic rule
-     * @param queryContext query context
-     * @return traffic tnstance ID
-     */
-    public Optional<String> getTrafficInstanceId(final TrafficRule trafficRule, final QueryContext queryContext) {
-        if (null == trafficRule || trafficRule.getStrategyRules().isEmpty()) {
-            return Optional.empty();
-        }
-        Optional<String> existedTrafficInstanceId = databaseConnectionManager.getConnectionContext().getTrafficInstanceId();
-        if (existedTrafficInstanceId.isPresent()) {
-            return existedTrafficInstanceId;
-        }
-        boolean isHoldTransaction = databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit);
-        Optional<String> result = new TrafficEngine(trafficRule, contextManager.getComputeNodeInstanceContext()).dispatch(queryContext, isHoldTransaction);
-        if (isHoldTransaction && result.isPresent()) {
-            databaseConnectionManager.getConnectionContext().setTrafficInstanceId(result.get());
-        }
-        return result;
     }
     
     @Override

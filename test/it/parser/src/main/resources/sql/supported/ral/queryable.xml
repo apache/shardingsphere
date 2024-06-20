@@ -28,7 +28,6 @@
     <sql-case id="show-authority-rule" value="SHOW AUTHORITY RULE" db-types="ShardingSphere" />
     <sql-case id="show-transaction-rule" value="SHOW TRANSACTION RULE" db-types="ShardingSphere" />
     <sql-case id="show-sql-parser-rule" value="SHOW SQL_PARSER RULE" db-types="ShardingSphere" />
-    <sql-case id="show-traffic-rules" value="SHOW TRAFFIC RULE rule_name" db-types="ShardingSphere" />
     <sql-case id="show-sql-translator-rule" value="SHOW SQL_TRANSLATOR RULE" db-types="ShardingSphere" />
     <sql-case id="show-global-clock-rule" value="SHOW GLOBAL CLOCK RULE" db-types="ShardingSphere" />
     

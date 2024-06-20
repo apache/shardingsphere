@@ -32,10 +32,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.E
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.impl.ShowRulesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.impl.ShowStorageUnitsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.impl.ShowTablesStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.impl.ShowTrafficRulesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.traffic.ShowTrafficRulesStatementTestCase;
-import org.apache.shardingsphere.traffic.distsql.statement.queryable.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.transaction.distsql.statement.queryable.ShowTransactionRuleStatement;
 
 /**
@@ -62,8 +59,6 @@ public final class RQLStatementAssert {
             ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowTransactionRuleStatement) {
             ExistingAssert.assertIs(assertContext, actual, expected);
-        } else if (actual instanceof ShowTrafficRulesStatement) {
-            ShowTrafficRulesStatementAssert.assertIs(assertContext, (ShowTrafficRulesStatement) actual, (ShowTrafficRulesStatementTestCase) expected);
         } else if (actual instanceof ShowSQLParserRuleStatement) {
             ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowSQLTranslatorRuleStatement) {

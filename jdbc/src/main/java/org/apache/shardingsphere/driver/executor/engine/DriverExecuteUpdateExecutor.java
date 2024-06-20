@@ -34,12 +34,9 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
-import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Optional;
 
 /**
  * Driver execute update executor.
@@ -55,15 +52,11 @@ public final class DriverExecuteUpdateExecutor {
     
     private final DriverRawPushDownExecuteUpdateExecutor rawPushDownExecutor;
     
-    private final TrafficExecutor trafficExecutor;
-    
-    public DriverExecuteUpdateExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData,
-                                       final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor, final TrafficExecutor trafficExecutor) {
+    public DriverExecuteUpdateExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor) {
         this.connection = connection;
         this.metaData = metaData;
         jdbcPushDownExecutor = new DriverJDBCPushDownExecuteUpdateExecutor(connection, metaData, jdbcExecutor);
         rawPushDownExecutor = new DriverRawPushDownExecuteUpdateExecutor(connection, metaData, rawExecutor);
-        this.trafficExecutor = trafficExecutor;
     }
     
     /**
@@ -81,10 +74,6 @@ public final class DriverExecuteUpdateExecutor {
     @SuppressWarnings("rawtypes")
     public int executeUpdate(final ShardingSphereDatabase database, final QueryContext queryContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                              final StatementExecuteUpdateCallback updateCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
-        Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
-        if (trafficInstanceId.isPresent()) {
-            return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, updateCallback::executeUpdate);
-        }
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(
                 queryContext, database, metaData.getGlobalRuleMetaData(), metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
         return database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()
