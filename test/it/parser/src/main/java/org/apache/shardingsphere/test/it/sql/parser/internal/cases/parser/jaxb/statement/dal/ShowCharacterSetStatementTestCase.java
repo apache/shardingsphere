@@ -15,13 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.show.ExpectedShowFilter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * MySQL show create view statement.
+ * Show character set statement test case.
  */
-public final class MySQLShowCreateViewStatement extends ShowCreateViewStatement implements MySQLStatement {
+@Getter
+@Setter
+public final class ShowCharacterSetStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement
+    private ExpectedShowFilter filter;
 }
