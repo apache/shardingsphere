@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.api.config;
+package org.apache.shardingsphere.single.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
