@@ -21,17 +21,17 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CursorStatement;
 
 /**
  * Cursor statement binder.
  */
-public final class CursorStatementBinder implements SQLStatementBinder<OpenGaussCursorStatement> {
+public final class CursorStatementBinder implements SQLStatementBinder<CursorStatement> {
     
     @SneakyThrows
     @Override
-    public OpenGaussCursorStatement bind(final OpenGaussCursorStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        OpenGaussCursorStatement result = new OpenGaussCursorStatement();
+    public CursorStatement bind(final CursorStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+        CursorStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.setCursorName(sqlStatement.getCursorName());
         result.setSelect(new SelectStatementBinder().bind(sqlStatement.getSelect(), metaData, defaultDatabaseName));
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());

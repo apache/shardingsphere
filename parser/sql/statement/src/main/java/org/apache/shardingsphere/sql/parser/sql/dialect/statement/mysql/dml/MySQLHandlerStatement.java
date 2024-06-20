@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.HandlerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL handler statement.
  */
-public final class MySQLHandlerStatement extends AbstractSQLStatement implements DMLStatement, MySQLStatement {
+public final class MySQLHandlerStatement extends HandlerStatement implements MySQLStatement {
 }

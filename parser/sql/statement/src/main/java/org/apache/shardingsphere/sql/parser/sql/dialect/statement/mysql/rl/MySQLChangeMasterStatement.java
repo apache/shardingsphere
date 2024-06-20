@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.RLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.ChangeMasterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL change master statement.
  */
-public final class MySQLChangeMasterStatement extends AbstractSQLStatement implements RLStatement, MySQLStatement {
+public final class MySQLChangeMasterStatement extends ChangeMasterStatement implements MySQLStatement {
 }

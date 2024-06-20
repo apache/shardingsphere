@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseLinkStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle create database link statement.
  */
-public final class OracleCreateDatabaseLinkStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
+public final class OracleCreateDatabaseLinkStatement extends CreateDatabaseLinkStatement implements OracleStatement {
 }

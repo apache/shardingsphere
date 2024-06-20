@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CursorStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -57,7 +57,7 @@ public final class CursorStatementContext extends CommonSQLStatementContext impl
     private final SelectStatementContext selectStatementContext;
     
     public CursorStatementContext(final ShardingSphereMetaData metaData, final List<Object> params,
-                                  final OpenGaussCursorStatement sqlStatement, final String defaultDatabaseName) {
+                                  final CursorStatement sqlStatement, final String defaultDatabaseName) {
         super(sqlStatement);
         tablesContext = new TablesContext(getSimpleTableSegments(), getDatabaseType());
         selectStatementContext = new SelectStatementContext(metaData, params, sqlStatement.getSelect(), defaultDatabaseName, Collections.emptyList());
@@ -73,8 +73,8 @@ public final class CursorStatementContext extends CommonSQLStatementContext impl
     }
     
     @Override
-    public OpenGaussCursorStatement getSqlStatement() {
-        return (OpenGaussCursorStatement) super.getSqlStatement();
+    public CursorStatement getSqlStatement() {
+        return (CursorStatement) super.getSqlStatement();
     }
     
     @Override

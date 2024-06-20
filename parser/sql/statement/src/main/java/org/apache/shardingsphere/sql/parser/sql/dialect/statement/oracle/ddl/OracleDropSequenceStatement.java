@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle drop sequence statement.
  */
-public final class OracleDropSequenceStatement extends AbstractSQLStatement implements OracleStatement {
+public final class OracleDropSequenceStatement extends DropSequenceStatement implements OracleStatement {
 }

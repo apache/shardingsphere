@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL create logfile group statement.
  */
-public final class MySQLCreateLogfileGroupStatement extends AbstractSQLStatement implements DDLStatement, MySQLStatement {
+public final class MySQLCreateLogfileGroupStatement extends CreateLogfileGroupStatement implements MySQLStatement {
 }

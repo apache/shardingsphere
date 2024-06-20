@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.RLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.ChangeReplicationSourceToStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * My SQL change replication source statement.
+ * MySQL change replication source statement.
  */
-public final class MySQLChangeReplicationSourceToStatement extends AbstractSQLStatement implements RLStatement, MySQLStatement {
+public final class MySQLChangeReplicationSourceToStatement extends ChangeReplicationSourceToStatement implements MySQLStatement {
 }

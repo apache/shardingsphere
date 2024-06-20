@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterServerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris alter server statement.
  */
-public final class DorisAlterServerStatement extends AbstractSQLStatement implements DDLStatement, DorisStatement {
+public final class DorisAlterServerStatement extends AlterServerStatement implements DorisStatement {
 }

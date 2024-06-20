@@ -25,6 +25,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeS
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
+/**
+ * Oracle create varray type statement.
+ */
 @Getter
 @Setter
 @RequiredArgsConstructor

@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.rl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.RLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.StartReplicaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris start replica statement.
  */
-public final class DorisStartReplicaStatement extends AbstractSQLStatement implements RLStatement, DorisStatement {
+public final class DorisStartReplicaStatement extends StartReplicaStatement implements DorisStatement {
 }

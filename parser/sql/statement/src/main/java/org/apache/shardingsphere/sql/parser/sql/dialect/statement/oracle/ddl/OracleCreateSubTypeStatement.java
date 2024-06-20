@@ -26,6 +26,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 
 import java.util.Collection;
 
+/**
+ * Oracle create sub type statement.
+ */
 @Getter
 @RequiredArgsConstructor
 public final class OracleCreateSubTypeStatement extends CreateTypeStatement implements OracleStatement {

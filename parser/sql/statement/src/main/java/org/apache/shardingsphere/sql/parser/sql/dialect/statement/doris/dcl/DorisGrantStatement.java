@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.GrantLevelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.DorisRoleOrPrivilegeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.RoleOrPrivilegeSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,7 +35,7 @@ import java.util.LinkedList;
 @Setter
 public final class DorisGrantStatement extends GrantStatement implements DorisStatement {
     
-    private final Collection<DorisRoleOrPrivilegeSegment> roleOrPrivileges = new LinkedList<>();
+    private final Collection<RoleOrPrivilegeSegment> roleOrPrivileges = new LinkedList<>();
     
     private boolean allPrivileges;
     

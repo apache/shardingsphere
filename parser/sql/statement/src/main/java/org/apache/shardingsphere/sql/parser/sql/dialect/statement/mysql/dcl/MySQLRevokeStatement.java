@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.RoleOrPrivilegeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.GrantLevelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.MySQLRoleOrPrivilegeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.UserSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,7 +35,7 @@ import java.util.LinkedList;
 @Setter
 public final class MySQLRevokeStatement extends RevokeStatement implements MySQLStatement {
     
-    private final Collection<MySQLRoleOrPrivilegeSegment> roleOrPrivileges = new LinkedList<>();
+    private final Collection<RoleOrPrivilegeSegment> roleOrPrivileges = new LinkedList<>();
     
     private boolean allPrivileges;
     

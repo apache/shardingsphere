@@ -106,8 +106,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.MySQLPrivilegeSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.MySQLRoleOrPrivilegeSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PasswordOrLockOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.SSLTypeEnum;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.TLSOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.SSLTypeEnum;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.TLSOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserResourceSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserResourceSpecifiedLimitEnum;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.UserSegment;

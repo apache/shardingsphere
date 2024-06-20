@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris create logfile group statement.
  */
-public final class DorisCreateLogfileGroupStatement extends AbstractSQLStatement implements DDLStatement, DorisStatement {
+public final class DorisCreateLogfileGroupStatement extends CreateLogfileGroupStatement implements DorisStatement {
 }

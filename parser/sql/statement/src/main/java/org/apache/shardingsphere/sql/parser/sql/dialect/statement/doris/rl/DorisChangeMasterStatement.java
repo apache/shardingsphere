@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.rl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.RLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.ChangeMasterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris change master statement.
  */
-public final class DorisChangeMasterStatement extends AbstractSQLStatement implements RLStatement, DorisStatement {
+public final class DorisChangeMasterStatement extends ChangeMasterStatement implements DorisStatement {
 }

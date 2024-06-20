@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropOutlineStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle drop outline statement.
  */
-public final class OracleDropOutlineStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
+public final class OracleDropOutlineStatement extends DropOutlineStatement implements OracleStatement {
 }

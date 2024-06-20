@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProfileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle create profile statement.
  */
-public final class OracleCreateProfileStatement extends AbstractSQLStatement implements OracleStatement {
+public final class OracleCreateProfileStatement extends CreateProfileStatement implements OracleStatement {
 }

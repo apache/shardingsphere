@@ -17,19 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.LoadDataStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL load data statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MySQLLoadDataStatement extends AbstractSQLStatement implements DMLStatement, MySQLStatement {
+public final class MySQLLoadDataStatement extends LoadDataStatement implements MySQLStatement {
     
-    private final SimpleTableSegment tableSegment;
+    public MySQLLoadDataStatement(final SimpleTableSegment tableSegment) {
+        super(tableSegment);
+    }
 }

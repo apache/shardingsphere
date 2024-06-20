@@ -17,21 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.FlashbackTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle flashback table statement.
  */
-@Getter
-@Setter
-public final class OracleFlashbackTableStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
-    
-    private SimpleTableSegment table;
-    
-    private SimpleTableSegment renameTable;
+public final class OracleFlashbackTableStatement extends FlashbackTableStatement implements OracleStatement {
 }

@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterForeignDataWrapperStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL alter foreign data wrapper statement.
  */
-public final class PostgreSQLAlterForeignDataWrapperStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
+public final class PostgreSQLAlterForeignDataWrapperStatement extends AlterForeignDataWrapperStatement implements PostgreSQLStatement {
 }

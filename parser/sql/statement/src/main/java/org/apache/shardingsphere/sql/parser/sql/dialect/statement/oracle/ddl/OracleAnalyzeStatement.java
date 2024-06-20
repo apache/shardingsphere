@@ -17,22 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AnalyzeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle analyze statement.
  */
-@Getter
-@Setter
-public final class OracleAnalyzeStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
-    
-    private IndexSegment index;
-    
-    private SimpleTableSegment table;
+public final class OracleAnalyzeStatement extends AnalyzeStatement implements OracleStatement {
 }

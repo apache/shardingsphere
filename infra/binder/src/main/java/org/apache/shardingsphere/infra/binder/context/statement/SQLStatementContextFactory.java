@@ -91,6 +91,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProce
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
@@ -106,12 +107,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.LoadDataStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.LoadXMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadDataStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadXMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleMergeStatement;
 
 import java.util.Collections;
 import java.util.List;
@@ -170,14 +170,14 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof DoStatement) {
             return new DoStatementContext((DoStatement) sqlStatement);
         }
-        if (sqlStatement instanceof MySQLLoadDataStatement) {
-            return new LoadDataStatementContext((MySQLLoadDataStatement) sqlStatement);
+        if (sqlStatement instanceof LoadDataStatement) {
+            return new LoadDataStatementContext((LoadDataStatement) sqlStatement);
         }
-        if (sqlStatement instanceof MySQLLoadXMLStatement) {
-            return new LoadXMLStatementContext((MySQLLoadXMLStatement) sqlStatement);
+        if (sqlStatement instanceof LoadXMLStatement) {
+            return new LoadXMLStatementContext((LoadXMLStatement) sqlStatement);
         }
-        if (sqlStatement instanceof OracleMergeStatement) {
-            return new MergeStatementContext((OracleMergeStatement) sqlStatement);
+        if (sqlStatement instanceof MergeStatement) {
+            return new MergeStatementContext((MergeStatement) sqlStatement);
         }
         throw new UnsupportedSQLOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
@@ -232,8 +232,8 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof CommentStatement) {
             return new CommentStatementContext((CommentStatement) sqlStatement);
         }
-        if (sqlStatement instanceof OpenGaussCursorStatement) {
-            return new CursorStatementContext(metaData, params, (OpenGaussCursorStatement) sqlStatement, defaultDatabaseName);
+        if (sqlStatement instanceof CursorStatement) {
+            return new CursorStatementContext(metaData, params, (CursorStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof CloseStatement) {
             return new CloseStatementContext((CloseStatement) sqlStatement);

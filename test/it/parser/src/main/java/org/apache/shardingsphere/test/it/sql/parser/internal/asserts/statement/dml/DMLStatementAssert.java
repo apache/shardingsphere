@@ -25,11 +25,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.LoadDataStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.LoadXMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadDataStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadXMLStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.CallStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.CopyStatementAssert;
@@ -83,10 +83,10 @@ public final class DMLStatementAssert {
             CopyStatementAssert.assertIs(assertContext, (CopyStatement) actual, (CopyStatementTestCase) expected);
         } else if (actual instanceof DoStatement) {
             DoStatementAssert.assertIs(assertContext, (DoStatement) actual, (DoStatementTestCase) expected);
-        } else if (actual instanceof MySQLLoadDataStatement) {
-            LoadDataStatementAssert.assertIs(assertContext, (MySQLLoadDataStatement) actual, (LoadDataStatementTestCase) expected);
-        } else if (actual instanceof MySQLLoadXMLStatement) {
-            LoadXMLStatementAssert.assertIs(assertContext, (MySQLLoadXMLStatement) actual, (LoadXMLStatementTestCase) expected);
+        } else if (actual instanceof LoadDataStatement) {
+            LoadDataStatementAssert.assertIs(assertContext, (LoadDataStatement) actual, (LoadDataStatementTestCase) expected);
+        } else if (actual instanceof LoadXMLStatement) {
+            LoadXMLStatementAssert.assertIs(assertContext, (LoadXMLStatement) actual, (LoadXMLStatementTestCase) expected);
         }
     }
 }
