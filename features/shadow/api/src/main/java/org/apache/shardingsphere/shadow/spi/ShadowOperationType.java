@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.api.shadow;
+package org.apache.shardingsphere.shadow.spi;
 
 import java.util.Optional;
 

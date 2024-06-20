@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.api.config.table;
+package org.apache.shardingsphere.shadow.spi.hint;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
 
 /**
- * Shadow table configuration.
+ * Precise hint of shadow in SQL comment.
+ *
+ * @param <T> class type of hint value
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class ShadowTableConfiguration {
+public interface HintShadowAlgorithm<T extends Comparable<?>> extends ShadowAlgorithm {
     
-    private final Collection<String> dataSourceNames;
-    
-    private final Collection<String> shadowAlgorithmNames;
+    /**
+     * Is need shadow.
+     *
+     * @param relatedShadowTables related shadow tables
+     * @param hintShadowValue hint value of shadow
+     * @return is need shadow or not
+     */
+    boolean isShadow(Collection<String> relatedShadowTables, PreciseHintShadowValue<T> hintShadowValue);
 }

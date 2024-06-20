@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.condition;
 
 import lombok.Getter;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
+import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 
 import java.util.Collection;
 import java.util.LinkedList;

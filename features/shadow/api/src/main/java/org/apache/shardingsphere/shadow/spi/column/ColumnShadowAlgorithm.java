@@ -15,25 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.api.shadow.hint;
+package org.apache.shardingsphere.shadow.spi.column;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowValue;
+import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 /**
- * Precise hint of shadow in SQL comment.
- *
- * @param <T> class type of hint value
+ * Column shadow algorithm.
+ * 
+ * @param <T> type of column shadow value
  */
-@RequiredArgsConstructor
-@Getter
-public final class PreciseHintShadowValue<T extends Comparable<?>> implements ShadowValue {
+public interface ColumnShadowAlgorithm<T extends Comparable<?>> extends ShadowAlgorithm {
     
-    private final String logicTableName;
+    /**
+     * Is need shadow.
+     *
+     * @param columnShadowValue column shadow value
+     * @return is need shadow or not
+     */
+    boolean isShadow(PreciseColumnShadowValue<T> columnShadowValue);
     
-    private final ShadowOperationType shadowOperationType;
+    /**
+     * Get shadow column.
+     * 
+     * @return shadow column
+     */
+    String getShadowColumn();
     
-    private final T value;
+    /**
+     * Get shadow operation type.
+     *
+     * @return shadow operation type
+     */
+    ShadowOperationType getShadowOperationType();
 }
