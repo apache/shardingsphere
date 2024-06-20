@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.binder.context.aware.CursorDefinitionAwar
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -38,7 +38,7 @@ import java.util.Optional;
  * Fetch statement context.
  */
 @Getter
-public final class FetchStatementContext extends CommonSQLStatementContext implements CursorAvailable, WhereAvailable, CursorDefinitionAware {
+public final class FetchStatementContext extends CommonSQLStatementContext implements CursorAvailable, TableAvailable, WhereAvailable, CursorDefinitionAware {
     
     private CursorStatementContext cursorStatementContext;
     
@@ -62,9 +62,7 @@ public final class FetchStatementContext extends CommonSQLStatementContext imple
     @Override
     public void setUpCursorDefinition(final CursorStatementContext cursorStatementContext) {
         this.cursorStatementContext = cursorStatementContext;
-        TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromSelect(cursorStatementContext.getSqlStatement().getSelect());
-        tablesContext = new TablesContext(tableExtractor.getRewriteTables(), getDatabaseType());
+        tablesContext = cursorStatementContext.getTablesContext();
     }
     
     @Override

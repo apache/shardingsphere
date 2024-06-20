@@ -29,7 +29,7 @@ execute
     | alterTable
     | dropTable
     | truncateTable
-    | lockTable
+    | lock
     | createIndex
     | dropIndex
     | alterIndex

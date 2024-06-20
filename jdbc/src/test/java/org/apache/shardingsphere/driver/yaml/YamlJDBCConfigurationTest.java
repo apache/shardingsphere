@@ -23,7 +23,6 @@ import org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguratio
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
-import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
 import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -49,12 +48,10 @@ class YamlJDBCConfigurationTest {
         actual.setSqlFederation(sqlFederationRuleConfig);
         YamlSQLTranslatorRuleConfiguration sqlTranslatorRuleConfig = new YamlSQLTranslatorRuleConfiguration();
         actual.setSqlTranslator(sqlTranslatorRuleConfig);
-        YamlTrafficRuleConfiguration trafficRuleConfig = new YamlTrafficRuleConfiguration();
-        actual.setTraffic(trafficRuleConfig);
         YamlLoggingRuleConfiguration loggingRuleConfig = new YamlLoggingRuleConfiguration();
         actual.setLogging(loggingRuleConfig);
         actual.rebuild();
         assertThat(actual.getRules(), is(Arrays.asList(
-                authorityRuleConfig, sqlParserRuleConfig, transactionRuleConfig, globalClockRuleConfig, sqlFederationRuleConfig, sqlTranslatorRuleConfig, trafficRuleConfig, loggingRuleConfig)));
+                authorityRuleConfig, sqlParserRuleConfig, transactionRuleConfig, globalClockRuleConfig, sqlFederationRuleConfig, sqlTranslatorRuleConfig, loggingRuleConfig)));
     }
 }

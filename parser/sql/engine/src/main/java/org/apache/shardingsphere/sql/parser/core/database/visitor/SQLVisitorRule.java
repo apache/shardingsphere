@@ -47,8 +47,6 @@ public enum SQLVisitorRule {
     
     HANDLER_STATEMENT("HandlerStatement", SQLStatementType.DML),
     
-    LOCKTABLE("LockTable", SQLStatementType.DML),
-    
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
     CREATE_AGGREGATE("CreateAggregate", SQLStatementType.DDL),
@@ -645,13 +643,13 @@ public enum SQLVisitorRule {
     
     FETCH("Fetch", SQLStatementType.DDL),
     
-    CHECKPOINT("Checkpoint", SQLStatementType.DML),
-    
     CLUSTER("Cluster", SQLStatementType.DDL),
     
     CREATE_ACCESS_METHOD("CreateAccessMethod", SQLStatementType.DDL),
     
     DO("DoStatement", SQLStatementType.DML),
+    
+    CHECKPOINT("Checkpoint", SQLStatementType.TCL),
     
     PREPARE_TRANSACTION("PrepareTransaction", SQLStatementType.TCL),
     

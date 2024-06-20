@@ -34,13 +34,10 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecut
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
-import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
-import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -63,19 +60,16 @@ public final class DriverExecuteExecutor {
     
     private final DriverRawPushDownExecuteExecutor rawPushDownExecutor;
     
-    private final TrafficExecutor trafficExecutor;
-    
     private final SQLFederationEngine sqlFederationEngine;
     
     private ExecuteType executeType;
     
-    public DriverExecuteExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final Grantee grantee,
-                                 final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor, final TrafficExecutor trafficExecutor, final SQLFederationEngine sqlFederationEngine) {
+    public DriverExecuteExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData,
+                                 final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor, final SQLFederationEngine sqlFederationEngine) {
         this.connection = connection;
         this.metaData = metaData;
-        jdbcPushDownExecutor = new DriverJDBCPushDownExecuteExecutor(connection, metaData, grantee, jdbcExecutor);
-        rawPushDownExecutor = new DriverRawPushDownExecuteExecutor(connection, metaData, grantee, rawExecutor);
-        this.trafficExecutor = trafficExecutor;
+        jdbcPushDownExecutor = new DriverJDBCPushDownExecuteExecutor(connection, metaData, jdbcExecutor);
+        rawPushDownExecutor = new DriverRawPushDownExecuteExecutor(connection, metaData, rawExecutor);
         this.sqlFederationEngine = sqlFederationEngine;
     }
     
@@ -94,11 +88,6 @@ public final class DriverExecuteExecutor {
     @SuppressWarnings("rawtypes")
     public boolean execute(final ShardingSphereDatabase database, final QueryContext queryContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                            final StatementExecuteCallback executeCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
-        Optional<String> trafficInstanceId = connection.getTrafficInstanceId(metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class), queryContext);
-        if (trafficInstanceId.isPresent()) {
-            executeType = ExecuteType.TRAFFIC;
-            return trafficExecutor.execute(connection.getProcessId(), database.getName(), trafficInstanceId.get(), queryContext, prepareEngine, executeCallback::execute);
-        }
         if (sqlFederationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaData.getGlobalRuleMetaData())) {
             executeType = ExecuteType.FEDERATION;
             ResultSet resultSet = sqlFederationEngine.executeQuery(prepareEngine,
@@ -131,8 +120,6 @@ public final class DriverExecuteExecutor {
             return Optional.empty();
         }
         switch (executeType) {
-            case TRAFFIC:
-                return Optional.of(trafficExecutor.getResultSet());
             case FEDERATION:
                 return Optional.of(sqlFederationEngine.getResultSet());
             case JDBC_PUSH_DOWN:
@@ -143,8 +130,6 @@ public final class DriverExecuteExecutor {
     }
     
     public enum ExecuteType {
-        
-        TRAFFIC,
         
         FEDERATION,
         

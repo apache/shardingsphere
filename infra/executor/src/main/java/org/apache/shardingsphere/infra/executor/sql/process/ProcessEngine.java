@@ -18,15 +18,12 @@
 package org.apache.shardingsphere.infra.executor.sql.process;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -35,6 +32,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Process engine.
  */
+@HighFrequencyInvocation
 public final class ProcessEngine {
     
     /**
@@ -84,9 +82,7 @@ public final class ProcessEngine {
      * @param queryContext query context
      */
     public void executeSQL(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
-        if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
-            ProcessRegistry.getInstance().add(new Process(queryContext.getSql(), executionGroupContext));
-        }
+        ProcessRegistry.getInstance().add(new Process(queryContext.getSql(), executionGroupContext));
     }
     
     /**
@@ -123,9 +119,5 @@ public final class ProcessEngine {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
                 Collections.emptyList(), new ExecutionGroupReportContext(processId, process.getDatabaseName(), new Grantee(process.getUsername(), process.getHostname())));
         ProcessRegistry.getInstance().add(new Process(executionGroupContext));
-    }
-    
-    private boolean isMySQLDDLOrDMLStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof MySQLStatement && (sqlStatement instanceof DDLStatement || sqlStatement instanceof DMLStatement);
     }
 }

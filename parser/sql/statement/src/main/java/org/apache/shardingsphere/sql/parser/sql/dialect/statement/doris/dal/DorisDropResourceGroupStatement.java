@@ -17,18 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DropResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris drop resource group statement.
  */
-@Getter
-@Setter
-public final class DorisDropResourceGroupStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private String groupName;
+public final class DorisDropResourceGroupStatement extends DropResourceGroupStatement implements DorisStatement {
 }

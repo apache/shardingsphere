@@ -122,9 +122,6 @@ public final class ProxyConfigurationLoader {
         if (null != serverConfig.getSqlTranslator()) {
             serverConfig.getRules().add(serverConfig.getSqlTranslator());
         }
-        if (null != serverConfig.getTraffic()) {
-            serverConfig.getRules().add(serverConfig.getTraffic());
-        }
         if (null != serverConfig.getLogging()) {
             serverConfig.getRules().add(serverConfig.getLogging());
         }

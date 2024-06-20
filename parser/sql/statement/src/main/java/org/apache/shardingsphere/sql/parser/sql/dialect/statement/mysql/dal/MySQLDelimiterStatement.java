@@ -17,18 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DelimiterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL delimiter statement.
  */
-@Getter
-@Setter
-public final class MySQLDelimiterStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-    
-    private String delimiterName;
+public final class MySQLDelimiterStatement extends DelimiterStatement implements MySQLStatement {
 }

@@ -38,7 +38,6 @@ import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
@@ -64,18 +63,15 @@ public final class DriverJDBCPushDownExecuteQueryExecutor {
     
     private final ConfigurationProperties props;
     
-    private final Grantee grantee;
-    
     private final JDBCExecutor jdbcExecutor;
     
     private final Collection<Statement> statements;
     
-    public DriverJDBCPushDownExecuteQueryExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final Grantee grantee, final JDBCExecutor jdbcExecutor) {
+    public DriverJDBCPushDownExecuteQueryExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final JDBCExecutor jdbcExecutor) {
         connectionContext = connection.getDatabaseConnectionManager().getConnectionContext();
         processId = connection.getProcessId();
         globalRuleMetaData = metaData.getGlobalRuleMetaData();
         props = metaData.getProps();
-        this.grantee = grantee;
         this.jdbcExecutor = jdbcExecutor;
         statements = new LinkedList<>();
     }
@@ -108,7 +104,7 @@ public final class DriverJDBCPushDownExecuteQueryExecutor {
         statements.clear();
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, props, connectionContext);
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(database.getName(), executionContext.getRouteContext(), executionContext.getExecutionUnits(),
-                new ExecutionGroupReportContext(processId, database.getName(), grantee));
+                new ExecutionGroupReportContext(processId, database.getName(), connectionContext.getGrantee()));
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
             Collection<Statement> statements = getStatements(each);
             this.statements.addAll(statements);

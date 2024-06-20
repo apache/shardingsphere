@@ -22,25 +22,16 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import lombok.Getter;
-import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
 import org.apache.shardingsphere.driver.jdbc.core.savepoint.ShardingSphereSavepoint;
-import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.kernel.connection.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -70,8 +61,6 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     
     private final Map<String, DataSource> physicalDataSourceMap;
     
-    private final Map<String, DataSource> trafficDataSourceMap;
-    
     private final Map<String, DataSource> dataSourceMap;
     
     @Getter
@@ -87,7 +76,6 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         this.defaultDatabaseName = defaultDatabaseName;
         this.contextManager = contextManager;
         physicalDataSourceMap = getPhysicalDataSourceMap(defaultDatabaseName, contextManager);
-        trafficDataSourceMap = getTrafficDataSourceMap(defaultDatabaseName, contextManager);
         dataSourceMap = getDataSourceMap();
         connectionContext = new ConnectionContext(cachedConnections::keySet);
         connectionContext.setCurrentDatabase(defaultDatabaseName);
@@ -102,57 +90,9 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         return result;
     }
     
-    private Map<String, DataSource> getTrafficDataSourceMap(final String databaseName, final ContextManager contextManager) {
-        TrafficRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
-        if (rule.getStrategyRules().isEmpty()) {
-            return Collections.emptyMap();
-        }
-        MetaDataPersistService persistService = contextManager.getPersistServiceFacade().getMetaDataPersistService();
-        String actualDatabaseName = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName();
-        Map<String, DataSourcePoolProperties> propsMap = persistService.getDataSourceUnitService().load(actualDatabaseName);
-        Preconditions.checkState(!propsMap.isEmpty(), "Can not get data source properties from meta data.");
-        DataSourcePoolProperties propsSample = propsMap.values().iterator().next();
-        Collection<ShardingSphereUser> users = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getConfiguration().getUsers();
-        Collection<InstanceMetaData> instances = contextManager.getComputeNodeInstanceContext().getAllClusterInstances(InstanceType.PROXY, rule.getLabels()).values();
-        Map<String, DataSource> trafficDataSourceMap = DataSourcePoolCreator.create(createDataSourcePoolPropertiesMap(instances, users, propsSample, actualDatabaseName), true);
-        Map<String, DataSource> result = new LinkedHashMap<>(trafficDataSourceMap.size(), 1F);
-        for (Entry<String, DataSource> entry : trafficDataSourceMap.entrySet()) {
-            result.put(getKey(databaseName, entry.getKey()), entry.getValue());
-        }
-        return result;
-    }
-    
-    private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap(final Collection<InstanceMetaData> instances, final Collection<ShardingSphereUser> users,
-                                                                                    final DataSourcePoolProperties propsSample, final String schema) {
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(instances.size(), 1F);
-        for (InstanceMetaData each : instances) {
-            result.put(each.getId(), createDataSourcePoolProperties((ProxyInstanceMetaData) each, users, propsSample, schema));
-        }
-        return result;
-    }
-    
-    private DataSourcePoolProperties createDataSourcePoolProperties(final ProxyInstanceMetaData instanceMetaData, final Collection<ShardingSphereUser> users,
-                                                                    final DataSourcePoolProperties propsSample, final String schema) {
-        Map<String, Object> props = propsSample.getAllLocalProperties();
-        props.put("jdbcUrl", createJdbcUrl(instanceMetaData, schema, props));
-        ShardingSphereUser user = users.iterator().next();
-        props.put("username", user.getGrantee().getUsername());
-        props.put("password", user.getPassword());
-        return new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", props);
-    }
-    
-    private String createJdbcUrl(final ProxyInstanceMetaData instanceMetaData, final String schema, final Map<String, Object> props) {
-        String jdbcUrl = String.valueOf(props.get("jdbcUrl"));
-        String jdbcUrlPrefix = jdbcUrl.substring(0, jdbcUrl.indexOf("//"));
-        String jdbcUrlSuffix = jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf('?')) : "";
-        return String.format("%s//%s:%s/%s%s", jdbcUrlPrefix, instanceMetaData.getIp(), instanceMetaData.getPort(), schema, jdbcUrlSuffix);
-    }
-    
     private Map<String, DataSource> getDataSourceMap() {
         Map<String, DataSource> result;
-        result = new LinkedHashMap<>(physicalDataSourceMap.size() + trafficDataSourceMap.size(), 1F);
-        result.putAll(physicalDataSourceMap);
-        result.putAll(trafficDataSourceMap);
+        result = new LinkedHashMap<>(physicalDataSourceMap);
         return result;
     }
     
@@ -430,14 +370,8 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     
     private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource,
                                         final TransactionConnectionContext transactionConnectionContext) throws SQLException {
-        Optional<Connection> connectionInTransaction = isRawJdbcDataSource(databaseName, dataSourceName)
-                ? getConnectionTransaction().getConnection(databaseName, dataSourceName, transactionConnectionContext)
-                : Optional.empty();
+        Optional<Connection> connectionInTransaction = getConnectionTransaction().getConnection(databaseName, dataSourceName, transactionConnectionContext);
         return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
-    }
-    
-    private boolean isRawJdbcDataSource(final String databaseName, final String dataSourceName) {
-        return !trafficDataSourceMap.containsKey(getKey(databaseName, dataSourceName));
     }
     
     @Override

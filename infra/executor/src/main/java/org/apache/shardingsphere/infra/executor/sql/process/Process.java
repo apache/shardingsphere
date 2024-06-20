@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -37,6 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Process.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 @Getter
 public final class Process {
@@ -139,26 +141,6 @@ public final class Process {
      */
     public boolean isIdle() {
         return idle.get();
-    }
-    
-    /**
-     * Put process statement.
-     *
-     * @param executionUnit execution unit
-     * @param statement statement
-     */
-    public void putProcessStatement(final ExecutionUnit executionUnit, final Statement statement) {
-        putProcessStatement(System.identityHashCode(executionUnit), statement);
-    }
-    
-    /**
-     * Put process statement.
-     *
-     * @param executionUnitIdentityHashCode execution unit identity hash code
-     * @param statement statement
-     */
-    public void putProcessStatement(final Integer executionUnitIdentityHashCode, final Statement statement) {
-        processStatements.put(executionUnitIdentityHashCode, statement);
     }
     
     /**

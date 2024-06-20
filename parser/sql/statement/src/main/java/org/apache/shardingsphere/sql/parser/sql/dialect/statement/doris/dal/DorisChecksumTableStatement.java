@@ -17,22 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ChecksumTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Doris checksum table statement.
  */
-@Setter
-@Getter
-public final class DorisChecksumTableStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+public final class DorisChecksumTableStatement extends ChecksumTableStatement implements DorisStatement {
 }

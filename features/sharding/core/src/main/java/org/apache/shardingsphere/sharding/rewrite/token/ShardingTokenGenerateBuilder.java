@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.Projectio
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.RowCountTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingInsertValuesTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingRemoveTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.TableTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingTableTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.token.generator.keygen.GeneratedKeyAssignmentTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.token.generator.keygen.GeneratedKeyForUseDefaultInsertColumnsTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.token.generator.keygen.GeneratedKeyInsertColumnTokenGenerator;
@@ -62,7 +62,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
-        addSQLTokenGenerator(result, new TableTokenGenerator());
+        addSQLTokenGenerator(result, new ShardingTableTokenGenerator());
         addSQLTokenGenerator(result, new DistinctProjectionPrefixTokenGenerator());
         addSQLTokenGenerator(result, new ProjectionsTokenGenerator());
         addSQLTokenGenerator(result, new OrderByTokenGenerator());

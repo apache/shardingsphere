@@ -50,8 +50,6 @@ public final class ConnectionContext implements AutoCloseable {
     @Setter(AccessLevel.NONE)
     private String databaseName;
     
-    private String trafficInstanceId;
-    
     public ConnectionContext(final UsedDataSourceProvider usedDataSourceProvider) {
         this(usedDataSourceProvider, null);
     }
@@ -67,15 +65,6 @@ public final class ConnectionContext implements AutoCloseable {
             result.add(each.contains(".") ? each.split("\\.")[1] : each);
         }
         return result;
-    }
-    
-    /**
-     * Get traffic instance ID.
-     *
-     * @return traffic instance ID
-     */
-    public Optional<String> getTrafficInstanceId() {
-        return Optional.ofNullable(trafficInstanceId);
     }
     
     /**
@@ -114,7 +103,6 @@ public final class ConnectionContext implements AutoCloseable {
     
     @Override
     public void close() {
-        trafficInstanceId = null;
         clearCursorContext();
         clearTransactionContext();
     }
