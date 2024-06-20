@@ -20,9 +20,9 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
+import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
 
 import java.util.Collection;

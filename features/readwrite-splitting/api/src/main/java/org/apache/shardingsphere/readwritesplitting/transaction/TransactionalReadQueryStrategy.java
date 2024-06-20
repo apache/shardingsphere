@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.api.transaction;
+package org.apache.shardingsphere.readwritesplitting.transaction;
 
 /**
  * Transactional read query strategy.

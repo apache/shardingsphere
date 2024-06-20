@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.rule.attribute.exportable.ExportableRuleA
 import org.apache.shardingsphere.infra.rule.attribute.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.attribute.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 

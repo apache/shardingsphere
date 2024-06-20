@@ -15,32 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.api.rule;
+package org.apache.shardingsphere.readwritesplitting.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Readwrite-splitting data source group rule configuration.
+ * Readwrite-splitting rule configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ReadwriteSplittingDataSourceGroupRuleConfiguration {
+public final class ReadwriteSplittingRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
-    private final String name;
+    private final Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups;
     
-    private final String writeDataSourceName;
+    private final Map<String, AlgorithmConfiguration> loadBalancers;
     
-    private final List<String> readDataSourceNames;
-    
-    private final TransactionalReadQueryStrategy transactionalReadQueryStrategy;
-    
-    private final String loadBalancerName;
-    
-    public ReadwriteSplittingDataSourceGroupRuleConfiguration(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final String loadBalancerName) {
-        this(name, writeDataSourceName, readDataSourceNames, TransactionalReadQueryStrategy.DYNAMIC, loadBalancerName);
+    @Override
+    public boolean isEmpty() {
+        return dataSourceGroups.isEmpty();
     }
 }

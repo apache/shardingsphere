@@ -11,7 +11,7 @@ The read/write splitting configured in Java API form can be easily applied to va
 
 ### Entry
 
-Class name: org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration
+Class name: org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration
 
 Configurable Properties:
 
@@ -22,7 +22,7 @@ Configurable Properties:
 
 ### Primary-secondary Data Source Configuration
 
-Class name: org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration
+Class name: org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration
 
 Configurable Properties:
 
