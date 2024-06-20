@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.manager;
+package org.apache.shardingsphere.mode.manager.switcher;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
