@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.api.config;
+package org.apache.shardingsphere.sqlfederation.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class SQLFederationRuleConfiguration implements GlobalRuleConfiguration {
     
     private final boolean sqlFederationEnabled;
