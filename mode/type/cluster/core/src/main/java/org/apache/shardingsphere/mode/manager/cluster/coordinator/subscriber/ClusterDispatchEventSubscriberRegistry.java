@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessListChangedSubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.subsciber.EventSubscriberRegistry;
-import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscriber;
 
 import java.util.Arrays;
 import java.util.Collection;
