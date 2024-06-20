@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.service.manager.ConfigurationManager;
 import org.apache.shardingsphere.mode.service.manager.ResourceMetaDataManager;
+import org.apache.shardingsphere.mode.service.manager.RuleItemManager;
 import org.apache.shardingsphere.mode.service.manager.ShardingSphereDatabaseManager;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -38,10 +39,13 @@ public class MetaDataContextManager {
     
     private final ResourceMetaDataManager resourceMetaDataManager;
     
+    private final RuleItemManager ruleItemManager;
+    
     public MetaDataContextManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
                                   final PersistServiceFacade persistServiceFacade) {
         databaseManager = new ShardingSphereDatabaseManager(metaDataContexts);
         configurationManager = new ConfigurationManager(metaDataContexts, computeNodeInstanceContext, persistServiceFacade);
         resourceMetaDataManager = new ResourceMetaDataManager(metaDataContexts, persistServiceFacade);
+        ruleItemManager = new RuleItemManager(metaDataContexts, persistServiceFacade, configurationManager);
     }
 }

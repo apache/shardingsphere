@@ -29,6 +29,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchema
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
@@ -275,29 +278,32 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             Collection<MetaDataVersion> metaDataVersions = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseRulePersistService()
                     .persistConfigurations(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), Collections.singletonList(toBeAlteredRuleConfig));
             contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
-            sendDatabaseRuleChangedEvent(databaseName, metaDataVersions);
+            for (MetaDataVersion each : metaDataVersions) {
+                Optional<GovernanceEvent> ruleItemEvent = buildAlterRuleItemEvent(databaseName, each, Type.UPDATED);
+                if (ruleItemEvent.isPresent() && ruleItemEvent.get() instanceof AlterRuleItemEvent) {
+                    contextManager.getMetaDataContextManager().getRuleItemManager().alterRuleItem((AlterRuleItemEvent) ruleItemEvent.get());
+                }
+            }
             clearServiceCache();
         }
         return Collections.emptyList();
     }
     
-    private void sendDatabaseRuleChangedEvent(final String databaseName, final Collection<MetaDataVersion> metaDataVersions) {
-        for (MetaDataVersion each : metaDataVersions) {
-            sendDatabaseRuleChangedEvent(databaseName, each);
-        }
-    }
-    
-    private void sendDatabaseRuleChangedEvent(final String databaseName, final MetaDataVersion metaDataVersion) {
-        ruleConfigurationEventBuilder.build(databaseName, new DataChangedEvent(metaDataVersion.getActiveVersionNodePath(), metaDataVersion.getNextActiveVersion(), Type.UPDATED))
-                .ifPresent(optional -> contextManager.getComputeNodeInstanceContext().getEventBusContext().post(optional));
+    private Optional<GovernanceEvent> buildAlterRuleItemEvent(final String databaseName, final MetaDataVersion metaDataVersion, final Type type) {
+        return ruleConfigurationEventBuilder.build(databaseName, new DataChangedEvent(metaDataVersion.getActiveVersionNodePath(), metaDataVersion.getNextActiveVersion(), type));
     }
     
     @Override
     public void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
         if (null != toBeRemovedRuleConfig) {
-            sendDatabaseRuleChangedEvent(databaseName,
-                    contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseRulePersistService()
-                            .deleteConfigurations(databaseName, Collections.singleton(toBeRemovedRuleConfig)));
+            Collection<MetaDataVersion> metaDataVersions = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseRulePersistService()
+                    .deleteConfigurations(databaseName, Collections.singleton(toBeRemovedRuleConfig));
+            for (MetaDataVersion metaDataVersion : metaDataVersions) {
+                Optional<GovernanceEvent> ruleItemEvent = buildAlterRuleItemEvent(databaseName, metaDataVersion, Type.DELETED);
+                if (ruleItemEvent.isPresent() && ruleItemEvent.get() instanceof DropRuleItemEvent) {
+                    contextManager.getMetaDataContextManager().getRuleItemManager().dropRuleItem((DropRuleItemEvent) ruleItemEvent.get());
+                }
+            }
             clearServiceCache();
         }
     }
