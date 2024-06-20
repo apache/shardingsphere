@@ -15,13 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowEngineStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * MySQL show engine statement.
+ * Show engine statement.
  */
-public final class MySQLShowEngineStatement extends ShowEngineStatement implements MySQLStatement {
+@Getter
+@Setter
+public abstract class ShowEngineStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private String engineName;
 }
