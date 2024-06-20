@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.metadata.manager.ConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.ResourceMetaDataManager;
+import org.apache.shardingsphere.mode.metadata.manager.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
 import org.apache.shardingsphere.mode.metadata.manager.ShardingSphereDatabaseManager;
 import org.apache.shardingsphere.mode.service.PersistServiceFacade;
@@ -41,10 +42,13 @@ public class MetaDataContextManager {
     
     private final RuleItemManager ruleItemManager;
     
+    private final ResourceSwitchManager resourceSwitchManager;
+    
     public MetaDataContextManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
                                   final PersistServiceFacade persistServiceFacade) {
+        resourceSwitchManager = new ResourceSwitchManager();
         databaseManager = new ShardingSphereDatabaseManager(metaDataContexts);
-        configurationManager = new ConfigurationManager(metaDataContexts, computeNodeInstanceContext, persistServiceFacade);
+        configurationManager = new ConfigurationManager(metaDataContexts, computeNodeInstanceContext, persistServiceFacade, resourceSwitchManager);
         resourceMetaDataManager = new ResourceMetaDataManager(metaDataContexts, persistServiceFacade);
         ruleItemManager = new RuleItemManager(metaDataContexts, persistServiceFacade, configurationManager);
     }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.switcher;
+package org.apache.shardingsphere.mode.metadata.manager;
 
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
