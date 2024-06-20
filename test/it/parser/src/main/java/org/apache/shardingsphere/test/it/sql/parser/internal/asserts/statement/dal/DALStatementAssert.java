@@ -53,9 +53,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowDatabas
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowFunctionStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowOpenTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOpenTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureCodeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowRelayLogEventsStatement;
@@ -276,8 +276,8 @@ public final class DALStatementAssert {
             LoadIndexInfoStatementAssert.assertIs(assertContext, (LoadIndexInfoStatement) actual, (LoadIndexInfoStatementTestCase) expected);
         } else if (actual instanceof MySQLShutdownStatement) {
             ShutdownStatementAssert.assertIs(assertContext, (MySQLShutdownStatement) actual, (ShutdownStatementTestCase) expected);
-        } else if (actual instanceof MySQLShowOpenTablesStatement) {
-            ShowOpenTablesStatementAssert.assertIs(assertContext, (MySQLShowOpenTablesStatement) actual, (ShowOpenTablesStatementTestCase) expected);
+        } else if (actual instanceof ShowOpenTablesStatement) {
+            ShowOpenTablesStatementAssert.assertIs(assertContext, (ShowOpenTablesStatement) actual, (ShowOpenTablesStatementTestCase) expected);
         } else if (actual instanceof MySQLShowTriggersStatement) {
             ShowTriggersStatementAssert.assertIs(assertContext, (MySQLShowTriggersStatement) actual, (ShowTriggersStatementTestCase) expected);
         } else if (actual instanceof MySQLShowStatusStatement) {
