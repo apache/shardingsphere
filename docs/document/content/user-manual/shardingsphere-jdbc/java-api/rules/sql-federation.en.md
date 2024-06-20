@@ -10,15 +10,15 @@ When multiple tables in a join query are distributed across different database i
 
 ## Parameters
 
-Class: org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration
+Class: org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration
 
 Attributes: 
 
-| *name*                  | *DataType*  | *Description*              | *Default Value* |
-|---------------------|---------|-------------------|-------|
-| sqlFederationEnabled          | boolean | SQL federation enabled configuration          | -     |
-| allQueryUseSQLFederation | boolean | all query use SQL federation configuration | -     |
-| executionPlanCache | org.apache.shardingsphere.sql.parser.api.CacheOption | execution plan cache configuration            | -     |
+| *name*                   | *DataType*                                           | *Description*                              | *Default Value* |
+|--------------------------|------------------------------------------------------|--------------------------------------------|-----------------|
+| sqlFederationEnabled     | boolean                                              | SQL federation enabled configuration       | -               |
+| allQueryUseSQLFederation | boolean                                              | all query use SQL federation configuration | -               |
+| executionPlanCache       | org.apache.shardingsphere.sql.parser.api.CacheOption | execution plan cache configuration         | -               |
 
 ## Cache option Configuration
 
@@ -26,10 +26,10 @@ Class: org.apache.shardingsphere.sql.parser.api.CacheOption
 
 Attributes: 
 
-| *name*            | *DataType* | *Description*         | *Default Value*                                        |
-|-----------------|--------|-----------------------|--------------------------------------------------------|
-| initialCapacity | int    | Initial capacity of local cache | execution plan local cache default value of 2000       |
-| maximumSize     | long   | Maximum capacity of local cache | execution plan local cache maximum default value 65535 |
+| *name*          | *DataType* | *Description*                   | *Default Value*                                        |
+|-----------------|------------|---------------------------------|--------------------------------------------------------|
+| initialCapacity | int        | Initial capacity of local cache | execution plan local cache default value of 2000       |
+| maximumSize     | long       | Maximum capacity of local cache | execution plan local cache maximum default value 65535 |
 
 ## Sample
 

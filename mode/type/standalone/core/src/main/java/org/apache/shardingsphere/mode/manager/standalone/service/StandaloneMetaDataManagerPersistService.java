@@ -47,7 +47,7 @@ import org.apache.shardingsphere.mode.metadata.builder.RuleConfigurationEventBui
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.metadata.manager.ConfigurationManager;
 import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 
 import java.sql.SQLException;
 import java.util.Collection;

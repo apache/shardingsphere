@@ -19,7 +19,7 @@ package org.apache.shardingsphere.single.distsql.handler.provider;
 
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 
 /**
  * Single rule configuration to DistSQL converter.

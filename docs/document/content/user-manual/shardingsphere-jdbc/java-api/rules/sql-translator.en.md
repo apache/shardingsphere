@@ -9,7 +9,7 @@ By using SQL translator in the form of Java API, you can easily integrate into v
 
 ## Parameters
 
-Class: org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration
+Class: org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration
 
 Attributes:
 

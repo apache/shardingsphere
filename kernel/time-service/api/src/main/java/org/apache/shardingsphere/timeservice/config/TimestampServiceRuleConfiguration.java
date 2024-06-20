@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.api.config;
+package org.apache.shardingsphere.timeservice.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

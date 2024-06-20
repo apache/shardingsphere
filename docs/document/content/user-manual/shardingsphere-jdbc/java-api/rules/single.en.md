@@ -9,14 +9,14 @@ Single rule is used to specify which single tables need to be managed by Shardin
 
 ## Parameters
 
-Class：org.apache.shardingsphere.single.api.config.SingleRuleConfiguration
+Class：org.apache.shardingsphere.single.config.SingleRuleConfiguration
 
 Attributes：
 
-| *name*                                  | *DataType* | *Description*                    | *Default Value* |
+| *name*                | *DataType*           | *Description*                    | *Default Value* |
 |-----------------------|----------------------|----------------------------------|-----------------|
 | tables (+)            | Collection\<String\> | single tables                    | -               |
-| defaultDataSource (?) | String | single table default data source | -               |
+| defaultDataSource (?) | String               | single table default data source | -               |
 
 ## Procedure
 
