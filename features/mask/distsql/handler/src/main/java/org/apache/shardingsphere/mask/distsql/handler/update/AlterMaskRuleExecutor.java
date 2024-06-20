@@ -24,9 +24,9 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.data
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.handler.converter.MaskRuleStatementConverter;
 import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.statement.AlterMaskRuleStatement;

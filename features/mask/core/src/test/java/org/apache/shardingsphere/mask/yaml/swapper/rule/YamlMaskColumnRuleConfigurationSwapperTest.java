@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.yaml.swapper.rule;
 
-import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskColumnRuleConfiguration;
 import org.junit.jupiter.api.Test;
 

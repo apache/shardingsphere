@@ -58,9 +58,9 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 </#if>
 <#if feature?contains("mask")>
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;    
+import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;    
 </#if>
 <#if transaction!="local">
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;

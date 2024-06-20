@@ -15,21 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.api.config.rule;
+package org.apache.shardingsphere.mask.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
- * Mask table rule configuration.
+ * Mask rule configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MaskTableRuleConfiguration {
+public final class MaskRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
     
-    private final String name;
+    private final Collection<MaskTableRuleConfiguration> tables;
     
-    private final Collection<MaskColumnRuleConfiguration> columns;
+    private final Map<String, AlgorithmConfiguration> maskAlgorithms;
+    
+    @Override
+    public boolean isEmpty() {
+        return tables.isEmpty();
+    }
 }
