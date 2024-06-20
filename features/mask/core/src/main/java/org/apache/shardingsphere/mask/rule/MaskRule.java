@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.rule.attribute.MaskTableMapperRuleAttribute;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
@@ -52,7 +52,6 @@ public final class MaskRule implements DatabaseRule, PartialRuleUpdateSupported<
     
     private final AtomicReference<RuleAttributes> attributes = new AtomicReference<>();
     
-    @SuppressWarnings("unchecked")
     public MaskRule(final MaskRuleConfiguration ruleConfig) {
         configuration.set(ruleConfig);
         ruleConfig.getMaskAlgorithms().forEach((key, value) -> maskAlgorithms.put(key, TypedSPILoader.getService(MaskAlgorithm.class, value.getType(), value.getProps())));

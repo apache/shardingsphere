@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.api.config.rule;
+package org.apache.shardingsphere.mask.config.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 /**
- * Mask column rule configuration.
+ * Mask table rule configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MaskColumnRuleConfiguration {
+public final class MaskTableRuleConfiguration {
     
-    private final String logicColumn;
+    private final String name;
     
-    private final String maskAlgorithm;
+    private final Collection<MaskColumnRuleConfiguration> columns;
 }

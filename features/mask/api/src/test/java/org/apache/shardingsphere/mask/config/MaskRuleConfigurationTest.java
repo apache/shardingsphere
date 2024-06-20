@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.api.config;
+package org.apache.shardingsphere.mask.config;
 
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
