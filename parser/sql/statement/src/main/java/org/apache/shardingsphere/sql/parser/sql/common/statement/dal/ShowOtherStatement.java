@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowOtherStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * MySQL show other statement.
+ * Show other statement.
  */
-public final class MySQLShowOtherStatement extends ShowOtherStatement implements MySQLStatement {
+public abstract class ShowOtherStatement extends AbstractSQLStatement implements DALStatement {
 }
