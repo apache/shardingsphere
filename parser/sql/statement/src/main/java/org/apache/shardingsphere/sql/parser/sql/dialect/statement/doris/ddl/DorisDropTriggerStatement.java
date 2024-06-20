@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris drop trigger statement.
  */
-public final class DorisDropTriggerStatement extends AbstractSQLStatement implements DDLStatement, DorisStatement {
+public final class DorisDropTriggerStatement extends DropTriggerStatement implements DorisStatement {
 }

@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.RLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.StartReplicaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL start replica statement.
  */
-public final class MySQLStartReplicaStatement extends AbstractSQLStatement implements RLStatement, MySQLStatement {
+public final class MySQLStartReplicaStatement extends StartReplicaStatement implements MySQLStatement {
 }

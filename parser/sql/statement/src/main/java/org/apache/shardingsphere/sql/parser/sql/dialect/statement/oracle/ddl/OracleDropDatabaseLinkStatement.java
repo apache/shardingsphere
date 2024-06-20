@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseLinkStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle drop database link statement.
  */
-public final class OracleDropDatabaseLinkStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
+public final class OracleDropDatabaseLinkStatement extends DropDatabaseLinkStatement implements OracleStatement {
 }

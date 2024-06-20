@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateRollbackSegmentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Create rollback segment statement.
+ * Oracle create rollback segment statement.
  */
-public final class OracleCreateRollbackSegmentStatement extends AbstractSQLStatement implements OracleStatement {
+public final class OracleCreateRollbackSegmentStatement extends CreateRollbackSegmentStatement implements OracleStatement {
 }

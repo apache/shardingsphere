@@ -17,29 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.UpdateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.StatisticsStrategySegment;
-
-import java.util.List;
 
 /**
  * SQLServer update statistics statement.
  */
-@Getter
-public final class SQLServerUpdateStatisticsStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
-    
-    @Setter
-    private List<IndexSegment> indexes;
-    
-    @Setter
-    private SimpleTableSegment table;
-    
-    @Setter
-    private StatisticsStrategySegment strategy;
+public final class SQLServerUpdateStatisticsStatement extends UpdateStatisticsStatement implements SQLServerStatement {
 }

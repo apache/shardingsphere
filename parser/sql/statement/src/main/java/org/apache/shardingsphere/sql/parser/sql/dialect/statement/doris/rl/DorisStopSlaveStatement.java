@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.rl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.RLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.StopSlaveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris stop slave statement.
  */
-public final class DorisStopSlaveStatement extends AbstractSQLStatement implements RLStatement, DorisStatement {
+public final class DorisStopSlaveStatement extends StopSlaveStatement implements DorisStatement {
 }

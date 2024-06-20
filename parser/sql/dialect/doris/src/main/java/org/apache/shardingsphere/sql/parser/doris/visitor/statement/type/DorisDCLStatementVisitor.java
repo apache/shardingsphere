@@ -87,6 +87,14 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StaticP
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TlsOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UsernameContext;
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitor;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ACLAttributeEnum;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.SSLTypeEnum;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.SSLTypeEnum.UserResourceSpecifiedLimitEnum;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.PasswordOrLockOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.PrivilegeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.RoleOrPrivilegeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.TLSOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.UserResourceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.GrantLevelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -103,14 +111,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.Dori
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisSetDefaultRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisSetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisSetRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.ACLAttributeEnum;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.DorisPrivilegeSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.DorisRoleOrPrivilegeSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.PasswordOrLockOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.SSLTypeEnum;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.TLSOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.UserResourceSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.UserResourceSpecifiedLimitEnum;
 
 import java.util.stream.Collectors;
 
@@ -150,8 +150,8 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitGrantProxy(final GrantProxyContext ctx) {
         DorisGrantStatement result = new DorisGrantStatement();
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.PROXY().getSymbol().getStartIndex(), ctx.PROXY().getSymbol().getStopIndex(), "GRANT");
-        result.getRoleOrPrivileges().add(new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege));
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.PROXY().getSymbol().getStartIndex(), ctx.PROXY().getSymbol().getStopIndex(), "GRANT");
+        result.getRoleOrPrivileges().add(new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege));
         for (UsernameContext each : ctx.userList().username()) {
             result.getUsers().add((UserSegment) visit(each));
         }
@@ -160,13 +160,13 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     private void fillRoleOrPrivileges(final DorisGrantStatement statement, final RoleOrPrivilegesContext ctx) {
         for (RoleOrPrivilegeContext each : ctx.roleOrPrivilege()) {
-            statement.getRoleOrPrivileges().add((DorisRoleOrPrivilegeSegment) visit(each));
+            statement.getRoleOrPrivileges().add((RoleOrPrivilegeSegment) visit(each));
         }
     }
     
     private void fillRoleOrPrivileges(final DorisRevokeStatement statement, final RoleOrPrivilegesContext ctx) {
         for (RoleOrPrivilegeContext each : ctx.roleOrPrivilege()) {
-            statement.getRoleOrPrivileges().add((DorisRoleOrPrivilegeSegment) visit(each));
+            statement.getRoleOrPrivileges().add((RoleOrPrivilegeSegment) visit(each));
         }
     }
     
@@ -191,226 +191,226 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitRoleOrDynamicPrivilege(final RoleOrDynamicPrivilegeContext ctx) {
         String role = new IdentifierValue(ctx.roleIdentifierOrText().getText()).getValue();
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), role, null, null);
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), role, null, null);
     }
     
     @Override
     public ASTNode visitRoleAtHost(final RoleAtHostContext ctx) {
         String role = new IdentifierValue(ctx.roleIdentifierOrText().getText()).getValue();
         String host = new IdentifierValue(ctx.textOrIdentifier().getText()).getValue();
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), role, host, null);
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), role, host, null);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeSelect(final StaticPrivilegeSelectContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "SELECT");
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "SELECT");
         if (null != ctx.columnNames()) {
             for (ColumnNameContext each : ctx.columnNames().columnName()) {
                 privilege.getColumns().add(new IdentifierValue(each.getText()).getValue());
             }
         }
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeInsert(final StaticPrivilegeInsertContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "INSERT");
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "INSERT");
         if (null != ctx.columnNames()) {
             for (ColumnNameContext each : ctx.columnNames().columnName()) {
                 privilege.getColumns().add(new IdentifierValue(each.getText()).getValue());
             }
         }
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeUpdate(final StaticPrivilegeUpdateContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "UPDATE");
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "UPDATE");
         if (null != ctx.columnNames()) {
             for (ColumnNameContext each : ctx.columnNames().columnName()) {
                 privilege.getColumns().add(new IdentifierValue(each.getText()).getValue());
             }
         }
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeReferences(final StaticPrivilegeReferencesContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "REFERENCES");
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "REFERENCES");
         if (null != ctx.columnNames()) {
             for (ColumnNameContext each : ctx.columnNames().columnName()) {
                 privilege.getColumns().add(new IdentifierValue(each.getText()).getValue());
             }
         }
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeDelete(final StaticPrivilegeDeleteContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "DELETE");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "DELETE");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeUsage(final StaticPrivilegeUsageContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "USAGE");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "USAGE");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeIndex(final StaticPrivilegeIndexContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "INDEX");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "INDEX");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeAlter(final StaticPrivilegeAlterContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "ALTER");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "ALTER");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeCreate(final StaticPrivilegeCreateContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "CREATE");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "CREATE");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeDrop(final StaticPrivilegeDropContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "DROP");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "DROP");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeExecute(final StaticPrivilegeExecuteContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "EXECUTE");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "EXECUTE");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeReload(final StaticPrivilegeReloadContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "RELOAD");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "RELOAD");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeShutdown(final StaticPrivilegeShutdownContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "SHUTDOWN");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "SHUTDOWN");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeProcess(final StaticPrivilegeProcessContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "PROCESS");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "PROCESS");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeFile(final StaticPrivilegeFileContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "FILE");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "FILE");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeGrant(final StaticPrivilegeGrantContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "GRANT");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "GRANT");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeShowDatabases(final StaticPrivilegeShowDatabasesContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "SHOW_DB");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "SHOW_DB");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeSuper(final StaticPrivilegeSuperContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "SUPER");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "SUPER");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeCreateTemporaryTables(final StaticPrivilegeCreateTemporaryTablesContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "CREATE_TMP");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "CREATE_TMP");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeLockTables(final StaticPrivilegeLockTablesContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "LOCK_TABLES");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "LOCK_TABLES");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeReplicationSlave(final StaticPrivilegeReplicationSlaveContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "REPL_SLAVE");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "REPL_SLAVE");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeReplicationClient(final StaticPrivilegeReplicationClientContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "REPL_CLIENT");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "REPL_CLIENT");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeCreateView(final StaticPrivilegeCreateViewContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "CREATE_VIEW");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "CREATE_VIEW");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeShowView(final StaticPrivilegeShowViewContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "SHOW_VIEW");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "SHOW_VIEW");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeCreateRoutine(final StaticPrivilegeCreateRoutineContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "CREATE_PROC");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "CREATE_PROC");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeAlterRoutine(final StaticPrivilegeAlterRoutineContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "ALTER_PROC");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "ALTER_PROC");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeCreateUser(final StaticPrivilegeCreateUserContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "CREATE_USER");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "CREATE_USER");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeEvent(final StaticPrivilegeEventContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "EVENT");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "EVENT");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeTrigger(final StaticPrivilegeTriggerContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "TRIGGER");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "TRIGGER");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeCreateTablespace(final StaticPrivilegeCreateTablespaceContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "CREATE_TABLESPACE");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "CREATE_TABLESPACE");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeCreateRole(final StaticPrivilegeCreateRoleContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "CREATE_ROLE");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "CREATE_ROLE");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeDropRole(final StaticPrivilegeDropRoleContext ctx) {
-        DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "DROP_ROLE");
-        return new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+        PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "DROP_ROLE");
+        return new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
@@ -435,8 +435,8 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
         } else if (null != ctx.ALL()) {
             result.setAllPrivileges(true);
         } else if (null != ctx.PROXY()) {
-            DorisPrivilegeSegment privilege = new DorisPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "DROP_ROLE");
-            result.getRoleOrPrivileges().add(new DorisRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege));
+            PrivilegeSegment privilege = new PrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "DROP_ROLE");
+            result.getRoleOrPrivileges().add(new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege));
             result.setOnUser((UserSegment) visit(ctx.username()));
         }
         if (null != ctx.grantIdentifier()) {

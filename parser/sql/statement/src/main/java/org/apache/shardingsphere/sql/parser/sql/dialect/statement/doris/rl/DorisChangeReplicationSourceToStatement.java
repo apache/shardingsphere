@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.rl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.RLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.ChangeReplicationSourceToStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
- * My SQL change replication source statement.
+ * Doris change replication source statement.
  */
-public final class DorisChangeReplicationSourceToStatement extends AbstractSQLStatement implements RLStatement, DorisStatement {
+public final class DorisChangeReplicationSourceToStatement extends ChangeReplicationSourceToStatement implements DorisStatement {
 }

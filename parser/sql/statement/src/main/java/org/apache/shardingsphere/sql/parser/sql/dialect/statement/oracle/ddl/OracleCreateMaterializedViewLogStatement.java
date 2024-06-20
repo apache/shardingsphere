@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateMaterializedViewLogStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle create materialized view log statement.
  */
-public final class OracleCreateMaterializedViewLogStatement extends AbstractSQLStatement implements OracleStatement {
+public final class OracleCreateMaterializedViewLogStatement extends CreateMaterializedViewLogStatement implements OracleStatement {
 }

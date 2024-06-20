@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.PLSQLBlockStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-public final class OraclePLSQLBlockStatement implements OracleStatement {
-    
-    @Override
-    public int getParameterCount() {
-        return 0;
-    }
+/**
+ * Oracle PLSQL block statement.
+ */
+public final class OraclePLSQLBlockStatement extends PLSQLBlockStatement implements OracleStatement {
 }

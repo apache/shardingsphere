@@ -17,19 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dml;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.LoadXMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris load xml statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DorisLoadXMLStatement extends AbstractSQLStatement implements DMLStatement, DorisStatement {
+public final class DorisLoadXMLStatement extends LoadXMLStatement implements DorisStatement {
     
-    private final SimpleTableSegment tableSegment;
+    public DorisLoadXMLStatement(final SimpleTableSegment tableSegment) {
+        super(tableSegment);
+    }
 }

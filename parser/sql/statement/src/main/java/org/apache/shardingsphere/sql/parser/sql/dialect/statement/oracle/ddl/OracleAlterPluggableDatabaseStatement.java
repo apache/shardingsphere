@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterPluggableDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle alter pluggable database statement.
  */
-public final class OracleAlterPluggableDatabaseStatement extends AbstractSQLStatement implements OracleStatement {
+public final class OracleAlterPluggableDatabaseStatement extends AlterPluggableDatabaseStatement implements OracleStatement {
 }

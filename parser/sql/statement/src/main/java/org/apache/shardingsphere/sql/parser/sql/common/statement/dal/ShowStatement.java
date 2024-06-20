@@ -17,16 +17,21 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
+import java.util.Optional;
 
 /**
  * Show statement.
  */
-@RequiredArgsConstructor
-@Getter
 public abstract class ShowStatement extends AbstractSQLStatement implements DALStatement {
     
-    private final String name;
+    /**
+     * Get name.
+     *
+     * @return name
+     */
+    public Optional<String> getName() {
+        return Optional.empty();
+    }
 }

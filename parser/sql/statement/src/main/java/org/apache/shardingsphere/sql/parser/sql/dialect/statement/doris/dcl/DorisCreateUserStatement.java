@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.PasswordOrLockOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.TLSOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.UserResourceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.PasswordOrLockOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.TLSOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.UserResourceSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;

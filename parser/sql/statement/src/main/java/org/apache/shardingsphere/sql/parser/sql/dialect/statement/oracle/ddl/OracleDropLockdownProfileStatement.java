@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropLockdownProfileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Drop lockdown profile statement.
+ * Oracle drop lockdown profile statement.
  */
-public final class OracleDropLockdownProfileStatement extends AbstractSQLStatement implements OracleStatement {
+public final class OracleDropLockdownProfileStatement extends DropLockdownProfileStatement implements OracleStatement {
 }

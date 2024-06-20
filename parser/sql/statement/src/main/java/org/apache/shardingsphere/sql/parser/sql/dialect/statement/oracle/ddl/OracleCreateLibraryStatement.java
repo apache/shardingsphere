@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateLibraryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle create library statement.
  */
-public final class OracleCreateLibraryStatement extends AbstractSQLStatement implements OracleStatement {
+public final class OracleCreateLibraryStatement extends CreateLibraryStatement implements OracleStatement {
 }

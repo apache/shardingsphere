@@ -17,16 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.NoAuditStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle no audit statement.
  */
-@Getter
-@Setter
-public final class OracleNoAuditStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
+public final class OracleNoAuditStatement extends NoAuditStatement implements OracleStatement {
 }

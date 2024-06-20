@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadDataStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.LoadDataStatement;
 
 /**
  * Load data statement context.
@@ -31,13 +31,13 @@ public final class LoadDataStatementContext extends CommonSQLStatementContext im
     
     private final TablesContext tablesContext;
     
-    public LoadDataStatementContext(final MySQLLoadDataStatement sqlStatement) {
+    public LoadDataStatementContext(final LoadDataStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTableSegment(), getDatabaseType());
     }
     
     @Override
-    public MySQLLoadDataStatement getSqlStatement() {
-        return (MySQLLoadDataStatement) super.getSqlStatement();
+    public LoadDataStatement getSqlStatement() {
+        return (LoadDataStatement) super.getSqlStatement();
     }
 }
