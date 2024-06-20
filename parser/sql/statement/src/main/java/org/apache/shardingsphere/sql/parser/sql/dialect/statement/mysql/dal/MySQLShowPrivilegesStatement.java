@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowPrivilegesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL show privileges statement.
  */
-public final class MySQLShowPrivilegesStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLShowPrivilegesStatement extends ShowPrivilegesStatement implements MySQLStatement {
 }

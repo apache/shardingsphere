@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTriggersStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowTriggersStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
@@ -39,7 +39,7 @@ public final class ShowTriggersStatementAssert {
      * @param actual actual show triggers statement
      * @param expected expected show tables statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowTriggersStatement actual, final ShowTriggersStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTriggersStatement actual, final ShowTriggersStatementTestCase expected) {
         if (actual.getFromSchema().isPresent()) {
             DatabaseAssert.assertIs(assertContext, actual.getFromSchema().get().getSchema(), expected.getFromSchema().getSchema());
             SQLSegmentAssert.assertIs(assertContext, actual.getFromSchema().get(), expected.getFromSchema());

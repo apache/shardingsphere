@@ -17,44 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-
-import java.util.Optional;
 
 /**
  * MySQL show tables statement.
  */
-@Setter
-public final class MySQLShowTablesStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-    
-    private FromSchemaSegment fromSchema;
-    
-    private ShowFilterSegment filter;
-    
-    @Getter
-    private boolean containsFull;
-    
-    /**
-     * Get from schema segment.
-     * 
-     * @return from schema segment
-     */
-    public Optional<FromSchemaSegment> getFromSchema() {
-        return Optional.ofNullable(fromSchema);
-    }
-    
-    /**
-     * Get filter segment.
-     *
-     * @return filter segment
-     */
-    public Optional<ShowFilterSegment> getFilter() {
-        return Optional.ofNullable(filter);
-    }
+public final class MySQLShowTablesStatement extends ShowTablesStatement implements MySQLStatement {
 }

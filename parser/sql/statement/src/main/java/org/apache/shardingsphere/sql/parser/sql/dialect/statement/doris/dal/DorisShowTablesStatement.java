@@ -17,44 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
-
-import java.util.Optional;
 
 /**
  * Doris show tables statement.
  */
-@Setter
-public final class DorisShowTablesStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private FromSchemaSegment fromSchema;
-    
-    private ShowFilterSegment filter;
-    
-    @Getter
-    private boolean containsFull;
-    
-    /**
-     * Get from schema segment.
-     * 
-     * @return from schema segment
-     */
-    public Optional<FromSchemaSegment> getFromSchema() {
-        return Optional.ofNullable(fromSchema);
-    }
-    
-    /**
-     * Get filter segment.
-     *
-     * @return filter segment
-     */
-    public Optional<ShowFilterSegment> getFilter() {
-        return Optional.ofNullable(filter);
-    }
+public final class DorisShowTablesStatement extends ShowTablesStatement implements DorisStatement {
 }

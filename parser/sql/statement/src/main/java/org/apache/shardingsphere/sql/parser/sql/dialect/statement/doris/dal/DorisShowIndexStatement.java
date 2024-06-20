@@ -17,33 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
-
-import java.util.Optional;
 
 /**
  * Doris show index statement.
  */
-@Setter
-public final class DorisShowIndexStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    @Getter
-    private SimpleTableSegment table;
-    
-    private FromSchemaSegment fromSchema;
-    
-    /**
-     * Get from schema.
-     * 
-     * @return from schema
-     */
-    public Optional<FromSchemaSegment> getFromSchema() {
-        return Optional.ofNullable(fromSchema);
-    }
+public final class DorisShowIndexStatement extends ShowIndexStatement implements DorisStatement {
 }

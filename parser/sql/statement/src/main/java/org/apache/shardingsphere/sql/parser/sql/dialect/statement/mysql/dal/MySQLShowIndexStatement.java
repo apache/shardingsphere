@@ -17,33 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-
-import java.util.Optional;
 
 /**
  * MySQL show index statement.
  */
-@Setter
-public final class MySQLShowIndexStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-    
-    @Getter
-    private SimpleTableSegment table;
-    
-    private FromSchemaSegment fromSchema;
-    
-    /**
-     * Get from schema.
-     * 
-     * @return from schema
-     */
-    public Optional<FromSchemaSegment> getFromSchema() {
-        return Optional.ofNullable(fromSchema);
-    }
+public final class MySQLShowIndexStatement extends ShowIndexStatement implements MySQLStatement {
 }

@@ -15,14 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
- * Doris show engines statement.
+ * Show replica status statement.
  */
-public final class DorisShowEnginesStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
+@Getter
+@Setter
+public abstract class ShowReplicaStatusStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private String channel;
 }

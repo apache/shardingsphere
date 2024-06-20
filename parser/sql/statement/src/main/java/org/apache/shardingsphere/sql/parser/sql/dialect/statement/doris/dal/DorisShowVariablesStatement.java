@@ -17,28 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowVariablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
-
-import java.util.Optional;
 
 /**
  * Doris show variables statement.
  */
-@Setter
-public final class DorisShowVariablesStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private ShowFilterSegment filter;
-    
-    /**
-     * Get filter segment.
-     *
-     * @return filter segment
-     */
-    public Optional<ShowFilterSegment> getFilter() {
-        return Optional.ofNullable(filter);
-    }
+public final class DorisShowVariablesStatement extends ShowVariablesStatement implements DorisStatement {
 }

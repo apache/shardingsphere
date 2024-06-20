@@ -17,19 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UninstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * MySQL uninstall component statement.
  */
-@Getter
-public final class MySQLUninstallComponentStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-    
-    private final List<String> components = new LinkedList<>();
+public final class MySQLUninstallComponentStatement extends UninstallComponentStatement implements MySQLStatement {
 }

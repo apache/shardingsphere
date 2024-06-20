@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowTableStatusStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
@@ -39,7 +39,7 @@ public final class ShowTableStatusStatementAssert {
      * @param actual actual show table status statement
      * @param expected expected show table status statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowTableStatusStatement actual, final ShowTableStatusStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTableStatusStatement actual, final ShowTableStatusStatementTestCase expected) {
         if (actual.getFromSchema().isPresent()) {
             DatabaseAssert.assertIs(assertContext, actual.getFromSchema().get().getSchema(), expected.getFromSchema().getSchema());
             SQLSegmentAssert.assertIs(assertContext, actual.getFromSchema().get(), expected.getFromSchema());

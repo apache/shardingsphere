@@ -17,19 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UninstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Doris uninstall component statement.
  */
-@Getter
-public final class DorisUninstallComponentStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private final List<String> components = new LinkedList<>();
+public final class DorisUninstallComponentStatement extends UninstallComponentStatement implements DorisStatement {
 }

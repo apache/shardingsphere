@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowGrantsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL show grants statement.
  */
-public final class MySQLShowGrantsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLShowGrantsStatement extends ShowGrantsStatement implements MySQLStatement {
 }

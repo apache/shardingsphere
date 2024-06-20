@@ -73,6 +73,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.KillStateme
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
@@ -104,9 +107,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadDataStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadXMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
@@ -270,14 +270,14 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof ShowColumnsStatement) {
             return new ShowColumnsStatementContext((ShowColumnsStatement) sqlStatement);
         }
-        if (sqlStatement instanceof MySQLShowTablesStatement) {
-            return new ShowTablesStatementContext((MySQLShowTablesStatement) sqlStatement);
+        if (sqlStatement instanceof ShowTablesStatement) {
+            return new ShowTablesStatementContext((ShowTablesStatement) sqlStatement);
         }
-        if (sqlStatement instanceof MySQLShowTableStatusStatement) {
-            return new ShowTableStatusStatementContext((MySQLShowTableStatusStatement) sqlStatement);
+        if (sqlStatement instanceof ShowTableStatusStatement) {
+            return new ShowTableStatusStatementContext((ShowTableStatusStatement) sqlStatement);
         }
-        if (sqlStatement instanceof MySQLShowIndexStatement) {
-            return new ShowIndexStatementContext((MySQLShowIndexStatement) sqlStatement);
+        if (sqlStatement instanceof ShowIndexStatement) {
+            return new ShowIndexStatementContext((ShowIndexStatement) sqlStatement);
         }
         if (sqlStatement instanceof AnalyzeTableStatement) {
             return new AnalyzeTableStatementContext((AnalyzeTableStatement) sqlStatement);

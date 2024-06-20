@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowProcessListStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris show process list statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DorisShowProcessListStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
+public final class DorisShowProcessListStatement extends ShowProcessListStatement implements DorisStatement {
     
-    private final boolean full;
+    public DorisShowProcessListStatement(final boolean full) {
+        super(full);
+    }
 }

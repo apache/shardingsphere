@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStateme
 import org.apache.shardingsphere.infra.binder.context.type.RemoveAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowIndexStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,14 +36,14 @@ public final class ShowIndexStatementContext extends CommonSQLStatementContext i
     
     private final TablesContext tablesContext;
     
-    public ShowIndexStatementContext(final MySQLShowIndexStatement sqlStatement) {
+    public ShowIndexStatementContext(final ShowIndexStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
     }
     
     @Override
-    public MySQLShowIndexStatement getSqlStatement() {
-        return (MySQLShowIndexStatement) super.getSqlStatement();
+    public ShowIndexStatement getSqlStatement() {
+        return (ShowIndexStatement) super.getSqlStatement();
     }
     
     @Override

@@ -15,14 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+
+import java.util.Optional;
 
 /**
- * MySQL show engines statement.
+ * Show procedure status statement.
  */
-public final class MySQLShowEnginesStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+@Setter
+public abstract class ShowProcedureStatusStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private ShowFilterSegment filter;
+    
+    /**
+     * Get filter segment.
+     *
+     * @return filter segment
+     */
+    public Optional<ShowFilterSegment> getFilter() {
+        return Optional.ofNullable(filter);
+    }
 }

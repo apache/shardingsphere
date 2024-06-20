@@ -17,18 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowReplicaStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris show replica status statement.
  */
-@Getter
-@Setter
-public final class DorisShowReplicaStatusStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private String channel;
+public final class DorisShowReplicaStatusStatement extends ShowReplicaStatusStatement implements DorisStatement {
 }
