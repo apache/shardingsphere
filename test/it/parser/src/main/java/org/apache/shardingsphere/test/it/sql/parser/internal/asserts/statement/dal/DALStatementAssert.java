@@ -49,9 +49,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowColumns
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowFunctionStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
@@ -202,8 +202,8 @@ public final class DALStatementAssert {
             EmptyStatementAssert.assertIs(assertContext, (EmptyStatement) actual, (EmptyStatementTestCase) expected);
         } else if (actual instanceof ExplainStatement) {
             ExplainStatementAssert.assertIs(assertContext, (ExplainStatement) actual, (ExplainStatementTestCase) expected);
-        } else if (actual instanceof MySQLShowDatabasesStatement) {
-            ShowDatabasesStatementAssert.assertIs(assertContext, (MySQLShowDatabasesStatement) actual, (ShowDatabasesStatementTestCase) expected);
+        } else if (actual instanceof ShowDatabasesStatement) {
+            ShowDatabasesStatementAssert.assertIs(assertContext, (ShowDatabasesStatement) actual, (ShowDatabasesStatementTestCase) expected);
         } else if (actual instanceof MySQLShowTablesStatement) {
             ShowTablesStatementAssert.assertIs(assertContext, (MySQLShowTablesStatement) actual, (ShowTablesStatementTestCase) expected);
         } else if (actual instanceof ShowColumnsStatement) {
