@@ -40,11 +40,12 @@ import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaD
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
+import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.builder.RuleConfigurationEventBuilder;
-import org.apache.shardingsphere.mode.metadata.manager.ConfigurationManager;
-import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
+import org.apache.shardingsphere.mode.metadata.manager.ConfigurationManager;
 import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
@@ -217,8 +218,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) throws SQLException {
-        SwitchingResource switchingResource = contextManager.getMetaDataContextManager().getResourceSwitchManager().registerStorageUnit(contextManager.getMetaDataContexts()
-                .getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisteredProps);
+        SwitchingResource switchingResource =
+                new ResourceSwitchManager().registerStorageUnit(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisteredProps);
         contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.getMetaDataContextManager().getConfigurationManager()
                 .createChangedDatabases(databaseName, false, switchingResource, null));
         contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()
@@ -234,8 +235,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void alterStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException {
-        SwitchingResource switchingResource = contextManager.getMetaDataContextManager().getResourceSwitchManager().alterStorageUnit(contextManager.getMetaDataContexts()
-                .getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeUpdatedProps);
+        SwitchingResource switchingResource =
+                new ResourceSwitchManager().alterStorageUnit(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeUpdatedProps);
         contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.getMetaDataContextManager().getConfigurationManager()
                 .createChangedDatabases(databaseName, true, switchingResource, null));
         contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()
@@ -249,8 +250,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) throws SQLException {
-        SwitchingResource switchingResource = contextManager.getMetaDataContextManager().getResourceSwitchManager().unregisterStorageUnit(contextManager.getMetaDataContexts()
-                .getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeDroppedStorageUnitNames);
+        SwitchingResource switchingResource =
+                new ResourceSwitchManager().unregisterStorageUnit(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeDroppedStorageUnitNames);
         ConfigurationManager configurationManager = contextManager.getMetaDataContextManager().getConfigurationManager();
         MetaDataContexts reloadMetaDataContexts = configurationManager.createMetaDataContexts(databaseName, false, switchingResource, null);
         configurationManager.alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
