@@ -38,8 +38,8 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 </#if>
 <#if feature?contains("readwrite-splitting")>
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 </#if>
 <#if feature?contains("encrypt")>
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
