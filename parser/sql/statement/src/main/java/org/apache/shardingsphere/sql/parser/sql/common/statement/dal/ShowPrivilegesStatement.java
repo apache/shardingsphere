@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowPrivilegesStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Doris show privileges statement.
+ * Show privileges statement.
  */
-public final class DorisShowPrivilegesStatement extends ShowPrivilegesStatement implements DorisStatement {
+public abstract class ShowPrivilegesStatement extends AbstractSQLStatement implements DALStatement {
 }
