@@ -33,7 +33,7 @@ public final class SQLServerDALStatementVisitor extends SQLServerStatementVisito
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
         SQLServerExplainStatement result = new SQLServerExplainStatement();
-        result.setStatement((SQLStatement) visit(ctx.explainableStatement()));
+        result.setSqlStatement((SQLStatement) visit(ctx.explainableStatement()));
         return result;
     }
     

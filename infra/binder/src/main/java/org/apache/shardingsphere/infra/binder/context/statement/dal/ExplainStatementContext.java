@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dal.ExplainStatementHandler;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -45,8 +44,8 @@ public final class ExplainStatementContext extends CommonSQLStatementContext imp
     
     private Collection<SimpleTableSegment> extractTablesFromExplain(final ExplainStatement sqlStatement) {
         Collection<SimpleTableSegment> result = new LinkedList<>();
-        ExplainStatementHandler.getSimpleTableSegment(sqlStatement).ifPresent(result::add);
-        SQLStatement explainableStatement = sqlStatement.getStatement().orElse(null);
+        sqlStatement.getSimpleTable().ifPresent(result::add);
+        SQLStatement explainableStatement = sqlStatement.getSqlStatement().orElse(null);
         TableExtractor extractor = new TableExtractor();
         // TODO extract table from declare, execute, createMaterializedView, refreshMaterializedView
         extractor.extractTablesFromSQLStatement(explainableStatement);

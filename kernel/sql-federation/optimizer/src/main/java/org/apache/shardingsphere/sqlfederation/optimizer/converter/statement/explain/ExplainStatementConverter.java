@@ -48,7 +48,7 @@ public final class ExplainStatementConverter implements SQLStatementConverter<Ex
     }
     
     private SqlNode convertSQLStatement(final ExplainStatement explainStatement) {
-        return explainStatement.getStatement().flatMap(this::convertSqlNode).orElseThrow(IllegalStateException::new);
+        return explainStatement.getSqlStatement().flatMap(this::convertSqlNode).orElseThrow(IllegalStateException::new);
     }
     
     private Optional<SqlNode> convertSqlNode(final SQLStatement sqlStatement) {
