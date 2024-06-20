@@ -19,8 +19,19 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
+import java.util.Optional;
+
 /**
  * Show statement.
  */
 public abstract class ShowStatement extends AbstractSQLStatement implements DALStatement {
+    
+    /**
+     * Get name.
+     *
+     * @return name
+     */
+    public Optional<String> getName() {
+        return Optional.empty();
+    }
 }

@@ -17,17 +17,26 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+
+import java.util.Optional;
 
 /**
  * PostgreSQL show statement.
  */
 @RequiredArgsConstructor
-@Getter
 public final class PostgreSQLShowStatement extends ShowStatement implements PostgreSQLStatement {
     
     private final String name;
+    
+    /**
+     * Get name.
+     *
+     * @return name
+     */
+    public Optional<String> getName() {
+        return Optional.ofNullable(name);
+    }
 }

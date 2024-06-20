@@ -87,6 +87,14 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StaticP
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TlsOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UsernameContext;
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitor;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ACLAttributeEnum;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.SSLTypeEnum;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.SSLTypeEnum.UserResourceSpecifiedLimitEnum;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.PasswordOrLockOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.PrivilegeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.RoleOrPrivilegeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.TLSOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.UserResourceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.GrantLevelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -103,14 +111,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.Dori
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisSetDefaultRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisSetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisSetRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.ACLAttributeEnum;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.PrivilegeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.RoleOrPrivilegeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.PasswordOrLockOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.SSLTypeEnum;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.segment.TLSOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.UserResourceSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.SSLTypeEnum.UserResourceSpecifiedLimitEnum;
 
 import java.util.stream.Collectors;
 

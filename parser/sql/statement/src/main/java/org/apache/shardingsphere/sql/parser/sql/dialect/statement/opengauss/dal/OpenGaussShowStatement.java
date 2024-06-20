@@ -17,17 +17,22 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+
+import java.util.Optional;
 
 /**
  * OpenGauss show statement.
  */
 @RequiredArgsConstructor
-@Getter
 public final class OpenGaussShowStatement extends ShowStatement implements OpenGaussStatement {
     
     private final String name;
+    
+    @Override
+    public Optional<String> getName() {
+        return Optional.ofNullable(name);
+    }
 }
