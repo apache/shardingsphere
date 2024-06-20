@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * MySQL reset master option segment.
+ * Show create view statement.
  */
 @Getter
 @Setter
-public final class ResetMasterOptionSegment extends ResetOptionSegment {
+public abstract class ShowCreateViewStatement extends AbstractSQLStatement implements DALStatement {
     
-    private int startIndex;
-    
-    private int stopIndex;
-    
-    private Long binaryLogFileIndexNumber;
+    private String viewName;
 }

@@ -17,18 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris show create trigger statement.
  */
-@Getter
-@Setter
-public final class DorisShowCreateTriggerStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private String name;
+public final class DorisShowCreateTriggerStatement extends ShowCreateTriggerStatement implements DorisStatement {
 }

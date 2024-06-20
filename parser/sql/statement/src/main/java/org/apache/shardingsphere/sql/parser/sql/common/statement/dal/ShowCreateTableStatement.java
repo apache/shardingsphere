@@ -15,13 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.RepairTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * MySQL repair table statement.
+ * Show create table statement.
  */
-public final class MySQLRepairTableStatement extends RepairTableStatement implements MySQLStatement {
+@Getter
+@Setter
+public abstract class ShowCreateTableStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private SimpleTableSegment table;
 }

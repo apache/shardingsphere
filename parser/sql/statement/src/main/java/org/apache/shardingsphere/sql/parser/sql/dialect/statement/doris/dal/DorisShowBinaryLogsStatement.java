@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowBinaryLogsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris show binary logs statement.
  */
-public final class DorisShowBinaryLogsStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
+public final class DorisShowBinaryLogsStatement extends ShowBinaryLogsStatement implements DorisStatement {
 }

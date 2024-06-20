@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.RepairTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * MySQL repair table statement.
+ * Show binary logs statement.
  */
-public final class MySQLRepairTableStatement extends RepairTableStatement implements MySQLStatement {
+public abstract class ShowBinaryLogsStatement extends AbstractSQLStatement implements DALStatement {
 }

@@ -17,21 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetPersistStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris reset persist statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DorisResetPersistStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
+public final class DorisResetPersistStatement extends ResetPersistStatement implements DorisStatement {
     
-    private final boolean ifExists;
-    
-    private final IdentifierValue identifier;
+    public DorisResetPersistStatement(final boolean ifExists, final IdentifierValue identifier) {
+        super(ifExists, identifier);
+    }
 }

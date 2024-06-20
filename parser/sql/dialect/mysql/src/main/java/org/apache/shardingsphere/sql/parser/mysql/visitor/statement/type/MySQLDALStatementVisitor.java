@@ -124,6 +124,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromTableSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.LoadTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PartitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ResetMasterOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ResetOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ResetSlaveOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
@@ -212,9 +215,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUninstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetMasterOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetSlaveOptionSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;

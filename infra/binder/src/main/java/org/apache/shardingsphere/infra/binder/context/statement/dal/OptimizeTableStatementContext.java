@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.OptimizeTableStatement;
 
 /**
  * Optimize table statement context.
@@ -31,13 +31,13 @@ public final class OptimizeTableStatementContext extends CommonSQLStatementConte
     
     private final TablesContext tablesContext;
     
-    public OptimizeTableStatementContext(final MySQLOptimizeTableStatement sqlStatement) {
+    public OptimizeTableStatementContext(final OptimizeTableStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
     }
     
     @Override
-    public MySQLOptimizeTableStatement getSqlStatement() {
-        return (MySQLOptimizeTableStatement) super.getSqlStatement();
+    public OptimizeTableStatement getSqlStatement() {
+        return (OptimizeTableStatement) super.getSqlStatement();
     }
 }
