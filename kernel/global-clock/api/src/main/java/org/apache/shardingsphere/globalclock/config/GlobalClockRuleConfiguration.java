@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.api.config;
+package org.apache.shardingsphere.globalclock.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

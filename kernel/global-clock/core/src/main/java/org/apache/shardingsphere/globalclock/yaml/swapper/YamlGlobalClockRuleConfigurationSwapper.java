@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.globalclock.yaml.swapper;
 
-import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
+import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.rule.constant.GlobalClockOrder;
 import org.apache.shardingsphere.globalclock.yaml.config.YamlGlobalClockRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;

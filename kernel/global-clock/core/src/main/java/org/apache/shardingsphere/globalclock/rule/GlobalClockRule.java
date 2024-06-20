@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.globalclock.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
+import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -37,9 +37,9 @@ import java.util.Properties;
 /**
  * Global clock rule.
  */
+@Getter
 public final class GlobalClockRule implements GlobalRule {
     
-    @Getter
     private final GlobalClockRuleConfiguration configuration;
     
     public GlobalClockRule(final GlobalClockRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
