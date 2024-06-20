@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.api.config;
+package org.apache.shardingsphere.sqltranslator.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
