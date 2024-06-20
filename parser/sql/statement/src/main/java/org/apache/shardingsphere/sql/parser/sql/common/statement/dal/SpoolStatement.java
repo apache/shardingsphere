@@ -17,10 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Use database statement for Doris.
+ * Spool statement.
  */
-public final class DorisUseStatement extends UseStatement implements DorisStatement {
+@Getter
+@Setter
+public abstract class SpoolStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private String fileName;
 }

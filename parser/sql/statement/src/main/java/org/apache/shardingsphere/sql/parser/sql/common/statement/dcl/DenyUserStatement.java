@@ -15,13 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * MySQL set role statement.
+ * Deny user statement.
  */
-public final class MySQLSetRoleStatement extends SetRoleStatement implements MySQLStatement {
+@Getter
+@Setter
+public abstract class DenyUserStatement extends AbstractSQLStatement implements DCLStatement {
+    
+    private SimpleTableSegment table;
+    
+    private final Collection<ColumnSegment> columns = new LinkedList<>();
 }
