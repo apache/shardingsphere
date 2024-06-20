@@ -122,6 +122,22 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     }
     
     /**
+     * Begin transaction.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void begin() throws SQLException {
+        ConnectionTransaction connectionTransaction = getConnectionTransaction();
+        if (connectionTransaction.isLocalTransaction()) {
+            setAutoCommit(false);
+        } else {
+            close();
+            connectionTransaction.begin();
+        }
+        connectionContext.getTransactionContext().beginTransaction(String.valueOf(connectionTransaction.getTransactionType()));
+    }
+    
+    /**
      * Commit.
      *
      * @throws SQLException SQL exception
@@ -140,6 +156,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
             for (Connection each : getCachedConnections()) {
                 ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
+            connectionContext.close();
         }
     }
     
@@ -160,6 +177,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
             for (Connection each : getCachedConnections()) {
                 ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
+            connectionContext.close();
         }
     }
     
