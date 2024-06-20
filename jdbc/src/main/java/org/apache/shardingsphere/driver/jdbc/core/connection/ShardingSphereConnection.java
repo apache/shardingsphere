@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
@@ -90,10 +91,11 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         if (autoCommit || databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
             return;
         }
-        if (TransactionType.isDistributedTransaction(databaseConnectionManager.getConnectionTransaction().getTransactionType())) {
+        ConnectionTransaction connectionTransaction = databaseConnectionManager.getConnectionTransaction();
+        if (TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) && !connectionTransaction.isInTransaction()) {
             beginDistributedTransaction();
         }
-        databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
+        databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(connectionTransaction.getTransactionType()));
     }
     
     private void beginDistributedTransaction() throws SQLException {
