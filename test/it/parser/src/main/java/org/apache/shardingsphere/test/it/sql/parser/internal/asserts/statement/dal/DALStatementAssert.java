@@ -51,9 +51,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateT
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowEventsStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowFunctionStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowFunctionStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOpenTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureCodeStatement;
@@ -250,8 +250,8 @@ public final class DALStatementAssert {
             RepairTableStatementAssert.assertIs(assertContext, (RepairTableStatement) actual, (RepairTableStatementTestCase) expected);
         } else if (actual instanceof BinlogStatement) {
             BinlogStatementAssert.assertIs(assertContext, (BinlogStatement) actual, (BinlogStatementTestCase) expected);
-        } else if (actual instanceof MySQLShowFunctionStatusStatement) {
-            ShowFunctionStatusStatementAssert.assertIs(assertContext, (MySQLShowFunctionStatusStatement) actual, (ShowFunctionStatusStatementTestCase) expected);
+        } else if (actual instanceof ShowFunctionStatusStatement) {
+            ShowFunctionStatusStatementAssert.assertIs(assertContext, (ShowFunctionStatusStatement) actual, (ShowFunctionStatusStatementTestCase) expected);
         } else if (actual instanceof MySQLShowProcedureStatusStatement) {
             ShowProcedureStatusStatementAssert.assertIs(assertContext, (MySQLShowProcedureStatusStatement) actual, (ShowProcedureStatusStatementTestCase) expected);
         } else if (actual instanceof MySQLShowReplicasStatement) {
