@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.broadcast.distsql.handler.query;
 
-import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.ShowBroadcastTableRulesStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;

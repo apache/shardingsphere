@@ -9,13 +9,13 @@ The Java API rule configuration for broadcast, which allows users to create Shar
 
 ## Parameters
 
-Class：org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration
+Class：org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration
 
 Attributes：
 
-| *name*                                  | *DataType* | *Description*                                    | *Default Value* |
-|---------------------------|---------------------------------------------|------------|-------|
-| tables (+)                | Collection\<String\> | Broadcast table rules    |       |
+| *name*     | *DataType*           | *Description*         | *Default Value* |
+|------------|----------------------|-----------------------|-----------------|
+| tables (+) | Collection\<String\> | Broadcast table rules |                 |
 
 ## Sample
 

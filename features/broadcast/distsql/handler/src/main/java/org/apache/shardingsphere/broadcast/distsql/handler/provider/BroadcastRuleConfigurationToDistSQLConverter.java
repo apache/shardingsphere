@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.broadcast.distsql.handler.provider;
 
 import com.google.common.base.Joiner;
-import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 
 /**
