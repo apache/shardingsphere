@@ -50,9 +50,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateT
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowFunctionStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOpenTablesStatement;
@@ -284,8 +284,8 @@ public final class DALStatementAssert {
             ShowStatusStatementAssert.assertIs(assertContext, (MySQLShowStatusStatement) actual, (ShowStatusStatementTestCase) expected);
         } else if (actual instanceof CheckTableStatement) {
             CheckTableStatementAssert.assertIs(assertContext, (CheckTableStatement) actual, (CheckTableStatementTestCase) expected);
-        } else if (actual instanceof MySQLShowEventsStatement) {
-            ShowEventsStatementAssert.assertIs(assertContext, (MySQLShowEventsStatement) actual, (ShowEventsStatementTestCase) expected);
+        } else if (actual instanceof ShowEventsStatement) {
+            ShowEventsStatementAssert.assertIs(assertContext, (ShowEventsStatement) actual, (ShowEventsStatementTestCase) expected);
         } else if (actual instanceof DropResourceGroupStatement) {
             DropResourceGroupStatementAssert.assertIs(assertContext, (DropResourceGroupStatement) actual, (DropResourceGroupStatementTestCase) expected);
         } else if (actual instanceof AlterResourceGroupStatement) {
