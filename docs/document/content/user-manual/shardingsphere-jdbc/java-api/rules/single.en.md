@@ -13,10 +13,10 @@ Class：org.apache.shardingsphere.single.config.SingleRuleConfiguration
 
 Attributes：
 
-| *name*                                  | *DataType* | *Description*                    | *Default Value* |
+| *name*                | *DataType*           | *Description*                    | *Default Value* |
 |-----------------------|----------------------|----------------------------------|-----------------|
 | tables (+)            | Collection\<String\> | single tables                    | -               |
-| defaultDataSource (?) | String | single table default data source | -               |
+| defaultDataSource (?) | String               | single table default data source | -               |
 
 ## Procedure
 

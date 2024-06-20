@@ -16,7 +16,7 @@ weight = 12
 | *名称*                  | *数据类型*               | *说明*    | *默认值* |
 |-----------------------|----------------------|---------|-------|
 | tables (+)            | Collection\<String\> | 单表规则列表  | -     |
-| defaultDataSource (?) | String | 单表默认数据源 | -     |
+| defaultDataSource (?) | String               | 单表默认数据源 | -     |
 
 ## 操作步骤
 
