@@ -19,6 +19,7 @@ package org.apache.shardingsphere.single.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rdl.SetDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -26,11 +27,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -41,9 +46,21 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
     private final SetDefaultSingleTableStorageUnitExecutor executor = new SetDefaultSingleTableStorageUnitExecutor();
     
     @Test
-    void assertCheckWithInvalidResource() {
-        executor.setDatabase(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+    void assertCheckWithInvalidDataSource() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().getAttributes(any())).thenReturn(Collections.emptyList());
+        executor.setDatabase(database);
         assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(new SetDefaultSingleTableStorageUnitStatement("bar_ds")));
+    }
+    
+    @Test
+    void assertCheckWithLogicDataSource() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
+        when(ruleAttribute.getDataSourceMapper().keySet()).thenReturn(Collections.singleton("logic_ds"));
+        when(database.getRuleMetaData().getAttributes(any())).thenReturn(Collections.singleton(ruleAttribute));
+        executor.setDatabase(database);
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(new SetDefaultSingleTableStorageUnitStatement("logic_ds")));
     }
     
     @Test

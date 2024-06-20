@@ -23,12 +23,15 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storag
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rdl.SetDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.stream.Collectors;
 
 /**
  * Set default single table storage unit executor.
@@ -47,10 +50,16 @@ public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseR
     
     private void checkStorageUnitExist(final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
         if (!Strings.isNullOrEmpty(sqlStatement.getDefaultStorageUnit())) {
-            Collection<String> storageUnitNames = database.getResourceMetaData().getStorageUnits().keySet();
-            ShardingSpherePreconditions.checkContains(storageUnitNames, sqlStatement.getDefaultStorageUnit(),
+            Collection<String> dataSourceNames = new HashSet<>(database.getResourceMetaData().getStorageUnits().keySet());
+            dataSourceNames.addAll(getLogicDataSourceNames());
+            ShardingSpherePreconditions.checkContains(dataSourceNames, sqlStatement.getDefaultStorageUnit(),
                     () -> new MissingRequiredStorageUnitsException(database.getName(), Collections.singleton(sqlStatement.getDefaultStorageUnit())));
         }
+    }
+    
+    private Collection<String> getLogicDataSourceNames() {
+        return database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class).stream()
+                .flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toSet());
     }
     
     @Override
