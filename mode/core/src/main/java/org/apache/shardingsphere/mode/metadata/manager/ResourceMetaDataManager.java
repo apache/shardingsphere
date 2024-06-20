@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.service.manager;
+package org.apache.shardingsphere.mode.metadata.manager;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;

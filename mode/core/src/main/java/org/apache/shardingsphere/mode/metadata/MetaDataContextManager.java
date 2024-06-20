@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.service;
+package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.service.manager.ConfigurationManager;
-import org.apache.shardingsphere.mode.service.manager.ResourceMetaDataManager;
-import org.apache.shardingsphere.mode.service.manager.ShardingSphereDatabaseManager;
+import org.apache.shardingsphere.mode.metadata.manager.ConfigurationManager;
+import org.apache.shardingsphere.mode.metadata.manager.ResourceMetaDataManager;
+import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
+import org.apache.shardingsphere.mode.metadata.manager.ShardingSphereDatabaseManager;
+import org.apache.shardingsphere.mode.service.PersistServiceFacade;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -38,10 +39,13 @@ public class MetaDataContextManager {
     
     private final ResourceMetaDataManager resourceMetaDataManager;
     
+    private final RuleItemManager ruleItemManager;
+    
     public MetaDataContextManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
                                   final PersistServiceFacade persistServiceFacade) {
         databaseManager = new ShardingSphereDatabaseManager(metaDataContexts);
         configurationManager = new ConfigurationManager(metaDataContexts, computeNodeInstanceContext, persistServiceFacade);
         resourceMetaDataManager = new ResourceMetaDataManager(metaDataContexts, persistServiceFacade);
+        ruleItemManager = new RuleItemManager(metaDataContexts, persistServiceFacade, configurationManager);
     }
 }

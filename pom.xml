@@ -489,6 +489,10 @@
                 <scope>provided</scope>
                 <exclusions>
                     <exclusion>
+                        <groupId>org.glassfish</groupId>
+                        <artifactId>javax.el</artifactId>
+                    </exclusion>
+                    <exclusion>
                         <groupId>com.github.joshelser</groupId>
                         <artifactId>dropwizard-metrics-hadoop-metrics2-reporter</artifactId>
                     </exclusion>
