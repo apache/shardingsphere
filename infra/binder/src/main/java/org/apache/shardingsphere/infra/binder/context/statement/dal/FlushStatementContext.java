@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dal.FlushStatementHandler;
 
 /**
  * Flush statement context.
@@ -34,7 +33,7 @@ public final class FlushStatementContext extends CommonSQLStatementContext imple
     
     public FlushStatementContext(final FlushStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(FlushStatementHandler.getSimpleTableSegment(sqlStatement), getDatabaseType());
+        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
     }
     
     @Override
