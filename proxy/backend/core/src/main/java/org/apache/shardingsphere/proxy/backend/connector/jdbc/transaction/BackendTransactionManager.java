@@ -27,7 +27,7 @@ import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributionTransactionManager;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
 
 import java.sql.Connection;
@@ -47,7 +47,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     private final LocalTransactionManager localTransactionManager;
     
-    private final ShardingSphereTransactionManager shardingSphereTransactionManager;
+    private final ShardingSphereDistributionTransactionManager distributionTransactionManager;
     
     private final Collection<TransactionHook> transactionHooks;
     
@@ -57,7 +57,7 @@ public final class BackendTransactionManager implements TransactionManager {
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         transactionType = transactionRule.getDefaultType();
         ShardingSphereTransactionManagerEngine engine = transactionRule.getResource();
-        shardingSphereTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
+        distributionTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
         transactionHooks = ShardingSphereServiceLoader.getServiceInstances(TransactionHook.class);
     }
     
@@ -72,10 +72,10 @@ public final class BackendTransactionManager implements TransactionManager {
         for (TransactionHook each : transactionHooks) {
             each.beforeBegin(getTransactionContext());
         }
-        if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
+        if (TransactionType.LOCAL == transactionType || null == distributionTransactionManager) {
             localTransactionManager.begin();
         } else {
-            shardingSphereTransactionManager.begin();
+            distributionTransactionManager.begin();
         }
         for (TransactionHook each : transactionHooks) {
             each.afterBegin(getTransactionContext());
@@ -89,10 +89,10 @@ public final class BackendTransactionManager implements TransactionManager {
         }
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
-                if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == shardingSphereTransactionManager) {
+                if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == distributionTransactionManager) {
                     localTransactionManager.commit();
                 } else {
-                    shardingSphereTransactionManager.commit(getTransactionContext().isExceptionOccur());
+                    distributionTransactionManager.commit(getTransactionContext().isExceptionOccur());
                 }
             } finally {
                 for (TransactionHook each : transactionHooks) {
@@ -113,10 +113,10 @@ public final class BackendTransactionManager implements TransactionManager {
         }
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
-                if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == shardingSphereTransactionManager) {
+                if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == distributionTransactionManager) {
                     localTransactionManager.rollback();
                 } else {
-                    shardingSphereTransactionManager.rollback();
+                    distributionTransactionManager.rollback();
                 }
             } finally {
                 for (TransactionHook each : transactionHooks) {

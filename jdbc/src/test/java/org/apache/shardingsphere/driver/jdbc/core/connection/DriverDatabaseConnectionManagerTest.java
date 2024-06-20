@@ -177,4 +177,10 @@ class DriverDatabaseConnectionManagerTest {
         assertThat(ex.getMessage(), is("Can not get 3 connections one time, partition succeed connection(0) have released. "
                 + "Please consider increasing the 'maxPoolSize' of the data sources or decreasing the 'max-connections-size-per-query' in properties."));
     }
+    
+    @Test
+    public void assertBeginTransaction() throws SQLException {
+        databaseConnectionManager.begin();
+        assertTrue(databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction());
+    }
 }

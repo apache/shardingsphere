@@ -27,7 +27,7 @@ import org.apache.shardingsphere.transaction.distsql.handler.fixture.ShardingSph
 import org.apache.shardingsphere.transaction.distsql.segment.TransactionProviderSegment;
 import org.apache.shardingsphere.transaction.distsql.statement.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributionTransactionManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -45,7 +45,7 @@ class AlterTransactionRuleExecutorTest {
     
     @Test
     void assertExecuteWithXA() {
-        when(ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class)).thenReturn(Collections.singleton(new ShardingSphereTransactionManagerFixture()));
+        when(ShardingSphereServiceLoader.getServiceInstances(ShardingSphereDistributionTransactionManager.class)).thenReturn(Collections.singleton(new ShardingSphereTransactionManagerFixture()));
         AlterTransactionRuleExecutor executor = new AlterTransactionRuleExecutor();
         AlterTransactionRuleStatement sqlStatement = new AlterTransactionRuleStatement(
                 "XA", new TransactionProviderSegment("Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts"))));

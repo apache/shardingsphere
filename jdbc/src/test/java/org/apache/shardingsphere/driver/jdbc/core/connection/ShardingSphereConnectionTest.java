@@ -99,12 +99,9 @@ class ShardingSphereConnectionTest {
         try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager())) {
             DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManager(connection, connectionTransaction);
             connection.setAutoCommit(false);
-            assertTrue(databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction());
             assertFalse(connection.getAutoCommit());
-            assertTrue(connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction());
-            verify(connectionTransaction).begin();
+            verify(databaseConnectionManager).begin();
             connection.commit();
-            assertFalse(connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction());
             verify(databaseConnectionManager).commit();
         }
     }
@@ -130,10 +127,8 @@ class ShardingSphereConnectionTest {
             final DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManager(connection, connectionTransaction);
             connection.setAutoCommit(false);
             assertFalse(connection.getAutoCommit());
-            assertTrue(connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction());
-            verify(connectionTransaction).begin();
+            verify(databaseConnectionManager).begin();
             connection.rollback();
-            assertFalse(connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction());
             verify(databaseConnectionManager).rollback();
         }
     }

@@ -20,13 +20,13 @@ package org.apache.shardingsphere.transaction.distsql.handler.fixture;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributionTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Map;
 
-public class ShardingSphereTransactionManagerFixture implements ShardingSphereTransactionManager {
+public class ShardingSphereTransactionManagerFixture implements ShardingSphereDistributionTransactionManager {
     
     @Setter
     private Runnable caller;

@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.session.connection.transaction.Transactio
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import javax.sql.DataSource;
@@ -113,12 +114,26 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @throws SQLException SQL exception
      */
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
-        methodInvocationRecorder.record("setAutoCommit", target -> target.setAutoCommit(autoCommit));
+        methodInvocationRecorder.record("setAutoCommit", connection -> connection.setAutoCommit(autoCommit));
         forceExecuteTemplate.execute(getCachedConnections(), connection -> connection.setAutoCommit(autoCommit));
     }
     
     private Collection<Connection> getCachedConnections() {
         return cachedConnections.values();
+    }
+    
+    /**
+     * Begin transaction.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void begin() throws SQLException {
+        ConnectionTransaction connectionTransaction = getConnectionTransaction();
+        if (TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType())) {
+            close();
+            connectionTransaction.begin();
+        }
+        connectionContext.getTransactionContext().beginTransaction(String.valueOf(connectionTransaction.getTransactionType()));
     }
     
     /**
@@ -140,6 +155,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
             for (Connection each : getCachedConnections()) {
                 ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
+            connectionContext.close();
         }
     }
     
@@ -160,6 +176,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
             for (Connection each : getCachedConnections()) {
                 ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
+            connectionContext.close();
         }
     }
     

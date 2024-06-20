@@ -34,7 +34,7 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.base.seata.at.exception.SeataATApplicationIDNotFoundException;
 import org.apache.shardingsphere.transaction.base.seata.at.exception.SeataATDisabledException;
 import org.apache.shardingsphere.transaction.exception.TransactionTimeoutException;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributionTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -45,7 +45,7 @@ import java.util.Map;
 /**
  * Seata AT transaction manager.
  */
-public final class SeataATShardingSphereTransactionManager implements ShardingSphereTransactionManager {
+public final class SeataATShardingSphereTransactionManager implements ShardingSphereDistributionTransactionManager {
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     

@@ -28,8 +28,8 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.DatabaseMetaData;
@@ -82,25 +82,15 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     }
     
     /**
-     * Handle auto commit.
+     * Begin transaction if needed when auto commit is false.
      *
      * @throws SQLException SQL exception
      */
-    public void handleAutoCommit() throws SQLException {
-        if (autoCommit || databaseConnectionManager.getConnectionTransaction().isInTransaction()) {
+    public void beginTransactionIfNeededWhenAutoCommitFalse() throws SQLException {
+        if (autoCommit || databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
             return;
         }
-        if (TransactionType.isDistributedTransaction(databaseConnectionManager.getConnectionTransaction().getTransactionType())) {
-            beginDistributedTransaction();
-        } else if (!databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
-            databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
-        }
-    }
-    
-    private void beginDistributedTransaction() throws SQLException {
-        databaseConnectionManager.close();
-        databaseConnectionManager.getConnectionTransaction().begin();
-        databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
+        databaseConnectionManager.begin();
     }
     
     @Override
@@ -170,23 +160,23 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private void processLocalTransaction() throws SQLException {
         databaseConnectionManager.setAutoCommit(autoCommit);
-        if (autoCommit && databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
-            databaseConnectionManager.getConnectionContext().getTransactionContext().close();
+        TransactionConnectionContext transactionContext = databaseConnectionManager.getConnectionContext().getTransactionContext();
+        if (autoCommit && transactionContext.isInTransaction()) {
+            transactionContext.close();
             return;
         }
-        if (!autoCommit && !databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
-            databaseConnectionManager.getConnectionContext().getTransactionContext()
-                    .beginTransaction(String.valueOf(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType()));
+        if (!autoCommit && !transactionContext.isInTransaction()) {
+            transactionContext.beginTransaction(String.valueOf(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType()));
         }
     }
     
     private void processDistributedTransaction() throws SQLException {
         switch (databaseConnectionManager.getConnectionTransaction().getDistributedTransactionOperationType(autoCommit)) {
             case BEGIN:
-                beginDistributedTransaction();
+                databaseConnectionManager.begin();
                 break;
             case COMMIT:
-                commit();
+                databaseConnectionManager.commit();
                 break;
             default:
                 break;
@@ -195,22 +185,12 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Override
     public void commit() throws SQLException {
-        try {
-            databaseConnectionManager.commit();
-        } finally {
-            databaseConnectionManager.getConnectionContext().getTransactionContext().setExceptionOccur(false);
-            databaseConnectionManager.getConnectionContext().close();
-        }
+        databaseConnectionManager.commit();
     }
     
     @Override
     public void rollback() throws SQLException {
-        try {
-            databaseConnectionManager.rollback();
-        } finally {
-            databaseConnectionManager.getConnectionContext().getTransactionContext().setExceptionOccur(false);
-            databaseConnectionManager.getConnectionContext().close();
-        }
+        databaseConnectionManager.rollback();
     }
     
     @Override
