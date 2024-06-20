@@ -15,45 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.api.config.rule;
+package org.apache.shardingsphere.encrypt.config.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
-import java.util.Optional;
+import java.util.Collection;
 
 /**
- * Encrypt column rule configuration.
+ * Encrypt table rule configuration.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class EncryptColumnRuleConfiguration {
+public final class EncryptTableRuleConfiguration {
     
     private final String name;
     
-    private final EncryptColumnItemRuleConfiguration cipher;
-    
-    private EncryptColumnItemRuleConfiguration assistedQuery;
-    
-    private EncryptColumnItemRuleConfiguration likeQuery;
-    
-    /**
-     * Get assisted query.
-     *
-     * @return assisted query column item rule configuration
-     */
-    public Optional<EncryptColumnItemRuleConfiguration> getAssistedQuery() {
-        return Optional.ofNullable(assistedQuery);
-    }
-    
-    /**
-     * Get like query.
-     *
-     * @return like query column item rule configuration
-     */
-    public Optional<EncryptColumnItemRuleConfiguration> getLikeQuery() {
-        return Optional.ofNullable(likeQuery);
-    }
+    private final Collection<EncryptColumnRuleConfiguration> columns;
 }
