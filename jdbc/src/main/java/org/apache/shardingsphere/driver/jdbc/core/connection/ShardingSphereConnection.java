@@ -28,6 +28,7 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
@@ -159,13 +160,13 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private void processLocalTransaction() throws SQLException {
         databaseConnectionManager.setAutoCommit(autoCommit);
-        if (autoCommit && databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
-            databaseConnectionManager.getConnectionContext().getTransactionContext().close();
+        TransactionConnectionContext transactionContext = databaseConnectionManager.getConnectionContext().getTransactionContext();
+        if (autoCommit && transactionContext.isInTransaction()) {
+            transactionContext.close();
             return;
         }
-        if (!autoCommit && !databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction()) {
-            databaseConnectionManager.getConnectionContext().getTransactionContext()
-                    .beginTransaction(String.valueOf(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType()));
+        if (!autoCommit && !transactionContext.isInTransaction()) {
+            transactionContext.beginTransaction(String.valueOf(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType()));
         }
     }
     
@@ -175,7 +176,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
                 databaseConnectionManager.begin();
                 break;
             case COMMIT:
-                commit();
+                databaseConnectionManager.commit();
                 break;
             default:
                 break;
