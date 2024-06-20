@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowReplicasStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL show replicas statement.
  */
-public final class MySQLShowReplicasStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLShowReplicasStatement extends ShowReplicasStatement implements MySQLStatement {
 }

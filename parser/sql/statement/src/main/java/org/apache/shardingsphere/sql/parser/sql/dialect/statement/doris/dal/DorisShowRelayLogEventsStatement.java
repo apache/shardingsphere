@@ -17,23 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowRelayLogEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris show relay log events statement.
  */
-@Getter
-@Setter
-public final class DorisShowRelayLogEventsStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private String logName;
-    
-    private LimitSegment limit;
-    
-    private String channel;
+public final class DorisShowRelayLogEventsStatement extends ShowRelayLogEventsStatement implements DorisStatement {
 }

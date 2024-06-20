@@ -17,19 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowProcedureCodeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL show procedure code statement.
  */
-@Getter
-@Setter
-public final class MySQLShowProcedureCodeStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-    
-    private FunctionSegment function;
+public final class MySQLShowProcedureCodeStatement extends ShowProcedureCodeStatement implements MySQLStatement {
 }

@@ -17,18 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowReplicaStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL show replica status statement.
  */
-@Getter
-@Setter
-public final class MySQLShowReplicaStatusStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-    
-    private String channel;
+public final class MySQLShowReplicaStatusStatement extends ShowReplicaStatusStatement implements MySQLStatement {
 }

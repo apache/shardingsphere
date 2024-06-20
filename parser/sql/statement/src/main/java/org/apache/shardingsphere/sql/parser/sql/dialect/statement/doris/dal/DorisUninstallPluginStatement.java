@@ -17,18 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
 /**
  * Doris uninstall plugin statement.
  */
-@Getter
-@Setter
-public final class DorisUninstallPluginStatement extends AbstractSQLStatement implements DALStatement, DorisStatement {
-    
-    private String pluginName;
+public final class DorisUninstallPluginStatement extends UninstallPluginStatement implements DorisStatement {
 }
