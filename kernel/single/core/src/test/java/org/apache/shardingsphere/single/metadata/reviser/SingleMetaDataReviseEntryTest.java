@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.metadata.reviser;
 
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.metadata.reviser.constraint.SingleConstraintReviser;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
