@@ -26,9 +26,9 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Map;
 
+@Setter
 public final class ShardingSphereTransactionManagerFixture implements ShardingSphereDistributionTransactionManager {
     
-    @Setter
     private Runnable caller;
     
     @Override
