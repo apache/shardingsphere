@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.checker;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingRequiredEncryptColumnException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;

@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.api.config.rule;
+package org.apache.shardingsphere.encrypt.config.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-
 /**
- * Encrypt table rule configuration.
+ * Encrypt column item rule configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class EncryptTableRuleConfiguration {
+public final class EncryptColumnItemRuleConfiguration {
     
     private final String name;
     
-    private final Collection<EncryptColumnRuleConfiguration> columns;
+    private final String encryptorName;
 }
