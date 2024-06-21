@@ -343,7 +343,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
         SQLServerDropIndexStatement result = new SQLServerDropIndexStatement(null != ctx.ifExists());
         result.getIndexes().add((IndexSegment) visit(ctx.indexName()));
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     

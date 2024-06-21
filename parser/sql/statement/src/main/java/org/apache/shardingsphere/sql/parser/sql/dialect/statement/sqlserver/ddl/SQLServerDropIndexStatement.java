@@ -36,14 +36,10 @@ public final class SQLServerDropIndexStatement extends DropIndexStatement implem
     
     private final boolean ifExists;
     
-    private SimpleTableSegment table;
+    private SimpleTableSegment simpleTable;
     
-    /**
-     * Get simple table segment.
-     *
-     * @return simple table segment
-     */
-    public Optional<SimpleTableSegment> getTable() {
-        return Optional.ofNullable(table);
+    @Override
+    public Optional<SimpleTableSegment> getSimpleTable() {
+        return Optional.ofNullable(simpleTable);
     }
 }

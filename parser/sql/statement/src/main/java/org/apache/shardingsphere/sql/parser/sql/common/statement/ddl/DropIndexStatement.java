@@ -19,10 +19,14 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.AlgorithmTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Drop index statement.
@@ -31,4 +35,40 @@ import java.util.LinkedList;
 public abstract class DropIndexStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<IndexSegment> indexes = new LinkedList<>();
+    
+    /**
+     * Get simple table.
+     *
+     * @return simple table
+     */
+    public Optional<SimpleTableSegment> getSimpleTable() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Judge whether contains exist clause or not.
+     *
+     * @return whether contains exist clause or not
+     */
+    public boolean isIfExists() {
+        return false;
+    }
+    
+    /**
+     * Get algorithm type.
+     *
+     * @return algorithm type
+     */
+    public Optional<AlgorithmTypeSegment> getAlgorithmType() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get lock table segment.
+     *
+     * @return lock table segment
+     */
+    public Optional<LockTableSegment> getLockTable() {
+        return Optional.empty();
+    }
 }

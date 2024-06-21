@@ -32,36 +32,24 @@ import java.util.Optional;
 @Setter
 public final class DorisDropIndexStatement extends DropIndexStatement implements DorisStatement {
     
-    private SimpleTableSegment table;
+    private SimpleTableSegment simpleTable;
     
-    private AlgorithmTypeSegment algorithmSegment;
+    private AlgorithmTypeSegment algorithmType;
     
-    private LockTableSegment lockTableSegment;
+    private LockTableSegment lockTable;
     
-    /**
-     * Get simple table segment.
-     *
-     * @return simple table segment
-     */
-    public Optional<SimpleTableSegment> getTable() {
-        return Optional.ofNullable(table);
+    @Override
+    public Optional<SimpleTableSegment> getSimpleTable() {
+        return Optional.ofNullable(simpleTable);
     }
     
-    /**
-     * Get algorithm segment.
-     *
-     * @return algorithm segment
-     */
-    public Optional<AlgorithmTypeSegment> getGetAlgorithmSegment() {
-        return Optional.ofNullable(algorithmSegment);
+    @Override
+    public Optional<AlgorithmTypeSegment> getAlgorithmType() {
+        return Optional.ofNullable(algorithmType);
     }
     
-    /**
-     * Get lock table Segment.
-     *
-     * @return lock table segment
-     */
-    public Optional<LockTableSegment> getLockTableSegment() {
-        return Optional.ofNullable(lockTableSegment);
+    @Override
+    public Optional<LockTableSegment> getLockTable() {
+        return Optional.ofNullable(lockTable);
     }
 }

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistServ
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexStatementHandler;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -58,7 +57,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     }
     
     private Optional<String> findLogicTableName(final ShardingSphereDatabase database, final DropIndexStatement sqlStatement, final Collection<IndexSegment> indexSegments) {
-        Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement);
+        Optional<SimpleTableSegment> simpleTableSegment = sqlStatement.getSimpleTable();
         if (simpleTableSegment.isPresent()) {
             return Optional.of(simpleTableSegment.get().getTableName().getIdentifier().getValue());
         }
