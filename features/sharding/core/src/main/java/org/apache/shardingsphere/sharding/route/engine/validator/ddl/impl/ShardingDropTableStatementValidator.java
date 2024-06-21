@@ -36,7 +36,6 @@ import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDL
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropTableStatementHandler;
 
 import java.util.Collection;
 import java.util.List;
@@ -53,12 +52,12 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         DropTableStatementContext dropTableStatementContext = (DropTableStatementContext) sqlStatementContext;
         DropTableStatement dropTableStatement = dropTableStatementContext.getSqlStatement();
-        if (!DropTableStatementHandler.ifExists(dropTableStatement)) {
+        if (!dropTableStatement.isIfExists()) {
             String defaultSchemaName = new DatabaseTypeRegistry(dropTableStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
             ShardingSphereSchema schema = dropTableStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
             validateTableExist(schema, dropTableStatementContext.getTablesContext().getSimpleTables());
         }
-        ShardingSpherePreconditions.checkState(!DropTableStatementHandler.containsCascade(dropTableStatement), () -> new UnsupportedShardingOperationException("DROP TABLE ... CASCADE",
+        ShardingSpherePreconditions.checkState(!dropTableStatement.isContainsCascade(), () -> new UnsupportedShardingOperationException("DROP TABLE ... CASCADE",
                 dropTableStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()));
     }
     

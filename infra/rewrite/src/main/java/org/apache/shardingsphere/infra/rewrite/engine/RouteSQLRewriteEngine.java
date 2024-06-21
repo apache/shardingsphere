@@ -36,9 +36,8 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
-import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
+import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -110,7 +109,7 @@ public final class RouteSQLRewriteEngine {
         SelectStatementContext statementContext = (SelectStatementContext) sqlStatementContext;
         boolean containsSubqueryJoinQuery = statementContext.isContainsSubquery() || statementContext.isContainsJoinQuery();
         boolean containsOrderByLimitClause = !statementContext.getOrderByContext().getItems().isEmpty() || statementContext.getPaginationContext().isHasPagination();
-        boolean containsLockClause = SelectStatementHandler.getLockSegment(statementContext.getSqlStatement()).isPresent();
+        boolean containsLockClause = statementContext.getSqlStatement().getLock().isPresent();
         boolean needAggregateRewrite = !containsSubqueryJoinQuery && !containsOrderByLimitClause && !containsLockClause;
         statementContext.setNeedAggregateRewrite(needAggregateRewrite);
         return needAggregateRewrite;

@@ -17,10 +17,32 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
+import java.util.Optional;
 
 /**
  * Cluster statement.
  */
 public abstract class ClusterStatement extends AbstractSQLStatement implements DDLStatement {
+    
+    /**
+     * Get simple table.
+     *
+     * @return simple table
+     */
+    public Optional<SimpleTableSegment> getSimpleTable() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get index.
+     *
+     * @return index segment
+     */
+    public Optional<IndexSegment> getIndex() {
+        return Optional.empty();
+    }
 }

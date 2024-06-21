@@ -17,20 +17,30 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
+import java.util.Optional;
+
 /**
  * MySQL alter view statement.
  */
-@Getter
 @Setter
 public final class MySQLAlterViewStatement extends AlterViewStatement implements MySQLStatement {
     
     private SelectStatement select;
     
     private String viewDefinition;
+    
+    @Override
+    public Optional<SelectStatement> getSelectStatement() {
+        return Optional.ofNullable(select);
+    }
+    
+    @Override
+    public Optional<String> getViewDefinition() {
+        return Optional.ofNullable(viewDefinition);
+    }
 }

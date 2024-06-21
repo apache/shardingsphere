@@ -31,4 +31,22 @@ import java.util.LinkedList;
 public abstract class DropTableStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+    
+    /**
+     * Judge whether contains if exists.
+     *
+     * @return contains contains if exists or not
+     */
+    public boolean isIfExists() {
+        return false;
+    }
+    
+    /**
+     * Judge whether contains cascade.
+     *
+     * @return contains cascade or not
+     */
+    public boolean isContainsCascade() {
+        return false;
+    }
 }

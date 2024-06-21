@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.FunctionNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.Optional;
@@ -40,5 +41,14 @@ public abstract class CreateProcedureStatement extends AbstractSQLStatement impl
      */
     public Optional<FunctionNameSegment> getProcedureName() {
         return Optional.ofNullable(procedureName);
+    }
+    
+    /**
+     * Get routine body.
+     *
+     * @return routine body
+     */
+    public Optional<RoutineBodySegment> getRoutineBody() {
+        return Optional.empty();
     }
 }

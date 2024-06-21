@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateProcedureStatementHandler;
 
 import java.util.Collection;
 import java.util.List;
@@ -45,7 +44,7 @@ public final class ShardingCreateProcedureStatementValidator extends ShardingDDL
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         CreateProcedureStatement createProcedureStatement = (CreateProcedureStatement) sqlStatementContext.getSqlStatement();
-        Optional<RoutineBodySegment> routineBodySegment = CreateProcedureStatementHandler.getRoutineBodySegment(createProcedureStatement);
+        Optional<RoutineBodySegment> routineBodySegment = createProcedureStatement.getRoutineBody();
         if (!routineBodySegment.isPresent()) {
             return;
         }

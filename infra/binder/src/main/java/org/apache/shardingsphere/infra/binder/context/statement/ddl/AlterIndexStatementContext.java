@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterIndexStatementHandler;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,7 +41,7 @@ public final class AlterIndexStatementContext extends CommonSQLStatementContext 
     
     public AlterIndexStatementContext(final AlterIndexStatement sqlStatement) {
         super(sqlStatement);
-        SimpleTableSegment simpleTableSegment = AlterIndexStatementHandler.getSimpleTableSegment(sqlStatement).orElse(null);
+        SimpleTableSegment simpleTableSegment = sqlStatement.getSimpleTable().orElse(null);
         tablesContext = new TablesContext(simpleTableSegment, getDatabaseType());
     }
     
@@ -57,7 +56,7 @@ public final class AlterIndexStatementContext extends CommonSQLStatementContext 
         if (getSqlStatement().getIndex().isPresent()) {
             result.add(getSqlStatement().getIndex().get());
         }
-        AlterIndexStatementHandler.getRenameIndexSegment(getSqlStatement()).ifPresent(result::add);
+        getSqlStatement().getRenameIndex().ifPresent(result::add);
         return result;
     }
     

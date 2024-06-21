@@ -47,11 +47,11 @@ class ExplainStatementContextTest {
     
     private void assertNewInstance(final ExplainStatement explainStatement) {
         SQLStatement statement = () -> 0;
-        when(explainStatement.getStatement()).thenReturn(Optional.of(statement));
+        when(explainStatement.getSqlStatement()).thenReturn(Optional.of(statement));
         ExplainStatementContext actual = new ExplainStatementContext(explainStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(explainStatement));
-        assertThat(actual.getSqlStatement().getStatement().orElse(null), is(statement));
+        assertThat(actual.getSqlStatement().getSqlStatement().orElse(null), is(statement));
         assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));
     }
 }

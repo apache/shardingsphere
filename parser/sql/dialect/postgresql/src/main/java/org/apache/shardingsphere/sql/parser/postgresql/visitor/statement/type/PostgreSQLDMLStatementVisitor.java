@@ -104,7 +104,7 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
             }
         }
         if (null != ctx.preparableStmt()) {
-            result.setPrepareStatementQuerySegment(extractPrepareStatementQuerySegmentFromPreparableStmt(ctx.preparableStmt()));
+            result.setPrepareStatementQuery(extractPrepareStatementQuerySegmentFromPreparableStmt(ctx.preparableStmt()));
         }
         return result;
     }
@@ -133,7 +133,7 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
             }
         }
         if (null != ctx.preparableStmt()) {
-            result.setPrepareStatementQuerySegment(extractPrepareStatementQuerySegmentFromPreparableStmt(ctx.preparableStmt()));
+            result.setPrepareStatementQuery(extractPrepareStatementQuerySegmentFromPreparableStmt(ctx.preparableStmt()));
         }
         return result;
     }

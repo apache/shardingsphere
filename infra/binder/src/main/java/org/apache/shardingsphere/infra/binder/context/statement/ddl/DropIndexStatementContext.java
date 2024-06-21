@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexStatementHandler;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -41,7 +40,7 @@ public final class DropIndexStatementContext extends CommonSQLStatementContext i
     
     public DropIndexStatementContext(final DropIndexStatement sqlStatement) {
         super(sqlStatement);
-        SimpleTableSegment simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement).orElse(null);
+        SimpleTableSegment simpleTableSegment = sqlStatement.getSimpleTable().orElse(null);
         tablesContext = new TablesContext(simpleTableSegment, getDatabaseType());
     }
     

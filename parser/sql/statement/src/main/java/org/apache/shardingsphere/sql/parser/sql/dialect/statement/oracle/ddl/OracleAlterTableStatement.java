@@ -34,11 +34,7 @@ public final class OracleAlterTableStatement extends AlterTableStatement impleme
     
     private ModifyCollectionRetrievalSegment modifyCollectionRetrieval;
     
-    /**
-     * Get modify collection retrieval segment.
-     * 
-     * @return modify collection retrieval
-     */
+    @Override
     public Optional<ModifyCollectionRetrievalSegment> getModifyCollectionRetrieval() {
         return Optional.ofNullable(modifyCollectionRetrieval);
     }

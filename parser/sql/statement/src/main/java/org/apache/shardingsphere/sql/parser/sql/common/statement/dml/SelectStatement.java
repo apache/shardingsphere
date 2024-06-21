@@ -23,8 +23,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.Combi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -115,5 +119,90 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
      */
     public Optional<WithSegment> getWithSegment() {
         return Optional.ofNullable(withSegment);
+    }
+    
+    /**
+     * Get limit segment.
+     *
+     * @return limit segment
+     */
+    public Optional<LimitSegment> getLimit() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Set limit segment.
+     *
+     * @param  limitSegment limit segment
+     */
+    public void setLimit(final LimitSegment limitSegment) {
+    }
+    
+    /**
+     * Get lock segment.
+     *
+     * @return lock segment
+     */
+    public Optional<LockSegment> getLock() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Set lock segment.
+     *
+     * @param lockSegment lock segment
+     */
+    public void setLock(final LockSegment lockSegment) {
+    }
+    
+    /**
+     * Get window segment.
+     *
+     * @return window segment
+     */
+    public Optional<WindowSegment> getWindow() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Set window segment.
+     *
+     * @param windowSegment window segment
+     */
+    public void setWindow(final WindowSegment windowSegment) {
+    }
+    
+    /**
+     * Get model segment.
+     *
+     * @return model segment
+     */
+    public Optional<ModelSegment> getModelSegment() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Set model segment.
+     *
+     * @param modelSegment model segment
+     */
+    public void setModelSegment(final ModelSegment modelSegment) {
+    }
+    
+    /**
+     * Get into segment.
+     *
+     * @return into table segment
+     */
+    public Optional<TableSegment> getIntoSegment() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Set into segment.
+     *
+     * @param intoSegment table into segment
+     */
+    public void setIntoSegment(final TableSegment intoSegment) {
     }
 }

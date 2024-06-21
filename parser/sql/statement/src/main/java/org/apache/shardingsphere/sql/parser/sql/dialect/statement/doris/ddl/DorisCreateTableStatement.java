@@ -39,23 +39,15 @@ public final class DorisCreateTableStatement extends CreateTableStatement implem
     
     private SimpleTableSegment likeTable;
     
-    private CreateTableOptionSegment createTableOptionSegment;
+    private CreateTableOptionSegment createTableOption;
     
-    /**
-     * Get like table.
-     *
-     * @return like table
-     */
+    @Override
     public Optional<SimpleTableSegment> getLikeTable() {
         return Optional.ofNullable(likeTable);
     }
     
-    /**
-     * Get create table option segment.
-     *
-     * @return create table option segment
-     */
-    public Optional<CreateTableOptionSegment> getCreateTableOptionSegment() {
-        return Optional.ofNullable(createTableOptionSegment);
+    @Override
+    public Optional<CreateTableOptionSegment> getCreateTableOption() {
+        return Optional.ofNullable(createTableOption);
     }
 }

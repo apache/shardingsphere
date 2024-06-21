@@ -30,14 +30,10 @@ import java.util.Optional;
 @Setter
 public final class SQLServerAlterIndexStatement extends AlterIndexStatement implements SQLServerStatement {
     
-    private SimpleTableSegment table;
+    private SimpleTableSegment simpleTable;
     
-    /**
-     * Get simple table segment.
-     *
-     * @return simple table segment
-     */
-    public Optional<SimpleTableSegment> getTable() {
-        return Optional.ofNullable(table);
+    @Override
+    public Optional<SimpleTableSegment> getSimpleTable() {
+        return Optional.ofNullable(simpleTable);
     }
 }

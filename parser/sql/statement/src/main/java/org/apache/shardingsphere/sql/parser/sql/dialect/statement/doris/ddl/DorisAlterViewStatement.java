@@ -17,20 +17,30 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.ddl;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.DorisStatement;
 
+import java.util.Optional;
+
 /**
  * Doris alter view statement.
  */
-@Getter
 @Setter
 public final class DorisAlterViewStatement extends AlterViewStatement implements DorisStatement {
     
     private SelectStatement select;
     
     private String viewDefinition;
+    
+    @Override
+    public Optional<SelectStatement> getSelectStatement() {
+        return Optional.ofNullable(select);
+    }
+    
+    @Override
+    public Optional<String> getViewDefinition() {
+        return Optional.ofNullable(viewDefinition);
+    }
 }

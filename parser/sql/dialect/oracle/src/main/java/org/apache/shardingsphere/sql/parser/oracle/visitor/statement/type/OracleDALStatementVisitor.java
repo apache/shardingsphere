@@ -48,13 +48,13 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
         getGlobalParameterMarkerSegments().addAll(visitor.getGlobalParameterMarkerSegments());
         getStatementParameterMarkerSegments().addAll(visitor.getStatementParameterMarkerSegments());
         if (null != ctx.insert()) {
-            result.setStatement((SQLStatement) visitor.visit(ctx.insert()));
+            result.setSqlStatement((SQLStatement) visitor.visit(ctx.insert()));
         } else if (null != ctx.delete()) {
-            result.setStatement((SQLStatement) visitor.visit(ctx.delete()));
+            result.setSqlStatement((SQLStatement) visitor.visit(ctx.delete()));
         } else if (null != ctx.update()) {
-            result.setStatement((SQLStatement) visitor.visit(ctx.update()));
+            result.setSqlStatement((SQLStatement) visitor.visit(ctx.update()));
         } else if (null != ctx.select()) {
-            result.setStatement((SQLStatement) visitor.visit(ctx.select()));
+            result.setSqlStatement((SQLStatement) visitor.visit(ctx.select()));
         }
         result.addParameterMarkerSegments(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         result.getVariableNames().addAll(getVariableNames());

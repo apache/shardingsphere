@@ -1243,7 +1243,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     public ASTNode visitCluster(final ClusterContext ctx) {
         PostgreSQLClusterStatement result = new PostgreSQLClusterStatement();
         if (null != ctx.tableName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+            result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
         }
         if (null != ctx.clusterIndexSpecification()) {
             result.setIndex((IndexSegment) visit(ctx.clusterIndexSpecification().indexName()));

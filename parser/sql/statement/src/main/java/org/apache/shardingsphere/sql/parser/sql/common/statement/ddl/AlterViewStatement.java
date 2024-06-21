@@ -19,8 +19,12 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+
+import java.util.Optional;
 
 /**
  * Alter view statement.
@@ -30,4 +34,40 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 public abstract class AlterViewStatement extends AbstractSQLStatement implements DDLStatement {
     
     private SimpleTableSegment view;
+    
+    /**
+     * Get select statement.
+     *
+     * @return select statement
+     */
+    public Optional<SelectStatement> getSelectStatement() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get view definition.
+     *
+     * @return view definition
+     */
+    public Optional<String> getViewDefinition() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get rename view.
+     *
+     * @return rename view
+     */
+    public Optional<SimpleTableSegment> getRenameView() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get constraint definition.
+     *
+     * @return constraint definition
+     */
+    public Optional<ConstraintDefinitionSegment> getConstraintDefinition() {
+        return Optional.empty();
+    }
 }

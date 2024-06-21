@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -29,28 +28,19 @@ import java.util.Optional;
 /**
  * PostgreSQL cluster statement.
  */
-@Getter
 @Setter
 public final class PostgreSQLClusterStatement extends ClusterStatement implements PostgreSQLStatement {
     
-    private SimpleTableSegment table;
+    private SimpleTableSegment simpleTable;
     
     private IndexSegment index;
     
-    /**
-     * Get simple table segment.
-     *
-     * @return simple table segment
-     */
-    public Optional<SimpleTableSegment> getTable() {
-        return Optional.ofNullable(table);
+    @Override
+    public Optional<SimpleTableSegment> getSimpleTable() {
+        return Optional.ofNullable(simpleTable);
     }
     
-    /**
-     * Get index segment.
-     *
-     * @return index segment
-     */
+    @Override
     public Optional<IndexSegment> getIndex() {
         return Optional.ofNullable(index);
     }

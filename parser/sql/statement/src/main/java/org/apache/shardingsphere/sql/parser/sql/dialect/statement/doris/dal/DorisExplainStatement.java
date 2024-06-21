@@ -31,24 +31,16 @@ import java.util.Optional;
 @Setter
 public final class DorisExplainStatement extends ExplainStatement implements DorisStatement {
     
-    private SimpleTableSegment table;
+    private SimpleTableSegment simpleTable;
     
     private ColumnSegment columnWild;
     
-    /**
-     * Get simple table segment.
-     * 
-     * @return simple table segment
-     */
-    public Optional<SimpleTableSegment> getTable() {
-        return Optional.ofNullable(table);
+    @Override
+    public Optional<SimpleTableSegment> getSimpleTable() {
+        return Optional.ofNullable(simpleTable);
     }
     
-    /**
-     * Get column segment.
-     *
-     * @return column segment
-     */
+    @Override
     public Optional<ColumnSegment> getColumnWild() {
         return Optional.ofNullable(columnWild);
     }

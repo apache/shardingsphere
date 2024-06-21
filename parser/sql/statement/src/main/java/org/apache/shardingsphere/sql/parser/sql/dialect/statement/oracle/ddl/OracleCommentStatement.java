@@ -17,18 +17,23 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
+import java.util.Optional;
+
 /**
  * Oracle comment statement.
  */
-@Getter
 @Setter
 public final class OracleCommentStatement extends CommentStatement implements OracleStatement {
     
     private IndexTypeSegment indexType;
+    
+    @Override
+    public Optional<IndexTypeSegment> getIndexType() {
+        return Optional.ofNullable(indexType);
+    }
 }

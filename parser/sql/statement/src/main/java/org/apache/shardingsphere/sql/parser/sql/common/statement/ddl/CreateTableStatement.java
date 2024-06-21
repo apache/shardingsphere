@@ -21,12 +21,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.CreateTableOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -51,5 +55,41 @@ public abstract class CreateTableStatement extends AbstractSQLStatement implemen
      */
     public Optional<SelectStatement> getSelectStatement() {
         return Optional.ofNullable(selectStatement);
+    }
+    
+    /**
+     * Judge whether contains if not exists or not.
+     *
+     * @return whether contains if not exists or not
+     */
+    public boolean isIfNotExists() {
+        return false;
+    }
+    
+    /**
+     * Get list of columns.
+     *
+     * @return list of columns
+     */
+    public List<ColumnSegment> getColumns() {
+        return Collections.emptyList();
+    }
+    
+    /**
+     * Get like table.
+     *
+     * @return like table
+     */
+    public Optional<SimpleTableSegment> getLikeTable() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get create table option.
+     *
+     * @return create table option
+     */
+    public Optional<CreateTableOptionSegment> getCreateTableOption() {
+        return Optional.empty();
     }
 }

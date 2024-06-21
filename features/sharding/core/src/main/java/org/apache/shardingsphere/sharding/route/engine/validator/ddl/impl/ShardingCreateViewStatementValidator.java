@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -107,6 +106,6 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
     }
     
     private boolean hasLimit(final SelectStatement selectStatement) {
-        return SelectStatementHandler.getLimitSegment(selectStatement).isPresent();
+        return selectStatement.getLimit().isPresent();
     }
 }

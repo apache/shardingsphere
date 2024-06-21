@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteE
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +43,7 @@ public final class ShardingCreateTableStatementValidator extends ShardingDDLStat
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         CreateTableStatementContext createTableStatementContext = (CreateTableStatementContext) sqlStatementContext;
         CreateTableStatement createTableStatement = createTableStatementContext.getSqlStatement();
-        if (!CreateTableStatementHandler.ifNotExists(createTableStatement)) {
+        if (!createTableStatement.isIfNotExists()) {
             String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
             ShardingSphereSchema schema = createTableStatementContext.getTablesContext().getSchemaName()
                     .map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));

@@ -143,7 +143,7 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
         OpenGaussExplainStatement result = new OpenGaussExplainStatement();
-        result.setStatement((SQLStatement) visit(ctx.explainableStmt()));
+        result.setSqlStatement((SQLStatement) visit(ctx.explainableStmt()));
         return result;
     }
     

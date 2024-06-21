@@ -43,7 +43,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Function
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -63,14 +62,14 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext
-                && InsertStatementHandler.getOnDuplicateKeyColumnsSegment(((InsertStatementContext) sqlStatementContext).getSqlStatement()).isPresent();
+                && (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getOnDuplicateKeyColumns().isPresent();
     }
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
         InsertStatement insertStatement = insertStatementContext.getSqlStatement();
-        Preconditions.checkState(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement).isPresent());
-        Collection<ColumnAssignmentSegment> onDuplicateKeyColumnsSegments = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement).get().getColumns();
+        Preconditions.checkState(insertStatement.getOnDuplicateKeyColumns().isPresent());
+        Collection<ColumnAssignmentSegment> onDuplicateKeyColumnsSegments = insertStatement.getOnDuplicateKeyColumns().get().getColumns();
         if (onDuplicateKeyColumnsSegments.isEmpty()) {
             return Collections.emptyList();
         }

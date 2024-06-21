@@ -559,22 +559,22 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitExplain(final ExplainContext ctx) {
         DorisExplainStatement result = new DorisExplainStatement();
         if (null != ctx.tableName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+            result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
             if (null != ctx.columnRef()) {
                 result.setColumnWild((ColumnSegment) visit(ctx.columnRef()));
             } else if (null != ctx.textString()) {
                 result.setColumnWild((ColumnSegment) visit(ctx.textString()));
             }
         } else if (null != ctx.explainableStatement()) {
-            result.setStatement((SQLStatement) visit(ctx.explainableStatement()));
+            result.setSqlStatement((SQLStatement) visit(ctx.explainableStatement()));
         } else if (null != ctx.select()) {
-            result.setStatement((SQLStatement) visit(ctx.select()));
+            result.setSqlStatement((SQLStatement) visit(ctx.select()));
         } else if (null != ctx.delete()) {
-            result.setStatement((SQLStatement) visit(ctx.delete()));
+            result.setSqlStatement((SQLStatement) visit(ctx.delete()));
         } else if (null != ctx.update()) {
-            result.setStatement((SQLStatement) visit(ctx.update()));
+            result.setSqlStatement((SQLStatement) visit(ctx.update()));
         } else if (null != ctx.insert()) {
-            result.setStatement((SQLStatement) visit(ctx.insert()));
+            result.setSqlStatement((SQLStatement) visit(ctx.insert()));
         }
         return result;
     }

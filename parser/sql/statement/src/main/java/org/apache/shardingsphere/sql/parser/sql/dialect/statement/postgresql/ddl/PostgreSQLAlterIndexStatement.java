@@ -32,11 +32,7 @@ public final class PostgreSQLAlterIndexStatement extends AlterIndexStatement imp
     
     private IndexSegment renameIndex;
     
-    /**
-     * Get rename index segment.
-     *
-     * @return rename index segment
-     */
+    @Override
     public Optional<IndexSegment> getRenameIndex() {
         return Optional.ofNullable(renameIndex);
     }

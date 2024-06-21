@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sharding.exception.metadata.DuplicateIndexExcep
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateIndexStatementHandler;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +43,7 @@ public final class ShardingCreateIndexStatementValidator extends ShardingDDLStat
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         CreateIndexStatementContext createIndexStatementContext = (CreateIndexStatementContext) sqlStatementContext;
         CreateIndexStatement createIndexStatement = createIndexStatementContext.getSqlStatement();
-        if (CreateIndexStatementHandler.ifNotExists(createIndexStatement)) {
+        if (createIndexStatement.isIfNotExists()) {
             return;
         }
         String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());

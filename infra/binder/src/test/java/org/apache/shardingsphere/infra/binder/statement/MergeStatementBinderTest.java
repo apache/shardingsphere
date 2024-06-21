@@ -168,9 +168,10 @@ class MergeStatementBinderTest {
         MergeStatement actual = new MergeStatementBinder().bind(mergeStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
         assertTrue(actual.getUpdate().isPresent());
         assertThat(actual.getUpdate().get(), instanceOf(OracleUpdateStatement.class));
-        assertThat(((OracleUpdateStatement) actual.getUpdate().get()).getDeleteWhere().getExpr(), instanceOf(BinaryOperationExpression.class));
-        assertThat(((BinaryOperationExpression) ((OracleUpdateStatement) actual.getUpdate().get()).getDeleteWhere().getExpr()).getLeft(), instanceOf(ColumnSegment.class));
-        assertThat(((ColumnSegment) ((BinaryOperationExpression) ((OracleUpdateStatement) actual.getUpdate().get()).getDeleteWhere().getExpr()).getLeft())
+        assertTrue(actual.getUpdate().get().getDeleteWhere().isPresent());
+        assertThat(actual.getUpdate().get().getDeleteWhere().get().getExpr(), instanceOf(BinaryOperationExpression.class));
+        assertThat(((BinaryOperationExpression) actual.getUpdate().get().getDeleteWhere().get().getExpr()).getLeft(), instanceOf(ColumnSegment.class));
+        assertThat(((ColumnSegment) ((BinaryOperationExpression) actual.getUpdate().get().getDeleteWhere().get().getExpr()).getLeft())
                 .getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
     }
 }

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterIndexStatementHandler;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -42,7 +41,7 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final AlterIndexStatement sqlStatement, final ConfigurationProperties props) {
-        Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(sqlStatement);
+        Optional<IndexSegment> renameIndex = sqlStatement.getRenameIndex();
         if (!sqlStatement.getIndex().isPresent() || !renameIndex.isPresent()) {
             return;
         }

@@ -57,9 +57,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -96,7 +93,7 @@ public final class TableExtractor {
         selectStatement.getOrderBy().ifPresent(optional -> extractTablesFromOrderByItems(optional.getOrderByItems()));
         selectStatement.getHaving().ifPresent(optional -> extractTablesFromExpression(optional.getExpr()));
         selectStatement.getWithSegment().ifPresent(optional -> extractTablesFromCTEs(optional.getCommonTableExpressions()));
-        SelectStatementHandler.getLockSegment(selectStatement).ifPresent(this::extractTablesFromLock);
+        selectStatement.getLock().ifPresent(this::extractTablesFromLock);
     }
     
     private void extractTablesFromCTEs(final Collection<CommonTableExpressionSegment> commonTableExpressionSegments) {
@@ -244,7 +241,7 @@ public final class TableExtractor {
                 extractTablesFromExpression(each);
             }
         }
-        InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement).ifPresent(optional -> extractTablesFromAssignmentItems(optional.getColumns()));
+        insertStatement.getOnDuplicateKeyColumns().ifPresent(optional -> extractTablesFromAssignmentItems(optional.getColumns()));
         if (insertStatement.getInsertSelect().isPresent()) {
             extractTablesFromSelect(insertStatement.getInsertSelect().get().getSelect());
         }
@@ -339,7 +336,7 @@ public final class TableExtractor {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         for (ValidStatementSegment each : routineBody.getValidStatements()) {
             Optional<CreateTableStatement> createTable = each.getCreateTable();
-            if (createTable.isPresent() && !CreateTableStatementHandler.ifNotExists(createTable.get())) {
+            if (createTable.isPresent() && !createTable.get().isIfNotExists()) {
                 result.add(createTable.get().getTable());
             }
         }

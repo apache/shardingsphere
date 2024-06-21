@@ -37,14 +37,10 @@ public final class PostgreSQLCopyStatement extends CopyStatement implements Post
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();
     
-    private PrepareStatementQuerySegment prepareStatementQuerySegment;
+    private PrepareStatementQuerySegment prepareStatementQuery;
     
-    /**
-     * Get prepare statement query segment.
-     *
-     * @return prepare statement query segment
-     */
-    public Optional<PrepareStatementQuerySegment> getPrepareStatementQuerySegment() {
-        return Optional.ofNullable(prepareStatementQuerySegment);
+    @Override
+    public Optional<PrepareStatementQuerySegment> getPrepareStatementQuery() {
+        return Optional.ofNullable(prepareStatementQuery);
     }
 }

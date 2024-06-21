@@ -266,7 +266,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
             result.setLikeTable((SimpleTableSegment) visit(ctx.createLikeClause()));
         }
         if (null != ctx.createTableOptions()) {
-            result.setCreateTableOptionSegment((CreateTableOptionSegment) visit(ctx.createTableOptions()));
+            result.setCreateTableOption((CreateTableOptionSegment) visit(ctx.createTableOptions()));
         }
         return result;
     }
@@ -673,10 +673,10 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
         result.getColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
         if (null != ctx.algorithmOptionAndLockOption()) {
             if (null != ctx.algorithmOptionAndLockOption().alterAlgorithmOption()) {
-                result.setAlgorithmSegment((AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption()));
+                result.setAlgorithmType((AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption()));
             }
             if (null != ctx.algorithmOptionAndLockOption().alterLockOption()) {
-                result.setLockTableSegment((LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption()));
+                result.setLockTable((LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption()));
             }
         }
         return result;
@@ -685,15 +685,15 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
         MySQLDropIndexStatement result = new MySQLDropIndexStatement();
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
         result.getIndexes().add(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
         if (null != ctx.algorithmOptionAndLockOption()) {
             if (null != ctx.algorithmOptionAndLockOption().alterAlgorithmOption()) {
-                result.setAlgorithmSegment((AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption()));
+                result.setAlgorithmType((AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption()));
             }
             if (null != ctx.algorithmOptionAndLockOption().alterLockOption()) {
-                result.setLockTableSegment((LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption()));
+                result.setLockTable((LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption()));
             }
         }
         return result;

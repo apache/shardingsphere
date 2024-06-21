@@ -19,10 +19,17 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionWithParamsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.merge.MergeWhenAndThenSegment;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -58,5 +65,50 @@ public abstract class MergeStatement extends AbstractSQLStatement implements DML
      */
     public Optional<InsertStatement> getInsert() {
         return Optional.ofNullable(insert);
+    }
+    
+    /**
+     * Get with segment.
+     *
+     * @return with segment
+     */
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get with table hint segment.
+     *
+     * @return with table hint segment
+     */
+    public Optional<WithTableHintSegment> getWithTableHintSegment() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get output segment.
+     *
+     * @return output segment
+     */
+    public Optional<OutputSegment> getOutputSegment() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get when and then segments.
+     *
+     * @return when and then segments
+     */
+    public Collection<MergeWhenAndThenSegment> getWhenAndThenSegments() {
+        return Collections.emptyList();
+    }
+    
+    /**
+     * Get index segments.
+     *
+     * @return index segments
+     */
+    public Collection<IndexSegment> getIndexes() {
+        return Collections.emptyList();
     }
 }
