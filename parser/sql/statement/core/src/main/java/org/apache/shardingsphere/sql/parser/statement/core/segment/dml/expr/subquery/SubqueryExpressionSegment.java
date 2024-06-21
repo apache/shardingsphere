@@ -25,9 +25,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
  * Subquery expression segment.
  */
 @RequiredArgsConstructor
+@Getter
 public final class SubqueryExpressionSegment implements SimpleExpressionSegment {
     
-    @Getter
     private final SubquerySegment subquery;
     
     @Override
