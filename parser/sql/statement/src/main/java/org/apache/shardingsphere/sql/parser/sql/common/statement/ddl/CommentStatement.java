@@ -19,10 +19,13 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+
+import java.util.Optional;
 
 /**
  * Comment statement.
@@ -36,4 +39,13 @@ public abstract class CommentStatement extends AbstractSQLStatement implements D
     private ColumnSegment column;
     
     private IdentifierValue comment;
+    
+    /**
+     * Get index type.
+     *
+     * @return index type
+     */
+    public Optional<IndexTypeSegment> getIndexType() {
+        return Optional.empty();
+    }
 }
