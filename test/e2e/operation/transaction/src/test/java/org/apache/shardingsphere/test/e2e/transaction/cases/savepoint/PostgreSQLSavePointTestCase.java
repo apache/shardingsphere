@@ -28,7 +28,6 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -55,21 +54,19 @@ public final class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
                 connection.setSavepoint("point");
                 fail("Expect exception, but no exception report.");
             } catch (final SQLException ex) {
-                assertThat(ex.getMessage(), is("Savepoint can only be used in transaction blocks."));
+                assertThat(ex.getMessage(), is("Savepoint can only be used in transaction blocks"));
             }
             try {
                 connection.rollback(new PSQLSavepoint("point1"));
                 fail("Expect exception, but no exception report.");
             } catch (final SQLException ex) {
-                // TODO can not run to get the correct result in JDBC mode.
-                assertTrue(ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
+                assertThat(ex.getMessage(), is("ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
             }
             try {
                 connection.releaseSavepoint(new PSQLSavepoint("point1"));
                 fail("Expect exception, but no exception report.");
             } catch (final SQLException ex) {
-                // TODO can not run to get the correct result in JDBC mode.
-                assertTrue(ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks"));
+                assertThat(ex.getMessage(), is("RELEASE SAVEPOINT can only be used in transaction blocks"));
             }
         }
     }
