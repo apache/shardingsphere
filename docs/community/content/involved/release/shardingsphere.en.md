@@ -200,6 +200,10 @@ GPG signatures and hashes (SHA* etc) should be prefixed with `https://downloads.
 
 Update `${RELEASE.VERSION}` and `${NEXT.RELEASE.VERSION}` in README.md and README_ZH.md.
 
+### 6. Update ShardingSphereDriver
+
+Update `MAJOR_DRIVER_VERSION` and `MINOR_DRIVER_VERSION` in ShardingSphereDriver.java.
+
 ## Apache Maven Central Repository Release
 
 ### 1. Set settings-security.xml and settings.xml
