@@ -35,20 +35,12 @@ public final class SQLServerDeleteStatement extends DeleteStatement implements S
     
     private OutputSegment outputSegment;
     
-    /**
-     * Get with segment.
-     *
-     * @return with segment.
-     */
+    @Override
     public Optional<WithSegment> getWithSegment() {
         return Optional.ofNullable(withSegment);
     }
     
-    /**
-     * Get output segment.
-     *
-     * @return output segment.
-     */
+    @Override
     public Optional<OutputSegment> getOutputSegment() {
         return Optional.ofNullable(outputSegment);
     }

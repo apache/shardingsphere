@@ -20,10 +20,10 @@ package org.apache.shardingsphere.sql.parser.statement.oracle.dml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.MultiTableConditionalIntoSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.MultiTableInsertIntoSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.MultiTableInsertType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
 
 import java.util.Optional;
@@ -43,38 +43,22 @@ public final class OracleInsertStatement extends InsertStatement implements Orac
     
     private WhereSegment where;
     
-    /**
-     * Get multi table insert type.
-     *
-     * @return multi table insert type
-     */
+    @Override
     public Optional<MultiTableInsertType> getMultiTableInsertType() {
         return Optional.ofNullable(multiTableInsertType);
     }
     
-    /**
-     * Get multi table insert into segment.
-     *
-     * @return multi table insert into segment
-     */
+    @Override
     public Optional<MultiTableInsertIntoSegment> getMultiTableInsertIntoSegment() {
         return Optional.ofNullable(multiTableInsertIntoSegment);
     }
     
-    /**
-     * Get multi table conditional into segment.
-     *
-     * @return multi table conditional into segment
-     */
+    @Override
     public Optional<MultiTableConditionalIntoSegment> getMultiTableConditionalIntoSegment() {
         return Optional.ofNullable(multiTableConditionalIntoSegment);
     }
     
-    /**
-     * Get where segment.
-     *
-     * @return where segment
-     */
+    @Override
     public Optional<WhereSegment> getWhere() {
         return Optional.ofNullable(where);
     }

@@ -41,29 +41,17 @@ public final class MySQLSelectStatement extends SelectStatement implements MySQL
     
     private WindowSegment window;
     
-    /**
-     * Get order by segment.
-     *
-     * @return order by segment
-     */
+    @Override
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
     }
     
-    /**
-     * Get lock segment.
-     *
-     * @return lock segment
-     */
+    @Override
     public Optional<LockSegment> getLock() {
         return Optional.ofNullable(lock);
     }
     
-    /**
-     * Get window segment.
-     *
-     * @return window segment
-     */
+    @Override
     public Optional<WindowSegment> getWindow() {
         return Optional.ofNullable(window);
     }
@@ -76,5 +64,4 @@ public final class MySQLSelectStatement extends SelectStatement implements MySQL
     public Optional<SimpleTableSegment> getTable() {
         return Optional.ofNullable(table);
     }
-    
 }

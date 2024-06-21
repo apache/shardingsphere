@@ -44,47 +44,27 @@ public final class SQLServerInsertStatement extends InsertStatement implements S
     
     private FunctionSegment rowSetFunctionSegment;
     
-    /**
-     * Get with segment.
-     *
-     * @return with segment.
-     */
+    @Override
     public Optional<WithSegment> getWithSegment() {
         return Optional.ofNullable(withSegment);
     }
     
-    /**
-     * Get output segment.
-     *
-     * @return output segment.
-     */
+    @Override
     public Optional<OutputSegment> getOutputSegment() {
         return Optional.ofNullable(outputSegment);
     }
     
-    /**
-     * Get execute segment.
-     *
-     * @return execute segment.
-     */
+    @Override
     public Optional<ExecSegment> getExecSegment() {
         return Optional.ofNullable(execSegment);
     }
     
-    /**
-     * Get with table hint segment.
-     *
-     * @return with table hint segment.
-     */
+    @Override
     public Optional<WithTableHintSegment> getWithTableHintSegment() {
         return Optional.ofNullable(withTableHintSegment);
     }
     
-    /**
-     * Get rowSet function segment.
-     *
-     * @return rowSet function segment.
-     */
+    @Override
     public Optional<FunctionSegment> getRowSetFunctionSegment() {
         return Optional.ofNullable(rowSetFunctionSegment);
     }

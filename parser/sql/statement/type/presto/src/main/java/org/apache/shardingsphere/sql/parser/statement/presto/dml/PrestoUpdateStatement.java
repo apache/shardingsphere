@@ -35,20 +35,12 @@ public final class PrestoUpdateStatement extends UpdateStatement implements Pres
     
     private LimitSegment limit;
     
-    /**
-     * Get order by segment.
-     *
-     * @return order by segment
-     */
+    @Override
     public Optional<OrderBySegment> getOrderBy() {
         return Optional.ofNullable(orderBy);
     }
     
-    /**
-     * Get order by segment.
-     *
-     * @return order by segment
-     */
+    @Override
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
     }

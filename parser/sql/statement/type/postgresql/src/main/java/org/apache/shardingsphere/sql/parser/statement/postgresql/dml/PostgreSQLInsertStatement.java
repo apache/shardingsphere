@@ -38,29 +38,17 @@ public final class PostgreSQLInsertStatement extends InsertStatement implements 
     
     private ReturningSegment returningSegment;
     
-    /**
-     * Get with segment.
-     *
-     * @return with segment.
-     */
+    @Override
     public Optional<WithSegment> getWithSegment() {
         return Optional.ofNullable(withSegment);
     }
     
-    /**
-     * Get on duplicate key columns segment.
-     *
-     * @return on duplicate key columns segment
-     */
+    @Override
     public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
         return Optional.ofNullable(onDuplicateKeyColumnsSegment);
     }
     
-    /**
-     * Get returning segment.
-     *
-     * @return returning segment
-     */
+    @Override
     public Optional<ReturningSegment> getReturningSegment() {
         return Optional.ofNullable(returningSegment);
     }

@@ -34,6 +34,7 @@ public final class PostgreSQLAlterSchemaStatement extends AlterSchemaStatement i
     
     private IdentifierValue renameSchema;
     
+    @Override
     public Optional<IdentifierValue> getRenameSchema() {
         return Optional.ofNullable(renameSchema);
     }

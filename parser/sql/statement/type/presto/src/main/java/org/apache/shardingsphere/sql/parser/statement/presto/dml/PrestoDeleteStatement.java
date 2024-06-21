@@ -35,20 +35,13 @@ public final class PrestoDeleteStatement extends DeleteStatement implements Pres
     
     private LimitSegment limit;
     
-    /**
-     * Get order by segment.
-     *
-     * @return order by segment
-     */
+    @Override
+    
     public Optional<OrderBySegment> getOrderBy() {
         return Optional.ofNullable(orderBy);
     }
     
-    /**
-     * Get limit segment.
-     *
-     * @return limit segment
-     */
+    @Override
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
     }

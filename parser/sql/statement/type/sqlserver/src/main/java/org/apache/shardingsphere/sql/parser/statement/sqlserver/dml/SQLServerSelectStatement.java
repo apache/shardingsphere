@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.dml;
 
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
 
 import java.util.Optional;
@@ -38,20 +38,12 @@ public final class SQLServerSelectStatement extends SelectStatement implements S
     
     private WithTableHintSegment withTableHintSegment;
     
-    /**
-     * Get order by segment.
-     *
-     * @return order by segment
-     */
+    @Override
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
     }
     
-    /**
-     * Get into segment.
-     *
-     * @return into segment
-     */
+    @Override
     public Optional<TableSegment> getIntoSegment() {
         return Optional.ofNullable(intoSegment);
     }
