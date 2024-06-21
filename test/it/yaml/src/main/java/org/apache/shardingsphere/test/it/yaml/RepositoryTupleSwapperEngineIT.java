@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.yaml;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
@@ -44,6 +45,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Slf4j
 public abstract class RepositoryTupleSwapperEngineIT {
     
     private final File yamlFile;
@@ -66,6 +68,7 @@ public abstract class RepositoryTupleSwapperEngineIT {
     private YamlRuleConfiguration loadYamlRuleConfiguration() throws IOException {
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(yamlFile, YamlRootConfiguration.class);
         assertThat(yamlRootConfig.getRules().size(), is(1));
+        log.info("RepositoryTupleSwapperEngineIT.loadYamlRuleConfiguration yamlRootConfig is {}", YamlEngine.marshal(yamlRootConfig));
         return yamlRootConfig.getRules().iterator().next();
     }
     
