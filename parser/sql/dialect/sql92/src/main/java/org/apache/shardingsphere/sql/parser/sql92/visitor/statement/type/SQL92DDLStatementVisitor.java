@@ -50,9 +50,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeS
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitor;
 
 import java.util.Collections;

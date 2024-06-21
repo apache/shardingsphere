@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatem
 import org.apache.shardingsphere.infra.rewrite.token.pojo.keygen.LiteralGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.infra.rewrite.token.pojo.keygen.ParameterMarkerGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

@@ -26,10 +26,10 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ShowCo
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SpoolContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleAlterResourceCostStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleExplainStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleShowStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleSpoolStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleAlterResourceCostStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleShowStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleSpoolStatement;
 
 /**
  * DAL statement visitor for Oracle.

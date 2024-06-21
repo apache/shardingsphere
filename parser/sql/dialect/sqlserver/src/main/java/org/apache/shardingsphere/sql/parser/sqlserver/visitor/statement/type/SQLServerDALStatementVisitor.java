@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatem
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExplainableStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dal.SQLServerExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dal.SQLServerExplainStatement;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitor;
 
 /**

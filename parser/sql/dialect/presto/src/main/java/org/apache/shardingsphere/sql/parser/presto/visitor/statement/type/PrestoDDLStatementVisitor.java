@@ -40,11 +40,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.presto.ddl.PrestoCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.presto.ddl.PrestoCreateViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.presto.ddl.PrestoDropTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.presto.ddl.PrestoDropViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.presto.dml.PrestoSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.presto.ddl.PrestoCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.presto.ddl.PrestoCreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.presto.ddl.PrestoDropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.presto.ddl.PrestoDropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoSelectStatement;
 
 /**
  * DDL statement visitor for Presto.

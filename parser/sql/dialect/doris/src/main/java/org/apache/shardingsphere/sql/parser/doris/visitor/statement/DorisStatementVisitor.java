@@ -233,10 +233,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.Number
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dml.DorisDeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dml.DorisInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dml.DorisSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dml.DorisUpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisDeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisInsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisUpdateStatement;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

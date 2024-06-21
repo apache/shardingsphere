@@ -29,8 +29,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Whe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
 
 import java.util.Collection;
 import java.util.Collections;

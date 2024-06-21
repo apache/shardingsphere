@@ -31,14 +31,14 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Rev
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dcl.OpenGaussAlterRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dcl.OpenGaussAlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dcl.OpenGaussCreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dcl.OpenGaussCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dcl.OpenGaussDropRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dcl.OpenGaussDropUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dcl.OpenGaussGrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dcl.OpenGaussRevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussAlterRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussAlterUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussCreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussDropRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussDropUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussGrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussRevokeStatement;
 
 import java.util.Collection;
 

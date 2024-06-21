@@ -60,7 +60,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateUserStatement;
 import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.SQLException;

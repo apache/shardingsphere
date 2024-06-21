@@ -169,11 +169,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.Number
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.CursorForLoopStatementSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureBodyEndNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureCallNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.SQLStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.CursorForLoopStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.ProcedureBodyEndNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.ProcedureCallNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.SQLStatementSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;

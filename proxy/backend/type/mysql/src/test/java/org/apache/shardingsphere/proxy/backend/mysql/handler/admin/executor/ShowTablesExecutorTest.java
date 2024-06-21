@@ -41,7 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSeg
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;

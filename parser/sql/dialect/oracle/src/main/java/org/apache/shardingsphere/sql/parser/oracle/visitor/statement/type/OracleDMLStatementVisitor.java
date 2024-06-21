@@ -182,11 +182,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleDeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleMergeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleUpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleDeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleInsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleMergeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleUpdateStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -42,12 +42,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSeg
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.IndexHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLCallStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDoStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLHandlerStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLImportStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadDataStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadXMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLCallStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLDoStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLHandlerStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLImportStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -179,10 +179,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.Number
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.presto.dml.PrestoDeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.presto.dml.PrestoInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.presto.dml.PrestoSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.presto.dml.PrestoUpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoDeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoInsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoUpdateStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;

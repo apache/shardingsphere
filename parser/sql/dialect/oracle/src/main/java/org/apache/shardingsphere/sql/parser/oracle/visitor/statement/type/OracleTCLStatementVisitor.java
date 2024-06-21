@@ -27,12 +27,12 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetCon
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleLockStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleRollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSetConstraintsStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleLockStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleRollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleSetConstraintsStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleSetTransactionStatement;
 
 /**
  * TCL statement visitor for Oracle.

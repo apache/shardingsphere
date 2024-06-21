@@ -25,11 +25,11 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ChangeR
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StartSlaveContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StopSlaveContext;
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.rl.DorisChangeMasterStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.rl.DorisChangeReplicationSourceToStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.rl.DorisStartReplicaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.rl.DorisStartSlaveStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.rl.DorisStopSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.rl.DorisChangeMasterStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.rl.DorisChangeReplicationSourceToStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.rl.DorisStartReplicaStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.rl.DorisStartSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.rl.DorisStopSlaveStatement;
 
 /**
  * RL statement visitor for Doris.

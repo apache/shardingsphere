@@ -27,9 +27,9 @@ import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaus
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussCallStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussCopyStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussDoStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussCallStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussCopyStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussDoStatement;
 
 /**
  * DML statement visitor for openGauss.

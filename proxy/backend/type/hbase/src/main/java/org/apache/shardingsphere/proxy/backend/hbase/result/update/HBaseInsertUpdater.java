@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.update.Update
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseInsertOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseExecutor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;

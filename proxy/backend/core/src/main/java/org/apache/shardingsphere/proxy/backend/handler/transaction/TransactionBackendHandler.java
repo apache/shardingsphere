@@ -33,11 +33,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackSta
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussRollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLRollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLSetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussRollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLRollbackStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.sql.SQLException;

@@ -42,12 +42,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSeg
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.IndexHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dml.DorisCallStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dml.DorisDoStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dml.DorisHandlerStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dml.DorisImportStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dml.DorisLoadDataStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dml.DorisLoadXMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisCallStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisDoStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisHandlerStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisImportStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisLoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisLoadXMLStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;

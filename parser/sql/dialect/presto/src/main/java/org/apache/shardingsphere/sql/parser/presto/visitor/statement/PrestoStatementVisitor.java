@@ -92,7 +92,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.Number
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.presto.dml.PrestoSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoSelectStatement;
 
 import java.math.BigDecimal;
 import java.util.Collection;

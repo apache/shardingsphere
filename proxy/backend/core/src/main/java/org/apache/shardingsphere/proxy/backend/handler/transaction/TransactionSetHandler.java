@@ -26,7 +26,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
 
 import java.sql.Connection;

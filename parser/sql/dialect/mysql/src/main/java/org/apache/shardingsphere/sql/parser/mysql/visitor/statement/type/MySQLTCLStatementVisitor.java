@@ -50,15 +50,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XAPrepar
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARecoveryStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLLockStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLRollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLUnlockStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLBeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLLockStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLReleaseSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLRollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLSetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLSetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLUnlockStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;

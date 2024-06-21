@@ -64,10 +64,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.clickhouse.dml.ClickHouseDeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.clickhouse.dml.ClickHouseInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.clickhouse.dml.ClickHouseSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.clickhouse.dml.ClickHouseUpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseDeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseInsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseUpdateStatement;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -100,17 +100,17 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.GrantLeve
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisAlterUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisCreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisDropRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisDropUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisGrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisRenameUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisRevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisSetDefaultRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisSetPasswordStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.dcl.DorisSetRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisAlterUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisCreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisDropRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisDropUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisGrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisRenameUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisRevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisSetDefaultRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisSetPasswordStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisSetRoleStatement;
 
 import java.util.stream.Collectors;
 

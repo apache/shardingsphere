@@ -50,15 +50,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XAPrepar
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARecoveryStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.tcl.DorisBeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.tcl.DorisCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.tcl.DorisLockStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.tcl.DorisReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.tcl.DorisRollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.tcl.DorisSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.tcl.DorisSetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.tcl.DorisSetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.doris.tcl.DorisUnlockStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.tcl.DorisBeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.tcl.DorisCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.tcl.DorisLockStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.tcl.DorisReleaseSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.tcl.DorisRollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.tcl.DorisSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.tcl.DorisSetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.tcl.DorisSetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.tcl.DorisUnlockStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;

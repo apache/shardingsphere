@@ -40,14 +40,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.OpenGaussAnalyzeTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.OpenGaussEmptyStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.OpenGaussExplainStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.OpenGaussLoadStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.OpenGaussResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.OpenGaussSetStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.OpenGaussShowStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.OpenGaussVacuumStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussAnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussEmptyStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussResetParameterStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussSetStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussShowStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussVacuumStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;

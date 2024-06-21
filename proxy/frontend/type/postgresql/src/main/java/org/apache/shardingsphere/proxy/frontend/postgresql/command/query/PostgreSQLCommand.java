@@ -68,7 +68,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackSta
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.StartTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCursorStatement;
 
 import java.util.Arrays;
 import java.util.Collection;

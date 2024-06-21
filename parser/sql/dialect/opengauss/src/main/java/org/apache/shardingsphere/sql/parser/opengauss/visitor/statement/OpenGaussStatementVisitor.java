@@ -190,11 +190,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.Number
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussExecuteStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussDeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussUpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussExecuteStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussDeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussInsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussUpdateStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
