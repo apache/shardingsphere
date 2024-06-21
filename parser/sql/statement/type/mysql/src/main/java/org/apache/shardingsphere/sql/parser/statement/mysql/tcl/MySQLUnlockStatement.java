@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.tcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.UnlockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.UnlockStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
 
 /**

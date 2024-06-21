@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.opengauss.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.OpenGaussStatement;
 
 /**

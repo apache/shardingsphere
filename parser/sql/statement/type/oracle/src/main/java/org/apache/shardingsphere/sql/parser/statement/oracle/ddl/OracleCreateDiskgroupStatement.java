@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDiskgroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDiskgroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
 
 /**

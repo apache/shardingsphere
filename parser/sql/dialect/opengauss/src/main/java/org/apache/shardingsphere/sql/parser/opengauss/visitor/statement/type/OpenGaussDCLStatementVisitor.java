@@ -29,8 +29,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Gra
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.PrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussAlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussAlterUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussCreateRoleStatement;

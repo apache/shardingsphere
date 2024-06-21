@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.doris.rl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.ChangeReplicationSourceToStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.ChangeReplicationSourceToStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 
 /**

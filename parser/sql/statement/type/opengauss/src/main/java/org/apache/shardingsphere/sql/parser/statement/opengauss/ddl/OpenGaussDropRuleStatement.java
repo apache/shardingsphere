@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.opengauss.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.OpenGaussStatement;
 
 /**

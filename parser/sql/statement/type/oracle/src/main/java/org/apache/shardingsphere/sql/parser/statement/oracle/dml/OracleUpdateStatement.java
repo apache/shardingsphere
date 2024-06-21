@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.statement.oracle.dml;
 
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
 
 import java.util.Optional;

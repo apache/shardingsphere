@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.clickhouse.ClickHouseStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 import org.apache.shardingsphere.sql.parser.statement.hive.HiveStatement;

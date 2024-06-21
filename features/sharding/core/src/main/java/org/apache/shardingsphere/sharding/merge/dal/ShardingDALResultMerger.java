@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sharding.merge.dal.show.ShowCreateTableMergedRe
 import org.apache.shardingsphere.sharding.merge.dal.show.ShowIndexMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.ShowTableStatusMergedResult;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowIndexStatement;

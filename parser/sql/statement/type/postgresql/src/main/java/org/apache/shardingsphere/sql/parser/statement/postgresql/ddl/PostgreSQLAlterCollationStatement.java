@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterCollationStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterCollationStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
 
 /**

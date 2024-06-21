@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.doris.tcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 
 /**

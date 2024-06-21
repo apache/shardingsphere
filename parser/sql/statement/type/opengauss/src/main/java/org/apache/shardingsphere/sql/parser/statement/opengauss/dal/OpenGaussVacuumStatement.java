@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.opengauss.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.VacuumStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.VacuumStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.OpenGaussStatement;
 
 /**

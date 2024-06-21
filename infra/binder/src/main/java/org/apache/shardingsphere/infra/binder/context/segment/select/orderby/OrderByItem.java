@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.orderby;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 
 /**
  * Order by item.

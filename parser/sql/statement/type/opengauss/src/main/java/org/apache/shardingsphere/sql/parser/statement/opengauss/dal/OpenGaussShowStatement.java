@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.opengauss.dal;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.OpenGaussStatement;
 
 import java.util.Optional;

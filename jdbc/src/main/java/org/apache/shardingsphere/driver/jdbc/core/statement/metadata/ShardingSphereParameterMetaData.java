@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.statement.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationParameterMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * ShardingSphere parameter meta data.

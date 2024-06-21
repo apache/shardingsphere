@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.doris.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowProcessListStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowProcessListStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 
 /**

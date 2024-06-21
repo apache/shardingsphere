@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetPasswordStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
 
 /**

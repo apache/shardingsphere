@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.doris.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 
 /**

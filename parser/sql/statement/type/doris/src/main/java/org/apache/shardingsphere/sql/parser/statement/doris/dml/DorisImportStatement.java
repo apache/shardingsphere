@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.doris.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.ImportStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.ImportStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 
 /**

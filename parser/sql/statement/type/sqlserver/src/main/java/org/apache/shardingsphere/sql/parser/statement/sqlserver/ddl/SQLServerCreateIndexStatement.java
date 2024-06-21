@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
 
 /**

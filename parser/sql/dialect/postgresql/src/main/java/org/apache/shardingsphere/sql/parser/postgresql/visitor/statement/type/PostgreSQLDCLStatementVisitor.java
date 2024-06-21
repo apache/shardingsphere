@@ -31,8 +31,8 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Pr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ReassignOwnedContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLAlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLAlterUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLCreateGroupStatement;

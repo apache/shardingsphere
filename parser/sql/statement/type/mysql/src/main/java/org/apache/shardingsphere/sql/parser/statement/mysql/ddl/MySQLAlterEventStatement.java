@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
 
 /**

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.clickhouse.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.clickhouse.ClickHouseStatement;
 
 /**

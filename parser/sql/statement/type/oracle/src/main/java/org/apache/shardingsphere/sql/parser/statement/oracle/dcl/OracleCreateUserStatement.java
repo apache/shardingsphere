@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.dcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
 
 /**

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.sql92.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.SQL92Statement;
 
 /**

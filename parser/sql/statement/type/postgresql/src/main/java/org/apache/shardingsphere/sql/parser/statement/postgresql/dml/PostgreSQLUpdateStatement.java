@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
 
 /**

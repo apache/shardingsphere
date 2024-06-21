@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateContextStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateContextStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
 
 /**

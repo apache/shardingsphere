@@ -82,7 +82,7 @@ import org.apache.shardingsphere.data.pipeline.distsql.statement.updatable.Alter
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;

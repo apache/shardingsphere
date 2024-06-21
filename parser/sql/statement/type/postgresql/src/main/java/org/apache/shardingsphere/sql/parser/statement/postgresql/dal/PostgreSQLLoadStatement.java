@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.dal;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.LoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
 
 /**

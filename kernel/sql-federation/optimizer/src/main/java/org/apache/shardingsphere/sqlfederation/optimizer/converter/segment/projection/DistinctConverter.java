@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 
 import java.util.Collections;
 import java.util.Optional;

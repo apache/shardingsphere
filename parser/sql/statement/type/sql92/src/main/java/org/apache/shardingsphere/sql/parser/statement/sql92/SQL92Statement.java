@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.sql92;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * SQL92 statement.

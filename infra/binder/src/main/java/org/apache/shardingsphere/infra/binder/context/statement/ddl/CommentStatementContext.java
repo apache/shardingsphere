@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CommentStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CommentStatement;
 
 import java.util.Collections;
 

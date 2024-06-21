@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
 
 /**

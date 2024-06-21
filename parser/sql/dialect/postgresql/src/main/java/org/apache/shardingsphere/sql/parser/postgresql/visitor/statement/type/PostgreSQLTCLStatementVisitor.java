@@ -38,9 +38,9 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Se
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.StartTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TransactionModeItemContext;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionAccessType;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCheckpointStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLCommitPreparedStatement;

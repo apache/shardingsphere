@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.statement;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * DistSQL statement.

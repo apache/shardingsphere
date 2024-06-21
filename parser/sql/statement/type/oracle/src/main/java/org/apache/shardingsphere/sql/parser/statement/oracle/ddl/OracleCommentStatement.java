@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTypeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CommentStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexTypeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
 
 import java.util.Optional;

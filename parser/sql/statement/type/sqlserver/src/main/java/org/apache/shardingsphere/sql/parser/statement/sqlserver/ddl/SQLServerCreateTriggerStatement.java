@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
 
 /**

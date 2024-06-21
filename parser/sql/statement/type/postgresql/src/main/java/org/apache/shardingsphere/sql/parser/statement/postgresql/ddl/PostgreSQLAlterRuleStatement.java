@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
 
 /**

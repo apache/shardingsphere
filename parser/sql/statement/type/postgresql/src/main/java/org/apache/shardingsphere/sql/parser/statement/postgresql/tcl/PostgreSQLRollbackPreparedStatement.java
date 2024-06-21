@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.tcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackPreparedStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackPreparedStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
 
 /**

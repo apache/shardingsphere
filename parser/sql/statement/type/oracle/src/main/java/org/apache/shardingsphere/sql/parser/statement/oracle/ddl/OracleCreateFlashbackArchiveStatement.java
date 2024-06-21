@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFlashbackArchiveStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFlashbackArchiveStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
 
 /**

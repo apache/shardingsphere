@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.statement;
 
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowDatabaseRulesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 
 /**
  * Show sharding audit algorithms statement.

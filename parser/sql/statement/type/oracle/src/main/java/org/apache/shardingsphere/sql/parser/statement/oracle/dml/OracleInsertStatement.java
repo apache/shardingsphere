@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sql.parser.statement.oracle.dml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.table.MultiTableConditionalIntoSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.table.MultiTableInsertIntoSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.table.MultiTableInsertType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.MultiTableConditionalIntoSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.MultiTableInsertIntoSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.MultiTableInsertType;
 import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
 
 import java.util.Optional;

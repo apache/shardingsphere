@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.clickhouse.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.clickhouse.ClickHouseStatement;
 
 /**

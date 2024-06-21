@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dcl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.PasswordOrLockOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.TLSOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.UserResourceSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PasswordOrLockOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.TLSOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserResourceSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
 
 import java.util.Collection;

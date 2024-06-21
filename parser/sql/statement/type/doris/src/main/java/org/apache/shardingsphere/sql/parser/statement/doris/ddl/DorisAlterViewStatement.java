@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.statement.doris.ddl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 
 import java.util.Optional;

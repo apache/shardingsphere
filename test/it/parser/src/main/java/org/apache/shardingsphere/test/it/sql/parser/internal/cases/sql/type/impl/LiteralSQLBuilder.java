@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.impl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.CaseTypedSQLBuilder;
 
 import java.util.List;

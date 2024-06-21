@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.segment.insert.values.expression;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 
 /**
  * Derived literal expression segment.

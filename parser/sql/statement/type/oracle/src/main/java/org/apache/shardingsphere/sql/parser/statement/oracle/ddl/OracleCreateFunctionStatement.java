@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.ProcedureCallNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.SQLStatementSegment;

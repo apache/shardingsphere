@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.ddl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
 
 import java.util.Optional;

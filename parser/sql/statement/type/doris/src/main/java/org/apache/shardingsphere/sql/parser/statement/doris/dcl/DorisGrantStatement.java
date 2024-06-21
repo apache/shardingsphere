@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sql.parser.statement.doris.dcl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.UserSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.GrantLevelSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.GrantLevelSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.RoleOrPrivilegeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.RoleOrPrivilegeSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;

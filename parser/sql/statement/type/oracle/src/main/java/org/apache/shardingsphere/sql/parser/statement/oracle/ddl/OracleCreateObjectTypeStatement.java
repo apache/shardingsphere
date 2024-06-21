@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
 
 import java.util.Collection;

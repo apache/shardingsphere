@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.rl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.rl.StartSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.StartSlaveStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
 
 /**

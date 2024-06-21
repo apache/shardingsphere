@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.from;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 
 import java.util.Collection;
 import java.util.Optional;

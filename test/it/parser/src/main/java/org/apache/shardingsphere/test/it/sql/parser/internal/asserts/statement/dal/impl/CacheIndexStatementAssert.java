@@ -19,11 +19,11 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.CacheTableIndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PartitionDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.PartitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.CacheIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CacheIndexStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;

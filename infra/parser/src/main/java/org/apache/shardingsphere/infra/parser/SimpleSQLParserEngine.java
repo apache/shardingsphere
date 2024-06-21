@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.parser;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SimpleSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SimpleSQLStatement;
 
 /**
  * Simple SQL parser engine.

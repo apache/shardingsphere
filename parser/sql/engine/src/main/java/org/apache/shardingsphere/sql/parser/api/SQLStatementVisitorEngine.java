@@ -25,9 +25,9 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.SQLStatementVi
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory;
 import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLVisitorRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * SQL statement visitor engine.

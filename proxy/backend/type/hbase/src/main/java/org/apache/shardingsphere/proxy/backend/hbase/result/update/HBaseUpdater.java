@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.result.update;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;

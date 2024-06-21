@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.dcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
 
 /**

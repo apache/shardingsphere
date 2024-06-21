@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.postgresql.dal;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
 
 import java.util.Optional;

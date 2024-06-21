@@ -19,13 +19,13 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XABeginStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XACommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XAEndStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XAPrepareStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARecoveryStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XABeginStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XACommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XAEndStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XAPrepareStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XARecoveryStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XARollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLAnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCacheIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLChecksumTableStatement;

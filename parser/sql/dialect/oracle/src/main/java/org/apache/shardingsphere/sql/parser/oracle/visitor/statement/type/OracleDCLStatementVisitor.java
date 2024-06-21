@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GrantC
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetRoleContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleAlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleAlterUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleCreateRoleStatement;

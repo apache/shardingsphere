@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateLoginStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
 
 /**

@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CursorStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
 
 /**
  * Cursor statement binder.

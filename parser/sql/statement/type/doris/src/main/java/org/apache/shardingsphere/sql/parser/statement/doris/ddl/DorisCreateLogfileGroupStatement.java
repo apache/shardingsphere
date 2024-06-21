@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.doris.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 
 /**

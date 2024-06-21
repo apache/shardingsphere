@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.dml;
 
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.hint.OptionHintSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.hint.WithTableHintSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OutputSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.OptionHintSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
 
 import java.util.Optional;
