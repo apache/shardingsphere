@@ -157,26 +157,6 @@ public final class TransactionE2EEnvironment {
     }
     
     /**
-     * Get proxy password.
-     *
-     * @return proxy password
-     */
-    public String getProxyPassword() {
-        // TODO this should extract into a constant
-        return props.getOrDefault("transaction.it.proxy.password", ProxyContainerConstants.PASSWORD).toString();
-    }
-    
-    /**
-     * Get proxy userName.
-     *
-     * @return proxy userName
-     */
-    public String getProxyUserName() {
-        // TODO this should extract into a constant
-        return props.getOrDefault("transaction.it.proxy.username", ProxyContainerConstants.USERNAME).toString();
-    }
-    
-    /**
      * Get instance.
      *
      * @return singleton instance
