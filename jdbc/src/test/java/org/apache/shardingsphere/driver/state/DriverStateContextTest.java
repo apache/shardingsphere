@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.state;
 
-import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
@@ -41,7 +40,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -61,8 +59,7 @@ class DriverStateContextTest {
     void setUp() {
         Map<String, ShardingSphereDatabase> databases = mockDatabases();
         TransactionRule transactionRule = mock(TransactionRule.class);
-        AuthorityRule authorityRule = mock(AuthorityRule.class);
-        RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(transactionRule, authorityRule));
+        RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(transactionRule));
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(
                 mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), globalRuleMetaData, new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
