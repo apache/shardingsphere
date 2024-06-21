@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContex
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.DeleteStatementHandler;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -52,10 +51,10 @@ public final class DeleteStatementBinder implements SQLStatementBinder<DeleteSta
         TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getTable(), statementBinderContext, tableBinderContexts, Collections.emptyMap());
         result.setTable(boundedTableSegment);
         sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, Collections.emptyMap())));
-        DeleteStatementHandler.getOrderBySegment(sqlStatement).ifPresent(optional -> DeleteStatementHandler.setOrderBySegment(result, optional));
-        DeleteStatementHandler.getLimitSegment(sqlStatement).ifPresent(optional -> DeleteStatementHandler.setLimitSegment(result, optional));
-        DeleteStatementHandler.getWithSegment(sqlStatement).ifPresent(optional -> DeleteStatementHandler.setWithSegment(result, optional));
-        DeleteStatementHandler.getOutputSegment(sqlStatement).ifPresent(optional -> DeleteStatementHandler.setOutputSegment(result, optional));
+        sqlStatement.getOrderBy().ifPresent(result::setOrderBy);
+        sqlStatement.getLimit().ifPresent(result::setLimit);
+        sqlStatement.getWithSegment().ifPresent(result::setWithSegment);
+        sqlStatement.getOutputSegment().ifPresent(result::setOutputSegment);
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;

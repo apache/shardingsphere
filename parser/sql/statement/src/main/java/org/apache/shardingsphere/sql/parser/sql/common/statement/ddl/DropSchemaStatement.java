@@ -31,4 +31,13 @@ import java.util.LinkedList;
 public abstract class DropSchemaStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<IdentifierValue> schemaNames = new LinkedList<>();
+    
+    /**
+     * Judge whether SQL statement contains cascade or not.
+     *
+     * @return SQL statement contains cascade or not
+     */
+    public boolean isContainsCascade() {
+        return false;
+    }
 }

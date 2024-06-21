@@ -45,7 +45,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -138,7 +137,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     }
     
     private Optional<OnDuplicateUpdateContext> getOnDuplicateKeyUpdateValueContext(final List<Object> params, final AtomicInteger parametersOffset) {
-        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(getSqlStatement());
+        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = getSqlStatement().getOnDuplicateKeyColumns();
         if (!onDuplicateKeyColumnsSegment.isPresent()) {
             return Optional.empty();
         }
@@ -198,7 +197,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
      */
     public boolean containsInsertColumns() {
         InsertStatement insertStatement = getSqlStatement();
-        return !insertStatement.getColumns().isEmpty() || InsertStatementHandler.getSetAssignmentSegment(insertStatement).isPresent();
+        return !insertStatement.getColumns().isEmpty() || insertStatement.getSetAssignment().isPresent();
     }
     
     /**
@@ -208,7 +207,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
      */
     public int getValueListCount() {
         InsertStatement insertStatement = getSqlStatement();
-        return InsertStatementHandler.getSetAssignmentSegment(insertStatement).isPresent() ? 1 : insertStatement.getValues().size();
+        return insertStatement.getSetAssignment().isPresent() ? 1 : insertStatement.getValues().size();
     }
     
     /**
@@ -218,7 +217,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
      */
     public List<String> getInsertColumnNames() {
         InsertStatement insertStatement = getSqlStatement();
-        return InsertStatementHandler.getSetAssignmentSegment(insertStatement).map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(insertStatement.getColumns()));
+        return insertStatement.getSetAssignment().map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(insertStatement.getColumns()));
     }
     
     private List<String> getColumnNamesForSetAssignment(final SetAssignmentSegment setAssignment) {
@@ -238,7 +237,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     }
     
     private List<List<ExpressionSegment>> getAllValueExpressions(final InsertStatement insertStatement) {
-        Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
+        Optional<SetAssignmentSegment> setAssignment = insertStatement.getSetAssignment();
         return setAssignment
                 .map(optional -> Collections.singletonList(getAllValueExpressionsFromSetAssignment(optional))).orElseGet(() -> getAllValueExpressionsFromValues(insertStatement.getValues()));
     }

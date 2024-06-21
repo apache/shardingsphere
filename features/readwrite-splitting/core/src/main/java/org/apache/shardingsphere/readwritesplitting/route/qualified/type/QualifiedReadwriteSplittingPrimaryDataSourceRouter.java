@@ -25,7 +25,6 @@ import org.apache.shardingsphere.readwritesplitting.route.qualified.QualifiedRea
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 /**
  * Qualified data source primary router for readwrite-splitting.
@@ -47,7 +46,7 @@ public final class QualifiedReadwriteSplittingPrimaryDataSourceRouter implements
     }
     
     private boolean containsLockSegment(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement && SelectStatementHandler.getLockSegment((SelectStatement) sqlStatement).isPresent();
+        return sqlStatement instanceof SelectStatement && ((SelectStatement) sqlStatement).getLock().isPresent();
     }
     
     private boolean containsLastInsertIdProjection(final SQLStatementContext sqlStatementContext) {

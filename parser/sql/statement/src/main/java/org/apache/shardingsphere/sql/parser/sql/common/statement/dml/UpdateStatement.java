@@ -20,9 +20,14 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.OptionHintSegment;
 
 import java.util.Optional;
 
@@ -55,5 +60,99 @@ public abstract class UpdateStatement extends AbstractSQLStatement implements DM
      */
     public Optional<SetAssignmentSegment> getAssignmentSegment() {
         return Optional.ofNullable(setAssignment);
+    }
+    
+    /**
+     * Get order by segment.
+     *
+     * @return order by segment
+     */
+    public Optional<OrderBySegment> getOrderBy() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get limit segment.
+     *
+     * @return limit segment
+     */
+    public Optional<LimitSegment> getLimit() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get with segment.
+     *
+     * @return with segment
+     */
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get delete where segment.
+     *
+     * @return delete where segment
+     */
+    public Optional<WhereSegment> getDeleteWhere() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get option hint segment.
+     *
+     * @return option hint segment
+     */
+    public Optional<OptionHintSegment> getOptionHintSegment() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Set order by segment.
+     *
+     * @param orderBySegment order by segment
+     */
+    public void setOrderBy(final OrderBySegment orderBySegment) {
+    }
+    
+    /**
+     * Set limit segment.
+     *
+     * @param limitSegment limit segment
+     */
+    public void setLimit(final LimitSegment limitSegment) {
+    }
+    
+    /**
+     * Set with segment.
+     *
+     * @param withSegment with segment
+     */
+    public void setWithSegment(final WithSegment withSegment) {
+    }
+    
+    /**
+     * Set delete where segment.
+     *
+     * @param deleteWhereSegment delete where segment
+     */
+    public void setDeleteWhere(final WhereSegment deleteWhereSegment) {
+    }
+    
+    /**
+     * Get output segment.
+     *
+     * @return output segment
+     */
+    public Optional<OutputSegment> getOutputSegment() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Set output segment.
+     *
+     * @param outputSegment output segment
+     */
+    public void setOutputSegment(final OutputSegment outputSegment) {
     }
 }

@@ -19,7 +19,11 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
@@ -39,9 +43,77 @@ public abstract class DeleteStatement extends AbstractSQLStatement implements DM
     /**
      * Get where.
      *
-     * @return where segment
+     * @return where
      */
     public Optional<WhereSegment> getWhere() {
         return Optional.ofNullable(where);
+    }
+    
+    /**
+     * Get order by.
+     *
+     * @return order by
+     */
+    public Optional<OrderBySegment> getOrderBy() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get limit.
+     *
+     * @return limit
+     */
+    public Optional<LimitSegment> getLimit() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get output segment.
+     *
+     * @return output segment
+     */
+    public Optional<OutputSegment> getOutputSegment() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get with segment.
+     *
+     * @return with segment
+     */
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Set order by segment.
+     *
+     * @param orderBySegment order by segment
+     */
+    public void setOrderBy(final OrderBySegment orderBySegment) {
+    }
+    
+    /**
+     * Set limit segment.
+     *
+     * @param limitSegment limit segment
+     */
+    public void setLimit(final LimitSegment limitSegment) {
+    }
+    
+    /**
+     * Set output segment.
+     *
+     * @param outputSegment output segment
+     */
+    public void setOutputSegment(final OutputSegment outputSegment) {
+    }
+    
+    /**
+     * Set with segment.
+     *
+     * @param withSegment with segment
+     */
+    public void setWithSegment(final WithSegment withSegment) {
     }
 }

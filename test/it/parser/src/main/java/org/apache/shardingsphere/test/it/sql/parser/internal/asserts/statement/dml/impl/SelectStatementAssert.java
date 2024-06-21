@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegme
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
@@ -82,7 +81,7 @@ public final class SelectStatementAssert {
     }
     
     private static void assertWindowClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(actual);
+        Optional<WindowSegment> windowSegment = actual.getWindow();
         if (null == expected.getWindowClause()) {
             assertFalse(windowSegment.isPresent(), assertContext.getText("Actual window segment should not exist."));
         } else {
@@ -153,7 +152,7 @@ public final class SelectStatementAssert {
     }
     
     private static void assertLimitClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(actual);
+        Optional<LimitSegment> limitSegment = actual.getLimit();
         if (null == expected.getLimitClause()) {
             assertFalse(limitSegment.isPresent(), assertContext.getText("Actual limit segment should not exist."));
         } else {
@@ -165,7 +164,7 @@ public final class SelectStatementAssert {
     }
     
     private static void assertLockClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        Optional<LockSegment> actualLock = SelectStatementHandler.getLockSegment(actual);
+        Optional<LockSegment> actualLock = actual.getLock();
         if (null == expected.getLockClause()) {
             assertFalse(actualLock.isPresent(), assertContext.getText("Actual lock segment should not exist."));
         } else {
@@ -175,7 +174,7 @@ public final class SelectStatementAssert {
     }
     
     private static void assertWithClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        Optional<WithSegment> withSegment = SelectStatementHandler.getWithSegment(actual);
+        Optional<WithSegment> withSegment = actual.getWithSegment();
         if (null == expected.getWithClause()) {
             assertFalse(withSegment.isPresent(), assertContext.getText("Actual with segment should not exist."));
         } else {
@@ -198,7 +197,7 @@ public final class SelectStatementAssert {
     }
     
     private static void assertModelClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        Optional<ModelSegment> modelSegment = SelectStatementHandler.getModelSegment(actual);
+        Optional<ModelSegment> modelSegment = actual.getModelSegment();
         if (null == expected.getModelClause()) {
             assertFalse(modelSegment.isPresent(), assertContext.getText("Actual model segment should not exist."));
         } else {
@@ -208,7 +207,7 @@ public final class SelectStatementAssert {
     }
     
     private static void assertIntoClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        Optional<TableSegment> intoSegment = SelectStatementHandler.getIntoSegment(actual);
+        Optional<TableSegment> intoSegment = actual.getIntoSegment();
         if (null == expected.getIntoClause()) {
             assertFalse(intoSegment.isPresent(), assertContext.getText("Actual into segment should not exist."));
         } else {

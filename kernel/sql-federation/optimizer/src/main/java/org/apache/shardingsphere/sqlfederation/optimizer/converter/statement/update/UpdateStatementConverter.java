@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.UpdateStatementHandler;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.TableConverter;
@@ -48,8 +47,8 @@ public final class UpdateStatementConverter implements SQLStatementConverter<Upd
     @Override
     public SqlNode convert(final UpdateStatement updateStatement) {
         SqlUpdate sqlUpdate = convertUpdate(updateStatement);
-        SqlNodeList orderBy = UpdateStatementHandler.getOrderBySegment(updateStatement).flatMap(OrderByConverter::convert).orElse(SqlNodeList.EMPTY);
-        Optional<LimitSegment> limit = UpdateStatementHandler.getLimitSegment(updateStatement);
+        SqlNodeList orderBy = updateStatement.getOrderBy().flatMap(OrderByConverter::convert).orElse(SqlNodeList.EMPTY);
+        Optional<LimitSegment> limit = updateStatement.getLimit();
         if (limit.isPresent()) {
             SqlNode offset = limit.get().getOffset().flatMap(PaginationValueSQLConverter::convert).orElse(null);
             SqlNode rowCount = limit.get().getRowCount().flatMap(PaginationValueSQLConverter::convert).orElse(null);

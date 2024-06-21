@@ -26,9 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,13 +41,11 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(InsertStatementHandler.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class EncryptAssignmentTokenGeneratorTest {
     
@@ -93,7 +89,7 @@ class EncryptAssignmentTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLTokenUpdateSQLFail() {
-        when(InsertStatementHandler.getSetAssignmentSegment(any())).thenReturn(Optional.of(setAssignmentSegment));
+        when(insertStatement.getSqlStatement().getSetAssignment()).thenReturn(Optional.of(setAssignmentSegment));
         assertTrue(tokenGenerator.isGenerateSQLToken(insertStatement));
     }
     
@@ -117,7 +113,7 @@ class EncryptAssignmentTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokenWithInsertLiteralExpressionSegment() {
-        when(InsertStatementHandler.getSetAssignmentSegment(any())).thenReturn(Optional.of(setAssignmentSegment));
+        when(insertStatement.getSqlStatement().getSetAssignment()).thenReturn(Optional.of(setAssignmentSegment));
         when(assignmentSegment.getValue()).thenReturn(mock(LiteralExpressionSegment.class));
         assertThat(tokenGenerator.generateSQLTokens(insertStatement).size(), is(1));
     }
