@@ -37,7 +37,7 @@ public final class PostgreSQLClusterStatement extends ClusterStatement implement
     
     @Override
     public Optional<SimpleTableSegment> getSimpleTable() {
-        return Optional.of(simpleTable);
+        return Optional.ofNullable(simpleTable);
     }
     
     @Override

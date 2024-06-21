@@ -34,6 +34,6 @@ public final class OracleCommentStatement extends CommentStatement implements Or
     
     @Override
     public Optional<IndexTypeSegment> getIndexType() {
-        return Optional.of(indexType);
+        return Optional.ofNullable(indexType);
     }
 }
