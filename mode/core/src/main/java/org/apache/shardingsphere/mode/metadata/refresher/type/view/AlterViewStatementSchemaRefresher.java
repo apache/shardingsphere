@@ -33,7 +33,6 @@ import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterViewStatementHandler;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -52,7 +51,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
                         final String schemaName, final DatabaseType databaseType, final AlterViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = TableRefreshUtils.getTableName(databaseType, sqlStatement.getView().getTableName().getIdentifier());
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
-        Optional<SimpleTableSegment> renameView = AlterViewStatementHandler.getRenameView(sqlStatement);
+        Optional<SimpleTableSegment> renameView = sqlStatement.getRenameView();
         if (renameView.isPresent()) {
             String renameViewName = renameView.get().getTableName().getIdentifier().getValue();
             String originalView = database.getSchema(schemaName).getView(viewName).getViewDefinition();
@@ -62,7 +61,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
             alterSchemaMetaDataPOJO.getDroppedTables().add(viewName);
             alterSchemaMetaDataPOJO.getDroppedViews().add(viewName);
         }
-        Optional<String> viewDefinition = AlterViewStatementHandler.getViewDefinition(sqlStatement);
+        Optional<String> viewDefinition = sqlStatement.getViewDefinition();
         if (viewDefinition.isPresent()) {
             ShardingSphereSchema schema = getSchema(database, logicDataSourceNames, schemaName, viewName, viewDefinition.get(), props);
             alterSchemaMetaDataPOJO.getAlteredTables().add(schema.getTable(viewName));
