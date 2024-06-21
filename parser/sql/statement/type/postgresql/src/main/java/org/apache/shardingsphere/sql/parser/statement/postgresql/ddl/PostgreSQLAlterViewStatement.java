@@ -34,11 +34,7 @@ public final class PostgreSQLAlterViewStatement extends AlterViewStatement imple
     
     private SimpleTableSegment renameView;
     
-    /**
-     * Get rename view.
-     *
-     * @return rename view
-     */
+    @Override
     public Optional<SimpleTableSegment> getRenameView() {
         return Optional.ofNullable(renameView);
     }

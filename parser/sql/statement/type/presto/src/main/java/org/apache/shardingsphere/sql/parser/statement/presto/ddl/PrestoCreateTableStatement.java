@@ -41,20 +41,11 @@ public final class PrestoCreateTableStatement extends CreateTableStatement imple
     
     private CreateTableOptionSegment createTableOptionSegment;
     
-    /**
-     * Get like table.
-     *
-     * @return like table
-     */
+    @Override
     public Optional<SimpleTableSegment> getLikeTable() {
         return Optional.ofNullable(likeTable);
     }
     
-    /**
-     * Get create table option segment.
-     *
-     * @return create table option segment
-     */
     public Optional<CreateTableOptionSegment> getCreateTableOptionSegment() {
         return Optional.ofNullable(createTableOptionSegment);
     }

@@ -35,20 +35,12 @@ public final class OracleSelectStatement extends SelectStatement implements Orac
     
     private ModelSegment modelSegment;
     
-    /**
-     * Get lock segment.
-     *
-     * @return lock segment
-     */
+    @Override
     public Optional<LockSegment> getLock() {
         return Optional.ofNullable(lock);
     }
     
-    /**
-     * Get model segment.
-     *
-     * @return model segment
-     */
+    @Override
     public Optional<ModelSegment> getModelSegment() {
         return Optional.ofNullable(modelSegment);
     }

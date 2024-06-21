@@ -35,20 +35,12 @@ public final class DorisInsertStatement extends InsertStatement implements Doris
     
     private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
     
-    /**
-     * Get set assignment segment.
-     *
-     * @return set assignment segment
-     */
+    @Override
     public Optional<SetAssignmentSegment> getSetAssignment() {
         return Optional.ofNullable(setAssignment);
     }
     
-    /**
-     * Get on duplicate key columns segment.
-     *
-     * @return on duplicate key columns segment
-     */
+    @Override
     public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
         return Optional.ofNullable(onDuplicateKeyColumns);
     }
