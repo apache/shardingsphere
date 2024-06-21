@@ -22,6 +22,8 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Optional;
+
 /**
  * Alter schema statement.
  */
@@ -30,4 +32,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 public abstract class AlterSchemaStatement extends AbstractSQLStatement implements DDLStatement {
     
     private IdentifierValue schemaName;
+    
+    /**
+     * Get rename schema.
+     *
+     * @return rename schema
+     */
+    public Optional<IdentifierValue> getRenameSchema() {
+        return Optional.empty();
+    }
 }

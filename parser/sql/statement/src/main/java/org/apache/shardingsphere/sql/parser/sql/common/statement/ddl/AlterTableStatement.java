@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyCollectionRetrievalSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.RenameColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
@@ -89,5 +90,14 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
      */
     public Optional<ConvertTableDefinitionSegment> getConvertTableDefinition() {
         return Optional.ofNullable(convertTableDefinition);
+    }
+    
+    /**
+     * Get modify collection retrieval.
+     *
+     * @return modify collection retrieval
+     */
+    public Optional<ModifyCollectionRetrievalSegment> getModifyCollectionRetrieval() {
+        return Optional.empty();
     }
 }

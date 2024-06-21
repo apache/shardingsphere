@@ -34,11 +34,6 @@ public final class OpenGaussAlterSchemaStatement extends AlterSchemaStatement im
     
     private IdentifierValue renameSchema;
     
-    /**
-     * Get rename schema.
-     * 
-     * @return rename schema
-     */
     public Optional<IdentifierValue> getRenameSchema() {
         return Optional.ofNullable(renameSchema);
     }
