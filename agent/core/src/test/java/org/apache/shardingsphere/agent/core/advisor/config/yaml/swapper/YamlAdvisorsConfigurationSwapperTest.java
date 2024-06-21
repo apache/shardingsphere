@@ -58,7 +58,9 @@ class YamlAdvisorsConfigurationSwapperTest {
         assertThat(actualAdvisorConfigs.get(5).getPointcut(), is(ElementMatchers.named("staticCall")));
         assertThat(actualAdvisorConfigs.get(6).getPointcut(), is(ElementMatchers.named("staticCall").and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String")))));
         assertThat(actualAdvisorConfigs.get(7).getPointcut(), is(ElementMatchers.named("staticCall")
-                .and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String"))).and(ElementMatchers.takesArgument(1, ElementMatchers.named("java.lang.String")))));
+                .and(ElementMatchers.takesArguments(2))
+                .and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String")))
+                .and(ElementMatchers.takesArgument(1, ElementMatchers.named("java.lang.String")))));
         actualAdvisorConfigs.forEach(each -> assertThat(each.getPluginType(), is("FIXTURE")));
     }
 }
