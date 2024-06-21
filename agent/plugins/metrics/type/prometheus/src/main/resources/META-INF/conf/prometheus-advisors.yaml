@@ -139,3 +139,11 @@ advisors:
     pointcuts:
       - name: rollback
         type: method
+  - target: org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.ShardingSphereDataSourceAdvice
+    pointcuts:
+      - name: createContextManager
+        type: method
+      - name: close
+        type: method
+        paramLength: 0
