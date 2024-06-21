@@ -47,6 +47,7 @@ advisors:
             type: java.lang.String
       - name: staticCall
         type: method
+        paramLength: 2
         params:
           - index: 0
             type: java.lang.String
