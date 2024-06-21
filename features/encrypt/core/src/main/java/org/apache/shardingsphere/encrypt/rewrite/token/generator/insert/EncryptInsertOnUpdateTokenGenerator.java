@@ -62,7 +62,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext
-                && (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getSetAssignment().isPresent();
+                && (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getOnDuplicateKeyColumns().isPresent();
     }
     
     @Override
