@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatem
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
@@ -90,7 +91,7 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
     
     @Test
     void assertIsNotGenerateSQLTokenWithoutOnDuplicateKeyColumns() {
-        assertFalse(generator.isGenerateSQLToken(mock(InsertStatementContext.class)));
+        assertFalse(generator.isGenerateSQLToken(mock(InsertStatementContext.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test
@@ -99,6 +100,7 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
         MySQLInsertStatement insertStatement = mock(MySQLInsertStatement.class);
         when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
         when(insertStatement.getOnDuplicateKeyColumns()).thenReturn(Optional.of(new OnDuplicateKeyColumnsSegment(0, 0, Collections.emptyList())));
+        when(insertStatement.getSetAssignment()).thenReturn(Optional.of(new SetAssignmentSegment(0, 0, Collections.emptyList())));
         assertTrue(generator.isGenerateSQLToken(insertStatementContext));
     }
     
