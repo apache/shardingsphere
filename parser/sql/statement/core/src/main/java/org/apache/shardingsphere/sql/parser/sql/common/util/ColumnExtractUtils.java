@@ -51,10 +51,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Column extractor.
+ * Column extract utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ColumnExtractor {
+public final class ColumnExtractUtils {
     
     /**
      * Extract column segment collection.

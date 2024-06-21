@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
 
 import java.util.Collection;
@@ -51,7 +51,7 @@ public final class ShadowUpdateStatementRoutingEngine extends AbstractShadowDMLS
     protected Collection<ShadowColumnCondition> getShadowColumnConditions(final String shadowColumnName) {
         Collection<ShadowColumnCondition> result = new LinkedList<>();
         for (ExpressionSegment each : getWhereSegment()) {
-            Collection<ColumnSegment> columns = ColumnExtractor.extract(each);
+            Collection<ColumnSegment> columns = ColumnExtractUtils.extract(each);
             if (1 != columns.size()) {
                 continue;
             }

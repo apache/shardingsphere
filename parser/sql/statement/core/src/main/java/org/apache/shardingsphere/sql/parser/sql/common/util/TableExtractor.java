@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.extractor;
+package org.apache.shardingsphere.sql.parser.sql.common.util;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
@@ -62,6 +62,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
 
+/**
+ * Table extractor.
+ */
 @Getter
 public final class TableExtractor {
     

@@ -232,10 +232,10 @@ public final class ExpressionExtractUtils {
             }
         }
         if (expression instanceof SubquerySegment && containsSubQuery) {
-            ColumnExtractor.extractFromSelectStatement(result, ((SubquerySegment) expression).getSelect(), true);
+            ColumnExtractUtils.extractFromSelectStatement(result, ((SubquerySegment) expression).getSelect(), true);
         }
         if (expression instanceof SubqueryExpressionSegment && containsSubQuery) {
-            ColumnExtractor.extractFromSelectStatement(result, ((SubqueryExpressionSegment) expression).getSubquery().getSelect(), true);
+            ColumnExtractUtils.extractFromSelectStatement(result, ((SubqueryExpressionSegment) expression).getSubquery().getSelect(), true);
         }
         return result;
     }

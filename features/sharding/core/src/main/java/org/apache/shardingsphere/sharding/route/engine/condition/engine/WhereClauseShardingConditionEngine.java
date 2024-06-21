@@ -39,7 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
@@ -118,7 +118,7 @@ public final class WhereClauseShardingConditionEngine {
                                                                                             final List<Object> params, final Map<String, String> columnTableNames) {
         Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1F);
         for (ExpressionSegment each : predicates) {
-            for (ColumnSegment columnSegment : ColumnExtractor.extract(each)) {
+            for (ColumnSegment columnSegment : ColumnExtractUtils.extract(each)) {
                 Optional<String> tableName = Optional.ofNullable(columnTableNames.get(columnSegment.getExpression()));
                 Optional<String> shardingColumn = tableName.flatMap(optional -> shardingRule.findShardingColumn(columnSegment.getColumnBoundedInfo().getOriginalColumn().getValue(), optional));
                 if (!tableName.isPresent() || !shardingColumn.isPresent()) {

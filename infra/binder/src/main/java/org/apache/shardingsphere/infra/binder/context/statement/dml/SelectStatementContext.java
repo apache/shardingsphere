@@ -48,7 +48,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
-import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.util.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -65,7 +65,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtils;
@@ -116,7 +116,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
                                   final Collection<TableSegment> inheritedTables) {
         super(sqlStatement);
         extractWhereSegments(whereSegments, sqlStatement);
-        ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
+        ColumnExtractUtils.extractColumnSegments(columnSegments, whereSegments);
         Collection<TableSegment> tableSegments = getAllTableSegments(inheritedTables);
         ExpressionExtractUtils.extractJoinConditions(joinConditions, whereSegments);
         subqueryContexts = createSubqueryContexts(metaData, params, defaultDatabaseName, tableSegments);

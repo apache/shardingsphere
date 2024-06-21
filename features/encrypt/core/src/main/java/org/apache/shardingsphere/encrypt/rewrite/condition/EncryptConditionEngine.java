@@ -39,7 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.S
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
 
 import java.util.Collection;
@@ -118,7 +118,7 @@ public final class EncryptConditionEngine {
         if (!findNotContainsNullLiteralsExpression(expression).isPresent()) {
             return;
         }
-        for (ColumnSegment each : ColumnExtractor.extract(expression)) {
+        for (ColumnSegment each : ColumnExtractUtils.extract(expression)) {
             String tableName = expressionTableNames.getOrDefault(each.getExpression(), "");
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
             if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(each.getIdentifier().getValue())) {
