@@ -67,13 +67,16 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
         String tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
-        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        if (!encryptTable.isPresent()) {
+            return Collections.emptyList();
+        }
         String schemaName = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
         for (ColumnAssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
             String columnName = each.getColumns().get(0).getIdentifier().getValue();
-            if (encryptTable.isEncryptColumn(columnName)) {
-                generateSQLToken(schemaName, encryptTable.getTable(), encryptTable.getEncryptColumn(columnName), each).ifPresent(result::add);
+            if (encryptTable.get().isEncryptColumn(columnName)) {
+                generateSQLToken(schemaName, encryptTable.get().getTable(), encryptTable.get().getEncryptColumn(columnName), each).ifPresent(result::add);
             }
         }
         return result;
