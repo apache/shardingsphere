@@ -32,11 +32,7 @@ public final class SQL92SelectStatement extends SelectStatement implements SQL92
     
     private LimitSegment limit;
     
-    /**
-     * Get order by segment.
-     *
-     * @return order by segment
-     */
+    @Override
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
     }

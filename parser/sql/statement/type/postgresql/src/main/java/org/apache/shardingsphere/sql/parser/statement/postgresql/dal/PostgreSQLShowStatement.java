@@ -31,11 +31,7 @@ public final class PostgreSQLShowStatement extends ShowStatement implements Post
     
     private final String name;
     
-    /**
-     * Get name.
-     *
-     * @return name
-     */
+    @Override
     public Optional<String> getName() {
         return Optional.ofNullable(name);
     }

@@ -41,40 +41,23 @@ public final class PostgreSQLSelectStatement extends SelectStatement implements 
     
     private TableSegment intoSegment;
     
-    /**
-     * Get order by segment.
-     *
-     * @return order by segment
-     */
+    @Override
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
     }
     
-    /**
-     * Get lock segment.
-     *
-     * @return lock segment
-     */
+    @Override
     public Optional<LockSegment> getLock() {
         return Optional.ofNullable(lock);
     }
     
-    /**
-     * Get window segment.
-     *
-     * @return window segment
-     */
+    @Override
     public Optional<WindowSegment> getWindow() {
         return Optional.ofNullable(window);
     }
     
-    /**
-     * Get into segment.
-     *
-     * @return into segment
-     */
+    @Override
     public Optional<TableSegment> getIntoSegment() {
         return Optional.ofNullable(intoSegment);
     }
-    
 }

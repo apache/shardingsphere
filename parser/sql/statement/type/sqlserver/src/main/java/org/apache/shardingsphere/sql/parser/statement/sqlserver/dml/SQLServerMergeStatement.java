@@ -51,29 +51,17 @@ public final class SQLServerMergeStatement extends MergeStatement implements SQL
     
     private Collection<MergeWhenAndThenSegment> whenAndThenSegments = new LinkedList<>();
     
-    /**
-     * Get with segment.
-     *
-     * @return with segment.
-     */
+    @Override
     public Optional<WithSegment> getWithSegment() {
         return Optional.ofNullable(withSegment);
     }
     
-    /**
-     * Get with table hint segment.
-     *
-     * @return with table hint segment.
-     */
+    @Override
     public Optional<WithTableHintSegment> getWithTableHintSegment() {
         return Optional.ofNullable(withTableHintSegment);
     }
     
-    /**
-     * Get output segment.
-     *
-     * @return output segment.
-     */
+    @Override
     public Optional<OutputSegment> getOutputSegment() {
         return Optional.ofNullable(outputSegment);
     }

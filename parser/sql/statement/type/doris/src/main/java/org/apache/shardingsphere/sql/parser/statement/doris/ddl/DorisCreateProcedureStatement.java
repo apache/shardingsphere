@@ -32,11 +32,7 @@ public final class DorisCreateProcedureStatement extends CreateProcedureStatemen
     
     private RoutineBodySegment routineBody;
     
-    /**
-     * Get routine body segment.
-     *
-     * @return routine body segment
-     */
+    @Override
     public Optional<RoutineBodySegment> getRoutineBody() {
         return Optional.ofNullable(routineBody);
     }

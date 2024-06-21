@@ -41,11 +41,7 @@ public final class SQLServerUpdateStatement extends UpdateStatement implements S
     
     private OutputSegment outputSegment;
     
-    /**
-     * Get with segment.
-     *
-     * @return with segment.
-     */
+    @Override
     public Optional<WithSegment> getWithSegment() {
         return Optional.ofNullable(withSegment);
     }
@@ -59,20 +55,12 @@ public final class SQLServerUpdateStatement extends UpdateStatement implements S
         return Optional.ofNullable(withTableHintSegment);
     }
     
-    /**
-     * Get option hint segment.
-     *
-     * @return option hint segment.
-     */
+    @Override
     public Optional<OptionHintSegment> getOptionHintSegment() {
         return Optional.ofNullable(optionHintSegment);
     }
     
-    /**
-     * Get output segment.
-     *
-     * @return output segment.
-     */
+    @Override
     public Optional<OutputSegment> getOutputSegment() {
         return Optional.ofNullable(outputSegment);
     }
