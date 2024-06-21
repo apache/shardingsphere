@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rewrite.token.generator.keygen;
 
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

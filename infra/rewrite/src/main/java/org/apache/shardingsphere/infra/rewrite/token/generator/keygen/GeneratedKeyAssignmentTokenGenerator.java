@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.Paramet
 import org.apache.shardingsphere.infra.rewrite.token.pojo.keygen.GeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.infra.rewrite.token.pojo.keygen.LiteralGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.infra.rewrite.token.pojo.keygen.ParameterMarkerGeneratedKeyAssignmentToken;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 
 import java.util.List;
 import java.util.Optional;

@@ -29,11 +29,11 @@ import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XABeginStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XACommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARecoveryStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XAStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XABeginStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XACommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XARecoveryStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XARollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XAStatement;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionNestedBeginException;
 

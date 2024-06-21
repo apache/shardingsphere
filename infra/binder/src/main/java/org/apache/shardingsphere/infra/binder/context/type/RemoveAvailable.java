@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.type;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 
 import java.util.Collection;
 

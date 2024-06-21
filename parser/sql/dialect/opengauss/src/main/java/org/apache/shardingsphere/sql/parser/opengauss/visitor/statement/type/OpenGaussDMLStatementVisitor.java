@@ -24,12 +24,12 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Cop
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ReturningClauseContext;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussCallStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussCopyStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussDoStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussCallStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussCopyStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussDoStatement;
 
 /**
  * DML statement visitor for openGauss.

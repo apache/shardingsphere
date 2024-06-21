@@ -28,10 +28,10 @@ import org.apache.shardingsphere.shadow.route.engine.dml.ShadowDeleteStatementRo
 import org.apache.shardingsphere.shadow.route.engine.dml.ShadowInsertStatementRoutingEngine;
 import org.apache.shardingsphere.shadow.route.engine.dml.ShadowSelectStatementRoutingEngine;
 import org.apache.shardingsphere.shadow.route.engine.dml.ShadowUpdateStatementRoutingEngine;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

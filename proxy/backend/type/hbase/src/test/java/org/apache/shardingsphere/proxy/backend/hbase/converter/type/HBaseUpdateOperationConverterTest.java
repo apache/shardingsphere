@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationCon
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverterFactory;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseUpdateOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;

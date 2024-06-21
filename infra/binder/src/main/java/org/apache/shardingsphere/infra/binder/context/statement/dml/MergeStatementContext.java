@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.dml;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
 
 /**
  * Merge statement context.

@@ -30,8 +30,8 @@ import org.apache.shardingsphere.infra.merge.result.impl.stream.StreamMergedResu
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.connection.CursorNameNotFoundException;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByValue;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.DirectionType;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.DirectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.DirectionType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.DirectionSegment;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

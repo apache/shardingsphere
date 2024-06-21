@@ -33,12 +33,4 @@
         <module>mysql</module>
         <module>opengauss</module>
     </modules>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-statement</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
 </project>

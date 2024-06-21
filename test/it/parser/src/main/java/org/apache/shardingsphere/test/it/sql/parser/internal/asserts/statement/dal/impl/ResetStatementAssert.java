@@ -19,10 +19,10 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ResetMasterOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ResetOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ResetSlaveOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetMasterOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetSlaveOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.reset.ExpectedResetOptionSegment;
