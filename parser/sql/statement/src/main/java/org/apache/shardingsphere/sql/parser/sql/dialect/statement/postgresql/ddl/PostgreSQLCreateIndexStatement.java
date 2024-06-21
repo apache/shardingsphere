@@ -37,11 +37,7 @@ public final class PostgreSQLCreateIndexStatement extends CreateIndexStatement i
     
     private Integer generatedIndexStartIndex;
     
-    /**
-     * Get generated index start index.
-     *
-     * @return generated index start index
-     */
+    @Override
     public Optional<Integer> getGeneratedIndexStartIndex() {
         return Optional.ofNullable(generatedIndexStartIndex);
     }

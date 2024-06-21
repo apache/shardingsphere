@@ -20,12 +20,15 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.AlgorithmTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Create index statement.
@@ -39,4 +42,40 @@ public abstract class CreateIndexStatement extends AbstractSQLStatement implemen
     private SimpleTableSegment table;
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();
+    
+    /**
+     * Get generated index start index.
+     *
+     * @return generated index start index
+     */
+    public Optional<Integer> getGeneratedIndexStartIndex() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Judge whether contains if not exists or not.
+     *
+     * @return whether contains if not exists or not
+     */
+    public boolean isIfNotExists() {
+        return false;
+    }
+    
+    /**
+     * Get algorithm type.
+     *
+     * @return algorithm type
+     */
+    public Optional<AlgorithmTypeSegment> getAlgorithmType() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get lock table.
+     *
+     * @return lock table
+     */
+    public Optional<LockTableSegment> getLockTable() {
+        return Optional.empty();
+    }
 }
