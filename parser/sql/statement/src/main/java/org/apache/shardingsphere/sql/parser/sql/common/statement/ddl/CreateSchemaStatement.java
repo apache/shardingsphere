@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -27,7 +26,6 @@ import java.util.Optional;
 /**
  * Create schema statement.
  */
-@Getter
 @Setter
 public abstract class CreateSchemaStatement extends AbstractSQLStatement implements DDLStatement {
     
@@ -40,5 +38,14 @@ public abstract class CreateSchemaStatement extends AbstractSQLStatement impleme
      */
     public Optional<IdentifierValue> getSchemaName() {
         return Optional.ofNullable(schemaName);
+    }
+    
+    /**
+     * Get username.
+     *
+     * @return username
+     */
+    public Optional<IdentifierValue> getUsername() {
+        return Optional.empty();
     }
 }

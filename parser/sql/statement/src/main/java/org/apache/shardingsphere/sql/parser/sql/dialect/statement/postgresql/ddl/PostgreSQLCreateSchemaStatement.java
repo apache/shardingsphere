@@ -34,11 +34,7 @@ public final class PostgreSQLCreateSchemaStatement extends CreateSchemaStatement
     
     private IdentifierValue username;
     
-    /**
-     * Get username.
-     *
-     * @return username
-     */
+    @Override
     public Optional<IdentifierValue> getUsername() {
         return Optional.ofNullable(username);
     }

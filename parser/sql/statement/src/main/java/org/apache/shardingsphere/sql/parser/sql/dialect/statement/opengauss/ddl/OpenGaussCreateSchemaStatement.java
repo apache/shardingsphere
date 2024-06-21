@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -28,17 +27,12 @@ import java.util.Optional;
 /**
  * OpenGauss create schema statement.
  */
-@Getter
 @Setter
 public final class OpenGaussCreateSchemaStatement extends CreateSchemaStatement implements OpenGaussStatement {
     
     private IdentifierValue username;
     
-    /**
-     * Get username.
-     *
-     * @return username
-     */
+    @Override
     public Optional<IdentifierValue> getUsername() {
         return Optional.ofNullable(username);
     }
