@@ -191,7 +191,8 @@ class SubqueryExtractUtilsTest {
     private SubquerySegment createSelectStatementForCombineSegment() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         ExpressionSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
-        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 0, new InExpression(0, 0, left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, mock(SelectStatement.class), "")), false))));
+        when(selectStatement.getWhere())
+                .thenReturn(Optional.of(new WhereSegment(0, 0, new InExpression(0, 0, left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, mock(SelectStatement.class), "")), false))));
         return new SubquerySegment(0, 0, selectStatement, "");
     }
     
