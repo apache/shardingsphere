@@ -44,8 +44,6 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
-import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.service.PersistServiceFacade;
@@ -79,6 +77,8 @@ public final class ConfigurationManager {
     
     private final PersistServiceFacade persistServiceFacade;
     
+    private final ResourceSwitchManager resourceSwitchManager;
+    
     /**
      * Register storage unit.
      *
@@ -88,8 +88,7 @@ public final class ConfigurationManager {
     public synchronized void registerStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
         try {
             closeStaleRules(databaseName);
-            SwitchingResource switchingResource =
-                    new ResourceSwitchManager().registerStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
+            SwitchingResource switchingResource = resourceSwitchManager.registerStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
             buildNewMetaDataContext(databaseName, switchingResource, false);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed", databaseName, ex);
@@ -105,8 +104,7 @@ public final class ConfigurationManager {
     public synchronized void alterStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
         try {
             closeStaleRules(databaseName);
-            SwitchingResource switchingResource =
-                    new ResourceSwitchManager().alterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
+            SwitchingResource switchingResource = resourceSwitchManager.alterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
             buildNewMetaDataContext(databaseName, switchingResource, false);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed", databaseName, ex);
@@ -122,7 +120,7 @@ public final class ConfigurationManager {
     public synchronized void unregisterStorageUnit(final String databaseName, final String storageUnitName) {
         try {
             closeStaleRules(databaseName);
-            SwitchingResource switchingResource = new ResourceSwitchManager().unregisterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
+            SwitchingResource switchingResource = resourceSwitchManager.unregisterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
                     Collections.singletonList(storageUnitName));
             buildNewMetaDataContext(databaseName, switchingResource, true);
         } catch (final SQLException ex) {

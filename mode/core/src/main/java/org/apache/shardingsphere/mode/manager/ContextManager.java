@@ -42,13 +42,12 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
-import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
-import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
-import org.apache.shardingsphere.mode.service.PersistServiceFacade;
 import org.apache.shardingsphere.mode.metadata.manager.ConfigurationManager;
+import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
+import org.apache.shardingsphere.mode.service.PersistServiceFacade;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.state.StateContext;
 
@@ -179,7 +178,7 @@ public final class ContextManager implements AutoCloseable {
         MetaDataPersistService metaDataPersistService = persistServiceFacade.getMetaDataPersistService();
         ConfigurationManager configurationManager = metaDataContextManager.getConfigurationManager();
         Map<String, DataSourcePoolProperties> dataSourcePoolPropsFromRegCenter = metaDataPersistService.getDataSourceUnitService().load(database.getName());
-        SwitchingResource switchingResource = new ResourceSwitchManager().alterStorageUnit(database.getResourceMetaData(), dataSourcePoolPropsFromRegCenter);
+        SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager().alterStorageUnit(database.getResourceMetaData(), dataSourcePoolPropsFromRegCenter);
         Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(database.getName());
         Map<String, ShardingSphereDatabase> changedDatabases = configurationManager.createChangedDatabases(database.getName(), false, switchingResource, ruleConfigs);
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
