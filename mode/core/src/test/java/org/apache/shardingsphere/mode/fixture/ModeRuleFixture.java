@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.fixture;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 
 import static org.mockito.Mockito.mock;
 
@@ -28,10 +27,5 @@ public final class ModeRuleFixture implements DatabaseRule {
     @Override
     public RuleConfiguration getConfiguration() {
         return mock(RuleConfiguration.class);
-    }
-    
-    @Override
-    public RuleAttributes getAttributes() {
-        return new RuleAttributes();
     }
 }
