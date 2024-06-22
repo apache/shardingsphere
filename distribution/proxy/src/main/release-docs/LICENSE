@@ -219,8 +219,6 @@ The text of each license is the standard Apache 2.0 license.
     aggdesigner-algorithm 6.0: Apache 2.0
     apiguardian-api 1.1.2: https://github.com/apiguardian-team/apiguardian, Apache 2.0
     audience-annotations 0.12.0: https://github.com/apache/yetus, Apache 2.0
-    avatica-core 1.23.0: https://calcite.apache.org/avatica, Apache 2.0
-    avatica-metrics 1.23.0: https://calcite.apache.org/avatica, Apache 2.0
     caffeine 2.9.3: https://github.com/ben-manes/caffeine, Apache 2.0
     calcite-core 1.35.0: https://calcite.apache.org, Apache 2.0
     calcite-linq4j 1.35.0: https://calcite.apache.org, Apache 2.0
