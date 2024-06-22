@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
-import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Map;
@@ -82,10 +81,5 @@ public final class AuthorityRule implements GlobalRule {
     @HighFrequencyInvocation
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
         return privileges.keySet().stream().filter(each -> each.accept(grantee)).findFirst().map(privileges::get);
-    }
-    
-    @Override
-    public RuleAttributes getAttributes() {
-        return new RuleAttributes();
     }
 }
