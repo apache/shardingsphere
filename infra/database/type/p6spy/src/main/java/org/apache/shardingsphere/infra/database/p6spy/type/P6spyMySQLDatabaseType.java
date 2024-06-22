@@ -28,16 +28,17 @@ import java.util.Optional;
  * Database type of MySQL under P6Spy.
  */
 public class P6spyMySQLDatabaseType implements DatabaseType {
+    
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singletonList("jdbc:p6spy:mysql:");
     }
-
+    
     @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
         return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     }
-
+    
     @Override
     public String getType() {
         return "P6spyMySQL";

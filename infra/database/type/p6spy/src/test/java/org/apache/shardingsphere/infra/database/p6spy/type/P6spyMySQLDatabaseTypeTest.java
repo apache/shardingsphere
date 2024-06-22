@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class P6spyMySQLDatabaseTypeTest {
-
+    
     @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "P6spyMySQL").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:p6spy:mysql:")));
