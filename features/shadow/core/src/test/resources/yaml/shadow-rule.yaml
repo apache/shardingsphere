@@ -64,6 +64,6 @@ rules:
     sql-hint-algorithm:
       type: SQL_HINT
       props:
-        shadow: true
         foo: bar
+        shadow: true
   defaultShadowAlgorithmName: sql-hint-algorithm
