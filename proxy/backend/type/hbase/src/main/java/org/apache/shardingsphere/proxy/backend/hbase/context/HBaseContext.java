@@ -40,7 +40,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -160,9 +159,9 @@ public final class HBaseContext implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public Connection getConnectionByClusterName(final String clusterName) throws SQLException {
-        Optional<HBaseCluster> cluster = connections.stream().filter(each -> each.getClusterName().equalsIgnoreCase(clusterName)).findFirst();
-        ShardingSpherePreconditions.checkState(cluster.isPresent(), () -> new SQLException(String.format("Cluster `%s` is not exists", clusterName)));
-        return cluster.get().getConnection();
+        HBaseCluster cluster = connections.stream().filter(each -> each.getClusterName().equalsIgnoreCase(clusterName)).findFirst()
+                .orElseThrow(() -> new SQLException(String.format("Cluster `%s` is not exists", clusterName)));
+        return cluster.getConnection();
     }
     
     @Override

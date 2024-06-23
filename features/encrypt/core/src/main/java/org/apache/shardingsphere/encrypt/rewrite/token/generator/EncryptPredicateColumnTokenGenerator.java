@@ -25,6 +25,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.util.EncryptTokenGenerato
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -107,9 +108,8 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         int startIndex = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getStopIndex() + 2 : columnSegment.getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
         if (includesLike(whereSegments, columnSegment)) {
-            ShardingSpherePreconditions.checkState(encryptColumn.getLikeQuery().isPresent(), () -> new UnsupportedEncryptSQLException("LIKE"));
-            return new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptColumn.getLikeQuery().get().getName(), columnSegment.getIdentifier().getQuoteCharacter()),
-                    databaseType);
+            LikeQueryColumnItem likeQueryColumnItem = encryptColumn.getLikeQuery().orElseThrow(() -> new UnsupportedEncryptSQLException("LIKE"));
+            return new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(likeQueryColumnItem.getName(), columnSegment.getIdentifier().getQuoteCharacter()), databaseType);
         }
         Collection<Projection> columnProjections =
                 encryptColumn.getAssistedQuery().map(optional -> createColumnProjections(optional.getName(), columnSegment.getIdentifier().getQuoteCharacter()))
