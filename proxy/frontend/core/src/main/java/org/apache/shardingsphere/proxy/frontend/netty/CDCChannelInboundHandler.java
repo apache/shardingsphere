@@ -60,7 +60,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.sql.SQLException;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * CDC channel inbound handler.
@@ -141,13 +140,12 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
                 () -> new CDCExceptionWrapper(request.getRequestId(), new EmptyCDCLoginRequestBodyException()));
         BasicBody body = request.getLoginRequestBody().getBasicBody();
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        Optional<ShardingSphereUser> user = authorityRule.findUser(new Grantee(body.getUsername(), getHostAddress(ctx)));
-        if (user.isPresent() && Objects.equals(Hashing.sha256().hashBytes(user.get().getPassword().getBytes()).toString().toUpperCase(), body.getPassword())) {
-            ctx.channel().attr(CONNECTION_CONTEXT_KEY).set(new CDCConnectionContext(user.get()));
-            ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
-        } else {
-            throw new CDCExceptionWrapper(request.getRequestId(), new CDCLoginFailedException());
-        }
+        ShardingSphereUser user = authorityRule.findUser(new Grantee(body.getUsername(), getHostAddress(ctx)))
+                .orElseThrow(() -> new CDCExceptionWrapper(request.getRequestId(), new CDCLoginFailedException()));
+        ShardingSpherePreconditions.checkState(Objects.equals(Hashing.sha256().hashBytes(user.getPassword().getBytes()).toString().toUpperCase(), body.getPassword()),
+                () -> new CDCExceptionWrapper(request.getRequestId(), new CDCLoginFailedException()));
+        ctx.channel().attr(CONNECTION_CONTEXT_KEY).set(new CDCConnectionContext(user));
+        ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
     }
     
     private void checkPrivileges(final String requestId, final Grantee grantee, final String currentDatabase) {
