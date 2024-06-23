@@ -309,9 +309,7 @@ public final class ShardingRule implements DatabaseRule {
      * @throws ShardingTableRuleNotFoundException sharding table rule not found exception
      */
     public ShardingTable getShardingTable(final String logicTableName) {
-        Optional<ShardingTable> shardingTable = findShardingTable(logicTableName);
-        ShardingSpherePreconditions.checkState(shardingTable.isPresent(), () -> new ShardingTableRuleNotFoundException(Collections.singleton(logicTableName)));
-        return shardingTable.get();
+        return findShardingTable(logicTableName).orElseThrow(() -> new ShardingTableRuleNotFoundException(Collections.singleton(logicTableName)));
     }
     
     /**
