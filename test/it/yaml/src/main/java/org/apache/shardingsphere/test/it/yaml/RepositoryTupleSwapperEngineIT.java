@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -109,7 +110,7 @@ public abstract class RepositoryTupleSwapperEngineIT {
     private String getExpectedYamlContent() throws IOException {
         String content = Files.readAllLines(yamlFile.toPath()).stream()
                 .filter(each -> !each.contains("#") && !each.isEmpty()).collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator();
-        log.info("getExpectedYamlContent is {}", YamlEngine.marshal(YamlEngine.unmarshal(content, Map.class)));
+        log.info("getExpectedYamlContent is {}", YamlEngine.marshal(YamlEngine.unmarshal(content, LinkedHashMap.class)));
         return YamlEngine.marshal(YamlEngine.unmarshal(content, Map.class));
     }
 }
