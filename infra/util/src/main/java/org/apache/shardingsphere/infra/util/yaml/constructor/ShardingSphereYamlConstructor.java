@@ -27,7 +27,6 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Node;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -42,7 +41,7 @@ public class ShardingSphereYamlConstructor extends Constructor {
     public ShardingSphereYamlConstructor(final Class<?> rootClass) {
         super(rootClass, createLoaderOptions());
         ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlConstruct.class).forEach(each -> typeConstructs.put(each.getType(), each));
-        Map<String, Class<?>> yamlShortcuts = new LinkedHashMap<>();
+        Map<String, Class<?>> yamlShortcuts = new HashMap<>();
         ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlShortcuts.class).stream().map(ShardingSphereYamlShortcuts::getYamlShortcuts).forEach(yamlShortcuts::putAll);
         yamlShortcuts.forEach((key, value) -> addTypeDescription(new TypeDescription(value, key)));
         this.rootClass = rootClass;

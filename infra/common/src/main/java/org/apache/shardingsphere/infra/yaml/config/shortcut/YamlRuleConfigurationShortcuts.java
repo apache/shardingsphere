@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -37,7 +37,7 @@ public final class YamlRuleConfigurationShortcuts implements ShardingSphereYamlS
     @SneakyThrows(ReflectiveOperationException.class)
     public Map<String, Class<?>> getYamlShortcuts() {
         Collection<YamlRuleConfigurationSwapper> swappers = ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class);
-        Map<String, Class<?>> result = new HashMap<>(swappers.size(), 1F);
+        Map<String, Class<?>> result = new LinkedHashMap<>(swappers.size(), 1F);
         for (YamlRuleConfigurationSwapper each : swappers) {
             Class<?> yamlRuleConfigurationClass = Class.forName(((ParameterizedType) each.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0].getTypeName());
             result.put(String.format("!%s", each.getRuleTagName()), yamlRuleConfigurationClass);
