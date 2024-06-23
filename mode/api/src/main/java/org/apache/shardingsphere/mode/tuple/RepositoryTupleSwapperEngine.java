@@ -103,8 +103,9 @@ public final class RepositoryTupleSwapperEngine {
         if (fieldValue instanceof Map) {
             Collection<RepositoryTuple> result = new LinkedList<>();
             for (Object entry : ((Map) fieldValue).entrySet()) {
-                log.info("RepositoryTupleSwapperEngine.swapToRepositoryTuples entry key is {} ", ruleNodePath.getNamedItem(tupleName).getPath(((Entry) entry).getKey().toString()));
-                log.info("RepositoryTupleSwapperEngine.swapToRepositoryTuples entry value is {}", YamlEngine.marshal(((Entry) entry).getValue()));
+                log.info("——————————————————————RepositoryTupleSwapperEngine.swapToRepositoryTuples entry key is {} ",
+                        ruleNodePath.getNamedItem(tupleName).getPath(((Entry) entry).getKey().toString()));
+                log.info("——————————————————————RepositoryTupleSwapperEngine.swapToRepositoryTuples entry value is {}", YamlEngine.marshal(((Entry) entry).getValue()));
                 result.add(new RepositoryTuple(ruleNodePath.getNamedItem(tupleName).getPath(((Entry) entry).getKey().toString()), YamlEngine.marshal(((Entry) entry).getValue())));
             }
             return result;
