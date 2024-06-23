@@ -51,8 +51,7 @@ public final class StorageUnit {
         this.storageNode = storageNode;
         Map<String, Object> standardProps = dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties();
         String url = standardProps.get("url").toString();
-        Object originUsername = standardProps.get("username");
-        String username = null != originUsername ? originUsername.toString() : "";
+        String username = standardProps.getOrDefault("username", "").toString();
         storageType = DatabaseTypeFactory.get(url);
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(storageType).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
         String catalog = isInstanceConnectionAvailable ? DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType).parse(url, username, null).getCatalog() : null;

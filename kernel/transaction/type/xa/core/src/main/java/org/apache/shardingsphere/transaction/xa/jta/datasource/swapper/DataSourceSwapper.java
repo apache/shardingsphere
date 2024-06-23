@@ -81,8 +81,8 @@ public final class DataSourceSwapper {
         Map<String, Object> standardProps = DataSourcePoolPropertiesCreator.create(
                 dataSource instanceof CatalogSwitchableDataSource ? ((CatalogSwitchableDataSource) dataSource).getDataSource() : dataSource).getAllStandardProperties();
         result.put("url", dataSource instanceof CatalogSwitchableDataSource ? ((CatalogSwitchableDataSource) dataSource).getUrl() : standardProps.get("url"));
-        result.put("user", standardProps.get("username"));
-        result.put("password", standardProps.get("password"));
+        result.put("user", standardProps.getOrDefault("username", ""));
+        result.put("password", standardProps.getOrDefault("password", ""));
         return result;
     }
     

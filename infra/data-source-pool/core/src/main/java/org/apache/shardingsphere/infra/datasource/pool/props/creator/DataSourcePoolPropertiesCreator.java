@@ -115,7 +115,8 @@ public final class DataSourcePoolPropertiesCreator {
     private static ConnectionConfiguration getConnectionConfiguration(final ConnectionPropertySynonyms connectionPropSynonyms) {
         Map<String, Object> standardProps = connectionPropSynonyms.getStandardProperties();
         return new ConnectionConfiguration(
-                (String) standardProps.get("dataSourceClassName"), (String) standardProps.get("url"), (String) standardProps.get("username"), (String) standardProps.get("password"));
+                (String) standardProps.get("dataSourceClassName"), (String) standardProps.get("url"), (String) standardProps.getOrDefault("username", ""),
+                (String) standardProps.getOrDefault("password", ""));
     }
     
     private static PoolConfiguration getPoolConfiguration(final PoolPropertySynonyms poolPropSynonyms, final CustomDataSourcePoolProperties customProps) {

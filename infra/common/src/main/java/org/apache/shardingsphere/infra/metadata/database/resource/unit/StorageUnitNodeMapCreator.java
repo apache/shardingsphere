@@ -51,7 +51,7 @@ public final class StorageUnitNodeMapCreator {
     
     private static StorageNode create(final String storageUnitName, final DataSourcePoolProperties props) {
         Map<String, Object> standardProps = props.getConnectionPropertySynonyms().getStandardProperties();
-        return create(storageUnitName, standardProps.get("url").toString(), standardProps.get("username").toString());
+        return create(storageUnitName, standardProps.get("url").toString(), standardProps.getOrDefault("username", "").toString());
     }
     
     private static StorageNode create(final String storageUnitName, final String url, final String username) {
