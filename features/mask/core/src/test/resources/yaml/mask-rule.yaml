@@ -29,7 +29,7 @@ rules:
       type: KEEP_FIRST_N_LAST_M
       props:
         first-n: 3
-        replace-char: '*'
         last-m: 4
+        replace-char: '*'
     md5_mask:
       type: MD5
