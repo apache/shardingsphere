@@ -104,9 +104,9 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
     private void fillRouteContext(final SingleRule singleRule, final RouteContext routeContext, final Collection<QualifiedTable> logicTables) {
         for (QualifiedTable each : logicTables) {
             String tableName = each.getTableName();
-            Optional<DataNode> dataNode = singleRule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(each.getSchemaName(), tableName);
-            ShardingSpherePreconditions.checkState(dataNode.isPresent(), () -> new SingleTableNotFoundException(tableName));
-            String dataSource = dataNode.get().getDataSourceName();
+            DataNode dataNode = singleRule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(each.getSchemaName(), tableName)
+                    .orElseThrow(() -> new SingleTableNotFoundException(tableName));
+            String dataSource = dataNode.getDataSourceName();
             routeContext.putRouteUnit(new RouteMapper(dataSource, dataSource), Collections.singletonList(new RouteMapper(tableName, tableName)));
         }
     }

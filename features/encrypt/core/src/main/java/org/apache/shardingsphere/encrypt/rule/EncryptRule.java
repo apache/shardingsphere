@@ -116,9 +116,7 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
      * @return encrypt table
      */
     public EncryptTable getEncryptTable(final String tableName) {
-        Optional<EncryptTable> encryptTable = findEncryptTable(tableName);
-        ShardingSpherePreconditions.checkState(encryptTable.isPresent(), () -> new EncryptTableNotFoundException(tableName));
-        return encryptTable.get();
+        return findEncryptTable(tableName).orElseThrow(() -> new EncryptTableNotFoundException(tableName));
     }
     
     @Override
