@@ -109,6 +109,7 @@ public abstract class RepositoryTupleSwapperEngineIT {
     private String getExpectedYamlContent() throws IOException {
         String content = Files.readAllLines(yamlFile.toPath()).stream()
                 .filter(each -> !each.contains("#") && !each.isEmpty()).collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator();
+        log.info("getExpectedYamlContent is {}", YamlEngine.marshal(YamlEngine.unmarshal(content, Map.class)));
         return YamlEngine.marshal(YamlEngine.unmarshal(content, Map.class));
     }
 }

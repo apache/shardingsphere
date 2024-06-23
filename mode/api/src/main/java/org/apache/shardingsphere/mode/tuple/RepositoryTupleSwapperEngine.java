@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.tuple;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -53,6 +54,7 @@ import java.util.stream.Collectors;
 /**
  * Repository tuple swapper engine.
  */
+@Slf4j
 public final class RepositoryTupleSwapperEngine {
     
     /**
@@ -101,6 +103,8 @@ public final class RepositoryTupleSwapperEngine {
         if (fieldValue instanceof Map) {
             Collection<RepositoryTuple> result = new LinkedList<>();
             for (Object entry : ((Map) fieldValue).entrySet()) {
+                log.info("RepositoryTupleSwapperEngine.swapToRepositoryTuples entry key is {} ", ruleNodePath.getNamedItem(tupleName).getPath(((Entry) entry).getKey().toString()));
+                log.info("RepositoryTupleSwapperEngine.swapToRepositoryTuples entry value is {}", YamlEngine.marshal(((Entry) entry).getValue()));
                 result.add(new RepositoryTuple(ruleNodePath.getNamedItem(tupleName).getPath(((Entry) entry).getKey().toString()), YamlEngine.marshal(((Entry) entry).getValue())));
             }
             return result;
