@@ -20,14 +20,11 @@ package org.apache.shardingsphere.agent.plugin.core.context;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
-import org.apache.shardingsphere.agent.plugin.core.util.ShardingSphereDriverUtils;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.agent.plugin.core.holder.ContextManagerHolder;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -73,7 +70,8 @@ public final class PluginContext {
         if (isEnhancedForProxy) {
             return Optional.ofNullable(ProxyContext.getInstance().getContextManager());
         }
-        Map<String, ShardingSphereDataSource> dataSourceMap = ShardingSphereDriverUtils.findShardingSphereDataSources();
-        return dataSourceMap.isEmpty() ? Optional.empty() : Optional.ofNullable(AgentReflectionUtils.getFieldValue(dataSourceMap.values().iterator().next(), "contextManager"));
+        return ContextManagerHolder.getDatabaseContextManager().isEmpty()
+                ? Optional.empty()
+                : Optional.of(ContextManagerHolder.getDatabaseContextManager().values().iterator().next());
     }
 }

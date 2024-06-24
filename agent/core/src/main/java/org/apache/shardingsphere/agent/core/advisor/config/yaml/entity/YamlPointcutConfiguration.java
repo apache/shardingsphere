@@ -34,5 +34,7 @@ public final class YamlPointcutConfiguration {
     
     private String type;
     
+    private Integer paramLength;
+    
     private Collection<YamlPointcutParameterConfiguration> params = new LinkedList<>();
 }
