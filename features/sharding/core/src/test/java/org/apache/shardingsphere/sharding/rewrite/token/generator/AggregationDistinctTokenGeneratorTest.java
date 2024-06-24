@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatem
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.AggregationDistinctTokenGenerator;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -43,8 +43,12 @@ class AggregationDistinctTokenGeneratorTest {
     @Test
     void assertIsGenerateSQLToken() {
         AggregationDistinctTokenGenerator aggregationDistinctTokenGenerator = new AggregationDistinctTokenGenerator();
-        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        assertTrue(aggregationDistinctTokenGenerator.isGenerateSQLToken(selectStatementContext));
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementContext.getProjectionsContext().getAggregationDistinctProjections()).thenReturn(Collections.emptyList());
+        assertFalse(aggregationDistinctTokenGenerator.isGenerateSQLToken(selectStatementContext));
+        SelectStatementContext selectStatementWithProjectionContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementWithProjectionContext.getProjectionsContext().getAggregationDistinctProjections()).thenReturn(Collections.singletonList(mock(AggregationDistinctProjection.class)));
+        assertTrue(aggregationDistinctTokenGenerator.isGenerateSQLToken(selectStatementWithProjectionContext));
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         assertFalse(aggregationDistinctTokenGenerator.isGenerateSQLToken(insertStatementContext));
     }

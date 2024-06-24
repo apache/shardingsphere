@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqlfederation.optimizer.planner.cache;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.statement.SQLStatementCompiler;
 
 import java.util.LinkedHashMap;

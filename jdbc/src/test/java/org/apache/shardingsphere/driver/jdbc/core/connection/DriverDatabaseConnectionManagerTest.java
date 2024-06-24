@@ -179,7 +179,7 @@ class DriverDatabaseConnectionManagerTest {
     }
     
     @Test
-    public void assertBeginTransaction() throws SQLException {
+    void assertBeginTransaction() throws SQLException {
         databaseConnectionManager.begin();
         assertTrue(databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction());
     }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

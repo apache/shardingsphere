@@ -19,7 +19,7 @@ package org.apache.shardingsphere.single.distsql.statement.rql;
 
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowDatabaseRulesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 
 /**
  * Show default single table storage unit statement.

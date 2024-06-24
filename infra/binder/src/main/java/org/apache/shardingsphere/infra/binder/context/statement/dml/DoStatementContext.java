@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
 
 /**
  * Do statement context.

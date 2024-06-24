@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.session.connection.transaction.Transactio
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 
 import java.sql.Connection;
 import java.sql.SQLException;

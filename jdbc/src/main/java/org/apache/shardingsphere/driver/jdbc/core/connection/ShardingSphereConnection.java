@@ -26,6 +26,8 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePrepar
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
@@ -196,28 +198,32 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public void rollback(final Savepoint savepoint) throws SQLException {
         checkClose();
+        ShardingSpherePreconditions.checkState(databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit) || !isSchemaSupportedDatabaseType(),
+                () -> new SQLFeatureNotSupportedException("ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
         databaseConnectionManager.rollback(savepoint);
     }
     
     @Override
     public Savepoint setSavepoint(final String name) throws SQLException {
         checkClose();
-        ShardingSpherePreconditions.checkState(databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit),
-                () -> new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks."));
+        ShardingSpherePreconditions.checkState(databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit) || !isSchemaSupportedDatabaseType(),
+                () -> new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks"));
         return databaseConnectionManager.setSavepoint(name);
     }
     
     @Override
     public Savepoint setSavepoint() throws SQLException {
         checkClose();
-        ShardingSpherePreconditions.checkState(databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit),
-                () -> new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks."));
+        ShardingSpherePreconditions.checkState(databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit) || !isSchemaSupportedDatabaseType(),
+                () -> new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks"));
         return databaseConnectionManager.setSavepoint();
     }
     
     @Override
     public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
         checkClose();
+        ShardingSpherePreconditions.checkState(databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit) || !isSchemaSupportedDatabaseType(),
+                () -> new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks"));
         if (databaseConnectionManager.getConnectionTransaction().isHoldTransaction(autoCommit)) {
             databaseConnectionManager.releaseSavepoint(savepoint);
         }
@@ -225,6 +231,11 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private void checkClose() throws SQLException {
         ShardingSpherePreconditions.checkState(!isClosed(), () -> new ConnectionClosedException().toSQLException());
+    }
+    
+    private boolean isSchemaSupportedDatabaseType() {
+        DatabaseType databaseType = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getProtocolType();
+        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDefaultSchema().isPresent();
     }
     
     @SuppressWarnings("MagicConstant")

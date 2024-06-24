@@ -37,5 +37,7 @@ public interface ShardingSphereRule {
      * 
      * @return rule attributes
      */
-    RuleAttributes getAttributes();
+    default RuleAttributes getAttributes() {
+        return new RuleAttributes();
+    }
 }

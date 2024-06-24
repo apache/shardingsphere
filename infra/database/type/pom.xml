@@ -40,6 +40,7 @@
         <module>presto</module>
         <module>h2</module>
         <module>sql92</module>
+        <module>p6spy</module>
         <module>testcontainers</module>
     </modules>
 </project>

@@ -25,11 +25,11 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeM
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StartSlaveContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StopSlaveContext;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLChangeMasterStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLChangeReplicationSourceToStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStartReplicaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStartSlaveStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStopSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLChangeMasterStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLChangeReplicationSourceToStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLStartReplicaStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLStartSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLStopSlaveStatement;
 
 /**
  * RL statement visitor for MySQL.

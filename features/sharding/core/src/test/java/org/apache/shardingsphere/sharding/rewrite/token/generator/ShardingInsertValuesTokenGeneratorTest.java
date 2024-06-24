@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValu
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingInsertValuesTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingInsertValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

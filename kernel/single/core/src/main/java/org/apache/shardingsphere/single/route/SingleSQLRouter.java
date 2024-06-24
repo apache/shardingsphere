@@ -34,7 +34,7 @@ import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.route.engine.SingleRouteEngineFactory;
 import org.apache.shardingsphere.single.route.validator.SingleMetaDataValidatorFactory;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 
 import java.util.Collection;
 import java.util.Collections;

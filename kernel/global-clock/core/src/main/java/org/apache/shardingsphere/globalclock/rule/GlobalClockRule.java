@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
-import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
 
@@ -72,10 +71,5 @@ public final class GlobalClockRule implements GlobalRule {
      */
     public String getGlobalClockProviderType() {
         return String.join(".", configuration.getType(), configuration.getProvider());
-    }
-    
-    @Override
-    public RuleAttributes getAttributes() {
-        return new RuleAttributes();
     }
 }

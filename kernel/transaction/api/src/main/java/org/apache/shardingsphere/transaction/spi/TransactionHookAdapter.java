@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.spi;
 
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 
 import java.sql.Connection;
 import java.sql.SQLException;

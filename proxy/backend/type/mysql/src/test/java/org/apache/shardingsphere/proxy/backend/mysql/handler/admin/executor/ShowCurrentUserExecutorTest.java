@@ -74,9 +74,9 @@ class ShowCurrentUserExecutorTest {
     
     private RuleMetaData mockRuleMetaData() {
         AuthorityRule authorityRule = mock(AuthorityRule.class);
-        ShardingSphereUser shardingSphereUser = mock(ShardingSphereUser.class);
-        when(shardingSphereUser.getGrantee()).thenReturn(new Grantee("root", "%"));
-        when(authorityRule.findUser(GRANTEE)).thenReturn(Optional.of(shardingSphereUser));
+        ShardingSphereUser user = mock(ShardingSphereUser.class);
+        when(user.getGrantee()).thenReturn(new Grantee("root", "%"));
+        when(authorityRule.findUser(GRANTEE)).thenReturn(Optional.of(user));
         return new RuleMetaData(Collections.singletonList(authorityRule));
     }
     

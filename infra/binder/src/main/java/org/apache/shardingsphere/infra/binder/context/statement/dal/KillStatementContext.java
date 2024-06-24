@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.KillStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.KillStatement;
 
 /**
  * Kill process statement.

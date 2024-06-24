@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.type;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 
 import java.util.Optional;
 

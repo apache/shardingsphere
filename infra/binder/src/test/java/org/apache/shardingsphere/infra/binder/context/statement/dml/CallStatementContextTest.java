@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLCallStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCallStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLCallStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCallStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

@@ -55,12 +55,12 @@ import org.apache.shardingsphere.sharding.rule.attribute.ShardingTableNamesRuleA
 import org.apache.shardingsphere.sharding.rule.checker.ShardingRuleChecker;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtractUtils;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -309,9 +309,7 @@ public final class ShardingRule implements DatabaseRule {
      * @throws ShardingTableRuleNotFoundException sharding table rule not found exception
      */
     public ShardingTable getShardingTable(final String logicTableName) {
-        Optional<ShardingTable> shardingTable = findShardingTable(logicTableName);
-        ShardingSpherePreconditions.checkState(shardingTable.isPresent(), () -> new ShardingTableRuleNotFoundException(Collections.singleton(logicTableName)));
-        return shardingTable.get();
+        return findShardingTable(logicTableName).orElseThrow(() -> new ShardingTableRuleNotFoundException(Collections.singleton(logicTableName)));
     }
     
     /**

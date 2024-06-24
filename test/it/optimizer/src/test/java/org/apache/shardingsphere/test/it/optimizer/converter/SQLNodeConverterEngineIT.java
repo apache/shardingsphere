@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.it.optimizer.converter;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.sqlfederation.optimizer.sql.SQLDialectFactory;
 import org.apache.shardingsphere.test.it.optimizer.converter.cases.SQLNodeConverterTestCases;

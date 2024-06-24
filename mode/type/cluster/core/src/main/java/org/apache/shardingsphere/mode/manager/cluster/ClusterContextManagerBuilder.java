@@ -55,9 +55,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     public ContextManager build(final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) throws SQLException {
         ModeConfiguration modeConfig = param.getModeConfiguration();
         ClusterPersistRepositoryConfiguration config = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
+        ComputeNodeInstanceContext computeNodeInstanceContext = buildComputeNodeInstanceContext(modeConfig, param.getInstanceMetaData(), eventBusContext, param.getLabels());
         ClusterPersistRepository repository = getClusterPersistRepository(config);
-        ComputeNodeInstanceContext computeNodeInstanceContext = buildComputeNodeInstanceContext(modeConfig, param.getInstanceMetaData(), repository, eventBusContext, param.getLabels());
         repository.init(config, computeNodeInstanceContext);
+        computeNodeInstanceContext.init(new ClusterWorkerIdGenerator(repository, param.getInstanceMetaData().getId()), new GlobalLockContext(new GlobalLockPersistService(repository)));
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, computeNodeInstanceContext);
         ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
@@ -71,10 +72,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private ComputeNodeInstanceContext buildComputeNodeInstanceContext(final ModeConfiguration modeConfig, final InstanceMetaData instanceMetaData,
-                                                                       final ClusterPersistRepository repository, final EventBusContext eventBusContext, final Collection<String> labels) {
-        return new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData, labels),
-                new ClusterWorkerIdGenerator(repository, instanceMetaData.getId()), modeConfig,
-                new GlobalLockContext(new GlobalLockPersistService(repository)), eventBusContext);
+                                                                       final EventBusContext eventBusContext, final Collection<String> labels) {
+        return new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData, labels), modeConfig, eventBusContext);
     }
     
     private void registerOnline(final EventBusContext eventBusContext, final ComputeNodeInstanceContext computeNodeInstanceContext,

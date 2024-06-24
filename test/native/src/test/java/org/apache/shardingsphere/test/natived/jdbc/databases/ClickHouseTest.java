@@ -26,6 +26,8 @@ import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 class ClickHouseTest {
     
     private TestShardingService testShardingService;
@@ -34,17 +36,16 @@ class ClickHouseTest {
      * TODO Need to fix `shardingsphere-parser-sql-clickhouse` module to use {@link TestShardingService#cleanEnvironment()}
      *      after {@link TestShardingService#processSuccessInClickHouse()}.
      *
-     * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     @EnabledInNativeImage
     @Test
-    void assertShardingInLocalTransactions() throws SQLException {
+    void assertShardingInLocalTransactions() {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/databases/clickhouse.yaml");
         DataSource dataSource = new HikariDataSource(config);
         testShardingService = new TestShardingService(dataSource);
-        testShardingService.processSuccessInClickHouse();
+        assertDoesNotThrow(() -> testShardingService.processSuccessInClickHouse());
     }
     
     /**

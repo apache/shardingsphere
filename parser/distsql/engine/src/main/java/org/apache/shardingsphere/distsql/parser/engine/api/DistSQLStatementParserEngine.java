@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.core.utility.UtilityDistSQLState
 import org.apache.shardingsphere.distsql.parser.core.kernel.KernelDistSQLStatementParserEngine;
 import org.apache.shardingsphere.distsql.parser.core.featured.DistSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * DistSQL statement parser engine.

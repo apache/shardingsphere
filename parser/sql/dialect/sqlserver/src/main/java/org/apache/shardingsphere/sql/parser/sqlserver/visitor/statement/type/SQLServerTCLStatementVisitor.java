@@ -29,14 +29,14 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Rol
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetImplicitTransactionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetTransactionContext;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl.SQLServerBeginDistributedTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl.SQLServerBeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl.SQLServerCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl.SQLServerRollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl.SQLServerSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl.SQLServerSetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl.SQLServerSetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerBeginDistributedTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerBeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerRollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerSetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerSetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitor;
 
 /**
