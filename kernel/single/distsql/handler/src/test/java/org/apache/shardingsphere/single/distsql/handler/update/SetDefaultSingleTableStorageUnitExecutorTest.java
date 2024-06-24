@@ -66,27 +66,12 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
     }
     
     @Test
-    void assertBuild() {
-        SingleRule rule = mock(SingleRule.class);
-        when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration());
-        executor.setRule(rule);
+    void assertUpdate() {
+        executor.setRule(mock(SingleRule.class));
         SingleRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
         assertTrue(toBeAlteredRuleConfig.getDefaultDataSource().isPresent());
         assertThat(toBeAlteredRuleConfig.getDefaultDataSource().get(), is("foo_ds"));
-    }
-    
-    @Test
-    void assertUpdate() {
-        SingleRuleConfiguration currentConfig = new SingleRuleConfiguration();
-        currentConfig.setDefaultDataSource("foo_ds");
-        currentConfig.getTables().add("foo_ds.t_order");
-        SingleRule rule = mock(SingleRule.class);
-        when(rule.getConfiguration()).thenReturn(currentConfig);
-        executor.setRule(rule);
-        SingleRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement("bar_ds"));
-        assertTrue(toBeAlteredRuleConfig.getDefaultDataSource().isPresent());
-        assertThat(toBeAlteredRuleConfig.getDefaultDataSource().get(), is("bar_ds"));
-        assertThat(toBeAlteredRuleConfig.getTables().iterator().next(), is("foo_ds.t_order"));
+        assertTrue(toBeAlteredRuleConfig.getTables().isEmpty());
         assertNull(executor.buildToBeDroppedRuleConfiguration(toBeAlteredRuleConfig));
     }
     
@@ -94,16 +79,15 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
     void assertRandom() {
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration();
         currentConfig.setDefaultDataSource("foo_ds");
-        currentConfig.getTables().add("foo_ds.t_order");
         SingleRule rule = mock(SingleRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
         SingleRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement(null));
         assertFalse(toBeAlteredRuleConfig.getDefaultDataSource().isPresent());
-        assertThat(toBeAlteredRuleConfig.getTables().iterator().next(), is("foo_ds.t_order"));
         SingleRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(toBeAlteredRuleConfig);
         assertNotNull(toBeDroppedRuleConfig);
         assertTrue(toBeDroppedRuleConfig.getDefaultDataSource().isPresent());
+        assertThat(toBeDroppedRuleConfig.getDefaultDataSource().get(), is("foo_ds"));
         assertTrue(toBeDroppedRuleConfig.getTables().isEmpty());
     }
 }
