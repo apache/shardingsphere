@@ -30,23 +30,21 @@ import java.lang.reflect.Method;
  */
 public final class ShardingSphereDataSourceAdvice extends AbstractInstanceMethodAdvice {
     
-    private static final String PUT_CONTEXT_MANAGER_METHOD_NAME = "createContextManager";
-    
-    private static final String REMOVE_CONTEXT_MANAGER_METHOD_NAME = "close";
-    
-    private static final String DATABASE_FIELD_NAME = "databaseName";
-    
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        if (REMOVE_CONTEXT_MANAGER_METHOD_NAME.equals(method.getName())) {
-            ContextManagerHolder.remove(AgentReflectionUtils.getFieldValue(target, DATABASE_FIELD_NAME));
+        if ("close".equals(method.getName())) {
+            ContextManagerHolder.remove(getDatabaseName(target));
         }
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
-        if (PUT_CONTEXT_MANAGER_METHOD_NAME.equals(method.getName())) {
-            ContextManagerHolder.put((String) args[0], (ContextManager) result);
+        if ("createContextManager".equals(method.getName())) {
+            ContextManagerHolder.put(getDatabaseName(target), (ContextManager) result);
         }
+    }
+    
+    private String getDatabaseName(final TargetAdviceObject target) {
+        return AgentReflectionUtils.getFieldValue(target, "databaseName");
     }
 }
