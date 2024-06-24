@@ -28,7 +28,6 @@ import org.apache.shardingsphere.driver.jdbc.core.savepoint.ShardingSphereSavepo
 import org.apache.shardingsphere.infra.exception.kernel.connection.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -44,12 +43,11 @@ import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 /**
  * Database connection manager of ShardingSphere-JDBC.
@@ -59,8 +57,6 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     private final String defaultDatabaseName;
     
     private final ContextManager contextManager;
-    
-    private final Map<String, DataSource> physicalDataSourceMap;
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -76,25 +72,14 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     public DriverDatabaseConnectionManager(final String defaultDatabaseName, final ContextManager contextManager) {
         this.defaultDatabaseName = defaultDatabaseName;
         this.contextManager = contextManager;
-        physicalDataSourceMap = getPhysicalDataSourceMap(defaultDatabaseName, contextManager);
-        dataSourceMap = getDataSourceMap();
+        dataSourceMap = contextManager.getStorageUnits(defaultDatabaseName).entrySet()
+                .stream().collect(Collectors.toMap(entry -> getKey(defaultDatabaseName, entry.getKey()), entry -> entry.getValue().getDataSource()));
         connectionContext = new ConnectionContext(cachedConnections::keySet);
         connectionContext.setCurrentDatabase(defaultDatabaseName);
     }
     
-    private Map<String, DataSource> getPhysicalDataSourceMap(final String databaseName, final ContextManager contextManager) {
-        Map<String, StorageUnit> stringStorageUnits = contextManager.getStorageUnits(databaseName);
-        Map<String, DataSource> result = new LinkedHashMap<>(stringStorageUnits.size(), 1F);
-        for (Entry<String, StorageUnit> entry : stringStorageUnits.entrySet()) {
-            result.put(getKey(databaseName, entry.getKey()), entry.getValue().getDataSource());
-        }
-        return result;
-    }
-    
-    private Map<String, DataSource> getDataSourceMap() {
-        Map<String, DataSource> result;
-        result = new LinkedHashMap<>(physicalDataSourceMap);
-        return result;
+    private String getKey(final String databaseName, final String dataSourceName) {
+        return databaseName.toLowerCase() + "." + dataSourceName;
     }
     
     /**
@@ -293,8 +278,8 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     }
     
     private String[] getRandomPhysicalDatabaseAndDataSourceName() {
-        Collection<String> cachedPhysicalDataSourceNames = Sets.intersection(physicalDataSourceMap.keySet(), cachedConnections.keySet());
-        Collection<String> databaseAndDatasourceNames = cachedPhysicalDataSourceNames.isEmpty() ? physicalDataSourceMap.keySet() : cachedPhysicalDataSourceNames;
+        Collection<String> cachedPhysicalDataSourceNames = Sets.intersection(dataSourceMap.keySet(), cachedConnections.keySet());
+        Collection<String> databaseAndDatasourceNames = cachedPhysicalDataSourceNames.isEmpty() ? dataSourceMap.keySet() : cachedPhysicalDataSourceNames;
         return new ArrayList<>(databaseAndDatasourceNames).get(ThreadLocalRandom.current().nextInt(databaseAndDatasourceNames.size())).split("\\.");
     }
     
@@ -345,10 +330,6 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
             }
         }
         return result;
-    }
-    
-    private String getKey(final String databaseName, final String dataSourceName) {
-        return databaseName.toLowerCase() + "." + dataSourceName;
     }
     
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
