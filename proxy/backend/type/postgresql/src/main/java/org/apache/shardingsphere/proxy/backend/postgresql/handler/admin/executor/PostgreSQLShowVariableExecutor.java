@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedRe
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 
 import java.sql.Types;
@@ -52,7 +53,7 @@ public final class PostgreSQLShowVariableExecutor implements DatabaseAdminQueryE
         VARIABLE_ROW_DATA_GENERATORS.put("integer_datetimes", connectionSession -> new String[]{"integer_datetimes", "on", "Shows whether datetimes are integer based."});
         VARIABLE_ROW_DATA_GENERATORS.put("timezone", connectionSession -> new String[]{"TimeZone", "Etc/UTC", "Sets the time zone for displaying and interpreting time stamps."});
         VARIABLE_ROW_DATA_GENERATORS.put("transaction_isolation", connectionSession -> {
-            String result = null == connectionSession.getIsolationLevel() ? "read committed" : connectionSession.getIsolationLevel().getIsolationLevel().replace("-", " ").toLowerCase(Locale.ROOT);
+            String result = connectionSession.getIsolationLevel().orElse(TransactionIsolationLevel.READ_COMMITTED).getIsolationLevel().replace("-", " ").toLowerCase(Locale.ROOT);
             return new String[]{"transaction_isolation", result, "Sets the current transaction's isolation level"};
         });
         VARIABLE_ROW_DATA_GENERATORS.put("transaction_read_only",

@@ -170,8 +170,8 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         if (connectionSession.isReadOnly()) {
             connection.setReadOnly(true);
         }
-        if (null != connectionSession.getIsolationLevel()) {
-            connection.setTransactionIsolation(TransactionUtils.getTransactionIsolationLevel(connectionSession.getIsolationLevel()));
+        if (connectionSession.getIsolationLevel().isPresent()) {
+            connection.setTransactionIsolation(TransactionUtils.getTransactionIsolationLevel(connectionSession.getIsolationLevel().get()));
         }
     }
     
