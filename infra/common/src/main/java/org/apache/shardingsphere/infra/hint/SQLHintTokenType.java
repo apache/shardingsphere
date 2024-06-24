@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public enum SQLHintTokenEnum {
+public enum SQLHintTokenType {
     
     /**
      * SQL start hint token.
