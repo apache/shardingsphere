@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * SQL hint token enum.
+ * SQL hint token type.
  */
 @RequiredArgsConstructor
 @Getter
