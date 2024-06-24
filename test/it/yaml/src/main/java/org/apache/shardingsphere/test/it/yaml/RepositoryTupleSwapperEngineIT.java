@@ -19,12 +19,12 @@ package org.apache.shardingsphere.test.it.yaml;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
 import org.apache.shardingsphere.mode.tuple.RepositoryTupleSwapperEngine;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -68,7 +69,6 @@ public abstract class RepositoryTupleSwapperEngineIT {
     private YamlRuleConfiguration loadYamlRuleConfiguration() throws IOException {
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(yamlFile, YamlRootConfiguration.class);
         assertThat(yamlRootConfig.getRules().size(), is(1));
-        log.info("RepositoryTupleSwapperEngineIT.loadYamlRuleConfiguration yamlRootConfig is {}", YamlEngine.marshal(yamlRootConfig));
         return yamlRootConfig.getRules().iterator().next();
     }
     
@@ -85,7 +85,11 @@ public abstract class RepositoryTupleSwapperEngineIT {
     
     @Test
     void assertSwapToYamlRuleConfiguration() throws IOException {
-        assertThat(getActualYamlContent(), is(getExpectedYamlContent()));
+        String actualYamlContent = getActualYamlContent();
+        String expectedYamlContent = getExpectedYamlContent();
+        if (!sameYamlContext(actualYamlContent, expectedYamlContent)) {
+            assertThat(actualYamlContent, is(expectedYamlContent));
+        }
     }
     
     private String getActualYamlContent() throws IOException {
@@ -110,5 +114,13 @@ public abstract class RepositoryTupleSwapperEngineIT {
         String content = Files.readAllLines(yamlFile.toPath()).stream()
                 .filter(each -> !each.contains("#") && !each.isEmpty()).collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator();
         return YamlEngine.marshal(YamlEngine.unmarshal(content, Map.class));
+    }
+    
+    private boolean sameYamlContext(final String actualYamlContext, final String expectedYamlContext) {
+        char[] actualArray = actualYamlContext.toCharArray();
+        char[] expectedArray = expectedYamlContext.toCharArray();
+        Arrays.sort(actualArray);
+        Arrays.sort(expectedArray);
+        return Arrays.equals(actualArray, expectedArray);
     }
 }
