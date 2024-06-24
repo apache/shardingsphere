@@ -31,6 +31,7 @@ import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBack
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -127,6 +128,15 @@ public final class ConnectionSession {
      */
     public String getDefaultDatabaseName() {
         return databaseName;
+    }
+    
+    /**
+     * Get isolation level.
+     *
+     * @return isolation level
+     */
+    public Optional<TransactionIsolationLevel> getIsolationLevel() {
+        return Optional.ofNullable(isolationLevel);
     }
     
     /**
