@@ -19,7 +19,7 @@ package org.apache.shardingsphere.single.distsql.handler.update;
 
 import com.google.common.base.Strings;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * Set default single table storage unit executor.
  */
 @Setter
-public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseRuleCreateExecutor<SetDefaultSingleTableStorageUnitStatement, SingleRule, SingleRuleConfiguration> {
+public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseRuleAlterExecutor<SetDefaultSingleTableStorageUnitStatement, SingleRule, SingleRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
@@ -63,10 +63,23 @@ public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseR
     }
     
     @Override
-    public SingleRuleConfiguration buildToBeCreatedRuleConfiguration(final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
+    public SingleRuleConfiguration buildToBeAlteredRuleConfiguration(final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
-        result.setDefaultDataSource(sqlStatement.getDefaultStorageUnit());
-        result.getTables().addAll(rule.getConfiguration().getTables());
+        if (null != sqlStatement.getDefaultStorageUnit()) {
+            result.setDefaultDataSource(sqlStatement.getDefaultStorageUnit());
+        }
+        return result;
+    }
+    
+    @Override
+    public SingleRuleConfiguration buildToBeDroppedRuleConfiguration(final SingleRuleConfiguration toBeAlteredRuleConfig) {
+        if (toBeAlteredRuleConfig.getDefaultDataSource().isPresent()) {
+            return null;
+        }
+        SingleRuleConfiguration result = new SingleRuleConfiguration();
+        if (rule.getConfiguration().getDefaultDataSource().isPresent()) {
+            result.setDefaultDataSource(rule.getConfiguration().getDefaultDataSource().get());
+        }
         return result;
     }
     

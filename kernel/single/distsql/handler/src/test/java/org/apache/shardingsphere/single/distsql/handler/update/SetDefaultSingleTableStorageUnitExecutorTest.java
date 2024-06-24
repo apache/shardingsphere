@@ -33,6 +33,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,33 +66,28 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
     }
     
     @Test
-    void assertBuild() {
-        SingleRule rule = mock(SingleRule.class);
-        when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration());
-        executor.setRule(rule);
-        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
-        assertTrue(toBeCreatedRuleConfig.getDefaultDataSource().isPresent());
-        assertThat(toBeCreatedRuleConfig.getDefaultDataSource().get(), is("foo_ds"));
-    }
-    
-    @Test
     void assertUpdate() {
-        SingleRuleConfiguration currentConfig = new SingleRuleConfiguration();
-        SingleRule rule = mock(SingleRule.class);
-        when(rule.getConfiguration()).thenReturn(currentConfig);
-        executor.setRule(rule);
-        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
-        assertTrue(toBeCreatedRuleConfig.getDefaultDataSource().isPresent());
-        assertThat(toBeCreatedRuleConfig.getDefaultDataSource().get(), is("foo_ds"));
+        executor.setRule(mock(SingleRule.class));
+        SingleRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
+        assertTrue(toBeAlteredRuleConfig.getDefaultDataSource().isPresent());
+        assertThat(toBeAlteredRuleConfig.getDefaultDataSource().get(), is("foo_ds"));
+        assertTrue(toBeAlteredRuleConfig.getTables().isEmpty());
+        assertNull(executor.buildToBeDroppedRuleConfiguration(toBeAlteredRuleConfig));
     }
     
     @Test
     void assertRandom() {
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration();
+        currentConfig.setDefaultDataSource("foo_ds");
         SingleRule rule = mock(SingleRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
-        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement(null));
-        assertFalse(toBeCreatedRuleConfig.getDefaultDataSource().isPresent());
+        SingleRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement(null));
+        assertFalse(toBeAlteredRuleConfig.getDefaultDataSource().isPresent());
+        SingleRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(toBeAlteredRuleConfig);
+        assertNotNull(toBeDroppedRuleConfig);
+        assertTrue(toBeDroppedRuleConfig.getDefaultDataSource().isPresent());
+        assertThat(toBeDroppedRuleConfig.getDefaultDataSource().get(), is("foo_ds"));
+        assertTrue(toBeDroppedRuleConfig.getTables().isEmpty());
     }
 }
