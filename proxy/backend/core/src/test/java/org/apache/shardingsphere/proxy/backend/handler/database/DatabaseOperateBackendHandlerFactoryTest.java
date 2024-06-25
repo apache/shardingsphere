@@ -79,6 +79,7 @@ class DatabaseOperateBackendHandlerFactoryTest {
     
     @BeforeEach
     void setUp() {
+        when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
