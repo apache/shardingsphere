@@ -60,7 +60,7 @@ class ConnectionSessionTest {
     @BeforeEach
     void setup() {
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), null);
-        connectionSession.setGrantee(new Grantee("", ""));
+        connectionSession.setGrantee(mock(Grantee.class));
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
     }
     
