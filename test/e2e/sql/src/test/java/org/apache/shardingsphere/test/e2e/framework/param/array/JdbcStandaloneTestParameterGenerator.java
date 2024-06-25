@@ -46,7 +46,8 @@ public final class JdbcStandaloneTestParameterGenerator {
      * @return assertion test parameter
      */
     public static Collection<AssertionTestParameter> getAssertionTestParameter(final SQLCommandType sqlCommandType) {
-        return new E2ETestParameterGenerator(ADAPTERS, ENV.getScenarios(), AdapterMode.STANDALONE.getValue(), ENV.getClusterEnvironment().getDatabaseTypes()).getAssertionTestParameter(sqlCommandType);
+        return new E2ETestParameterGenerator(ADAPTERS, ENV.getScenarios(), AdapterMode.STANDALONE.getValue(), ENV.getClusterEnvironment().getDatabaseTypes(), ENV.isSmoke())
+                .getAssertionTestParameter(sqlCommandType);
     }
     
     /**
@@ -56,6 +57,7 @@ public final class JdbcStandaloneTestParameterGenerator {
      * @return case test parameter
      */
     public static Collection<E2ETestParameter> getCaseTestParameter(final SQLCommandType sqlCommandType) {
-        return new E2ETestParameterGenerator(ADAPTERS, ENV.getScenarios(), AdapterMode.STANDALONE.getValue(), ENV.getClusterEnvironment().getDatabaseTypes()).getCaseTestParameter(sqlCommandType);
+        return new E2ETestParameterGenerator(ADAPTERS, ENV.getScenarios(), AdapterMode.STANDALONE.getValue(), ENV.getClusterEnvironment().getDatabaseTypes(), ENV.isSmoke())
+                .getCaseTestParameter(sqlCommandType);
     }
 }
