@@ -73,10 +73,10 @@ class YamlShardingAutoTableRuleConfigurationSwapperTest {
     
     private YamlShardingStrategyConfiguration createYamlShardingStrategyConfiguration() {
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
-        YamlStandardShardingStrategyConfiguration yamlStandardShardingStrategyConfiguration = new YamlStandardShardingStrategyConfiguration();
-        yamlStandardShardingStrategyConfiguration.setShardingColumn("user_id");
-        yamlStandardShardingStrategyConfiguration.setShardingAlgorithmName("hash_mod");
-        result.setStandard(yamlStandardShardingStrategyConfiguration);
+        YamlStandardShardingStrategyConfiguration yamlStandardShardingStrategyConfig = new YamlStandardShardingStrategyConfiguration();
+        yamlStandardShardingStrategyConfig.setShardingColumn("user_id");
+        yamlStandardShardingStrategyConfig.setShardingAlgorithmName("hash_mod");
+        result.setStandard(yamlStandardShardingStrategyConfig);
         return result;
     }
     
