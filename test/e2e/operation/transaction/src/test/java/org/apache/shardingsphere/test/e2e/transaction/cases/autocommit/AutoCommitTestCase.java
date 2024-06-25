@@ -129,6 +129,17 @@ public abstract class AutoCommitTestCase extends BaseTransactionTestCase {
         }
     }
     
+    protected void assertAutoCommitWithoutCommit() throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            executeWithLog(connection, "DELETE FROM account");
+            connection.setAutoCommit(false);
+            executeWithLog(connection, "INSERT INTO account VALUES (1, 1, 1), (2, 2, 2)");
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            assertAccountRowCount(connection, 0);
+        }
+    }
+    
     private void executeUpdatePreparedStatement(final PreparedStatement preparedStatement, final int value) throws SQLException {
         setPreparedStatementParameters(preparedStatement, value);
         preparedStatement.executeUpdate();
