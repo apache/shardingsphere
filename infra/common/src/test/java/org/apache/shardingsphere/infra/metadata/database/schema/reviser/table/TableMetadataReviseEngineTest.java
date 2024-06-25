@@ -23,23 +23,21 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMe
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -51,33 +49,40 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class TableMetadataReviseEngineTest<T extends ShardingSphereRule> {
     
-    private final T mockRule = (T) mock(ShardingSphereRule.class);
+    @Mock
+    private T rule;
     
-    private final DatabaseType databaseType = mock(DatabaseType.class);
+    @Mock
+    private DatabaseType databaseType;
     
-    private final DataSource dataSource = mock(DataSource.class);
+    @Mock
+    private DataSource dataSource;
     
-    private final MetaDataReviseEntry metaDataReviseEntry = mock(MetaDataReviseEntry.class);
+    @SuppressWarnings("rawtypes")
+    @Mock
+    private MetaDataReviseEntry metaDataReviseEntry;
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertGetRevisedTableName() {
         TableNameReviser tableNameReviser = mock(TableNameReviser.class);
-        TableMetaData originalMetaData = new TableMetaData("originalTableName", new ArrayList<>(), null, null);
-        TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<T>(mockRule, databaseType, dataSource, metaDataReviseEntry);
+        TableMetaData originalMetaData = new TableMetaData("originalTableName", new LinkedList<>(), null, null);
+        TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<T>(rule, databaseType, dataSource, metaDataReviseEntry);
         doReturn(Optional.of(tableNameReviser)).when(metaDataReviseEntry).getTableNameReviser();
-        when(tableNameReviser.revise(anyString(), eq(mockRule))).thenReturn("revisedTableName");
+        when(tableNameReviser.revise(anyString(), eq(rule))).thenReturn("revisedTableName");
         TableMetaData revisedMetaData = tableMetaDataReviseEngine.revise(originalMetaData);
         assertThat(revisedMetaData.getName(), is("revisedTableName"));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertGetOriginalTableName() {
-        Collection<ColumnMetaData> columns = new ArrayList<>();
+        Collection<ColumnMetaData> columns = new LinkedList<>();
         columns.add(new ColumnMetaData("column1", 2, true, true, true, false, false, false));
-        Collection<IndexMetaData> indexes = new ArrayList<>();
+        Collection<IndexMetaData> indexes = new LinkedList<>();
         indexes.add(new IndexMetaData("index1"));
         TableMetaData tableMetaData = new TableMetaData("originalTableName", columns, indexes, null);
-        TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<T>(mockRule, databaseType, dataSource, metaDataReviseEntry);
+        TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<T>(rule, databaseType, dataSource, metaDataReviseEntry);
         when(metaDataReviseEntry.getTableNameReviser()).thenReturn(Optional.empty());
         TableMetaData revisedMetaData = tableMetaDataReviseEngine.revise(tableMetaData);
         assertThat(revisedMetaData.getName(), is("originalTableName"));
