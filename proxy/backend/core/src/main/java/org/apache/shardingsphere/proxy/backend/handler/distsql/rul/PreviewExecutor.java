@@ -59,7 +59,6 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 
@@ -134,9 +133,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     
     private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final ShardingSphereMetaData metaData, final SQLFederationEngine federationEngine) {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        // TODO move dialect MySQLInsertStatement into database type module @zhangliang
-        boolean isReturnGeneratedKeys = sqlStatement instanceof MySQLInsertStatement;
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaData.getProps());
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(metaData.getProps());
         SQLFederationContext context = new SQLFederationContext(true, queryContext, metaData,
                 ((ProxyDatabaseConnectionManager) connectionContext.getDatabaseConnectionManager()).getConnectionSession().getProcessId());
         federationEngine.executeQuery(prepareEngine, createPreviewCallback(sqlStatement), context);
@@ -159,10 +156,10 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final ConfigurationProperties props) {
+    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final ConfigurationProperties props) {
         int maxConnectionsSizePerQuery = props.<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connectionContext.getDatabaseConnectionManager(),
-                connectionContext.getExecutorStatementManager(), new StatementOption(isReturnGeneratedKeys), database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
+                connectionContext.getExecutorStatementManager(), new StatementOption(false), database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
     }
     
     @Override
