@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,9 @@ public final class LocalDataQueryResultRow {
         }
         if (data instanceof Map) {
             return ((Map<?, ?>) data).isEmpty() ? "" : JsonUtils.toJsonString(data);
+        }
+        if (data instanceof Collection) {
+            return ((Collection<?>) data).isEmpty() ? "" : JsonUtils.toJsonString(data);
         }
         return JsonUtils.toJsonString(data);
     }
