@@ -38,7 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @Slf4j
 public class TransactionRollbackOnlyTest extends BaseTransactionTestCase {
     
-    public TransactionRollbackOnlyTest(TransactionTestCaseParameter testCaseParam) {
+    public TransactionRollbackOnlyTest(final TransactionTestCaseParameter testCaseParam) {
         super(testCaseParam);
     }
     
@@ -58,7 +58,7 @@ public class TransactionRollbackOnlyTest extends BaseTransactionTestCase {
                 String duplicatedKeySQL = "INSERT INTO account (id, balance, transaction_id) values (1, 11, 11)";
                 executeUpdateWithLog(connection, duplicatedKeySQL);
                 throw new SQLException("Expect report SQLException, but not report");
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 assertExceptionOccur(connection, true);
             }
             connection.commit();
@@ -77,7 +77,7 @@ public class TransactionRollbackOnlyTest extends BaseTransactionTestCase {
                 duplicatedKeyUpdateStatement.setInt(1, 1);
                 duplicatedKeyUpdateStatement.execute();
                 throw new SQLException("Expect report SQLException, but not report");
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 assertExceptionOccur(connection, true);
             }
             connection.commit();
@@ -92,7 +92,7 @@ public class TransactionRollbackOnlyTest extends BaseTransactionTestCase {
         }
     }
     
-    private void assertExceptionOccur(Connection connection, boolean expected) {
+    private void assertExceptionOccur(final Connection connection, final boolean expected) {
         if (connection instanceof ShardingSphereConnection) {
             assertThat(((ShardingSphereConnection) connection).getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isExceptionOccur(), is(expected));
         }
