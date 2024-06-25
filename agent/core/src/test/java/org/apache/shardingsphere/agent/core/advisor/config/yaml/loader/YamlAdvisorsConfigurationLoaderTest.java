@@ -52,7 +52,7 @@ class YamlAdvisorsConfigurationLoaderTest {
         assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(1), null, "constructor", null, null, null,
                 Collections.singletonList(createYamlPointcutParameterConfiguration(0, "java.lang.String")));
         assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(2), "call", "method", null, null, null, Collections.emptyList());
-        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(3), "call", "method", "public", null, "java.lang.String",
+        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(3), "call", "method", "public static", null, "java.lang.String",
                 Collections.singletonList(createYamlPointcutParameterConfiguration(0, "java.lang.String")));
         assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(4), "call", "method", null, null, null,
                 Arrays.asList(createYamlPointcutParameterConfiguration(0, "java.lang.String"), createYamlPointcutParameterConfiguration(1, "java.lang.String")));
