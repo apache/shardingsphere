@@ -21,7 +21,6 @@ import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallba
 import org.apache.shardingsphere.driver.executor.callback.execute.ExecuteQueryCallbackFactory;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetFactory;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
@@ -42,6 +41,7 @@ import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
@@ -90,10 +90,10 @@ public final class DriverJDBCPushDownExecuteQueryExecutor {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
-    public ShardingSphereResultSet executeQuery(final ShardingSphereDatabase database, final QueryContext queryContext,
-                                                final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement,
-                                                final Map<String, Integer> columnLabelAndIndexMap,
-                                                final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
+    public ResultSet executeQuery(final ShardingSphereDatabase database, final QueryContext queryContext,
+                                  final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement,
+                                  final Map<String, Integer> columnLabelAndIndexMap,
+                                  final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
         List<QueryResult> queryResults = getQueryResults(database, queryContext, prepareEngine, addCallback, replayCallback);
         return new ShardingSphereResultSetFactory(connectionContext, globalRuleMetaData, props, statements).newInstance(database, queryContext, queryResults, statement, columnLabelAndIndexMap);
     }
