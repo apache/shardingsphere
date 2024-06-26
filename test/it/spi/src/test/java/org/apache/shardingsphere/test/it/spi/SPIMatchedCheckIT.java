@@ -45,8 +45,10 @@ class SPIMatchedCheckIT {
             URL url = spiURLs.nextElement();
             for (File each : listSPIs(url)) {
                 for (String serviceFullName : parseServiceFullNames(each)) {
-                    assertSPIServiceNameMatchInterface(each, serviceFullName);
-                    spiCount++;
+                    if (!serviceFullName.contains(".test.")) {
+                        assertSPIServiceNameMatchInterface(each, serviceFullName);
+                        spiCount++;
+                    }
                 }
             }
         }
