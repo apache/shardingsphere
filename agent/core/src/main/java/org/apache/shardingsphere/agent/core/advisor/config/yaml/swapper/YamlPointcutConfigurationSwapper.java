@@ -83,9 +83,7 @@ public final class YamlPointcutConfigurationSwapper {
     private static Optional<Mode> findMode(final String mode) {
         try {
             return Optional.of(Mode.valueOf(mode.toUpperCase()));
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final IllegalArgumentException ex) {
             LOGGER.log(Level.SEVERE, "Invalid parameters `{0}`, valid values is [{1}]", new String[]{mode, getValidValues()});
         }
         return Optional.empty();
