@@ -76,7 +76,7 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
     }
     
     private void checkTableExist(final Collection<String> allTables, final String tableName) {
-        ShardingSpherePreconditions.checkState(allTables.contains(tableName), () -> new NoSuchTableException(tableName));
+        ShardingSpherePreconditions.checkContains(allTables, tableName, () -> new NoSuchTableException(tableName));
     }
     
     private void checkIsSingleTable(final Collection<String> singleTables, final String tableName) {
