@@ -53,7 +53,7 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Shar
     
     /**
      * Whether there is dropped data.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @return dropped data exists or does not exist
      */
