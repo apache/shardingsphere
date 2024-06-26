@@ -56,9 +56,10 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     @Override
     public void dropDatabase(final String databaseName) {
+        String droppedDatabaseName = contextManager.getDatabase(databaseName).getName();
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService()
-                .persistDatabaseNameListenerAssisted(new ListenerAssistedPOJO(contextManager.getDatabase(databaseName).getName(), ListenerAssistedEnum.DROP_DATABASE));
-        contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().dropDatabase(contextManager.getDatabase(databaseName).getName());
+                .persistDatabaseNameListenerAssisted(new ListenerAssistedPOJO(droppedDatabaseName, ListenerAssistedEnum.DROP_DATABASE));
+        contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().dropDatabase(droppedDatabaseName);
     }
     
     @Override
