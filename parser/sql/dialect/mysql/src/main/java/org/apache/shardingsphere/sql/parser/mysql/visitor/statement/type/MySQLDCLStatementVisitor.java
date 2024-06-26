@@ -173,7 +173,6 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
     private GrantLevelSegment generateGrantLevel(final GrantIdentifierContext ctx) {
         if (ctx instanceof GrantLevelGlobalContext) {
             return new GrantLevelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "*", "*");
-            
         }
         if (ctx instanceof GrantLevelSchemaGlobalContext) {
             String schemaName = new IdentifierValue(((GrantLevelSchemaGlobalContext) ctx).schemaName().getText()).getValue();
