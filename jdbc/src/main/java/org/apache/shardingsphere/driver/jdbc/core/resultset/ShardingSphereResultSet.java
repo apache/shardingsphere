@@ -34,6 +34,7 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
+import java.sql.NClob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -328,6 +329,16 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     @Override
     public Clob getClob(final String columnLabel) throws SQLException {
         return getClob(getIndexFromColumnLabelAndIndexMap(columnLabel));
+    }
+    
+    @Override
+    public NClob getNClob(final int columnIndex) throws SQLException {
+        return (NClob) mergeResultSet.getValue(columnIndex, NClob.class);
+    }
+    
+    @Override
+    public NClob getNClob(final String columnLabel) throws SQLException {
+        return getNClob(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
