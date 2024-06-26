@@ -58,7 +58,7 @@ public class TransactionRollbackOnlyTestCase extends BaseTransactionTestCase {
                 String duplicatedKeySQL = "INSERT INTO account (id, balance, transaction_id) values (1, 11, 11)";
                 executeUpdateWithLog(connection, duplicatedKeySQL);
                 throw new SQLException("Expect report SQLException, but not report");
-            } catch (final SQLException ex) {
+            } catch (final SQLException ignored) {
                 assertExceptionOccur(connection, true);
             }
             connection.commit();
@@ -73,11 +73,11 @@ public class TransactionRollbackOnlyTestCase extends BaseTransactionTestCase {
             assertExceptionOccur(connection, false);
             try {
                 executeUpdateWithLog(connection, "UPDATE account SET balance = 100 WHERE id = 1");
-                PreparedStatement duplicatedKeyUpdateStatement = connection.prepareStatement("INSERT INTO account (id, balance, transaction_id) values (?, 11, 11)");
-                duplicatedKeyUpdateStatement.setInt(1, 1);
-                duplicatedKeyUpdateStatement.execute();
+                PreparedStatement duplicatedKeyInsertStatement = connection.prepareStatement("INSERT INTO account (id, balance, transaction_id) values (?, 11, 11)");
+                duplicatedKeyInsertStatement.setInt(1, 1);
+                duplicatedKeyInsertStatement.execute();
                 throw new SQLException("Expect report SQLException, but not report");
-            } catch (final SQLException ex) {
+            } catch (final SQLException ignored) {
                 assertExceptionOccur(connection, true);
             }
             connection.commit();
