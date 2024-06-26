@@ -110,7 +110,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Replace
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RowConstructorListContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectWithIntoContext;
@@ -334,7 +334,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     }
     
     @Override
-    public final ASTNode visitSchemaName(final SchemaNameContext ctx) {
+    public final ASTNode visitDatabaseName(final DatabaseNameContext ctx) {
         return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
     

@@ -216,11 +216,11 @@ createIndex
     ;
 
 createDatabase
-    : CREATE (DATABASE | SCHEMA) ifNotExists? schemaName createDatabaseSpecification_*
+    : CREATE (DATABASE | SCHEMA) ifNotExists? databaseName createDatabaseSpecification_*
     ;
 
 alterDatabase
-    : ALTER (DATABASE | SCHEMA) schemaName? alterDatabaseSpecification_*
+    : ALTER (DATABASE | SCHEMA) databaseName? alterDatabaseSpecification_*
     ;
 
 createDatabaseSpecification_
@@ -235,7 +235,7 @@ alterDatabaseSpecification_
     ;
 
 dropDatabase
-    : DROP (DATABASE | SCHEMA) ifExists? schemaName
+    : DROP (DATABASE | SCHEMA) ifExists? databaseName
     ;
 
 alterInstance
@@ -425,7 +425,7 @@ createTrigger
     ;
 
 dropTrigger
-    : DROP TRIGGER ifExists? (schemaName DOT_)? triggerName
+    : DROP TRIGGER ifExists? (databaseName DOT_)? triggerName
     ;
 
 renameTable
