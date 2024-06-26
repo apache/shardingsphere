@@ -37,7 +37,7 @@ class SPIMatchedCheckIT {
     
     @Test
     void assertSPIServiceNameMatchInterface() throws IOException, ClassNotFoundException {
-        //  int spiCount = 0;
+        // int spiCount = 0;
         Enumeration<URL> spiURLs = getClass().getClassLoader().getResources("META-INF/services/");
         while (spiURLs.hasMoreElements()) {
             URL url = spiURLs.nextElement();
@@ -46,13 +46,13 @@ class SPIMatchedCheckIT {
                     // TODO check why test fixture can not loaded @hongsheng
                     if (!serviceFullName.contains(".test.")) {
                         assertSPIServiceNameMatchInterface(each, serviceFullName);
-                        //  spiCount++;
+                        // spiCount++;
                     }
                 }
             }
         }
         // TODO check why using maven install can not load all SPIs @hongsheng
-        //  assertThat("The count of SPIs is too low, please check if the loading is correct.", spiCount, greaterThan(500));
+        // assertThat("The count of SPIs is too low, please check if the loading is correct.", spiCount, greaterThan(500));
     }
     
     private void assertSPIServiceNameMatchInterface(final File spiFile, final String serviceFullName) throws ClassNotFoundException {
