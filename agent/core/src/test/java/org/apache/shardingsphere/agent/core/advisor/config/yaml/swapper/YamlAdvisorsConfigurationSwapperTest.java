@@ -52,7 +52,11 @@ class YamlAdvisorsConfigurationSwapperTest {
         assertThat(actualAdvisorConfigs.get(0).getPointcut(), is(ElementMatchers.isConstructor()));
         assertThat(actualAdvisorConfigs.get(1).getPointcut(), is(ElementMatchers.isConstructor().and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String")))));
         assertThat(actualAdvisorConfigs.get(2).getPointcut(), is(ElementMatchers.named("call")));
-        assertThat(actualAdvisorConfigs.get(3).getPointcut(), is(ElementMatchers.named("call").and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String")))));
+        assertThat(actualAdvisorConfigs.get(3).getPointcut(), is(ElementMatchers.named("call")
+                .and(ElementMatchers.isPublic())
+                .and(ElementMatchers.isStatic())
+                .and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String")))
+                .and(ElementMatchers.returns(ElementMatchers.named("java.lang.String")))));
         assertThat(actualAdvisorConfigs.get(4).getPointcut(), is(ElementMatchers.named("call")
                 .and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String"))).and(ElementMatchers.takesArgument(1, ElementMatchers.named("java.lang.String")))));
         assertThat(actualAdvisorConfigs.get(5).getPointcut(), is(ElementMatchers.named("staticCall")));

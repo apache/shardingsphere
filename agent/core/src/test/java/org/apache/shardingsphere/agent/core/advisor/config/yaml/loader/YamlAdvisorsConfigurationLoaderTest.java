@@ -48,20 +48,23 @@ class YamlAdvisorsConfigurationLoaderTest {
         assertThat(actual.getAdvice(), is(YamlAdviceFixture.class.getName()));
         assertThat(actual.getPointcuts().size(), is(8));
         List<YamlPointcutConfiguration> actualYamlPointcutConfigs = new ArrayList<>(actual.getPointcuts());
-        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(0), null, "constructor", null, Collections.emptyList());
-        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(1), null, "constructor", null, Collections.singletonList(createYamlPointcutParameterConfiguration(0, "java.lang.String")));
-        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(2), "call", "method", null, Collections.emptyList());
-        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(3), "call", "method", null, Collections.singletonList(createYamlPointcutParameterConfiguration(0, "java.lang.String")));
-        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(4), "call", "method", null,
+        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(0), null, "constructor", null, null, null, Collections.emptyList());
+        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(1), null, "constructor", null, null, null,
+                Collections.singletonList(createYamlPointcutParameterConfiguration(0, "java.lang.String")));
+        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(2), "call", "method", null, null, null, Collections.emptyList());
+        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(3), "call", "method", "public static", null, "java.lang.String",
+                Collections.singletonList(createYamlPointcutParameterConfiguration(0, "java.lang.String")));
+        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(4), "call", "method", null, null, null,
                 Arrays.asList(createYamlPointcutParameterConfiguration(0, "java.lang.String"), createYamlPointcutParameterConfiguration(1, "java.lang.String")));
-        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(5), "staticCall", "method", null, Collections.emptyList());
-        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(6), "staticCall", "method", null, Collections.singletonList(createYamlPointcutParameterConfiguration(0, "java.lang.String")));
-        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(7), "staticCall", "method", 2,
+        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(5), "staticCall", "method", null, null, null, Collections.emptyList());
+        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(6), "staticCall", "method", null, null, null,
+                Collections.singletonList(createYamlPointcutParameterConfiguration(0, "java.lang.String")));
+        assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(7), "staticCall", "method", null, 2, null,
                 Arrays.asList(createYamlPointcutParameterConfiguration(0, "java.lang.String"), createYamlPointcutParameterConfiguration(1, "java.lang.String")));
     }
     
-    private void assertYamlPointcutConfiguration(final YamlPointcutConfiguration actual,
-                                                 final String expectedName, final String expectedType, final Integer expectedParamsLength,
+    private void assertYamlPointcutConfiguration(final YamlPointcutConfiguration actual, final String expectedName, final String expectedType,
+                                                 final String expectedModifiers, final Integer expectedParamsLength, final String expectedReturnType,
                                                  final List<YamlPointcutParameterConfiguration> expectedParams) {
         assertThat(actual.getName(), is(expectedName));
         assertThat(actual.getType(), is(expectedType));
@@ -71,7 +74,9 @@ class YamlAdvisorsConfigurationLoaderTest {
             assertYamlPointcutParameterConfiguration(each, expectedParams.get(count));
             count++;
         }
+        assertThat(actual.getModifiers(), is(expectedModifiers));
         assertThat(actual.getParamLength(), is(expectedParamsLength));
+        assertThat(actual.getReturnType(), is(expectedReturnType));
     }
     
     private void assertYamlPointcutParameterConfiguration(final YamlPointcutParameterConfiguration actual, final YamlPointcutParameterConfiguration expected) {
