@@ -20,19 +20,38 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-test</artifactId>
+        <artifactId>shardingsphere-test-it</artifactId>
         <version>5.5.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test-it</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-test-it-spi</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>spi</module>
-        <module>yaml</module>
-        <module>parser</module>
-        <module>optimizer</module>
-        <module>rewriter</module>
-        <module>pipeline</module>
-    </modules>
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <dockerfile.skip.build>true</dockerfile.skip.build>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-proxy-bootstrap</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
