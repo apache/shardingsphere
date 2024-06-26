@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.lock.LockDefinition;
 
 /**
  * Lock persist service.
- * 
+ *
  * @param <T> type of lock definition
  */
 public interface LockPersistService<T extends LockDefinition> {
