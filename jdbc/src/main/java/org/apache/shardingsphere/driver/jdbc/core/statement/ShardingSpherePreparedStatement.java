@@ -181,7 +181,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             return currentResultSet;
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
+        } catch (final RuntimeException | SQLException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaData);
             throw SQLExceptionTransformEngine.toSQLException(ex, database.getProtocolType());
@@ -221,7 +221,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
             return result;
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
+        } catch (final RuntimeException | SQLException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaData);
             throw SQLExceptionTransformEngine.toSQLException(ex, database.getProtocolType());
@@ -245,7 +245,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
             return result;
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
+        } catch (final RuntimeException | SQLException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaData);
             throw SQLExceptionTransformEngine.toSQLException(ex, database.getProtocolType());

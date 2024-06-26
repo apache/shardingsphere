@@ -53,7 +53,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     private boolean closeOnCompletion;
     
     protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData) {
-        if (connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction()) {
+        if (connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()) {
             DatabaseType databaseType = metaData.getDatabase(connection.getDatabaseName()).getProtocolType();
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
             if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
