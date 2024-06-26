@@ -26,22 +26,25 @@ advisors:
     pointcuts:
       - name: executeQuery
         type: method
+        modifiers: public
       - name: execute
         type: method
+        modifiers: public
       - name: executeUpdate
         type: method
-        params:
-          - index: 0
-            type: java.lang.String
+        modifiers: public
   - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement
     advice: org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.OpenTelemetryRootSpanAdvice
     pointcuts:
       - name: executeQuery
         type: method
+        modifiers: public
       - name: execute
         type: method
+        modifiers: public
       - name: executeUpdate
         type: method
+        modifiers: public
   - target: org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine
     advice: org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.OpenTelemetrySQLParserEngineAdvice
     pointcuts:
@@ -52,6 +55,7 @@ advisors:
     pointcuts:
       - name: execute
         type: method
+        modifiers: private
         params:
           - index: 0
             type: org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit
