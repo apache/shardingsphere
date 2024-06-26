@@ -51,7 +51,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -100,7 +99,6 @@ class ProcessListChangedSubscriberTest {
         when(database.getSchemas()).thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema()));
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         when(database.getSchema("foo_schema")).thenReturn(mock(ShardingSphereSchema.class));
-        when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("db", database);
     }
