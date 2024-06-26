@@ -599,8 +599,8 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         int startIndex = ctx.start.getStartIndex();
         int stopIndex = ctx.stop.getStopIndex();
         if (null != ctx.subquery()) {
-            SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().getStart().getStartIndex(), ctx.subquery().getStop().getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery()),
-                    getOriginalText(ctx.subquery()));
+            SubquerySegment subquerySegment = new SubquerySegment(
+                    ctx.subquery().getStart().getStartIndex(), ctx.subquery().getStop().getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
             if (null != ctx.EXISTS()) {
                 subquerySegment.setSubqueryType(SubqueryType.EXISTS_SUBQUERY);
                 return new ExistsSubqueryExpression(startIndex, stopIndex, subquerySegment);
@@ -623,11 +623,8 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             return visit(ctx.functionCall());
         }
         if (null != ctx.collateClause()) {
-            if (null != ctx.simpleExpr()) {
-                ExpressionSegment expr = (ExpressionSegment) visit(ctx.simpleExpr(0));
-                return new CollateExpression(startIndex, stopIndex, (SimpleExpressionSegment) visit(ctx.collateClause()), expr);
-            }
-            return new CollateExpression(startIndex, stopIndex, (SimpleExpressionSegment) visit(ctx.collateClause()), null);
+            ExpressionSegment expr = null == ctx.simpleExpr() ? null : (ExpressionSegment) visit(ctx.simpleExpr(0));
+            return new CollateExpression(startIndex, stopIndex, (SimpleExpressionSegment) visit(ctx.collateClause()), expr);
         }
         if (null != ctx.columnRef()) {
             return visit(ctx.columnRef());
