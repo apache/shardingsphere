@@ -20,7 +20,7 @@ grammar DALStatement;
 import DMLStatement;
 
 use
-    : USE schemaName
+    : USE databaseName
     ;
 
 help
@@ -35,7 +35,7 @@ explain
     ;
     
 fromSchema
-    : (FROM | IN) schemaName
+    : (FROM | IN) databaseName
     ;
 
 fromTable
@@ -103,7 +103,7 @@ showColumns
     ;
 
 showCreateDatabase
-    : SHOW CREATE (DATABASE | SCHEMA) ifNotExists? schemaName
+    : SHOW CREATE (DATABASE | SCHEMA) ifNotExists? databaseName
     ;
 
 showCreateEvent

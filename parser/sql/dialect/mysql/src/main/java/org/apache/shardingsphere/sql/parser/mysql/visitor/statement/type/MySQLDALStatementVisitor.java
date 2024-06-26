@@ -235,7 +235,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitShowCreateDatabase(final ShowCreateDatabaseContext ctx) {
         MySQLShowCreateDatabaseStatement result = new MySQLShowCreateDatabaseStatement();
-        result.setDatabaseName(((DatabaseSegment) visit(ctx.schemaName())).getIdentifier().getValue());
+        result.setDatabaseName(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
         return result;
     }
     
@@ -551,7 +551,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitUse(final UseContext ctx) {
         MySQLUseStatement result = new MySQLUseStatement();
-        result.setSchema(((DatabaseSegment) visit(ctx.schemaName())).getIdentifier().getValue());
+        result.setSchema(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
         return result;
     }
     
@@ -988,7 +988,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitFromSchema(final FromSchemaContext ctx) {
-        return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (DatabaseSegment) visit(ctx.schemaName()));
+        return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
