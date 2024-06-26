@@ -164,16 +164,6 @@ class UnsupportedOperationResultSetTest {
     }
     
     @Test
-    void assertGetNClobForColumnIndex() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getNClob(1));
-    }
-    
-    @Test
-    void assertGetNClobForColumnLabel() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getNClob("label"));
-    }
-    
-    @Test
     void assertGetNCharacterStreamForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getNCharacterStream(1));
     }
