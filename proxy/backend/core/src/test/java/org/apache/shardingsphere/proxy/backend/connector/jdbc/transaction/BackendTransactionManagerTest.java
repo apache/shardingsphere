@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -40,6 +42,7 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 
@@ -69,16 +72,26 @@ class BackendTransactionManagerTest {
     @Mock
     private ShardingSphereDistributionTransactionManager distributionTransactionManager;
     
+    @Mock
+    private Connection connection;
+    
     private BackendTransactionManager backendTransactionManager;
     
     @BeforeEach
     void setUp() {
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
+        when(databaseConnectionManager.getCachedConnections()).thenReturn(mockCachedConnections());
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         TransactionConnectionContext context = new TransactionConnectionContext();
         when(connectionContext.getTransactionContext()).thenReturn(context);
+    }
+    
+    private Multimap<String, Connection> mockCachedConnections() {
+        Multimap<String, Connection> result = HashMultimap.create();
+        result.putAll("ds1", Collections.singleton(connection));
+        return result;
     }
     
     @Test
