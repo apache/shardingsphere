@@ -47,7 +47,7 @@ public final class YamlShardingSphereDataSourceFactory {
     
     /**
      * Create ShardingSphere data source.
-     * 
+     *
      * @param yamlFile YAML file for rule configurations
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
