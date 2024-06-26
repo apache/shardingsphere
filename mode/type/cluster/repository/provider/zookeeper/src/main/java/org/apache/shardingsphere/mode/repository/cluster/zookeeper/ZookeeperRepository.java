@@ -50,9 +50,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -268,7 +268,7 @@ public final class ZookeeperRepository implements ClusterPersistRepository {
         if (null == cacheListener) {
             return;
         }
-        Optional.ofNullable(caches.get(key)).ifPresent(optional -> optional.listenable().removeListener(cacheListener));
+        Optional.ofNullable(caches.remove(key)).ifPresent(optional -> optional.listenable().removeListener(cacheListener));
     }
     
     @Override
