@@ -30,6 +30,7 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
+// TODO extends ExpressionSegment
 public final class ExpressionWithParamsSegment implements SQLSegment {
     
     private final int startIndex;
