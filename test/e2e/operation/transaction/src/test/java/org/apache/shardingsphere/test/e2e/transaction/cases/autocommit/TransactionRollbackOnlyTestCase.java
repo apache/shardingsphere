@@ -36,9 +36,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 @TransactionTestCase(dbTypes = {TransactionTestConstants.POSTGRESQL, TransactionTestConstants.OPENGAUSS})
 @Slf4j
-public class TransactionRollbackOnlyTest extends BaseTransactionTestCase {
+public class TransactionRollbackOnlyTestCase extends BaseTransactionTestCase {
     
-    public TransactionRollbackOnlyTest(final TransactionTestCaseParameter testCaseParam) {
+    public TransactionRollbackOnlyTestCase(final TransactionTestCaseParameter testCaseParam) {
         super(testCaseParam);
     }
     
