@@ -18,63 +18,38 @@
 package org.apache.shardingsphere.driver.state;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.sql.Connection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class DriverStateContextTest {
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ContextManager contextManager;
-    
-    @BeforeEach
-    void setUp() {
-        Map<String, ShardingSphereDatabase> databases = mockDatabases();
-        TransactionRule transactionRule = mock(TransactionRule.class);
-        RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(transactionRule));
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(
-                mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), globalRuleMetaData, new ConfigurationProperties(new Properties())));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(contextManager.getComputeNodeInstanceContext().getInstance().getState()).thenReturn(new InstanceStateContext());
-    }
-    
-    private Map<String, ShardingSphereDatabase> mockDatabases() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS);
-        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
-    }
     
     @Test
     void assertGetConnectionWithOkState() {
-        Connection actual = DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager);
-        assertThat(actual, instanceOf(ShardingSphereConnection.class));
+        ContextManager contextManager = mockContextManager(InstanceState.OK);
+        assertThat(DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager), instanceOf(ShardingSphereConnection.class));
+    }
+    
+    @Test
+    void assertGetConnectionWithCircuitBreakState() {
+        ContextManager contextManager = mockContextManager(InstanceState.CIRCUIT_BREAK);
+        assertThat(DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager), instanceOf(CircuitBreakerConnection.class));
+    }
+    
+    private ContextManager mockContextManager(final InstanceState instanceState) {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        InstanceStateContext instanceStateContext = new InstanceStateContext();
+        instanceStateContext.switchState(instanceState);
+        when(result.getComputeNodeInstanceContext().getInstance().getState()).thenReturn(instanceStateContext);
+        return result;
     }
 }
