@@ -42,7 +42,7 @@ public interface SQLTranslator extends ShardingSphereAlgorithm {
      * @param storageType storage type
      * @param database database
      * @param globalRuleMetaData global rule meta data
-     * @return sql translator context
+     * @return SQL translator context
      */
     SQLTranslatorContext translate(String sql, List<Object> parameters, QueryContext queryContext, DatabaseType storageType, ShardingSphereDatabase database, RuleMetaData globalRuleMetaData);
 }
