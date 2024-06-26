@@ -39,7 +39,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropRes
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplainableStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FlushContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HelpContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexNameContext;
@@ -119,7 +119,7 @@ import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStateme
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneActionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneInstanceSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromSchemaSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.LoadTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionDefinitionSegment;
@@ -551,7 +551,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitUse(final UseContext ctx) {
         MySQLUseStatement result = new MySQLUseStatement();
-        result.setSchema(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
+        result.setDatabase(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
         return result;
     }
     
@@ -630,8 +630,8 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitShowEvents(final ShowEventsContext ctx) {
         MySQLShowEventsStatement result = new MySQLShowEventsStatement();
-        if (null != ctx.fromSchema()) {
-            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
@@ -643,8 +643,8 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitShowTables(final ShowTablesContext ctx) {
         MySQLShowTablesStatement result = new MySQLShowTablesStatement();
-        if (null != ctx.fromSchema()) {
-            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
@@ -657,8 +657,8 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitShowTriggers(final ShowTriggersContext ctx) {
         MySQLShowTriggersStatement result = new MySQLShowTriggersStatement();
-        if (null != ctx.fromSchema()) {
-            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
@@ -675,8 +675,8 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitShowTableStatus(final ShowTableStatusContext ctx) {
         MySQLShowTableStatusStatement result = new MySQLShowTableStatusStatement();
-        if (null != ctx.fromSchema()) {
-            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
@@ -691,8 +691,8 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.fromTable()) {
             result.setTable(((FromTableSegment) visit(ctx.fromTable())).getTable());
         }
-        if (null != ctx.fromSchema()) {
-            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
@@ -716,8 +716,8 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitShowIndex(final ShowIndexContext ctx) {
         MySQLShowIndexStatement result = new MySQLShowIndexStatement();
-        if (null != ctx.fromSchema()) {
-            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
         if (null != ctx.fromTable()) {
             result.setTable(((FromTableSegment) visitFromTable(ctx.fromTable())).getTable());
@@ -866,8 +866,8 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitShowOpenTables(final ShowOpenTablesContext ctx) {
         MySQLShowOpenTablesStatement result = new MySQLShowOpenTablesStatement();
-        if (null != ctx.fromSchema()) {
-            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
@@ -987,8 +987,8 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     }
     
     @Override
-    public ASTNode visitFromSchema(final FromSchemaContext ctx) {
-        return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName()));
+    public ASTNode visitFromDatabase(final FromDatabaseContext ctx) {
+        return new FromDatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override

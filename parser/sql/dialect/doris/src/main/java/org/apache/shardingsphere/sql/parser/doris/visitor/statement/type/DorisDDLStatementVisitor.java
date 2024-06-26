@@ -230,7 +230,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         DorisCreateDatabaseStatement result = new DorisCreateDatabaseStatement();
-        result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
+        result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
         result.setIfNotExists(null != ctx.ifNotExists());
         return result;
     }
@@ -243,7 +243,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         DorisDropDatabaseStatement result = new DorisDropDatabaseStatement();
-        result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
+        result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
         result.setIfExists(null != ctx.ifExists());
         return result;
     }

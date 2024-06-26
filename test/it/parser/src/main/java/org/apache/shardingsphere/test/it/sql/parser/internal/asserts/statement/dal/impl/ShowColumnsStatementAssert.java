@@ -43,8 +43,8 @@ public final class ShowColumnsStatementAssert {
         if (null != actual.getTable()) {
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         }
-        if (actual.getFromSchema().isPresent()) {
-            DatabaseAssert.assertIs(assertContext, actual.getFromSchema().get().getSchema(), expected.getSchema());
+        if (actual.getFromDatabase().isPresent()) {
+            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().get().getDatabase(), expected.getDatabase());
         }
         if (actual.getFilter().isPresent()) {
             ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());

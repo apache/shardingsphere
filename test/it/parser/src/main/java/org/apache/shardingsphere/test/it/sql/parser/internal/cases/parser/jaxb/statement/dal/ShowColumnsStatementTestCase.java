@@ -37,7 +37,7 @@ public final class ShowColumnsStatementTestCase extends SQLParserTestCase {
     private ExpectedSimpleTable table;
     
     @XmlElement
-    private ExpectedDatabase schema;
+    private ExpectedDatabase database;
     
     @XmlElement
     private ExpectedShowFilter filter;

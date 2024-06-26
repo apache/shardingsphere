@@ -28,5 +28,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 @Setter
 public abstract class UseStatement extends AbstractSQLStatement implements DALStatement {
     
-    private String schema;
+    private String database;
 }

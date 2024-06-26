@@ -44,7 +44,7 @@ public final class ShowIndexStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
-        assertSchema(assertContext, actual, expected);
+        assertDatabase(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final ShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
@@ -55,12 +55,12 @@ public final class ShowIndexStatementAssert {
         }
     }
     
-    private static void assertSchema(final SQLCaseAssertContext assertContext, final ShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
-        if (null == expected.getSchema()) {
-            assertFalse(actual.getFromSchema().isPresent(), assertContext.getText("Actual database segment should not exist."));
+    private static void assertDatabase(final SQLCaseAssertContext assertContext, final ShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
+        if (null == expected.getDatabase()) {
+            assertFalse(actual.getFromDatabase().isPresent(), assertContext.getText("Actual database segment should not exist."));
         } else {
-            assertTrue(actual.getFromSchema().isPresent(), assertContext.getText("Actual database segment should exist."));
-            SQLSegmentAssert.assertIs(assertContext, actual.getFromSchema().get(), expected.getSchema());
+            assertTrue(actual.getFromDatabase().isPresent(), assertContext.getText("Actual database segment should exist."));
+            SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase().get(), expected.getDatabase());
         }
     }
 }

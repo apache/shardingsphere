@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.from.ExpectedFromSchema;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.from.ExpectedFromDatabase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.show.ExpectedShowFilter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlElement;
 public final class ShowTablesStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "from")
-    private ExpectedFromSchema fromSchema;
+    private ExpectedFromDatabase fromDatabase;
     
     @XmlElement
     private ExpectedShowFilter filter;

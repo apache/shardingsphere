@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromSchemaSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
@@ -34,14 +34,14 @@ public abstract class ShowIndexStatement extends AbstractSQLStatement implements
     @Getter
     private SimpleTableSegment table;
     
-    private FromSchemaSegment fromSchema;
+    private FromDatabaseSegment fromDatabase;
     
     /**
-     * Get from schema.
+     * Get from database.
      * 
-     * @return from schema
+     * @return from database
      */
-    public Optional<FromSchemaSegment> getFromSchema() {
-        return Optional.ofNullable(fromSchema);
+    public Optional<FromDatabaseSegment> getFromDatabase() {
+        return Optional.ofNullable(fromDatabase);
     }
 }

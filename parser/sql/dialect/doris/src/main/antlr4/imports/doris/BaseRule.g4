@@ -649,24 +649,24 @@ transactionAccessMode
     : READ (WRITE | ONLY)
     ;
     
-schemaName
+databaseName
     : identifier
     ;
     
-schemaNames
-    : schemaName (COMMA_ schemaName)*
+databaseNames
+    : databaseName (COMMA_ databaseName)*
     ;
     
 charsetName
     : textOrIdentifier | BINARY | DEFAULT
     ;
     
-schemaPairs
-    : schemaPair (COMMA_ schemaPair)*
+databasePairs
+    : databasePair (COMMA_ databasePair)*
     ;
     
-schemaPair
-    : LP_ schemaName COMMA_ schemaName RP_
+databasePair
+    : LP_ databaseName COMMA_ databaseName RP_
     ;
     
 tableName
