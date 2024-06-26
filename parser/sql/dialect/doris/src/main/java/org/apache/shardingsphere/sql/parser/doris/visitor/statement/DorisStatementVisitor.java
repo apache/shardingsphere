@@ -51,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Convert
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CteClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CurrentUserFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DataTypeContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.EngineRefContext;
@@ -110,7 +111,6 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Replace
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReplaceSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReplaceValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RowConstructorListContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectWithIntoContext;
@@ -334,7 +334,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     }
     
     @Override
-    public final ASTNode visitSchemaName(final SchemaNameContext ctx) {
+    public final ASTNode visitDatabaseName(final DatabaseNameContext ctx) {
         return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
     
@@ -1719,8 +1719,8 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         OwnerSegment owner = new OwnerSegment(identifier.getStart().getStartIndex(), identifier.getStop().getStopIndex(), new IdentifierValue(identifier.getText()));
         result.setOwner(owner);
         if (shorthand.identifier().size() > 1) {
-            IdentifierContext schemaIdentifier = shorthand.identifier().get(0);
-            owner.setOwner(new OwnerSegment(schemaIdentifier.getStart().getStartIndex(), schemaIdentifier.getStop().getStopIndex(), new IdentifierValue(schemaIdentifier.getText())));
+            IdentifierContext databaseIdentifier = shorthand.identifier().get(0);
+            owner.setOwner(new OwnerSegment(databaseIdentifier.getStart().getStartIndex(), databaseIdentifier.getStop().getStopIndex(), new IdentifierValue(databaseIdentifier.getText())));
         }
         return result;
     }

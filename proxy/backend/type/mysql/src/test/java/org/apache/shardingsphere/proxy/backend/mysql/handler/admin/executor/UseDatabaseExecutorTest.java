@@ -62,7 +62,7 @@ class UseDatabaseExecutorTest {
     @Test
     void assertExecuteUseStatementBackendHandler() {
         MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
-        when(useStatement.getSchema()).thenReturn(String.format(DATABASE_PATTERN, 0));
+        when(useStatement.getDatabase()).thenReturn(String.format(DATABASE_PATTERN, 0));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists("db_0")).thenReturn(true);
@@ -75,7 +75,7 @@ class UseDatabaseExecutorTest {
     @Test
     void assertExecuteUseStatementBackendHandlerWhenSchemaNotExist() {
         MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
-        when(useStatement.getSchema()).thenReturn(String.format(DATABASE_PATTERN, 10));
+        when(useStatement.getDatabase()).thenReturn(String.format(DATABASE_PATTERN, 10));
         UseDatabaseExecutor executor = new UseDatabaseExecutor(useStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

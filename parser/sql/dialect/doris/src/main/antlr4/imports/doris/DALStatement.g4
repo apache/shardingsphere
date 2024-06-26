@@ -20,7 +20,7 @@ grammar DALStatement;
 import DMLStatement;
 
 use
-    : USE schemaName
+    : USE databaseName
     ;
 
 help
@@ -34,8 +34,8 @@ explain
     | ANALYZE (FORMAT EQ_ TREE)? (select | delete | update | insert))
     ;
     
-fromSchema
-    : (FROM | IN) schemaName
+fromDatabase
+    : (FROM | IN) databaseName
     ;
 
 fromTable
@@ -99,11 +99,11 @@ showCollation
     ;
 
 showColumns
-    : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable fromSchema? showFilter?
+    : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable fromDatabase? showFilter?
     ;
 
 showCreateDatabase
-    : SHOW CREATE (DATABASE | SCHEMA) ifNotExists? schemaName
+    : SHOW CREATE (DATABASE | SCHEMA) ifNotExists? databaseName
     ;
 
 showCreateEvent
@@ -151,7 +151,7 @@ showErrors
     ;
 
 showEvents
-    : SHOW EVENTS fromSchema? showFilter?
+    : SHOW EVENTS fromDatabase? showFilter?
     ;
 
 showFunctionCode
@@ -167,7 +167,7 @@ showGrants
     ;
 
 showIndex
-    : SHOW EXTENDED? (INDEX | INDEXES | KEYS) fromTable fromSchema? showWhereClause?
+    : SHOW EXTENDED? (INDEX | INDEXES | KEYS) fromTable fromDatabase? showWhereClause?
     ;
 
 showMasterStatus
@@ -175,7 +175,7 @@ showMasterStatus
     ;
 
 showOpenTables
-    : SHOW OPEN TABLES fromSchema? showFilter?
+    : SHOW OPEN TABLES fromDatabase? showFilter?
     ;
 
 showPlugins
@@ -231,15 +231,15 @@ showStatus
     ;
 
 showTableStatus
-    : SHOW TABLE STATUS fromSchema? showFilter?
+    : SHOW TABLE STATUS fromDatabase? showFilter?
     ;
 
 showTables
-    : SHOW EXTENDED? FULL? TABLES fromSchema? showFilter?
+    : SHOW EXTENDED? FULL? TABLES fromDatabase? showFilter?
     ;
 
 showTriggers
-    : SHOW TRIGGERS fromSchema? showFilter?
+    : SHOW TRIGGERS fromDatabase? showFilter?
     ;
 
 showVariables

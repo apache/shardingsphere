@@ -40,7 +40,7 @@ public final class UseStatementAssert {
      * @param expected expected use statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final UseStatement actual, final UseStatementTestCase expected) {
-        assertThat(assertContext.getText("Schema name assertion error: "), actual.getSchema(), is(expected.getSchema().getName()));
+        assertThat(assertContext.getText("Database name assertion error: "), actual.getDatabase(), is(expected.getDatabase().getName()));
         // TODO create a new assert class named `SchemaAssert`
         // TODO extract and assert start index, stop index, start delimiter and end delimiter
     }

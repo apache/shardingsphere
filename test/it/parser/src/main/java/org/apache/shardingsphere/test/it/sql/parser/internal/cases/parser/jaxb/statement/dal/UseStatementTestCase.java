@@ -32,5 +32,5 @@ import javax.xml.bind.annotation.XmlElement;
 public final class UseStatementTestCase extends SQLParserTestCase {
     
     @XmlElement
-    private ExpectedDatabase schema;
+    private ExpectedDatabase database;
 }

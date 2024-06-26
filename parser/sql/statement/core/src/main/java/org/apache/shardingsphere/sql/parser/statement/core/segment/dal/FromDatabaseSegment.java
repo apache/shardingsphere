@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.from;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.dal;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.database.ExpectedDatabase;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 
 /**
- * Expected from schema segment.
+ * From database segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ExpectedFromSchema extends AbstractExpectedSQLSegment {
+public final class FromDatabaseSegment implements SQLSegment {
     
-    private ExpectedDatabase schema;
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final DatabaseSegment database;
 }

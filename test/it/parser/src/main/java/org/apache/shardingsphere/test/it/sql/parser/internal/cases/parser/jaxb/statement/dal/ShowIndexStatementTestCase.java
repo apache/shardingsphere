@@ -36,5 +36,5 @@ public final class ShowIndexStatementTestCase extends SQLParserTestCase {
     private ExpectedSimpleTable table;
     
     @XmlElement
-    private ExpectedDatabase schema;
+    private ExpectedDatabase database;
 }

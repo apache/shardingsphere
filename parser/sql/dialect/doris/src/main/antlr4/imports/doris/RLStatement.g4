@@ -134,13 +134,13 @@ filterDefs
     ;
 
 filterDef
-    : REPLICATE_DO_DB EQ_ LP_ schemaNames? RP_
-    | REPLICATE_IGNORE_DB EQ_ LP_ schemaNames? RP_
+    : REPLICATE_DO_DB EQ_ LP_ databaseNames? RP_
+    | REPLICATE_IGNORE_DB EQ_ LP_ databaseNames? RP_
     | REPLICATE_DO_TABLE EQ_ LP_ tableList? RP_
     | REPLICATE_IGNORE_TABLE EQ_ LP_ tableList? RP_
     | REPLICATE_WILD_DO_TABLE EQ_ LP_ wildTables? RP_
     | REPLICATE_WILD_IGNORE_TABLE EQ_ LP_ wildTables? RP_
-    | REPLICATE_REWRITE_DB EQ_ LP_ schemaPairs? RP_
+    | REPLICATE_REWRITE_DB EQ_ LP_ databasePairs? RP_
     ;
 
 wildTables

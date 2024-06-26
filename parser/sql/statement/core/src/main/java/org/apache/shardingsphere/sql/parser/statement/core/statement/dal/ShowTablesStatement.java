@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromSchemaSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
@@ -31,7 +31,7 @@ import java.util.Optional;
 @Setter
 public abstract class ShowTablesStatement extends AbstractSQLStatement implements DALStatement {
     
-    private FromSchemaSegment fromSchema;
+    private FromDatabaseSegment fromDatabase;
     
     private ShowFilterSegment filter;
     
@@ -39,12 +39,12 @@ public abstract class ShowTablesStatement extends AbstractSQLStatement implement
     private boolean containsFull;
     
     /**
-     * Get from schema segment.
+     * Get from database segment.
      * 
-     * @return from schema segment
+     * @return from database segment
      */
-    public Optional<FromSchemaSegment> getFromSchema() {
-        return Optional.ofNullable(fromSchema);
+    public Optional<FromDatabaseSegment> getFromDatabase() {
+        return Optional.ofNullable(fromDatabase);
     }
     
     /**

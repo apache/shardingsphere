@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropRol
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.GrantIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.GrantLevelGlobalContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.GrantLevelSchemaGlobalContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.GrantLevelDatabaseGlobalContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.GrantLevelTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.GrantProxyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.GrantRoleOrPrivilegeOnToContext;
@@ -175,17 +175,17 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
             return new GrantLevelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "*", "*");
             
         }
-        if (ctx instanceof GrantLevelSchemaGlobalContext) {
-            String schemaName = new IdentifierValue(((GrantLevelSchemaGlobalContext) ctx).schemaName().getText()).getValue();
-            return new GrantLevelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), schemaName, "*");
+        if (ctx instanceof GrantLevelDatabaseGlobalContext) {
+            String databaseName = new IdentifierValue(((GrantLevelDatabaseGlobalContext) ctx).databaseName().getText()).getValue();
+            return new GrantLevelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), databaseName, "*");
         }
-        String schemaName = null;
+        String databaseName = null;
         String tableName;
         if (null != ((GrantLevelTableContext) ctx).tableName().owner()) {
-            schemaName = new IdentifierValue(((GrantLevelTableContext) ctx).tableName().owner().getText()).getValue();
+            databaseName = new IdentifierValue(((GrantLevelTableContext) ctx).tableName().owner().getText()).getValue();
         }
         tableName = new IdentifierValue(((GrantLevelTableContext) ctx).tableName().name().getText()).getValue();
-        return new GrantLevelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), schemaName, tableName);
+        return new GrantLevelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), databaseName, tableName);
     }
     
     @Override

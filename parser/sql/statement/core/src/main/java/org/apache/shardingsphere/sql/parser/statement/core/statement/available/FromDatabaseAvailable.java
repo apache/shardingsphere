@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Datab
 import java.util.Optional;
 
 /**
- * From schema available.
+ * From database available.
  */
 public interface FromDatabaseAvailable {
     

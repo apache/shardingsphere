@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromSchemaSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -44,14 +44,14 @@ class ShowColumnsStatementContextTest {
         String tableName = "tbl_1";
         String databaseName = "sharding_db";
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
-        FromSchemaSegment fromSchema = new FromSchemaSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue(databaseName)));
+        FromDatabaseSegment fromDatabase = new FromDatabaseSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue(databaseName)));
         when(showColumnsStatement.getTable()).thenReturn(table);
-        when(showColumnsStatement.getFromSchema()).thenReturn(Optional.of(fromSchema));
+        when(showColumnsStatement.getFromDatabase()).thenReturn(Optional.of(fromDatabase));
         ShowColumnsStatementContext actual = new ShowColumnsStatementContext(showColumnsStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(showColumnsStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Collections.singletonList(tableName)));
-        assertThat(actual.getRemoveSegments(), is(Collections.singletonList(fromSchema)));
+        assertThat(actual.getRemoveSegments(), is(Collections.singletonList(fromDatabase)));
     }
 }

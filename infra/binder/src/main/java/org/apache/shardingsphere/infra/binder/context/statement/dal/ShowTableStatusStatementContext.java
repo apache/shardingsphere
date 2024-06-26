@@ -42,7 +42,7 @@ public final class ShowTableStatusStatementContext extends CommonSQLStatementCon
     @Override
     public Collection<SQLSegment> getRemoveSegments() {
         Collection<SQLSegment> result = new LinkedList<>();
-        getSqlStatement().getFromSchema().ifPresent(result::add);
+        getSqlStatement().getFromDatabase().ifPresent(result::add);
         return result;
     }
 }

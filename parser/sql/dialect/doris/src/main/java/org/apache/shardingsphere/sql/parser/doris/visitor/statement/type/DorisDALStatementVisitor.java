@@ -39,7 +39,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropRes
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExplainableStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FlushContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FromSchemaContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FromDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FromTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.HelpContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IndexNameContext;
@@ -119,7 +119,7 @@ import org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStateme
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneActionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneInstanceSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromSchemaSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.LoadTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionDefinitionSegment;
@@ -235,7 +235,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitShowCreateDatabase(final ShowCreateDatabaseContext ctx) {
         DorisShowCreateDatabaseStatement result = new DorisShowCreateDatabaseStatement();
-        result.setDatabaseName(((DatabaseSegment) visit(ctx.schemaName())).getIdentifier().getValue());
+        result.setDatabaseName(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
         return result;
     }
     
@@ -551,7 +551,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitUse(final UseContext ctx) {
         DorisUseStatement result = new DorisUseStatement();
-        result.setSchema(((DatabaseSegment) visit(ctx.schemaName())).getIdentifier().getValue());
+        result.setDatabase(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
         return result;
     }
     
@@ -630,8 +630,8 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitShowEvents(final ShowEventsContext ctx) {
         DorisShowEventsStatement result = new DorisShowEventsStatement();
-        if (null != ctx.fromSchema()) {
-            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
@@ -643,8 +643,8 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitShowTables(final ShowTablesContext ctx) {
         DorisShowTablesStatement result = new DorisShowTablesStatement();
-        if (null != ctx.fromSchema()) {
-            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
@@ -657,8 +657,8 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitShowTriggers(final ShowTriggersContext ctx) {
         DorisShowTriggersStatement result = new DorisShowTriggersStatement();
-        if (null != ctx.fromSchema()) {
-            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
@@ -675,8 +675,8 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitShowTableStatus(final ShowTableStatusContext ctx) {
         DorisShowTableStatusStatement result = new DorisShowTableStatusStatement();
-        if (null != ctx.fromSchema()) {
-            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
@@ -691,8 +691,8 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         if (null != ctx.fromTable()) {
             result.setTable(((FromTableSegment) visit(ctx.fromTable())).getTable());
         }
-        if (null != ctx.fromSchema()) {
-            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
@@ -716,8 +716,8 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitShowIndex(final ShowIndexContext ctx) {
         DorisShowIndexStatement result = new DorisShowIndexStatement();
-        if (null != ctx.fromSchema()) {
-            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
         if (null != ctx.fromTable()) {
             result.setTable(((FromTableSegment) visitFromTable(ctx.fromTable())).getTable());
@@ -866,8 +866,8 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitShowOpenTables(final ShowOpenTablesContext ctx) {
         DorisShowOpenTablesStatement result = new DorisShowOpenTablesStatement();
-        if (null != ctx.fromSchema()) {
-            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
@@ -987,8 +987,8 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
-    public ASTNode visitFromSchema(final FromSchemaContext ctx) {
-        return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (DatabaseSegment) visit(ctx.schemaName()));
+    public ASTNode visitFromDatabase(final FromDatabaseContext ctx) {
+        return new FromDatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override

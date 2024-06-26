@@ -45,8 +45,8 @@ public final class HBaseListResultSet implements HBaseQueryResultSet {
     public void init(final SQLStatementContext sqlStatementContext) throws SQLException {
         ShowTablesStatementContext context = (ShowTablesStatementContext) sqlStatementContext;
         Map<String, String> result;
-        if (context.getSqlStatement().getFromSchema().isPresent()) {
-            String clusterName = context.getSqlStatement().getFromSchema().get().getSchema().getIdentifier().getValue();
+        if (context.getSqlStatement().getFromDatabase().isPresent()) {
+            String clusterName = context.getSqlStatement().getFromDatabase().get().getDatabase().getIdentifier().getValue();
             result = listTablesInHBaseByFromSchema(clusterName);
         } else {
             result = listTablesInHBase();
