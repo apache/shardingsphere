@@ -65,13 +65,29 @@ public final class ColumnValueReaderEngine {
             case Types.BOOLEAN:
                 return resultSet.getBoolean(columnIndex);
             case Types.TINYINT:
-                return isSigned(metaData, columnIndex) ? resultSet.getByte(columnIndex) : resultSet.getShort(columnIndex);
+                if (isSigned(metaData, columnIndex)) {
+                    return resultSet.getByte(columnIndex);
+                } else {
+                    return resultSet.getShort(columnIndex);
+                }
             case Types.SMALLINT:
-                return isSigned(metaData, columnIndex) ? resultSet.getShort(columnIndex) : resultSet.getInt(columnIndex);
+                if (isSigned(metaData, columnIndex)) {
+                    return resultSet.getShort(columnIndex);
+                } else {
+                    return resultSet.getInt(columnIndex);
+                }
             case Types.INTEGER:
-                return isSigned(metaData, columnIndex) ? resultSet.getInt(columnIndex) : resultSet.getLong(columnIndex);
+                if (isSigned(metaData, columnIndex)) {
+                    return resultSet.getInt(columnIndex);
+                } else {
+                    return resultSet.getLong(columnIndex);
+                }
             case Types.BIGINT:
-                return isSigned(metaData, columnIndex) ? Long.valueOf(resultSet.getLong(columnIndex)) : resultSet.getBigDecimal(columnIndex);
+                if (isSigned(metaData, columnIndex)) {
+                    return resultSet.getLong(columnIndex);
+                } else {
+                    return resultSet.getBigDecimal(columnIndex);
+                }
             case Types.NUMERIC:
             case Types.DECIMAL:
                 return resultSet.getBigDecimal(columnIndex);
