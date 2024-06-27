@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
 import java.io.Reader;
+import java.sql.NClob;
 import java.sql.Ref;
 import java.sql.RowId;
 import java.sql.SQLException;
@@ -147,6 +148,16 @@ public abstract class AbstractUnsupportedOperationResultSet extends AbstractUnsu
     @Override
     public final int getHoldability() throws SQLException {
         throw new SQLFeatureNotSupportedException("getHoldability");
+    }
+    
+    @Override
+    public final NClob getNClob(final int columnIndex) throws SQLException {
+        throw new SQLFeatureNotSupportedException("getNClob");
+    }
+    
+    @Override
+    public final NClob getNClob(final String columnLabel) throws SQLException {
+        throw new SQLFeatureNotSupportedException("getNClob");
     }
     
     @Override
