@@ -56,8 +56,7 @@ public final class GenericSQLRewriteEngine {
         Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         DatabaseType storageType = storageUnits.isEmpty() ? protocolType : storageUnits.values().iterator().next().getStorageType();
         SQLTranslatorContext sqlTranslatorContext = translatorRule.translate(new DefaultSQLBuilder(sqlRewriteContext.getSql(), sqlRewriteContext.getSqlTokens()).toSQL(),
-                sqlRewriteContext.getParameterBuilder().getParameters(), queryContext,
-                storageType, database, globalRuleMetaData);
+                sqlRewriteContext.getParameterBuilder().getParameters(), queryContext, storageType, database, globalRuleMetaData);
         return new GenericSQLRewriteResult(new SQLRewriteUnit(sqlTranslatorContext.getSql(), sqlTranslatorContext.getParameters()));
     }
 }
