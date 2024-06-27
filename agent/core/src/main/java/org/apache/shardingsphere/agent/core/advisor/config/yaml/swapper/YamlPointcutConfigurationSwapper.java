@@ -27,7 +27,6 @@ import net.bytebuddy.matcher.ModifierMatcher;
 import net.bytebuddy.matcher.ModifierMatcher.Mode;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlPointcutConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlPointcutParameterConfiguration;
-import org.apache.shardingsphere.agent.core.builder.AgentTransformer;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -41,7 +40,7 @@ import java.util.logging.Logger;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlPointcutConfigurationSwapper {
     
-    private static final Logger LOGGER = Logger.getLogger(AgentTransformer.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(YamlPointcutConfigurationSwapper.class.getName());
     
     /**
      * Swap from YAML pointcut configuration to method pointcut.
