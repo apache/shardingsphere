@@ -23,7 +23,6 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
-import java.sql.NClob;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
@@ -115,16 +114,6 @@ public abstract class AbstractUnsupportedDatabaseMetaDataResultSet extends Abstr
     @Override
     public final Clob getClob(final String columnLabel) throws SQLException {
         throw new SQLFeatureNotSupportedException("getClob");
-    }
-    
-    @Override
-    public final NClob getNClob(final int columnIndex) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getNClob");
-    }
-    
-    @Override
-    public final NClob getNClob(final String columnLabel) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getNClob");
     }
     
     @Override

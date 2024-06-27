@@ -27,7 +27,6 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
-import java.sql.NClob;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLWarning;
@@ -366,16 +365,6 @@ public final class CircuitBreakerResultSet extends AbstractUnsupportedOperationR
     
     @Override
     public Clob getClob(final String columnLabel) {
-        return null;
-    }
-    
-    @Override
-    public NClob getNClob(final int columnIndex) {
-        return null;
-    }
-    
-    @Override
-    public NClob getNClob(final String columnLabel) {
         return null;
     }
     
