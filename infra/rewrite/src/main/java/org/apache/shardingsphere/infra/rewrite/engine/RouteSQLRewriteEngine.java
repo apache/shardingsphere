@@ -118,26 +118,27 @@ public final class RouteSQLRewriteEngine {
             if (containsDollarMarker && !params.isEmpty()) {
                 continue;
             }
-            params.addAll(getParameters(sqlRewriteContext.getParameterBuilder(), routeContext, each));
+            params.addAll(getParameters(sqlRewriteContext, routeContext, each));
         }
         return new SQLRewriteUnit(String.join(" UNION ALL ", sql), params);
     }
     
     private SQLRewriteUnit createSQLRewriteUnit(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final RouteUnit routeUnit) {
-        return new SQLRewriteUnit(getActualSQL(sqlRewriteContext, routeUnit), getParameters(sqlRewriteContext.getParameterBuilder(), routeContext, routeUnit));
+        return new SQLRewriteUnit(getActualSQL(sqlRewriteContext, routeUnit), getParameters(sqlRewriteContext, routeContext, routeUnit));
     }
     
     private String getActualSQL(final SQLRewriteContext sqlRewriteContext, final RouteUnit routeUnit) {
         return new RouteSQLBuilder(sqlRewriteContext.getSql(), sqlRewriteContext.getSqlTokens(), routeUnit).toSQL();
     }
     
-    private List<Object> getParameters(final ParameterBuilder paramBuilder, final RouteContext routeContext, final RouteUnit routeUnit) {
-        if (paramBuilder instanceof StandardParameterBuilder) {
-            return paramBuilder.getParameters();
+    private List<Object> getParameters(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final RouteUnit routeUnit) {
+        ParameterBuilder parameterBuilder = sqlRewriteContext.getParameterBuilder();
+        if (parameterBuilder instanceof StandardParameterBuilder) {
+            return parameterBuilder.getParameters();
         }
         return routeContext.getOriginalDataNodes().isEmpty()
-                ? ((GroupedParameterBuilder) paramBuilder).getParameters()
-                : buildRouteParameters((GroupedParameterBuilder) paramBuilder, routeContext, routeUnit);
+                ? ((GroupedParameterBuilder) parameterBuilder).getParameters()
+                : buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeContext, routeUnit);
     }
     
     private List<Object> buildRouteParameters(final GroupedParameterBuilder paramBuilder, final RouteContext routeContext, final RouteUnit routeUnit) {
