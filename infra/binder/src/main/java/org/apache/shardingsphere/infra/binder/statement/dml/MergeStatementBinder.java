@@ -63,15 +63,15 @@ import java.util.Map;
 public final class MergeStatementBinder implements SQLStatementBinder<MergeStatement> {
     
     @Override
-    public MergeStatement bind(final MergeStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap());
+    public MergeStatement bind(final MergeStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
+        return bind(sqlStatement, metaData, currentDatabaseName, Collections.emptyMap());
     }
     
     @SneakyThrows
-    private MergeStatement bind(final MergeStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+    private MergeStatement bind(final MergeStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                 final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         MergeStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
+        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
         Map<String, TableSegmentBinderContext> targetTableBinderContexts = new CaseInsensitiveMap<>();
         TableSegment boundedTargetTableSegment = TableSegmentBinder.bind(sqlStatement.getTarget(), statementBinderContext, targetTableBinderContexts, Collections.emptyMap());
@@ -121,7 +121,7 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
     @SneakyThrows
     private InsertStatement bindMergeInsert(final InsertStatement sqlStatement, final SimpleTableSegment tableSegment, final SQLStatementBinderContext statementBinderContext,
                                             final Map<String, TableSegmentBinderContext> targetTableBinderContexts, final Map<String, TableSegmentBinderContext> sourceTableBinderContexts) {
-        SQLStatementBinderContext insertStatementBinderContext = new SQLStatementBinderContext(statementBinderContext.getMetaData(), statementBinderContext.getDefaultDatabaseName(),
+        SQLStatementBinderContext insertStatementBinderContext = new SQLStatementBinderContext(statementBinderContext.getMetaData(), statementBinderContext.getCurrentDatabaseName(),
                 statementBinderContext.getDatabaseType(), statementBinderContext.getVariableNames());
         insertStatementBinderContext.getExternalTableBinderContexts().putAll(statementBinderContext.getExternalTableBinderContexts());
         insertStatementBinderContext.getExternalTableBinderContexts().putAll(sourceTableBinderContexts);
@@ -177,7 +177,7 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
         UpdateStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.setTable(tableSegment);
         Collection<ColumnAssignmentSegment> assignments = new LinkedList<>();
-        SQLStatementBinderContext updateStatementBinderContext = new SQLStatementBinderContext(statementBinderContext.getMetaData(), statementBinderContext.getDefaultDatabaseName(),
+        SQLStatementBinderContext updateStatementBinderContext = new SQLStatementBinderContext(statementBinderContext.getMetaData(), statementBinderContext.getCurrentDatabaseName(),
                 statementBinderContext.getDatabaseType(), statementBinderContext.getVariableNames());
         updateStatementBinderContext.getExternalTableBinderContexts().putAll(statementBinderContext.getExternalTableBinderContexts());
         updateStatementBinderContext.getExternalTableBinderContexts().putAll(sourceTableBinderContexts);

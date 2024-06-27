@@ -91,9 +91,9 @@ class ShardingSphereDatabaseMetaDataTest {
         when(shardingSphereConnection.getDatabaseConnectionManager().getRandomPhysicalDataSourceName()).thenReturn(DATA_SOURCE_NAME);
         when(shardingSphereConnection.getDatabaseConnectionManager().getRandomConnection()).thenReturn(connection);
         when(shardingSphereConnection.getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(shardingSphereConnection.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(shardingSphereConnection.getCurrentDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabase(shardingSphereConnection.getDatabaseName())).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabase(shardingSphereConnection.getCurrentDatabaseName())).thenReturn(database);
         ShardingRule shardingRule = mockShardingRule();
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
         ConnectionProperties connectionProps = mock(ConnectionProperties.class);

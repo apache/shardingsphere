@@ -69,7 +69,7 @@ class DatabaseAdminQueryBackendHandlerTest {
     @BeforeEach
     void before() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         DatabaseAdminQueryExecutor executor = mock(DatabaseAdminQueryExecutor.class, RETURNS_DEEP_STUBS);
         when(executor.getMergedResult()).thenReturn(new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow("ds_0", "ds_1"))));
         when(executor.getQueryResultMetaData().getColumnCount()).thenReturn(1);

@@ -39,7 +39,7 @@ public final class SQLStatementBinderContext {
     
     private final ShardingSphereMetaData metaData;
     
-    private final String defaultDatabaseName;
+    private final String currentDatabaseName;
     
     private final DatabaseType databaseType;
     

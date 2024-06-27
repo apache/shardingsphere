@@ -43,16 +43,16 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     
     @SneakyThrows
     @Override
-    public SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap(), Collections.emptyMap());
+    public SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
+        return bind(sqlStatement, metaData, currentDatabaseName, Collections.emptyMap(), Collections.emptyMap());
     }
     
     @SneakyThrows
-    private SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+    private SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                  final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         SelectStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
-        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
+        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
         sqlStatement.getWithSegment()
                 .ifPresent(optional -> result.setWithSegment(WithSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, statementBinderContext.getExternalTableBinderContexts())));
@@ -79,15 +79,15 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
      *
      * @param sqlStatement subquery select statement
      * @param metaData meta data
-     * @param defaultDatabaseName default database name
+     * @param currentDatabaseName current database name
      * @param outerTableBinderContexts outer select statement table binder contexts
      * @param externalTableBinderContexts external table binder contexts
      * @return bounded correlate subquery select statement
      */
     @SneakyThrows
-    public SelectStatement bindCorrelateSubquery(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+    public SelectStatement bindCorrelateSubquery(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                                  final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
-        return bind(sqlStatement, metaData, defaultDatabaseName, outerTableBinderContexts, externalTableBinderContexts);
+        return bind(sqlStatement, metaData, currentDatabaseName, outerTableBinderContexts, externalTableBinderContexts);
     }
     
     /**
@@ -95,12 +95,12 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
      *
      * @param statement select statement
      * @param metaData meta data
-     * @param defaultDatabaseName default database name
+     * @param currentDatabaseName current database name
      * @param externalTableContexts external table contexts
      * @return select statement
      */
-    public SelectStatement bindWithExternalTableContexts(final SelectStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+    public SelectStatement bindWithExternalTableContexts(final SelectStatement statement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                                          final Map<String, TableSegmentBinderContext> externalTableContexts) {
-        return bind(statement, metaData, defaultDatabaseName, Collections.emptyMap(), externalTableContexts);
+        return bind(statement, metaData, currentDatabaseName, Collections.emptyMap(), externalTableContexts);
     }
 }

@@ -54,7 +54,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData) {
         if (connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()) {
-            DatabaseType databaseType = metaData.getDatabase(connection.getDatabaseName()).getProtocolType();
+            DatabaseType databaseType = metaData.getDatabase(connection.getCurrentDatabaseName()).getProtocolType();
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
             if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
                 connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().setExceptionOccur(true);

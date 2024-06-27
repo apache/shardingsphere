@@ -91,8 +91,8 @@ class ProxyBackendHandlerFactoryTest {
     @BeforeEach
     void setUp() {
         when(connectionSession.getConnectionContext().getGrantee()).thenReturn(new Grantee(DefaultUser.USERNAME, "%"));
-        when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
-        when(connectionSession.getDatabaseName()).thenReturn("db");
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("db");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("db");
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);

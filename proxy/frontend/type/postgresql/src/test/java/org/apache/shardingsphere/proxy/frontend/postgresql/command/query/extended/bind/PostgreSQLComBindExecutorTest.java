@@ -82,7 +82,7 @@ class PostgreSQLComBindExecutorTest {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
-        when(connectionSession.getDefaultDatabaseName()).thenReturn(databaseName);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn(databaseName);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         String statementId = "S_1";
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId,
@@ -109,7 +109,7 @@ class PostgreSQLComBindExecutorTest {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
-        when(connectionSession.getDefaultDatabaseName()).thenReturn(databaseName);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn(databaseName);
         String statementId = "S_1";
         List<Object> parameters = Arrays.asList(1, "updated_name");
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement("update test set name = $2 where id = $1",

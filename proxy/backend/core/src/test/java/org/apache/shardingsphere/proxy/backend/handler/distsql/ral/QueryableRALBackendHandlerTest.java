@@ -73,7 +73,7 @@ class QueryableRALBackendHandlerTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData();
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class), metaData);
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
-        when(connectionSession.getDatabaseName()).thenReturn("unknown");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("unknown");
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
         ContextManager contextManager = new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(PersistRepository.class));

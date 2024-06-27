@@ -116,7 +116,7 @@ class DropDatabaseBackendHandlerTest {
     
     @Test
     void assertExecuteDropCurrentDatabaseWithMySQL() {
-        when(connectionSession.getDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         ResponseHeader responseHeader = handler.execute();
@@ -126,7 +126,7 @@ class DropDatabaseBackendHandlerTest {
     
     @Test
     void assertExecuteDropCurrentDatabaseWithPostgreSQL() {
-        when(connectionSession.getDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         assertThrows(UnsupportedOperationException.class, () -> handler.execute());
@@ -134,7 +134,7 @@ class DropDatabaseBackendHandlerTest {
     
     @Test
     void assertExecuteDropOtherDatabase() {
-        when(connectionSession.getDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         when(sqlStatement.getDatabaseName()).thenReturn("bar_db");
         ResponseHeader responseHeader = handler.execute();
         verify(connectionSession, times(0)).setCurrentDatabase(null);

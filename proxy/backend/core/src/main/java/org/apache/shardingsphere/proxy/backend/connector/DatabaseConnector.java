@@ -131,12 +131,12 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private void failedIfBackendNotReady(final ConnectionSession connectionSession, final SQLStatementContext sqlStatementContext) {
-        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase(connectionSession.getDatabaseName());
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase(connectionSession.getUsedDatabaseName());
         boolean isSystemSchema = SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(),
                 sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaNames() : Collections.emptyList(), database);
-        ShardingSpherePreconditions.checkState(isSystemSchema || database.containsDataSource(), () -> new EmptyStorageUnitException(connectionSession.getDatabaseName()));
+        ShardingSpherePreconditions.checkState(isSystemSchema || database.containsDataSource(), () -> new EmptyStorageUnitException(connectionSession.getUsedDatabaseName()));
         if (!isSystemSchema && !database.isComplete()) {
-            throw new EmptyRuleException(connectionSession.getDatabaseName());
+            throw new EmptyRuleException(connectionSession.getUsedDatabaseName());
         }
     }
     
@@ -167,9 +167,9 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     @Override
     public ResponseHeader execute() throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        String defaultDatabaseName = databaseConnectionManager.getConnectionSession().getDefaultDatabaseName();
-        ShardingSphereDatabase defaultDatabase = Strings.isNullOrEmpty(defaultDatabaseName) ? database : metaDataContexts.getMetaData().getDatabase(defaultDatabaseName);
-        if (proxySQLExecutor.getSqlFederationEngine().decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), defaultDatabase,
+        String currentDatabaseName = databaseConnectionManager.getConnectionSession().getCurrentDatabaseName();
+        ShardingSphereDatabase currentDatabase = Strings.isNullOrEmpty(currentDatabaseName) ? database : metaDataContexts.getMetaData().getDatabase(currentDatabaseName);
+        if (proxySQLExecutor.getSqlFederationEngine().decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), currentDatabase,
                 metaDataContexts.getMetaData().getGlobalRuleMetaData())) {
             ResultSet resultSet = doExecuteFederation(queryContext, metaDataContexts);
             return processExecuteFederation(resultSet, metaDataContexts);
@@ -213,7 +213,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             transactionManager.rollback();
-            String databaseName = databaseConnectionManager.getConnectionSession().getDatabaseName();
+            String databaseName = databaseConnectionManager.getConnectionSession().getUsedDatabaseName();
             throw SQLExceptionTransformEngine.toSQLException(ex, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getProtocolType());
         }
         return result;
@@ -233,7 +233,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private ResultSet doExecuteFederation(final QueryContext queryContext, final MetaDataContexts metaDataContexts) {
         boolean isReturnGeneratedKeys = queryContext.getSqlStatementContext().getSqlStatement() instanceof MySQLInsertStatement;
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseConnectionManager.getConnectionSession().getDatabaseName());
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseConnectionManager.getConnectionSession().getUsedDatabaseName());
         DatabaseType protocolType = database.getProtocolType();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(driverType, protocolType, database.getResourceMetaData(),
                 queryContext.getSqlStatementContext().getSqlStatement(), this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
@@ -246,14 +246,14 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         int maxConnectionsSizePerQuery = metaData.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         JDBCBackendStatement statementManager = (JDBCBackendStatement) databaseConnectionManager.getConnectionSession().getStatementManager();
         return new DriverExecutionPrepareEngine<>(driverType, maxConnectionsSizePerQuery, databaseConnectionManager, statementManager,
-                new StatementOption(isReturnGeneratedKeys), metaData.getMetaData().getDatabase(databaseConnectionManager.getConnectionSession().getDatabaseName()).getRuleMetaData().getRules(),
-                metaData.getMetaData().getDatabase(databaseConnectionManager.getConnectionSession().getDatabaseName()).getResourceMetaData().getStorageUnits());
+                new StatementOption(isReturnGeneratedKeys), metaData.getMetaData().getDatabase(databaseConnectionManager.getConnectionSession().getUsedDatabaseName()).getRuleMetaData().getRules(),
+                metaData.getMetaData().getDatabase(databaseConnectionManager.getConnectionSession().getUsedDatabaseName()).getResourceMetaData().getStorageUnits());
     }
     
     private ResponseHeader processExecuteFederation(final ResultSet resultSet, final MetaDataContexts metaDataContexts) throws SQLException {
         int columnCount = resultSet.getMetaData().getColumnCount();
         queryHeaders = new ArrayList<>(columnCount);
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseConnectionManager.getConnectionSession().getDatabaseName());
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseConnectionManager.getConnectionSession().getUsedDatabaseName());
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(null == database ? null : database.getProtocolType());
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             queryHeaders.add(queryHeaderBuilderEngine.build(new JDBCQueryResultMetaData(resultSet.getMetaData()), database, columnIndex));

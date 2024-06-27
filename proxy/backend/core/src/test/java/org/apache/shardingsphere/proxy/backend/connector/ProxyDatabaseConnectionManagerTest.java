@@ -109,7 +109,7 @@ class ProxyDatabaseConnectionManagerTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getBackendDataSource()).thenReturn(backendDataSource);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus());
-        when(connectionSession.getDatabaseName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(connectionSession.getUsedDatabaseName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         databaseConnectionManager = new ProxyDatabaseConnectionManager(connectionSession);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         JDBCBackendStatement backendStatement = new JDBCBackendStatement();
@@ -151,7 +151,7 @@ class ProxyDatabaseConnectionManagerTest {
     void assertGetConnectionSizeLessThanCache() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
         MockConnectionUtils.setCachedConnections(databaseConnectionManager, "ds1", 10);
-        List<Connection> actualConnections = databaseConnectionManager.getConnections(connectionSession.getDatabaseName(), "ds1", 0, 2, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actualConnections = databaseConnectionManager.getConnections(connectionSession.getUsedDatabaseName(), "ds1", 0, 2, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(2));
         assertThat(databaseConnectionManager.getConnectionSize(), is(10));
         assertTrue(connectionSession.getTransactionStatus().isInTransaction());
@@ -162,7 +162,7 @@ class ProxyDatabaseConnectionManagerTest {
         connectionSession.getTransactionStatus().setInTransaction(true);
         MockConnectionUtils.setCachedConnections(databaseConnectionManager, "ds1", 10);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
-        List<Connection> actualConnections = databaseConnectionManager.getConnections(connectionSession.getDatabaseName(), "ds1", 0, 12, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actualConnections = databaseConnectionManager.getConnections(connectionSession.getUsedDatabaseName(), "ds1", 0, 12, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(12));
         assertThat(databaseConnectionManager.getConnectionSize(), is(12));
         assertTrue(connectionSession.getTransactionStatus().isInTransaction());
@@ -277,10 +277,10 @@ class ProxyDatabaseConnectionManagerTest {
         connectionSession.getTransactionStatus().setInTransaction(false);
         List<Connection> connections = MockConnectionUtils.mockNewConnections(1);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(connections);
-        List<Connection> fetchedConnections = databaseConnectionManager.getConnections(connectionSession.getDatabaseName(), "ds1", 0, 1, null);
+        List<Connection> fetchedConnections = databaseConnectionManager.getConnections(connectionSession.getUsedDatabaseName(), "ds1", 0, 1, null);
         assertThat(fetchedConnections.size(), is(1));
         assertTrue(fetchedConnections.contains(connections.get(0)));
-        assertConnectionsCached(connectionSession.getDatabaseName() + ".ds1", connections);
+        assertConnectionsCached(connectionSession.getUsedDatabaseName() + ".ds1", connections);
     }
     
     @SuppressWarnings("unchecked")
@@ -462,9 +462,9 @@ class ProxyDatabaseConnectionManagerTest {
     
     @Test
     void assertGetDataSourceNamesOfCachedConnections() {
-        databaseConnectionManager.getCachedConnections().put(connectionSession.getDatabaseName() + ".ds_0", null);
-        databaseConnectionManager.getCachedConnections().put(connectionSession.getDatabaseName() + ".ds_1", null);
-        databaseConnectionManager.getCachedConnections().put(connectionSession.getDatabaseName() + ".ds_2", null);
+        databaseConnectionManager.getCachedConnections().put(connectionSession.getUsedDatabaseName() + ".ds_0", null);
+        databaseConnectionManager.getCachedConnections().put(connectionSession.getUsedDatabaseName() + ".ds_1", null);
+        databaseConnectionManager.getCachedConnections().put(connectionSession.getUsedDatabaseName() + ".ds_2", null);
         List<String> actual = new ArrayList<>(databaseConnectionManager.getUsedDataSourceNames());
         Collections.sort(actual);
         assertThat(actual, is(Arrays.asList("ds_0", "ds_1", "ds_2")));

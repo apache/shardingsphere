@@ -79,7 +79,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
     }
     
     private void executeSetGlobalVariablesIfPresent(final ConnectionSession connectionSession) throws SQLException {
-        if (null == connectionSession.getDatabaseName()) {
+        if (null == connectionSession.getUsedDatabaseName()) {
             return;
         }
         String concatenatedGlobalVariables = extractGlobalVariables().entrySet().stream().map(entry -> String.format("@@GLOBAL.%s = %s", entry.getKey(), entry.getValue()))
@@ -92,7 +92,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
-                connectionSession.getDefaultDatabaseName(), new HintValueContext()).bind(sqlStatement, Collections.emptyList());
+                connectionSession.getCurrentDatabaseName(), new HintValueContext()).bind(sqlStatement, Collections.emptyList());
         DatabaseBackendHandler databaseBackendHandler = DatabaseConnectorFactory.getInstance()
                 .newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext()), connectionSession.getDatabaseConnectionManager(), false);
         try {

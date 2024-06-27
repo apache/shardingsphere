@@ -222,7 +222,7 @@ class ShowTablesExecutorTest {
     
     private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
+        when(result.getUsedDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         return result;
     }
 }

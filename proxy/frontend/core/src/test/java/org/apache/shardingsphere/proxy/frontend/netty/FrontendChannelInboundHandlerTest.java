@@ -107,7 +107,7 @@ class FrontendChannelInboundHandlerTest {
         when(authenticationEngine.authenticate(any(ChannelHandlerContext.class), any(PacketPayload.class))).thenReturn(authenticationResult);
         channel.writeInbound(Unpooled.EMPTY_BUFFER);
         assertThat(connectionSession.getConnectionContext().getGrantee(), is(new Grantee("username", "hostname")));
-        assertThat(connectionSession.getDatabaseName(), is("database"));
+        assertThat(connectionSession.getUsedDatabaseName(), is("database"));
     }
     
     @Test

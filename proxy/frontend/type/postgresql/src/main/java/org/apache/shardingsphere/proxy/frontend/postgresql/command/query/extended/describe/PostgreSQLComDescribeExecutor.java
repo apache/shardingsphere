@@ -129,7 +129,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             return;
         }
         String logicTableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
-        ShardingSphereTable table = getTableFromMetaData(connectionSession.getDatabaseName(), insertStatement, logicTableName);
+        ShardingSphereTable table = getTableFromMetaData(connectionSession.getUsedDatabaseName(), insertStatement, logicTableName);
         List<String> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
         preparedStatement.setRowDescription(returningSegment.<PostgreSQLPacket>map(returning -> describeReturning(returning, table))
                 .orElseGet(PostgreSQLNoDataPacket::getInstance));
@@ -236,7 +236,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
     private void tryDescribePreparedStatementByJDBC(final PostgreSQLServerPreparedStatement logicPreparedStatement) throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        String databaseName = connectionSession.getDatabaseName();
+        String databaseName = connectionSession.getUsedDatabaseName();
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), databaseName, logicPreparedStatement.getHintValueContext())
                 .bind(logicPreparedStatement.getSqlStatementContext().getSqlStatement(), Collections.emptyList());
         QueryContext queryContext = new QueryContext(sqlStatementContext, logicPreparedStatement.getSql(), Collections.emptyList(), logicPreparedStatement.getHintValueContext());

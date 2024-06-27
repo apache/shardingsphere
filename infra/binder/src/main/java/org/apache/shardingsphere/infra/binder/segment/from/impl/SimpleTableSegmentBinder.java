@@ -100,7 +100,7 @@ public final class SimpleTableSegmentBinder {
     private static IdentifierValue getDatabaseName(final SimpleTableSegment tableSegment, final SQLStatementBinderContext statementBinderContext) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(statementBinderContext.getDatabaseType()).getDialectDatabaseMetaData();
         Optional<OwnerSegment> owner = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? tableSegment.getOwner().flatMap(OwnerSegment::getOwner) : tableSegment.getOwner();
-        return new IdentifierValue(owner.map(optional -> optional.getIdentifier().getValue()).orElse(statementBinderContext.getDefaultDatabaseName()));
+        return new IdentifierValue(owner.map(optional -> optional.getIdentifier().getValue()).orElse(statementBinderContext.getCurrentDatabaseName()));
     }
     
     private static IdentifierValue getSchemaName(final SimpleTableSegment segment, final SQLStatementBinderContext statementBinderContext) {
@@ -113,7 +113,7 @@ public final class SimpleTableSegmentBinder {
                 && SYSTEM_CATALOG_TABLES.contains(segment.getTableName().getIdentifier().getValue())) {
             return new IdentifierValue(PG_CATALOG);
         }
-        return new IdentifierValue(new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(statementBinderContext.getDefaultDatabaseName()));
+        return new IdentifierValue(new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(statementBinderContext.getCurrentDatabaseName()));
     }
     
     private static SimpleTableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema,

@@ -48,7 +48,7 @@ public final class SQLBindEngine {
     
     private final ShardingSphereMetaData metaData;
     
-    private final String defaultDatabaseName;
+    private final String currentDatabaseName;
     
     private final HintValueContext hintValueContext;
     
@@ -60,45 +60,45 @@ public final class SQLBindEngine {
      * @return SQL statement context
      */
     public SQLStatementContext bind(final SQLStatement sqlStatement, final List<Object> params) {
-        SQLStatement buoundedSQLStatement = bind(sqlStatement, metaData, defaultDatabaseName);
-        return SQLStatementContextFactory.newInstance(metaData, params, buoundedSQLStatement, defaultDatabaseName);
+        SQLStatement buoundedSQLStatement = bind(sqlStatement, metaData, currentDatabaseName);
+        return SQLStatementContextFactory.newInstance(metaData, params, buoundedSQLStatement, currentDatabaseName);
     }
     
-    private SQLStatement bind(final SQLStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+    private SQLStatement bind(final SQLStatement statement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
         if (hintValueContext.findHintDataSourceName().isPresent()) {
             return statement;
         }
         if (statement instanceof DMLStatement) {
-            return bindDMLStatement(statement, metaData, defaultDatabaseName);
+            return bindDMLStatement(statement, metaData, currentDatabaseName);
         }
         if (statement instanceof DDLStatement) {
-            return bindDDLStatement(statement, metaData, defaultDatabaseName);
+            return bindDDLStatement(statement, metaData, currentDatabaseName);
         }
         return statement;
     }
     
-    private static SQLStatement bindDMLStatement(final SQLStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+    private static SQLStatement bindDMLStatement(final SQLStatement statement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
         if (statement instanceof SelectStatement) {
-            return new SelectStatementBinder().bind((SelectStatement) statement, metaData, defaultDatabaseName);
+            return new SelectStatementBinder().bind((SelectStatement) statement, metaData, currentDatabaseName);
         }
         if (statement instanceof InsertStatement) {
-            return new InsertStatementBinder().bind((InsertStatement) statement, metaData, defaultDatabaseName);
+            return new InsertStatementBinder().bind((InsertStatement) statement, metaData, currentDatabaseName);
         }
         if (statement instanceof UpdateStatement) {
-            return new UpdateStatementBinder().bind((UpdateStatement) statement, metaData, defaultDatabaseName);
+            return new UpdateStatementBinder().bind((UpdateStatement) statement, metaData, currentDatabaseName);
         }
         if (statement instanceof DeleteStatement) {
-            return new DeleteStatementBinder().bind((DeleteStatement) statement, metaData, defaultDatabaseName);
+            return new DeleteStatementBinder().bind((DeleteStatement) statement, metaData, currentDatabaseName);
         }
         if (statement instanceof MergeStatement) {
-            return new MergeStatementBinder().bind((MergeStatement) statement, metaData, defaultDatabaseName);
+            return new MergeStatementBinder().bind((MergeStatement) statement, metaData, currentDatabaseName);
         }
         return statement;
     }
     
-    private static SQLStatement bindDDLStatement(final SQLStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+    private static SQLStatement bindDDLStatement(final SQLStatement statement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
         if (statement instanceof CursorStatement) {
-            return new CursorStatementBinder().bind((CursorStatement) statement, metaData, defaultDatabaseName);
+            return new CursorStatementBinder().bind((CursorStatement) statement, metaData, currentDatabaseName);
         }
         return statement;
     }

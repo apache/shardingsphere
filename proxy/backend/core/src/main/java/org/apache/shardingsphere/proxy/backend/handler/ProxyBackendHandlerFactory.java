@@ -90,7 +90,7 @@ public final class ProxyBackendHandlerFactory {
             return new SkipBackendHandler(sqlStatement);
         }
         SQLStatementContext sqlStatementContext = sqlStatement instanceof DistSQLStatement ? new DistSQLStatementContext((DistSQLStatement) sqlStatement)
-                : new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), connectionSession.getDefaultDatabaseName(), hintValueContext).bind(sqlStatement,
+                : new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement,
                         Collections.emptyList());
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
         connectionSession.setQueryContext(queryContext);
@@ -140,7 +140,7 @@ public final class ProxyBackendHandlerFactory {
         }
         String databaseName = sqlStatementContext instanceof TableAvailable && ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().isPresent()
                 ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().get()
-                : connectionSession.getDatabaseName();
+                : connectionSession.getUsedDatabaseName();
         if (null == databaseName) {
             return DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
         }

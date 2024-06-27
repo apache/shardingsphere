@@ -83,8 +83,8 @@ class PostgreSQLComParseExecutorTest {
     @BeforeEach
     void setup() {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
-        when(connectionSession.getDatabaseName()).thenReturn("foo_db");
-        when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
     }
     
     @Test
@@ -115,7 +115,7 @@ class PostgreSQLComParseExecutorTest {
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.INT4));
         when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
-        when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
         Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

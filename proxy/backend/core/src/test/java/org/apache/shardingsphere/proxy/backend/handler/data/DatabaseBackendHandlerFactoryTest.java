@@ -105,7 +105,7 @@ class DatabaseBackendHandlerFactoryTest {
     
     private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
-        when(result.getDatabaseName()).thenReturn("foo_db");
+        when(result.getUsedDatabaseName()).thenReturn("foo_db");
         when(result.getDatabaseConnectionManager()).thenReturn(mock(ProxyDatabaseConnectionManager.class));
         when(result.getDatabaseConnectionManager().getConnectionSession()).thenReturn(result);
         return result;

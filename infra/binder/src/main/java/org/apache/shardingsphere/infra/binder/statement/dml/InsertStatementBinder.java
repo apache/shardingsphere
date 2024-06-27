@@ -43,15 +43,15 @@ import java.util.Optional;
 public final class InsertStatementBinder implements SQLStatementBinder<InsertStatement> {
     
     @Override
-    public InsertStatement bind(final InsertStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap());
+    public InsertStatement bind(final InsertStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
+        return bind(sqlStatement, metaData, currentDatabaseName, Collections.emptyMap());
     }
     
     @SneakyThrows
-    private InsertStatement bind(final InsertStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+    private InsertStatement bind(final InsertStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                  final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         InsertStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
+        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         Optional.ofNullable(sqlStatement.getTable()).ifPresent(optional -> result.setTable(SimpleTableSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts)));

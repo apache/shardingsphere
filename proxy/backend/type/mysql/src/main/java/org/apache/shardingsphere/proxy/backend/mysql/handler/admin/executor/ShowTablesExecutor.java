@@ -64,7 +64,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        String databaseName = showTablesStatement.getFromDatabase().map(schema -> schema.getDatabase().getIdentifier().getValue()).orElseGet(connectionSession::getDatabaseName);
+        String databaseName = showTablesStatement.getFromDatabase().map(schema -> schema.getDatabase().getIdentifier().getValue()).orElseGet(connectionSession::getUsedDatabaseName);
         queryResultMetaData = createQueryResultMetaData(databaseName);
         mergedResult = new TransparentMergedResult(getQueryResult(databaseName));
     }

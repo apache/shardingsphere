@@ -87,7 +87,7 @@ class RefreshTableMetaDataUpdaterTest {
     
     private ConnectionSession mockConnectionSession(final String databaseName) {
         ConnectionSession result = mock(ConnectionSession.class);
-        when(result.getDatabaseName()).thenReturn(databaseName);
+        when(result.getUsedDatabaseName()).thenReturn(databaseName);
         when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         return result;
     }

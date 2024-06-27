@@ -67,7 +67,7 @@ class ConnectionSessionTest {
     @Test
     void assertSetCurrentSchema() {
         connectionSession.setCurrentDatabase("currentDatabase");
-        assertThat(connectionSession.getDatabaseName(), is("currentDatabase"));
+        assertThat(connectionSession.getUsedDatabaseName(), is("currentDatabase"));
     }
     
     @Test
@@ -77,7 +77,7 @@ class ConnectionSessionTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         new BackendTransactionManager(databaseConnectionManager).begin();
         connectionSession.setCurrentDatabase("newDB");
-        assertThat(connectionSession.getDefaultDatabaseName(), is("newDB"));
+        assertThat(connectionSession.getCurrentDatabaseName(), is("newDB"));
     }
     
     private ContextManager mockContextManager() {

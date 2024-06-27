@@ -37,16 +37,16 @@ import java.util.Map;
 public final class DeleteStatementBinder implements SQLStatementBinder<DeleteStatement> {
     
     @Override
-    public DeleteStatement bind(final DeleteStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap());
+    public DeleteStatement bind(final DeleteStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
+        return bind(sqlStatement, metaData, currentDatabaseName, Collections.emptyMap());
     }
     
     @SneakyThrows
-    private DeleteStatement bind(final DeleteStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+    private DeleteStatement bind(final DeleteStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                  final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         DeleteStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
-        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
+        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
         TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getTable(), statementBinderContext, tableBinderContexts, Collections.emptyMap());
         result.setTable(boundedTableSegment);

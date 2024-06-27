@@ -70,7 +70,7 @@ public final class DatabaseAdminBackendHandlerFactory {
         if (!executorCreator.isPresent()) {
             return Optional.empty();
         }
-        Optional<DatabaseAdminExecutor> executor = executorCreator.get().create(sqlStatementContext, sql, connectionSession.getDatabaseName(), parameters);
+        Optional<DatabaseAdminExecutor> executor = executorCreator.get().create(sqlStatementContext, sql, connectionSession.getUsedDatabaseName(), parameters);
         return executor.map(optional -> createProxyBackendHandler(sqlStatementContext, connectionSession, optional));
     }
     

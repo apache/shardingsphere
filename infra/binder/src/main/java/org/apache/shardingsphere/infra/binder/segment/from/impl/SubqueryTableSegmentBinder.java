@@ -69,7 +69,7 @@ public final class SubqueryTableSegmentBinder {
                                             final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         fillPivotColumnNamesInBinderContext(segment, statementBinderContext);
         SelectStatement boundedSelect = new SelectStatementBinder().bindCorrelateSubquery(segment.getSubquery().getSelect(), statementBinderContext.getMetaData(),
-                statementBinderContext.getDefaultDatabaseName(), outerTableBinderContexts, statementBinderContext.getExternalTableBinderContexts());
+                statementBinderContext.getCurrentDatabaseName(), outerTableBinderContexts, statementBinderContext.getExternalTableBinderContexts());
         SubquerySegment boundedSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundedSelect, segment.getSubquery().getText());
         boundedSubquerySegment.setSubqueryType(segment.getSubquery().getSubqueryType());
         IdentifierValue subqueryTableName = segment.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));

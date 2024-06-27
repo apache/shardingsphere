@@ -102,7 +102,7 @@ class MySQLMultiStatementsHandlerTest {
     
     private ConnectionSession mockConnectionSession() throws SQLException {
         ConnectionSession result = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabaseName()).thenReturn("foo_db");
+        when(result.getUsedDatabaseName()).thenReturn("foo_db");
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1/db");
         Statement statement = mock(Statement.class);

@@ -53,7 +53,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        String originalDatabaseName = connectionSession.getDefaultDatabaseName();
+        String originalDatabaseName = connectionSession.getCurrentDatabaseName();
         String unicastDatabaseName = null == originalDatabaseName ? getFirstDatabaseName() : originalDatabaseName;
         ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getContextManager().getDatabase(unicastDatabaseName).containsDataSource(),
                 () -> new EmptyStorageUnitException(unicastDatabaseName));
