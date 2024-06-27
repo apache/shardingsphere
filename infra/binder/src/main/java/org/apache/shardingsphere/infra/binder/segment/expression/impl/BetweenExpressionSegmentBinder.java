@@ -44,7 +44,7 @@ public final class BetweenExpressionSegmentBinder {
      * @param outerTableBinderContexts outer table binder contexts
      * @return bounded between expression segment
      */
-    public static BetweenExpression bind(final BetweenExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext statementBinderContext, 
+    public static BetweenExpression bind(final BetweenExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext statementBinderContext,
                                          final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         ExpressionSegment boundedLeft = ExpressionSegmentBinder.bind(segment.getLeft(), parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         ExpressionSegment boundedBetweenExpr = ExpressionSegmentBinder.bind(segment.getBetweenExpr(), parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
