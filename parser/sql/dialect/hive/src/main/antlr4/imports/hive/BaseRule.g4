@@ -631,27 +631,11 @@ isolationTypes
 transactionAccessMode
     : READ (WRITE | ONLY)
     ;
-    
-schemaName
-    : identifier
-    ;
-    
-schemaNames
-    : schemaName (COMMA_ schemaName)*
-    ;
-    
+
 charsetName
     : textOrIdentifier | BINARY | DEFAULT
     ;
-    
-schemaPairs
-    : schemaPair (COMMA_ schemaPair)*
-    ;
-    
-schemaPair
-    : LP_ schemaName COMMA_ schemaName RP_
-    ;
-    
+
 tableName
     : (owner DOT_)? name
     ;
