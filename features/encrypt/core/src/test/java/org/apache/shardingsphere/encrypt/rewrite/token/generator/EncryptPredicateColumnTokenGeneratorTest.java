@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
@@ -28,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,15 +44,11 @@ class EncryptPredicateColumnTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLToken() {
-        generator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
-        generator.setSchemas(Collections.emptyMap());
         assertTrue(generator.isGenerateSQLToken(EncryptGeneratorFixtureBuilder.createUpdateStatementContext()));
     }
     
     @Test
     void assertGenerateSQLTokenFromGenerateNewSQLToken() {
-        generator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
-        generator.setSchemas(Collections.emptyMap());
         generator.setDatabaseType(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         Collection<SQLToken> substitutableColumnNameTokens = generator.generateSQLTokens(EncryptGeneratorFixtureBuilder.createUpdateStatementContext());
         assertThat(substitutableColumnNameTokens.size(), is(1));
@@ -63,8 +57,6 @@ class EncryptPredicateColumnTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokensWhenJoinConditionUseDifferentEncryptor() {
-        generator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
-        generator.setSchemas(Collections.emptyMap());
         assertThrows(UnsupportedSQLOperationException.class, () -> generator.generateSQLTokens(EncryptGeneratorFixtureBuilder.createSelectStatementContext()));
     }
 }

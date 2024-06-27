@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.TableSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Optional;
@@ -40,6 +41,8 @@ public final class OwnerSegment implements SQLSegment {
     private final IdentifierValue identifier;
     
     private OwnerSegment owner;
+    
+    private TableSegmentBoundedInfo tableBoundedInfo;
     
     /**
      * Get owner.

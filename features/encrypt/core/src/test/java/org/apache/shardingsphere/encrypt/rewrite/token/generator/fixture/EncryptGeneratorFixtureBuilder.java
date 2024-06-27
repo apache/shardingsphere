@@ -25,11 +25,11 @@ import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfigurat
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -53,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Colu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.TableSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
@@ -165,17 +166,23 @@ public final class EncryptGeneratorFixtureBuilder {
      */
     public static UpdateStatementContext createUpdateStatementContext() {
         MySQLUpdateStatement updateStatement = new MySQLUpdateStatement();
-        updateStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
+        TableNameSegment tableName = new TableNameSegment(0, 0, new IdentifierValue("t_user"));
+        tableName.setTableBoundedInfo(new TableSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME)));
+        updateStatement.setTable(new SimpleTableSegment(tableName));
         updateStatement.setWhere(createWhereSegment());
         updateStatement.setSetAssignment(createSetAssignmentSegment());
         return new UpdateStatementContext(updateStatement);
     }
     
     private static WhereSegment createWhereSegment() {
-        BinaryOperationExpression nameExpression = new BinaryOperationExpression(10, 24,
-                new ColumnSegment(10, 13, new IdentifierValue("name")), new LiteralExpressionSegment(18, 22, "LiLei"), "=", "name = 'LiLei'");
-        BinaryOperationExpression pwdExpression = new BinaryOperationExpression(30, 44,
-                new ColumnSegment(30, 32, new IdentifierValue("pwd")), new LiteralExpressionSegment(40, 45, "123456"), "=", "pwd = '123456'");
+        ColumnSegment nameColumn = new ColumnSegment(10, 13, new IdentifierValue("name"));
+        nameColumn.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue("t_user"),
+                new IdentifierValue("name")));
+        BinaryOperationExpression nameExpression = new BinaryOperationExpression(10, 24, nameColumn, new LiteralExpressionSegment(18, 22, "LiLei"), "=", "name = 'LiLei'");
+        ColumnSegment pwdColumn = new ColumnSegment(30, 32, new IdentifierValue("pwd"));
+        pwdColumn.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue("t_user"),
+                new IdentifierValue("pwd")));
+        BinaryOperationExpression pwdExpression = new BinaryOperationExpression(30, 44, pwdColumn, new LiteralExpressionSegment(40, 45, "123456"), "=", "pwd = '123456'");
         return new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, nameExpression, pwdExpression, "AND", "name = 'LiLei' AND pwd = '123456'"));
     }
     

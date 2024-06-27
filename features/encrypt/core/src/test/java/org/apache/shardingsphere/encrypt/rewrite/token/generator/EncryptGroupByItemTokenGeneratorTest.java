@@ -25,13 +25,14 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.TableSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -56,8 +57,6 @@ class EncryptGroupByItemTokenGeneratorTest {
     @BeforeEach
     void setup() {
         generator.setEncryptRule(mockEncryptRule());
-        generator.setDatabaseName("db_schema");
-        generator.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         generator.setDatabaseType(databaseType);
     }
     
@@ -78,10 +77,14 @@ class EncryptGroupByItemTokenGeneratorTest {
     }
     
     private SelectStatementContext buildSelectStatementContext() {
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")));
+        TableNameSegment tableName = new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"));
+        tableName.setTableBoundedInfo(new TableSegmentBoundedInfo(new IdentifierValue("db_schema"), new IdentifierValue("test")));
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableName);
         simpleTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("certificate_number"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
+        columnSegment.setColumnBoundedInfo(
+                new ColumnSegmentBoundedInfo(new IdentifierValue("db_schema"), new IdentifierValue("test"), new IdentifierValue("t_encrypt"), new IdentifierValue("certificate_number")));
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getDatabaseType()).thenReturn(databaseType);
         ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, NullsOrderType.FIRST);

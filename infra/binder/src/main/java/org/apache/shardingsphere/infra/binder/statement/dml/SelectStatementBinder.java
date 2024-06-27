@@ -21,7 +21,9 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.segment.combine.CombineSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.segment.groupby.GroupBySegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.lock.LockSegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.orderby.OrderBySegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.projection.ProjectionsSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.where.WhereSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.with.WithSegmentBinder;
@@ -61,9 +63,9 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), statementBinderContext, boundedTableSegment.orElse(null), tableBinderContexts, outerTableBinderContexts));
         sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, outerTableBinderContexts)));
         // TODO support other segment bind in select statement
-        sqlStatement.getGroupBy().ifPresent(result::setGroupBy);
+        sqlStatement.getGroupBy().ifPresent(optional -> result.setGroupBy(GroupBySegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, outerTableBinderContexts)));
         sqlStatement.getHaving().ifPresent(result::setHaving);
-        sqlStatement.getOrderBy().ifPresent(result::setOrderBy);
+        sqlStatement.getOrderBy().ifPresent(optional -> result.setOrderBy(OrderBySegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, outerTableBinderContexts)));
         sqlStatement.getCombine().ifPresent(optional -> result.setCombine(CombineSegmentBinder.bind(optional, statementBinderContext)));
         sqlStatement.getLimit().ifPresent(result::setLimit);
         sqlStatement.getLock().ifPresent(optional -> result.setLock(LockSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, outerTableBinderContexts)));

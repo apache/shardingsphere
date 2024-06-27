@@ -137,7 +137,9 @@ public final class TableExtractor {
     private void extractTablesFromExpression(final ExpressionSegment expressionSegment) {
         if (expressionSegment instanceof ColumnSegment && ((ColumnSegment) expressionSegment).getOwner().isPresent() && needRewrite(((ColumnSegment) expressionSegment).getOwner().get())) {
             OwnerSegment ownerSegment = ((ColumnSegment) expressionSegment).getOwner().get();
-            rewriteTables.add(new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier())));
+            TableNameSegment tableName = new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier());
+            tableName.setTableBoundedInfo(ownerSegment.getTableBoundedInfo());
+            rewriteTables.add(new SimpleTableSegment(tableName));
         }
         if (expressionSegment instanceof ListExpression) {
             for (ExpressionSegment each : ((ListExpression) expressionSegment).getItems()) {

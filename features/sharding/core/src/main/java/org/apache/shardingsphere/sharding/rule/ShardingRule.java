@@ -63,7 +63,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtractUtils;
 
 import javax.sql.DataSource;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -608,9 +607,8 @@ public final class ShardingRule implements DatabaseRule {
             }
             ColumnSegment leftColumn = (ColumnSegment) ((BinaryOperationExpression) each).getLeft();
             ColumnSegment rightColumn = (ColumnSegment) ((BinaryOperationExpression) each).getRight();
-            Map<String, String> columnExpressionTableNames = select.getTablesContext().findTableNames(Arrays.asList(leftColumn, rightColumn), schema);
-            Optional<ShardingTable> leftShardingTable = findShardingTable(columnExpressionTableNames.get(leftColumn.getExpression()));
-            Optional<ShardingTable> rightShardingTable = findShardingTable(columnExpressionTableNames.get(rightColumn.getExpression()));
+            Optional<ShardingTable> leftShardingTable = findShardingTable(leftColumn.getColumnBoundedInfo().getOriginalTable().getValue());
+            Optional<ShardingTable> rightShardingTable = findShardingTable(rightColumn.getColumnBoundedInfo().getOriginalTable().getValue());
             if (!leftShardingTable.isPresent() || !rightShardingTable.isPresent()) {
                 continue;
             }
@@ -620,10 +618,9 @@ public final class ShardingRule implements DatabaseRule {
             ShardingStrategyConfiguration rightConfig = isDatabaseJoinCondition
                     ? getDatabaseShardingStrategyConfiguration(rightShardingTable.get())
                     : getTableShardingStrategyConfiguration(rightShardingTable.get());
-            if (findShardingColumn(leftConfig, leftColumn.getIdentifier().getValue()).isPresent()
-                    && findShardingColumn(rightConfig, rightColumn.getIdentifier().getValue()).isPresent()) {
-                result.add(columnExpressionTableNames.get(leftColumn.getExpression()));
-                result.add(columnExpressionTableNames.get(rightColumn.getExpression()));
+            if (findShardingColumn(leftConfig, leftColumn.getIdentifier().getValue()).isPresent() && findShardingColumn(rightConfig, rightColumn.getIdentifier().getValue()).isPresent()) {
+                result.add(leftColumn.getColumnBoundedInfo().getOriginalTable().getValue());
+                result.add(rightColumn.getColumnBoundedInfo().getOriginalTable().getValue());
             }
         }
         return result;

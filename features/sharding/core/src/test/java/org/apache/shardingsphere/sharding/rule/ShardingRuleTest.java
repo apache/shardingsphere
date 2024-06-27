@@ -54,6 +54,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.TableSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -646,7 +648,6 @@ class ShardingRuleTest {
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(sqlStatementContext.getTablesContext().findTableNames(Arrays.asList(leftDatabaseJoin, rightDatabaseJoin), schema)).thenReturn(createColumnTableNameMap());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
@@ -656,7 +657,11 @@ class ShardingRuleTest {
     @Test
     void assertIsAllBindingTableWithJoinQueryWithDatabaseJoinConditionInUpperCaseAndNoOwner() {
         ColumnSegment leftDatabaseJoin = createColumnSegment("USER_ID", "LOGIC_TABLE");
+        leftDatabaseJoin.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+                new IdentifierValue("LOGIC_TABLE"), new IdentifierValue("USER_ID")));
         ColumnSegment rightDatabaseJoin = createColumnSegment("UID", null);
+        rightDatabaseJoin.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+                new IdentifierValue("SUB_LOGIC_TABLE"), new IdentifierValue("UID")));
         BinaryOperationExpression condition = createBinaryOperationExpression(leftDatabaseJoin, rightDatabaseJoin, EQUAL);
         JoinTableSegment joinTable = mock(JoinTableSegment.class);
         when(joinTable.getCondition()).thenReturn(condition);
@@ -665,9 +670,11 @@ class ShardingRuleTest {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
-        Collection<SimpleTableSegment> tableSegments = Arrays.asList(
-                new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("LOGIC_TABLE"))),
-                new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("SUB_LOGIC_TABLE"))));
+        TableNameSegment logicTableName = new TableNameSegment(0, 0, new IdentifierValue("LOGIC_TABLE"));
+        logicTableName.setTableBoundedInfo(new TableSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME)));
+        TableNameSegment subLogicTableName = new TableNameSegment(0, 0, new IdentifierValue("SUB_LOGIC_TABLE"));
+        subLogicTableName.setTableBoundedInfo(new TableSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME)));
+        Collection<SimpleTableSegment> tableSegments = Arrays.asList(new SimpleTableSegment(logicTableName), new SimpleTableSegment(subLogicTableName));
         TablesContext tablesContext = new TablesContext(tableSegments, Collections.emptyMap(), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
@@ -681,10 +688,18 @@ class ShardingRuleTest {
     @Test
     void assertIsAllBindingTableWithJoinQueryWithDatabaseTableJoinCondition() {
         ColumnSegment leftDatabaseJoin = createColumnSegment("user_id", "logic_Table");
+        leftDatabaseJoin.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+                new IdentifierValue("logic_Table"), new IdentifierValue("user_id")));
         ColumnSegment rightDatabaseJoin = createColumnSegment("user_id", "sub_Logic_Table");
+        rightDatabaseJoin.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+                new IdentifierValue("sub_Logic_Table"), new IdentifierValue("user_id")));
         BinaryOperationExpression databaseJoin = createBinaryOperationExpression(leftDatabaseJoin, rightDatabaseJoin, EQUAL);
         ColumnSegment leftTableJoin = createColumnSegment("order_id", "logic_Table");
+        leftTableJoin.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+                new IdentifierValue("logic_Table"), new IdentifierValue("order_id")));
         ColumnSegment rightTableJoin = createColumnSegment("order_id", "sub_Logic_Table");
+        rightTableJoin.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+                new IdentifierValue("sub_Logic_Table"), new IdentifierValue("order_id")));
         BinaryOperationExpression tableJoin = createBinaryOperationExpression(leftTableJoin, rightTableJoin, EQUAL);
         JoinTableSegment joinTable = mock(JoinTableSegment.class);
         BinaryOperationExpression condition = createBinaryOperationExpression(databaseJoin, tableJoin, AND);
@@ -698,8 +713,6 @@ class ShardingRuleTest {
         when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(new WhereSegment(0, 0, condition)));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(sqlStatementContext.getTablesContext().findTableNames(Arrays.asList(leftDatabaseJoin, rightDatabaseJoin), schema)).thenReturn(createColumnTableNameMap());
-        when(sqlStatementContext.getTablesContext().findTableNames(Arrays.asList(leftTableJoin, rightTableJoin), schema)).thenReturn(createColumnTableNameMap());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
