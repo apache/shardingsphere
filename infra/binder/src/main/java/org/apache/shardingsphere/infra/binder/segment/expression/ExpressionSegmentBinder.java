@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.segment.expression;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.enums.SegmentType;
+import org.apache.shardingsphere.infra.binder.segment.expression.impl.BetweenExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.BinaryOperationExpressionBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ExistsSubqueryExpressionBinder;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.infra.binder.segment.expression.impl.SubqueryEx
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -82,6 +84,9 @@ public final class ExpressionSegmentBinder {
         }
         if (segment instanceof FunctionSegment) {
             return FunctionExpressionSegmentBinder.bind((FunctionSegment) segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
+        }
+        if (segment instanceof BetweenExpression) {
+            return BetweenExpressionSegmentBinder.bind((BetweenExpression) segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         }
         // TODO support more ExpressionSegment bind
         return segment;
