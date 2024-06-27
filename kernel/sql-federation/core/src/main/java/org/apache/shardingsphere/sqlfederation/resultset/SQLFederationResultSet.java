@@ -55,7 +55,7 @@ import java.util.Map;
 /**
  * SQL federation result set.
  */
-public final class SQLFederationResultSet extends AbstractUnsupportedOperationResultSet {
+public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQLFederationResultSet {
     
     private static final String ASCII = "Ascii";
     

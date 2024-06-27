@@ -35,9 +35,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 /**
- * Unsupported {@code ResultSet} update methods.
+ * Unsupported {@code ResultSet} update methods for SQL federation.
  */
-public abstract class AbstractUnsupportedUpdateOperationResultSet extends WrapperAdapter implements ResultSet {
+public abstract class AbstractUnsupportedUpdateOperationSQLFederationResultSet extends WrapperAdapter implements ResultSet {
     
     @Override
     public final void updateNull(final int columnIndex) throws SQLException {

@@ -26,9 +26,9 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Map;
 
 /**
- * Unsupported {@code ResultSet} methods.
+ * Unsupported {@code ResultSet} methods for SQL federation.
  */
-public abstract class AbstractUnsupportedOperationResultSet extends AbstractUnsupportedUpdateOperationResultSet {
+public abstract class AbstractUnsupportedOperationSQLFederationResultSet extends AbstractUnsupportedUpdateOperationSQLFederationResultSet {
     
     @Override
     public boolean previous() throws SQLException {
