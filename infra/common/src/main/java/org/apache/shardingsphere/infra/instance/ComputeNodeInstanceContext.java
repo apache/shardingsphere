@@ -59,6 +59,7 @@ public final class ComputeNodeInstanceContext {
     
     private final Collection<ComputeNodeInstance> allClusterInstances = new CopyOnWriteArrayList<>();
     
+    @SuppressWarnings("rawtypes")
     public ComputeNodeInstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator, final ModeConfiguration modeConfiguration,
                                       final LockContext lockContext, final EventBusContext eventBusContext) {
         this.instance = instance;
@@ -78,6 +79,7 @@ public final class ComputeNodeInstanceContext {
      * @param workerIdGenerator worker id generator
      * @param lockContext lock context
      */
+    @SuppressWarnings("rawtypes")
     public void init(final WorkerIdGenerator workerIdGenerator, final LockContext lockContext) {
         this.workerIdGenerator.set(workerIdGenerator);
         this.lockContext.set(lockContext);
