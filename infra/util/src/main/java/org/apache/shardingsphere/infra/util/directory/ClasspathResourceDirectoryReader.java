@@ -86,7 +86,7 @@ public final class ClasspathResourceDirectoryReader {
             }
             return jarFile.getJarEntry(name).isDirectory();
         } else {
-            return Files.isDirectory(Paths.get(resourceUrl.toURI()));
+            return Paths.get(resourceUrl.toURI()).toFile().exists();
         }
     }
     
