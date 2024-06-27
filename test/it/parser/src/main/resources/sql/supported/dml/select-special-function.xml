@@ -58,4 +58,9 @@
     <sql-case id="select_first_last_value_function" value="SELECT BusinessEntityID, DATEPART(QUARTER, QuotaDate) AS Quarter, YEAR(QuotaDate) AS SalesYear, SalesQuota AS QuotaThisQuarter, SalesQuota - FIRST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate)) AS DifferenceFromFirstQuarter, SalesQuota - LAST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate) RANGE BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING) AS DifferenceFromLastQuarter FROM Sales.SalesPersonQuotaHistory WHERE YEAR(QuotaDate) > 2005 AND BusinessEntityID BETWEEN 274 AND 275 ORDER BY BusinessEntityID, SalesYear, Quarter" db-types="SQLServer" />
     <sql-case id="select_approx_percentile_cont_function" value="SELECT DeptId,APPROX_PERCENTILE_CONT(0.10) WITHIN GROUP(ORDER BY Salary) AS 'P10',APPROX_PERCENTILE_CONT(0.90) WITHIN GROUP(ORDER BY Salary) AS 'P90' FROM tblEmployee GROUP BY DeptId" db-types="SQLServer" />
     <sql-case id="select_wm_concat_function_with_schema" value="SELECT TO_CHAR(WMSYS.WM_CONCAT(DISTINCT o.status)) FROM t_order o GROUP BY o.order_id" db-types="Oracle" />
+    <sql-case id="select_add_date" value="SELECT ADDDATE('2008-01-02', 31)" db-types="MySQL" />
+    <sql-case id="select_add_time" value="SELECT ADDTIME('2007-12-31 23:59:59.999999', '1 1:1:1.000002')" db-types="MySQL" />
+    <sql-case id="select_aes_decrypt" value="SELECT AES_DECRYPT('encrypt_text','key_str')" db-types="MySQL" />
+    <sql-case id="select_any_value" value="SELECT ANY_VALUE(age) FROM t" db-types="MySQL" />
+    <sql-case id="select_ascii" value="SELECT ASCII('2')" db-types="MySQL" />
 </sql-cases>
