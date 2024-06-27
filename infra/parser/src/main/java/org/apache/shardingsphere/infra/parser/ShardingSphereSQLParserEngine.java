@@ -56,10 +56,14 @@ public final class ShardingSphereSQLParserEngine implements SQLParserEngine {
                 String trimSQL = SQLUtils.trimComment(sql);
                 return distSQLStatementParserEngine.parse(trimSQL);
             } catch (final SQLParsingException ignored) {
-                throw (RuntimeException) (originalEx instanceof SQLParsingException
-                        ? new DialectSQLParsingException(originalEx.getMessage(), ((SQLParsingException) originalEx).getSymbol(), ((SQLParsingException) originalEx).getLine())
-                        : originalEx);
+                throw getException(originalEx);
             }
         }
+    }
+    
+    private static RuntimeException getException(final RuntimeException originalEx) {
+        return originalEx instanceof SQLParsingException
+                ? new DialectSQLParsingException(originalEx.getMessage(), ((SQLParsingException) originalEx).getSymbol(), ((SQLParsingException) originalEx).getLine())
+                : originalEx;
     }
 }
