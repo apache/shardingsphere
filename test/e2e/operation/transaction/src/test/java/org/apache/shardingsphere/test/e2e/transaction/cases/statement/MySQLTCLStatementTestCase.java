@@ -69,7 +69,7 @@ public final class MySQLTCLStatementTestCase extends BaseTCLStatementTransaction
         executeWithLog(connection, "COMMIT");
         assertAccountBalances(queryConnection, 1, 2);
     }
-
+    
     private void assertSetAutoCommit(final Connection connection, final Connection queryConnection) throws SQLException {
         executeWithLog(connection, "DELETE FROM account");
         assertAccountBalances(queryConnection);
