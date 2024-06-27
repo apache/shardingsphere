@@ -50,7 +50,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     public ShardingSphereDatabaseMetaData(final ShardingSphereConnection connection) throws SQLException {
         super(connection.getDatabaseConnectionManager().getRandomConnection().getMetaData());
         this.connection = connection;
-        rules = connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules();
+        rules = connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getCurrentDatabaseName()).getRuleMetaData().getRules();
     }
     
     @Override
@@ -232,7 +232,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
         }
         // TODO consider get actual catalog by logic catalog rather than random physical datasource's catalog.
         ConnectionProperties connectionProps = connection.getContextManager()
-                .getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageUnits().get(getDataSourceName()).getConnectionProperties();
+                .getMetaDataContexts().getMetaData().getDatabase(connection.getCurrentDatabaseName()).getResourceMetaData().getStorageUnits().get(getDataSourceName()).getConnectionProperties();
         return connectionProps.getCatalog();
     }
     
@@ -242,7 +242,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
         }
         // TODO consider get actual schema by logic catalog rather than random physical datasource's schema.
         ConnectionProperties connectionProps = connection.getContextManager()
-                .getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageUnits().get(getDataSourceName()).getConnectionProperties();
+                .getMetaDataContexts().getMetaData().getDatabase(connection.getCurrentDatabaseName()).getResourceMetaData().getStorageUnits().get(getDataSourceName()).getConnectionProperties();
         return Optional.ofNullable(connectionProps.getSchema()).map(String::toUpperCase).orElse(null);
     }
     

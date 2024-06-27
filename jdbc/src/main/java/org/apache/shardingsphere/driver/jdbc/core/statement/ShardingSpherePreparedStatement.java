@@ -140,10 +140,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         this.sql = SQLHintUtils.removeHint(sql);
         hintValueContext = SQLHintUtils.extractHint(sql);
         SQLStatement sqlStatement = parseSQL(connection);
-        sqlStatementContext = new SQLBindEngine(metaData, connection.getDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
+        sqlStatementContext = new SQLBindEngine(metaData, connection.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
         String databaseName = sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(connection.getDatabaseName())
-                : connection.getDatabaseName();
+                ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName())
+                : connection.getCurrentDatabaseName();
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
         database = metaData.getDatabase(databaseName);
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
@@ -157,7 +157,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private SQLStatement parseSQL(final ShardingSphereConnection connection) {
         SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        return sqlParserRule.getSQLParserEngine(metaData.getDatabase(connection.getDatabaseName()).getProtocolType()).parse(sql, true);
+        return sqlParserRule.getSQLParserEngine(metaData.getDatabase(connection.getCurrentDatabaseName()).getProtocolType()).parse(sql, true);
     }
     
     private boolean isStatementsCacheable() {

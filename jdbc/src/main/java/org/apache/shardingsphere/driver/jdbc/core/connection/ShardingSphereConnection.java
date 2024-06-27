@@ -54,7 +54,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private final ForceExecuteTemplate<StatementManager> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
     @Getter
-    private final String databaseName;
+    private final String currentDatabaseName;
     
     @Getter
     private final ContextManager contextManager;
@@ -76,11 +76,11 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private volatile boolean closed;
     
-    public ShardingSphereConnection(final String databaseName, final ContextManager contextManager) {
-        this.databaseName = databaseName;
+    public ShardingSphereConnection(final String currentDatabaseName, final ContextManager contextManager) {
+        this.currentDatabaseName = currentDatabaseName;
         this.contextManager = contextManager;
-        databaseConnectionManager = new DriverDatabaseConnectionManager(databaseName, contextManager);
-        processId = processEngine.connect(databaseName);
+        databaseConnectionManager = new DriverDatabaseConnectionManager(currentDatabaseName, contextManager);
+        processId = processEngine.connect(currentDatabaseName);
     }
     
     /**
@@ -234,7 +234,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     }
     
     private boolean isSchemaSupportedDatabaseType() {
-        DatabaseType databaseType = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getProtocolType();
+        DatabaseType databaseType = contextManager.getMetaDataContexts().getMetaData().getDatabase(currentDatabaseName).getProtocolType();
         return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDefaultSchema().isPresent();
     }
     
@@ -269,7 +269,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public String getSchema() {
         // TODO return databaseName for now in getSchema(), the same as before
-        return databaseName;
+        return currentDatabaseName;
     }
     
     @Override
