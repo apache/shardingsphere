@@ -99,9 +99,11 @@ public final class BackendTransactionManager implements TransactionManager {
                     each.afterCommit(connection.getCachedConnections().values(),
                             getTransactionContext(), ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getLockContext());
                 }
+                for (Connection each : connection.getCachedConnections().values()) {
+                    ConnectionSavepointManager.getInstance().transactionFinished(each);
+                }
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
-                connection.getConnectionSession().getConnectionContext().clearTransactionContext();
-                connection.getConnectionSession().getConnectionContext().clearCursorContext();
+                connection.getConnectionSession().getConnectionContext().close();
             }
         }
     }
@@ -122,9 +124,11 @@ public final class BackendTransactionManager implements TransactionManager {
                 for (TransactionHook each : transactionHooks) {
                     each.afterRollback(connection.getCachedConnections().values(), getTransactionContext());
                 }
+                for (Connection each : connection.getCachedConnections().values()) {
+                    ConnectionSavepointManager.getInstance().transactionFinished(each);
+                }
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
-                connection.getConnectionSession().getConnectionContext().clearTransactionContext();
-                connection.getConnectionSession().getConnectionContext().clearCursorContext();
+                connection.getConnectionSession().getConnectionContext().close();
             }
         }
     }
