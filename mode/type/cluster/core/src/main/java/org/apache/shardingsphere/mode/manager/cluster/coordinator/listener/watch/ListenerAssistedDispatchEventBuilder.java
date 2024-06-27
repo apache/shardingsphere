@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mode.service.enums.ListenerAssistedEnum;
 import org.apache.shardingsphere.mode.service.pojo.ListenerAssistedPOJO;
 import org.apache.shardingsphere.mode.path.ListenerAssistedNodePath;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -44,7 +45,7 @@ public class ListenerAssistedDispatchEventBuilder implements DispatchEventBuilde
     
     @Override
     public Collection<DataChangedEvent.Type> getSubscribedTypes() {
-        return Collections.singletonList(Type.ADDED);
+        return Arrays.asList(Type.ADDED, Type.UPDATED);
     }
     
     @Override
