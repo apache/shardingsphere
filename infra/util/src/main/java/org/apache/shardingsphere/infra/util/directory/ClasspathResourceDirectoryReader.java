@@ -81,10 +81,7 @@ public final class ClasspathResourceDirectoryReader {
         }
         if (JAR_URL_PROTOCOLS.contains(resourceUrl.getProtocol())) {
             JarFile jarFile = getJarFile(resourceUrl);
-            if (null == jarFile) {
-                return false;
-            }
-            return jarFile.getJarEntry(name).isDirectory();
+            return null != jarFile && jarFile.getJarEntry(name).isDirectory();
         }
         return Paths.get(resourceUrl.toURI()).toFile().isDirectory();
     }
