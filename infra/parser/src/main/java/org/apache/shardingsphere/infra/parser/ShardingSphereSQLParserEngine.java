@@ -61,7 +61,7 @@ public final class ShardingSphereSQLParserEngine implements SQLParserEngine {
         }
     }
     
-    private static RuntimeException getException(final RuntimeException originalEx) {
+    private RuntimeException getException(final RuntimeException originalEx) {
         return originalEx instanceof SQLParsingException
                 ? new DialectSQLParsingException(originalEx.getMessage(), ((SQLParsingException) originalEx).getSymbol(), ((SQLParsingException) originalEx).getLine())
                 : originalEx;
