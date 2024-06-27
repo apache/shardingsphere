@@ -128,15 +128,15 @@ public final class SQLStatementContextFactory {
      * @param metaData metadata
      * @param params SQL parameters
      * @param sqlStatement SQL statement
-     * @param defaultDatabaseName default database name
+     * @param currentDatabaseName current database name
      * @return SQL statement context
      */
-    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData, final List<Object> params, final SQLStatement sqlStatement, final String defaultDatabaseName) {
+    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData, final List<Object> params, final SQLStatement sqlStatement, final String currentDatabaseName) {
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(metaData, params, (DMLStatement) sqlStatement, defaultDatabaseName);
+            return getDMLStatementContext(metaData, params, (DMLStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLStatementContext(metaData, params, (DDLStatement) sqlStatement, defaultDatabaseName);
+            return getDDLStatementContext(metaData, params, (DDLStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DCLStatement) {
             return getDCLStatementContext((DCLStatement) sqlStatement);
@@ -148,9 +148,9 @@ public final class SQLStatementContextFactory {
     }
     
     private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData,
-                                                              final List<Object> params, final DMLStatement sqlStatement, final String defaultDatabaseName) {
+                                                              final List<Object> params, final DMLStatement sqlStatement, final String currentDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(metaData, params, (SelectStatement) sqlStatement, defaultDatabaseName, Collections.emptyList());
+            return new SelectStatementContext(metaData, params, (SelectStatement) sqlStatement, currentDatabaseName, Collections.emptyList());
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext((UpdateStatement) sqlStatement);
@@ -159,7 +159,7 @@ public final class SQLStatementContextFactory {
             return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext(metaData, params, (InsertStatement) sqlStatement, defaultDatabaseName);
+            return new InsertStatementContext(metaData, params, (InsertStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof CallStatement) {
             return new CallStatementContext((CallStatement) sqlStatement);
@@ -183,7 +183,7 @@ public final class SQLStatementContextFactory {
     }
     
     private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final List<Object> params,
-                                                              final DDLStatement sqlStatement, final String defaultDatabaseName) {
+                                                              final DDLStatement sqlStatement, final String currentDatabaseName) {
         if (sqlStatement instanceof CreateSchemaStatement) {
             return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
         }
@@ -233,7 +233,7 @@ public final class SQLStatementContextFactory {
             return new CommentStatementContext((CommentStatement) sqlStatement);
         }
         if (sqlStatement instanceof CursorStatement) {
-            return new CursorStatementContext(metaData, params, (CursorStatement) sqlStatement, defaultDatabaseName);
+            return new CursorStatementContext(metaData, params, (CursorStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof CloseStatement) {
             return new CloseStatementContext((CloseStatement) sqlStatement);

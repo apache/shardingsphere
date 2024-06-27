@@ -38,16 +38,16 @@ import java.util.Map;
 public final class UpdateStatementBinder implements SQLStatementBinder<UpdateStatement> {
     
     @Override
-    public UpdateStatement bind(final UpdateStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap());
+    public UpdateStatement bind(final UpdateStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
+        return bind(sqlStatement, metaData, currentDatabaseName, Collections.emptyMap());
     }
     
     @SneakyThrows
-    private UpdateStatement bind(final UpdateStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+    private UpdateStatement bind(final UpdateStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                  final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         UpdateStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
-        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
+        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
         TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getTable(), statementBinderContext, tableBinderContexts, Collections.emptyMap());
         result.setTable(boundedTableSegment);

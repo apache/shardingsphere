@@ -30,10 +30,10 @@ public final class CursorStatementBinder implements SQLStatementBinder<CursorSta
     
     @SneakyThrows
     @Override
-    public CursorStatement bind(final CursorStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+    public CursorStatement bind(final CursorStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
         CursorStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.setCursorName(sqlStatement.getCursorName());
-        result.setSelect(new SelectStatementBinder().bind(sqlStatement.getSelect(), metaData, defaultDatabaseName));
+        result.setSelect(new SelectStatementBinder().bind(sqlStatement.getSelect(), metaData, currentDatabaseName));
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;

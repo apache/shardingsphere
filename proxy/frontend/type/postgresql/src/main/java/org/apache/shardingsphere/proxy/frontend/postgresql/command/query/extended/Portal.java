@@ -86,7 +86,7 @@ public final class Portal {
         this.sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
         this.resultFormats = resultFormats;
         this.databaseConnectionManager = databaseConnectionManager;
-        String databaseName = databaseConnectionManager.getConnectionSession().getDefaultDatabaseName();
+        String databaseName = databaseConnectionManager.getConnectionSession().getCurrentDatabaseName();
         SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(params);

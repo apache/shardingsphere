@@ -32,6 +32,6 @@ public final class VersionValueProvider implements MySQLSystemVariableValueProvi
     
     @Override
     public String get(final Scope scope, final ConnectionSession connectionSession, final MySQLSystemVariable variable) {
-        return DatabaseProtocolServerInfo.getProtocolVersion(connectionSession.getDefaultDatabaseName(), TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        return DatabaseProtocolServerInfo.getProtocolVersion(connectionSession.getCurrentDatabaseName(), TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     }
 }

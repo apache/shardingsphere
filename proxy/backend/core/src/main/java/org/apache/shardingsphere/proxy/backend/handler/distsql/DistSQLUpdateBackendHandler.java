@@ -37,7 +37,7 @@ public final class DistSQLUpdateBackendHandler implements DistSQLBackendHandler 
     
     public DistSQLUpdateBackendHandler(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
         this.sqlStatement = sqlStatement;
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, connectionSession.getDatabaseName(), ProxyContext.getInstance().getContextManager());
+        engine = new DistSQLUpdateExecuteEngine(sqlStatement, connectionSession.getUsedDatabaseName(), ProxyContext.getInstance().getContextManager());
     }
     
     @Override

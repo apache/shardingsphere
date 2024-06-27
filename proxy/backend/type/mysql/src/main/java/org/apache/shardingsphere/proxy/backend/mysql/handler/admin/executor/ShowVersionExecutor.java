@@ -52,7 +52,7 @@ public final class ShowVersionExecutor implements DatabaseAdminQueryExecutor {
     @Override
     public void execute(final ConnectionSession connectionSession) {
         mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(
-                DatabaseProtocolServerInfo.getProtocolVersion(connectionSession.getDatabaseName(), TypedSPILoader.getService(DatabaseType.class, "MySQL")))));
+                DatabaseProtocolServerInfo.getProtocolVersion(connectionSession.getUsedDatabaseName(), TypedSPILoader.getService(DatabaseType.class, "MySQL")))));
     }
     
     @Override

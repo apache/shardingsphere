@@ -66,7 +66,7 @@ public final class DropDatabaseBackendHandler implements ProxyBackendHandler {
     }
     
     private boolean isDropCurrentDatabase(final String databaseName) {
-        return !Strings.isNullOrEmpty(connectionSession.getDatabaseName()) && connectionSession.getDatabaseName().equals(databaseName);
+        return !Strings.isNullOrEmpty(connectionSession.getUsedDatabaseName()) && connectionSession.getUsedDatabaseName().equals(databaseName);
     }
     
     private void checkSupportedDropCurrentDatabase(final ConnectionSession connectionSession) {

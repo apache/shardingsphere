@@ -52,7 +52,7 @@ public final class DistSQLQueryBackendHandler implements DistSQLBackendHandler {
         DistSQLConnectionContext distsqlConnectionContext = new DistSQLConnectionContext(connectionSession.getConnectionContext(),
                 connectionSession.getDatabaseConnectionManager().getConnectionSize(), connectionSession.getProtocolType(),
                 connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());
-        engine = new DistSQLQueryExecuteEngine(sqlStatement, connectionSession.getDatabaseName(), ProxyContext.getInstance().getContextManager(), distsqlConnectionContext);
+        engine = new DistSQLQueryExecuteEngine(sqlStatement, connectionSession.getUsedDatabaseName(), ProxyContext.getInstance().getContextManager(), distsqlConnectionContext);
     }
     
     @Override

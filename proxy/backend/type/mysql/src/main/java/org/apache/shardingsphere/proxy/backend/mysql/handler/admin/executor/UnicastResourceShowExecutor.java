@@ -75,14 +75,14 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
-        String originDatabase = connectionSession.getDatabaseName();
+        String originDatabase = connectionSession.getUsedDatabaseName();
         String databaseName = null == originDatabase ? getFirstDatabaseName() : originDatabase;
         ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getContextManager().getDatabase(databaseName).containsDataSource(), () -> new EmptyStorageUnitException(databaseName));
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
         try {
             connectionSession.setCurrentDatabase(databaseName);
             SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
-                    connectionSession.getDefaultDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
+                    connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
             databaseConnector = databaseConnectorFactory.newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext),
                     connectionSession.getDatabaseConnectionManager(), false);
             responseHeader = databaseConnector.execute();

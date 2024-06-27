@@ -109,7 +109,7 @@ public final class CommandExecutorTask implements Runnable {
     }
     
     private void fillLogMDC() {
-        MDC.put(LogMDCConstants.DATABASE_KEY, connectionSession.getDatabaseName());
+        MDC.put(LogMDCConstants.DATABASE_KEY, connectionSession.getUsedDatabaseName());
         MDC.put(LogMDCConstants.USER_KEY, connectionSession.getConnectionContext().getGrantee().toString());
     }
     

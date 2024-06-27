@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
  */
 public final class DriverDatabaseConnectionManager implements DatabaseConnectionManager<Connection>, AutoCloseable {
     
-    private final String defaultDatabaseName;
+    private final String currentDatabaseName;
     
     private final ContextManager contextManager;
     
@@ -69,13 +69,13 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
-    public DriverDatabaseConnectionManager(final String defaultDatabaseName, final ContextManager contextManager) {
-        this.defaultDatabaseName = defaultDatabaseName;
+    public DriverDatabaseConnectionManager(final String currentDatabaseName, final ContextManager contextManager) {
+        this.currentDatabaseName = currentDatabaseName;
         this.contextManager = contextManager;
-        dataSourceMap = contextManager.getStorageUnits(defaultDatabaseName).entrySet()
-                .stream().collect(Collectors.toMap(entry -> getKey(defaultDatabaseName, entry.getKey()), entry -> entry.getValue().getDataSource()));
+        dataSourceMap = contextManager.getStorageUnits(currentDatabaseName).entrySet()
+                .stream().collect(Collectors.toMap(entry -> getKey(currentDatabaseName, entry.getKey()), entry -> entry.getValue().getDataSource()));
         connectionContext = new ConnectionContext(cachedConnections::keySet);
-        connectionContext.setCurrentDatabase(defaultDatabaseName);
+        connectionContext.setCurrentDatabase(currentDatabaseName);
     }
     
     private String getKey(final String databaseName, final String dataSourceName) {
@@ -303,7 +303,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     private List<Connection> getConnections0(final String databaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
                                              final ConnectionMode connectionMode) throws SQLException {
         String cacheKey = getKey(databaseName, dataSourceName);
-        DataSource dataSource = defaultDatabaseName.equals(databaseName) ? dataSourceMap.get(cacheKey) : contextManager.getStorageUnits(databaseName).get(dataSourceName).getDataSource();
+        DataSource dataSource = currentDatabaseName.equals(databaseName) ? dataSourceMap.get(cacheKey) : contextManager.getStorageUnits(databaseName).get(dataSourceName).getDataSource();
         Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
         synchronized (cachedConnections) {

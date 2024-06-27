@@ -96,9 +96,9 @@ public final class SQLFederationEngine implements AutoCloseable {
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, SQLFederationDecider> deciders;
     
-    private final String defaultDatabaseName;
+    private final String currentDatabaseName;
     
-    private final String defaultSchemaName;
+    private final String currentSchemaName;
     
     private final ShardingSphereMetaData metaData;
     
@@ -110,11 +110,11 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     private ResultSet resultSet;
     
-    public SQLFederationEngine(final String defaultDatabaseName, final String defaultSchemaName, final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics,
+    public SQLFederationEngine(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics,
                                final JDBCExecutor jdbcExecutor) {
-        deciders = OrderedSPILoader.getServices(SQLFederationDecider.class, metaData.getDatabase(defaultDatabaseName).getRuleMetaData().getRules());
-        this.defaultDatabaseName = defaultDatabaseName;
-        this.defaultSchemaName = defaultSchemaName;
+        deciders = OrderedSPILoader.getServices(SQLFederationDecider.class, metaData.getDatabase(currentDatabaseName).getRuleMetaData().getRules());
+        this.currentDatabaseName = currentDatabaseName;
+        this.currentSchemaName = currentSchemaName;
         this.metaData = metaData;
         this.statistics = statistics;
         this.jdbcExecutor = jdbcExecutor;
@@ -189,8 +189,8 @@ public final class SQLFederationEngine implements AutoCloseable {
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationContext federationContext) {
         try {
-            String databaseName = federationContext.getQueryContext().getDatabaseNameFromSQLStatement().orElse(defaultDatabaseName);
-            String schemaName = federationContext.getQueryContext().getSchemaNameFromSQLStatement().orElse(defaultSchemaName);
+            String databaseName = federationContext.getQueryContext().getDatabaseNameFromSQLStatement().orElse(currentDatabaseName);
+            String schemaName = federationContext.getQueryContext().getSchemaNameFromSQLStatement().orElse(currentSchemaName);
             OptimizerMetaData optimizerMetaData = sqlFederationRule.getOptimizerContext().getMetaData(databaseName);
             CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(sqlFederationRule.getOptimizerContext().getParserContext(databaseName).getDialectProps());
             CalciteCatalogReader catalogReader = SQLFederationPlannerUtils.createCatalogReader(schemaName, optimizerMetaData.getSchema(schemaName), DEFAULT_DATA_TYPE_FACTORY, connectionConfig);

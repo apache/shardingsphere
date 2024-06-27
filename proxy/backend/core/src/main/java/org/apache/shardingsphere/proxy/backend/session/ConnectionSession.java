@@ -44,7 +44,7 @@ public final class ConnectionSession {
     private final DatabaseType protocolType;
     
     @Setter(AccessLevel.NONE)
-    private volatile String databaseName;
+    private volatile String currentDatabaseName;
     
     private volatile int connectionId;
     
@@ -95,11 +95,11 @@ public final class ConnectionSession {
     /**
      * Change database of current channel.
      *
-     * @param databaseName database name
+     * @param currentDatabaseName current database name
      */
-    public void setCurrentDatabase(final String databaseName) {
-        if (null == databaseName || !databaseName.equals(this.databaseName)) {
-            this.databaseName = databaseName;
+    public void setCurrentDatabase(final String currentDatabaseName) {
+        if (null == currentDatabaseName || !currentDatabaseName.equals(this.currentDatabaseName)) {
+            this.currentDatabaseName = currentDatabaseName;
         }
     }
     
@@ -113,21 +113,12 @@ public final class ConnectionSession {
     }
     
     /**
-     * Get database name.
+     * Get used database name.
      *
-     * @return database name
+     * @return used database name
      */
-    public String getDatabaseName() {
-        return null == queryContext ? databaseName : queryContext.getDatabaseNameFromSQLStatement().orElse(databaseName);
-    }
-    
-    /**
-     * Get default database name.
-     *
-     * @return default database name
-     */
-    public String getDefaultDatabaseName() {
-        return databaseName;
+    public String getUsedDatabaseName() {
+        return null == queryContext ? currentDatabaseName : queryContext.getDatabaseNameFromSQLStatement().orElse(currentDatabaseName);
     }
     
     /**

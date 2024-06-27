@@ -182,7 +182,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      */
     public Collection<String> getUsedDataSourceNames() {
         Collection<String> result = new ArrayList<>(cachedConnections.size());
-        String databaseName = connectionSession.getDatabaseName().toLowerCase();
+        String databaseName = connectionSession.getUsedDatabaseName().toLowerCase();
         for (String each : cachedConnections.keySet()) {
             String[] split = each.split("\\.", 2);
             String cachedDatabaseName = split[0];
