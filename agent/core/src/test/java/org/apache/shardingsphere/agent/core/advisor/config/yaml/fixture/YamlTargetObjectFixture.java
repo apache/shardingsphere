@@ -38,7 +38,7 @@ public final class YamlTargetObjectFixture {
      * @return value
      */
     public static String call(final String value) {
-        return "";
+        return value;
     }
     
     /**
