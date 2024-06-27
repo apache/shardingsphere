@@ -49,7 +49,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -84,8 +83,7 @@ class SQLRewriteEntryTest {
                 mock(RuleMetaData.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         SQLTranslatorRule sqlTranslatorRule = mock(SQLTranslatorRule.class);
         when(sqlTranslatorRule.translate(any(), any(), any(), any(), any(), any())).thenReturn(new SQLTranslatorContext("", Collections.emptyList()));
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
-                database, new RuleMetaData(Collections.singleton(sqlTranslatorRule)), new ConfigurationProperties(new Properties()));
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, new RuleMetaData(Collections.singleton(sqlTranslatorRule)), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         RouteUnit firstRouteUnit = mock(RouteUnit.class);
         when(firstRouteUnit.getDataSourceMapper()).thenReturn(new RouteMapper("ds", "ds_0"));
@@ -104,7 +102,7 @@ class SQLRewriteEntryTest {
         when(storageUnit2.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         storageUnits.put("ds_0", storageUnit1);
         storageUnits.put("ds_1", storageUnit2);
-        ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
+        ResourceMetaData result = mock(ResourceMetaData.class);
         when(result.getStorageUnits()).thenReturn(storageUnits);
         return result;
     }

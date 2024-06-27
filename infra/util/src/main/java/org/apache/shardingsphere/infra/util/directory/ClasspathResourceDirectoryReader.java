@@ -201,9 +201,9 @@ public final class ClasspathResourceDirectoryReader {
         }
     }
     
+    @SuppressWarnings("resource")
     private static Stream<String> loadFromDirectory(final String directory, final URL directoryUrl) throws URISyntaxException, IOException {
         Path directoryPath = Paths.get(directoryUrl.toURI());
-        // noinspection resource
         Stream<Path> walkStream = Files.find(directoryPath, Integer.MAX_VALUE, (path, basicFileAttributes) -> !basicFileAttributes.isDirectory(), FileVisitOption.FOLLOW_LINKS);
         return walkStream.map(path -> {
             StringBuilder stringBuilder = new StringBuilder();
