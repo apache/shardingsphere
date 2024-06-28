@@ -88,7 +88,8 @@ public final class TablesContext {
                 SimpleTableSegment simpleTableSegment = (SimpleTableSegment) each;
                 simpleTables.add(simpleTableSegment);
                 tableNames.add(simpleTableSegment.getTableName().getIdentifier().getValue());
-                schemaNames.add(simpleTableSegment.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(getDefaultSchemaName(databaseType, currentDatabaseName)));
+                // TODO use sql binder result when statement which contains tables support bind logic
+                simpleTableSegment.getOwner().ifPresent(optional -> schemaNames.add(optional.getIdentifier().getValue()));
                 databaseNames.add(findDatabaseName(simpleTableSegment, databaseType).orElse(currentDatabaseName));
                 tableNameAliasMap.put(simpleTableSegment.getTableName().getIdentifier().getValue().toLowerCase(), each.getAlias().orElse(simpleTableSegment.getTableName().getIdentifier()));
             }
@@ -96,11 +97,6 @@ public final class TablesContext {
                 subqueryTables.putAll(createSubqueryTables(subqueryContexts, (SubqueryTableSegment) each));
             }
         }
-    }
-    
-    private String getDefaultSchemaName(final DatabaseType databaseType, final String currentDatabaseName) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getDefaultSchema().orElse(currentDatabaseName);
     }
     
     private Optional<String> findDatabaseName(final SimpleTableSegment tableSegment, final DatabaseType databaseType) {
