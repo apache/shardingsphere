@@ -189,8 +189,9 @@ public final class SQLFederationEngine implements AutoCloseable {
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationContext federationContext) {
         try {
-            String databaseName = federationContext.getQueryContext().getDatabaseNameFromSQLStatement().orElse(currentDatabaseName);
-            String schemaName = federationContext.getQueryContext().getSchemaNameFromSQLStatement().orElse(currentSchemaName);
+            SelectStatementContext selectStatementContext = (SelectStatementContext) federationContext.getQueryContext().getSqlStatementContext();
+            String databaseName = selectStatementContext.getTablesContext().getDatabaseNames().stream().findFirst().orElse(currentDatabaseName);
+            String schemaName = selectStatementContext.getTablesContext().getSchemaName().orElse(currentSchemaName);
             OptimizerMetaData optimizerMetaData = sqlFederationRule.getOptimizerContext().getMetaData(databaseName);
             CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(sqlFederationRule.getOptimizerContext().getParserContext(databaseName).getDialectProps());
             CalciteCatalogReader catalogReader = SQLFederationPlannerUtils.createCatalogReader(schemaName, optimizerMetaData.getSchema(schemaName), DEFAULT_DATA_TYPE_FACTORY, connectionConfig);
