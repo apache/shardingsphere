@@ -48,9 +48,9 @@ public final class UpdateStatementContext extends CommonSQLStatementContext impl
     
     private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
     
-    public UpdateStatementContext(final UpdateStatement sqlStatement) {
+    public UpdateStatementContext(final UpdateStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
+        tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType(), currentDatabaseName);
         getSqlStatement().getWhere().ifPresent(whereSegments::add);
         ColumnExtractUtils.extractColumnSegments(columnSegments, whereSegments);
         ExpressionExtractUtils.extractJoinConditions(joinConditions, whereSegments);

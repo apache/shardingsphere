@@ -31,9 +31,9 @@ public final class CopyStatementContext extends CommonSQLStatementContext implem
     
     private final TablesContext tablesContext;
     
-    public CopyStatementContext(final CopyStatement sqlStatement) {
+    public CopyStatementContext(final CopyStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTableSegment(), getDatabaseType());
+        tablesContext = new TablesContext(sqlStatement.getTableSegment(), getDatabaseType(), currentDatabaseName);
     }
     
     @Override

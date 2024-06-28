@@ -68,7 +68,7 @@ class ShardingCreateFunctionStatementValidatorTest {
         routineBody.getValidStatements().add(selectValidStatementSegment);
         MySQLCreateFunctionStatement sqlStatement = new MySQLCreateFunctionStatement();
         sqlStatement.setRoutineBody(routineBody);
-        SQLStatementContext sqlStatementContext = new CreateFunctionStatementContext(sqlStatement);
+        SQLStatementContext sqlStatementContext = new CreateFunctionStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order_item")).thenReturn(true);
@@ -86,7 +86,7 @@ class ShardingCreateFunctionStatementValidatorTest {
         routineBody.getValidStatements().add(validStatementSegment);
         MySQLCreateFunctionStatement sqlStatement = new MySQLCreateFunctionStatement();
         sqlStatement.setRoutineBody(routineBody);
-        SQLStatementContext sqlStatementContext = new CreateFunctionStatementContext(sqlStatement);
+        SQLStatementContext sqlStatementContext = new CreateFunctionStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db_schema");
         assertThrows(NoSuchTableException.class,
@@ -103,7 +103,7 @@ class ShardingCreateFunctionStatementValidatorTest {
         routineBody.getValidStatements().add(validStatementSegment);
         MySQLCreateFunctionStatement sqlStatement = new MySQLCreateFunctionStatement();
         sqlStatement.setRoutineBody(routineBody);
-        SQLStatementContext sqlStatementContext = new CreateFunctionStatementContext(sqlStatement);
+        SQLStatementContext sqlStatementContext = new CreateFunctionStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db_schema");
         assertThrows(NoSuchTableException.class,
@@ -120,7 +120,7 @@ class ShardingCreateFunctionStatementValidatorTest {
         routineBody.getValidStatements().add(validStatementSegment);
         MySQLCreateFunctionStatement sqlStatement = new MySQLCreateFunctionStatement();
         sqlStatement.setRoutineBody(routineBody);
-        SQLStatementContext sqlStatementContext = new CreateFunctionStatementContext(sqlStatement);
+        SQLStatementContext sqlStatementContext = new CreateFunctionStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order")).thenReturn(true);

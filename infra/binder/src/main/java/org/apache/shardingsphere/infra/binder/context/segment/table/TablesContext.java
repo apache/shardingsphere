@@ -69,15 +69,16 @@ public final class TablesContext {
     
     private final Map<String, IdentifierValue> tableNameAliasMap = new HashMap<>();
     
-    public TablesContext(final SimpleTableSegment tableSegment, final DatabaseType databaseType) {
-        this(null == tableSegment ? Collections.emptyList() : Collections.singletonList(tableSegment), databaseType);
+    public TablesContext(final SimpleTableSegment tableSegment, final DatabaseType databaseType, final String currentDatabaseName) {
+        this(null == tableSegment ? Collections.emptyList() : Collections.singletonList(tableSegment), databaseType, currentDatabaseName);
     }
     
-    public TablesContext(final Collection<SimpleTableSegment> tables, final DatabaseType databaseType) {
-        this(tables, Collections.emptyMap(), databaseType);
+    public TablesContext(final Collection<SimpleTableSegment> tables, final DatabaseType databaseType, final String currentDatabaseName) {
+        this(tables, Collections.emptyMap(), databaseType, currentDatabaseName);
     }
     
-    public TablesContext(final Collection<? extends TableSegment> tables, final Map<Integer, SelectStatementContext> subqueryContexts, final DatabaseType databaseType) {
+    public TablesContext(final Collection<? extends TableSegment> tables, final Map<Integer, SelectStatementContext> subqueryContexts, final DatabaseType databaseType,
+                         final String currentDatabaseName) {
         if (tables.isEmpty()) {
             return;
         }
@@ -87,14 +88,19 @@ public final class TablesContext {
                 SimpleTableSegment simpleTableSegment = (SimpleTableSegment) each;
                 simpleTables.add(simpleTableSegment);
                 tableNames.add(simpleTableSegment.getTableName().getIdentifier().getValue());
-                simpleTableSegment.getOwner().ifPresent(optional -> schemaNames.add(optional.getIdentifier().getValue()));
-                findDatabaseName(simpleTableSegment, databaseType).ifPresent(databaseNames::add);
+                schemaNames.add(simpleTableSegment.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(getDefaultSchemaName(databaseType, currentDatabaseName)));
+                databaseNames.add(findDatabaseName(simpleTableSegment, databaseType).orElse(currentDatabaseName));
                 tableNameAliasMap.put(simpleTableSegment.getTableName().getIdentifier().getValue().toLowerCase(), each.getAlias().orElse(simpleTableSegment.getTableName().getIdentifier()));
             }
             if (each instanceof SubqueryTableSegment) {
                 subqueryTables.putAll(createSubqueryTables(subqueryContexts, (SubqueryTableSegment) each));
             }
         }
+    }
+    
+    private String getDefaultSchemaName(final DatabaseType databaseType, final String currentDatabaseName) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        return dialectDatabaseMetaData.getDefaultSchema().orElse(currentDatabaseName);
     }
     
     private Optional<String> findDatabaseName(final SimpleTableSegment tableSegment, final DatabaseType databaseType) {
