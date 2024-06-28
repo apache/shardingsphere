@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -105,7 +105,7 @@ class ShardingCreateTableStatementValidatorTest {
     }
     
     private void assertPreValidateCreateTable(final CreateTableStatement sqlStatement, final String schemaName) {
-        SQLStatementContext sqlStatementContext = new CreateTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
+        SQLStatementContext sqlStatementContext = new CreateTableStatementContext(sqlStatement, "sharding_db");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("sharding_db");
         when(database.getSchema(schemaName).containsTable("t_order")).thenReturn(true);

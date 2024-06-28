@@ -82,7 +82,7 @@ class ShardingDropTableStatementValidatorTest {
     void assertPreValidateDropTableForMySQL() {
         MySQLDropTableStatement sqlStatement = new MySQLDropTableStatement(false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
-        SQLStatementContext sqlStatementContext = new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
+        SQLStatementContext sqlStatementContext = new DropTableStatementContext(sqlStatement, "db_schema");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db_schema");
         when(database.getSchema("db_schema").containsTable("t_order_item")).thenReturn(true);
