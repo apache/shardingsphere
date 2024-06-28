@@ -44,15 +44,15 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         if (sqlStatementContext instanceof RemoveAvailable) {
             containsRemoveSegment = !((RemoveAvailable) sqlStatementContext).getRemoveSegments().isEmpty();
         }
-        boolean containsSchemaName = false;
+        boolean containsDatabaseName = false;
         if (sqlStatementContext instanceof TableAvailable) {
-            containsSchemaName = ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().isPresent();
+            containsDatabaseName = ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().isPresent();
         }
         boolean containsIndexSegment = false;
         if (sqlStatementContext instanceof IndexAvailable) {
             containsIndexSegment = !((IndexAvailable) sqlStatementContext).getIndexes().isEmpty();
         }
-        return containsRemoveSegment || containsSchemaName || containsIndexSegment;
+        return containsRemoveSegment || containsDatabaseName || containsIndexSegment;
     }
     
     @Override
