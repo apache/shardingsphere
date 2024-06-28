@@ -46,7 +46,6 @@ public class ClusterDispatchEventSubscriberRegistry implements EventSubscriberRe
         eventBusContext = contextManager.getComputeNodeInstanceContext().getEventBusContext();
         repository = (ClusterPersistRepository) contextManager.getRepository();
         subscribers = Arrays.asList(new RuleItemChangedSubscriber(contextManager),
-                new ConfigurationChangedSubscriber(contextManager),
                 new ResourceMetaDataChangedSubscriber(contextManager),
                 new ListenerAssistedMetaDataChangedSubscriber(contextManager),
                 new StateChangedSubscriber(contextManager),
@@ -54,7 +53,10 @@ public class ClusterDispatchEventSubscriberRegistry implements EventSubscriberRe
                 new ProcessListChangedSubscriber(contextManager),
                 new CacheEvictedSubscriber(),
                 new ComputeNodeOnlineSubscriber(contextManager),
-                new QualifiedDataSourceSubscriber(contextManager));
+                new QualifiedDataSourceSubscriber(contextManager),
+                new StorageUnitEventSubscriber(contextManager),
+                new GlobalRuleConfigurationEventSubscriber(contextManager),
+                new PropertiesEventSubscriber(contextManager));
     }
     
     @Override
