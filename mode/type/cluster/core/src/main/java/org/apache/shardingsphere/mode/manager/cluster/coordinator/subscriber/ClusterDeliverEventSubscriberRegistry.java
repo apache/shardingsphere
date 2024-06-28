@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.subsciber.DeliverEventSubscriberRegistry;
  */
 public class ClusterDeliverEventSubscriberRegistry extends DeliverEventSubscriberRegistry {
     
-    public ClusterDeliverEventSubscriberRegistry(final ContextManager contextManager, final ClusterPersistRepository repository) {
-        super(contextManager, new InternalQualifiedDataSourceSubscriber(repository));
+    public ClusterDeliverEventSubscriberRegistry(final ContextManager contextManager) {
+        super(contextManager, new InternalQualifiedDataSourceSubscriber((ClusterPersistRepository) contextManager.getRepository()));
     }
 }

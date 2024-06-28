@@ -62,7 +62,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, computeNodeInstanceContext);
         ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
-        registerOnline(eventBusContext, computeNodeInstanceContext, repository, param, result);
+        registerOnline(eventBusContext, computeNodeInstanceContext, param, result);
         return result;
     }
     
@@ -77,12 +77,12 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void registerOnline(final EventBusContext eventBusContext, final ComputeNodeInstanceContext computeNodeInstanceContext,
-                                final ClusterPersistRepository repository, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
+                                final ContextManagerBuilderParameter param, final ContextManager contextManager) {
         contextManager.getPersistServiceFacade().getComputeNodePersistService().registerOnline(computeNodeInstanceContext.getInstance());
         watchDatabaseMetaDataListener(param, contextManager.getPersistServiceFacade().getMetaDataPersistService(), eventBusContext);
         contextManager.getComputeNodeInstanceContext().getAllClusterInstances().addAll(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllComputeNodeInstances());
-        new ClusterDeliverEventSubscriberRegistry(contextManager, repository).register();
-        new ClusterDispatchEventSubscriberRegistry(contextManager, repository).register();
+        new ClusterDeliverEventSubscriberRegistry(contextManager).register();
+        new ClusterDispatchEventSubscriberRegistry(contextManager).register();
     }
     
     private void watchDatabaseMetaDataListener(final ContextManagerBuilderParameter param, final MetaDataPersistService metaDataPersistService, final EventBusContext eventBusContext) {
