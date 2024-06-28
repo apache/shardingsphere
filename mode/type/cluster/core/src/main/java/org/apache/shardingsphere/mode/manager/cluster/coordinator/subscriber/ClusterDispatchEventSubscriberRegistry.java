@@ -51,7 +51,7 @@ public class ClusterDispatchEventSubscriberRegistry implements EventSubscriberRe
                 new ListenerAssistedMetaDataChangedSubscriber(contextManager),
                 new StateChangedSubscriber(contextManager),
                 new DatabaseChangedSubscriber(contextManager),
-                new ProcessListChangedSubscriber(contextManager, repository),
+                new ProcessListChangedSubscriber(contextManager),
                 new CacheEvictedSubscriber(),
                 new ComputeNodeOnlineSubscriber(contextManager),
                 new QualifiedDataSourceSubscriber(contextManager));
