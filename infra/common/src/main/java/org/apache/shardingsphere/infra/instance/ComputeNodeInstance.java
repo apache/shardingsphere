@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -48,7 +47,7 @@ public final class ComputeNodeInstance {
     
     public ComputeNodeInstance(final InstanceMetaData metaData, final Collection<String> labels) {
         this.metaData = metaData;
-        Optional.ofNullable(labels).ifPresent(this.labels::addAll);
+        this.labels.addAll(labels);
     }
     
     /**
