@@ -59,8 +59,7 @@ public final class DatabaseTypeEngine {
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
         }
-        Collection<DataSource> dataSources = databaseConfig.getStorageUnits().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)).values();
+        Collection<DataSource> dataSources = getDataSources(databaseConfig).values();
         return dataSources.isEmpty() ? getDefaultStorageType() : getStorageType(dataSources.iterator().next());
     }
     
@@ -88,11 +87,14 @@ public final class DatabaseTypeEngine {
     private static Map<String, DataSource> getDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSource> result = new LinkedHashMap<>();
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
-            Map<String, DataSource> dataSources = entry.getValue().getStorageUnits().entrySet().stream()
-                    .collect(Collectors.toMap(Entry::getKey, storageUnit -> storageUnit.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-            result.putAll(dataSources);
+            result.putAll(getDataSources(entry.getValue()));
         }
         return result;
+    }
+    
+    private static Map<String, DataSource> getDataSources(final DatabaseConfiguration databaseConfig) {
+        return databaseConfig.getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
@@ -103,8 +105,7 @@ public final class DatabaseTypeEngine {
      */
     public static Map<String, DatabaseType> getStorageTypes(final DatabaseConfiguration databaseConfig) {
         Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getStorageUnits().size(), 1F);
-        Map<String, DataSource> dataSources = databaseConfig.getStorageUnits().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        Map<String, DataSource> dataSources = getDataSources(databaseConfig);
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {
             result.put(entry.getKey(), getStorageType(entry.getValue()));
         }
