@@ -39,15 +39,17 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.plugins.MemberAccessor;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -73,19 +75,21 @@ class ProcessListChangedSubscriberTest {
     private ContextManager contextManager;
     
     @Mock
-    private ClusterPersistRepository repository;
+    private PersistRepository repository;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
     @BeforeEach
-    void setUp() throws SQLException {
+    void setUp() throws SQLException, NoSuchFieldException, IllegalAccessException {
         EventBusContext eventBusContext = new EventBusContext();
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter(), eventBusContext);
         contextManager.renewMetaDataContexts(MetaDataContextsFactory.create(contextManager.getPersistServiceFacade().getMetaDataPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalResourceMetaData(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
                 new ConfigurationProperties(new Properties()))));
-        subscriber = new ProcessListChangedSubscriber(contextManager, repository);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(contextManager.getClass().getDeclaredField("repository"), contextManager, repository);
+        subscriber = new ProcessListChangedSubscriber(contextManager);
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {

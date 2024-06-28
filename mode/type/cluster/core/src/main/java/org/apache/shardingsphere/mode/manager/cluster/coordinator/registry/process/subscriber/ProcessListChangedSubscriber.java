@@ -32,23 +32,19 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillLocalProcessEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesEvent;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 
 /**
- * TODO replace the old ProcessListChangedSubscriber after meta data refactor completed
- * New process list changed subscriber.
+ * Process list changed subscriber.
  */
 @SuppressWarnings("unused")
 @RequiredArgsConstructor
 public final class ProcessListChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
-    
-    private final ClusterPersistRepository repository;
     
     private final YamlProcessListSwapper swapper = new YamlProcessListSwapper();
     
@@ -64,10 +60,10 @@ public final class ProcessListChangedSubscriber implements EventSubscriber {
         }
         Collection<Process> processes = ProcessRegistry.getInstance().listAll();
         if (!processes.isEmpty()) {
-            repository.persist(
+            contextManager.getRepository().persist(
                     ProcessNode.getProcessListInstancePath(event.getTaskId(), event.getInstanceId()), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
         }
-        repository.delete(ComputeNode.getProcessTriggerInstanceNodePath(event.getInstanceId(), event.getTaskId()));
+        contextManager.getRepository().delete(ComputeNode.getProcessTriggerInstanceNodePath(event.getInstanceId(), event.getTaskId()));
     }
     
     /**
@@ -98,7 +94,7 @@ public final class ProcessListChangedSubscriber implements EventSubscriber {
                 each.cancel();
             }
         }
-        repository.delete(ComputeNode.getProcessKillInstanceIdNodePath(event.getInstanceId(), event.getProcessId()));
+        contextManager.getRepository().delete(ComputeNode.getProcessKillInstanceIdNodePath(event.getInstanceId(), event.getProcessId()));
     }
     
     /**
