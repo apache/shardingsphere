@@ -40,6 +40,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Single rule configuration decorator.
@@ -78,6 +79,35 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         return splitTables.stream().anyMatch(each -> each.contains(SingleTableConstants.ASTERISK));
     }
     
+    private void checkRuleConfiguration(final String databaseName, final Map<String, DataSource> dataSources, final Collection<String> excludedTables, final Collection<DataNode> dataNodes) {
+        for (DataNode each : dataNodes) {
+            if (!SingleTableConstants.ASTERISK.equals(each.getDataSourceName())) {
+                ShardingSpherePreconditions.checkContainsKey(dataSources, each.getDataSourceName(),
+                        () -> new InvalidSingleRuleConfigurationException(String.format("Data source `%s` does not exist in database `%s`", each.getDataSourceName(), databaseName)));
+            }
+            ShardingSpherePreconditions.checkNotContains(excludedTables, each.getTableName(),
+                    () -> new InvalidSingleRuleConfigurationException(String.format("Table `%s` existed and is not a single table in database `%s`", each.getTableName(), databaseName)));
+        }
+    }
+    
+    private Collection<String> loadAllTables(final boolean isSchemaSupportedDatabaseType, final Map<String, Collection<DataNode>> actualDataNodes) {
+        return actualDataNodes.values().stream().map(each -> getTableNodeString(isSchemaSupportedDatabaseType, each.iterator().next())).collect(Collectors.toList());
+    }
+    
+    private String getTableNodeString(final boolean isSchemaSupportedDatabaseType, final DataNode dataNode) {
+        return isSchemaSupportedDatabaseType
+                ? formatTableName(dataNode.getDataSourceName(), dataNode.getSchemaName(), dataNode.getTableName())
+                : formatTableName(dataNode.getDataSourceName(), dataNode.getTableName());
+    }
+    
+    private String formatTableName(final String dataSourceName, final String schemaName, final String tableName) {
+        return String.format("%s.%s.%s", dataSourceName, schemaName, tableName);
+    }
+    
+    private String formatTableName(final String dataSourceName, final String tableName) {
+        return String.format("%s.%s", dataSourceName, tableName);
+    }
+    
     private Collection<String> loadSpecifiedTables(final boolean isSchemaSupportedDatabaseType, final Map<String, Collection<DataNode>> actualDataNodes,
                                                    final Collection<ShardingSphereRule> builtRules, final Collection<DataNode> configuredDataNodes) {
         Collection<String> expandRequiredDataSources = new LinkedHashSet<>(configuredDataNodes.size(), 1F);
@@ -89,11 +119,10 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
                 expectedDataNodes.put(each.getTableName(), each);
             }
         }
-        if (expandRequiredDataSources.isEmpty()) {
-            return loadSpecifiedTablesWithoutExpand(isSchemaSupportedDatabaseType, actualDataNodes, configuredDataNodes);
-        }
-        Collection<String> featureRequiredSingleTables = SingleTableLoadUtils.getFeatureRequiredSingleTables(builtRules);
-        return loadSpecifiedTablesWithExpand(isSchemaSupportedDatabaseType, actualDataNodes, featureRequiredSingleTables, expandRequiredDataSources, expectedDataNodes);
+        return expandRequiredDataSources.isEmpty()
+                ? loadSpecifiedTablesWithoutExpand(isSchemaSupportedDatabaseType, actualDataNodes, configuredDataNodes)
+                : loadSpecifiedTablesWithExpand(
+                        isSchemaSupportedDatabaseType, actualDataNodes, SingleTableLoadUtils.getFeatureRequiredSingleTables(builtRules), expandRequiredDataSources, expectedDataNodes);
     }
     
     private Collection<String> loadSpecifiedTablesWithExpand(final boolean isSchemaSupportedDatabaseType, final Map<String, Collection<DataNode>> actualDataNodes,
@@ -121,52 +150,18 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         return result;
     }
     
-    private Collection<String> loadSpecifiedTablesWithoutExpand(final boolean isSchemaSupportedDatabaseType, final Map<String, Collection<DataNode>> actualDataNodes,
-                                                                final Collection<DataNode> configuredDataNodes) {
+    private Collection<String> loadSpecifiedTablesWithoutExpand(final boolean isSchemaSupportedDatabaseType,
+                                                                final Map<String, Collection<DataNode>> actualDataNodes, final Collection<DataNode> configuredDataNodes) {
         Collection<String> result = new LinkedHashSet<>(configuredDataNodes.size(), 1F);
         for (DataNode each : configuredDataNodes) {
             ShardingSpherePreconditions.checkContainsKey(actualDataNodes, each.getTableName(), () -> new SingleTableNotFoundException(getTableNodeString(isSchemaSupportedDatabaseType, each)));
             DataNode actualDataNode = actualDataNodes.get(each.getTableName()).iterator().next();
             String tableNodeStr = getTableNodeString(isSchemaSupportedDatabaseType, actualDataNode);
-            ShardingSpherePreconditions.checkState(actualDataNode.equals(each),
-                    () -> new InvalidSingleRuleConfigurationException(String.format("Single table '%s' is found that does not match %s", tableNodeStr,
-                            getTableNodeString(isSchemaSupportedDatabaseType, each))));
+            ShardingSpherePreconditions.checkState(actualDataNode.equals(each), () -> new InvalidSingleRuleConfigurationException(
+                    String.format("Single table '%s' is found that does not match %s", tableNodeStr, getTableNodeString(isSchemaSupportedDatabaseType, each))));
             result.add(tableNodeStr);
         }
         return result;
-    }
-    
-    private Collection<String> loadAllTables(final boolean isSchemaSupportedDatabaseType, final Map<String, Collection<DataNode>> actualDataNodes) {
-        Collection<String> result = new LinkedList<>();
-        for (Entry<String, Collection<DataNode>> entry : actualDataNodes.entrySet()) {
-            result.add(getTableNodeString(isSchemaSupportedDatabaseType, entry.getValue().iterator().next()));
-        }
-        return result;
-    }
-    
-    private String getTableNodeString(final boolean isSchemaSupportedDatabaseType, final DataNode dataNode) {
-        return isSchemaSupportedDatabaseType
-                ? formatTableName(dataNode.getDataSourceName(), dataNode.getSchemaName(), dataNode.getTableName())
-                : formatTableName(dataNode.getDataSourceName(), dataNode.getTableName());
-    }
-    
-    private void checkRuleConfiguration(final String databaseName, final Map<String, DataSource> dataSources, final Collection<String> excludedTables, final Collection<DataNode> dataNodes) {
-        for (DataNode each : dataNodes) {
-            if (!SingleTableConstants.ASTERISK.equals(each.getDataSourceName())) {
-                ShardingSpherePreconditions.checkContainsKey(dataSources, each.getDataSourceName(),
-                        () -> new InvalidSingleRuleConfigurationException(String.format("Data source `%s` does not exist in database `%s`", each.getDataSourceName(), databaseName)));
-            }
-            ShardingSpherePreconditions.checkNotContains(excludedTables, each.getTableName(),
-                    () -> new InvalidSingleRuleConfigurationException(String.format("Table `%s` existed and is not a single table in database `%s`", each.getTableName(), databaseName)));
-        }
-    }
-    
-    private String formatTableName(final String dataSourceName, final String tableName) {
-        return String.format("%s.%s", dataSourceName, tableName);
-    }
-    
-    private String formatTableName(final String dataSourceName, final String schemaName, final String tableName) {
-        return String.format("%s.%s.%s", dataSourceName, schemaName, tableName);
     }
     
     @Override
