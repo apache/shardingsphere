@@ -174,7 +174,8 @@ public final class MetaDataContextsFactory {
     }
     
     private static void persistDatabaseConfigurations(final MetaDataContexts metadataContexts, final ContextManagerBuilderParameter param, final MetaDataPersistService persistService) {
-        persistService.persistGlobalRuleConfiguration(param.getGlobalRuleConfigs(), param.getProps());
+        Collection<RuleConfiguration> globalRuleConfigs = param.getGlobalRuleConfigs();
+        persistService.persistGlobalRuleConfiguration(globalRuleConfigs, param.getProps());
         for (Entry<String, ? extends DatabaseConfiguration> entry : param.getDatabaseConfigs().entrySet()) {
             String databaseName = entry.getKey();
             persistService.persistConfigurations(entry.getKey(), entry.getValue(),
