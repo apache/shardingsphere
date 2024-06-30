@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -81,7 +82,7 @@ class ShardingDropTableStatementValidatorTest {
     void assertPreValidateDropTableForMySQL() {
         MySQLDropTableStatement sqlStatement = new MySQLDropTableStatement(false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
-        SQLStatementContext sqlStatementContext = new DropTableStatementContext(sqlStatement);
+        SQLStatementContext sqlStatementContext = new DropTableStatementContext(sqlStatement, "db_schema");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db_schema");
         when(database.getSchema("db_schema").containsTable("t_order_item")).thenReturn(true);
@@ -97,7 +98,7 @@ class ShardingDropTableStatementValidatorTest {
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         assertThrows(InUsedTablesException.class,
-                () -> validator.postValidate(shardingRule, new DropTableStatementContext(sqlStatement), new HintValueContext(), Collections.emptyList(), database,
+                () -> validator.postValidate(shardingRule, new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(), Collections.emptyList(), database,
                         mock(ConfigurationProperties.class), routeContext));
     }
     
@@ -131,7 +132,7 @@ class ShardingDropTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singleton(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         assertDoesNotThrow(() -> new ShardingDropTableStatementValidator().postValidate(
-                shardingRule, new DropTableStatementContext(sqlStatement), new HintValueContext(), Collections.emptyList(),
+                shardingRule, new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(), Collections.emptyList(),
                 mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext));
     }
     
@@ -145,7 +146,7 @@ class ShardingDropTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singleton(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         assertThrows(ShardingDDLRouteException.class,
-                () -> new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement), new HintValueContext(),
+                () -> new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(),
                         Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext));
     }
     
@@ -159,7 +160,7 @@ class ShardingDropTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singleton(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         assertDoesNotThrow(() -> new ShardingDropTableStatementValidator().postValidate(
-                shardingRule, new DropTableStatementContext(sqlStatement), new HintValueContext(),
+                shardingRule, new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(),
                 Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext));
     }
 }

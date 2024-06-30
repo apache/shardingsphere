@@ -112,15 +112,15 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private PaginationContext paginationContext;
     
-    public SelectStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final SelectStatement sqlStatement, final String currentDatabaseName,
-                                  final Collection<TableSegment> inheritedTables) {
+    public SelectStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final SelectStatement sqlStatement,
+                                  final String currentDatabaseName, final Collection<TableSegment> inheritedTables) {
         super(sqlStatement);
         extractWhereSegments(whereSegments, sqlStatement);
         ColumnExtractUtils.extractColumnSegments(columnSegments, whereSegments);
         Collection<TableSegment> tableSegments = getAllTableSegments(inheritedTables);
         ExpressionExtractUtils.extractJoinConditions(joinConditions, whereSegments);
         subqueryContexts = createSubqueryContexts(metaData, params, currentDatabaseName, tableSegments);
-        tablesContext = new TablesContext(tableSegments, subqueryContexts, getDatabaseType());
+        tablesContext = new TablesContext(tableSegments, subqueryContexts, getDatabaseType(), currentDatabaseName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(getDatabaseType()).createProjectionsContext(getSqlStatement().getProjections(), groupByContext, orderByContext);

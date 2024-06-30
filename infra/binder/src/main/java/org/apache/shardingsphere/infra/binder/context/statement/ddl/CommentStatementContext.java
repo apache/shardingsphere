@@ -33,9 +33,9 @@ public final class CommentStatementContext extends CommonSQLStatementContext imp
     
     private final TablesContext tablesContext;
     
-    public CommentStatementContext(final CommentStatement sqlStatement) {
+    public CommentStatementContext(final CommentStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(null == sqlStatement.getTable() ? Collections.emptyList() : Collections.singletonList(sqlStatement.getTable()), getDatabaseType());
+        tablesContext = new TablesContext(null == sqlStatement.getTable() ? Collections.emptyList() : Collections.singletonList(sqlStatement.getTable()), getDatabaseType(), currentDatabaseName);
     }
     
     @Override

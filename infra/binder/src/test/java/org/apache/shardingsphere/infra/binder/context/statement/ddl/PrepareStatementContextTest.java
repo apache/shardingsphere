@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -66,7 +67,7 @@ class PrepareStatementContextTest {
         when(prepareStatement.getInsert()).thenReturn(Optional.of(getInsert()));
         when(prepareStatement.getUpdate()).thenReturn(Optional.of(getUpdate()));
         when(prepareStatement.getDelete()).thenReturn(Optional.of(getDelete()));
-        PrepareStatementContext actual = new PrepareStatementContext(prepareStatement);
+        PrepareStatementContext actual = new PrepareStatementContext(prepareStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(prepareStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),

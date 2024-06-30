@@ -228,19 +228,19 @@ class ProxySQLExecutorTest {
     private CreateTableStatementContext createMySQLCreateTableStatementContext() {
         MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return new CreateTableStatementContext(sqlStatement);
+        return new CreateTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     private TruncateStatementContext createMySQLTruncateStatementContext() {
         MySQLTruncateStatement sqlStatement = new MySQLTruncateStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return new TruncateStatementContext(sqlStatement);
+        return new TruncateStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     private SQLStatementContext createPostgreSQLTruncateStatementContext() {
         PostgreSQLTruncateStatement sqlStatement = new PostgreSQLTruncateStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return new TruncateStatementContext(sqlStatement);
+        return new TruncateStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     private CursorStatementContext createCursorStatementContext() {
@@ -280,7 +280,7 @@ class ProxySQLExecutorTest {
     private CreateTableStatementContext createPostgreSQLCreateTableStatementContext() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return new CreateTableStatementContext(sqlStatement);
+        return new CreateTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     private InsertStatementContext createPostgreSQLInsertStatementContext() {

@@ -39,10 +39,10 @@ public final class AlterIndexStatementContext extends CommonSQLStatementContext 
     
     private final TablesContext tablesContext;
     
-    public AlterIndexStatementContext(final AlterIndexStatement sqlStatement) {
+    public AlterIndexStatementContext(final AlterIndexStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
         SimpleTableSegment simpleTableSegment = sqlStatement.getSimpleTable().orElse(null);
-        tablesContext = new TablesContext(simpleTableSegment, getDatabaseType());
+        tablesContext = new TablesContext(simpleTableSegment, getDatabaseType(), currentDatabaseName);
     }
     
     @Override

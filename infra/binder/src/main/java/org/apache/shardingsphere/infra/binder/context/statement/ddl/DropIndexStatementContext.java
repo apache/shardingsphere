@@ -38,10 +38,10 @@ public final class DropIndexStatementContext extends CommonSQLStatementContext i
     
     private final TablesContext tablesContext;
     
-    public DropIndexStatementContext(final DropIndexStatement sqlStatement) {
+    public DropIndexStatementContext(final DropIndexStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
         SimpleTableSegment simpleTableSegment = sqlStatement.getSimpleTable().orElse(null);
-        tablesContext = new TablesContext(simpleTableSegment, getDatabaseType());
+        tablesContext = new TablesContext(simpleTableSegment, getDatabaseType(), currentDatabaseName);
     }
     
     @Override

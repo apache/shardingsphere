@@ -292,13 +292,13 @@ class ShardingInsertStatementValidatorTest {
     private TablesContext createSingleTablesContext() {
         List<SimpleTableSegment> result = new LinkedList<>();
         result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
-        return new TablesContext(result, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        return new TablesContext(result, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), DefaultDatabase.LOGIC_NAME);
     }
     
     private TablesContext createMultiTablesContext() {
         List<SimpleTableSegment> result = new LinkedList<>();
         result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
-        return new TablesContext(result, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        return new TablesContext(result, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), DefaultDatabase.LOGIC_NAME);
     }
 }

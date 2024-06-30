@@ -139,10 +139,10 @@ public final class SQLStatementContextFactory {
             return getDDLStatementContext(metaData, params, (DDLStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DCLStatement) {
-            return getDCLStatementContext((DCLStatement) sqlStatement);
+            return getDCLStatementContext((DCLStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DALStatement) {
-            return getDALStatementContext((DALStatement) sqlStatement);
+            return getDALStatementContext((DALStatement) sqlStatement, currentDatabaseName);
         }
         return new UnknownSQLStatementContext(sqlStatement);
     }
@@ -153,10 +153,10 @@ public final class SQLStatementContextFactory {
             return new SelectStatementContext(metaData, params, (SelectStatement) sqlStatement, currentDatabaseName, Collections.emptyList());
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return new UpdateStatementContext((UpdateStatement) sqlStatement);
+            return new UpdateStatementContext((UpdateStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DeleteStatement) {
-            return new DeleteStatementContext((DeleteStatement) sqlStatement);
+            return new DeleteStatementContext((DeleteStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof InsertStatement) {
             return new InsertStatementContext(metaData, params, (InsertStatement) sqlStatement, currentDatabaseName);
@@ -165,16 +165,16 @@ public final class SQLStatementContextFactory {
             return new CallStatementContext((CallStatement) sqlStatement);
         }
         if (sqlStatement instanceof CopyStatement) {
-            return new CopyStatementContext((CopyStatement) sqlStatement);
+            return new CopyStatementContext((CopyStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DoStatement) {
             return new DoStatementContext((DoStatement) sqlStatement);
         }
         if (sqlStatement instanceof LoadDataStatement) {
-            return new LoadDataStatementContext((LoadDataStatement) sqlStatement);
+            return new LoadDataStatementContext((LoadDataStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof LoadXMLStatement) {
-            return new LoadXMLStatementContext((LoadXMLStatement) sqlStatement);
+            return new LoadXMLStatementContext((LoadXMLStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof MergeStatement) {
             return new MergeStatementContext((MergeStatement) sqlStatement);
@@ -188,87 +188,87 @@ public final class SQLStatementContextFactory {
             return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
         }
         if (sqlStatement instanceof CreateTableStatement) {
-            return new CreateTableStatementContext((CreateTableStatement) sqlStatement);
+            return new CreateTableStatementContext((CreateTableStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof AlterTableStatement) {
-            return new AlterTableStatementContext((AlterTableStatement) sqlStatement);
+            return new AlterTableStatementContext((AlterTableStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof RenameTableStatement) {
-            return new RenameTableStatementContext((RenameTableStatement) sqlStatement);
+            return new RenameTableStatementContext((RenameTableStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DropTableStatement) {
-            return new DropTableStatementContext((DropTableStatement) sqlStatement);
+            return new DropTableStatementContext((DropTableStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof CreateIndexStatement) {
-            return new CreateIndexStatementContext((CreateIndexStatement) sqlStatement);
+            return new CreateIndexStatementContext((CreateIndexStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof AlterIndexStatement) {
-            return new AlterIndexStatementContext((AlterIndexStatement) sqlStatement);
+            return new AlterIndexStatementContext((AlterIndexStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DropIndexStatement) {
-            return new DropIndexStatementContext((DropIndexStatement) sqlStatement);
+            return new DropIndexStatementContext((DropIndexStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof TruncateStatement) {
-            return new TruncateStatementContext((TruncateStatement) sqlStatement);
+            return new TruncateStatementContext((TruncateStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof CreateFunctionStatement) {
-            return new CreateFunctionStatementContext((CreateFunctionStatement) sqlStatement);
+            return new CreateFunctionStatementContext((CreateFunctionStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof CreateProcedureStatement) {
-            return new CreateProcedureStatementContext((CreateProcedureStatement) sqlStatement);
+            return new CreateProcedureStatementContext((CreateProcedureStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof CreateViewStatement) {
-            return new CreateViewStatementContext((CreateViewStatement) sqlStatement);
+            return new CreateViewStatementContext((CreateViewStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof AlterViewStatement) {
-            return new AlterViewStatementContext((AlterViewStatement) sqlStatement);
+            return new AlterViewStatementContext((AlterViewStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DropViewStatement) {
-            return new DropViewStatementContext((DropViewStatement) sqlStatement);
+            return new DropViewStatementContext((DropViewStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof PrepareStatement) {
-            return new PrepareStatementContext((PrepareStatement) sqlStatement);
+            return new PrepareStatementContext((PrepareStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof CommentStatement) {
-            return new CommentStatementContext((CommentStatement) sqlStatement);
+            return new CommentStatementContext((CommentStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof CursorStatement) {
             return new CursorStatementContext(metaData, params, (CursorStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof CloseStatement) {
-            return new CloseStatementContext((CloseStatement) sqlStatement);
+            return new CloseStatementContext((CloseStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof MoveStatement) {
-            return new MoveStatementContext((MoveStatement) sqlStatement);
+            return new MoveStatementContext((MoveStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof FetchStatement) {
-            return new FetchStatementContext((FetchStatement) sqlStatement);
+            return new FetchStatementContext((FetchStatement) sqlStatement, currentDatabaseName);
         }
         return new UnknownSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDCLStatementContext(final DCLStatement sqlStatement) {
+    private static SQLStatementContext getDCLStatementContext(final DCLStatement sqlStatement, final String currentDatabaseName) {
         if (sqlStatement instanceof GrantStatement) {
-            return new GrantStatementContext((GrantStatement) sqlStatement);
+            return new GrantStatementContext((GrantStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof RevokeStatement) {
-            return new RevokeStatementContext((RevokeStatement) sqlStatement);
+            return new RevokeStatementContext((RevokeStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DenyUserStatement) {
-            return new DenyUserStatementContext((DenyUserStatement) sqlStatement);
+            return new DenyUserStatementContext((DenyUserStatement) sqlStatement, currentDatabaseName);
         }
         return new UnknownSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDALStatementContext(final DALStatement sqlStatement) {
+    private static SQLStatementContext getDALStatementContext(final DALStatement sqlStatement, final String currentDatabaseName) {
         if (sqlStatement instanceof ExplainStatement) {
-            return new ExplainStatementContext((ExplainStatement) sqlStatement);
+            return new ExplainStatementContext((ExplainStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof ShowCreateTableStatement) {
-            return new ShowCreateTableStatementContext((ShowCreateTableStatement) sqlStatement);
+            return new ShowCreateTableStatementContext((ShowCreateTableStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof ShowColumnsStatement) {
-            return new ShowColumnsStatementContext((ShowColumnsStatement) sqlStatement);
+            return new ShowColumnsStatementContext((ShowColumnsStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof ShowTablesStatement) {
             return new ShowTablesStatementContext((ShowTablesStatement) sqlStatement);
@@ -277,16 +277,16 @@ public final class SQLStatementContextFactory {
             return new ShowTableStatusStatementContext((ShowTableStatusStatement) sqlStatement);
         }
         if (sqlStatement instanceof ShowIndexStatement) {
-            return new ShowIndexStatementContext((ShowIndexStatement) sqlStatement);
+            return new ShowIndexStatementContext((ShowIndexStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof AnalyzeTableStatement) {
-            return new AnalyzeTableStatementContext((AnalyzeTableStatement) sqlStatement);
+            return new AnalyzeTableStatementContext((AnalyzeTableStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof FlushStatement) {
-            return new FlushStatementContext((FlushStatement) sqlStatement);
+            return new FlushStatementContext((FlushStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof OptimizeTableStatement) {
-            return new OptimizeTableStatementContext((OptimizeTableStatement) sqlStatement);
+            return new OptimizeTableStatementContext((OptimizeTableStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof KillStatement) {
             return new KillStatementContext((KillStatement) sqlStatement);
