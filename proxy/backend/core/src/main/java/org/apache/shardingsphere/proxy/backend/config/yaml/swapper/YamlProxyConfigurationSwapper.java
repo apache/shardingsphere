@@ -34,9 +34,11 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfig
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -63,7 +65,8 @@ public final class YamlProxyConfigurationSwapper {
     private ProxyGlobalConfiguration swapGlobalConfiguration(final YamlProxyServerConfiguration yamlConfig) {
         Map<String, DataSource> dataSources = swapDataSources(yamlConfig.getDataSources());
         Collection<RuleConfiguration> ruleConfigs = ruleConfigSwapperEngine.swapToRuleConfigurations(yamlConfig.getRules());
-        return new ProxyGlobalConfiguration(dataSources, ruleConfigs, yamlConfig.getProps(), yamlConfig.getLabels());
+        return new ProxyGlobalConfiguration(dataSources, ruleConfigs,
+                null == yamlConfig.getProps() ? new Properties() : yamlConfig.getProps(), null == yamlConfig.getLabels() ? Collections.emptyList() : yamlConfig.getLabels());
     }
     
     private Map<String, DataSource> swapDataSources(final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceConfigs) {

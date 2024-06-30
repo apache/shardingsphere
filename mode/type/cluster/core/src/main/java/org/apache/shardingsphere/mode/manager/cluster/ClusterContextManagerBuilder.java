@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -55,7 +54,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     public ContextManager build(final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) throws SQLException {
         ModeConfiguration modeConfig = param.getModeConfiguration();
         ClusterPersistRepositoryConfiguration config = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
-        ComputeNodeInstanceContext computeNodeInstanceContext = buildComputeNodeInstanceContext(modeConfig, param.getInstanceMetaData(), eventBusContext, param.getLabels());
+        ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(param.getInstanceMetaData(), param.getLabels()), modeConfig, eventBusContext);
         ClusterPersistRepository repository = getClusterPersistRepository(config);
         repository.init(config, computeNodeInstanceContext);
         computeNodeInstanceContext.init(new ClusterWorkerIdGenerator(repository, param.getInstanceMetaData().getId()), new GlobalLockContext(new GlobalLockPersistService(repository)));
@@ -69,11 +68,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private ClusterPersistRepository getClusterPersistRepository(final ClusterPersistRepositoryConfiguration config) {
         ShardingSpherePreconditions.checkNotNull(config, MissingRequiredClusterRepositoryConfigurationException::new);
         return TypedSPILoader.getService(ClusterPersistRepository.class, config.getType(), config.getProps());
-    }
-    
-    private ComputeNodeInstanceContext buildComputeNodeInstanceContext(final ModeConfiguration modeConfig, final InstanceMetaData instanceMetaData,
-                                                                       final EventBusContext eventBusContext, final Collection<String> labels) {
-        return new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData, labels), modeConfig, eventBusContext);
     }
     
     private void registerOnline(final EventBusContext eventBusContext, final ComputeNodeInstanceContext computeNodeInstanceContext,

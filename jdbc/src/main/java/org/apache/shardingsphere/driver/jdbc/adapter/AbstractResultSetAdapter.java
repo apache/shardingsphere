@@ -77,17 +77,6 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     }
     
     @Override
-    public final void close() throws SQLException {
-        closed = true;
-        forceExecuteTemplate.execute(resultSets, ResultSet::close);
-    }
-    
-    @Override
-    public final boolean isClosed() {
-        return closed;
-    }
-    
-    @Override
     public final void setFetchDirection(final int direction) throws SQLException {
         forceExecuteTemplate.execute(resultSets, resultSet -> resultSet.setFetchDirection(direction));
     }
@@ -125,5 +114,16 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     @Override
     public final void clearWarnings() throws SQLException {
         forceExecuteTemplate.execute(resultSets, ResultSet::clearWarnings);
+    }
+    
+    @Override
+    public final boolean isClosed() {
+        return closed;
+    }
+    
+    @Override
+    public final void close() throws SQLException {
+        closed = true;
+        forceExecuteTemplate.execute(resultSets, ResultSet::close);
     }
 }

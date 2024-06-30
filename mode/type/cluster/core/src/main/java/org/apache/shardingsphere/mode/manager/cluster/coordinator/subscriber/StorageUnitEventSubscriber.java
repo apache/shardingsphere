@@ -20,19 +20,16 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.event.config.AlterGlobalRuleConfigurationEvent;
-import org.apache.shardingsphere.mode.event.config.AlterPropertiesEvent;
 import org.apache.shardingsphere.mode.event.datasource.unit.AlterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.datasource.unit.RegisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.datasource.unit.UnregisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
- * Configuration changed subscriber.
+ * Storage unit event subscriber.
  */
 @RequiredArgsConstructor
-@SuppressWarnings("unused")
-public final class ConfigurationChangedSubscriber implements EventSubscriber {
+public final class StorageUnitEventSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
     
@@ -77,35 +74,5 @@ public final class ConfigurationChangedSubscriber implements EventSubscriber {
             return;
         }
         contextManager.getMetaDataContextManager().getConfigurationManager().unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
-    }
-    
-    /**
-     * Renew for global rule configuration.
-     *
-     * @param event global rule alter event
-     */
-    @Subscribe
-    public synchronized void renew(final AlterGlobalRuleConfigurationEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
-            return;
-        }
-        contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load(event.getRuleSimpleName())
-                .ifPresent(optional -> contextManager.getMetaDataContextManager().getConfigurationManager().alterGlobalRuleConfiguration(optional));
-        
-    }
-    
-    /**
-     * Renew for global properties.
-     *
-     * @param event global properties alter event
-     */
-    @Subscribe
-    public synchronized void renew(final AlterPropertiesEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
-            return;
-        }
-        contextManager.getMetaDataContextManager().getConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
     }
 }

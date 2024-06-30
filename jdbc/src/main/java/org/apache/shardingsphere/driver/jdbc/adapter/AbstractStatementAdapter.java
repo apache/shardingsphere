@@ -25,6 +25,7 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.sql.SQLException;
@@ -48,9 +49,9 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     private int fetchDirection;
     
-    private boolean closed;
-    
     private boolean closeOnCompletion;
+    
+    private boolean closed;
     
     protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData) {
         if (connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()) {
@@ -179,41 +180,34 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     }
     
     @Override
-    public final SQLWarning getWarnings() {
-        return null;
-    }
-    
-    @Override
-    public final void clearWarnings() {
-    }
-    
-    @Override
-    public void closeOnCompletion() {
-        closeOnCompletion = true;
-    }
-    
-    @Override
-    public boolean isCloseOnCompletion() {
+    public final boolean isCloseOnCompletion() {
         return closeOnCompletion;
     }
     
     @Override
-    public void setCursorName(final String name) throws SQLException {
-        if (isTransparent()) {
-            getRoutedStatements().iterator().next().setCursorName(name);
-        } else {
-            throw new SQLFeatureNotSupportedException("setCursorName");
-        }
+    public final void closeOnCompletion() {
+        closeOnCompletion = true;
     }
     
-    private boolean isTransparent() {
-        return 1 == getRoutedStatements().size();
+    @Override
+    public final void setCursorName(final String name) throws SQLException {
+        ShardingSpherePreconditions.checkState(1 == getRoutedStatements().size(), () -> new SQLFeatureNotSupportedException("setCursorName"));
+        getRoutedStatements().iterator().next().setCursorName(name);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void cancel() throws SQLException {
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::cancel);
+    }
+    
+    @Override
+    public final SQLWarning getWarnings() {
+        return null;
+    }
+    
+    @Override
+    public final void clearWarnings() {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
