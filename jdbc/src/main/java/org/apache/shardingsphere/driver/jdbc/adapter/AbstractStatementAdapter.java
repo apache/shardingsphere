@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.Collection;
@@ -49,8 +48,6 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     private int fetchDirection;
     
     private boolean closed;
-    
-    private boolean closeOnCompletion;
     
     protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData) {
         if (connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()) {
@@ -185,29 +182,6 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     @Override
     public final void clearWarnings() {
-    }
-    
-    @Override
-    public void closeOnCompletion() {
-        closeOnCompletion = true;
-    }
-    
-    @Override
-    public boolean isCloseOnCompletion() {
-        return closeOnCompletion;
-    }
-    
-    @Override
-    public void setCursorName(final String name) throws SQLException {
-        if (isTransparent()) {
-            getRoutedStatements().iterator().next().setCursorName(name);
-        } else {
-            throw new SQLFeatureNotSupportedException("setCursorName");
-        }
-    }
-    
-    private boolean isTransparent() {
-        return 1 == getRoutedStatements().size();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

@@ -24,9 +24,9 @@ import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecu
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
 import org.apache.shardingsphere.driver.executor.engine.DriverExecutorFacade;
 import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchStatementExecutor;
-import org.apache.shardingsphere.driver.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
+import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -63,7 +63,7 @@ import java.util.Optional;
  * ShardingSphere statement.
  */
 @HighFrequencyInvocation
-public final class ShardingSphereStatement extends AbstractStatementAdapter {
+public final class ShardingSphereStatement extends AbstractUnsupportedOperationStatement {
     
     @Getter
     private final ShardingSphereConnection connection;

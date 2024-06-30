@@ -128,4 +128,19 @@ public abstract class AbstractUnsupportedOperationPreparedStatement extends Abst
     public final boolean execute(final String sql, final String[] columnNames) throws SQLException {
         throw new SQLFeatureNotSupportedException("execute with SQL for PreparedStatement");
     }
+    
+    @Override
+    public final void closeOnCompletion() throws SQLException {
+        throw new SQLFeatureNotSupportedException("closeOnCompletion");
+    }
+    
+    @Override
+    public final boolean isCloseOnCompletion() throws SQLException {
+        throw new SQLFeatureNotSupportedException("isCloseOnCompletion");
+    }
+    
+    @Override
+    public final void setCursorName(final String name) throws SQLException {
+        throw new SQLFeatureNotSupportedException("setCursorName");
+    }
 }
