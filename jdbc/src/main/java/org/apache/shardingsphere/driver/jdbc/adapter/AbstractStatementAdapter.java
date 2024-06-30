@@ -180,22 +180,13 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     }
     
     @Override
-    public final SQLWarning getWarnings() {
-        return null;
-    }
-    
-    @Override
-    public final void clearWarnings() {
+    public final boolean isCloseOnCompletion() {
+        return closeOnCompletion;
     }
     
     @Override
     public final void closeOnCompletion() {
         closeOnCompletion = true;
-    }
-    
-    @Override
-    public final boolean isCloseOnCompletion() {
-        return closeOnCompletion;
     }
     
     @Override
@@ -208,6 +199,15 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     @Override
     public final void cancel() throws SQLException {
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::cancel);
+    }
+    
+    @Override
+    public final SQLWarning getWarnings() {
+        return null;
+    }
+    
+    @Override
+    public final void clearWarnings() {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
