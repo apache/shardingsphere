@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
@@ -61,14 +62,14 @@ class CreateIndexStatementContextTest {
     }
     
     private void assertNewInstance(final CreateIndexStatement createIndexStatement) {
-        CreateIndexStatementContext actual = new CreateIndexStatementContext(createIndexStatement);
+        CreateIndexStatementContext actual = new CreateIndexStatementContext(createIndexStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(createIndexStatement));
         assertTrue(actual.isGeneratedIndex());
         assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));
         assertThat(actual.getIndexes(), is(Collections.emptyList()));
         when(createIndexStatement.getIndex()).thenReturn(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("index_2"))));
-        CreateIndexStatementContext actual2 = new CreateIndexStatementContext(createIndexStatement);
+        CreateIndexStatementContext actual2 = new CreateIndexStatementContext(createIndexStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual2.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("index_2")));
     }
 }

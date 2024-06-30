@@ -31,9 +31,9 @@ public final class GrantStatementContext extends CommonSQLStatementContext imple
     
     private final TablesContext tablesContext;
     
-    public GrantStatementContext(final GrantStatement sqlStatement) {
+    public GrantStatementContext(final GrantStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
+        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType(), currentDatabaseName);
     }
     
     @Override

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dcl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevokeStatement;
@@ -74,7 +75,7 @@ class RevokeStatementContextTest {
         tables.add(table1);
         tables.add(table2);
         when(revokeStatement.getTables()).thenReturn(tables);
-        RevokeStatementContext actual = new RevokeStatementContext(revokeStatement);
+        RevokeStatementContext actual = new RevokeStatementContext(revokeStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(revokeStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));

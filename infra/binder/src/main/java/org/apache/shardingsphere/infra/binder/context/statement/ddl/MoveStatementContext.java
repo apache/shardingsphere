@@ -44,9 +44,9 @@ public final class MoveStatementContext extends CommonSQLStatementContext implem
     
     private TablesContext tablesContext;
     
-    public MoveStatementContext(final MoveStatement sqlStatement) {
+    public MoveStatementContext(final MoveStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(Collections.emptyList(), getDatabaseType());
+        tablesContext = new TablesContext(Collections.emptyList(), getDatabaseType(), currentDatabaseName);
     }
     
     @Override

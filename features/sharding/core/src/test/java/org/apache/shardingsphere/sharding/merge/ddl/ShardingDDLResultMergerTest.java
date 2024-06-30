@@ -83,7 +83,7 @@ class ShardingDDLResultMergerTest {
     
     private FetchStatementContext createFetchStatementContext(final ShardingSphereDatabase database) {
         OpenGaussFetchStatement fetchStatement = createFetchStatement();
-        FetchStatementContext result = new FetchStatementContext(fetchStatement);
+        FetchStatementContext result = new FetchStatementContext(fetchStatement, DefaultDatabase.LOGIC_NAME);
         CursorStatementContext cursorStatementContext = createCursorStatementContext(database);
         result.setUpCursorDefinition(cursorStatementContext);
         return result;

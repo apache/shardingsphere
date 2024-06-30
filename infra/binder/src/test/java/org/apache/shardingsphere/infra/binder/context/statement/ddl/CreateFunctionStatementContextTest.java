@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateFunctionStatement;
@@ -47,7 +48,7 @@ class CreateFunctionStatementContextTest {
     }
     
     private void assertNewInstance(final CreateFunctionStatement createDatabaseStatement) {
-        CreateFunctionStatementContext actual = new CreateFunctionStatementContext(createDatabaseStatement);
+        CreateFunctionStatementContext actual = new CreateFunctionStatementContext(createDatabaseStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(createDatabaseStatement));
     }

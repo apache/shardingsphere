@@ -44,9 +44,9 @@ public final class FetchStatementContext extends CommonSQLStatementContext imple
     
     private TablesContext tablesContext;
     
-    public FetchStatementContext(final FetchStatement sqlStatement) {
+    public FetchStatementContext(final FetchStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(Collections.emptyList(), getDatabaseType());
+        tablesContext = new TablesContext(Collections.emptyList(), getDatabaseType(), currentDatabaseName);
     }
     
     @Override

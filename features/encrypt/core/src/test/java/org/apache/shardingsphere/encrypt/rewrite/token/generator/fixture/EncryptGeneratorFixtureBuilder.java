@@ -168,7 +168,7 @@ public final class EncryptGeneratorFixtureBuilder {
         updateStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         updateStatement.setWhere(createWhereSegment());
         updateStatement.setSetAssignment(createSetAssignmentSegment());
-        return new UpdateStatementContext(updateStatement);
+        return new UpdateStatementContext(updateStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     private static WhereSegment createWhereSegment() {

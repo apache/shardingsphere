@@ -44,9 +44,9 @@ public final class CloseStatementContext extends CommonSQLStatementContext imple
     
     private TablesContext tablesContext;
     
-    public CloseStatementContext(final CloseStatement sqlStatement) {
+    public CloseStatementContext(final CloseStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(Collections.emptyList(), getDatabaseType());
+        tablesContext = new TablesContext(Collections.emptyList(), getDatabaseType(), currentDatabaseName);
     }
     
     @Override

@@ -48,9 +48,9 @@ public final class AlterTableStatementContext extends CommonSQLStatementContext 
     
     private final TablesContext tablesContext;
     
-    public AlterTableStatementContext(final AlterTableStatement sqlStatement) {
+    public AlterTableStatementContext(final AlterTableStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(getTables(sqlStatement), getDatabaseType());
+        tablesContext = new TablesContext(getTables(sqlStatement), getDatabaseType(), currentDatabaseName);
     }
     
     private Collection<SimpleTableSegment> getTables(final AlterTableStatement sqlStatement) {

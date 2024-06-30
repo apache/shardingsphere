@@ -31,9 +31,9 @@ public final class TruncateStatementContext extends CommonSQLStatementContext im
     
     private final TablesContext tablesContext;
     
-    public TruncateStatementContext(final TruncateStatement sqlStatement) {
+    public TruncateStatementContext(final TruncateStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
+        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType(), currentDatabaseName);
     }
     
     @Override
