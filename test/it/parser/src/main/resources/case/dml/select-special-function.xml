@@ -1242,7 +1242,7 @@
             </expression-projection>
         </projections>
     </select>
-
+  
     <select sql-case-id="select_bin">
         <projections start-index="7" stop-index="13">
             <expression-projection start-index="7" stop-index="13" text="BIN(12)">
@@ -1256,7 +1256,7 @@
             </expression-projection>
         </projections>
     </select>
-
+  
     <select sql-case-id="select_bin_uuid">
         <projections start-index="7" stop-index="70">
             <expression-projection start-index="7" stop-index="70" text="BIN_TO_UUID(UUID_TO_BIN('6ccd780c-baba-1026-9564-5b8c656024db'))">
@@ -1274,7 +1274,7 @@
             </expression-projection>
         </projections>
     </select>
-
+  
     <select sql-case-id="select_bit_length">
         <projections start-index="7" stop-index="19">
             <expression-projection start-index="7" stop-index="19" text="BIT_LENGTH(1)">
@@ -1288,8 +1288,8 @@
             </expression-projection>
         </projections>
     </select>
-
-    <select sql-case-id="select_bit_count">
+  
+     <select sql-case-id="select_bit_count">
         <projections start-index="7" stop-index="18">
             <expression-projection start-index="7" stop-index="18" text="BIT_COUNT(1)">
                 <expr>
@@ -1302,7 +1302,7 @@
             </expression-projection>
         </projections>
     </select>
-
+  
     <select sql-case-id="select_ceil">
         <projections start-index="7" stop-index="15">
             <expression-projection start-index="7" stop-index="15" text="CEIL(1.1)">
@@ -1317,7 +1317,7 @@
         </projections>
     </select>
 
-    <select sql-case-id="select_ceiling">
+     <select sql-case-id="select_ceiling">
         <projections start-index="7" stop-index="18">
             <expression-projection start-index="7" stop-index="18" text="CEILING(1.1)">
                 <expr>
@@ -1330,7 +1330,7 @@
             </expression-projection>
         </projections>
     </select>
-
+  
     <select sql-case-id="select_with_uuid_function">
         <projections start-index="7" stop-index="12">
             <expression-projection text="UUID()" start-index="7" stop-index="12">
@@ -1419,7 +1419,7 @@
             </expression-projection>
         </projections>
     </select>
-
+  
     <select sql-case-id="select_with_variance_function">
         <from>
             <simple-table name="sales_view" start-index="29" stop-index="40" alias="s" />
