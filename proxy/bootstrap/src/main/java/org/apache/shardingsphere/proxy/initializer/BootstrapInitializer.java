@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy.initializer;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
@@ -39,8 +37,6 @@ import java.sql.SQLException;
 /**
  * Bootstrap initializer.
  */
-@RequiredArgsConstructor
-@Slf4j
 public final class BootstrapInitializer {
     
     /**
@@ -60,13 +56,9 @@ public final class BootstrapInitializer {
     }
     
     private ContextManager createContextManager(final ProxyConfiguration proxyConfig, final ModeConfiguration modeConfig, final int port, final boolean force) throws SQLException {
+        InstanceMetaData instanceMetaData = TypedSPILoader.getService(InstanceMetaDataBuilder.class, "Proxy").build(port);
         ContextManagerBuilderParameter param = new ContextManagerBuilderParameter(modeConfig, proxyConfig.getDatabaseConfigurations(), proxyConfig.getGlobalConfiguration().getDataSources(),
-                proxyConfig.getGlobalConfiguration().getRules(), proxyConfig.getGlobalConfiguration().getProperties(), proxyConfig.getGlobalConfiguration().getLabels(),
-                createInstanceMetaData(port), force);
+                proxyConfig.getGlobalConfiguration().getRules(), proxyConfig.getGlobalConfiguration().getProperties(), proxyConfig.getGlobalConfiguration().getLabels(), instanceMetaData, force);
         return TypedSPILoader.getService(ContextManagerBuilder.class, null == modeConfig ? null : modeConfig.getType()).build(param, new EventBusContext());
-    }
-    
-    private InstanceMetaData createInstanceMetaData(final int port) {
-        return TypedSPILoader.getService(InstanceMetaDataBuilder.class, "Proxy").build(port);
     }
 }
