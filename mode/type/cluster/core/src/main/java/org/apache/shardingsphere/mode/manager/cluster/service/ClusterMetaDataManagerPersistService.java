@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.service;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -46,7 +45,6 @@ import java.util.stream.Collectors;
 /**
  * Cluster meta data manager persist service.
  */
-@RequiredArgsConstructor
 public final class ClusterMetaDataManagerPersistService implements MetaDataManagerPersistService {
     
     private final MetaDataPersistService metaDataPersistService;

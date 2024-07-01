@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.service;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.mode.service.persist.ProcessPersistService;
@@ -29,7 +28,6 @@ import java.util.Collection;
 /**
  * Standalone process persist service.
  */
-@RequiredArgsConstructor
 public final class StandaloneProcessPersistService implements ProcessPersistService {
     
     @Override

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.manager;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
@@ -32,7 +31,6 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Rule item manager.
  */
-@RequiredArgsConstructor
 public class RuleItemManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
