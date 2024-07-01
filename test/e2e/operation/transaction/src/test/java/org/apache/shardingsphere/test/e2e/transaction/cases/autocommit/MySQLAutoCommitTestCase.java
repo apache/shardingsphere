@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.cases.autocommit;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
@@ -34,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * MySQL auto commit transaction integration test.
  */
 @TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL)
+@Slf4j
 public final class MySQLAutoCommitTestCase extends AutoCommitTestCase {
     
     public MySQLAutoCommitTestCase(final TransactionTestCaseParameter testCaseParam) {
@@ -48,6 +50,26 @@ public final class MySQLAutoCommitTestCase extends AutoCommitTestCase {
         assertAutoCommitWithStatement();
         assertAutoCommitWithPreparedStatement();
         assertAutoCommitWithoutCommit();
+        assertExceptionForceCommit();
+    }
+    
+    private void assertExceptionForceCommit() throws SQLException {
+        Connection connection = getDataSource().getConnection();
+        try {
+            executeWithLog(connection, "DELETE FROM account");
+            connection.setAutoCommit(false);
+            executeWithLog(connection, "INSERT INTO account VALUES (1, 1, 1), (2, 2, 2)");
+            int causeExceptionResult = 1 / 0;
+            log.info("Caused exception result: {}", causeExceptionResult);
+            executeWithLog(connection, "INSERT INTO account VALUES (3, 3, 3), (4, 4, 4)");
+        } catch (final ArithmeticException ignored) {
+        } finally {
+            connection.commit();
+            connection.close();
+        }
+        try (Connection queryConnection = getDataSource().getConnection()) {
+            assertAccountRowCount(queryConnection, 2);
+        }
     }
     
     private void assertAutoCommit() throws SQLException {
