@@ -50,14 +50,21 @@ Introduce Maven dependencies and exclude the outdated Maven dependencies of `org
 
 ### Start Seata Server
 
-Follow the steps in [seata-fescar-workshop](https://github.com/seata/fescar-workshop) or https://hub.docker.com/r/seataio/seata-server ,
-download and start the Seata server.
+Follow the steps in one of the links below to download and start Seata Server.
+
+The proper way to start Seata Server is to instantiate it through the Docker Image of `seataio/seata-server` in Docker Hub.
+For `apache/incubator-seata:v2.0.0` and earlier Seata versions, `seataio/seata-server` from Docker Hub should be used.
+Otherwise, `apache/seata-server` from Docker Hub should be used.
+
+- [seata-fescar-workshop](https://github.com/seata/fescar-workshop)
+- https://hub.docker.com/r/seataio/seata-server
+- https://hub.docker.com/r/apache/seata-server
 
 ### Create undo_log table
 
-Create the `undo_log` table in each shard database instance (take MySQL as an example).
-The content of SQL is subject to the corresponding database in https://github.com/apache/incubator-seata/tree/v2.0.0/script/client/at/db .
-
+Create the `undo_log` table in each real database instance involved in ShardingSphere.
+The SQL content is based on the corresponding database in https://github.com/apache/incubator-seata/tree/v2.0.0/script/client/at/db .
+The following content takes MySQL as an example.
 ```sql
 CREATE TABLE IF NOT EXISTS `undo_log`
 (
@@ -96,6 +103,16 @@ client {
     application.id = example
     transaction.service.group = default_tx_group
 }
+```
+
+A minimally configured `seata.conf` is as follows.
+Please note that in `seata.conf` managed by ShardingSphere, the default value of `client.transaction.service.group` is set to `default` for historical reasons.
+Assuming that in the `registry.conf` of Seata Server and Seata Client used by the user, `registry.type` and `config.type` are both `file`,
+then for the `.conf` file configured by `config.file.name` of `registry.conf`, 
+the default value of the transaction group name is `default_tx_group` after `apache/incubator-seata:v1.5.1`, otherwise it is `my_test_tx_group`.
+
+```conf
+client.application.id = example
 ```
 
 Modify the `registry.conf` file of Seata as required.
