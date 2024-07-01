@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.service;
 
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.service.persist.PersistServiceBuilder;
 import org.apache.shardingsphere.mode.service.persist.ProcessPersistService;
@@ -29,8 +29,8 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 public final class ClusterPersistServiceBuilder implements PersistServiceBuilder {
     
     @Override
-    public MetaDataManagerPersistService buildMetaDataManagerPersistService(final ContextManager contextManager) {
-        return new ClusterMetaDataManagerPersistService(contextManager);
+    public MetaDataManagerPersistService buildMetaDataManagerPersistService(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
+        return new ClusterMetaDataManagerPersistService(repository, metaDataContextManager);
     }
     
     @Override

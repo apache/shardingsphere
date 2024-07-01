@@ -19,12 +19,15 @@ package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.manager.ConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.ResourceMetaDataManager;
 import org.apache.shardingsphere.mode.metadata.manager.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
 import org.apache.shardingsphere.mode.metadata.manager.ShardingSphereDatabaseManager;
-import org.apache.shardingsphere.mode.service.PersistServiceFacade;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -33,6 +36,8 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Getter
 public class MetaDataContextManager {
+    
+    private final AtomicReference<MetaDataContexts> metaDataContexts;
     
     private final ShardingSphereDatabaseManager databaseManager;
     
@@ -44,12 +49,37 @@ public class MetaDataContextManager {
     
     private final ResourceSwitchManager resourceSwitchManager;
     
+    private final MetaDataPersistService metaDataPersistService;
+    
     public MetaDataContextManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
-                                  final PersistServiceFacade persistServiceFacade) {
+                                  final PersistRepository repository) {
+        this.metaDataContexts = metaDataContexts;
         resourceSwitchManager = new ResourceSwitchManager();
         databaseManager = new ShardingSphereDatabaseManager(metaDataContexts);
-        configurationManager = new ConfigurationManager(metaDataContexts, computeNodeInstanceContext, persistServiceFacade, resourceSwitchManager);
-        resourceMetaDataManager = new ResourceMetaDataManager(metaDataContexts, persistServiceFacade);
-        ruleItemManager = new RuleItemManager(metaDataContexts, persistServiceFacade, configurationManager);
+        configurationManager = new ConfigurationManager(metaDataContexts, computeNodeInstanceContext, repository, resourceSwitchManager);
+        resourceMetaDataManager = new ResourceMetaDataManager(metaDataContexts, repository);
+        ruleItemManager = new RuleItemManager(metaDataContexts, repository, configurationManager);
+        metaDataPersistService = new MetaDataPersistService(repository);
+    }
+    
+    /**
+     * Delete schema names.
+     *
+     * @param databaseName database name
+     * @param reloadDatabase reload database
+     * @param currentDatabase current database
+     */
+    public void deletedSchemaNames(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+        GenericSchemaManager.getToBeDeletedSchemaNames(reloadDatabase.getSchemas(), currentDatabase.getSchemas()).keySet()
+                .forEach(each -> metaDataPersistService.getDatabaseMetaDataService().dropSchema(databaseName, each));
+    }
+    
+    /**
+     * Renew meta data contexts.
+     *
+     * @param metaDataContexts meta data contexts
+     */
+    public void renewMetaDataContexts(final MetaDataContexts metaDataContexts) {
+        this.metaDataContexts.set(metaDataContexts);
     }
 }
