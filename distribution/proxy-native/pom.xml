@@ -23,8 +23,8 @@
         <artifactId>shardingsphere-distribution</artifactId>
         <version>5.5.1-SNAPSHOT</version>
     </parent>
-    
     <artifactId>shardingsphere-proxy-native-distribution</artifactId>
+    <name>${project.artifactId}</name>
     
     <properties>
         <imageName>apache-shardingsphere-proxy-native</imageName>
