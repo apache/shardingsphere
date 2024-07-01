@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        java-version: [ 11 ]
+        java-version: [ 8 ]
 
     steps:
       - uses: actions/checkout@v4
