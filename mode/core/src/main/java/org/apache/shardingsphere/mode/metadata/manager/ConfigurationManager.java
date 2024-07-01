@@ -78,7 +78,7 @@ public final class ConfigurationManager {
     private final MetaDataPersistService metaDataPersistService;
     
     public ConfigurationManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
-                               final PersistRepository repository, final ResourceSwitchManager resourceSwitchManager) {
+                                final PersistRepository repository, final ResourceSwitchManager resourceSwitchManager) {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
         this.resourceSwitchManager = resourceSwitchManager;
