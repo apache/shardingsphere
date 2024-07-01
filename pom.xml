@@ -988,7 +988,7 @@
                                 </argLine>
                             </configuration>
                             <dependencies>
-                                <!--                 使用junit作为单测框架               -->
+                                <!-- use Junit5 as test structure  -->
                                 <dependency>
                                     <groupId>org.junit.jupiter</groupId>
                                     <artifactId>junit-jupiter</artifactId>
