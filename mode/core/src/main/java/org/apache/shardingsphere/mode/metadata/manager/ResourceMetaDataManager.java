@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.metadata.manager;
 
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -29,10 +28,11 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
-import org.apache.shardingsphere.mode.service.PersistServiceFacade;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -41,12 +41,16 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Resource meta data manager.
  */
-@RequiredArgsConstructor
 public final class ResourceMetaDataManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     
-    private final PersistServiceFacade persistServiceFacade;
+    private final MetaDataPersistService metaDataPersistService;
+    
+    public ResourceMetaDataManager(final AtomicReference<MetaDataContexts> metaDataContexts, final PersistRepository repository) {
+        this.metaDataContexts = metaDataContexts;
+        metaDataPersistService = new MetaDataPersistService(repository);
+    }
     
     /**
      * Add database.
@@ -59,7 +63,7 @@ public final class ResourceMetaDataManager {
         }
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.get().getMetaData().getProps());
         metaDataContexts.get().getMetaData().addDatabase(databaseName, protocolType, metaDataContexts.get().getMetaData().getProps());
-        metaDataContexts.set(MetaDataContextsFactory.create(persistServiceFacade.getMetaDataPersistService(), metaDataContexts.get().getMetaData()));
+        metaDataContexts.set(MetaDataContextsFactory.create(metaDataPersistService, metaDataContexts.get().getMetaData()));
     }
     
     /**

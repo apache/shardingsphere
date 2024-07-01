@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.service.persist;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
@@ -29,10 +29,11 @@ public interface PersistServiceBuilder extends TypedSPI {
     /**
      * Build meta data manager persist service.
      *
-     * @param contextManager context manager
+     * @param repository persist repository
+     * @param metaDataContextManager meta data context manager
      * @return meta data manager persist service
      */
-    MetaDataManagerPersistService buildMetaDataManagerPersistService(ContextManager contextManager);
+    MetaDataManagerPersistService buildMetaDataManagerPersistService(PersistRepository repository, MetaDataContextManager metaDataContextManager);
     
     /**
      * Build process persist service.
