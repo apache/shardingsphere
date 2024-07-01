@@ -88,7 +88,7 @@ class ProcessListChangedSubscriberTest {
                 contextManager.getMetaDataContexts().getMetaData().getGlobalResourceMetaData(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
                 new ConfigurationProperties(new Properties()))));
         MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(contextManager.getClass().getDeclaredField("repository"), contextManager, repository);
+        accessor.set(contextManager.getPersistServiceFacade().getClass().getDeclaredField("repository"), contextManager.getPersistServiceFacade(), repository);
         subscriber = new ProcessListChangedSubscriber(contextManager);
     }
     

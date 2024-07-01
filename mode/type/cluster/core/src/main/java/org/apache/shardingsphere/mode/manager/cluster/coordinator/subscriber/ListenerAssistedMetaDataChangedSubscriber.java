@@ -51,7 +51,7 @@ public final class ListenerAssistedMetaDataChangedSubscriber implements EventSub
         if (!processor.isPresent()) {
             return;
         }
-        new MetaDataWatchListenerManager((ClusterPersistRepository) contextManager.getRepository())
+        new MetaDataWatchListenerManager((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository())
                 .addListener(processor.get().getListenerKey(event), new MetaDataChangedListener(contextManager.getComputeNodeInstanceContext().getEventBusContext()));
         processor.get().processor(contextManager, event);
     }
@@ -67,7 +67,7 @@ public final class ListenerAssistedMetaDataChangedSubscriber implements EventSub
         if (!processor.isPresent()) {
             return;
         }
-        new MetaDataWatchListenerManager((ClusterPersistRepository) contextManager.getRepository()).removeListener(processor.get().getListenerKey(event));
+        new MetaDataWatchListenerManager((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository()).removeListener(processor.get().getListenerKey(event));
         processor.get().processor(contextManager, event);
     }
 }

@@ -76,12 +76,9 @@ public final class ContextManager implements AutoCloseable {
     
     private final MetaDataContextManager metaDataContextManager;
     
-    private final PersistRepository repository;
-    
     public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
         this.metaDataContexts = new AtomicReference<>(metaDataContexts);
         this.computeNodeInstanceContext = computeNodeInstanceContext;
-        this.repository = repository;
         persistServiceFacade = new PersistServiceFacade(repository, computeNodeInstanceContext.getModeConfiguration(), this);
         stateContext = new StateContext(persistServiceFacade.getStatePersistService().loadClusterState().orElse(ClusterState.OK));
         metaDataContextManager = new MetaDataContextManager(this.metaDataContexts, computeNodeInstanceContext, persistServiceFacade);
@@ -296,6 +293,6 @@ public final class ContextManager implements AutoCloseable {
         }
         executorEngine.close();
         metaDataContexts.get().close();
-        repository.close();
+        persistServiceFacade.getRepository().close();
     }
 }

@@ -252,7 +252,7 @@ class ContextManagerTest {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getName()).thenReturn("foo_db");
         ShardingSphereDatabase database = mockDatabase();
         contextManager.reloadSchema(database, "foo_schema", "foo_ds");
-        verify(contextManager.getRepository()).delete(DatabaseMetaDataNode.getMetaDataSchemaPath("foo_db", "foo_schema"));
+        verify(contextManager.getPersistServiceFacade().getRepository()).delete(DatabaseMetaDataNode.getMetaDataSchemaPath("foo_db", "foo_schema"));
     }
     
     @Test
