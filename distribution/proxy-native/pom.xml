@@ -25,7 +25,7 @@
     </parent>
     <artifactId>shardingsphere-proxy-native-distribution</artifactId>
     <name>${project.artifactId}</name>
-
+    
     <properties>
         <imageName>apache-shardingsphere-proxy-native</imageName>
         <native.image.repository>apache/shardingsphere-proxy-native</native.image.repository>
