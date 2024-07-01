@@ -44,7 +44,7 @@ public class ClusterDispatchEventSubscriberRegistry implements EventSubscriberRe
     
     public ClusterDispatchEventSubscriberRegistry(final ContextManager contextManager) {
         eventBusContext = contextManager.getComputeNodeInstanceContext().getEventBusContext();
-        repository = (ClusterPersistRepository) contextManager.getRepository();
+        repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
         subscribers = Arrays.asList(new RuleItemChangedSubscriber(contextManager),
                 new ResourceMetaDataChangedSubscriber(contextManager),
                 new ListenerAssistedMetaDataChangedSubscriber(contextManager),

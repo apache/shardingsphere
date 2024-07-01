@@ -38,6 +38,8 @@ import org.apache.shardingsphere.mode.state.StatePersistService;
 @Getter
 public final class PersistServiceFacade {
     
+    private final PersistRepository repository;
+    
     private final MetaDataPersistService metaDataPersistService;
     
     private final ComputeNodePersistService computeNodePersistService;
@@ -53,6 +55,7 @@ public final class PersistServiceFacade {
     private final QualifiedDataSourceStatePersistService qualifiedDataSourceStatePersistService;
     
     public PersistServiceFacade(final PersistRepository repository, final ModeConfiguration modeConfiguration, final ContextManager contextManager) {
+        this.repository = repository;
         metaDataPersistService = new MetaDataPersistService(repository);
         computeNodePersistService = new ComputeNodePersistService(repository);
         statePersistService = new StatePersistService(repository);
