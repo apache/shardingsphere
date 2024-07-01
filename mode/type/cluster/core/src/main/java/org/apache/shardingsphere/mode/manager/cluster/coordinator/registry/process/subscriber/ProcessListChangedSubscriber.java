@@ -60,10 +60,10 @@ public final class ProcessListChangedSubscriber implements EventSubscriber {
         }
         Collection<Process> processes = ProcessRegistry.getInstance().listAll();
         if (!processes.isEmpty()) {
-            contextManager.getRepository().persist(
+            contextManager.getPersistServiceFacade().getRepository().persist(
                     ProcessNode.getProcessListInstancePath(event.getTaskId(), event.getInstanceId()), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
         }
-        contextManager.getRepository().delete(ComputeNode.getProcessTriggerInstanceNodePath(event.getInstanceId(), event.getTaskId()));
+        contextManager.getPersistServiceFacade().getRepository().delete(ComputeNode.getProcessTriggerInstanceNodePath(event.getInstanceId(), event.getTaskId()));
     }
     
     /**
@@ -94,7 +94,7 @@ public final class ProcessListChangedSubscriber implements EventSubscriber {
                 each.cancel();
             }
         }
-        contextManager.getRepository().delete(ComputeNode.getProcessKillInstanceIdNodePath(event.getInstanceId(), event.getProcessId()));
+        contextManager.getPersistServiceFacade().getRepository().delete(ComputeNode.getProcessKillInstanceIdNodePath(event.getInstanceId(), event.getProcessId()));
     }
     
     /**

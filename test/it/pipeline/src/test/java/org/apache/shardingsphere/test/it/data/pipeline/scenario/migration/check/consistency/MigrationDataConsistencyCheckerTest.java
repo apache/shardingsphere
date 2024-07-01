@@ -72,7 +72,7 @@ class MigrationDataConsistencyCheckerTest {
     
     private ClusterPersistRepository getClusterPersistRepository() {
         ContextManager contextManager = PipelineContextManager.getContext(PipelineContextUtils.getContextKey()).getContextManager();
-        return (ClusterPersistRepository) contextManager.getRepository();
+        return (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
     }
     
     private ConsistencyCheckJobItemProgressContext createConsistencyCheckJobItemProgressContext(final String jobId) {
