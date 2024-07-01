@@ -36,7 +36,7 @@ import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuild
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.storage.event.QualifiedDataSourceStateEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.storage.QualifiedDataSourceState;
+import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
