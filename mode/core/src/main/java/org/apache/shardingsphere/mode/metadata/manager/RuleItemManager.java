@@ -22,8 +22,9 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.service.PersistServiceFacade;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -36,9 +37,15 @@ public class RuleItemManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     
-    private final PersistServiceFacade persistServiceFacade;
-    
     private final ConfigurationManager configurationManager;
+    
+    private final MetaDataPersistService metaDataPersistService;
+    
+    public RuleItemManager(final AtomicReference<MetaDataContexts> metaDataContexts, final PersistRepository repository, final ConfigurationManager configurationManager) {
+        this.metaDataContexts = metaDataContexts;
+        this.configurationManager = configurationManager;
+        metaDataPersistService = new MetaDataPersistService(repository);
+    }
     
     /**
      * Alter with rule item.
@@ -47,12 +54,12 @@ public class RuleItemManager {
      */
     @SuppressWarnings({"rawtypes", "unchecked", "unused"})
     public void alterRuleItem(final AlterRuleItemEvent event) {
-        if (!event.getActiveVersion().equals(persistServiceFacade.getMetaDataPersistService().getMetaDataVersionPersistService()
+        if (!event.getActiveVersion().equals(metaDataPersistService.getMetaDataVersionPersistService()
                 .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
-        String yamlContent = persistServiceFacade.getMetaDataPersistService().getMetaDataVersionPersistService()
+        String yamlContent = metaDataPersistService.getMetaDataVersionPersistService()
                 .getVersionPathByActiveVersion(event.getActiveVersionKey(), event.getActiveVersion());
         String databaseName = event.getDatabaseName();
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.get().getMetaData().getDatabase(databaseName));

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.fixture;
 
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.service.persist.PersistServiceBuilder;
 import org.apache.shardingsphere.mode.service.persist.ProcessPersistService;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 public final class PersistServiceBuilderFixture implements PersistServiceBuilder {
     
     @Override
-    public MetaDataManagerPersistService buildMetaDataManagerPersistService(final ContextManager contextManager) {
+    public MetaDataManagerPersistService buildMetaDataManagerPersistService(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
         return null;
     }
     
