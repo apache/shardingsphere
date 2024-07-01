@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.storage;
+package org.apache.shardingsphere.infra.state.datasource.qualified.yaml;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Qualified data source state.
+ * YAML qualified data source state.
  */
-@RequiredArgsConstructor
 @Getter
-public final class QualifiedDataSourceState {
+@Setter
+public final class YamlQualifiedDataSourceState implements YamlConfiguration {
     
-    private final DataSourceState state;
+    private String state;
 }

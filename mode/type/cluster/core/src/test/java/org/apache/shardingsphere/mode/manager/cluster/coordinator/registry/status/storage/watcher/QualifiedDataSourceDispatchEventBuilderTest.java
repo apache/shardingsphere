@@ -37,7 +37,7 @@ class QualifiedDataSourceDispatchEventBuilderTest {
     @Test
     void assertCreateEnabledQualifiedDataSourceChangedEvent() {
         Optional<GovernanceEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
-                new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "status: ENABLED\n", Type.ADDED));
+                new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "state: ENABLED\n", Type.ADDED));
         assertTrue(actual.isPresent());
         QualifiedDataSourceStateEvent actualEvent = (QualifiedDataSourceStateEvent) actual.get();
         assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
@@ -49,7 +49,7 @@ class QualifiedDataSourceDispatchEventBuilderTest {
     @Test
     void assertCreateDisabledQualifiedDataSourceChangedEvent() {
         Optional<GovernanceEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
-                new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "status: DISABLED\n", Type.DELETED));
+                new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "state: DISABLED\n", Type.DELETED));
         assertTrue(actual.isPresent());
         QualifiedDataSourceStateEvent actualEvent = (QualifiedDataSourceStateEvent) actual.get();
         assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
