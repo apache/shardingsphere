@@ -37,7 +37,7 @@
             <artifactId>shardingsphere-sql-parser-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-parser-sql-sql92</artifactId>
@@ -91,7 +91,7 @@
             <artifactId>jackson-dataformat-xml</artifactId>
             <scope>test</scope>
         </dependency>
-
+        
         <dependency>
             <groupId>org.apache.calcite</groupId>
             <artifactId>calcite-core</artifactId>
