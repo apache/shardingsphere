@@ -34,8 +34,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.MetaD
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.MetaDataWatchListenerManager;
 import org.apache.shardingsphere.mode.manager.cluster.lock.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.instance.workerid.ClusterWorkerIdGenerator;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.registry.ClusterDeliverEventSubscriberRegistry;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.registry.ClusterDispatchEventSubscriberRegistry;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDeliverEventSubscriberRegistry;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.cluster.exception.MissingRequiredClusterRepositoryConfigurationException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;

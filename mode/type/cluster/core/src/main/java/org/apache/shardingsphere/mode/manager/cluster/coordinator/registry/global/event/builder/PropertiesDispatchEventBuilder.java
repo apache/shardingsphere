@@ -22,7 +22,7 @@ import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.dispatch.config.AlterPropertiesEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.DispatchEventBuilder;
+import org.apache.shardingsphere.mode.event.builder.dispatch.DispatchEventBuilder;
 
 import java.util.Arrays;
 import java.util.Collections;
