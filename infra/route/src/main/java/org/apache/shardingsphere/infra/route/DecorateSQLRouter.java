@@ -15,38 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route;
+package org.apache.shardingsphere.infra.route;
 
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.route.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.shadow.constant.ShadowOrder;
-import org.apache.shardingsphere.shadow.route.engine.ShadowRouteEngineFactory;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
- * Shadow SQL router.
+ * Decorate SQL Router.
+ * 
+ * @param <T> type of rule
  */
-@HighFrequencyInvocation
-public final class ShadowSQLRouter implements DecorateSQLRouter<ShadowRule> {
+public interface DecorateSQLRouter<T extends ShardingSphereRule> extends SQLRouter<T> {
     
-    @Override
-    public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
-                                     final ShadowRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
-        ShadowRouteEngineFactory.newInstance(queryContext).route(routeContext, rule);
-    }
-    
-    @Override
-    public int getOrder() {
-        return ShadowOrder.ORDER;
-    }
-    
-    @Override
-    public Class<ShadowRule> getTypeClass() {
-        return ShadowRule.class;
-    }
+    /**
+     * Decorate route context.
+     *
+     * @param routeContext route context
+     * @param queryContext query context
+     * @param database database
+     * @param rule rule
+     * @param props configuration properties
+     * @param connectionContext connection context
+     */
+    void decorateRouteContext(RouteContext routeContext, QueryContext queryContext, ShardingSphereDatabase database, T rule, ConfigurationProperties props, ConnectionContext connectionContext);
 }
