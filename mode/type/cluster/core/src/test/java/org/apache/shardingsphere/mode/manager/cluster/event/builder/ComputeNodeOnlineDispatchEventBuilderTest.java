@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.event.InstanceOfflineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.event.InstanceOnlineEvent;
+import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOfflineEvent;
+import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOnlineEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
