@@ -33,12 +33,12 @@ import org.apache.shardingsphere.mode.event.dispatch.datasource.nodes.Unregister
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.AlterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.RegisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.UnregisterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.dispatch.schema.table.CreateOrAlterTableEvent;
-import org.apache.shardingsphere.mode.event.dispatch.schema.table.DropTableEvent;
-import org.apache.shardingsphere.mode.event.dispatch.schema.view.CreateOrAlterViewEvent;
-import org.apache.shardingsphere.mode.event.dispatch.schema.view.DropViewEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.CreateOrAlterTableEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.DropTableEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.CreateOrAlterViewEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.DropViewEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaAddedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.event.builder.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch
 
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.listener.DropDatabaseListenerAssistedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

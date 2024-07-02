@@ -20,10 +20,10 @@ package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeInstanceStateChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
+import org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateEvent;
+import org.apache.shardingsphere.mode.event.dispatch.state.compute.ComputeNodeInstanceStateChangedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.state.compute.LabelsEvent;
+import org.apache.shardingsphere.mode.event.dispatch.state.compute.WorkerIdEvent;
 
 /**
  * State changed subscriber.
