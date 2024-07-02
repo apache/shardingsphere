@@ -15,27 +15,72 @@
  * limitations under the License.
  */
 
+// package org.apache.shardingsphere.encrypt.metadata.reviser.column;
+
+// import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+// import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.ColumnNameReviser;
+
+// /**
+//  * Encrypt column name reviser.
+//  */
+// public final class EncryptColumnNameReviser implements ColumnNameReviser {
+
+//     private final EncryptTable encryptTable;
+
+//     public EncryptColumnNameReviser(final EncryptTable encryptTable) {
+//         this.encryptTable = encryptTable;
+//     }
+
+//     @Override
+//     public String revise(final String originalName) {
+//         if (encryptTable.isCipherColumn(originalName)) {
+//             return encryptTable.getLogicColumnByCipherColumn(originalName);
+//         }
+//         return originalName;
+//     }
+// }
+
 package org.apache.shardingsphere.encrypt.metadata.reviser.column;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.ColumnNameReviser;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- * Encrypt column name reviser.
- */
-public final class EncryptColumnNameReviser implements ColumnNameReviser {
-    
-    private final EncryptTable encryptTable;
-    
-    public EncryptColumnNameReviser(final EncryptTable encryptTable) {
-        this.encryptTable = encryptTable;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class EncryptColumnNameReviserTest {
+
+    private EncryptColumnNameReviser encryptColumnNameReviser;
+
+    @Before
+    public void setUp() {
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        when(encryptTable.getLogicColumnByPlainColumn("plain_column")).thenReturn("logic_column");
+        when(encryptTable.getLogicColumnByCipherColumn("cipher_column")).thenReturn("logic_column");
+        when(encryptTable.isCipherColumn("cipher_column")).thenReturn(true);
+        when(encryptTable.getPlainColumns()).thenReturn(Collections.singletonList("plain_column"));
+        encryptColumnNameReviser = new EncryptColumnNameReviser(encryptTable);
     }
-    
-    @Override
-    public String revise(final String originalName) {
-        if (encryptTable.isCipherColumn(originalName)) {
-            return encryptTable.getLogicColumnByCipherColumn(originalName);
-        }
-        return originalName;
+
+    @Test
+    public void assertRevisePlainColumn() {
+        assertThat(encryptColumnNameReviser.revise("plain_column"), is("logic_column"));
+    }
+
+    @Test
+    public void assertReviseCipherColumn() {
+        assertThat(encryptColumnNameReviser.revise("cipher_column"), is("logic_column"));
+    }
+
+    @Test
+    public void assertReviseOtherColumn() {
+        assertThat(encryptColumnNameReviser.revise("other_column"), is("other_column"));
     }
 }
