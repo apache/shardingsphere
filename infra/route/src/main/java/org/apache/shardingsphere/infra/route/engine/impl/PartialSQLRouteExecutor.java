@@ -25,8 +25,9 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.route.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.route.SQLRouter;
-import org.apache.shardingsphere.infra.route.TableAggregationSQLRouter;
+import org.apache.shardingsphere.infra.route.EntranceSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -68,10 +69,10 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
             return result;
         }
         for (Entry<ShardingSphereRule, SQLRouter> entry : routers.entrySet()) {
-            if (result.getRouteUnits().isEmpty() && entry.getValue() instanceof TableAggregationSQLRouter) {
-                result = ((TableAggregationSQLRouter) entry.getValue()).createRouteContext(queryContext, globalRuleMetaData, database, entry.getKey(), props, connectionContext);
-            } else {
-                entry.getValue().decorateRouteContext(result, queryContext, database, entry.getKey(), props, connectionContext);
+            if (result.getRouteUnits().isEmpty() && entry.getValue() instanceof EntranceSQLRouter) {
+                result = ((EntranceSQLRouter) entry.getValue()).createRouteContext(queryContext, globalRuleMetaData, database, entry.getKey(), props, connectionContext);
+            } else if (entry.getValue() instanceof DecorateSQLRouter) {
+                ((DecorateSQLRouter) entry.getValue()).decorateRouteContext(result, queryContext, database, entry.getKey(), props, connectionContext);
             }
         }
         if (result.getRouteUnits().isEmpty() && 1 == database.getResourceMetaData().getStorageUnits().size()) {

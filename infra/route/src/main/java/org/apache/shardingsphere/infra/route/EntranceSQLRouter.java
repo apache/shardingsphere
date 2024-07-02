@@ -26,11 +26,11 @@ import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 /**
- * Table aggregation SQL Router.
+ * Entrance SQL Router.
  * 
  * @param <T> type of rule
  */
-public interface TableAggregationSQLRouter<T extends ShardingSphereRule> extends SQLRouter<T> {
+public interface EntranceSQLRouter<T extends ShardingSphereRule> extends SQLRouter<T> {
     
     /**
      * Create route context.
