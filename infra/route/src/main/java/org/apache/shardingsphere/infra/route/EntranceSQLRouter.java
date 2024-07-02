@@ -15,26 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route;
+package org.apache.shardingsphere.infra.route;
 
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 
-import java.util.Collections;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-
-class ShadowSQLRouterTest {
+/**
+ * Entrance SQL Router.
+ * 
+ * @param <T> type of rule
+ */
+public interface EntranceSQLRouter<T extends ShardingSphereRule> extends SQLRouter<T> {
     
-    @Test
-    void assertCreateRouteContext() {
-        assertNotNull(new ShadowSQLRouter().createRouteContext(mock(QueryContext.class),
-                mock(RuleMetaData.class), mock(ShardingSphereDatabase.class), mock(ShadowRule.class), mock(ConfigurationProperties.class), new ConnectionContext(Collections::emptySet)));
-    }
+    /**
+     * Create route context.
+     *
+     * @param queryContext query context
+     * @param globalRuleMetaData global rule meta data
+     * @param database database
+     * @param rule rule
+     * @param props configuration properties
+     * @param connectionContext connection context
+     * @return route context
+     */
+    RouteContext createRouteContext(QueryContext queryContext,
+                                    RuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, ConfigurationProperties props, ConnectionContext connectionContext);
 }

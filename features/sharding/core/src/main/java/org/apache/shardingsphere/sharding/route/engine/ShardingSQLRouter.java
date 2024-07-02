@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.route.SQLRouter;
+import org.apache.shardingsphere.infra.route.EntranceSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -46,7 +46,7 @@ import java.util.Optional;
  * Sharding SQL router.
  */
 @HighFrequencyInvocation
-public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
+public final class ShardingSQLRouter implements EntranceSQLRouter<ShardingRule> {
     
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule,
@@ -84,12 +84,6 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
             shardingConditions = Collections.emptyList();
         }
         return new ShardingConditions(shardingConditions, queryContext.getSqlStatementContext(), rule);
-    }
-    
-    @Override
-    public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule,
-                                     final ConfigurationProperties props, final ConnectionContext connectionContext) {
-        // TODO
     }
     
     @Override
