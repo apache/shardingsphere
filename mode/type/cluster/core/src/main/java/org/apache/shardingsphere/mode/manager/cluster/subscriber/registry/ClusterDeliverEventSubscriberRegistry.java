@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
+package org.apache.shardingsphere.mode.manager.cluster.subscriber.registry;
 
-import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.subscriber.deliver.DeliverQualifiedDataSourceSubscriber;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.subsciber.DeliverEventSubscriberRegistry;
 
 /**
- * Cache evicted subscriber.
+ * Cluster deliver event subscriber registry.
  */
-@SuppressWarnings("unused")
-public final class CacheEvictedSubscriber implements EventSubscriber {
+public class ClusterDeliverEventSubscriberRegistry extends DeliverEventSubscriberRegistry {
     
-    /**
-     * Callback of any {@link GovernanceEvent}.
-     *
-     * @param ignored unused
-     */
-    @Subscribe
-    public void onGovernanceEvent(final GovernanceEvent ignored) {
-        OrderedServicesCache.clearCache();
+    public ClusterDeliverEventSubscriberRegistry(final ContextManager contextManager) {
+        super(contextManager, new DeliverQualifiedDataSourceSubscriber((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository()));
     }
 }

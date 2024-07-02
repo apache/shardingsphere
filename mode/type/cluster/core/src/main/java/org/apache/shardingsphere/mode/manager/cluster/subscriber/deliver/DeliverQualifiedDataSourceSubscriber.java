@@ -15,40 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
+package org.apache.shardingsphere.mode.manager.cluster.subscriber.deliver;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.qualified.QualifiedDataSourceDeletedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
 
 /**
- * Rule item changed subscriber.
+ * Deliver data source status subscriber.
  */
 @RequiredArgsConstructor
-public final class RuleItemChangedSubscriber implements EventSubscriber {
+public final class DeliverQualifiedDataSourceSubscriber implements EventSubscriber {
     
-    private final ContextManager contextManager;
-    
-    /**
-     * Renew with alter rule item.
-     *
-     * @param event alter rule item event
-     */
-    @Subscribe
-    public void renew(final AlterRuleItemEvent event) {
-        contextManager.getMetaDataContextManager().getRuleItemManager().alterRuleItem(event);
-    }
+    private final ClusterPersistRepository repository;
     
     /**
-     * Renew with drop rule item.
+     * Delete qualified data source.
      *
-     * @param event drop rule item event
+     * @param event qualified data source deleted event
      */
     @Subscribe
-    public void renew(final DropRuleItemEvent event) {
-        contextManager.getMetaDataContextManager().getRuleItemManager().dropRuleItem(event);
+    public void delete(final QualifiedDataSourceDeletedEvent event) {
+        repository.delete(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(event.getQualifiedDataSource()));
     }
 }

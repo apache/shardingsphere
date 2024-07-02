@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
+package org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;

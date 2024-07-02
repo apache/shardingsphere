@@ -15,33 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
+package org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.event.dispatch.config.AlterPropertiesEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
- * Properties event subscriber.
+ * Rule item changed subscriber.
  */
 @RequiredArgsConstructor
-public final class PropertiesEventSubscriber implements EventSubscriber {
+public final class RuleItemChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
     
     /**
-     * Renew for global properties.
+     * Renew with alter rule item.
      *
-     * @param event global properties alter event
+     * @param event alter rule item event
      */
     @Subscribe
-    public synchronized void renew(final AlterPropertiesEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
-            return;
-        }
-        contextManager.getMetaDataContextManager().getConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
+    public void renew(final AlterRuleItemEvent event) {
+        contextManager.getMetaDataContextManager().getRuleItemManager().alterRuleItem(event);
+    }
+    
+    /**
+     * Renew with drop rule item.
+     *
+     * @param event drop rule item event
+     */
+    @Subscribe
+    public void renew(final DropRuleItemEvent event) {
+        contextManager.getMetaDataContextManager().getRuleItemManager().dropRuleItem(event);
     }
 }
