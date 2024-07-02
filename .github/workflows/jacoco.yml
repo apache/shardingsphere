@@ -17,6 +17,13 @@ jobs:
           distribution: temurin
           java-version: 11
           cache: 'maven'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: shardingsphere-maven-third-party-e2e-cache-${{ github.sha }}
+          restore-keys: |
+            shardingsphere-maven-third-party-e2e-cache-
+            shardingsphere-maven-third-party-
 
       - name: Build Maven Env for Autogen
         run: ./mvnw clean install -T1C
