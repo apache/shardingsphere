@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.service;
+package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
