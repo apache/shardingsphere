@@ -15,31 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.fixture.router;
+package org.apache.shardingsphere.infra.route;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.route.SQLRouter;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixture;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
-public final class SQLRouterFailureFixture implements SQLRouter<RouteFailureRuleFixture> {
+/**
+ * Table aggregation SQL Router.
+ * 
+ * @param <T> type of rule
+ */
+public interface TableAggregationSQLRouter<T extends ShardingSphereRule> extends SQLRouter<T> {
     
-    @Override
-    public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
-                                     final RouteFailureRuleFixture rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
-        throw new UnsupportedOperationException("Route failure.");
-    }
-    
-    @Override
-    public int getOrder() {
-        return 1;
-    }
-    
-    @Override
-    public Class<RouteFailureRuleFixture> getTypeClass() {
-        return RouteFailureRuleFixture.class;
-    }
+    /**
+     * Create route context.
+     *
+     * @param queryContext query context
+     * @param globalRuleMetaData global rule meta data
+     * @param database database
+     * @param rule rule
+     * @param props configuration properties
+     * @param connectionContext connection context
+     * @return route context
+     */
+    RouteContext createRouteContext(QueryContext queryContext,
+                                    RuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, ConfigurationProperties props, ConnectionContext connectionContext);
 }

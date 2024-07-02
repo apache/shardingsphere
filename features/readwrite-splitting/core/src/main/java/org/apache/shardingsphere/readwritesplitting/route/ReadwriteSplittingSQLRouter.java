@@ -20,7 +20,6 @@ package org.apache.shardingsphere.readwritesplitting.route;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataS
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -41,16 +39,6 @@ import java.util.Optional;
  */
 @HighFrequencyInvocation
 public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadwriteSplittingRule> {
-    
-    @Override
-    public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData,
-                                           final ShardingSphereDatabase database, final ReadwriteSplittingRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
-        RouteContext result = new RouteContext();
-        ReadwriteSplittingDataSourceGroupRule dataSourceGroupRule = rule.getSingleDataSourceGroupRule();
-        String dataSourceName = new ReadwriteSplittingDataSourceRouter(dataSourceGroupRule, connectionContext).route(queryContext.getSqlStatementContext(), queryContext.getHintValueContext());
-        result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceGroupRule.getName(), dataSourceName), Collections.emptyList()));
-        return result;
-    }
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
