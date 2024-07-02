@@ -20,9 +20,9 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.event.datasource.unit.AlterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.datasource.unit.RegisterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.datasource.unit.UnregisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.AlterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.RegisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.UnregisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**

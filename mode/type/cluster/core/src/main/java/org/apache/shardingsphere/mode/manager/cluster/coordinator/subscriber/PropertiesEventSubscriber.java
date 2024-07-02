@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.event.config.AlterPropertiesEvent;
+import org.apache.shardingsphere.mode.event.dispatch.config.AlterPropertiesEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**

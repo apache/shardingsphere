@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.config;
+package org.apache.shardingsphere.mode.event.dispatch.datasource.nodes;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Alter properties event.
+ * Add data source node event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterPropertiesEvent implements GovernanceEvent {
+public final class UnregisterStorageNodeEvent implements GovernanceEvent {
     
-    private final String activeVersionKey;
+    private final String databaseName;
     
-    private final String activeVersion;
+    private final String storageNodeName;
 }
