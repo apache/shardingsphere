@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.service;
+package org.apache.shardingsphere.mode.persist;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
-import org.apache.shardingsphere.mode.service.persist.ComputeNodePersistService;
-import org.apache.shardingsphere.mode.service.persist.ListenerAssistedPersistService;
-import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.service.persist.PersistServiceBuilder;
-import org.apache.shardingsphere.mode.service.persist.ProcessPersistService;
-import org.apache.shardingsphere.mode.service.persist.QualifiedDataSourceStatePersistService;
-import org.apache.shardingsphere.mode.service.pojo.ShardingSphereSchemaDataAlteredPOJO;
+import org.apache.shardingsphere.mode.persist.service.ComputeNodePersistService;
+import org.apache.shardingsphere.mode.persist.service.ListenerAssistedPersistService;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;
+import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
+import org.apache.shardingsphere.mode.persist.service.QualifiedDataSourceStatePersistService;
+import org.apache.shardingsphere.mode.persist.pojo.ShardingSphereSchemaDataAlteredPOJO;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
-import org.apache.shardingsphere.mode.state.StatePersistService;
+import org.apache.shardingsphere.mode.persist.service.StatePersistService;
 
 /**
  * Persist service facade.

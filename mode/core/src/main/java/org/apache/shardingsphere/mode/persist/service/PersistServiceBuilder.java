@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.service.persist;
+package org.apache.shardingsphere.mode.persist.service;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;

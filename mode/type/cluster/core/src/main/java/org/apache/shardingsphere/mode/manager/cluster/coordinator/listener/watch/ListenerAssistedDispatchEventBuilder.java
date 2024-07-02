@@ -24,8 +24,8 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.listener.DropDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.listener.CreateDatabaseListenerAssistedEvent;
-import org.apache.shardingsphere.mode.service.enums.ListenerAssistedEnum;
-import org.apache.shardingsphere.mode.service.pojo.ListenerAssistedPOJO;
+import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedType;
+import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedPOJO;
 import org.apache.shardingsphere.mode.path.ListenerAssistedNodePath;
 
 import java.util.Arrays;
@@ -55,10 +55,10 @@ public class ListenerAssistedDispatchEventBuilder implements DispatchEventBuilde
             return Optional.empty();
         }
         ListenerAssistedPOJO data = YamlEngine.unmarshal(event.getValue(), ListenerAssistedPOJO.class);
-        if (ListenerAssistedEnum.CREATE_DATABASE == data.getListenerAssistedEnum()) {
+        if (ListenerAssistedType.CREATE_DATABASE == data.getListenerAssistedType()) {
             return Optional.of(new CreateDatabaseListenerAssistedEvent(databaseName.get()));
         }
-        return ListenerAssistedEnum.DROP_DATABASE == data.getListenerAssistedEnum()
+        return ListenerAssistedType.DROP_DATABASE == data.getListenerAssistedType()
                 ? Optional.of(new DropDatabaseListenerAssistedEvent(databaseName.get()))
                 : Optional.empty();
     }
