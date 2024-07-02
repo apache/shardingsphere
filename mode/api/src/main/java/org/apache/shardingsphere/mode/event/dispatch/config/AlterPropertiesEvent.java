@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.config;
+package org.apache.shardingsphere.mode.event.dispatch.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Alter global rule configuration event.
+ * Alter properties event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterGlobalRuleConfigurationEvent implements GovernanceEvent {
-    
-    private final String ruleSimpleName;
+public final class AlterPropertiesEvent implements GovernanceEvent {
     
     private final String activeVersionKey;
     

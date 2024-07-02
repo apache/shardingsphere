@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.datasource.unit;
+package org.apache.shardingsphere.mode.event.dispatch.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Add data source unit event.
+ * Alter global rule configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterStorageUnitEvent implements GovernanceEvent {
+public final class AlterGlobalRuleConfigurationEvent implements GovernanceEvent {
     
-    private final String databaseName;
-    
-    private final String storageUnitName;
+    private final String ruleSimpleName;
     
     private final String activeVersionKey;
     
