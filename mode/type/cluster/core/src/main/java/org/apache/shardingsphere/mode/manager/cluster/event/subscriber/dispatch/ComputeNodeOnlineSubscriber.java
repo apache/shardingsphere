@@ -22,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.event.InstanceOfflineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.nodes.compute.online.event.InstanceOnlineEvent;
+import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOfflineEvent;
+import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOnlineEvent;
 
 /**
  * Compute node online subscriber.
