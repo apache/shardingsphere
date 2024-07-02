@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.mode.metadata.builder;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
-import org.apache.shardingsphere.mode.path.rule.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.mode.path.rule.item.UniqueRuleItemNodePath;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.NamedRuleItemChangedEventCreator;
-import org.apache.shardingsphere.mode.event.UniqueRuleItemChangedEventCreator;
+import org.apache.shardingsphere.mode.event.dispatch.rule.NamedRuleItemChangedEventCreator;
+import org.apache.shardingsphere.mode.event.dispatch.rule.UniqueRuleItemChangedEventCreator;
+import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
+import org.apache.shardingsphere.mode.path.rule.item.NamedRuleItemNodePath;
+import org.apache.shardingsphere.mode.path.rule.item.UniqueRuleItemNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
 import java.util.Map.Entry;

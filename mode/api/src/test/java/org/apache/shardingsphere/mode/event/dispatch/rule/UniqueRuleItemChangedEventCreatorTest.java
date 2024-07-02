@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event;
+package org.apache.shardingsphere.mode.event.dispatch.rule;
 
 import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterUniqueRuleItemEvent;
 import org.apache.shardingsphere.infra.rule.event.rule.drop.DropUniqueRuleItemEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

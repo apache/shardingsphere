@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.schema.view;
+package org.apache.shardingsphere.mode.event.dispatch.schema.view;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Create or alter view event.
+ * Drop view event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateOrAlterViewEvent implements GovernanceEvent {
+public final class DropViewEvent implements GovernanceEvent {
     
     private final String databaseName;
     
