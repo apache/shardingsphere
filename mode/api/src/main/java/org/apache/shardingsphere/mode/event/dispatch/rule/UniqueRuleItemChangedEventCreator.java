@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event;
+package org.apache.shardingsphere.mode.event.dispatch.rule;
 
 import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
-import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterUniqueRuleItemEvent;
+import org.apache.shardingsphere.infra.rule.event.rule.drop.DropUniqueRuleItemEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 
 /**
- * Named rule item changed event creator.
+ * Unique rule item changed event creator.
  */
-public final class NamedRuleItemChangedEventCreator {
+public final class UniqueRuleItemChangedEventCreator {
     
     /**
      * Create named rule item changed event.
      * 
      * @param databaseName database name
-     * @param itemName item name
      * @param event data changed event
      * @param type rule item type
      * @return named rule item changed event
      */
-    public RuleItemChangedEvent create(final String databaseName, final String itemName, final DataChangedEvent event, final String type) {
+    public RuleItemChangedEvent create(final String databaseName, final DataChangedEvent event, final String type) {
         return Type.ADDED == event.getType() || Type.UPDATED == event.getType()
-                ? new AlterNamedRuleItemEvent(databaseName, itemName, event.getKey(), event.getValue(), type)
-                : new DropNamedRuleItemEvent(databaseName, itemName, type);
+                ? new AlterUniqueRuleItemEvent(databaseName, event.getKey(), event.getValue(), type)
+                : new DropUniqueRuleItemEvent(databaseName, type);
     }
 }
