@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.state;
 
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.mode.persist.service.StatePersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

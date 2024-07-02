@@ -15,25 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.service.pojo;
+package org.apache.shardingsphere.mode.persist.pojo;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.mode.service.enums.ListenerAssistedEnum;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Listener assisted pojo.
+ * Schema altered pojo.
  */
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ListenerAssistedPOJO implements YamlConfiguration {
+public final class ShardingSphereSchemaDataAlteredPOJO {
     
-    private String databaseName;
+    private final String databaseName;
     
-    private ListenerAssistedEnum listenerAssistedEnum;
+    private final String schemaName;
+    
+    private final String tableName;
+    
+    private final Collection<YamlShardingSphereRowData> addedRows = new LinkedList<>();
+    
+    private final Collection<YamlShardingSphereRowData> updatedRows = new LinkedList<>();
+    
+    private final Collection<YamlShardingSphereRowData> deletedRows = new LinkedList<>();
 }

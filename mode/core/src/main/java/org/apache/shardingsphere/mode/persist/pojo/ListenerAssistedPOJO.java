@@ -15,30 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.service.persist;
+package org.apache.shardingsphere.mode.persist.pojo;
 
-import org.apache.shardingsphere.infra.executor.sql.process.Process;
-
-import java.sql.SQLException;
-import java.util.Collection;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Process persist service.
+ * Listener assisted pojo.
  */
-public interface ProcessPersistService {
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public final class ListenerAssistedPOJO implements YamlConfiguration {
     
-    /**
-     * Get process list.
-     *
-     * @return collection of process
-     */
-    Collection<Process> getProcessList();
+    private String databaseName;
     
-    /**
-     * Kill process.
-     *
-     * @param processId process id
-     * @throws  SQLException SQL exception
-     */
-    void killProcess(String processId) throws SQLException;
+    private ListenerAssistedType listenerAssistedType;
 }
