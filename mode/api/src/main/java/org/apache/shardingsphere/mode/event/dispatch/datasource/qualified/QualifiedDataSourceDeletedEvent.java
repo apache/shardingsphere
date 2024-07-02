@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.datasource.nodes;
+package org.apache.shardingsphere.mode.event.dispatch.datasource.qualified;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 
 /**
- * Add data source node event.
+ * Qualified data source deleted event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class UnregisterStorageNodeEvent implements GovernanceEvent {
+public final class QualifiedDataSourceDeletedEvent {
     
-    private final String databaseName;
-    
-    private final String storageNodeName;
+    private final QualifiedDataSource qualifiedDataSource;
 }

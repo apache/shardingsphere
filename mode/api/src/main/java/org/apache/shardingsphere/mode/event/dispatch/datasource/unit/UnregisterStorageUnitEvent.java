@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.datasource.unit;
+package org.apache.shardingsphere.mode.event.dispatch.datasource.unit;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +26,9 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
  */
 @RequiredArgsConstructor
 @Getter
-public final class RegisterStorageUnitEvent implements GovernanceEvent {
+public final class UnregisterStorageUnitEvent implements GovernanceEvent {
     
     private final String databaseName;
     
     private final String storageUnitName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
 }

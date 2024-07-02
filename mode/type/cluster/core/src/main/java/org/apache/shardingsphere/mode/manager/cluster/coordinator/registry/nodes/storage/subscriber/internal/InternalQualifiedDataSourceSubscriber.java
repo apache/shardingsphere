@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.node
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.event.node.QualifiedDataSourceDeletedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.qualified.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
 
