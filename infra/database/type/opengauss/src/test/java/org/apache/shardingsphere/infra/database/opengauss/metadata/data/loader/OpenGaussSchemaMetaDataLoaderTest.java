@@ -54,7 +54,8 @@ class OpenGaussSchemaMetaDataLoaderTest {
     @BeforeEach
     void setUp() throws SQLException {
         ResultSet tableResultSet = mockTableResultSet();
-        when(dataSource.getConnection().getMetaData().getTables("catalog", "public", null, new String[]{"TABLE", "VIEW", "SYSTEM TABLE", "SYSTEM VIEW"})).thenReturn(tableResultSet);
+        String[] loadTypes = {"TABLE", "VIEW", "SYSTEM TABLE", "SYSTEM VIEW", "PARTITIONED TABLE"};
+        when(dataSource.getConnection().getMetaData().getTables("catalog", "public", null, loadTypes)).thenReturn(tableResultSet);
         when(dataSource.getConnection().getCatalog()).thenReturn("catalog");
         when(dataSource.getConnection().getSchema()).thenReturn("public");
         ResultSet schemaResultSet = mockSchemaResultSet();
