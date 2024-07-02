@@ -15,33 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch;
+package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.deliver;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.event.dispatch.config.AlterPropertiesEvent;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.qualified.QualifiedDataSourceDeletedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
 
 /**
- * Properties event subscriber.
+ * Deliver data source status subscriber.
  */
 @RequiredArgsConstructor
-public final class PropertiesEventSubscriber implements EventSubscriber {
+public final class DeliverQualifiedDataSourceSubscriber implements EventSubscriber {
     
-    private final ContextManager contextManager;
+    private final ClusterPersistRepository repository;
     
     /**
-     * Renew for global properties.
+     * Delete qualified data source.
      *
-     * @param event global properties alter event
+     * @param event qualified data source deleted event
      */
     @Subscribe
-    public synchronized void renew(final AlterPropertiesEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
-            return;
-        }
-        contextManager.getMetaDataContextManager().getConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
+    public void delete(final QualifiedDataSourceDeletedEvent event) {
+        repository.delete(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(event.getQualifiedDataSource()));
     }
 }

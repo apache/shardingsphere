@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.qualified.QualifiedDataSourceDeletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.deliver.DeliverQualifiedDataSourceSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.deliver.DeliverQualifiedDataSourceSubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
 import org.junit.jupiter.api.Test;

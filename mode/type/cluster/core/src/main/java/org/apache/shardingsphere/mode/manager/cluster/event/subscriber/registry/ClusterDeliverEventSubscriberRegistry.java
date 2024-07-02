@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.subscriber.registry;
+package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry;
 
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.deliver.DeliverQualifiedDataSourceSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.deliver.DeliverQualifiedDataSourceSubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.subsciber.DeliverEventSubscriberRegistry;
+import org.apache.shardingsphere.mode.event.subsciber.DeliverEventSubscriberRegistry;
 
 /**
  * Cluster deliver event subscriber registry.

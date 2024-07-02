@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch.ResourceMetaDataChangedSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ResourceMetaDataChangedSubscriber;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.junit.jupiter.api.BeforeEach;
