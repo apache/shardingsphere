@@ -29,10 +29,10 @@ import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourceUnitPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
-import org.apache.shardingsphere.mode.service.enums.ListenerAssistedEnum;
-import org.apache.shardingsphere.mode.service.persist.ListenerAssistedPersistService;
-import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.service.pojo.ListenerAssistedPOJO;
+import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedType;
+import org.apache.shardingsphere.mode.persist.service.ListenerAssistedPersistService;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedPOJO;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 
@@ -62,13 +62,13 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @Override
     public void createDatabase(final String databaseName) {
         metaDataPersistService.getDatabaseMetaDataService().addDatabase(databaseName);
-        listenerAssistedPersistService.persistDatabaseNameListenerAssisted(new ListenerAssistedPOJO(databaseName, ListenerAssistedEnum.CREATE_DATABASE));
+        listenerAssistedPersistService.persistDatabaseNameListenerAssisted(new ListenerAssistedPOJO(databaseName, ListenerAssistedType.CREATE_DATABASE));
     }
     
     @Override
     public void dropDatabase(final String databaseName) {
         String droppedDatabaseName = metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getName();
-        listenerAssistedPersistService.persistDatabaseNameListenerAssisted(new ListenerAssistedPOJO(droppedDatabaseName, ListenerAssistedEnum.DROP_DATABASE));
+        listenerAssistedPersistService.persistDatabaseNameListenerAssisted(new ListenerAssistedPOJO(droppedDatabaseName, ListenerAssistedType.DROP_DATABASE));
         metaDataPersistService.getDatabaseMetaDataService().dropDatabase(droppedDatabaseName);
     }
     

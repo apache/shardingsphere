@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.service.persist;
+package org.apache.shardingsphere.mode.persist.service;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.path.ListenerAssistedNodePath;
-import org.apache.shardingsphere.mode.service.pojo.ListenerAssistedPOJO;
+import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedPOJO;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**

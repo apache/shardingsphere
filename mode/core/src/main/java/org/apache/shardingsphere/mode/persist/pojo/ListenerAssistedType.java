@@ -15,9 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.service.enums;
+package org.apache.shardingsphere.mode.persist.pojo;
 
-public enum ListenerAssistedEnum {
+/**
+ * Listener assisted type.
+ */
+public enum ListenerAssistedType {
     CREATE_DATABASE,
     
     DROP_DATABASE

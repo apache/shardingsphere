@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.proc
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.listener.DropDatabaseListenerAssistedEvent;
-import org.apache.shardingsphere.mode.processor.ListenerAssistedProcessor;
 
 /**
  * Drop database listener assisted processor.

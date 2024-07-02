@@ -15,31 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.service.pojo;
+package org.apache.shardingsphere.mode.persist.service;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
 
+import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Schema altered pojo.
+ * Process persist service.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingSphereSchemaDataAlteredPOJO {
+public interface ProcessPersistService {
     
-    private final String databaseName;
+    /**
+     * Get process list.
+     *
+     * @return collection of process
+     */
+    Collection<Process> getProcessList();
     
-    private final String schemaName;
-    
-    private final String tableName;
-    
-    private final Collection<YamlShardingSphereRowData> addedRows = new LinkedList<>();
-    
-    private final Collection<YamlShardingSphereRowData> updatedRows = new LinkedList<>();
-    
-    private final Collection<YamlShardingSphereRowData> deletedRows = new LinkedList<>();
+    /**
+     * Kill process.
+     *
+     * @param processId process id
+     * @throws  SQLException SQL exception
+     */
+    void killProcess(String processId) throws SQLException;
 }

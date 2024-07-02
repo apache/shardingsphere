@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.processor;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.processor;
 
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;

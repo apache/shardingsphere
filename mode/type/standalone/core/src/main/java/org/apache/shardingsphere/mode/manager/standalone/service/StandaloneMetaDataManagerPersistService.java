@@ -46,7 +46,7 @@ import org.apache.shardingsphere.mode.metadata.builder.RuleConfigurationEventBui
 import org.apache.shardingsphere.mode.metadata.manager.ConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
-import org.apache.shardingsphere.mode.service.persist.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 
