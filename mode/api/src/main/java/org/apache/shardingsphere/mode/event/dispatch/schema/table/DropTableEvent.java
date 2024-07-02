@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.schema.table;
+package org.apache.shardingsphere.mode.event.dispatch.schema.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
