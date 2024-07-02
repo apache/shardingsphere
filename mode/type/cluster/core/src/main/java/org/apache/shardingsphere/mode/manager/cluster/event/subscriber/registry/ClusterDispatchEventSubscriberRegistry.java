@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.subscriber.registry;
+package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.DispatchEventBuilder;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch.ComputeNodeOnlineSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch.QualifiedDataSourceSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch.ProcessListChangedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch.CacheEvictedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch.DatabaseChangedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch.GlobalRuleConfigurationEventSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch.ListenerAssistedMetaDataChangedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch.PropertiesEventSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch.ResourceMetaDataChangedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch.RuleItemChangedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch.StateChangedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.subscriber.dispatch.StorageUnitEventSubscriber;
+import org.apache.shardingsphere.mode.event.builder.dispatch.DispatchEventBuilder;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ComputeNodeOnlineSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.DatabaseChangedSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.GlobalRuleConfigurationEventSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ProcessListChangedSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ResourceMetaDataChangedSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.QualifiedDataSourceSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.CacheEvictedSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ListenerAssistedMetaDataChangedSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.PropertiesEventSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.RuleItemChangedSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.StateChangedSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.StorageUnitEventSubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.subsciber.EventSubscriberRegistry;
+import org.apache.shardingsphere.mode.event.subsciber.EventSubscriberRegistry;
 
 import java.util.Arrays;
 import java.util.Collection;

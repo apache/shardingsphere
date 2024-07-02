@@ -15,30 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.subscriber.deliver;
+package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.qualified.QualifiedDataSourceDeletedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
+import org.apache.shardingsphere.mode.event.dispatch.config.AlterPropertiesEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
- * Deliver data source status subscriber.
+ * Properties event subscriber.
  */
 @RequiredArgsConstructor
-public final class DeliverQualifiedDataSourceSubscriber implements EventSubscriber {
+public final class PropertiesEventSubscriber implements EventSubscriber {
     
-    private final ClusterPersistRepository repository;
+    private final ContextManager contextManager;
     
     /**
-     * Delete qualified data source.
+     * Renew for global properties.
      *
-     * @param event qualified data source deleted event
+     * @param event global properties alter event
      */
     @Subscribe
-    public void delete(final QualifiedDataSourceDeletedEvent event) {
-        repository.delete(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(event.getQualifiedDataSource()));
+    public synchronized void renew(final AlterPropertiesEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
+                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
+            return;
+        }
+        contextManager.getMetaDataContextManager().getConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
     }
 }

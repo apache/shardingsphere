@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.subsciber;
+package org.apache.shardingsphere.mode.event.subsciber;
 
 /**
  * Event subscriber registry.
