@@ -63,4 +63,10 @@
     <sql-case id="select_aes_decrypt" value="SELECT AES_DECRYPT('encrypt_text','key_str')" db-types="MySQL" />
     <sql-case id="select_any_value" value="SELECT ANY_VALUE(age) FROM t" db-types="MySQL" />
     <sql-case id="select_ascii" value="SELECT ASCII('2')" db-types="MySQL" />
+    <sql-case id="select_bin" value="SELECT BIN(12)" db-types="MySQL" />
+    <sql-case id="select_bin_uuid" value="SELECT BIN_TO_UUID(UUID_TO_BIN('6ccd780c-baba-1026-9564-5b8c656024db'))" db-types="MySQL" />
+    <sql-case id="select_bit_length" value="SELECT BIT_LENGTH(1)" db-types="MySQL" />
+    <sql-case id="select_bit_count" value="SELECT BIT_COUNT(1)" db-types="MySQL" />
+    <sql-case id="select_ceil" value="SELECT CEIL(1.1)" db-types="MySQL" />
+    <sql-case id="select_ceiling" value="SELECT CEILING(1.1)" db-types="MySQL" />
 </sql-cases>

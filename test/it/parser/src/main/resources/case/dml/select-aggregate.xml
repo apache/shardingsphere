@@ -453,6 +453,34 @@
         </where>
     </select>
 
+    <select sql-case-id="select_bit_and">
+        <projections start-index="7" stop-index="16">
+            <expression-projection start-index="7" stop-index="16" text="BIT_AND(1)">
+                <expr>
+                    <function function-name="BIT_AND" text="BIT_AND(1)" start-index="7" stop-index="16">
+                        <parameter>
+                            <literal-expression value="1" start-index="15" stop-index="15" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_bit_or">
+        <projections start-index="7" stop-index="15">
+            <expression-projection start-index="7" stop-index="15" text="BIT_OR(1)">
+                <expr>
+                    <function function-name="BIT_OR" text="BIT_OR(1)" start-index="7" stop-index="15">
+                        <parameter>
+                            <literal-expression value="1" start-index="14" stop-index="14" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_bit_xor">
         <from>
             <simple-table name="t_order" start-index="29" stop-index="35" />

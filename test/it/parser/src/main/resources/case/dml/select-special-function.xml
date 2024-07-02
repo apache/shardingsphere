@@ -1242,4 +1242,92 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_bin">
+        <projections start-index="7" stop-index="13">
+            <expression-projection start-index="7" stop-index="13" text="BIN(12)">
+                <expr>
+                    <function function-name="BIN" text="BIN(12)" start-index="7" stop-index="13">
+                        <parameter>
+                            <literal-expression value="12" start-index="11" stop-index="12" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_bin_uuid">
+        <projections start-index="7" stop-index="70">
+            <expression-projection start-index="7" stop-index="70" text="BIN_TO_UUID(UUID_TO_BIN('6ccd780c-baba-1026-9564-5b8c656024db'))">
+                <expr>
+                    <function function-name="BIN_TO_UUID" text="BIN_TO_UUID(UUID_TO_BIN('6ccd780c-baba-1026-9564-5b8c656024db'))" start-index="7" stop-index="70">
+                        <parameter>
+                            <function function-name="UUID_TO_BIN" text="UUID_TO_BIN('6ccd780c-baba-1026-9564-5b8c656024db')" start-index="19" stop-index="69">
+                                <parameter>
+                                    <literal-expression value="6ccd780c-baba-1026-9564-5b8c656024db" start-index="31" stop-index="68" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_bit_length">
+        <projections start-index="7" stop-index="19">
+            <expression-projection start-index="7" stop-index="19" text="BIT_LENGTH(1)">
+                <expr>
+                    <function function-name="BIT_LENGTH" text="BIT_LENGTH(1)" start-index="7" stop-index="19">
+                        <parameter>
+                            <literal-expression value="1" start-index="18" stop-index="18" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_bit_count">
+        <projections start-index="7" stop-index="18">
+            <expression-projection start-index="7" stop-index="18" text="BIT_COUNT(1)">
+                <expr>
+                    <function function-name="BIT_COUNT" text="BIT_COUNT(1)" start-index="7" stop-index="18">
+                        <parameter>
+                            <literal-expression value="1" start-index="17" stop-index="17" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_ceil">
+        <projections start-index="7" stop-index="15">
+            <expression-projection start-index="7" stop-index="15" text="CEIL(1.1)">
+                <expr>
+                    <function function-name="CEIL" text="CEIL(1.1)" start-index="7" stop-index="15">
+                        <parameter>
+                            <literal-expression value="1.1" start-index="12" stop-index="14" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_ceiling">
+        <projections start-index="7" stop-index="18">
+            <expression-projection start-index="7" stop-index="18" text="CEILING(1.1)">
+                <expr>
+                    <function function-name="CEILING" text="CEILING(1.1)" start-index="7" stop-index="18">
+                        <parameter>
+                            <literal-expression value="1.1" start-index="15" stop-index="17" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
