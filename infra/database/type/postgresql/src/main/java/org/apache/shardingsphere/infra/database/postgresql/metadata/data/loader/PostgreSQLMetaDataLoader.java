@@ -81,7 +81,7 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
         try (Connection connection = material.getDataSource().getConnection()) {
             Collection<String> schemaNames = SchemaMetaDataLoader.loadSchemaNames(connection, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
             Map<String, Multimap<String, IndexMetaData>> schemaIndexMetaDataMap = loadIndexMetaDataMap(connection, schemaNames);
-            Map<String, Multimap<String, ColumnMetaData>> schemaColumnMetaDataMap = loadColumnMetaDataMap(connection, material.getActualTableNames(), schemaNames);
+            Map<String, Multimap<String, ColumnMetaData>> schemaColumnMetaDataMap = loadColumnMetaDataMap(connection, material.getActualTableNames(), schemaNames, material.getStorageType());
             Map<String, Multimap<String, ConstraintMetaData>> schemaConstraintMetaDataMap = loadConstraintMetaDataMap(connection, schemaNames);
             Collection<SchemaMetaData> result = new LinkedList<>();
             for (String each : schemaNames) {
@@ -135,11 +135,11 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private Map<String, Multimap<String, ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables,
-                                                                                final Collection<String> schemaNames) throws SQLException {
+                                                                                final Collection<String> schemaNames, final DatabaseType databaseType) throws SQLException {
         Map<String, Multimap<String, ColumnMetaData>> result = new LinkedHashMap<>();
         Collection<String> roleTableGrants = loadRoleTableGrants(connection, tables);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getColumnMetaDataSQL(schemaNames, tables)); ResultSet resultSet = preparedStatement.executeQuery()) {
-            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), getType());
+            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), databaseType);
             Collection<String> primaryKeys = loadPrimaryKeys(connection, schemaNames);
             while (resultSet.next()) {
                 String tableName = resultSet.getString("table_name");

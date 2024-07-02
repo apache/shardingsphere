@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaM
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -57,7 +56,7 @@ class MySQLMetaDataLoaderTest {
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement("SELECT TABLE_NAME, INDEX_NAME, NON_UNIQUE, COLUMN_NAME FROM information_schema.statistics "
                 + "WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl') ORDER BY NON_UNIQUE, INDEX_NAME, SEQ_IN_INDEX").executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.emptyList(), dataSource, new MySQLDatabaseType(), "sharding_db")));
+        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.emptyList(), dataSource, TypedSPILoader.getService(DatabaseType.class, "Mysql"), "sharding_db")));
     }
     
     @Test
@@ -71,7 +70,8 @@ class MySQLMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement("SELECT TABLE_NAME, INDEX_NAME, NON_UNIQUE, COLUMN_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl') "
                 + "ORDER BY NON_UNIQUE, INDEX_NAME, SEQ_IN_INDEX")
                 .executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), dataSource, new MySQLDatabaseType(), "sharding_db")));
+        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), dataSource, TypedSPILoader.getService(DatabaseType.class, "Mysql"),
+                "sharding_db")));
     }
     
     private DataSource mockDataSource() throws SQLException {

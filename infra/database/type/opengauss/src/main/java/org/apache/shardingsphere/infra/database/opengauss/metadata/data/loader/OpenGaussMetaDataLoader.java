@@ -71,7 +71,7 @@ public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
         try (Connection connection = material.getDataSource().getConnection()) {
             Collection<String> schemaNames = SchemaMetaDataLoader.loadSchemaNames(connection, TypedSPILoader.getService(DatabaseType.class, "openGauss"));
             Map<String, Multimap<String, IndexMetaData>> schemaIndexMetaDataMap = loadIndexMetaDataMap(connection, schemaNames);
-            Map<String, Multimap<String, ColumnMetaData>> schemaColumnMetaDataMap = loadColumnMetaDataMap(connection, material.getActualTableNames(), schemaNames);
+            Map<String, Multimap<String, ColumnMetaData>> schemaColumnMetaDataMap = loadColumnMetaDataMap(connection, material.getActualTableNames(), schemaNames, material.getStorageType());
             Collection<SchemaMetaData> result = new LinkedList<>();
             for (String each : schemaNames) {
                 Multimap<String, IndexMetaData> tableIndexMetaDataMap = schemaIndexMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
@@ -123,10 +123,10 @@ public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private Map<String, Multimap<String, ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables,
-                                                                                final Collection<String> schemaNames) throws SQLException {
+                                                                                final Collection<String> schemaNames, final DatabaseType databaseType) throws SQLException {
         Map<String, Multimap<String, ColumnMetaData>> result = new LinkedHashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getColumnMetaDataSQL(schemaNames, tables)); ResultSet resultSet = preparedStatement.executeQuery()) {
-            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), getType());
+            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), databaseType);
             Collection<String> primaryKeys = loadPrimaryKeys(connection, schemaNames);
             while (resultSet.next()) {
                 String tableName = resultSet.getString("table_name");
