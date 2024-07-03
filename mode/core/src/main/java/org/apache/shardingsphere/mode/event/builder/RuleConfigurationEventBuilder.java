@@ -22,8 +22,11 @@ import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.dispatch.rule.NamedRuleItemChangedEventCreator;
-import org.apache.shardingsphere.mode.event.dispatch.rule.UniqueRuleItemChangedEventCreator;
+import org.apache.shardingsphere.mode.event.dispatch.rule.RuleItemChangedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterUniqueRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropUniqueRuleItemEvent;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.path.rule.item.NamedRuleItemNodePath;
 import org.apache.shardingsphere.mode.path.rule.item.UniqueRuleItemNodePath;
@@ -61,14 +64,26 @@ public final class RuleConfigurationEventBuilder {
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
             Optional<String> itemName = entry.getValue().getNameByActiveVersion(event.getKey());
             if (itemName.isPresent()) {
-                return Optional.of(new NamedRuleItemChangedEventCreator().create(databaseName, itemName.get(), event, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                return Optional.of(create(databaseName, itemName.get(), event, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
             if (entry.getValue().isActiveVersionPath(event.getKey())) {
-                return Optional.of(new UniqueRuleItemChangedEventCreator().create(databaseName, event, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                return Optional.of(create(databaseName, event, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         return Optional.empty();
+    }
+    
+    private RuleItemChangedEvent create(final String databaseName, final String itemName, final DataChangedEvent event, final String type) {
+        return Type.ADDED == event.getType() || Type.UPDATED == event.getType()
+                ? new AlterNamedRuleItemEvent(databaseName, itemName, event.getKey(), event.getValue(), type)
+                : new DropNamedRuleItemEvent(databaseName, itemName, type);
+    }
+    
+    private RuleItemChangedEvent create(final String databaseName, final DataChangedEvent event, final String type) {
+        return Type.ADDED == event.getType() || Type.UPDATED == event.getType()
+                ? new AlterUniqueRuleItemEvent(databaseName, event.getKey(), event.getValue(), type)
+                : new DropUniqueRuleItemEvent(databaseName, type);
     }
 }
