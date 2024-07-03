@@ -27,12 +27,10 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Readwrite-splitting SQL router.
@@ -46,14 +44,12 @@ public final class ReadwriteSplittingSQLRouter implements DecorateSQLRouter<Read
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {
-            String dataSourceName = each.getDataSourceMapper().getLogicName();
-            Optional<ReadwriteSplittingDataSourceGroupRule> dataSourceGroupRule = rule.findDataSourceGroupRule(dataSourceName);
-            if (dataSourceGroupRule.isPresent() && dataSourceGroupRule.get().getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
+            String logicDataSourceName = each.getDataSourceMapper().getActualName();
+            rule.findDataSourceGroupRule(logicDataSourceName).ifPresent(optional -> {
                 toBeRemoved.add(each);
-                String actualDataSourceName = new ReadwriteSplittingDataSourceRouter(dataSourceGroupRule.get(), connectionContext).route(queryContext.getSqlStatementContext(),
-                        queryContext.getHintValueContext());
-                toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), actualDataSourceName), each.getTableMappers()));
-            }
+                String actualDataSourceName = new ReadwriteSplittingDataSourceRouter(optional, connectionContext).route(queryContext.getSqlStatementContext(), queryContext.getHintValueContext());
+                toBeAdded.add(new RouteUnit(new RouteMapper(logicDataSourceName, actualDataSourceName), each.getTableMappers()));
+            });
         }
         routeContext.getRouteUnits().removeAll(toBeRemoved);
         routeContext.getRouteUnits().addAll(toBeAdded);
