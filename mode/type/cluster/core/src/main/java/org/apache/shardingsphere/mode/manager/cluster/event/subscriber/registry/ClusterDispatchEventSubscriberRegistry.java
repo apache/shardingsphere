@@ -17,25 +17,22 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
+import org.apache.shardingsphere.mode.event.subsciber.EventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.event.builder.dispatch.DispatchEventBuilder;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.CacheEvictedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ComputeNodeOnlineSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.DatabaseChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.GlobalRuleConfigurationEventSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ProcessListChangedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ResourceMetaDataChangedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.QualifiedDataSourceSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.CacheEvictedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ListenerAssistedMetaDataChangedSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ProcessListChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.PropertiesEventSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.QualifiedDataSourceSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ResourceMetaDataChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.RuleItemChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.StateChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.StorageUnitEventSubscriber;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.event.subsciber.EventSubscriberRegistry;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,11 +46,8 @@ public class ClusterDispatchEventSubscriberRegistry implements EventSubscriberRe
     
     private final Collection<EventSubscriber> subscribers;
     
-    private final ClusterPersistRepository repository;
-    
     public ClusterDispatchEventSubscriberRegistry(final ContextManager contextManager) {
         eventBusContext = contextManager.getComputeNodeInstanceContext().getEventBusContext();
-        repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
         subscribers = Arrays.asList(new RuleItemChangedSubscriber(contextManager),
                 new ResourceMetaDataChangedSubscriber(contextManager),
                 new ListenerAssistedMetaDataChangedSubscriber(contextManager),
@@ -70,24 +64,7 @@ public class ClusterDispatchEventSubscriberRegistry implements EventSubscriberRe
     
     @Override
     public void register() {
-        for (DispatchEventBuilder<?> each : ShardingSphereServiceLoader.getServiceInstances(DispatchEventBuilder.class)) {
-            register(each);
-        }
         // TODO use call subscruber instead of event bus
         subscribers.forEach(eventBusContext::register);
-    }
-    
-    private void register(final DispatchEventBuilder<?> listener) {
-        for (String each : listener.getSubscribedKeys()) {
-            register(each, listener);
-        }
-    }
-    
-    private void register(final String subscribedKey, final DispatchEventBuilder<?> listener) {
-        repository.watch(subscribedKey, dataChangedEvent -> {
-            if (listener.getSubscribedTypes().contains(dataChangedEvent.getType())) {
-                listener.build(dataChangedEvent).ifPresent(eventBusContext::post);
-            }
-        });
     }
 }
