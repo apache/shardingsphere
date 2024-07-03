@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.event.rule.drop;
+package org.apache.shardingsphere.mode.event.dispatch.rule;
 
-import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
- * Drop rule item event.
+ * Rule item changed event.
  */
-public interface DropRuleItemEvent extends RuleItemChangedEvent {
+public interface RuleItemChangedEvent extends GovernanceEvent {
     
     /**
-     * Get database name.
+     * Get rule item type.
      * 
-     * @return database name
+     * @return rule item type
      */
-    String getDatabaseName();
+    String getType();
 }
