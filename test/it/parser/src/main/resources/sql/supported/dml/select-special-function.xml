@@ -97,4 +97,15 @@
     <sql-case id="select_sign" value="SELECT SIGN(-5)" db-types="MySQL" />
     <sql-case id="select_sin" value="SELECT SIN(0.5)" db-types="MySQL" />
     <sql-case id="select_sleep" value="SELECT SLEEP(5)" db-types="MySQL" />
+    <sql-case id="select_char_length" value="SELECT CHAR_LENGTH('str')" db-types="MySQL" />
+    <sql-case id="select_character_length" value="SELECT CHARACTER_LENGTH('str')" db-types="MySQL" />
+    <sql-case id="select_charset" value="SELECT CHARSET('str')" db-types="MySQL" />
+    <sql-case id="select_coalesce" value="SELECT COALESCE(null, 1)" db-types="MySQL" />
+    <sql-case id="select_coercibility" value="SELECT COERCIBILITY('str')" db-types="MySQL" />
+    <sql-case id="select_collation" value="SELECT COLLATION('str')" db-types="MySQL" />
+    <sql-case id="select_compress" value="SELECT COMPRESS('str')" db-types="MySQL" />
+    <sql-case id="select_concat" value="SELECT CONCAT('My', 'S', 'QL')" db-types="MySQL" />
+    <sql-case id="select_concat_ws" value="SELECT CONCAT_WS(',', 'First name', 'Second name', 'Last Name')" db-types="MySQL" />
+    <sql-case id="select_connection_id" value="SELECT CONNECTION_ID()" db-types="MySQL" />
+    <sql-case id="select_conv" value="SELECT CONV('a',16,2)" db-types="MySQL" />
 </sql-cases>

@@ -1736,4 +1736,178 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_char_length">
+        <projections start-index="7" stop-index="24">
+            <expression-projection start-index="7" stop-index="24" text="CHAR_LENGTH('str')">
+                <expr>
+                    <function function-name="CHAR_LENGTH" text="CHAR_LENGTH('str')" start-index="7" stop-index="24">
+                        <parameter>
+                            <literal-expression value="str" start-index="19" stop-index="23" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_character_length">
+        <projections start-index="7" stop-index="29">
+            <expression-projection start-index="7" stop-index="29" text="CHARACTER_LENGTH('str')">
+                <expr>
+                    <function function-name="CHARACTER_LENGTH" text="CHARACTER_LENGTH('str')" start-index="7" stop-index="29">
+                        <parameter>
+                            <literal-expression value="str" start-index="24" stop-index="28" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_charset">
+        <projections start-index="7" stop-index="20">
+            <expression-projection start-index="7" stop-index="20" text="CHARSET('str')">
+                <expr>
+                    <function function-name="CHARSET" text="CHARSET('str')" start-index="7" stop-index="20">
+                        <parameter>
+                            <literal-expression value="str" start-index="15" stop-index="19" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_coalesce">
+        <projections start-index="7" stop-index="23">
+            <expression-projection start-index="7" stop-index="23" text="COALESCE(null, 1)">
+                <expr>
+                    <function function-name="COALESCE" text="COALESCE(null, 1)" start-index="7" stop-index="23">
+                        <parameter>
+                            <literal-expression value="null" start-index="16" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="22" stop-index="22" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_coercibility">
+        <projections start-index="7" stop-index="25">
+            <expression-projection start-index="7" stop-index="25" text="COERCIBILITY('str')">
+                <expr>
+                    <function function-name="COERCIBILITY" text="COERCIBILITY('str')" start-index="7" stop-index="25">
+                        <parameter>
+                            <literal-expression value="str" start-index="20" stop-index="24" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_collation">
+        <projections start-index="7" stop-index="22">
+            <expression-projection start-index="7" stop-index="22" text="COLLATION('str')">
+                <expr>
+                    <function function-name="COLLATION" text="COLLATION('str')" start-index="7" stop-index="22">
+                        <parameter>
+                            <literal-expression value="str" start-index="17" stop-index="21" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_compress">
+        <projections start-index="7" stop-index="21">
+            <expression-projection start-index="7" stop-index="21" text="COMPRESS('str')">
+                <expr>
+                    <function function-name="COMPRESS" text="COMPRESS('str')" start-index="7" stop-index="21">
+                        <parameter>
+                            <literal-expression value="str" start-index="16" stop-index="20" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_concat">
+        <projections start-index="7" stop-index="29">
+            <expression-projection start-index="7" stop-index="29" text="CONCAT('My', 'S', 'QL')">
+                <expr>
+                    <function function-name="CONCAT" text="CONCAT('My', 'S', 'QL')" start-index="7" stop-index="29">
+                        <parameter>
+                            <literal-expression value="My" start-index="14" stop-index="17" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="S" start-index="20" stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="QL" start-index="25" stop-index="28" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_concat_ws">
+        <projections start-index="7" stop-index="62">
+            <expression-projection start-index="7" stop-index="62" text="CONCAT_WS(',', 'First name', 'Second name', 'Last Name')">
+                <expr>
+                    <function function-name="CONCAT_WS" text="CONCAT_WS(',', 'First name', 'Second name', 'Last Name')" start-index="7" stop-index="62">
+                        <parameter>
+                            <literal-expression value="," start-index="17" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="First name" start-index="22" stop-index="33" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Second name" start-index="36" stop-index="48" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Last Name" start-index="51" stop-index="61" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_connection_id">
+        <projections start-index="7" stop-index="21">
+            <expression-projection start-index="7" stop-index="21" text="CONNECTION_ID()">
+                <expr>
+                    <function function-name="CONNECTION_ID" text="CONNECTION_ID()" start-index="7" stop-index="21" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_conv">
+        <projections start-index="7" stop-index="20">
+            <expression-projection start-index="7" stop-index="20" text="CONV('a',16,2)">
+                <expr>
+                    <function function-name="CONV" text="CONV('a',16,2)" start-index="7" stop-index="20">
+                        <parameter>
+                            <literal-expression value="a" start-index="12" stop-index="14" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="16" start-index="16" stop-index="17" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2" start-index="19" stop-index="19" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
