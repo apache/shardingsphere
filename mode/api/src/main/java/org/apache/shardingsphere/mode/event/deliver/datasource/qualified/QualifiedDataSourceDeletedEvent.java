@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.dispatch.datasource.qualified;
+package org.apache.shardingsphere.mode.event.deliver.datasource.qualified;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
